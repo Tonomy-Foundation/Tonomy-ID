@@ -2,6 +2,8 @@
 
 Tonomy ID is the cross-platform mobile wallet (Android and iOS) for public and private EOSIO blockchains. This application allows you to sign transactions on the block chain, share your DID and Verifiable Credentials containing your identity with others in a consensual way and log into web2 and web3 applications. If you lose your phone several mechanisms exist to allow you to recover your account without trusting anyone with custody of your private keys.
 
+Tonomy ID is a React Native application in typescript. Tests are written in jest.
+
 Features:
 1. EOSIO blockchain tx signing
 2. EOSIO blockchain multi-sig signing
