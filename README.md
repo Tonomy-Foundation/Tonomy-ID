@@ -29,12 +29,20 @@ Features:
   Open Android Studio and Preparing the Android device
   - Preparing the Android device
   - Using a virtual device
-- [React native](https://reactnative.dev) v7.0.3+
 
 See `./scripts/install_prerequisits.sh` for installation of dependancies on Ubuntu 20.0.4
 
 ## Run
 
+First start the emulator in VS code (use recommended extension [Android iOS Emulator](https://marketplace.visualstudio.com/items?itemName=DiemasMichiels.emulate)), Android Studio, XCode or via command line:
+
+```bash
+~/Android/Sdk/emulator/emulator -avd Pixel_4_API_30
+#or
+#TODO iOS command
+```
+
+Then start the compiler
 ```bash
 npm start
 npm run android
