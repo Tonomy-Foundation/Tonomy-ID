@@ -5,6 +5,7 @@ Tonomy ID is the cross-platform mobile wallet (Android and iOS) for public and p
 Tonomy ID is a React Native application in typescript. Tests are written in jest.
 
 Features:
+
 1. EOSIO blockchain tx signing
 2. EOSIO blockchain multi-sig signing
 3. Social recovery
@@ -43,6 +44,7 @@ First start the emulator in VS code (use recommended extension [Android iOS Emul
 ```
 
 Then start the compiler
+
 ```bash
 npm start
 npm run android
