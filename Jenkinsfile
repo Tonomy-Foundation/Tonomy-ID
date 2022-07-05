@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                cd /var/repo/Tonomy-ID
+                cd /var/repo
                 npm i
             }
         }
