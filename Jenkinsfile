@@ -6,16 +6,19 @@ pipeline {
         }
     }
     stages {
-        stage('Lint') {
+        stage('Build') {
             steps {
                 cd /var/repo/Tonomy-ID
                 npm i
+            }
+        }
+        stage('Lint') {
+            steps {
                 npm run lint
             }
         }
         stage('Test') {
             steps {
-                cd /var/repo/Tonomy-ID
                 npm test
             }
         }
