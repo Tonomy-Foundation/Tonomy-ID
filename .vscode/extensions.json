@@ -1,5 +1,8 @@
 {
     "recommendations": [
-        "DiemasMichiels.emulate"
+        "DiemasMichiels.emulate",
+        "dbaeumer.vscode-eslint",
+        "DavidAnson.vscode-markdownlint",
+        "christian-kohler.npm-intellisense"
     ]
 }
