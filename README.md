@@ -32,3 +32,10 @@ Features:
   - Android: [Client Android](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=blankexample)
   - Web: Any web browser
 
+## Contributing
+
+- For folder structure, see [article](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
+- For persistent data storage check:
+  - [React Native Async Storage](https://reactnative.dev/docs/asyncstorage)
+  - [React Native SQLite](https://reactnative.dev/docs/sqlite)
+  - [Realm](https://realm.io)
