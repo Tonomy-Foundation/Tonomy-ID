@@ -1,14 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { Button } from 'react-native-paper';
-import TMYButton from './src/components/tmy-button';
+import TButton from './src/components/Tbutton';
 export default function App() {
   return (
     <PaperProvider>
       <View style={styles.container}>
         <Text>Open up App.tsx to start working on your app! </Text>
-        <TMYButton>test</TMYButton>
+        <TButton>test</TButton>
         <StatusBar style="auto" />
       </View>
     </PaperProvider>

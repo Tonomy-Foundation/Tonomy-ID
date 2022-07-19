@@ -5,7 +5,7 @@ type Props = {
   children: JSX.Element | JSX.Element[] | string;
 };
 
-export default function TMYButton({ children }: Props) {
+export default function TButton({ children }: Props) {
   return (
     <Button mode="contained">{children}</Button>
   );
