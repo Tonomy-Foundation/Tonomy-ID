@@ -7,6 +7,14 @@ type Props = {
 
 export default function TButton({ children }: Props) {
   return (
-    <Button mode="contained">{children}</Button>
+    <Button 
+    mode="contained"
+    contentStyle={{
+      width: 350,
+      height: 50
+    }}
+    >
+      {children}
+      </Button>
   );
 }
