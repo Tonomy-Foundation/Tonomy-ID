@@ -13,8 +13,14 @@ As a X
 I can Y
 So that Z
 
+**API Design planning**
+
 **Definition of done**
 
 - [ ] X
 - [ ] Y
 - [ ] Z
+
+**Hints**
+
+1.
