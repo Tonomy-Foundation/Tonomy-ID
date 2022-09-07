@@ -3,10 +3,11 @@ import { Button } from "react-native-paper";
 
 type Props = {
   children: JSX.Element | JSX.Element[] | string;
+  onPress: () => void;
 };
 
-export default function TButton({ children }: Props) {
+export default function TButton({ children, onPress }: Props) {
   return (
-    <Button mode="contained">{children}</Button>
+    <Button onPress={onPress} mode="contained">{children}</Button>
   );
 }
