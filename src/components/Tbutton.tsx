@@ -10,8 +10,10 @@ export default function TButton({ children }: Props) {
     <Button 
     mode="contained"
     contentStyle={{
-      width: 350,
-      height: 50
+      width: 340,
+      height: 50,
+      flex: 1,
+      justifyContent: center
     }}
     >
       {children}

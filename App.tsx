@@ -10,8 +10,12 @@ export default function App() {
     <PaperProvider>
       <View style={styles.container}>
 
-        {/* <Ttextinput></Ttextinput> */}
+      <Ttextinput>Username</Ttextinput>
+      <Ttextinput>Password</Ttextinput>
+      <Ttextinput>Confirm Password</Ttextinput>
+
         <TButton>Create Account</TButton>
+        
         <StatusBar style="auto" />
 
       </View>

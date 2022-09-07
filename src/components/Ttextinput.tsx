@@ -8,12 +8,13 @@ type Props = {
 export default function Ttextinput({ children }: Props) {
   return (
     <TextInput
-      multiline={false}
+    
+    style={{
+      width: 340,
+      height: 50
+      }}
       rows={1}
-      name="Username"
-      placeholder="Username"
-      value={children}
-      onChangeText={text => setText(text)}
+      placeholder={children}
     />
   );
 };
