@@ -1,6 +1,6 @@
 import create from 'zustand';
 
-
+// TODO change this to be an instance of User class when we have implemented the RNKeyStore
 interface UserState {
   username: string | null;
   isLoggedIn: () => boolean;
