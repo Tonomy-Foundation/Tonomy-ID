@@ -1,30 +1,35 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
-import TButton from './src/components/Tbutton';
-import Ttextinput from './src/components/Ttextinput';
+import { Appbar } from 'react-native-paper';
+import TButton from './src/components/TButton';
+import TTextInput from './src/components/TTextInput';
+import TPasswordInput from './src/components/TPasswordInput';
+import { autocompleteClasses } from '@mui/material';
+import { blue } from '@mui/material/colors';
 
 
 export default function App() {
   return (
     <PaperProvider>
-<<<<<<< HEAD
 
       <Appbar.Header>
         <Appbar.BackAction onPress={() => { }} />
         <Appbar.Content title="Create Account" />
       </Appbar.Header>
 
-=======
->>>>>>> parent of f0ae117... PR 106 comments implemented
       <View style={styles.container}>
+        <View style={TextInputSizing.container}>
+          <TTextInput>Username</TTextInput>
+          <TPasswordInput>Password</TPasswordInput>
+          <TPasswordInput>Confirm Password</TPasswordInput>
+        </View>
 
-      <Ttextinput>Username</Ttextinput>
-      <Ttextinput>Password</Ttextinput>
-      <Ttextinput>Confirm Password</Ttextinput>
+        <View style={CreateAccountButtonStyle.container}>
+          <TButton>Create Account</TButton>
+        </View>
 
-        <TButton>Create Account</TButton>
-        
         <StatusBar style="auto" />
 
       </View>
@@ -38,5 +43,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+});
+const TextInputSizing = StyleSheet.create({
+  container: {
+    width: 340,
+    height: 50,
+    marginBottom: 440,
+  },
+});
+const CreateAccountButtonStyle = StyleSheet.create({
+  container: {
+    width: 340,
+    height: 50,
   },
 });
