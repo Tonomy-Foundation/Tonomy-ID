@@ -10,6 +10,9 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/material": "^5.10.4",
     "@react-navigation/native": "^6.0.12",
     "@react-navigation/native-stack": "^6.8.0",
     "expo": "~45.0.0",
