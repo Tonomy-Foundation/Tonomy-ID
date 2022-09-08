@@ -17,7 +17,6 @@ export default function App() {
       <Appbar.Header>
         <Appbar.BackAction onPress={() => { }} />
         <Appbar.Content title="Create Account" />
-        <Appbar.Action icon="help" onPress={() => { }} />
       </Appbar.Header>
 
       <View style={styles.container}>
