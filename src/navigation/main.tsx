@@ -17,11 +17,11 @@ export default function MainNavigation() {
       <Stack.Navigator initialRouteName="home">
       {user.isLoggedIn() ?(
         <>
-        <Stack.Screen name="home" component={HomeScreen} />
         <Stack.Screen name="test" component={TestScreen} />
         </>
       ) : (
         <>
+        <Stack.Screen name="home" component={HomeScreen} />
         <Stack.Screen name="Create Account" component={CreateAccountScreen} />
         </>
       )}

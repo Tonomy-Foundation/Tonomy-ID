@@ -8,6 +8,8 @@ export default function HomeScreen({ navigation }: { navigation: NavigationProp<
     <View style={styles.container}>
       <Text>Home page </Text>
       <TButton onPress={() => navigation.navigate('test')}>Go to Test</TButton>
+      <TButton onPress={() => navigation.navigate('Create Account')}>Go to Create Account</TButton>
+
     </View>
   );
 }
