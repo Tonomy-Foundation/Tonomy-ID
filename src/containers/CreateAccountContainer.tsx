@@ -19,8 +19,8 @@ export default function CreateAccountcontainer() {
     </View>
 
     <View style={CreateAccountButtonStyle.container}>
-      <TButton>Create Account</TButton>
-    </View>
+    <TButton onPress={() => navigation.navigate('homescreen')}>Create Account</TButton>
+    </View>  
 
     <StatusBar style="auto" />
     </View>
