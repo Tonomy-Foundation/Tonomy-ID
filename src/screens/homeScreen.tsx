@@ -4,7 +4,6 @@ import { NavigationProp } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { EthrDID } from 'ethr-did'
 import { createVerifiableCredentialJwt, Issuer, JwtCredentialPayload } from 'did-jwt-vc'
-// import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc'
 
 export default function HomeScreen({ navigation }: { navigation: NavigationProp<any> }) {
 
