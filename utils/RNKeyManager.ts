@@ -1,6 +1,6 @@
 import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
 import { GetKeyOptions, KeyManager, KeyManagerLevel, randomBytes, sha256, SignDataOptions, StoreKeyOptions } from 'tonomy-id-sdk';
-import argon2 from 'react-native-argon2';
+import * as argon2 from 'react-native-argon2';
 import * as Keychain from 'react-native-keychain';
 export default class RNKeyManager implements KeyManager {
   keys: any
@@ -16,8 +16,10 @@ export default class RNKeyManager implements KeyManager {
   }
   // store key in object
   async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
+
+    const result = await Keychain.setGenericPassword(options.level, options.privateKey.toString());
     const publicKey = options.privateKey.toPublic()
-    this.keys[options.level] = options.privateKey
+    this.keys[options.level] = options.privateKey;
     return publicKey;
   }
 
