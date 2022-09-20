@@ -1,9 +1,13 @@
 import TButton from '../components/Tbutton';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import React from 'react';
-
+import React, { useEffect } from 'react';
+import RNKeyManager from '../../utils/RNKeyManager';
 export default function HomeScreen({ navigation }: { navigation: NavigationProp<any> }) {
+  useEffect(() => {
+    const rn = new RNKeyManager();
+
+  }, [])
   return (
     <View style={styles.container}>
       <Text>Home page </Text>
