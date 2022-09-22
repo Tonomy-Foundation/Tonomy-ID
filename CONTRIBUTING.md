@@ -8,8 +8,10 @@ Reading and following these guidelines will help us make the contribution proces
     * [Tonomy ID Workshop](#tonomy-id-workshop)
     * [Design](#design)
     * [Software Repositories](#software-repositories)
-    * [Issues](#issues)
-    * [Pull Requests](#pull-requests)
+    * [Integration](#integration)
+    * [General Practices](#general-practices)
+* [Issues](#issues)
+* [Pull Requests](#pull-requests)
 * [Getting Help](#getting-help)
 #
 ## Getting Started
