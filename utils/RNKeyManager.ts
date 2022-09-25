@@ -19,6 +19,7 @@ export default class RNKeyManager implements KeyManager {
 
     if (!salt) salt = Checksum256.from(randomBytes(32));
     const result = await argon2(password, salt.toString(), { mode: "argon2id", hashLength: 32 });
+    console.log(result);
     const bytes = Bytes.from(result.rawHash, 'hex');
     const privateKey = new PrivateKey(KeyType.K1, bytes);
     return {
@@ -33,7 +34,7 @@ export default class RNKeyManager implements KeyManager {
     }
     if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
       if (!options.challenge) throw new Error("Challenge missing");
-      keyStore.salt = randomString(32);
+      keyStore.salt = randomString(32).toString();
       keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
     }
     await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), { requireAuthentication: true });

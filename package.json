@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
-    "test": "jest",
+    "test": "jest -o",
     "testDebug": "jest -o --watch --coverage=false",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -45,11 +45,10 @@
     "typescript": "~4.3.5"
   },
   "jest": {
-    "preset": "jest-expo/universal",
+    "preset": "jest-expo",
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)|argon2"
-    ],
-    "esModuleInterop": true
+    ]
   },
   "private": true
 }
