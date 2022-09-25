@@ -81,10 +81,10 @@ describe("RNKeyManager", () => {
 
   // private key is generated in home screen
   it("generates same private key as integration argon", async () => {
-    const salt: string = rn.encodeHex("12345678901234567890123456789012")
+    const salt: string = rn.encodeHex("12345678901234567890123456789012") // salt
     const encodedSalt: Checksum256 = Checksum256.from(Bytes.from(salt));
     const res = await rn.generatePrivateKeyFromPassword("password", encodedSalt);
-    // react native private key
+    // react
     expect(res.privateKey.toString()).toBe("PVT_K1_pPnFBQwMSQgjAenyLdMHoeFQBtazFBYEWeA12FtKpm5PEY4fc");
   })
 
