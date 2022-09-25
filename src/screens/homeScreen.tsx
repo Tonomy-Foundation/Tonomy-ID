@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import RNKeyManager from '../../utils/RNKeyManager';
-import { Checksum256, PrivateKey } from '@greymass/eosio';
+import { Bytes, Checksum256, PrivateKey } from '@greymass/eosio';
 
 export interface IR {
   privateKey: PrivateKey
@@ -13,12 +13,11 @@ export default function HomeScreen({ navigation }: { navigation: NavigationProp<
   const [r, setR] = useState<IR>();
   const generatePass = () => {
     const rn = new RNKeyManager();
-    const salt: Checksum256 = Checksum256.from([
-      67, 77, 27, 126, 213, 70, 191, 194,
-      15, 230, 237, 35, 230, 219, 207, 49,
-      136, 31, 150, 160, 31, 233, 136, 96,
-      146, 102, 195, 158, 133, 224, 99, 159
-    ])
+    const hex = rn.encodeHex("12345678901234567890123456789012");
+    console.log("hex", hex);
+
+    const salt: Checksum256 = Checksum256.from(Bytes.from(hex, "hex"));
+
     rn.generatePrivateKeyFromPassword('password', salt).then(result => {
       setR(result);
       console

@@ -5,14 +5,15 @@ import * as argon2 from 'react-native-argon2';
 import arg from 'argon2';
 
 const mockarg = arg
+
 jest.mock('react-native-argon2', () => {
   return {
     __esModule: true,
-    default: jest.fn(async (passowrd: string, salt: Checksum256, options) => {
-      return mockarg.hash(passowrd, { raw: true, salt: Buffer.from(salt.toString()), type: mockarg.argon2id, hashLength: 32, timeCost: 2 }).then((hash) => {
+    default: jest.fn(async (passowrd: string, salt: string, options?) => {
+      return mockarg.hash(passowrd, { raw: true, salt: Buffer.from(salt), type: mockarg.argon2id, hashLength: 32, memoryCost: 16 * 1024, parallelism: 1, timeCost: 3 }).then((hash) => {
         return {
           rawHash: hash.toString('hex'),
-          encoded: "aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+          encoded: "test value"
         }
 
       })
@@ -73,7 +74,6 @@ describe("RNKeyManager", () => {
 
   it("generates same private key from same salt", async () => {
     const salt = randomBytes(32);
-    console.log("salt", salt);
     const hash = await rn.generatePrivateKeyFromPassword("test", Checksum256.from(salt));
     const hash2 = await rn.generatePrivateKeyFromPassword("test", Checksum256.from(salt));
     expect(hash2).toEqual(hash);
@@ -81,15 +81,11 @@ describe("RNKeyManager", () => {
 
   // private key is generated in home screen
   it("generates same private key as integration argon", async () => {
-    const salt: Checksum256 = Checksum256.from([
-      67, 77, 27, 126, 213, 70, 191, 194,
-      15, 230, 237, 35, 230, 219, 207, 49,
-      136, 31, 150, 160, 31, 233, 136, 96,
-      146, 102, 195, 158, 133, 224, 99, 159
-    ]);
-    const res = await rn.generatePrivateKeyFromPassword("password", salt);
-    console.log(res.privateKey.toString());
-    console.log(res.salt.toString());
+    const salt: string = rn.encodeHex("12345678901234567890123456789012")
+    const encodedSalt: Checksum256 = Checksum256.from(Bytes.from(salt));
+    const res = await rn.generatePrivateKeyFromPassword("password", encodedSalt);
+    // react native private key
+    expect(res.privateKey.toString()).toBe("PVT_K1_pPnFBQwMSQgjAenyLdMHoeFQBtazFBYEWeA12FtKpm5PEY4fc");
   })
 
 });

@@ -18,8 +18,13 @@ export default class RNKeyManager implements KeyManager {
   async generatePrivateKeyFromPassword(password: string, salt?: Checksum256 | undefined): Promise<{ privateKey: PrivateKey; salt: Checksum256; }> {
 
     if (!salt) salt = Checksum256.from(randomBytes(32));
-    const result = await argon2(password, salt.toString(), { mode: "argon2id", hashLength: 32 });
-    console.log(result);
+    const result = await argon2(password, this.decodeHex(salt.hexString), {
+      mode: "argon2id",
+      iterations: 3,
+      memory: 16384,
+      parallelism: 1,
+      hashLength: 32,
+    });
     const bytes = Bytes.from(result.rawHash, 'hex');
     const privateKey = new PrivateKey(KeyType.K1, bytes);
     return {
@@ -74,5 +79,18 @@ export default class RNKeyManager implements KeyManager {
     if (!key) throw new Error("No key for this level");
     const keyStore = JSON.parse(key) as KeyStorage;
     return keyStore.publicKey;
+  }
+
+  encodeHex(str: string): string {
+    return str.split("")
+      .map(c => c.charCodeAt(0).toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  decodeHex(hex: string): string {
+    return hex.split(/(\w\w)/g)
+      .filter(p => !!p)
+      .map(c => String.fromCharCode(parseInt(c, 16)))
+      .join("")
   }
 }
