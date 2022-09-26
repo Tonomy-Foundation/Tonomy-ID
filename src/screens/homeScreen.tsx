@@ -30,9 +30,8 @@ export default function HomeScreen({ navigation }: { navigation: NavigationProp<
     <View style={styles.container}>
 
       <Text>{r?.privateKey.toString() || "test"}</Text>
-      {/* <Text>{r?.salt.toString()}</Text> */}
       <Text>Home page </Text>
-      {/* <TButton onPress={() => navigation.navigate('test')}>Go to Testtttt</TButton> */}
+      <TButton onPress={() => navigation.navigate('test')}>Go to Test</TButton>
       <TButton onPress={() => navigation.navigate('Create Account')}>Go to Create Account</TButton>
       <TButton onPress={generatePass}>create pass</TButton>
 

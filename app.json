@@ -19,14 +19,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rebal.tonomyid"
+      "bundleIdentifier": "foundation.tonomy.tonomyid"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.rebal.tonomyid"
+      "package": "foundation.tonomy.tonomyid"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
