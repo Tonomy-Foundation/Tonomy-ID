@@ -1,5 +1,5 @@
 import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
-import { GetKeyOptions, KeyManager, KeyManagerLevel, randomBytes, randomString, sha256, SignDataOptions, StoreKeyOptions } from 'tonomy-id-sdk';
+import { GetKeyOptions, KeyManager, KeyManagerLevel, randomBytes, randomString, sha256, SignDataOptions, StoreKeyOptions, decodeHex, } from 'tonomy-id-sdk';
 import argon2 from 'react-native-argon2';
 import * as SecureStore from 'expo-secure-store';
 
@@ -20,7 +20,7 @@ export default class RNKeyManager implements KeyManager {
 
   async generatePrivateKeyFromPassword(password: string, salt?: Checksum256 | undefined): Promise<{ privateKey: PrivateKey; salt: Checksum256; }> {
     if (!salt) salt = Checksum256.from(randomBytes(32));
-    const result = await argon2(password, this.decodeHex(salt.hexString), {
+    const result = await argon2(password, decodeHex(salt.hexString), {
       mode: "argon2id",
       iterations: 3,
       memory: 16384,
@@ -43,7 +43,7 @@ export default class RNKeyManager implements KeyManager {
     }
     if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
       if (!options.challenge) throw new Error("Challenge missing");
-      keyStore.salt = randomString(32).toString();
+      keyStore.salt = randomString(32);
       keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
     }
     await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), { requireAuthentication: true });
@@ -73,8 +73,8 @@ export default class RNKeyManager implements KeyManager {
     return signature;
   }
 
-  removeKey(options: GetKeyOptions): void {
-    SecureStore.deleteItemAsync(options.level, { requireAuthentication: true });
+  async removeKey(options: GetKeyOptions): Promise<void> {
+    await SecureStore.deleteItemAsync(options.level, { requireAuthentication: true });
   }
 
   generateRandomPrivateKey(): PrivateKey {
@@ -88,16 +88,5 @@ export default class RNKeyManager implements KeyManager {
     return keyStore.publicKey;
   }
 
-  encodeHex(str: string): string {
-    return str.split("")
-      .map(c => c.charCodeAt(0).toString(16).padStart(2, "0"))
-      .join("");
-  }
 
-  decodeHex(hex: string): string {
-    return hex.split(/(\w\w)/g)
-      .filter(p => !!p)
-      .map(c => String.fromCharCode(parseInt(c, 16)))
-      .join("")
-  }
 }
