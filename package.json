@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
-    "test": "jest -o",
+    "test": "jest",
     "testDebug": "jest -o --watch --coverage=false",
     "android": "expo run:android",
     "ios": "expo run:ios",
