@@ -1,14 +1,13 @@
-import { Children } from 'react';
+import React from 'react';
 import { TextInput } from 'react-native-paper';
 
-type Props = {
-  children: JSX.Element | JSX.Element[] | string;
-};
 
-export default function TTextInput({ children }: Props) {
+export type TTextInputProps = React.ComponentProps<typeof TextInput>;
+
+export default function TTextInput(props: TTextInputProps) {
   return (
     <TextInput
-      placeholder={children}
+      {...props}
     />
   );
 };

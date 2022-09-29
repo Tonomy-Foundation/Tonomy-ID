@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PersistantStorage } from 'tonomy-id-sdk';
 
 export default class Storage implements PersistantStorage {
-
+  [x: string]: any;
 
   async retrieve(key: string): Promise<any> {
     const data = await AsyncStorage.getItem(key);
