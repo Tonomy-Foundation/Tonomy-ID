@@ -7,20 +7,25 @@ import { Bytes, Checksum256, PrivateKey } from '@greymass/eosio';
 import { encodeHex } from 'tonomy-id-sdk';
 import TTextInput from '../components/TTextInput';
 import Storage from '../utils/storage';
+import useUserStore from '../store/userStore';
 
 export interface IR {
   privateKey: PrivateKey
   salt: Checksum256
 }
 export default function HomeScreen({ navigation }: { navigation: NavigationProp<any> }) {
-  let storage: Storage;
+  const user = useUserStore(state => state.user);
   const [r, setR] = useState<IR>();
-  const [test, setTest] = useState<string>();
+  const [inputValue, setInputValue] = useState<string>();
+  const [str, setStr] = useState<string>('');
 
   useEffect(() => {
-    storage = new Storage();
-    setTest(storage.test);
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    setStr(await user.storage.test);
+  }
 
   const generatePass = () => {
     const rn = new RNKeyManager();
@@ -39,7 +44,7 @@ export default function HomeScreen({ navigation }: { navigation: NavigationProp<
   }
 
   const saveInStorage = () => {
-    storage.test = test;
+    user.storage.test = inputValue;
   }
 
   return (
@@ -47,13 +52,15 @@ export default function HomeScreen({ navigation }: { navigation: NavigationProp<
 
       <Text>{r?.privateKey.toString() || "private key"}</Text>
       <Text>Home page </Text>
-      <TButton onPress={() => navigation.navigate('test')}>Go to Test</TButton>
       <TButton onPress={() => navigation.navigate('Create Account')}>Go to Create Account</TButton>
-      <TTextInput value={test} onChangeText={
-        (text) => { setTest(text) }}></TTextInput>
+      <View style={styles.inputContainer}>
+        <TTextInput label="test" value={inputValue} onChangeText={
+          (text: string) => { setInputValue(text) }} />
+      </View>
+
       <TButton onPress={saveInStorage}>save in storage</TButton>
       <TButton onPress={generatePass}>create pass</TButton>
-
+      <Text>{str}</Text>
     </View>
   );
 }
@@ -65,4 +72,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  inputContainer: {
+    width: 340,
+    height: 50,
+  }
 });

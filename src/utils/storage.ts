@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { PersistantStorage } from 'tonomy-id-sdk';
 
 export default class Storage implements PersistantStorage {
