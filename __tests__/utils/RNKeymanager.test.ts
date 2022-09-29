@@ -1,6 +1,6 @@
 import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey } from "@greymass/eosio";
-import { KeyManagerLevel, randomBytes } from "tonomy-id-sdk";
-import RNKeyManager from "../../utils/RNKeyManager";
+import { KeyManagerLevel, randomBytes, encodeHex } from "tonomy-id-sdk";
+import RNKeyManager from "../../src/utils/RNKeyManager";
 import * as argon2 from 'react-native-argon2';
 import arg from 'argon2';
 
@@ -81,7 +81,7 @@ describe("RNKeyManager", () => {
 
   // private key is generated in home screen
   it("generates same private key as integration argon", async () => {
-    const salt: string = rn.encodeHex("12345678901234567890123456789012") // salt
+    const salt: string = encodeHex("12345678901234567890123456789012") // salt
     const encodedSalt: Checksum256 = Checksum256.from(Bytes.from(salt));
     const res = await rn.generatePrivateKeyFromPassword("password", encodedSalt);
     // react

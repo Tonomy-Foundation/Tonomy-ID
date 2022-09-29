@@ -2,8 +2,9 @@ import TButton from '../components/Tbutton';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import RNKeyManager from '../../utils/RNKeyManager';
+import RNKeyManager from '../utils/RNKeyManager';
 import { Bytes, Checksum256, PrivateKey } from '@greymass/eosio';
+import { encodeHex } from 'tonomy-id-sdk';
 
 export interface IR {
   privateKey: PrivateKey
@@ -13,7 +14,7 @@ export default function HomeScreen({ navigation }: { navigation: NavigationProp<
   const [r, setR] = useState<IR>();
   const generatePass = () => {
     const rn = new RNKeyManager();
-    const hex = rn.encodeHex("12345678901234567890123456789012");
+    const hex = encodeHex("12345678901234567890123456789012");
     console.log("hex", hex);
 
     const salt: Checksum256 = Checksum256.from(Bytes.from(hex, "hex"));
