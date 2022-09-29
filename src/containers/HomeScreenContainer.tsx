@@ -19,16 +19,6 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 220,
-    marginTop: 50
-  },
-});
 const HomeButtonStyle = StyleSheet.create({
   container: {
     width: 340,
