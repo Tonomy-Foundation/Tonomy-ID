@@ -22,12 +22,17 @@ Features:
 - [Expo](https://expo.dev)  v45.0.0
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
+- [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v0.42.0 globally installed with npm
+
+## pre-setup (one time)
+
+1. you need an expo account to build the app. [Sign up here](https://expo.dev/signup)
+2. run `eas device:create` to create a device profile for your phone (for IOS only)
+3. run `eas build --profile development --platform ios` (ios) or `eas build --profile development --platform android` (android) to build the app for your phone
+4. install the created app on your phone
 
 ## Run
 
 - Install packages with `npm install`.
-- Run `npm start` to start the bundler.
-- Open the project in a React runtime to try it:
-  - iOS: [Client iOS](https://itunes.apple.com/app/apple-store/id982107779)
-  - Android: [Client Android](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=blankexample)
-  - Web: Any web browser
+- Run `npm start` to start the development server.
+- scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
