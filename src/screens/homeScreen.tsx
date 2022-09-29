@@ -1,24 +1,9 @@
-import TButton from '../components/Tbutton';
-import { StyleSheet, Text, View } from 'react-native';
+import HomeScreenContainer from '../containers/HomeScreenContainer'
 import { NavigationProp } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function HomeScreen({ navigation }: { navigation: NavigationProp<any> }) {
   return (
-    <View style={styles.container}>
-      <Text>Home page </Text>
-      <TButton onPress={() => navigation.navigate('test')}>Go to Test</TButton>
-      <TButton onPress={() => navigation.navigate('Create Account')}>Go to Create Account</TButton>
-
-    </View>
+    <HomeScreenContainer navigation={navigation}></HomeScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
