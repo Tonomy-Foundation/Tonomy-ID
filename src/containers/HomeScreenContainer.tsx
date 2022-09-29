@@ -2,16 +2,16 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
-import TTextInput from '../components/TTextInput';
-import TPasswordInput from '../components/TPasswordInput';
 import { NavigationProp } from '@react-navigation/native';
 
-export default function HomeScreenContainer() {
+export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
   return (
     <View>
 
     <View style={HomeButtonStyle.container}>
-      <TButton>Create Account</TButton>
+    <TButton onPress={() => navigation.navigate('home')}>Go to Home</TButton>
+    <TButton onPress={() => navigation.navigate('CreateAccountScreen')}>Create Account</TButton>
+    <TButton onPress={() => navigation.navigate('#')}>Scan QR</TButton>
     </View>
 
     <StatusBar style="auto" />
