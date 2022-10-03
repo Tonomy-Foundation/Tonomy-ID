@@ -4,6 +4,7 @@ import React from 'react';
 import HomeScreen from '../screens/homeScreen';
 import TestScreen from '../screens/testScreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen';
+import SplashSecurityScreen from "../screens/SplashSecurityScreen";
 import useUserStore from '../store/userStore';
 
 
@@ -14,17 +15,18 @@ export default function MainNavigation() {
   const user = useUserStore()
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="home">
-      {user.isLoggedIn() ?(
-        <>
-        <Stack.Screen name="test" component={TestScreen} />
-        </>
-      ) : (
-        <>
-        <Stack.Screen name="home" component={HomeScreen} />
-        <Stack.Screen name="Create Account" component={CreateAccountScreen} />
-        </>
-      )}
+      <Stack.Navigator initialRouteName="securitySplash">
+        {user.isLoggedIn() ? (
+          <>
+            <Stack.Screen name="test" component={TestScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="home" component={HomeScreen} />
+            <Stack.Screen name="securitySplash" component={SplashSecurityScreen} />
+            <Stack.Screen name="Create Account" component={CreateAccountScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   )
