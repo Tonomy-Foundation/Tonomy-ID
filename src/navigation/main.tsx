@@ -5,9 +5,9 @@ import HomeScreen from '../screens/homeScreen';
 import TestScreen from '../screens/testScreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen';
 import SplashSecurityScreen from "../screens/SplashSecurityScreen";
+import SplashPrivacyScreen from "../screens/SplashPrivacyScreen";
+import SplashTransparencyScreen from "../screens/SplashTransparencyScreen";
 import useUserStore from '../store/userStore';
-
-
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +24,8 @@ export default function MainNavigation() {
           <>
             <Stack.Screen name="home" component={HomeScreen} />
             <Stack.Screen name="securitySplash" component={SplashSecurityScreen} />
+            <Stack.Screen name="privacySplash" component={SplashPrivacyScreen} />
+            <Stack.Screen name="transparencySplash" component={SplashTransparencyScreen} />
             <Stack.Screen name="Create Account" component={CreateAccountScreen} />
           </>
         )}

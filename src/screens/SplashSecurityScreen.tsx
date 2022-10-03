@@ -12,7 +12,7 @@ export default function SplashSecurityScreen({ navigation }: { navigation: Navig
             description="Tonomy secures all transactions and data by only storing keys and your data on your phone - nowhere else!"
             learnMoreUrl=""
             buttonText="NEXT"
-            buttonOnPress={() => navigation.navigate('home')}
+            buttonOnPress={() => navigation.navigate('privacySplash')}
         ></SplashScreenContainer >
     );
 }
