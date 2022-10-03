@@ -3,26 +3,37 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 
-export default function CreateAccountcontainer({ navigation }: { navigation: NavigationProp<any> }) {
+type SplashScreenContainerProps = {
+    navigation: NavigationProp<any>;
+    title: string;
+    subtitle: string;
+    imageUrl: string;
+    description: string;
+    learnMoreUrl: string;
+    buttonText: string;
+    buttonOnPress: () => void;
+}
+
+export default function SplashScreenContainer(props: SplashScreenContainerProps) {
     return (
         <View style={styles.container}>
             <View>
-                <Text><h1>Security</h1></Text>
+                <Text><h1>{props.title}</h1></Text>
             </View>
             <View>
-                <Text>You are in control of your identity</Text>
+                <Text>{props.subtitle}</Text>
             </View>
             <View>
-                <Image source={require("./assets/security-splash.png")}></Image>
+                <Image source={require(props.imageUrl)}></Image>
             </View>
             <View>
-                <Text>Tonomy secures all transactions and data by only storing keys and your data on your phone - nowhere else!</Text>
+                <Text>{props.description}</Text>
             </View>
             <View>
-                <Text><a href="">Learn more</a></Text>
+                <Text><a href={props.learnMoreUrl}>Learn more</a></Text>
             </View>
             <View>
-                <TButton onPress={() => navigation.navigate('home')}>NEXT</TButton>
+                <TButton onPress={props.buttonOnPress}>{props.buttonText}</TButton>
             </View>
         </View>
     );
