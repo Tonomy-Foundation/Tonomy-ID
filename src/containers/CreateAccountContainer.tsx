@@ -9,22 +9,20 @@ import { NavigationProp } from '@react-navigation/native';
 export default function CreateAccountcontainer() {
   return (
     <View>
+      <View style={styles.container}>
+        <View style={styles.TextInputSizing}>
+          <TTextInput label="username" />
+          <TPasswordInput label="Password" />
+          <TPasswordInput label="Confirm Password" />
+        </View>
 
+        <View style={styles.CreateAccountButtonStyle}>
+          <TButton>Create Account</TButton>
+        </View>
 
-  <View style={styles.container}>
-    <View style={TextInputSizing.container}>
-      <TTextInput>Username</TTextInput>
-      <TPasswordInput>Password</TPasswordInput>
-      <TPasswordInput>Confirm Password</TPasswordInput>
+        <StatusBar style="auto" />
+      </View>
     </View>
-
-    <View style={CreateAccountButtonStyle.container}>
-      <TButton>Create Account</TButton>
-    </View>
-
-    <StatusBar style="auto" />
-    </View>
-  </View>
   );
 }
 
@@ -37,17 +35,17 @@ const styles = StyleSheet.create({
     paddingTop: 220,
     marginTop: 50
   },
-});
-const TextInputSizing = StyleSheet.create({
-  container: {
+
+  TextInputSizing: {
     width: 340,
     height: 50,
   },
-});
-const CreateAccountButtonStyle = StyleSheet.create({
-  container: {
+  CreateAccountButtonStyle: {
     width: 340,
     height: 50,
     marginTop: 250
-  },
+
+  }
 });
+
+

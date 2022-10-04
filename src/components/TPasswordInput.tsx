@@ -1,14 +1,11 @@
-import { Children } from 'react';
-import { TextInput } from 'react-native-paper';
+import React from 'react';
+import TTextInput, { TTextInputProps } from './TTextInput';
 
-type Props = {
-  children: JSX.Element | JSX.Element[] | string;
-};
 
-export default function TPasswordInput({ children }: Props) {
+export default function TPasswordInput(props: TTextInputProps) {
   return (
-    <TextInput
-      placeholder={children}
+    <TTextInput
+      {...props}
       secureTextEntry={true}
     />
   );
