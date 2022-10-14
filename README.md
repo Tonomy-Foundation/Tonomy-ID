@@ -44,6 +44,7 @@ Features:
 
 ## Run
 
-- Install packages with `npm install`.
-- Run `npm start` to start the development server.
-- scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
+1. Install packages with `npm install`.
+2. To run in staging mode call `export NODE_ENV=staging`
+3. Run `npm start` to start the development server.
+4. Scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
