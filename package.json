@@ -2,7 +2,7 @@
   "name": "tonomy-id",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --dev-client",
+    "start": "expo start --dev-client --clear",
     "test": "jest",
     "testDebug": "jest -o --watch --coverage=false",
     "android": "expo run:android",
