@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV || 'DEVELOPMENT';
+const env = process.env.NODE_ENV || 'development';
 
 type ConfigType = {
     blockchainUrl: string;
@@ -12,7 +12,7 @@ type SettingsType = {
 }
 let settings: SettingsType = {
     env,
-    isProduction: () => settings.env === 'PRODUCTION'
+    isProduction: () => settings.env === 'production'
 } as SettingsType;
 
 switch (env) {
