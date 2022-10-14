@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "react-native/react-native": true
     },
     "extends": [
         "airbnb-base",
@@ -14,10 +15,16 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2018,
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "tsx": true
+        }
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "react",
+        "react-native"
     ],
     "rules": {
         "no-multiple-empty-lines": [
@@ -25,6 +32,7 @@
             {
                 "max": 1
             }
-        ]
+        ],
+        "react-native/no-unused-styles": 2
     }
 }
