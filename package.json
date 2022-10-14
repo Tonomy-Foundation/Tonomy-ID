@@ -2,7 +2,7 @@
   "name": "tonomy-id",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --dev-client",
+    "start": "expo start --dev-client --clear",
     "test": "jest",
     "testDebug": "jest -o --watch --coverage=false",
     "android": "expo run:android",
@@ -43,6 +43,7 @@
     "@types/react-native-base64": "^0.2.0",
     "@types/react-test-renderer": "^18.0.0",
     "argon2": "^0.29.1",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "react-test-renderer": "^17.0.2",
     "typescript": "~4.3.5"
   },
