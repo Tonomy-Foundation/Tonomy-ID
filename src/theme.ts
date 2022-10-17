@@ -9,7 +9,8 @@ const theme: Theme = {
     colors: {
         ...DefaultTheme.colors,
         primary: settings.config.theme.primaryColor,
-        background: settings.config.theme.secondaryColor,
+        accent: settings.config.theme.secondaryColor,
+        surface: settings.config.theme.tertiaryColor,
     },
 };
 

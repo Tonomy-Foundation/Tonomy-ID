@@ -5,6 +5,7 @@ type ConfigType = {
     theme: {
         primaryColor: string;
         secondaryColor: string;
+        tertiaryColor: string;
     };
     appName: string;
     appSlogan: string;
