@@ -44,9 +44,10 @@ Features:
 
 ## Run
 
-- Install packages with `npm install`.
-- Run `npm start` to start the development server.
-- scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
+1. Install packages with `npm install`.
+2. (optional) To run in staging mode call `export NODE_ENV=staging`
+3. Run `npm start` to start the development server.
+4. Scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
 
 ## Linting
 
@@ -55,3 +56,9 @@ Linting is done with `eslint`. Install the recommended VS Code plugin to see mar
 ```bash
 npm run lint
 ```
+
+### Configuration
+
+Set the configuration variables in the desired file in `./src/config`
+
+`config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
