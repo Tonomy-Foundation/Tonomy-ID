@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
-import { TA, TH1 } from '../components/THeadings';
+import { TH1 } from '../components/THeadings';
+import TA from '../components/TA';
 
 type SplashScreenContainerProps = {
     navigation: NavigationProp<any>;
@@ -13,13 +14,15 @@ type SplashScreenContainerProps = {
     learnMoreUrl: string;
     buttonText: string;
     buttonOnPress: () => void;
-}
+};
 
 export default function SplashScreenContainer(props: SplashScreenContainerProps) {
     return (
         <View style={styles.container}>
             <View>
-                <Text><TH1>{props.title}</H1></Text>
+                <Text>
+                    <TH1>{props.title}</TH1>
+                </Text>
             </View>
             <View>
                 <Text>{props.subtitle}</Text>
@@ -31,7 +34,9 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
                 <Text>{props.description}</Text>
             </View>
             <View>
-                <Text><TA href={props.learnMoreUrl}>Learn more</A></Text>
+                <Text>
+                    <TA href={props.learnMoreUrl}>Learn more</TA>
+                </Text>
             </View>
             <View>
                 <TButton onPress={props.buttonOnPress}>{props.buttonText}</TButton>
@@ -39,7 +44,6 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
         </View>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {

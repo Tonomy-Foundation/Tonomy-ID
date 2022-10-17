@@ -1,5 +1,4 @@
 import React from 'react';
-import { A } from '@expo/html-elements';
 import { Text, StyleSheet } from 'react-native';
 
 export function TH1(props: any) {
@@ -10,14 +9,19 @@ export function TH1(props: any) {
     );
 }
 
-export function TA(props: any) {
+export function TH2(props: any) {
     return (
-        <A {...props} />
+        <Text style={styles.h2} {...props}>
+            {props.children}
+        </Text>
     );
 }
 
 const styles = StyleSheet.create({
     h1: {
+        fontSize: 36,
+    },
+    h2: {
         fontSize: 24,
     },
 });
