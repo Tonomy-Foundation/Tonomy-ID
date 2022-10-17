@@ -2,17 +2,24 @@ const env = process.env.NODE_ENV || 'development';
 
 type ConfigType = {
     blockchainUrl: string;
-}
+    theme: {
+        primaryColor: string;
+        secondaryColor: string;
+    };
+    appName: string;
+    appSlogan: string;
+    appLogoUrl: string;
+};
 let config: ConfigType;
 
 type SettingsType = {
     env: string;
     config: ConfigType;
     isProduction: () => boolean;
-}
-let settings: SettingsType = {
+};
+const settings: SettingsType = {
     env,
-    isProduction: () => settings.env === 'production'
+    isProduction: () => settings.env === 'production',
 } as SettingsType;
 
 switch (env) {

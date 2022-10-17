@@ -1,3 +1,10 @@
 {
-    "blockchainUrl": "http://localhost:8888"
+    "blockchainUrl": "http://localhost:8888",
+    "theme": {
+        "primaryColor": "#571AFF",
+        "secondaryColor": "#1AD6FF"
+    },
+    "appName": "Telos ID",
+    "appSlogan": "The fastest EVM",
+    "appLogoUrl": "https://telos.net/wp-content/uploads/2018/09/telos-logo.png",
 }
