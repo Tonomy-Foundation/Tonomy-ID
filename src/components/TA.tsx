@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet, Linking } from 'react-native';
-// import { Linking } from '@react-navigation/native';
+import settings from '../settings';
 
 type AProps = {
     href: string;
@@ -18,7 +18,7 @@ export default function TLink(props: AProps & any) {
 
 const styles = StyleSheet.create({
     a: {
-        color: 'blue',
+        color: settings.config.theme.secondaryColor,
         textDecorationLine: 'underline',
     },
 });
