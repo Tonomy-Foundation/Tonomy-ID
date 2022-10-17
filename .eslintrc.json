@@ -1,38 +1,46 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true,
-        "react-native/react-native": true
-    },
+    "root": true,
     "extends": [
-        "airbnb-base",
-        "prettier"
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:prettier/recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "jsx": true,
-            "tsx": true
-        }
-    },
     "plugins": [
-        "@typescript-eslint",
+        "prettier",
         "react",
-        "react-native"
+        "react-native",
+        "react-hooks",
+        "@typescript-eslint"
     ],
     "rules": {
-        "no-multiple-empty-lines": [
-            "error",
-            {
-                "max": 1
-            }
-        ],
-        "react-native/no-unused-styles": 2
-    }
+        "eqeqeq": "error",
+        "no-console": "warn",
+        "prettier/prettier": "error",
+        "react/display-name": "off",
+        "react/no-children-prop": "off",
+        "react/react-in-jsx-scope": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+    },
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "react-native/react-native": true,
+        "es6": true,
+        "jest": true
+    },
+    "ignorePatterns": [
+        "node_modules",
+        "build",
+        "dist",
+        "public"
+    ]
 }
