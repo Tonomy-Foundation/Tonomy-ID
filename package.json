@@ -13,8 +13,6 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
     "@greymass/eosio": "^0.6.4",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-navigation/native": "^6.0.12",
