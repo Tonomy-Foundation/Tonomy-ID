@@ -49,6 +49,14 @@ Features:
 3. Run `npm start` to start the development server.
 4. Scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
 
+## Linting
+
+Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
+
+```bash
+npm run lint
+```
+
 ### Configuration
 
 Set the configuration variables in the desired file in `./src/config`
