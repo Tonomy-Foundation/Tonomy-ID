@@ -1,19 +1,27 @@
 import React from 'react';
 import { StyleSheet, Text, Image, View, ImageSourcePropType } from 'react-native';
 import settings from '../settings';
+import { NavigationProp } from '@react-navigation/native';
 
-export default function LoadingScreenContainer() {
+type LoadingScreenProps = {
+    navigation: NavigationProp<any>;
+    creditText: string;
+    appLogoUrl: string;
+    tonomyLogoUrl: string;
+};
+
+export default function LoadingScreenContainer(props: LoadingScreenProps) {
     return (
         <View>
             <View>
-                <Image source={settings.config.appLogoUrl}></Image>
+                <Image source={props.appLogoUrl}></Image>
             </View>
             <View>
-                <Image source={settings.config.tonomyLogoUrl}></Image>
+                <Image source={props.tonomyLogoUrl}></Image>
             </View>
             <View>
                 <Text>
-                    {settings.config.creditText}
+                    {props.creditText}
                 </Text>
             </View>
         </View>
