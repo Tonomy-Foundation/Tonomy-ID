@@ -8,7 +8,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
     return (
         <View>
             <View style={HomeButtonStyle.container}>
-                <TButton onPress={() => navigation.navigate('CreateAccountScreen')}>Create Account</TButton>
+                <TButton onPress={() => navigation.navigate('createAccount')}>Create Account</TButton>
                 <TButton onPress={() => navigation.navigate('#')}>Scan QR</TButton>
             </View>
 
