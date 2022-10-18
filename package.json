@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client --clear",
+    "tunnel": "npm start --tunnel",
     "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
