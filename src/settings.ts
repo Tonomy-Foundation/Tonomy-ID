@@ -10,6 +10,7 @@ type ConfigType = {
     appName: string;
     appSlogan: string;
     appLogoUrl: string;
+    accountSuffix: string;
 };
 let config: ConfigType;
 
@@ -24,16 +25,16 @@ const settings: SettingsType = {
 } as SettingsType;
 
 switch (env) {
-    case 'development':
-        config = require('./config/config.json');
-        break;
-    case 'staging':
-        config = require('./config/config.staging.json');
-        break;
-    case 'production':
+case 'development':
+    config = require('./config/config.json');
+    break;
+case 'staging':
+    config = require('./config/config.staging.json');
+    break;
+case 'production':
     // TODO add production config when ready
-    default:
-        throw new Error('Unknown environment: ' + env);
+default:
+    throw new Error('Unknown environment: ' + env);
 }
 
 settings.config = config;
