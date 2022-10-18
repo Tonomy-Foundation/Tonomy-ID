@@ -7,8 +7,9 @@ import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
 import { TH1 } from '../components/THeadings';
 import settings from '../settings';
+import { NavigationProp } from '@react-navigation/native';
 
-export default function CreateAccountContainer() {
+export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
     return (
         <View style={styles.container}>
             <View>
@@ -27,7 +28,7 @@ export default function CreateAccountContainer() {
             </View>
 
             <View>
-                <TButton>Next</TButton>
+                <TButton onPress={() => navigation.navigate('fingerprint')}>Next</TButton>
             </View>
             <View>
                 <Text>
