@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "tonomy-id",
+    "slug": "tonomy-id",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/tonomy-logo1024.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/tonomy-splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "foundation.tonomy.tonomyid"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/tonomy-logo1024.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "foundation.tonomy.tonomyid"
+    },
+    "web": {
+      "favicon": "./src/assets/tonomy-logo48.ico"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "83b91e03-98c2-4ae1-80a3-57d3fbe6db6d"
+      }
+    }
+  }
+}

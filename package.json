@@ -2,16 +2,13 @@
   "name": "tonomy-id",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --dev-client --clear",
+    "prepare": "npx ts-node pre-compile",
+    "start": "npm run prepare && expo start --dev-client --clear",
     "tunnel": "npm start --tunnel",
     "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
-    "testDebug": "jest -o --watch --coverage=false",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web",
-    "eject": "expo eject"
+    "testDebug": "jest -o --watch --coverage=false"
   },
   "dependencies": {
     "@greymass/eosio": "^0.6.4",
