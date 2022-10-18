@@ -1,9 +1,9 @@
 {
     "blockchainUrl": "https://stagingapi.staging.tonomy.foundation",
     "theme": {
-        "primaryColor": "yellow",
-        "secondaryColor": "orange",
-        "tertiaryColor": "green"
+        "primaryColor": "#571AFF",
+        "secondaryColor": "#1AD6FF",
+        "tertiaryColor": "#CBCAF9"
     },
     "appName": "Telos ID",
     "appSlogan": "The fastest EVM",

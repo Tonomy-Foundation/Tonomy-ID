@@ -1,12 +1,12 @@
 {
     "blockchainUrl": "http://localhost:8888",
     "theme": {
-        "primaryColor": "#571AFF",
-        "secondaryColor": "#1AD6FF",
-        "tertiaryColor": "#CBCAF9"
+        "primaryColor": "#6200ee",
+        "secondaryColor": "#03dac4",
+        "tertiaryColor": "#ffffff"
     },
-    "appName": "Telos ID",
-    "appSlogan": "The fastest EVM",
-    "appLogoUrl": "https://telos.net/wp-content/uploads/2018/09/telos-logo.png",
-    "accountSuffix": ".telos.id"
+    "appName": "Tonomy ID",
+    "appSlogan": "Building ecosystems of trust",
+    "appLogoUrl": "./src/assets/tonomy-logo48",
+    "accountSuffix": ".tonomy.id"
 }
