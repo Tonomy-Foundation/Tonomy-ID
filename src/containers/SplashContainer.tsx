@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native';
 import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { TH1 } from '../components/THeadings';
@@ -9,7 +9,7 @@ type SplashScreenContainerProps = {
     navigation: NavigationProp<any>;
     title: string;
     subtitle: string;
-    imageSource: any;
+    imageSource: ImageSourcePropType;
     description: string;
     learnMoreUrl: string;
     buttonText: string;
