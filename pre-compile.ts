@@ -4,14 +4,14 @@ import app from './app.default.json';
 
 app.expo.name = settings.config.appName;
 const slug = settings.config.appName.toLowerCase().replace(' ', '-');
-const identifier = 'foundation.tonomy.' + slug.replace(' ', '');
+const identifier = 'foundation.tonomy.' + slug.replace('-', '');
 
 app.expo.slug = slug;
 app.expo.ios.bundleIdentifier = identifier;
 app.expo.android.package = identifier;
 
 if (settings.env === 'staging') {
-    app.expo.extra.eas.projectId = '83b91e03-98c2-4ae1-80a3-57d3fbe6db6d';
+    app.expo.extra.eas.projectId = '18ee7c2e-dba4-4c3d-8bd1-712e0c19b901';
 }
 // TODO
 // app.expo.icon
