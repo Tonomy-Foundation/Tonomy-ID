@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "DiemasMichiels.emulate"
+        "DavidAnson.vscode-markdownlint",
+        "dbaeumer.vscode-eslint",
+        "streetsidesoftware.code-spell-checker"
     ]
 }

@@ -1,0 +1,12 @@
+{
+    "blockchainUrl": "https://stagingapi.staging.tonomy.foundation",
+    "theme": {
+        "primaryColor": "yellow",
+        "secondaryColor": "orange",
+        "tertiaryColor": "green"
+    },
+    "appName": "Telos ID",
+    "appSlogan": "The fastest EVM",
+    "appLogoUrl": "https://telos.net/wp-content/uploads/2018/09/telos-logo.png",
+    "accountSuffix": ".telos.id"
+}

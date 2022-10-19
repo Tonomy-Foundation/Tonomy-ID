@@ -2,9 +2,10 @@
 
 Tonomy ID is the cross-platform mobile wallet (Android and iOS) for public and private EOSIO blockchains. This application allows you to sign transactions on the block chain, share your DID and Verifiable Credentials containing your identity with others in a consensual way and log into web2 and web3 applications. If you lose your phone several mechanisms exist to allow you to recover your account without trusting anyone with custody of your private keys.
 
-Tonomy ID is a React Native application in typescript. Tests are written in jest.
+Tonomy ID is a React Native application in typescript.
 
 Features:
+
 1. EOSIO blockchain tx signing
 2. EOSIO blockchain multi-sig signing
 3. Social recovery
@@ -18,40 +19,46 @@ Features:
 
 ## Dependancies
 
+- [Expo](https://expo.dev)  v45.0.0
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
-- [Java JDK 11+](http://openjdk.java.net/)
-- [Android studio](https://reactnative.dev/docs/environment-setup) v2021.2.1 follow all the instructions
-  1. Install Android Studio
-  2. Install the Android SDK
-  3. Configure the ANDROID_SDK_ROOT environment variable
-  - Install [Watchman](https://facebook.github.io/watchman/docs/install.html)
-  Open Android Studio and Preparing the Android device
-  - Preparing the Android device
-  - Using a virtual device
+- [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with npm
 
-See `./scripts/install_prerequisits.sh` for installation of dependancies on Ubuntu 20.0.4
+## Pre-run (one time)
+
+1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
+2. Remove the following lines from `app.json`
+
+```json
+"extra": {
+    "eas": {
+        "projectId": "afffe2ee-9f93-4d18-9361-df30429cbd98"
+    }
+}
+```
+
+3. (for IOS only) Run `eas device:create` to create a device profile for your phone
+4. Run `eas build --profile development --platform ios` (ios) or `eas build --profile development --platform android` (android) to build the app for your phone
+5. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
+6. Install the created app on your phone
 
 ## Run
 
-First start the emulator in VS code (use recommended extension [Android iOS Emulator](https://marketplace.visualstudio.com/items?itemName=DiemasMichiels.emulate)), Android Studio, XCode or via command line:
+1. Install packages with `npm install`.
+2. (optional) To run in staging mode call `export NODE_ENV=staging`
+3. Run `npm start` to start the development server.
+4. Scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
+
+## Linting
+
+Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
 
 ```bash
-~/Android/Sdk/emulator/emulator -avd Pixel_4_API_30
-#or
-#TODO iOS command
+npm run lint
 ```
 
-Then start the compiler
-```bash
-npm start
-npm run android
-#or
-npm run ios
-```
+### Configuration
 
-## Test
+Set the configuration variables in the desired file in `./src/config`
 
-```bash
-npm test
-```
+`config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
