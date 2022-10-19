@@ -41,8 +41,8 @@ Features:
 
 For future runs, make sure the `projectId` matches the one in [https://expo.dev/](https://expo.dev/) website.
 
-5. (optional for IOS only) Run `eas device:create` to create a device profile for your phone
-6. Run `eas build --profile development --platform ios` (ios) or `eas build --profile development --platform android` (android) to build the app for your phone
+5. (optional for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
+6. Run `npm run build:ios` or `npm run build:android` to build the app for your phone
 7. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
 8. Install the created app on your phone
 
