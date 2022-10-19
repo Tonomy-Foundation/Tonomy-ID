@@ -7,6 +7,10 @@
     },
     "appName": "Tonomy ID",
     "appSlogan": "Building ecosystems of trust",
-    "appLogoUrl": "./src/assets/tonomy-logo48",
+    "images": {
+        "splash": "./src/assets/tonomy/tonomy-splash",
+        "logo48": "./src/assets/tonomy/tonomy-logo48",
+        "logo1024": "./src/assets/tonomy/tonomy-logo1048"
+    },
     "accountSuffix": ".tonomy.id"
 }

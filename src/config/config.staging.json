@@ -7,6 +7,10 @@
     },
     "appName": "Telos ID",
     "appSlogan": "The fastest EVM",
-    "appLogoUrl": "https://telos.net/wp-content/uploads/2018/09/telos-logo.png",
+    "images": {
+        "splash": "./src/assets/tonomy/tonomy-splash",
+        "logo48": "./src/assets/tonomy/tonomy-logo48",
+        "logo1024": "./src/assets/tonomy/tonomy-logo1048"
+    },
     "accountSuffix": ".telos.id"
 }

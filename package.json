@@ -1,8 +1,8 @@
 {
   "name": "tonomy-id",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "scripts": {
-    "prepare": "npx ts-node@v10.9.1 pre-compile",
+    "prepare": "npx ts-node@v10.9.1 prepare.ts",
     "start": "npm run prepare && expo start --dev-client --clear",
     "tunnel": "npm start --tunnel",
     "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
