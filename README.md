@@ -24,10 +24,12 @@ Features:
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 - [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with npm
 
-## Pre-run (one time)
+## Pre-run build (first time and each time new RN only packages are installed)
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
-2. Remove the following lines from `app.json`
+2. (optional for staging) Run `export NODE_ENV=staging` for staging
+3. Run `npm run prepare`
+4. (optional for first time) Remove the following lines from `app.json`
 
 ```json
 "extra": {
@@ -37,10 +39,12 @@ Features:
 }
 ```
 
-3. (for IOS only) Run `eas device:create` to create a device profile for your phone
-4. Run `eas build --profile development --platform ios` (ios) or `eas build --profile development --platform android` (android) to build the app for your phone
-5. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
-6. Install the created app on your phone
+For future runs, make sure the `projectId` matches the one in [https://expo.dev/](https://expo.dev/) website.
+
+5. (optional for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
+6. Run `npm run build:ios` or `npm run build:android` to build the app for your phone
+7. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
+8. Install the created app on your phone
 
 ## Run
 

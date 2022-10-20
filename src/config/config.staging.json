@@ -1,12 +1,17 @@
 {
-    "blockchainUrl": "https://stagingapi.staging.tonomy.foundation",
+    "blockchainUrl": "https://telosapi.telos.projects.tonomy.foundation",
     "theme": {
-        "primaryColor": "yellow",
-        "secondaryColor": "orange",
-        "tertiaryColor": "green"
+        "primaryColor": "#571AFF",
+        "secondaryColor": "#1AD6FF",
+        "tertiaryColor": "#CBCAF9"
     },
-    "appName": "Telos ID",
-    "appSlogan": "The fastest EVM",
-    "appLogoUrl": "https://telos.net/wp-content/uploads/2018/09/telos-logo.png",
-    "accountSuffix": ".telos.id"
+    "appName": "Telos ID Staging",
+    "appSlogan": "Home to the Fastest EVM",
+    "images": {
+        "splash": "./src/assets/tonomy/tonomy-splash.png",
+        "logo48": "./src/assets/telos/telos-logo48.png",
+        "logo1024": "./src/assets/telos/telos-logo1024.png"
+    },
+    "expoProjectId": "d992ed97-c705-498e-8ffb-e0460bae4514",
+    "accountSuffix": ".stag.telos.id"
 }
