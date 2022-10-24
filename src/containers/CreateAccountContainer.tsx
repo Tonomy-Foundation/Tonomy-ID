@@ -8,16 +8,18 @@ import TLink from '../components/TA';
 import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
-import useUserStore from '../stores/userStore';
+import useUserStore from '../store/userStore';
 
 export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState(!settings.isProduction() ? 'testaccount' : '');
+    const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
     const [loading, setLoading] = useState(false);
 
     const user = useUserStore().user;
 
     async function onNext() {
+        console.log(username, password);
+
         setLoading(true);
         await user.saveUsername(username);
         await user.savePassword(password);
@@ -37,15 +39,20 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
             </View>
             <View>
                 <View style={styles.username}>
-                    <TTextInput value={username} onChange={setUsername} style={styles.usernameInput} label="Username" />
+                    <TTextInput
+                        value={username}
+                        onChangeText={setUsername}
+                        style={styles.usernameInput}
+                        label="Username"
+                    />
                     <Text style={styles.accountSuffix}>{settings.config.accountSuffix}</Text>
                 </View>
-                <TPasswordInput value={password} onChange={setPassword} label="Password" />
+                <TPasswordInput value={password} onChangeText={setPassword} label="Password" />
                 <TPasswordInput label="Confirm Password" />
             </View>
 
             <View>
-                <TButton onPress={onNext} disabled={loading}>
+                <TButton onPress={onNext} loading={loading}>
                     Next
                 </TButton>
             </View>
