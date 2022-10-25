@@ -51,7 +51,6 @@ export default class RNKeyManager implements KeyManager {
 
   // store key in object
   async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
-    console.log('storeKey1', options);
     const keyStore: KeyStorage = {
       privateKey: options.privateKey,
       publicKey: options.privateKey.toPublic(),

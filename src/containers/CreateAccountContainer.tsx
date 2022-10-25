@@ -9,9 +9,14 @@ import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
+import { randomString } from 'tonomy-id-sdk';
 
 export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
-    const [username, setUsername] = useState(!settings.isProduction() ? 'testaccount' : '');
+    let startUsername = '';
+    if (!settings.isProduction()) {
+        startUsername = 'test' + randomString(2);
+    }
+    const [username, setUsername] = useState(startUsername);
     const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
     const [loading, setLoading] = useState(false);
 
@@ -20,7 +25,7 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
     async function onNext() {
         setLoading(true);
 
-        await user.saveUsername(username);
+        await user.saveUsername(username, settings.config.accountSuffix);
         await user.savePassword(password);
         await user.createPerson();
         setLoading(false);
