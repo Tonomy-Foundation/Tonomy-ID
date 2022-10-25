@@ -62,10 +62,9 @@ export default class RNKeyManager implements KeyManager {
       keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
     }
 
-    console.log('storeKey3', keyStore);
-    await SecureStore.setItemAsync('myKey', 'myValue');
-    console.log('storeKey4');
-    // await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), { requireAuthentication: true });
+    const requireAuthentication = options.level === KeyManagerLevel.FINGERPRINT ? true : false;
+    await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), { requireAuthentication });
+
     return keyStore.publicKey;
   }
 
