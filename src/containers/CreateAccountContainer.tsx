@@ -18,9 +18,8 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
     const user = useUserStore().user;
 
     async function onNext() {
-        console.log(username, password);
-
         setLoading(true);
+
         await user.saveUsername(username);
         await user.savePassword(password);
         await user.createPerson();
