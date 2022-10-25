@@ -1,12 +1,18 @@
 {
     "blockchainUrl": "http://localhost:8888",
     "theme": {
-        "primaryColor": "#571AFF",
-        "secondaryColor": "#1AD6FF",
-        "tertiaryColor": "#CBCAF9"
+        "primaryColor": "#6200ee",
+        "secondaryColor": "#03dac4",
+        "tertiaryColor": "#ffffff"
     },
-    "appName": "Telos ID",
-    "appSlogan": "The fastest EVM",
     "appLogoUrl": "Tonomy-ID/src/assets/Telos.png",
-    "accountSuffix": ".telos.id"
+    "appName": "Tonomy ID Development",
+    "appSlogan": "Building ecosystems of trust",
+    "images": {
+        "splash": "./src/assets/tonomy/tonomy-splash.png",
+        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
+        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+    },
+    "expoProjectId": "18ee7c2e-dba4-4c3d-8bd1-712e0c19b901",
+    "accountSuffix": ".dev.tonomy.id"
 }

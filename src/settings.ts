@@ -9,7 +9,12 @@ type ConfigType = {
     };
     appName: string;
     appSlogan: string;
-    appLogoUrl: string;
+    images: {
+        splash: string;
+        logo48: string;
+        logo1024: string;
+    };
+    expoProjectId: string;
     accountSuffix: string;
 };
 let config: ConfigType;

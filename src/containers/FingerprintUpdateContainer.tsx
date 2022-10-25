@@ -14,7 +14,7 @@ export default function CreateAccountContainer() {
             <View>
                 <Text>This is easier than using your PIN every time</Text>
             </View>
-            <Image source={require('../assets/fingerprint.png')}></Image>
+            <Image source={require('../assets/images/fingerprint.png')}></Image>
 
             <View>
                 <TButton>Next</TButton>
