@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
@@ -8,8 +8,33 @@ import TLink from '../components/TA';
 import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
+import useUserStore from '../store/userStore';
+import { randomString } from 'tonomy-id-sdk';
 
 export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
+    let startUsername = '';
+    if (!settings.isProduction()) {
+        startUsername = 'test' + randomString(2);
+    }
+    const [username, setUsername] = useState(startUsername);
+    const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
+    const [loading, setLoading] = useState(false);
+
+    const user = useUserStore().user;
+
+    async function onNext() {
+        setLoading(true);
+
+        // TODO error handling here
+        await user.saveUsername(username, settings.config.accountSuffix);
+        await user.savePassword(password);
+        await user.createPerson();
+
+        setLoading(false);
+
+        navigation.navigate('fingerprint');
+    }
+
     return (
         <View style={styles.container}>
             <View>
@@ -20,15 +45,22 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
             </View>
             <View>
                 <View style={styles.username}>
-                    <TTextInput style={styles.usernameInput} label="Username" />
+                    <TTextInput
+                        value={username}
+                        onChangeText={setUsername}
+                        style={styles.usernameInput}
+                        label="Username"
+                    />
                     <Text style={styles.accountSuffix}>{settings.config.accountSuffix}</Text>
                 </View>
-                <TPasswordInput label="Password" />
+                <TPasswordInput value={password} onChangeText={setPassword} label="Password" />
                 <TPasswordInput label="Confirm Password" />
             </View>
 
             <View>
-                <TButton onPress={() => navigation.navigate('fingerprint')}>Next</TButton>
+                <TButton onPress={onNext} loading={loading}>
+                    Next
+                </TButton>
             </View>
             <View>
                 <Text>

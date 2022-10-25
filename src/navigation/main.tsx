@@ -17,7 +17,8 @@ export default function MainNavigation() {
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName="securitySplash">
-                {user.isLoggedIn() ? (
+                {/* TODO: fix user.isLoggedIn() always returns true */}
+                {user.isLoggedIn() && false ? (
                     <>
                         <Stack.Screen name="test" component={TestScreen} />
                     </>
