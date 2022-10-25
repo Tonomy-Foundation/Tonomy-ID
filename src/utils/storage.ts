@@ -7,16 +7,15 @@ export default class Storage implements PersistantStorage {
 
   async retrieve(key: string): Promise<any> {
     const data = await AsyncStorage.getItem(key);
-    return data;
+    return JSON.parse(data);
   }
 
   async store(key: string, value: any): Promise<void> {
-    await AsyncStorage.setItem(key, value);
+    const str = JSON.stringify(value);
+    await AsyncStorage.setItem(key, str);
   }
 
   async clear(): Promise<void> {
     await AsyncStorage.clear();
   }
-
-
 }
