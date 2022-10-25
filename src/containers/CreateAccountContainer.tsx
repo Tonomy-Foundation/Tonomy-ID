@@ -25,9 +25,11 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
     async function onNext() {
         setLoading(true);
 
+        // TODO error handling here
         await user.saveUsername(username, settings.config.accountSuffix);
         await user.savePassword(password);
         await user.createPerson();
+
         setLoading(false);
 
         navigation.navigate('fingerprint');
