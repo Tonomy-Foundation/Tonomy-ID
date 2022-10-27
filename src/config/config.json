@@ -5,6 +5,7 @@
         "secondaryColor": "#03dac4",
         "tertiaryColor": "#ffffff"
     },
+    "appLogoUrl": "Tonomy-ID/src/assets/telos/Telos.png",
     "appName": "Tonomy ID Development",
     "appSlogan": "Building ecosystems of trust",
     "images": {

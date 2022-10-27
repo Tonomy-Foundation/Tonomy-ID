@@ -5,6 +5,7 @@
         "secondaryColor": "#1AD6FF",
         "tertiaryColor": "#CBCAF9"
     },
+    "appLogoUrl": "Tonomy-ID/src/assets/Telos.png",
     "appName": "Telos ID Staging",
     "appSlogan": "Home to the Fastest EVM",
     "images": {
