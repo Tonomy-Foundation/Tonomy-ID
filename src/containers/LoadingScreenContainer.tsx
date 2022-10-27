@@ -21,7 +21,7 @@ export default function LoadingScreenContainer(props: LoadingScreenProps) {
             </View>
             <View>
                 <Text>
-                    {props.creditText}
+                    Brought to you by Tonomy
                 </Text>
             </View>
         </View>
