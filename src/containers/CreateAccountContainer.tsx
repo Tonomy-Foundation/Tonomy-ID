@@ -9,12 +9,13 @@ import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import { randomString } from 'tonomy-id-sdk';
+import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
 
 export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
     if (!settings.isProduction()) {
-        startUsername = 'test' + randomString(2);
+        startUsername = 'test';
+        // startUsername = 'test' + randomString(2);
     }
     const [username, setUsername] = useState(startUsername);
     const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
@@ -28,10 +29,20 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
         // TODO error handling here
         await user.saveUsername(username, settings.config.accountSuffix);
         await user.savePassword(password);
-        await user.createPerson();
+        try {
+            await user.createPerson();
+        } catch (e) {
+            console.log('error', e, e.code);
+            if (e instanceof ExpectedSdkError && e.code === 'TSDK1001') {
+                console.log('Username already exists');
+                // TODO show error
+            }
+
+            setLoading(false);
+            throw e;
+        }
 
         setLoading(false);
-
         navigation.navigate('fingerprint');
     }
 
