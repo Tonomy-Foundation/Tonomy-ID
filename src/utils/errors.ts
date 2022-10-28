@@ -52,15 +52,6 @@ export function throwUnexpectedError(message: string, code?: string) {
     throw error;
 }
 
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export async function throwUnhandled() {
-    await sleep(1000);
-    throw new Error('im not handled!');
-}
-
 global.onunhandledrejection = function (error) {
     // Warning: when running in "remote debug" mode (JS environment is Chrome browser),
     // this handler is called a second time by Bluebird with a custom "dom-event".
