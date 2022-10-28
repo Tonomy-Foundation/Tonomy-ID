@@ -66,3 +66,7 @@ npm run lint
 Set the configuration variables in the desired file in `./src/config`
 
 `config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
+
+## Error handling
+
+See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code. All errors are either expected or unexpected, depending on weather the user will create the error, or somethig has gone wrong nothing to do with the user. This helps us distinguish errors that we should fix as developers. Please maintain the list of files and their error code numeration in [errors.ts](./src/utils/errors.ts).
