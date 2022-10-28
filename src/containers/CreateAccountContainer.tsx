@@ -32,7 +32,6 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
         try {
             await user.createPerson();
         } catch (e) {
-            console.log('error', e, e.code);
             if (e instanceof ExpectedSdkError && e.code === 'TSDK1001') {
                 console.log('Username already exists');
                 // TODO show error
