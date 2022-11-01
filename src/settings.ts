@@ -43,7 +43,7 @@ switch (env) {
         break;
     case 'designonly':
         config = require('./config/config.designonly.json');
-        config.sdk = 
+
         break;
     default:
         throw new Error('Unknown environment: ' + env);
