@@ -1,0 +1,77 @@
+import { Checksum256, Name } from '@greymass/eosio';
+import { GetAccountTonomyIDInfoResponse, KeyManager, User as TUser } from 'tonomy-id-sdk';
+export function initialize(storage: any, keymanger: any, settings: any) {
+    return new User(storage, keymanger, settings);
+}
+
+export class User implements TUser {
+    storage;
+    keyManager: KeyManager;
+    settings;
+    constructor(storage: any, keymanger: KeyManager, settings: any) {
+        this.storage = storage;
+        this.keyManager = keymanger;
+        this.settings = settings;
+    }
+
+    async saveUsername(username: string, suffix: string): Promise<void> {
+        return;
+    }
+
+    async savePassword(
+        masterPassword: string,
+        options?: { salt?: Checksum256 | undefined } | undefined
+    ): Promise<void> {
+        return;
+    }
+    async savePIN(pin: string): Promise<void> {
+        return;
+    }
+    async saveFingerprint(): Promise<void> {
+        return;
+    }
+    async saveLocal(): Promise<void> {
+        return;
+    }
+    async createPerson(): Promise<void> {
+        return;
+    }
+    async updateKeys(password: string): Promise<void> {
+        return;
+    }
+    async login(username: string, password: string): Promise<GetAccountTonomyIDInfoResponse> {
+        return {
+            account_name: Name.from('jack123'),
+            type: 1,
+            status: 1,
+            username_hash: Checksum256.from('123'),
+            password_salt: Checksum256.from('123'),
+            version: 1,
+        };
+    }
+    async logout(): Promise<void> {
+        return;
+    }
+    async isLoggedIn(): Promise<boolean> {
+        return true;
+    }
+}
+
+export type SettingsType = {
+    blockchainUrl: string;
+};
+
+let settings: SettingsType;
+let initialized = false;
+
+export function setSettings(newSettings: SettingsType) {
+    settings = newSettings;
+    initialized = true;
+}
+
+export async function getSettings(): Promise<SettingsType> {
+    if (!initialized) {
+        throw new Error('settings not yet intialized');
+    }
+    return settings;
+}

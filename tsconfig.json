@@ -7,4 +7,5 @@
   },
   "esModuleInterop": true,
   "allowJs": true,
+  "ignore_non_literal_requires": true,
 }

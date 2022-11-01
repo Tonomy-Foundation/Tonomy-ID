@@ -16,7 +16,6 @@ type ConfigType = {
     };
     expoProjectId: string;
     accountSuffix: string;
-    sdk: string;
 };
 let config: ConfigType;
 
@@ -43,7 +42,6 @@ switch (env) {
         break;
     case 'designonly':
         config = require('./config/config.designonly.json');
-
         break;
     default:
         throw new Error('Unknown environment: ' + env);

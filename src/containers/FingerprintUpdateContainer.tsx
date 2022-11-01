@@ -1,5 +1,4 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import TButton from '../components/Tbutton';
 import { TH1 } from '../components/THeadings';
@@ -20,8 +19,6 @@ export default function CreateAccountContainer() {
                 <TButton>Next</TButton>
                 <TButton color={settings.config.theme.secondaryColor}>Skip</TButton>
             </View>
-
-            <StatusBar style="auto" />
         </View>
     );
 }

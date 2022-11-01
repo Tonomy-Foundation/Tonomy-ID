@@ -13,6 +13,5 @@
         "logo1024": "./src/assets/telos/telos-logo1024.png"
     },
     "expoProjectId": "d992ed97-c705-498e-8ffb-e0460bae4514",
-    "accountSuffix": ".stag.telos.id",
-    "sdk": "tonomy-id-sdk"
+    "accountSuffix": ".stag.telos.id"
 }
