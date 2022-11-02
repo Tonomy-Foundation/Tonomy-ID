@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import TTextInput from '../components/TTextInput';
-import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
 import { TH1 } from '../components/THeadings';
 import settings from '../settings';
@@ -11,13 +10,13 @@ import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
 
-export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
     if (!settings.isProduction()) {
         startUsername = 'test' + randomString(2);
     }
     const [username, setUsername] = useState(startUsername);
-    const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
+    const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
     const user = useUserStore().user;
@@ -25,32 +24,34 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
     async function onNext() {
         setLoading(true);
 
-        // TODO error handling here
-        await user.saveUsername(username, settings.config.accountSuffix);
-        await user.savePassword(password);
         try {
-            await user.createPerson();
+            await user.saveUsername(username, settings.config.accountSuffix);
         } catch (e) {
-            if (e instanceof ExpectedSdkError && e.code === 'TSDK1001') {
-                console.log('Username already exists');
-                // TODO show error
+            if (e instanceof ExpectedSdkError && e.code === 'TSDK1000') {
+                setErrorMessage('Username already exists');
+                setLoading(false);
+                return;
             } else {
                 setLoading(false);
+                // TODO throw unexpected error
                 throw e;
             }
         }
 
         setLoading(false);
-        navigation.navigate('fingerprint');
+        navigation.navigate('createAccountPassword');
     }
 
     return (
         <View style={styles.container}>
             <View>
-                <TH1>Create your username and password</TH1>
+                <TH1>Create your username</TH1>
             </View>
             <View>
-                <Text>Get started with your account on {settings.config.appName}</Text>
+                <Text>
+                    Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                    Foundation can see it. <TLink href={settings.config.links.usernameLearnMore}>Learn more</TLink>
+                </Text>
             </View>
             <View>
                 <View style={styles.username}>
@@ -59,25 +60,27 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
                         onChangeText={setUsername}
                         style={styles.usernameInput}
                         label="Username"
+                        errorText={errorMessage}
                     />
                     <Text style={styles.accountSuffix}>{settings.config.accountSuffix}</Text>
                 </View>
-                <TPasswordInput value={password} onChangeText={setPassword} label="Password" />
-                <TPasswordInput label="Confirm Password" />
+            </View>
+            <View>
+                <Text>You can always change your username later</Text>
             </View>
 
             <View>
-                <TButton onPress={onNext} loading={loading}>
+                <TButton onPress={onNext} disabled={username.length === 0} loading={loading}>
                     Next
                 </TButton>
             </View>
             <View>
                 <Text>
-                    Already have an account? <TLink>Login</TLink>
+                    Already have an account? <TLink href="login">Login</TLink>
                 </Text>
             </View>
 
-            <StatusBar style="auto" />
+            {/* <StatusBar style="auto" /> */}
         </View>
     );
 }

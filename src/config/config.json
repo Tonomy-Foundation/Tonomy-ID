@@ -5,13 +5,16 @@
         "secondaryColor": "#03dac4",
         "tertiaryColor": "#ffffff"
     },
-    "appLogoUrl": "Tonomy-ID/src/assets/telos/Telos.png",
+    "appLogoUrl": "./src/assets/telos/Telos.png",
     "appName": "Tonomy ID Development",
     "appSlogan": "Building ecosystems of trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
         "logo48": "./src/assets/tonomy/tonomy-logo48.png",
         "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+    },
+    "links": {
+        "usernameLearnMore": "#"
     },
     "expoProjectId": "18ee7c2e-dba4-4c3d-8bd1-712e0c19b901",
     "accountSuffix": ".dev.tonomy.id"

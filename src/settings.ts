@@ -14,6 +14,9 @@ type ConfigType = {
         logo48: string;
         logo1024: string;
     };
+    links: {
+        usernameLearnMore: string;
+    };
     expoProjectId: string;
     accountSuffix: string;
 };
