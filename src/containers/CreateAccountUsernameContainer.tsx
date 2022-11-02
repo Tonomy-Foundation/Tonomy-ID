@@ -89,16 +89,18 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     username: {
-        width: '100%',
         flexDirection: 'row',
         marginTop: 48,
         marginBottom: 170,
     },
     usernameInput: {
-        width: '80%',
+        width: '60%',
     },
     accountSuffix: {
-        width: '20%',
+        width: '40%',
+        paddingLeft: 14,
+        textAlignVertical: 'bottom',
+        fontSize: 16,
     },
     button: {
         marginTop: 24,

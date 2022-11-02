@@ -9,10 +9,10 @@ export default function TTextInput(props: TTextInputProps) {
   const showError: boolean = !!props.errorText && props.errorText.length > 0;
 
   return (
-    <View>
+    <>
       <TextInput {...props} error={showError} />
       {showError && <Text style={styles.errorText}>{props.errorText}</Text>}
-    </View>
+    </>
   );
 }
 
