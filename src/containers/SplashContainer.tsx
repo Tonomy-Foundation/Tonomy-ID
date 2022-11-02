@@ -10,6 +10,7 @@ type SplashScreenContainerProps = {
     title: string;
     subtitle: string;
     imageSource: ImageSourcePropType;
+    iconSource: ImageSourcePropType;
     description: string;
     learnMoreUrl: string;
     buttonText: string;
@@ -18,35 +19,53 @@ type SplashScreenContainerProps = {
 
 export default function SplashScreenContainer(props: SplashScreenContainerProps) {
     return (
-        <View style={styles.container}>
-            <View>
-                <Text>
-                    <TH1>{props.title}</TH1>
-                </Text>
-            </View>
-            <View>
-                <Text>{props.subtitle}</Text>
-            </View>
-            <View>
-                <Image source={props.imageSource}></Image>
-            </View>
-            <View>
-                <Text>{props.description}</Text>
-            </View>
-            <View>
-                <Text>
-                    <TA href={props.learnMoreUrl}>Learn more</TA>
-                </Text>
-            </View>
-            <View>
-                <TButton onPress={props.buttonOnPress}>{props.buttonText}</TButton>
-            </View>
+        <View style={styles.head}>
+            <Image style={styles.icon} source={props.iconSource}></Image>
+            <Text style={styles.header}>
+                <TH1>{props.title}</TH1>
+            </Text>
+            <Text style={styles.description}>{props.subtitle}</Text>
+            <Image style={styles.image} source={props.imageSource}></Image>
+            <Text style={styles.description}>{props.description}</Text>
+            <Text style={styles.description}>
+                <TA href={props.learnMoreUrl}>Learn more</TA>
+            </Text>
+            <TButton style={styles.button} onPress={props.buttonOnPress}>
+                {props.buttonText}
+            </TButton>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    head: {
         flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center',
+    },
+    icon: {
+        alignSelf: 'center',
+    },
+    header: {
+        textAlign: 'center',
+        fontFamily: 'Roboto',
+        fontStyle: 'normal',
+        fontWeight: '800',
+    },
+    description: {
+        textAlign: 'center',
+        alignSelf: 'center',
+        color: 'gray',
+        width: '90%',
+    },
+    image: {
+        alignSelf: 'center',
+        width: '60%',
+        height: '30%',
+    },
+    button: {
+        alignSelf: 'center',
+        width: '90%',
+        backgroundColor: 'linear-gradient(90deg, #1AD6FF 9.11%, #571AFF 100%)',
     },
 });
