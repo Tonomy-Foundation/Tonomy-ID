@@ -4,6 +4,7 @@ import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { TH1 } from '../components/THeadings';
 import TA from '../components/TA';
+import theme from '../theme';
 
 type SplashScreenContainerProps = {
     navigation: NavigationProp<any>;
@@ -20,16 +21,18 @@ type SplashScreenContainerProps = {
 export default function SplashScreenContainer(props: SplashScreenContainerProps) {
     return (
         <View style={styles.head}>
-            <Image style={styles.icon} source={props.iconSource}></Image>
             <Text style={styles.header}>
                 <TH1>{props.title}</TH1>
             </Text>
             <Text style={styles.description}>{props.subtitle}</Text>
             <Image style={styles.image} source={props.imageSource}></Image>
-            <Text style={styles.description}>{props.description}</Text>
-            <Text style={styles.description}>
-                <TA href={props.learnMoreUrl}>Learn more</TA>
-            </Text>
+            <View style={styles.infoContainer}>
+                <Image style={styles.icon} source={props.iconSource}></Image>
+                <Text style={styles.description}>{props.description}</Text>
+                <Text style={styles.description}>
+                    <TA href={props.learnMoreUrl}>Learn more</TA>
+                </Text>
+            </View>
             <TButton style={styles.button} onPress={props.buttonOnPress}>
                 {props.buttonText}
             </TButton>
@@ -38,6 +41,17 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
 }
 
 const styles = StyleSheet.create({
+    infoContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#e1f2e2',
+        borderRadius: 8,
+        padding: 10,
+        width: '90%',
+        alignContent: 'center',
+    },
     head: {
         flex: 1,
         justifyContent: 'center',
@@ -55,7 +69,7 @@ const styles = StyleSheet.create({
     description: {
         textAlign: 'center',
         alignSelf: 'center',
-        color: 'gray',
+        color: theme.colors.disabled,
         width: '90%',
     },
     image: {
@@ -66,6 +80,5 @@ const styles = StyleSheet.create({
     button: {
         alignSelf: 'center',
         width: '90%',
-        backgroundColor: 'linear-gradient(90deg, #1AD6FF 9.11%, #571AFF 100%)',
     },
 });
