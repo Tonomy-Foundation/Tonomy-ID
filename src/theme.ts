@@ -11,6 +11,7 @@ const theme: Theme = {
         primary: settings.config.theme.primaryColor,
         accent: settings.config.theme.secondaryColor,
         surface: settings.config.theme.tertiaryColor,
+        disabled: '#BEBEBE',
     },
 };
 

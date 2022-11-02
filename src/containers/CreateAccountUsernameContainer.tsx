@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import TTextInput from '../components/TTextInput';
@@ -9,6 +8,7 @@ import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
+import theme from '../theme';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
@@ -66,21 +66,19 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 </View>
             </View>
             <View style={styles.centeredText}>
-                <Text>You can always change your username later</Text>
+                <Text style={styles.greyText}>You can always change your username later</Text>
             </View>
 
-            <View>
+            <View style={styles.button}>
                 <TButton onPress={onNext} disabled={username.length === 0} loading={loading}>
                     Next
                 </TButton>
             </View>
             <View style={styles.centeredText}>
-                <Text>
+                <Text style={styles.greyText}>
                     Already have an account? <TLink href="login">Login</TLink>
                 </Text>
             </View>
-
-            {/* <StatusBar style="auto" /> */}
         </View>
     );
 }
@@ -88,15 +86,25 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 16,
     },
     username: {
         flexDirection: 'row',
+        paddingTop: 48,
+        paddingBottom: 170,
     },
     usernameInput: {
         width: '80%',
     },
+    button: {
+        paddingTop: 24,
+        paddingBottom: 16,
+    },
     centeredText: {
         alignItems: 'center',
+    },
+    greyText: {
+        color: theme.colors.disabled,
     },
     accountSuffix: {
         width: '20%',
