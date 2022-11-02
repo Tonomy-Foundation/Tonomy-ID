@@ -19,7 +19,7 @@ export function TH2(props: any) {
 
 const styles = StyleSheet.create({
     h1: {
-        fontSize: 36,
+        fontSize: 30,
     },
     h2: {
         fontSize: 24,

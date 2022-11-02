@@ -65,7 +65,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                     <Text style={styles.accountSuffix}>{settings.config.accountSuffix}</Text>
                 </View>
             </View>
-            <View>
+            <View style={styles.centeredText}>
                 <Text>You can always change your username later</Text>
             </View>
 
@@ -74,7 +74,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                     Next
                 </TButton>
             </View>
-            <View>
+            <View style={styles.centeredText}>
                 <Text>
                     Already have an account? <TLink href="login">Login</TLink>
                 </Text>
@@ -94,6 +94,9 @@ const styles = StyleSheet.create({
     },
     usernameInput: {
         width: '80%',
+    },
+    centeredText: {
+        alignItems: 'center',
     },
     accountSuffix: {
         width: '20%',

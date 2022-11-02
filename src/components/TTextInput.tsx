@@ -1,23 +1,23 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { Text, TextInput } from 'react-native-paper';
+import theme from '../theme';
 
-export type TTextInputProps = {
-  ...React.ComponentProps<typeof TextInput>,
-  errorText: string
-};
+export type TTextInputProps = React.ComponentProps<typeof TextInput> & { errorText?: string };
 
 export default function TTextInput(props: TTextInputProps) {
+  const showError: boolean = !!props.errorText && props.errorText.length > 0;
+
   return (
     <View>
-      <TextInput {...props, error: props.errorText.length > 0} />
-      {props.errorText.length > 0 && <Text style={styles.errorText}>{props.errorText}</Text>}
+      <TextInput {...props} error={showError} />
+      {showError && <Text style={styles.errorText}>{props.errorText}</Text>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   errorText: {
-    color: 'red',
-  }
+    color: theme.colors.error,
+  },
 });
