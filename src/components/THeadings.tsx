@@ -20,7 +20,7 @@ export function TH2(props: any) {
 const styles = StyleSheet.create({
     h1: {
         fontSize: 30,
-        paddingBottom: 8,
+        marginBottom: 8,
     },
     h2: {
         fontSize: 24,

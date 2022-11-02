@@ -89,24 +89,25 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     username: {
+        width: '100%',
         flexDirection: 'row',
-        paddingTop: 48,
-        paddingBottom: 170,
+        marginTop: 48,
+        marginBottom: 170,
     },
     usernameInput: {
         width: '80%',
     },
+    accountSuffix: {
+        width: '20%',
+    },
     button: {
-        paddingTop: 24,
-        paddingBottom: 16,
+        marginTop: 24,
+        marginBottom: 16,
     },
     centeredText: {
         alignItems: 'center',
     },
     greyText: {
         color: theme.colors.disabled,
-    },
-    accountSuffix: {
-        width: '20%',
     },
 });
