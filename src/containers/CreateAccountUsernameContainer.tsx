@@ -43,49 +43,65 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
     }
 
     return (
-        <View style={styles.container}>
-            <View>
+        <View style={layoutStyles.container}>
+            <View style={layoutStyles.title}>
                 <TH1>Create your username</TH1>
             </View>
-            <View>
-                {/* TODO change this to alert with icon */}
-                <Text>
-                    Your username is private and can only be seen by you and those you share it with, not even Tonomy
-                    Foundation can see it. <TLink href={settings.config.links.usernameLearnMore}>Learn more</TLink>
-                </Text>
+            <View style={layoutStyles.body}>
+                <View>
+                    {/* TODO change this to alert with icon */}
+                    <Text>
+                        Your username is private and can only be seen by you and those you share it with, not even
+                        Tonomy Foundation can see it.{' '}
+                        <TLink href={settings.config.links.usernameLearnMore}>Learn more</TLink>
+                    </Text>
+                </View>
+                <View style={styles.username}>
+                    <TUsername
+                        errorText={errorMessage}
+                        suffix={settings.config.accountSuffix}
+                        value={username}
+                        onChangeText={setUsername}
+                        label="Username"
+                    />
+                </View>
+                <View style={styles.centeredText}>
+                    <Text style={styles.greyText}>You can always change your username later</Text>
+                </View>
             </View>
-            <View style={styles.username}>
-                <TUsername
-                    errorText={errorMessage}
-                    suffix={settings.config.accountSuffix}
-                    value={username}
-                    onChangeText={setUsername}
-                    label="Username"
-                />
-            </View>
-            <View style={styles.centeredText}>
-                <Text style={styles.greyText}>You can always change your username later</Text>
-            </View>
-
-            <View style={styles.button}>
-                <TButton onPress={onNext} disabled={username.length === 0} loading={loading}>
-                    Next
-                </TButton>
-            </View>
-            <View style={styles.centeredText}>
-                <Text style={styles.bottomMessage}>
-                    Already have an account? <TLink href="login">Login</TLink>
-                </Text>
+            <View style={layoutStyles.bottom}>
+                <View style={styles.button}>
+                    <TButton onPress={onNext} disabled={username.length === 0} loading={loading}>
+                        Next
+                    </TButton>
+                </View>
+                <View style={styles.centeredText}>
+                    <Text style={styles.bottomMessage}>
+                        Already have an account? <TLink href="login">Login</TLink>
+                    </Text>
+                </View>
             </View>
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const layoutStyles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
     },
+    title: {
+        height: '10%',
+    },
+    body: {
+        height: `60%`,
+    },
+    bottom: {
+        height: `30%`,
+    },
+});
+
+const styles = StyleSheet.create({
     username: {
         marginBottom: 100,
     },
