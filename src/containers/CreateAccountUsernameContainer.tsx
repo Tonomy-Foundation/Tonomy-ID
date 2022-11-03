@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
-import TTextInput from '../components/TTextInput';
 import TLink from '../components/TA';
 import { TH1 } from '../components/THeadings';
 import settings from '../settings';
@@ -9,6 +8,7 @@ import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
 import theme from '../theme';
+import TUsername from '../components/TUsername';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
@@ -48,22 +48,20 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 <TH1>Create your username</TH1>
             </View>
             <View>
+                {/* TODO change this to alert with icon */}
                 <Text>
                     Your username is private and can only be seen by you and those you share it with, not even Tonomy
                     Foundation can see it. <TLink href={settings.config.links.usernameLearnMore}>Learn more</TLink>
                 </Text>
             </View>
-            <View>
-                <View style={styles.username}>
-                    <TTextInput
-                        value={username}
-                        onChangeText={setUsername}
-                        style={styles.usernameInput}
-                        label="Username"
-                        errorText={errorMessage}
-                    />
-                    <Text style={styles.accountSuffix}>{settings.config.accountSuffix}</Text>
-                </View>
+            <View style={styles.username}>
+                <TUsername
+                    errorText={errorMessage}
+                    suffix={settings.config.accountSuffix}
+                    value={username}
+                    onChangeText={setUsername}
+                    label="Username"
+                />
             </View>
             <View style={styles.centeredText}>
                 <Text style={styles.greyText}>You can always change your username later</Text>
@@ -89,19 +87,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     username: {
-        flexDirection: 'row',
-        marginTop: 48,
-        marginBottom: 170,
-    },
-    usernameInput: {
-        width: '60%',
-        height: 45,
-    },
-    accountSuffix: {
-        width: '40%',
-        paddingLeft: 14,
-        textAlignVertical: 'bottom',
-        fontSize: 16,
+        marginBottom: 100,
     },
     button: {
         marginTop: 24,
