@@ -9,7 +9,7 @@ import {
     SignDataOptions,
     StoreKeyOptions,
     decodeHex,
-} from 'tonomy-id-sdk';
+} from 'sdk';
 import argon2 from 'react-native-argon2';
 import * as SecureStore from 'expo-secure-store';
 

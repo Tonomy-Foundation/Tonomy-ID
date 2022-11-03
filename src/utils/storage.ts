@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { PersistantStorage } from 'tonomy-id-sdk';
+import { PersistantStorage } from 'sdk';
 
 export default class Storage implements PersistantStorage {
     [x: string]: any;

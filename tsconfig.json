@@ -3,9 +3,18 @@
   "compilerOptions": {
     "jsx": "react",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/components/*"],
+      "@": ["./src/components/*"],
+      "utils": ["./src/utils/*"],
+      "utils/*": ["./src/utils/*"],
+      "sdk": ["node_modules/tonomy-id-sdk"],
+      "sdk/*": ["node_modules/tonomy-id-sdk/*"]
+    }
   },
   "esModuleInterop": true,
   "allowJs": true,
-  "ignore_non_literal_requires": true,
+ 
 }
