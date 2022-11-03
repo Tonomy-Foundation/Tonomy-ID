@@ -48,7 +48,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 <TH1>Create your username</TH1>
             </View>
             <View style={layoutStyles.body}>
-                <View>
+                <View style={styles.message}>
                     {/* TODO change this to alert with icon */}
                     <Text>
                         Your username is private and can only be seen by you and those you share it with, not even
@@ -102,8 +102,11 @@ const layoutStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+    message: {
+        height: `20%`,
+    },
     username: {
-        marginBottom: 100,
+        height: '20%',
     },
     button: {
         marginTop: 24,
