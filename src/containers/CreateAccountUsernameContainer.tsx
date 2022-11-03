@@ -75,7 +75,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 </TButton>
             </View>
             <View style={styles.centeredText}>
-                <Text style={styles.greyText}>
+                <Text style={styles.bottomMessage}>
                     Already have an account? <TLink href="login">Login</TLink>
                 </Text>
             </View>
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     },
     usernameInput: {
         width: '60%',
+        height: 45,
     },
     accountSuffix: {
         width: '40%',
@@ -111,5 +112,9 @@ const styles = StyleSheet.create({
     },
     greyText: {
         color: theme.colors.disabled,
+    },
+    bottomMessage: {
+        color: theme.colors.disabled,
+        fontSize: 16,
     },
 });
