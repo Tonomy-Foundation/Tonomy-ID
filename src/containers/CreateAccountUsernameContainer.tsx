@@ -7,7 +7,7 @@ import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
-import theme from '../theme';
+import theme from '../utils/theme';
 import TUsername from '../components/TUsername';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {

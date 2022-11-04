@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
-import theme, { customColors } from '../theme';
+import theme, { customColors } from '../utils/theme';
 
 export type ButtonProps = React.ComponentProps<typeof Button>;
 

@@ -10,7 +10,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
-import theme, { customColors } from '../theme';
+import theme, { customColors } from '../utils/theme';
 
 const Stack = createNativeStackNavigator();
 
