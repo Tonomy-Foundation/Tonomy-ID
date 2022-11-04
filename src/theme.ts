@@ -15,4 +15,9 @@ const theme: Theme = {
     },
 };
 
+export const customColors = {
+    containedButtonTextColor: 'white',
+    disabledButtonTextColor: 'darkgrey',
+};
+
 export default theme;

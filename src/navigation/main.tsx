@@ -10,7 +10,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
-import theme from '../theme';
+import theme, { customColors } from '../theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +24,7 @@ const defaultScreenOptions = {
         fontSize: 24,
     },
     headerTitleAlign: 'center',
-    headerTintColor: 'white',
+    headerTintColor: customColors.containedButtonTextColor,
 };
 
 export default function MainNavigation() {
@@ -39,29 +39,25 @@ export default function MainNavigation() {
                     </>
                 ) : (
                     <>
-                        <Stack.Screen
-                            name="home"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
-                            component={HomeScreen}
-                        />
+                        <Stack.Screen name="home" options={{ headerShown: false }} component={HomeScreen} />
                         <Stack.Screen
                             name="securitySplash"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
+                            options={{ headerShown: false }}
                             component={SplashSecurityScreen}
                         />
                         <Stack.Screen
                             name="privacySplash"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
+                            options={{ headerShown: false }}
                             component={SplashPrivacyScreen}
                         />
                         <Stack.Screen
                             name="transparencySplash"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
+                            options={{ headerShown: false }}
                             component={SplashTransparencyScreen}
                         />
                         <Stack.Screen
                             name="createAccountUsername"
-                            options={{ ...defaultScreenOptions, title: 'Create New Account' }}
+                            options={{ title: 'Create New Account' }}
                             component={CreateAccountUsernameScreen}
                         />
                         <Stack.Screen name="createAccountPassword" component={CreateAccountPasswordScreen} />

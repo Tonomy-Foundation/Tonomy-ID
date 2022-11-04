@@ -48,7 +48,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 <TH1>Create your username</TH1>
             </View>
             <View>
-                <View style={styles.message}>
+                <View>
                     {/* TODO change this to alert with icon */}
                     <Text>
                         Your username is private and can only be seen by you and those you share it with, not even
@@ -56,7 +56,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                         <TLink href={settings.config.links.usernameLearnMore}>Learn more</TLink>
                     </Text>
                 </View>
-                <View style={styles.username}>
+                <View>
                     <TUsername
                         errorText={errorMessage}
                         suffix={settings.config.accountSuffix}
@@ -92,12 +92,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingVertical: 40,
-    },
-    message: {
-        height: `20%`,
-    },
-    username: {
-        height: '20%',
     },
     button: {
         marginTop: 24,
