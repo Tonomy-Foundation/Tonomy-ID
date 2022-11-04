@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Modal, Text } from 'react-native-paper';
 import settings from '../settings';
 import theme from '../theme';
+import TLink from './TA';
 import TButton from './Tbutton';
 import TIconButton from './TIconButton';
 
@@ -10,13 +11,11 @@ export type ModalProps = React.ComponentProps<typeof Modal> & { onPress: () => v
 
 const styles = StyleSheet.create({
     modal: {
-        // flex: 1,
         padding: 50,
-        backgroundColor: 'yellow',
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
-    other: {
-        // flex: 1,
-        // backgroundColor: 'blue',
+    space: {
+        marginTop: 6,
     },
     modalContent: {
         justifyContent: 'center',
@@ -28,12 +27,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: 'bold',
+        marginBottom: 16,
     },
     buttonView: {
+        marginTop: 16,
         alignSelf: 'flex-end',
-    },
-    button: {
-        color: theme.colors.primary,
     },
 });
 
@@ -45,23 +43,21 @@ export default function TModal(props: ModalProps) {
                     <TIconButton icon="check" />
                 </View>
                 <View>
-                    <Text style={styles.title}>Welocome to {settings.config.ecosystemName}</Text>
+                    <Text style={styles.title}>Welcome to {settings.config.ecosystemName}</Text>
                 </View>
                 <View>
-                    <Text>Your username is jack.telos.id</Text>
+                    <Text>
+                        Your username is <Text style={{ color: theme.colors.primary }}>jack.telos.id</Text>
+                    </Text>
                 </View>
-                <View>
-                    <Text>See it on the blockchain here</Text>
+                <View style={styles.space}>
+                    <Text>
+                        See it on the blockchain <TLink href="#">here</TLink>
+                    </Text>
                 </View>
                 <View style={styles.buttonView}>
-                    <TButton
-                        onPress={props.onPress}
-                        mode="text"
-                        labelStyle={styles.button}
-                        // color={theme.colors.primary}
-                        color="red"
-                    >
-                        OK
+                    <TButton onPress={props.onPress} mode="text">
+                        <Text style={{ color: theme.colors.primary }}>OK</Text>
                     </TButton>
                 </View>
             </View>

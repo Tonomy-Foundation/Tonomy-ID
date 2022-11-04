@@ -51,9 +51,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
     return (
         <View style={layoutStyles.container}>
-            {/* <Portal> */}
             <TModal visible={showModal} onPress={() => console.log('hiiii')} />
-            {/* </Portal> */}
             <View style={layoutStyles.title}>
                 <TH1>Create your password</TH1>
             </View>
