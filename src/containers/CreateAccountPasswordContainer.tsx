@@ -46,14 +46,18 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         setLoading(false);
 
         setShowModal(true);
-        // navigation.navigate('fingerprint');
+    }
+
+    async function onModalPress() {
+        setShowModal(false);
+        navigation.navigate('fingerprint');
     }
 
     return (
         <View style={layoutStyles.container}>
             <TModal
                 visible={showModal}
-                onPress={() => console.log('hiiii')}
+                onPress={onModalPress}
                 icon="check"
                 title={'Welcome to' + settings.config.ecosystemName}
             >
@@ -132,7 +136,7 @@ const layoutStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
     message: {
-        height: `20%`,
+        height: '20%',
     },
     password: {
         height: '40%',

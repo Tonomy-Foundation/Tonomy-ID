@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     modalContent: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'pink',
+        backgroundColor: theme.colors.background,
         borderRadius: 4,
         padding: 26,
     },

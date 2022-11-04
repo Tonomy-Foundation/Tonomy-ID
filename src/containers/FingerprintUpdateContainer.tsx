@@ -18,7 +18,9 @@ export default function CreateAccountContainer() {
 
             <View>
                 <TButton mode="contained">Next</TButton>
-                <TButton color={settings.config.theme.secondaryColor}>Skip</TButton>
+                <TButton mode="contained" color={settings.config.theme.secondaryColor}>
+                    Skip
+                </TButton>
             </View>
 
             <StatusBar style="auto" />
