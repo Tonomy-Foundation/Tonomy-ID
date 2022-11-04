@@ -48,41 +48,90 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     }
 
     return (
-        <View style={styles.container}>
-            <View>
+        <View style={layoutStyles.container}>
+            <View style={layoutStyles.title}>
                 <TH1>Create your password</TH1>
             </View>
-            <View>
-                <Text>Get started with your account on {settings.config.appName}</Text>
+            <View style={layoutStyles.body}>
+                <View style={styles.message}>
+                    {/* TODO change this to alert with icon */}
+                    <Text>
+                        Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy
+                        Foundation, can pretend to be you.{' '}
+                        <TLink href={settings.config.links.passwordLearnMore}>Learn more</TLink>
+                    </Text>
+                </View>
+                <View style={styles.username}>
+                    <TPasswordInput
+                        value={password}
+                        onChangeText={setPassword}
+                        errorText={errorMessage}
+                        label="Password"
+                    />
+                    <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Password" />
+                </View>
+                <View style={styles.centeredText}>
+                    <Text style={styles.rememberPasswordText}>Please remember your password for future use</Text>
+                </View>
             </View>
-            <View>
-                <TPasswordInput value={password} onChangeText={setPassword} errorText={errorMessage} label="Password" />
-                <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Password" />
+            <View style={layoutStyles.bottom}>
+                <View style={styles.button}>
+                    <TButton
+                        onPress={onNext}
+                        disabled={password.length === 0 || password2.length === 0}
+                        loading={loading}
+                    >
+                        Next
+                    </TButton>
+                </View>
+                <View style={styles.centeredText}>
+                    <Text style={styles.bottomMessage}>
+                        Already have an account? <TLink href="login">Login</TLink>
+                    </Text>
+                </View>
             </View>
-            <View>
-                <Text style={styles.rememberPasswordText}>Please remember your password for future use</Text>
-            </View>
-            <View>
-                <TButton onPress={onNext} disabled={password.length === 0 || password2.length === 0} loading={loading}>
-                    Next
-                </TButton>
-            </View>
-            <View>
-                <Text>
-                    Already have an account? <TLink>Login</TLink>
-                </Text>
-            </View>
-
-            <StatusBar style="auto" />
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const layoutStyles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 16,
+    },
+    title: {
+        height: '10%',
+    },
+    body: {
+        height: `60%`,
+    },
+    bottom: {
+        height: `30%`,
+    },
+});
+
+const styles = StyleSheet.create({
+    message: {
+        height: `20%`,
+    },
+    username: {
+        height: '20%',
+    },
+    button: {
+        marginTop: 24,
+        marginBottom: 16,
+    },
+    centeredText: {
+        alignItems: 'center',
     },
     rememberPasswordText: {
         color: theme.colors.error,
+    },
+    greyText: {
+        color: theme.colors.disabled,
+    },
+    bottomMessage: {
+        color: theme.colors.disabled,
+        fontSize: 16,
     },
 });
