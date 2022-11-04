@@ -43,11 +43,11 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
     }
 
     return (
-        <View style={layoutStyles.container}>
-            <View style={layoutStyles.title}>
+        <View style={styles.container}>
+            <View>
                 <TH1>Create your username</TH1>
             </View>
-            <View style={layoutStyles.body}>
+            <View>
                 <View style={styles.message}>
                     {/* TODO change this to alert with icon */}
                     <Text>
@@ -69,7 +69,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                     <Text style={styles.greyText}>You can always change your username later</Text>
                 </View>
             </View>
-            <View style={layoutStyles.bottom}>
+            <View>
                 <View style={styles.button}>
                     <TButton onPress={onNext} disabled={username.length === 0} loading={loading}>
                         Next
@@ -85,23 +85,14 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
     );
 }
 
-const layoutStyles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingVertical: 40,
     },
-    title: {
-        height: '10%',
-    },
-    body: {
-        height: `60%`,
-    },
-    bottom: {
-        height: `30%`,
-    },
-});
-
-const styles = StyleSheet.create({
     message: {
         height: `20%`,
     },
