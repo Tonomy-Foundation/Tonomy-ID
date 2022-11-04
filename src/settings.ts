@@ -1,5 +1,5 @@
 const env = process.env.NODE_ENV || 'development';
-
+console.log('ENVIROMENT', process.env.NODE_ENV);
 type ConfigType = {
     blockchainUrl: string;
     theme: {
