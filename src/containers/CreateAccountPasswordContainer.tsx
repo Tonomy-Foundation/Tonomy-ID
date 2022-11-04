@@ -16,6 +16,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     const [password2, setPassword2] = useState(!settings.isProduction() ? 'Password123!' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
 
     const user = useUserStore().user;
@@ -29,7 +30,13 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         setLoading(true);
         try {
             await user.savePassword(password);
-            await user.createPerson();
+            const res = await user.createPerson();
+            setTrxUrl(
+                `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
+            );
+            console.log(
+                `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
+            );
         } catch (e) {
             // TODO catch password errors as well
             if (e instanceof ExpectedSdkError && e.code === 'TSDK1001') {
@@ -63,12 +70,12 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             >
                 <View>
                     <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>jack.telos.id</Text>
+                        Your username is <Text style={{ color: theme.colors.primary }}>{user.storage.username}</Text>
                     </Text>
                 </View>
                 <View style={styles.space}>
                     <Text>
-                        See it on the blockchain <TLink href="#">here</TLink>
+                        See it on the blockchain <TLink href={trxUrl}>here</TLink>
                     </Text>
                 </View>
             </TModal>
@@ -102,7 +109,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                     <TButton
                         mode="contained"
                         onPress={onNext}
-                        disabled={password.length === 0 || password2.length === 0}
+                        disabled={password.length === 0 || password2.length === 0 || loading}
                         loading={loading}
                     >
                         Next
