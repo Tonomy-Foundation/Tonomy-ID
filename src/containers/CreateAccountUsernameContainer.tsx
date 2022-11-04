@@ -71,7 +71,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
             </View>
             <View style={layoutStyles.bottom}>
                 <View style={styles.button}>
-                    <TButton onPress={onNext} disabled={username.length === 0} loading={loading}>
+                    <TButton onPress={onNext} mode="contained" disabled={username.length === 0} loading={loading}>
                         Next
                     </TButton>
                 </View>

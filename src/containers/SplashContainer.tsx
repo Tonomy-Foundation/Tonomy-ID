@@ -39,7 +39,9 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
                 </Text>
             </View>
             <View>
-                <TButton onPress={props.buttonOnPress}>{props.buttonText}</TButton>
+                <TButton mode="contained" onPress={props.buttonOnPress}>
+                    {props.buttonText}
+                </TButton>
             </View>
         </View>
     );

@@ -62,7 +62,11 @@ export default function MainNavigation() {
                             options={{ ...defaultScreenOptions, title: 'Create New Account' }}
                             component={CreateAccountUsernameScreen}
                         />
-                        <Stack.Screen name="createAccountPassword" component={CreateAccountPasswordScreen} />
+                        <Stack.Screen
+                            name="createAccountPassword"
+                            options={{ ...defaultScreenOptions, title: 'Create New Account' }}
+                            component={CreateAccountPasswordScreen}
+                        />
                         <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
                     </>
                 )}

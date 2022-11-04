@@ -8,6 +8,7 @@ type ConfigType = {
         tertiaryColor: string;
     };
     appName: string;
+    ecosystemName: string;
     appSlogan: string;
     images: {
         splash: string;

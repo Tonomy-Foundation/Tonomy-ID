@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
-import TTextInput from '../components/TTextInput';
 import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
 import { TH1 } from '../components/THeadings';
@@ -11,12 +9,14 @@ import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { ExpectedSdkError } from 'tonomy-id-sdk';
 import theme from '../theme';
+import TModal from '../components/TModal';
 
 export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
     const [password2, setPassword2] = useState(!settings.isProduction() ? 'Password123!' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const user = useUserStore().user;
 
@@ -44,11 +44,16 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         }
 
         setLoading(false);
-        navigation.navigate('fingerprint');
+
+        setShowModal(true);
+        // navigation.navigate('fingerprint');
     }
 
     return (
         <View style={layoutStyles.container}>
+            {/* <Portal> */}
+            <TModal visible={showModal} onPress={() => console.log('hiiii')} />
+            {/* </Portal> */}
             <View style={layoutStyles.title}>
                 <TH1>Create your password</TH1>
             </View>
@@ -61,22 +66,23 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                         <TLink href={settings.config.links.passwordLearnMore}>Learn more</TLink>
                     </Text>
                 </View>
-                <View style={styles.username}>
+                <View style={styles.password}>
                     <TPasswordInput
                         value={password}
                         onChangeText={setPassword}
                         errorText={errorMessage}
-                        label="Password"
+                        label="Master Password"
                     />
-                    <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Password" />
+                    <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Master Password" />
                 </View>
                 <View style={styles.centeredText}>
-                    <Text style={styles.rememberPasswordText}>Please remember your password for future use</Text>
+                    <Text style={styles.rememberPasswordText}>Please remember your master password for future use</Text>
                 </View>
             </View>
             <View style={layoutStyles.bottom}>
                 <View style={styles.button}>
                     <TButton
+                        mode="contained"
                         onPress={onNext}
                         disabled={password.length === 0 || password2.length === 0}
                         loading={loading}
@@ -114,8 +120,8 @@ const styles = StyleSheet.create({
     message: {
         height: `20%`,
     },
-    username: {
-        height: '20%',
+    password: {
+        height: '40%',
     },
     button: {
         marginTop: 24,

@@ -7,6 +7,7 @@
     },
     "appLogoUrl": "Tonomy-ID/src/assets/Telos.png",
     "appName": "Telos ID Staging",
+    "ecosystemName": "Telos Staging",
     "appSlogan": "Home to the Fastest EVM",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
