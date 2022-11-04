@@ -11,7 +11,8 @@ export default function SplashTransparencyScreen({ navigation }: { navigation: N
             imageSource={require('../assets/images/transparency-splash.png')}
             iconSource={require('../assets/images/transparency-icon.png')}
             description="The software that runs Telos ID is open-source and can be reviewed and run by anyone. It is maintained by a Dutch non profit called the Tonomy Foundation that practices radical transarency."
-            learnMoreUrl="http://example.com"
+            linkUrl="http://example.com"
+            linkUrlText="Learn More"
             buttonText="GET STARTED"
             buttonOnPress={() => navigation.navigate('home')}
         ></SplashScreenContainer>

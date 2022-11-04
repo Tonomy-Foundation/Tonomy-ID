@@ -6,6 +6,7 @@ import { TH1 } from '../components/THeadings';
 import TA from '../components/TA';
 import theme from '../theme';
 import { white } from 'react-native-paper/lib/typescript/styles/colors';
+import TInfoBox from '../components/TInfoBox';
 
 type SplashScreenContainerProps = {
     navigation: NavigationProp<any>;
@@ -14,7 +15,8 @@ type SplashScreenContainerProps = {
     imageSource: ImageSourcePropType;
     iconSource: ImageSourcePropType;
     description: string;
-    learnMoreUrl: string;
+    linkUrl: string;
+    linkUrlText: string;
     buttonText: string;
     buttonOnPress: () => void;
 };
@@ -27,13 +29,12 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
             </Text>
             <Text style={styles.headdescription}>{props.subtitle}</Text>
             <Image style={styles.image} source={props.imageSource}></Image>
-            <View style={styles.infoContainer}>
-                <Image style={styles.icon} source={props.iconSource}></Image>
-                <Text style={styles.description}>{props.description}</Text>
-                <Text style={styles.description}>
-                    <TA href={props.learnMoreUrl}>Learn more</TA>
-                </Text>
-            </View>
+            <TInfoBox
+                description={props.description}
+                iconSource={props.iconSource}
+                linkUrl={props.linkUrl}
+                linkUrlText={props.linkUrlText}
+            ></TInfoBox>
             <TButton style={styles.button} onPress={props.buttonOnPress}>
                 {props.buttonText}
             </TButton>
@@ -42,22 +43,10 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
 }
 
 const styles = StyleSheet.create({
-    infoContainer: {
-        marginTop: 30,
-        alignSelf: 'center',
-        backgroundColor: '#e1f2e2',
-        borderRadius: 8,
-        padding: 10,
-        gap: 10,
-        width: '90%',
-    },
     head: {
         flex: 1,
         display: 'flex',
         alignContent: 'center',
-    },
-    icon: {
-        alignSelf: 'center',
     },
     header: {
         marginTop: 20,
@@ -72,11 +61,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignSelf: 'center',
         color: theme.colors.disabled,
-    },
-    description: {
-        textAlign: 'center',
-        alignSelf: 'center',
-        width: '90%',
     },
     image: {
         marginTop: 50,
