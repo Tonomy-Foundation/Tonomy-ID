@@ -5,6 +5,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { TH1 } from '../components/THeadings';
 import TA from '../components/TA';
 import theme from '../theme';
+import { white } from 'react-native-paper/lib/typescript/styles/colors';
 
 type SplashScreenContainerProps = {
     navigation: NavigationProp<any>;
@@ -24,7 +25,7 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
             <Text style={styles.header}>
                 <TH1>{props.title}</TH1>
             </Text>
-            <Text style={styles.description}>{props.subtitle}</Text>
+            <Text style={styles.headdescription}>{props.subtitle}</Text>
             <Image style={styles.image} source={props.imageSource}></Image>
             <View style={styles.infoContainer}>
                 <Image style={styles.icon} source={props.iconSource}></Image>
@@ -42,42 +43,49 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
 
 const styles = StyleSheet.create({
     infoContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
+        marginTop: 30,
+        alignSelf: 'center',
         backgroundColor: '#e1f2e2',
         borderRadius: 8,
         padding: 10,
+        gap: 10,
         width: '90%',
-        alignContent: 'center',
     },
     head: {
         flex: 1,
-        justifyContent: 'center',
+        display: 'flex',
         alignContent: 'center',
     },
     icon: {
         alignSelf: 'center',
     },
     header: {
+        marginTop: 20,
         textAlign: 'center',
         fontFamily: 'Roboto',
         fontStyle: 'normal',
         fontWeight: '800',
+        fontSize: 14,
+    },
+    headdescription: {
+        marginTop: 7,
+        textAlign: 'center',
+        alignSelf: 'center',
+        color: theme.colors.disabled,
     },
     description: {
         textAlign: 'center',
         alignSelf: 'center',
-        color: theme.colors.disabled,
         width: '90%',
     },
     image: {
+        marginTop: 50,
         alignSelf: 'center',
-        width: '60%',
-        height: '30%',
+        width: 330,
+        height: 300,
     },
     button: {
+        margin: 20,
         alignSelf: 'center',
         width: '90%',
     },
