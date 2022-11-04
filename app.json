@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Telos ID Staging",
-    "slug": "telos-id-staging",
+    "name": "Tonomy ID Development",
+    "slug": "tonomy-id-development",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./src/assets/telos/telos-logo1024.png",
+    "icon": "./src/assets/tonomy/tonomy-logo1024.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./src/assets/tonomy/tonomy-splash.png",
@@ -19,21 +19,21 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "foundation.tonomy.projects.telosidstaging"
+      "bundleIdentifier": "foundation.tonomy.projects.tonomyiddevelopment"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/telos/telos-logo1024.png",
+        "foregroundImage": "./src/assets/tonomy/tonomy-logo1024.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "foundation.tonomy.projects.telosidstaging"
+      "package": "foundation.tonomy.projects.tonomyiddevelopment"
     },
     "web": {
-      "favicon": "./src/assets/telos/telos-logo48.png"
+      "favicon": "./src/assets/tonomy/tonomy-logo48.png"
     },
     "extra": {
       "eas": {
-        "projectId": "d992ed97-c705-498e-8ffb-e0460bae4514"
+        "projectId": "83b91e03-98c2-4ae1-80a3-57d3fbe6db6d"
       }
     }
   }
