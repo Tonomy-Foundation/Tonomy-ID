@@ -27,6 +27,8 @@ const defaultScreenOptions = {
     headerTintColor: 'white',
 };
 
+const noHeaderScreenOptions = { ...defaultScreenOptions, headerShown: false };
+
 export default function MainNavigation() {
     const user = useUserStore();
     return (
@@ -39,24 +41,20 @@ export default function MainNavigation() {
                     </>
                 ) : (
                     <>
-                        <Stack.Screen
-                            name="home"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
-                            component={HomeScreen}
-                        />
+                        <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen
                             name="securitySplash"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
+                            options={noHeaderScreenOptions}
                             component={SplashSecurityScreen}
                         />
                         <Stack.Screen
                             name="privacySplash"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
+                            options={noHeaderScreenOptions}
                             component={SplashPrivacyScreen}
                         />
                         <Stack.Screen
                             name="transparencySplash"
-                            options={{ ...defaultScreenOptions, headerShown: false }}
+                            options={noHeaderScreenOptions}
                             component={SplashTransparencyScreen}
                         />
                         <Stack.Screen
