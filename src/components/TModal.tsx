@@ -7,15 +7,17 @@ import TLink from './TA';
 import TButton from './Tbutton';
 import TIconButton from './TIconButton';
 
-export type ModalProps = React.ComponentProps<typeof Modal> & { onPress: () => void };
+export type ModalProps = React.ComponentProps<typeof Modal> & {
+    onPress: () => void;
+    icon: string;
+    title: string;
+    buttonLabel?: string;
+};
 
 const styles = StyleSheet.create({
     modal: {
         padding: 50,
         backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    space: {
-        marginTop: 6,
     },
     modalContent: {
         justifyContent: 'center',
@@ -37,27 +39,20 @@ const styles = StyleSheet.create({
 
 export default function TModal(props: ModalProps) {
     return (
-        <Modal {...props} dismissable={false} style={styles.modal} contentContainerStyle={styles.other}>
+        <Modal {...props} dismissable={false} style={styles.modal}>
             <View style={styles.modalContent}>
                 <View>
-                    <TIconButton icon="check" />
+                    <TIconButton icon={props.icon} />
                 </View>
                 <View>
-                    <Text style={styles.title}>Welcome to {settings.config.ecosystemName}</Text>
+                    <Text style={styles.title}>{props.title}</Text>
                 </View>
-                <View>
-                    <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>jack.telos.id</Text>
-                    </Text>
-                </View>
-                <View style={styles.space}>
-                    <Text>
-                        See it on the blockchain <TLink href="#">here</TLink>
-                    </Text>
-                </View>
+                {props.children}
                 <View style={styles.buttonView}>
                     <TButton onPress={props.onPress} mode="text">
-                        <Text style={{ color: theme.colors.primary }}>OK</Text>
+                        <Text style={{ color: theme.colors.primary }}>
+                            {props.buttonLabel ? props.buttonLabel : 'OK'}
+                        </Text>
                     </TButton>
                 </View>
             </View>

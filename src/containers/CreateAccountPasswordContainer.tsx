@@ -51,7 +51,23 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
     return (
         <View style={layoutStyles.container}>
-            <TModal visible={showModal} onPress={() => console.log('hiiii')} />
+            <TModal
+                visible={showModal}
+                onPress={() => console.log('hiiii')}
+                icon="check"
+                title={'Welcome to' + settings.config.ecosystemName}
+            >
+                <View>
+                    <Text>
+                        Your username is <Text style={{ color: theme.colors.primary }}>jack.telos.id</Text>
+                    </Text>
+                </View>
+                <View style={styles.space}>
+                    <Text>
+                        See it on the blockchain <TLink href="#">here</TLink>
+                    </Text>
+                </View>
+            </TModal>
             <View style={layoutStyles.title}>
                 <TH1>Create your password</TH1>
             </View>
@@ -120,6 +136,9 @@ const styles = StyleSheet.create({
     },
     password: {
         height: '40%',
+    },
+    space: {
+        marginTop: 6,
     },
     button: {
         marginTop: 24,
