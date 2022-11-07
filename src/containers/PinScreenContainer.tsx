@@ -41,6 +41,8 @@ const styles = StyleSheet.create({
         height: 100,
         fontSize: 30,
         textAlign: 'center',
+        alignSelf: 'center',
+        justifyContent: 'space-between',
     },
     grid: {
         backgroundColor: '#2196f3',
