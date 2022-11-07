@@ -19,6 +19,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     const [loading, setLoading] = useState(false);
     const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
 
     const user = useUserStore().user;
 
@@ -31,18 +32,17 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         setLoading(true);
         try {
             await user.savePassword(password);
+            user.storage.username = 'test42b2.dev.tonomy.id';
+            await user.storage.username;
             const res = await user.createPerson();
+            // this only works when blockchainUrl === localhost || https://...
             setTrxUrl(
-                `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
-            );
-            console.log(
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
             );
         } catch (e) {
             // TODO catch password errors as well
             if (e instanceof ExpectedSdkError && e.code === 'TSDK1001') {
-                console.log('Username already exists');
-                // TODO need to send user back to username screen. Show modal with error and redirect
+                setShowUsernameErrorModal(true);
                 setLoading(false);
                 return;
             } else {
@@ -61,8 +61,27 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         navigation.navigate('fingerprint');
     }
 
+    async function onUsernameErrorModalPress() {
+        setShowUsernameErrorModal(false);
+        navigation.navigate('createAccountUsername');
+    }
+
     return (
         <View style={layoutStyles.container}>
+            <TModal
+                visible={showUsernameErrorModal}
+                onPress={onUsernameErrorModalPress}
+                icon="alert-circle"
+                iconColor={theme.colors.error}
+                title="Please choose another username"
+            >
+                <View>
+                    <Text>
+                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username}</Text> is already
+                        taken. Please choose another one.
+                    </Text>
+                </View>
+            </TModal>
             <TModal
                 visible={showModal}
                 onPress={onModalPress}

@@ -9,6 +9,7 @@ import { Modal } from 'react-native';
 export type ModalProps = React.ComponentProps<typeof Modal> & {
     onPress: () => void;
     icon: string;
+    iconColor?: string;
     title: string;
     buttonLabel?: string;
 };
@@ -41,12 +42,11 @@ const styles = StyleSheet.create({
 
 export default function TModal(props: ModalProps) {
     return (
-        // <Modal {...props} dismissable={false} style={styles.modal}>
         <Modal animationType="fade" transparent={true} visible={props.visible} {...props}>
             <View style={styles.modal}>
                 <View style={styles.modalContent}>
                     <View>
-                        <TIconButton icon={props.icon} />
+                        <TIconButton icon={props.icon} color={props.iconColor} />
                     </View>
                     <View>
                         <Text style={styles.title}>{props.title}</Text>
@@ -62,6 +62,5 @@ export default function TModal(props: ModalProps) {
                 </View>
             </View>
         </Modal>
-        // </Modal>
     );
 }
