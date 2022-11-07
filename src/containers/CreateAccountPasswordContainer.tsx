@@ -10,6 +10,7 @@ import useUserStore from '../store/userStore';
 import { ExpectedSdkError } from 'tonomy-id-sdk';
 import theme from '../utils/theme';
 import TModal from '../components/TModal';
+import TInfoBox from '../components/TInfoBox';
 
 export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
@@ -79,31 +80,29 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                     </Text>
                 </View>
             </TModal>
-            <View style={layoutStyles.title}>
+            <View>
                 <TH1>Create your password</TH1>
+
+                <TInfoBox
+                    align="left"
+                    icon="security"
+                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                    linkUrl={settings.config.links.securityLearnMore}
+                    linkUrlText="Learn more"
+                />
+
+                <TPasswordInput
+                    value={password}
+                    onChangeText={setPassword}
+                    errorText={errorMessage}
+                    label="Master Password"
+                />
+                <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Master Password" />
             </View>
-            <View style={layoutStyles.body}>
-                <View style={styles.message}>
-                    {/* TODO change this to alert with icon */}
-                    <Text>
-                        Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy
-                        Foundation, can pretend to be you.{' '}
-                        <TLink href={settings.config.links.passwordLearnMore}>Learn more</TLink>
-                    </Text>
-                </View>
-                <View style={styles.password}>
-                    <TPasswordInput
-                        value={password}
-                        onChangeText={setPassword}
-                        errorText={errorMessage}
-                        label="Master Password"
-                    />
-                    <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Master Password" />
-                </View>
-                <View style={styles.centeredText}>
-                    <Text style={styles.rememberPasswordText}>Please remember your master password for future use</Text>
-                </View>
+            <View style={styles.centeredText}>
+                <Text style={styles.rememberPasswordText}>Please remember your master password for future use</Text>
             </View>
+
             <View style={layoutStyles.bottom}>
                 <View style={styles.button}>
                     <TButton
@@ -128,26 +127,16 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 const layoutStyles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingVertical: 40,
     },
-    title: {
-        height: '10%',
-    },
-    body: {
-        height: `60%`,
-    },
-    bottom: {
-        height: `30%`,
-    },
+    title: { flex: 4 },
+    bottom: { flex: 1 },
 });
 
 const styles = StyleSheet.create({
-    message: {
-        height: '20%',
-    },
-    password: {
-        height: '40%',
-    },
     space: {
         marginTop: 6,
     },

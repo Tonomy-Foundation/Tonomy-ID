@@ -28,6 +28,7 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
             <Text style={styles.headdescription}>{props.subtitle}</Text>
             <Image style={styles.image} source={props.imageSource}></Image>
             <TInfoBox
+                align="center"
                 description={props.description}
                 icon={props.icon}
                 linkUrl={props.linkUrl}

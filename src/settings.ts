@@ -18,6 +18,9 @@ type ConfigType = {
     links: {
         usernameLearnMore: string;
         passwordLearnMore: string;
+        securityLearnMore: string;
+        privacyLearnMore: string;
+        transparencyLearnMore: string;
     };
     expoProjectId: string;
     accountSuffix: string;
