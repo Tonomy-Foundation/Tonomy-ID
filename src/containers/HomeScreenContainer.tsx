@@ -8,7 +8,11 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
     return (
         <View>
             <View>
-                <TButton mode="contained" onPress={() => navigation.navigate('createAccountUsername')}>
+                <TButton
+                    mode="contained"
+                    onPress={() => navigation.navigate('createAccountUsername')}
+                    style={{ marginTop: 100, marginBottom: 30 }}
+                >
                     Create Account
                 </TButton>
                 <TButton mode="contained" onPress={() => navigation.navigate('login')}>

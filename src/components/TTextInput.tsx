@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, TextInput } from 'react-native-paper';
-import theme from '../theme';
+import theme from '../utils/theme';
 
 export type TTextInputProps = React.ComponentProps<typeof TextInput> & { errorText?: string };
 

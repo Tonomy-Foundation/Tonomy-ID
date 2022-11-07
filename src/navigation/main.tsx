@@ -10,7 +10,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
-import theme from '../theme';
+import theme, { customColors } from '../utils/theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +24,7 @@ const defaultScreenOptions = {
         fontSize: 24,
     },
     headerTitleAlign: 'center',
-    headerTintColor: 'white',
+    headerTintColor: customColors.containedButtonTextColor,
 };
 
 const noHeaderScreenOptions = { ...defaultScreenOptions, headerShown: false };
@@ -59,7 +59,7 @@ export default function MainNavigation() {
                         />
                         <Stack.Screen
                             name="createAccountUsername"
-                            options={{ ...defaultScreenOptions, title: 'Create New Account' }}
+                            options={{ title: 'Create New Account' }}
                             component={CreateAccountUsernameScreen}
                         />
                         <Stack.Screen
