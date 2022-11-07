@@ -45,28 +45,30 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
 
     return (
         <View style={layoutStyles.container}>
-            <View>
-                <TH1>Create your username</TH1>
+            <View style={layoutStyles.body}>
+                <View>
+                    <TH1>Create your username</TH1>
 
-                <TInfoBox
-                    align="left"
-                    icon="security"
-                    description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
-                    Foundation can see it."
-                    linkUrl={settings.config.links.securityLearnMore}
-                    linkUrlText="Learn more"
-                />
+                    <TInfoBox
+                        align="left"
+                        icon="security"
+                        description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                        Foundation can see it."
+                        linkUrl={settings.config.links.securityLearnMore}
+                        linkUrlText="Learn more"
+                    />
 
-                <TUsername
-                    errorText={errorMessage}
-                    suffix={settings.config.accountSuffix}
-                    value={username}
-                    onChangeText={setUsername}
-                    label="Username"
-                />
-            </View>
-            <View style={styles.centeredText}>
-                <Text style={styles.greyText}>You can always change your username later</Text>
+                    <TUsername
+                        errorText={errorMessage}
+                        suffix={settings.config.accountSuffix}
+                        value={username}
+                        onChangeText={setUsername}
+                        label="Username"
+                    />
+                </View>
+                <View style={styles.changeUsername}>
+                    <Text style={styles.greyText}>You can always change your username later</Text>
+                </View>
             </View>
 
             <View style={layoutStyles.bottom}>
@@ -98,7 +100,7 @@ const layoutStyles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 40,
     },
-    title: { flex: 4 },
+    body: { flex: 4 },
     bottom: { flex: 1 },
 });
 
@@ -109,6 +111,10 @@ const styles = StyleSheet.create({
     },
     centeredText: {
         alignItems: 'center',
+    },
+    changeUsername: {
+        alignItems: 'center',
+        marginTop: 40,
     },
     greyText: {
         color: theme.colors.disabled,

@@ -80,27 +80,29 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                     </Text>
                 </View>
             </TModal>
-            <View>
-                <TH1>Create your password</TH1>
+            <View style={layoutStyles.body}>
+                <View>
+                    <TH1>Create your password</TH1>
 
-                <TInfoBox
-                    align="left"
-                    icon="security"
-                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                    linkUrl={settings.config.links.securityLearnMore}
-                    linkUrlText="Learn more"
-                />
+                    <TInfoBox
+                        align="left"
+                        icon="security"
+                        description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                        linkUrl={settings.config.links.securityLearnMore}
+                        linkUrlText="Learn more"
+                    />
 
-                <TPasswordInput
-                    value={password}
-                    onChangeText={setPassword}
-                    errorText={errorMessage}
-                    label="Master Password"
-                />
-                <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Master Password" />
-            </View>
-            <View style={styles.centeredText}>
-                <Text style={styles.rememberPasswordText}>Please remember your master password for future use</Text>
+                    <TPasswordInput
+                        value={password}
+                        onChangeText={setPassword}
+                        errorText={errorMessage}
+                        label="Master Password"
+                    />
+                    <TPasswordInput value={password2} onChangeText={setPassword2} label="Confirm Master Password" />
+                </View>
+                <View style={styles.centeredText}>
+                    <Text style={styles.rememberPasswordText}>Please remember your master password for future use</Text>
+                </View>
             </View>
 
             <View style={layoutStyles.bottom}>
@@ -132,7 +134,7 @@ const layoutStyles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 40,
     },
-    title: { flex: 4 },
+    body: { flex: 4 },
     bottom: { flex: 1 },
 });
 
@@ -148,6 +150,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rememberPasswordText: {
+        alignSelf: 'center',
+        marginTop: 40,
         color: theme.colors.error,
     },
     greyText: {
