@@ -9,6 +9,7 @@ import useUserStore from '../store/userStore';
 import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
 import theme from '../utils/theme';
 import TUsername from '../components/TUsername';
+import TInfoBox from '../components/TInfoBox';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
@@ -44,32 +45,43 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
 
     return (
         <View style={layoutStyles.container}>
-            <View>
-                <TH1>Create your username</TH1>
+            <View style={layoutStyles.body}>
+                <View>
+                    <TH1>Create your username</TH1>
 
-                {/* TODO change this to alert with icon */}
-                <Text style={styles.hint}>
-                    Your username is private and can only be seen by you and those you share it with, not even Tonomy
-                    Foundation can see it. <TLink href={settings.config.links.usernameLearnMore}>Learn more</TLink>
-                </Text>
+                    <TInfoBox
+                        align="left"
+                        icon="security"
+                        description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                        Foundation can see it."
+                        linkUrl={settings.config.links.securityLearnMore}
+                        linkUrlText="Learn more"
+                    />
 
-                <TUsername
-                    errorText={errorMessage}
-                    suffix={settings.config.accountSuffix}
-                    value={username}
-                    onChangeText={setUsername}
-                    label="Username"
-                />
-            </View>
-            <View style={styles.centeredText}>
-                <Text style={styles.greyText}>You can always change your username later</Text>
+                    <TUsername
+                        errorText={errorMessage}
+                        suffix={settings.config.accountSuffix}
+                        value={username}
+                        onChangeText={setUsername}
+                        label="Username"
+                    />
+                </View>
+                <View style={styles.changeUsername}>
+                    <Text style={styles.greyText}>You can always change your username later</Text>
+                </View>
             </View>
 
             <View style={layoutStyles.bottom}>
-                <TButton style={styles.button} onPress={onNext} disabled={username.length === 0} loading={loading}>
-                    Next
-                </TButton>
-
+                <View style={styles.button}>
+                    <TButton
+                        onPress={onNext}
+                        mode="contained"
+                        disabled={username.length === 0 || loading}
+                        loading={loading}
+                    >
+                        Next
+                    </TButton>
+                </View>
                 <View style={styles.centeredText}>
                     <Text style={styles.bottomMessage}>
                         Already have an account? <TLink href="login">Login</TLink>
@@ -88,7 +100,7 @@ const layoutStyles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 40,
     },
-    title: { flex: 4 },
+    body: { flex: 4 },
     bottom: { flex: 1 },
 });
 
@@ -100,18 +112,15 @@ const styles = StyleSheet.create({
     centeredText: {
         alignItems: 'center',
     },
+    changeUsername: {
+        alignItems: 'center',
+        marginTop: 40,
+    },
     greyText: {
         color: theme.colors.disabled,
     },
     bottomMessage: {
         color: theme.colors.disabled,
         fontSize: 16,
-    },
-    // TODO use component
-    hint: {
-        backgroundColor: '#E1F1E1',
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 16,
     },
 });

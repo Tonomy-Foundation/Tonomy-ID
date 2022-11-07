@@ -9,12 +9,15 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
         <View>
             <View>
                 <TButton
+                    mode="contained"
                     onPress={() => navigation.navigate('createAccountUsername')}
                     style={{ marginTop: 100, marginBottom: 30 }}
                 >
                     Create Account
                 </TButton>
-                <TButton onPress={() => navigation.navigate('login')}>Login</TButton>
+                <TButton mode="contained" onPress={() => navigation.navigate('login')}>
+                    Login
+                </TButton>
             </View>
 
             <StatusBar style="auto" />

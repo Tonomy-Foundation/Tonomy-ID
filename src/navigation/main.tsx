@@ -27,6 +27,8 @@ const defaultScreenOptions = {
     headerTintColor: customColors.containedButtonTextColor,
 };
 
+const noHeaderScreenOptions = { ...defaultScreenOptions, headerShown: false };
+
 export default function MainNavigation() {
     const user = useUserStore();
     return (
@@ -39,20 +41,20 @@ export default function MainNavigation() {
                     </>
                 ) : (
                     <>
-                        <Stack.Screen name="home" options={{ headerShown: false }} component={HomeScreen} />
+                        <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen
                             name="securitySplash"
-                            options={{ headerShown: false }}
+                            options={noHeaderScreenOptions}
                             component={SplashSecurityScreen}
                         />
                         <Stack.Screen
                             name="privacySplash"
-                            options={{ headerShown: false }}
+                            options={noHeaderScreenOptions}
                             component={SplashPrivacyScreen}
                         />
                         <Stack.Screen
                             name="transparencySplash"
-                            options={{ headerShown: false }}
+                            options={noHeaderScreenOptions}
                             component={SplashTransparencyScreen}
                         />
                         <Stack.Screen
@@ -60,7 +62,11 @@ export default function MainNavigation() {
                             options={{ title: 'Create New Account' }}
                             component={CreateAccountUsernameScreen}
                         />
-                        <Stack.Screen name="createAccountPassword" component={CreateAccountPasswordScreen} />
+                        <Stack.Screen
+                            name="createAccountPassword"
+                            options={{ ...defaultScreenOptions, title: 'Create New Account' }}
+                            component={CreateAccountPasswordScreen}
+                        />
                         <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
                     </>
                 )}
