@@ -9,7 +9,7 @@ export default function SplashSecurityScreen({ navigation }: { navigation: Navig
             title="Security"
             subtitle="You are in control of your identity"
             imageSource={require('../assets/images/security-splash.png')}
-            iconSource={require('../assets/images/security-icon.png')}
+            icon="security"
             description="Tonomy secures all transactions and data by only storing keys and your data on your phone - nowhere else!"
             linkUrl="http://example.com"
             linkUrlText="Learn More"

@@ -3,9 +3,7 @@ import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native
 import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { TH1 } from '../components/THeadings';
-import TA from '../components/TA';
 import theme from '../utils/theme';
-import { white } from 'react-native-paper/lib/typescript/styles/colors';
 import TInfoBox from '../components/TInfoBox';
 
 type SplashScreenContainerProps = {
@@ -13,7 +11,7 @@ type SplashScreenContainerProps = {
     title: string;
     subtitle: string;
     imageSource: ImageSourcePropType;
-    iconSource: ImageSourcePropType;
+    icon: string;
     description: string;
     linkUrl: string;
     linkUrlText: string;
@@ -31,11 +29,11 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
             <Image style={styles.image} source={props.imageSource}></Image>
             <TInfoBox
                 description={props.description}
-                iconSource={props.iconSource}
+                icon={props.icon}
                 linkUrl={props.linkUrl}
                 linkUrlText={props.linkUrlText}
             ></TInfoBox>
-            <TButton style={styles.button} onPress={props.buttonOnPress}>
+            <TButton style={styles.button} mode="contained" onPress={props.buttonOnPress}>
                 {props.buttonText}
             </TButton>
         </View>

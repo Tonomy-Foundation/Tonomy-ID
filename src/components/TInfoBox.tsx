@@ -1,18 +1,35 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, IconSourcePropType } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { SvgProps } from 'react-native-svg';
+import PrivacyIcon from '../assets/icons/PrivacyIcon';
+import SecurityIcon from '../assets/icons/SecurityIcon';
+import TransparencyIcon from '../assets/icons/TransparencyIcon';
 import TA from './TA';
 
 export type TInfoBoxProps = {
-    iconSource: IconSourcePropType;
+    icon: string;
     description: string;
     linkUrl: string;
     linkUrlText: string;
 };
 
+function IconComponent(props: SvgProps & { icon: string }) {
+    switch (props.icon) {
+        case 'security':
+            return <SecurityIcon {...props} />;
+        case 'privacy':
+            return <PrivacyIcon {...props} />;
+        case 'transparency':
+            return <TransparencyIcon {...props} />;
+        default:
+            throw new Error('Invalid icon name');
+    }
+}
+
 export default function TInfoBox(props: TInfoBoxProps) {
     return (
         <View style={styles.infoContainer}>
-            <Image style={styles.icon} source={props.iconSource}></Image>
+            <IconComponent style={styles.icon} icon={props.icon}/>
             <Text style={styles.description}>{props.description}</Text>
             <Text style={styles.description}>
                 <TA href={props.linkUrl}>{props.linkUrlText}</TA>
