@@ -67,7 +67,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                 visible={showModal}
                 onPress={onModalPress}
                 icon="check"
-                title={'Welcome to' + settings.config.ecosystemName}
+                title={'Welcome to ' + settings.config.ecosystemName}
             >
                 <View>
                     <Text>
