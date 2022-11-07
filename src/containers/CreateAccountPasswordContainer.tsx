@@ -11,7 +11,7 @@ import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
 
-export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
     if (!settings.isProduction()) {
         startUsername = 'test' + randomString(2);

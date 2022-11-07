@@ -1,6 +1,6 @@
 import { DefaultTheme } from 'react-native-paper';
 import { Theme } from 'react-native-paper/src/types';
-import settings from './settings';
+import settings from '../settings';
 
 // https://callstack.github.io/react-native-paper/4.0/theming.html
 const theme: Theme = {
@@ -11,7 +11,13 @@ const theme: Theme = {
         primary: settings.config.theme.primaryColor,
         accent: settings.config.theme.secondaryColor,
         surface: settings.config.theme.tertiaryColor,
+        background: 'white',
     },
+};
+
+export const customColors = {
+    containedButtonTextColor: 'white',
+    disabledButtonTextColor: 'darkgrey',
 };
 
 export default theme;
