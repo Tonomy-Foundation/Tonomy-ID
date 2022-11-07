@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Modal, Text } from 'react-native-paper';
 import settings from '../settings';
-import theme from '../theme';
+import theme from '../utils/theme';
 import TLink from './TA';
 import TButton from './Tbutton';
 import TIconButton from './TIconButton';

@@ -4,7 +4,7 @@ import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { TH1 } from '../components/THeadings';
 import TA from '../components/TA';
-import theme from '../theme';
+import theme from '../utils/theme';
 import { white } from 'react-native-paper/lib/typescript/styles/colors';
 import TInfoBox from '../components/TInfoBox';
 

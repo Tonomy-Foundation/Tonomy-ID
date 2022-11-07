@@ -8,7 +8,7 @@ import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { ExpectedSdkError } from 'tonomy-id-sdk';
-import theme from '../theme';
+import theme from '../utils/theme';
 import TModal from '../components/TModal';
 
 export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
