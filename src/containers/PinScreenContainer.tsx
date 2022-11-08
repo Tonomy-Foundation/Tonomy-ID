@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import TButton from '../components/Tbutton';
 import { TH1 } from '../components/THeadings';
 import theme from '../theme';
@@ -12,24 +13,52 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                 <TH1>Add a PIN</TH1>
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
-            {/* TODO use the pin circles here */}
+            <View style={styles.dotcontainer}>
+                <View style={styles.dot}></View>
+                <View style={styles.dot}></View>
+                <View style={styles.dot}></View>
+                <View style={styles.dot}></View>
+                <View style={styles.dot}></View>
+            </View>
             <View style={styles.grid}>
-                <Text style={styles.griditem}>1</Text>
-                <Text style={styles.griditem}>2</Text>
-                <Text style={styles.griditem}>3</Text>
-                <Text style={styles.griditem}>4</Text>
-                <Text style={styles.griditem}>5</Text>
-                <Text style={styles.griditem}>6</Text>
-                <Text style={styles.griditem}>7</Text>
-                <Text style={styles.griditem}>8</Text>
-                <Text style={styles.griditem}>9</Text>
-                <Text style={styles.griditem}>0</Text>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>1</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>2</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>3</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>4</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>5</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>6</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>7</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>8</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>9</Text>
+                </TouchableOpacity>
+                <Text style={styles.griditem}></Text>
+                <TouchableOpacity style={styles.griditem}>
+                    <Text style={styles.griditem}>0</Text>
+                </TouchableOpacity>
+                <Text style={styles.griditem}></Text>
             </View>
             <View style={styles.buttonwrapper}>
-                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.button}>
+                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.nextbutton}>
                     Next
                 </TButton>
-                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.button}>
+                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipbutton}>
                     Skip
                 </TButton>
             </View>
@@ -39,24 +68,35 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
 
 const styles = StyleSheet.create({
     griditem: {
-        color: '#ffffff',
-        borderColor: '#000000',
-        borderWidth: 1,
-        width: '30%',
-        height: 100,
-        fontSize: 30,
+        paddingTop: 20,
+        width: '33%',
+        height: 90,
+        fontSize: 35,
+        // Color: '#000000',
         textAlign: 'center',
         alignSelf: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
+        alignContent: 'center',
     },
     grid: {
-        backgroundColor: '#2196f3',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         width: '90%',
     },
+    dotcontainer: {
+        alignContent: 'center',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
     dot: {
-        height: '25px',
-        width: '25px',
-        borderRadius: 50,
+        margin: 10,
+        marginTop: 20,
+        marginBottom: 20,
+        height: 25,
+        width: 25,
+        borderRadius: 1000,
         backgroundColor: theme.colors.disabled,
     },
     head: {
@@ -81,9 +121,15 @@ const styles = StyleSheet.create({
     buttonwrapper: {
         marginTop: 20,
     },
-    button: {
+    skipbutton: {
         marginBottom: 10,
         alignSelf: 'center',
         width: '90%',
+    },
+    nextbutton: {
+        marginBottom: 10,
+        alignSelf: 'center',
+        width: '90%',
+        backgroundColor: theme.colors.disabled,
     },
 });
