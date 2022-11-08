@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import settings from '../settings';
+import { PersistantStorage as PersistentStorage } from 'tonomy-id-sdk';
 
-import { PersistantStorage } from 'sdk';
-
-export default class Storage implements PersistantStorage {
+export default class Storage implements PersistentStorage {
     [x: string]: any;
 
     async retrieve(key: string): Promise<any> {

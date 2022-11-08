@@ -2,7 +2,8 @@ import create from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
 import Storage from '../utils/storage';
 import settings from '../settings';
-import { initialize, User, SettingsType } from 'sdk';
+import { User, SettingsType } from 'tonomy-id-sdk';
+const { initialize } = settings.sdk;
 // TODO change this to be an instance of User class when we have implemented the RNKeyStore
 interface UserState {
     username: string | null;

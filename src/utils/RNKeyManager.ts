@@ -1,18 +1,16 @@
 import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
-import {
-    GetKeyOptions,
-    KeyManager,
+import argon2 from 'react-native-argon2';
+import * as SecureStore from 'expo-secure-store';
+import settings from '../settings';
+import { KeyManager, GetKeyOptions, SignDataOptions, StoreKeyOptions } from 'tonomy-id-sdk';
+const {
     KeyManagerLevel,
     randomBytes,
     randomString,
     sha256,
-    SignDataOptions,
-    StoreKeyOptions,
-    decodeHex,
-} from 'sdk';
-import argon2 from 'react-native-argon2';
-import * as SecureStore from 'expo-secure-store';
 
+    decodeHex,
+} = settings.sdk;
 type KeyStorage = {
     privateKey: PrivateKey;
     publicKey: PublicKey;
@@ -20,7 +18,6 @@ type KeyStorage = {
     hashedSaltedChallenge?: string;
     salt?: string;
 };
-
 export default class RNKeyManager implements KeyManager {
     keys: any;
 

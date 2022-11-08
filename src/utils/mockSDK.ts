@@ -1,10 +1,10 @@
 import { Checksum256, Name } from '@greymass/eosio';
 import { GetAccountTonomyIDInfoResponse, KeyManager, User as TUser } from 'tonomy-id-sdk';
-export function initialize(storage: any, keymanger: any, settings: any) {
+function initialize(storage: any, keymanger: any, settings: any) {
     return new User(storage, keymanger, settings);
 }
 
-export class User implements TUser {
+class User implements TUser {
     storage;
     keyManager: KeyManager;
     settings;
@@ -57,21 +57,23 @@ export class User implements TUser {
     }
 }
 
-export type SettingsType = {
+type SettingsType = {
     blockchainUrl: string;
 };
 
 let settings: SettingsType;
 let initialized = false;
 
-export function setSettings(newSettings: SettingsType) {
+function setSettings(newSettings: SettingsType) {
     settings = newSettings;
     initialized = true;
 }
 
-export async function getSettings(): Promise<SettingsType> {
+async function getSettings(): Promise<SettingsType> {
     if (!initialized) {
         throw new Error('settings not yet intialized');
     }
     return settings;
 }
+
+export { getSettings, setSettings, initialize, SettingsType, User };

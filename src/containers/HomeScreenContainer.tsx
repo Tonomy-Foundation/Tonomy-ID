@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { Text } from 'react-native-paper';
-import useUserStore from 'src/store/userStore';
+import useUserStore from '../store/userStore';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const user = useUserStore((state) => state.user);
