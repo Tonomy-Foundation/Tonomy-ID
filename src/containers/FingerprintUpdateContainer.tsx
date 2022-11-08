@@ -16,8 +16,10 @@ export default function CreateAccountContainer() {
             <Image source={require('../assets/images/fingerprint.png')}></Image>
 
             <View>
-                <TButton>Next</TButton>
-                <TButton color={settings.config.theme.secondaryColor}>Skip</TButton>
+                <TButton mode="contained">Next</TButton>
+                <TButton mode="contained" color={settings.config.theme.secondaryColor}>
+                    Skip
+                </TButton>
             </View>
         </View>
     );
