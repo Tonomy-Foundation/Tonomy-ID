@@ -8,11 +8,19 @@ type ConfigType = {
         tertiaryColor: string;
     };
     appName: string;
+    ecosystemName: string;
     appSlogan: string;
     images: {
         splash: string;
         logo48: string;
         logo1024: string;
+    };
+    links: {
+        usernameLearnMore: string;
+        passwordLearnMore: string;
+        securityLearnMore: string;
+        privacyLearnMore: string;
+        transparencyLearnMore: string;
     };
     expoProjectId: string;
     accountSuffix: string;
