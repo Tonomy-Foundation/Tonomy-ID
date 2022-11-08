@@ -9,6 +9,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
+import WelcomeSplashScreen from '../screens/WelcomeSplashScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ export default function MainNavigation() {
                         <Stack.Screen name="transparencySplash" component={SplashTransparencyScreen} />
                         <Stack.Screen name="createAccount" component={CreateAccountScreen} />
                         <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
+                        <Stack.Screen name="welcomeSplash" component={WelcomeSplashScreen} />
                     </>
                 )}
             </Stack.Navigator>
