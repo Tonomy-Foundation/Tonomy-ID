@@ -1,5 +1,5 @@
 class ApplicationError extends Error {
-    code: string;
+    code: ApplicationErrors;
 
     constructor(message: string) {
         super(message);
@@ -12,40 +12,8 @@ class ApplicationError extends Error {
     }
 }
 
-export class ExpectedApplicationError extends ApplicationError {
-    constructor(message: string) {
-        super(message);
-        // Ensure the name of this error is the same as the class name
-        this.name = this.constructor.name;
-        // This clips the constructor invocation from the stack trace.
-        // It's not absolutely essential, but it does make the stack trace a little nicer.
-        //  @see Node.js reference (bottom)
-        Error.captureStackTrace(this, this.constructor);
-    }
-}
-
-export class UnexpectedApplicationError extends ApplicationError {
-    constructor(message: string) {
-        super(message);
-        // Ensure the name of this error is the same as the class name
-        this.name = this.constructor.name;
-        // This clips the constructor invocation from the stack trace.
-        // It's not absolutely essential, but it does make the stack trace a little nicer.
-        //  @see Node.js reference (bottom)
-        Error.captureStackTrace(this, this.constructor);
-    }
-}
-
-export function throwExpectedError(message: string, code?: string) {
-    const error = new ExpectedApplicationError(message);
-    if (code) {
-        error.code = code;
-    }
-    throw error;
-}
-
-export function throwUnexpectedError(message: string, code?: string) {
-    const error = new UnexpectedApplicationError(message);
+export function throwError(message: string, code?: ApplicationErrors) {
+    const error = new ApplicationError(message);
     if (code) {
         error.code = code;
     }
@@ -63,8 +31,35 @@ global.onunhandledrejection = function (error) {
     }
 };
 
-/*
-List of which files have which error codes, to avoide duplicates:export function throwExpectedError(message: string, code: string) {
+enum ApplicationErrors {
+    UsernameTaken = 'UsernameTaken',
+}
 
-TAPP10## = ???
-*/
+// eslint-disable-next-line @typescript-eslint/no-namespace
+namespace ApplicationErrors {
+    /*
+     * Returns the index of the enum value
+     *
+     * @param value The value to get the index of
+     */
+    export function indexFor(value: ApplicationErrors): number {
+        return Object.keys(ApplicationErrors).indexOf(value);
+    }
+
+    /*
+     * Creates an ApplicationErrors from a string or index of the level
+     *
+     * @param value The string or index
+     */
+    export function from(value: number | string): ApplicationErrors {
+        let index: number;
+        if (typeof value !== 'number') {
+            index = ApplicationErrors.indexFor(value as ApplicationErrors);
+        } else {
+            index = value;
+        }
+        return Object.values(ApplicationErrors)[index] as ApplicationErrors;
+    }
+}
+
+export { ApplicationErrors };
