@@ -3,8 +3,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import { TH1 } from '../components/THeadings';
 import theme from '../theme';
+import { NavigationProp } from '@react-navigation/native';
 
-export default function PinScreenContainer() {
+export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     return (
         <View style={styles.head}>
             <Text style={styles.header}>
@@ -25,8 +26,12 @@ export default function PinScreenContainer() {
                 <Text style={styles.griditem}>0</Text>
             </View>
             <View style={styles.buttonwrapper}>
-                <TButton style={styles.button}>Next</TButton>
-                <TButton style={styles.button}>Skip</TButton>
+                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.button}>
+                    Next
+                </TButton>
+                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.button}>
+                    Skip
+                </TButton>
             </View>
         </View>
     );
