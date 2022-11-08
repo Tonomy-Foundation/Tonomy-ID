@@ -1,12 +1,13 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Platform, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Button } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import TButton from '../components/Tbutton';
 import { TH1 } from '../components/THeadings';
-import theme from '../theme';
+import theme from '../utils/theme';
 import { NavigationProp } from '@react-navigation/native';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
+    const [pin, setPin] = useState('');
     return (
         <View style={styles.head}>
             <Text style={styles.header}>
