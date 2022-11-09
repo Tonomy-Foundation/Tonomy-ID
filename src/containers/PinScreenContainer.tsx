@@ -8,6 +8,10 @@ import { NavigationProp } from '@react-navigation/native';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [pin, setPin] = useState('');
+    function onNumberPress(num: string) {
+        setPin((pin) => pin + num);
+    }
+
     return (
         <View style={styles.head}>
             <Text style={styles.header}>
@@ -15,17 +19,19 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
             <View style={styles.dotcontainer}>
-                <View style={styles.dot}></View>
+                <View style={styles.dot}>
+                    <Text></Text>
+                </View>
                 <View style={styles.dot}></View>
                 <View style={styles.dot}></View>
                 <View style={styles.dot}></View>
                 <View style={styles.dot}></View>
             </View>
             <View style={styles.grid}>
-                <TouchableOpacity style={styles.griditem}>
+                <TouchableOpacity onPress={() => onNumberPress('1')} style={styles.griditem}>
                     <Text style={styles.griditem}>1</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
+                <TouchableOpacity onPress={() => onNumberPress('2')} style={styles.griditem}>
                     <Text style={styles.griditem}>2</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.griditem}>
