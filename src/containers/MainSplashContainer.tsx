@@ -4,7 +4,7 @@ import theme from '../utils/theme';
 import { NavigationProp } from '@react-navigation/native';
 
 type MainSplashScreenContainerProps = {
-    ImageSource: ImageSourcePropType;
+    imageSource: ImageSourcePropType;
 };
 
 export default function MainSplashScreenContainer(props: MainSplashScreenContainerProps) {
