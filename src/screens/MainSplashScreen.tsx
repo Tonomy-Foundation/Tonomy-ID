@@ -6,7 +6,7 @@ import settings from '../settings';
 export default function MainSplashScreen({ navigation }: { navigation: NavigationProp<any> }) {
     return (
         <MainSplashScreenContainer
-            imageSource={require('../assets/images/privacy-splash.png')}
+            imageSource={require('../assets/tonomy/tonomy-logo1024.png')}
         ></MainSplashScreenContainer>
     );
 }

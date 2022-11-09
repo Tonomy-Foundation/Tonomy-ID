@@ -19,10 +19,16 @@ export default function MainSplashScreenContainer(props: MainSplashScreenContain
 
 const styles = StyleSheet.create({
     mainlogo: {
-        backgroundColor: '#ffffff',
+        margin: 180,
+        alignSelf: 'center',
+        width: 220,
+        height: 220,
     },
     tonomylogo: {
-        backgroundColor: '#ffffff',
+        margin: 10,
+        alignSelf: 'center',
+        width: 40,
+        height: 40,
     },
     text: {
         marginTop: 7,
