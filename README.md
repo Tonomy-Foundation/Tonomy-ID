@@ -46,12 +46,6 @@ For future runs, make sure the `projectId` matches the one in [https://expo.dev/
 7. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
 8. Install the created app on your phone
 
-## Run
-
-1. Install packages with `npm install`.
-2. (optional) To run in staging mode call `export NODE_ENV=staging`
-3. Run `npm start` to start the development server.
-4. Scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
 
 ## Linting
 
@@ -70,3 +64,20 @@ Set the configuration variables in the desired file in `./src/config`
 ## Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code. All errors are either expected or unexpected, depending on weather the user will create the error, or somethig has gone wrong nothing to do with the user. This helps us distinguish errors that we should fix as developers. Please maintain the list of files and their error code numeration in [errors.ts](./src/utils/errors.ts).
+
+# Standalone run
+
+1. clone the [tonomy id](https://github.com/Tonomy-Foundation/Tonomy-ID.git) repo and change the branch to `development` or run 
+```bash
+git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
+```
+2. clone the [tonomy id sdk](https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git) repo and change the branch to `development` or run 
+
+```bash
+git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
+```
+
+3. run `npm install` in both repos if it fails run it again
+4. run `sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/` in the `Tonomy-ID` directory
+5. run `export NODE_ENV=designonly` to run the app standalone without the backend. for a whole app environment check this repo [link](https://github.com/Tonomy-Foundation/Tonomy-ID-Integration.git)
+6. run `npm run start` to start the app in the `Tonomy-ID` directory
