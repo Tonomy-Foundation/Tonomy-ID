@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
+import { Text } from 'react-native-paper';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     return (
