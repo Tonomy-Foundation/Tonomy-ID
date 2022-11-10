@@ -80,4 +80,5 @@ git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
 3. run `npm install` in both repos if it fails run it again
 4. run `sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/` in the `Tonomy-ID` directory
 5. run `export NODE_ENV=designonly` to run the app standalone without the backend. for a whole app environment check this repo [link](https://github.com/Tonomy-Foundation/Tonomy-ID-Integration.git)
-6. run `npm start` to start the app in the `Tonomy-ID` directory
+5. check that you have followed all the steps in the `pre-run build` section
+6. change to the `Tonomy-ID` directory and run `npm start` 
