@@ -5,11 +5,15 @@ import TButton from '../components/Tbutton';
 import { TH1 } from '../components/THeadings';
 import theme from '../utils/theme';
 import { NavigationProp } from '@react-navigation/native';
+import dotsContainer from '../components/dotsContainer';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [pin, setPin] = useState('');
     function onNumberPress(num: string) {
         setPin((pin) => pin + num);
+        {
+            console.log(pin);
+        }
     }
 
     return (
@@ -18,48 +22,40 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                 <TH1>Add a PIN</TH1>
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
-            <View style={styles.dotcontainer}>
-                <View style={styles.dot}>
-                    <Text></Text>
-                </View>
-                <View style={styles.dot}></View>
-                <View style={styles.dot}></View>
-                <View style={styles.dot}></View>
-                <View style={styles.dot}></View>
-            </View>
+            <dotsContainer></dotsContainer>
             <View style={styles.grid}>
-                <TouchableOpacity onPress={() => onNumberPress('1')} style={styles.griditem}>
-                    <Text style={styles.griditem}>1</Text>
+                <TouchableOpacity onPress={() => onNumberPress('1')} style={styles.gridItem}>
+                    <Text style={styles.gridItem}>1</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('2')} style={styles.griditem}>
-                    <Text style={styles.griditem}>2</Text>
+                <TouchableOpacity onPress={() => onNumberPress('2')} style={styles.gridItem}>
+                    <Text style={styles.gridItem}>2</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>3</Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>3</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>4</Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>4</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>5</Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>5</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>6</Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>6</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>7</Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>7</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>8</Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>8</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>9</Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>9</Text>
                 </TouchableOpacity>
-                <Text style={styles.griditem}></Text>
-                <TouchableOpacity style={styles.griditem}>
-                    <Text style={styles.griditem}>0</Text>
+                <Text style={styles.gridItem}></Text>
+                <TouchableOpacity>
+                    <Text style={styles.gridItem}>0</Text>
                 </TouchableOpacity>
-                <Text style={styles.griditem}></Text>
+                <Text style={styles.gridItem}></Text>
             </View>
             <View style={styles.buttonwrapper}>
                 <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.nextbutton}>
@@ -74,7 +70,7 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
 }
 
 const styles = StyleSheet.create({
-    griditem: {
+    gridItem: {
         paddingTop: 20,
         width: '33%',
         height: 90,
@@ -90,21 +86,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         width: '90%',
-    },
-    dotcontainer: {
-        alignContent: 'center',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    dot: {
-        margin: 10,
-        marginTop: 20,
-        marginBottom: 20,
-        height: 20,
-        width: 20,
-        borderRadius: 1000,
-        backgroundColor: theme.colors.disabled,
     },
     head: {
         flex: 1,
