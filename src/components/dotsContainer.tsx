@@ -1,28 +1,12 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import theme from '../utils/theme';
-
+//TODO container to component
 export default function dotsContainer() {
-    return (
-        <View style={styles.dotcontainer}>
-            <View style={styles.dot}>
-                <Text></Text>
-            </View>
-            <View style={styles.dot}></View>
-            <View style={styles.dot}></View>
-            <View style={styles.dot}></View>
-            <View style={styles.dot}></View>
-        </View>
-    );
+    return <View style={styles.dot}></View>;
 }
 
 const styles = StyleSheet.create({
-    dotcontainer: {
-        alignContent: 'center',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
     dot: {
         margin: 10,
         marginTop: 20,

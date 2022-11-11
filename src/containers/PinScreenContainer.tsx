@@ -5,14 +5,19 @@ import TButton from '../components/Tbutton';
 import { TH1 } from '../components/THeadings';
 import theme from '../utils/theme';
 import { NavigationProp } from '@react-navigation/native';
-import dotsContainer from '../components/dotsContainer';
+import DotsContainer from '../components/dotsContainer';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [pin, setPin] = useState('');
     function onNumberPress(num: string) {
         setPin((pin) => pin + num);
-        {
-            console.log(pin);
+        // TODO deny input after 5 characters
+    }
+    function DotOrChar(props: any) {
+        if (props.pin === true) {
+            return <DotsContainer></DotsContainer>;
+        } else {
+            return <Text>1</Text>;
         }
     }
 
@@ -22,7 +27,13 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                 <TH1>Add a PIN</TH1>
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
-            <dotsContainer></dotsContainer>
+            <View style={styles.dotcontainer}>
+                <DotOrChar pin={false}></DotOrChar>
+                <DotsContainer></DotsContainer>
+                <DotsContainer></DotsContainer>
+                <DotsContainer></DotsContainer>
+                <DotsContainer></DotsContainer>
+            </View>
             <View style={styles.grid}>
                 <TouchableOpacity onPress={() => onNumberPress('1')} style={styles.gridItem}>
                     <Text style={styles.gridItem}>1</Text>
@@ -70,6 +81,12 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
 }
 
 const styles = StyleSheet.create({
+    dotcontainer: {
+        alignContent: 'center',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
     gridItem: {
         paddingTop: 20,
         width: '33%',
