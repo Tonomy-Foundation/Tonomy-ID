@@ -12,6 +12,12 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
     function onNumberPress(num: string) {
         setPin((pin) => pin + num);
         // TODO deny input after 5 characters
+        const pinLimit = 5;
+        if (pin.valueOf.length >= pinLimit) {
+            pin.valueOf = pin.valueOf.substring(0, pinLimit);
+        } else {
+            pin.valueOf = pinLimit - pinLimit.valueOf.length;
+        }
     }
     function DotOrChar(props: any) {
         if (props.pin === true) {
