@@ -20,11 +20,16 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
         }
     }
     function DotOrChar(props: any) {
-        if (props.pin === true) {
-            return <DotsContainer></DotsContainer>;
-        } else {
-            return <Text>1</Text>;
-        }
+        const loop = 5;
+        // TODO Write a component that, if there is no string input, it returns a dot. If there is, it returns the string. Limit of 5.
+        foreach(async (pin) => {
+            // eslint-disable-next-line react/prop-types
+            if (props.pin[foreach(loop)] === true) {
+                return <DotsContainer></DotsContainer>;
+            } else {
+                return <Text></Text>;
+            }
+        });
     }
 
     return (
@@ -35,10 +40,10 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
             <View style={styles.dotcontainer}>
                 <DotOrChar pin={false}></DotOrChar>
-                <DotsContainer></DotsContainer>
-                <DotsContainer></DotsContainer>
-                <DotsContainer></DotsContainer>
-                <DotsContainer></DotsContainer>
+                <DotOrChar pin={false}></DotOrChar>
+                <DotOrChar pin={false}></DotOrChar>
+                <DotOrChar pin={false}></DotOrChar>
+                <DotOrChar pin={false}></DotOrChar>
             </View>
             <View style={styles.grid}>
                 <TouchableOpacity onPress={() => onNumberPress('1')} style={styles.gridItem}>
@@ -144,3 +149,6 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.disabled,
     },
 });
+function foreach(loop: number) {
+    throw new Error('Function not implemented.');
+}
