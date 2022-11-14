@@ -10,26 +10,20 @@ import DotsContainer from '../components/dotsContainer';
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [pin, setPin] = useState('');
     function onNumberPress(num: string) {
-        setPin((pin) => pin + num);
-        // TODO deny input after 5 characters
-        const pinLimit = 5;
-        if (pin.valueOf.length >= pinLimit) {
-            pin.valueOf = pin.valueOf.substring(0, pinLimit);
-        } else {
-            pin.valueOf = pinLimit - pinLimit.valueOf.length;
-        }
-    }
-    function DotOrChar(props: any) {
-        const loop = 5;
-        // TODO Write a component that, if there is no string input, it returns a dot. If there is, it returns the string. Limit of 5.
-        foreach(async (pin) => {
-            // eslint-disable-next-line react/prop-types
-            if (props.pin[foreach(loop)] === true) {
-                return <DotsContainer></DotsContainer>;
+        setPin(function (pin) {
+            if (pin.length === 5) {
+                return pin;
             } else {
-                return <Text></Text>;
+                return pin + num;
             }
         });
+    }
+    function DotOrChar(props: any) {
+        if (props.pin.length >= props.pinIndex + 1) {
+            return <Text style={styles.dotText}>{props.pin[props.pinIndex]}</Text>;
+        } else {
+            return <DotsContainer></DotsContainer>;
+        }
     }
 
     return (
@@ -39,43 +33,43 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
             <View style={styles.dotcontainer}>
-                <DotOrChar pin={false}></DotOrChar>
-                <DotOrChar pin={false}></DotOrChar>
-                <DotOrChar pin={false}></DotOrChar>
-                <DotOrChar pin={false}></DotOrChar>
-                <DotOrChar pin={false}></DotOrChar>
+                <DotOrChar pinIndex={0} pin={pin}></DotOrChar>
+                <DotOrChar pinIndex={1} pin={pin}></DotOrChar>
+                <DotOrChar pinIndex={2} pin={pin}></DotOrChar>
+                <DotOrChar pinIndex={3} pin={pin}></DotOrChar>
+                <DotOrChar pinIndex={4} pin={pin}></DotOrChar>
             </View>
             <View style={styles.grid}>
-                <TouchableOpacity onPress={() => onNumberPress('1')} style={styles.gridItem}>
-                    <Text style={styles.gridItem}>1</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('1')}>
+                    <Text style={styles.text}>1</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('2')} style={styles.gridItem}>
-                    <Text style={styles.gridItem}>2</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('2')}>
+                    <Text style={styles.text}>2</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('2')}>
-                    <Text style={styles.gridItem}>3</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('2')}>
+                    <Text style={styles.text}>3</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('4')}>
-                    <Text style={styles.gridItem}>4</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('4')}>
+                    <Text style={styles.text}>4</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('5')}>
-                    <Text style={styles.gridItem}>5</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('5')}>
+                    <Text style={styles.text}>5</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('6')}>
-                    <Text style={styles.gridItem}>6</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('6')}>
+                    <Text style={styles.text}>6</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('7')}>
-                    <Text style={styles.gridItem}>7</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('7')}>
+                    <Text style={styles.text}>7</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('8')}>
-                    <Text style={styles.gridItem}>8</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('8')}>
+                    <Text style={styles.text}>8</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onNumberPress('9')}>
-                    <Text style={styles.gridItem}>9</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('9')}>
+                    <Text style={styles.text}>9</Text>
                 </TouchableOpacity>
                 <Text style={styles.gridItem}></Text>
-                <TouchableOpacity onPress={() => onNumberPress('0')}>
-                    <Text style={styles.gridItem}>0</Text>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('0')}>
+                    <Text style={styles.text}>0</Text>
                 </TouchableOpacity>
                 <Text style={styles.gridItem}></Text>
             </View>
@@ -92,6 +86,22 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
 }
 
 const styles = StyleSheet.create({
+    text: {
+        fontSize: 35,
+        // Color: '#000000',
+        textAlign: 'center',
+        alignSelf: 'center',
+    },
+    dotText: {
+        padding: 10,
+        fontSize: 35,
+        // Color: '#000000',
+        textAlign: 'center',
+        alignContent: 'center',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
     dotcontainer: {
         alignContent: 'center',
         alignSelf: 'center',
@@ -102,10 +112,6 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         width: '33%',
         height: 90,
-        fontSize: 35,
-        // Color: '#000000',
-        textAlign: 'center',
-        alignSelf: 'center',
         justifyContent: 'center',
         alignContent: 'center',
     },
