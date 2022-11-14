@@ -22,10 +22,9 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
         if (props.pin.length >= props.pinIndex + 1) {
             return <Text style={styles.dotText}>{props.pin[props.pinIndex]}</Text>;
         } else {
-            return <DotsContainer></DotsContainer>;
+            return <View style={styles.dot}></View>;
         }
     }
-
     return (
         <View style={styles.head}>
             <Text style={styles.header}>
@@ -152,6 +151,15 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         alignSelf: 'center',
         width: '90%',
+        backgroundColor: theme.colors.disabled,
+    },
+    dot: {
+        margin: 10,
+        marginTop: 20,
+        marginBottom: 20,
+        height: 20,
+        width: 20,
+        borderRadius: 1000,
         backgroundColor: theme.colors.disabled,
     },
 });
