@@ -47,29 +47,29 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                 <TouchableOpacity onPress={() => onNumberPress('2')} style={styles.gridItem}>
                     <Text style={styles.gridItem}>2</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('2')}>
                     <Text style={styles.gridItem}>3</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('4')}>
                     <Text style={styles.gridItem}>4</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('5')}>
                     <Text style={styles.gridItem}>5</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('6')}>
                     <Text style={styles.gridItem}>6</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('7')}>
                     <Text style={styles.gridItem}>7</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('8')}>
                     <Text style={styles.gridItem}>8</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('9')}>
                     <Text style={styles.gridItem}>9</Text>
                 </TouchableOpacity>
                 <Text style={styles.gridItem}></Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onNumberPress('0')}>
                     <Text style={styles.gridItem}>0</Text>
                 </TouchableOpacity>
                 <Text style={styles.gridItem}></Text>
