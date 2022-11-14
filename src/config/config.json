@@ -3,14 +3,23 @@
     "theme": {
         "primaryColor": "#6200ee",
         "secondaryColor": "#03dac4",
-        "tertiaryColor": "#ffffff"
+        "tertiaryColor": "white"
     },
+    "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
     "appName": "Tonomy ID Development",
+    "ecosystemName": "Tonomy Development",
     "appSlogan": "Building ecosystems of trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
         "logo48": "./src/assets/tonomy/tonomy-logo48.png",
         "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+    },
+    "links": {
+        "usernameLearnMore": "#",
+        "passwordLearnMore": "#",
+        "privacyLearnMore": "#",
+        "transarencyLearnMore": "#",
+        "securityLearnMore": "#"
     },
     "expoProjectId": "18ee7c2e-dba4-4c3d-8bd1-712e0c19b901",
     "accountSuffix": ".dev.tonomy.id"
