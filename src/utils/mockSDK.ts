@@ -1,6 +1,6 @@
 import { Checksum256, Name } from '@greymass/eosio';
 import { PushTransactionResponse } from '@greymass/eosio/src/api/v1/types';
-import { GetAccountTonomyIDInfoResponse, KeyManager, User as TUser } from 'tonomy-id-sdk';
+import { GetPersonResponse, KeyManager, User as TUser } from 'tonomy-id-sdk';
 function initialize(storage: any, keymanger: any, settings: any) {
     return new User(storage, keymanger, settings);
 }
@@ -47,7 +47,7 @@ class User implements TUser {
     async updateKeys(password: string): Promise<void> {
         return;
     }
-    async login(username: string, password: string): Promise<GetAccountTonomyIDInfoResponse> {
+    async login(username: string, password: string): Promise<GetPersonResponse> {
         return {
             account_name: Name.from('jack123'),
             type: 1,
