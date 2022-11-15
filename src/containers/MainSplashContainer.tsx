@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image, ImageSourcePropType } from 'react-native';
 import theme from '../utils/theme';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import useUserStore from '../store/userStore';
 
 type MainSplashScreenContainerProps = {
     imageSource: ImageSourcePropType;
@@ -12,9 +13,14 @@ export default function MainSplashScreenContainer(
     { navigation }: { navigation: NavigationProp<any> }
 ) {
     const navi = useNavigation();
+    const user = useUserStore();
     useEffect(() => {
         setTimeout(() => {
-            navi.navigate('securitySplash');
+            {user.isLoggedIn() && false ? (
+                navi.navigate('securitySplash');
+            ) : (
+                navi.navigate('home');
+            )}
         }, 300);
     }, [navigation]);
     return (
