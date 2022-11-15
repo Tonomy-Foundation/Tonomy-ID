@@ -6,7 +6,7 @@ import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
+import { randomString, SdkError, SdkErrors } from 'tonomy-id-sdk';
 import theme from '../utils/theme';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
@@ -29,7 +29,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         try {
             await user.saveUsername(username, settings.config.accountSuffix);
         } catch (e) {
-            if (e instanceof ExpectedSdkError && e.code === 'TSDK1000') {
+            if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
                 setLoading(false);
                 return;

@@ -7,7 +7,7 @@ import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import { ExpectedSdkError } from 'tonomy-id-sdk';
+import { SdkError, SdkErrors } from 'tonomy-id-sdk';
 import theme from '../utils/theme';
 import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
@@ -41,7 +41,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             );
         } catch (e) {
             // TODO catch password errors as well
-            if (e instanceof ExpectedSdkError && e.code === 'TSDK1001') {
+            if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setShowUsernameErrorModal(true);
                 setLoading(false);
                 return;
