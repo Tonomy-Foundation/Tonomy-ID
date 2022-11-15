@@ -8,21 +8,16 @@ type MainSplashScreenContainerProps = {
     imageSource: ImageSourcePropType;
 };
 
-export default function MainSplashScreenContainer(
-    props: MainSplashScreenContainerProps,
-    { navigation }: { navigation: NavigationProp<any> }
-) {
-    const navi = useNavigation();
+export default function MainSplashScreenContainer(props: MainSplashScreenContainerProps, { navigation }) {
     const user = useUserStore();
     useEffect(() => {
         setTimeout(() => {
-            {user.isLoggedIn() && false ? (
-                navi.navigate('securitySplash');
-            ) : (
-                navi.navigate('home');
-            )}
+            user.isLoggedIn().then((res) => {
+                const page = res ? 'home' : 'securitySplash';
+                navigation.navigate(page);
+            });
         }, 300);
-    }, [navigation]);
+    }, []);
     return (
         <View>
             <Image style={styles.mainlogo} source={props.imageSource}></Image>
