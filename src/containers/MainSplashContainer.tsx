@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image, ImageSourcePropType } from 'react-native';
 import theme from '../utils/theme';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 type MainSplashScreenContainerProps = {
     imageSource: ImageSourcePropType;
 };
 
-export default function MainSplashScreenContainer(props: MainSplashScreenContainerProps) {
+export default function MainSplashScreenContainer(
+    props: MainSplashScreenContainerProps,
+    { navigation }: { navigation: NavigationProp<any> }
+) {
+    const navi = useNavigation();
+    useEffect(() => {
+        setTimeout(() => {
+            navi.navigate('securitySplash');
+        }, 300);
+    }, [navigation]);
     return (
         <View>
             <Image style={styles.mainlogo} source={props.imageSource}></Image>
