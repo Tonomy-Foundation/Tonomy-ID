@@ -10,6 +10,7 @@ import { randomString, ExpectedSdkError } from 'tonomy-id-sdk';
 import theme from '../utils/theme';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
+import LayoutComponent from '../components/layout';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
@@ -44,8 +45,8 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
     }
 
     return (
-        <View style={layoutStyles.container}>
-            <View style={layoutStyles.body}>
+        <LayoutComponent
+            body={
                 <View>
                     <TH1>Create your username</TH1>
 
@@ -53,7 +54,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                         align="left"
                         icon="security"
                         description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
-                        Foundation can see it."
+                         Foundation can see it."
                         linkUrl={settings.config.links.securityLearnMore}
                         linkUrlText="Learn more"
                     />
@@ -66,47 +67,38 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                         label="Username"
                     />
                 </View>
+            }
+            footerHint={
                 <View style={styles.changeUsername}>
                     <Text style={styles.greyText}>You can always change your username later</Text>
                 </View>
-            </View>
-
-            <View style={layoutStyles.bottom}>
-                <View style={styles.button}>
-                    <TButton
-                        onPress={onNext}
-                        mode="contained"
-                        disabled={username.length === 0 || loading}
-                        loading={loading}
-                    >
-                        Next
-                    </TButton>
+            }
+            footer={
+                <View>
+                    <View style={styles.button}>
+                        <TButton
+                            onPress={onNext}
+                            mode="contained"
+                            disabled={username.length === 0 || loading}
+                            loading={loading}
+                        >
+                            Next
+                        </TButton>
+                    </View>
+                    <View style={styles.centeredText}>
+                        <Text style={styles.bottomMessage}>
+                            Already have an account?
+                            <TLink href="login">Login</TLink>
+                        </Text>
+                    </View>
                 </View>
-                <View style={styles.centeredText}>
-                    <Text style={styles.bottomMessage}>
-                        Already have an account? <TLink href="login">Login</TLink>
-                    </Text>
-                </View>
-            </View>
-        </View>
+            }
+        ></LayoutComponent>
     );
 }
 
-const layoutStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingVertical: 40,
-    },
-    body: { flex: 4 },
-    bottom: { flex: 1 },
-});
-
 const styles = StyleSheet.create({
     button: {
-        marginTop: 24,
         marginBottom: 16,
     },
     centeredText: {
@@ -114,7 +106,7 @@ const styles = StyleSheet.create({
     },
     changeUsername: {
         alignItems: 'center',
-        marginTop: 40,
+        marginBottom: 16,
     },
     greyText: {
         color: theme.colors.disabled,

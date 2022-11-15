@@ -2,20 +2,34 @@ import React from 'react';
 import TButton from '../components/Tbutton';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
+import LayoutComponent from '../components/layout';
 
 export default function HomeScreen({ navigation }: { navigation: NavigationProp<any> }) {
     return (
-        <View style={styles.container}>
-            <Text>test Page </Text>
-            <TButton onPress={() => navigation.navigate('home')}>Go to Home</TButton>
-        </View>
+        <LayoutComponent
+            body={
+                <View>
+                    <Text>Header</Text>
+                    <Text>Body</Text>
+                    <Text>Footer</Text>
+                    <Text>Header</Text>
+                    <Text>Body</Text>
+                    <Text>Footer</Text>
+                    <Text>Header</Text>
+                    <Text>Body</Text>
+                    <Text>Footer</Text>
+                    <Text>Header</Text>
+                    <Text>Body</Text>
+                    <Text>Footer</Text>
+                </View>
+            }
+            footerHint={<Text>Header</Text>}
+            footer={
+                <View>
+                    <TButton mode="contained">test</TButton>
+                    <Text></Text>
+                </View>
+            }
+        ></LayoutComponent>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
