@@ -4,11 +4,7 @@ import theme from '../utils/theme';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 
-type MainSplashScreenContainerProps = {
-    imageSource: ImageSourcePropType;
-};
-
-export default function MainSplashScreenContainer(props: MainSplashScreenContainerProps, { navigation }) {
+export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const user = useUserStore();
     useEffect(() => {
         setTimeout(() => {
@@ -16,11 +12,11 @@ export default function MainSplashScreenContainer(props: MainSplashScreenContain
                 const page = res ? 'home' : 'securitySplash';
                 navigation.navigate(page);
             });
-        }, 300);
+        }, 500);
     }, []);
     return (
         <View>
-            <Image style={styles.mainlogo} source={props.imageSource}></Image>
+            <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
             <Image style={styles.tonomylogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
             <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
         </View>
