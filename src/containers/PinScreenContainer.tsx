@@ -31,6 +31,7 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                 <TH1>Add a PIN</TH1>
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
+            {/* TODO separate component for all of this */}
             <View style={styles.dotcontainer}>
                 <DotOrChar pinIndex={0} pin={pin}></DotOrChar>
                 <DotOrChar pinIndex={1} pin={pin}></DotOrChar>
@@ -69,11 +70,16 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                 <Text style={styles.gridItem}></Text>
                 <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('0')}>
                     <Text style={styles.text}>0</Text>
+                    {/* TODO justifycontent center instead of two empty spaces */}
                 </TouchableOpacity>
                 <Text style={styles.gridItem}></Text>
             </View>
             <View style={styles.buttonwrapper}>
-                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.nextbutton}>
+                <TButton
+                    disabled={pin.length > 4}
+                    onPress={() => navigation.navigate('fingerprint')}
+                    style={styles.nextbutton}
+                >
                     Next
                 </TButton>
                 <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipbutton}>
