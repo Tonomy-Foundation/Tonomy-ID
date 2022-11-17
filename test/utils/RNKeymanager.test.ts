@@ -1,7 +1,6 @@
 import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey } from '@greymass/eosio';
 import { KeyManagerLevel, randomBytes, encodeHex } from 'tonomy-id-sdk';
 import RNKeyManager from '../../src/utils/RNKeyManager';
-import * as argon2 from 'react-native-argon2';
 import arg from 'argon2';
 
 const mockarg = arg;
