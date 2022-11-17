@@ -2,6 +2,7 @@ import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey } from '@greymass/eo
 import { KeyManagerLevel, randomBytes, encodeHex } from 'tonomy-id-sdk';
 import RNKeyManager from '../../src/utils/RNKeyManager';
 import arg from 'argon2';
+const x = 0;
 
 const mockarg = arg;
 
