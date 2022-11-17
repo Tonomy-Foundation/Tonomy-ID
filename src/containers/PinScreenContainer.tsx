@@ -7,13 +7,17 @@ import { NavigationProp } from '@react-navigation/native';
 import TPin from '../components/TPin';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
+    const [pin, setPin] = useState('');
+    const handlePin = (p: string) => {
+        setPin(p);
+    };
     return (
         <View style={styles.head}>
             <Text style={styles.header}>
                 <TH1>Add a PIN</TH1>
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
-            <TPin></TPin>
+            <TPin onPin={handlePin}></TPin>
             <View style={styles.buttonwrapper}>
                 <TButton
                     disabled={pin.length > 4}

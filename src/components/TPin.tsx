@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import theme from '../utils/theme';
 
-export default function TPin() {
+export default function TPin(props: { onPin: (pin: string) => void }) {
     const [pin, setPin] = useState('');
+    useEffect(() => {
+        props.onPin(pin);
+    }, [pin]);
     function onNumberPress(num: string) {
         setPin(function (pin) {
             if (pin.length === 5) {
