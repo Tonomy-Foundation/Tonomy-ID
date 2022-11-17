@@ -70,6 +70,7 @@ export default function MainNavigation() {
                             component={CreateAccountPasswordScreen}
                         />
                         <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
+                        <Stack.Screen name="test" component={TestScreen} />
                     </>
                 )}
             </Stack.Navigator>
