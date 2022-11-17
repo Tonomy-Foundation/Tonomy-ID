@@ -5,6 +5,7 @@ import HomeScreen from '../screens/homeScreen';
 import TestScreen from '../screens/testScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import CreateAccountPasswordScreen from '../screens/CreateAccountPasswordScreen';
+import MainSplashScreen from '../screens/MainSplashScreen';
 import SplashSecurityScreen from '../screens/SplashSecurityScreen';
 import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
@@ -33,7 +34,7 @@ export default function MainNavigation() {
     const user = useUserStore();
     return (
         <NavigationContainer theme={theme}>
-            <Stack.Navigator initialRouteName="securitySplash" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>
                 {/* TODO: fix user.isLoggedIn() always returns true */}
                 {user.isLoggedIn() && false ? (
                     <>
@@ -42,6 +43,7 @@ export default function MainNavigation() {
                 ) : (
                     <>
                         <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
+                        <Stack.Screen name="mainSplash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                         <Stack.Screen
                             name="securitySplash"
                             options={noHeaderScreenOptions}
