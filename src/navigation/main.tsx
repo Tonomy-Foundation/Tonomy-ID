@@ -12,7 +12,6 @@ import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 import theme, { customColors } from '../utils/theme';
-import WelcomeSplashScreen from '../screens/WelcomeSplashScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,7 +70,6 @@ export default function MainNavigation() {
                             component={CreateAccountPasswordScreen}
                         />
                         <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
-                        <Stack.Screen name="welcomeSplash" component={WelcomeSplashScreen} />
                     </>
                 )}
             </Stack.Navigator>
