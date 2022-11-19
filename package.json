@@ -6,7 +6,7 @@
     "build:ios:create": "eas device:create",
     "build:ios": "npm run build:prepare && eas build --clear-cache --profile development --platform ios",
     "build:android": "npm run build:prepare && eas build --clear-cache --profile development --platform android",
-    "start": "npm run build:prepare && expo start --dev-client --clear",
+    "start": "npm run build:prepare && expo start --dev-client --clear -c",
     "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
@@ -15,6 +15,7 @@
   "dependencies": {
     "@greymass/eosio": "^0.6.4",
     "@react-native-async-storage/async-storage": "~1.17.3",
+    "@react-navigation/drawer": "^6.5.0",
     "@react-navigation/native": "^6.0.12",
     "@react-navigation/native-stack": "^6.8.0",
     "expo": "~45.0.0",
@@ -33,7 +34,9 @@
     "react-native-screens": "~3.11.1",
     "react-native-svg": "12.3.0",
     "react-native-web": "0.17.7",
-    "zustand": "^4.1.1"
+    "zustand": "^4.1.1",
+    "react-native-gesture-handler": "~2.2.1",
+    "react-native-reanimated": "~2.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

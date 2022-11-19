@@ -23,7 +23,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                     >
                         Create Account
                     </TButton>
-                    <TButton mode="contained" onPress={() => navigation.navigate('test')}>
+                    <TButton mode="contained" onPress={() => navigation.navigate('main')}>
                         Login
                     </TButton>
                 </View>

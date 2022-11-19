@@ -12,7 +12,8 @@ import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 import theme, { customColors } from '../utils/theme';
-
+import DrawerNavigation from './drawer';
+import settings from '../settings';
 const Stack = createNativeStackNavigator();
 
 // https://reactnavigation.org/docs/native-stack-navigator/#options
@@ -42,6 +43,11 @@ export default function MainNavigation() {
                     </>
                 ) : (
                     <>
+                        <Stack.Screen
+                            name="main"
+                            component={DrawerNavigation}
+                            options={{ headerShown: false, title: settings.config.appName }}
+                        />
                         <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen name="mainSplash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                         <Stack.Screen
@@ -70,7 +76,6 @@ export default function MainNavigation() {
                             component={CreateAccountPasswordScreen}
                         />
                         <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
-                        <Stack.Screen name="test" component={TestScreen} />
                     </>
                 )}
             </Stack.Navigator>
