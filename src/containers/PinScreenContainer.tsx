@@ -5,6 +5,7 @@ import { TH1 } from '../components/THeadings';
 import theme from '../utils/theme';
 import { NavigationProp } from '@react-navigation/native';
 import TPin from '../components/TPin';
+import settings from '../settings';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [pin, setPin] = useState('');
@@ -19,15 +20,15 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
             <TPin onPin={handlePin}></TPin>
             <View style={styles.buttonwrapper}>
+                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipbutton}>
+                    Skip
+                </TButton>
                 <TButton
-                    disabled={pin.length > 4}
+                    disabled={pin.length < 5}
                     onPress={() => navigation.navigate('fingerprint')}
                     style={styles.nextbutton}
                 >
                     Next
-                </TButton>
-                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipbutton}>
-                    Skip
                 </TButton>
             </View>
         </View>
@@ -96,21 +97,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         alignSelf: 'center',
         width: '90%',
+        backgroundColor: settings.config.theme.primaryColor,
     },
     nextbutton: {
         marginBottom: 10,
         alignSelf: 'center',
         width: '90%',
-        backgroundColor: theme.colors.disabled,
-    },
-    dot: {
-        margin: 10,
-        marginTop: 20,
-        marginBottom: 20,
-        height: 20,
-        width: 20,
-        borderRadius: 1000,
-        backgroundColor: theme.colors.disabled,
+        backgroundColor: settings.config.theme.primaryColor,
     },
 });
 function foreach(loop: number) {
