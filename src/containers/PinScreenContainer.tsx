@@ -36,41 +36,6 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
 }
 
 const styles = StyleSheet.create({
-    text: {
-        fontSize: 35,
-        // Color: '#000000',
-        textAlign: 'center',
-        alignSelf: 'center',
-    },
-    dotText: {
-        padding: 10,
-        fontSize: 35,
-        // Color: '#000000',
-        textAlign: 'center',
-        alignContent: 'center',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    dotcontainer: {
-        alignContent: 'center',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    gridItem: {
-        paddingTop: 20,
-        width: '33%',
-        height: 90,
-        justifyContent: 'center',
-        alignContent: 'center',
-    },
-    grid: {
-        alignSelf: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: '90%',
-    },
     head: {
         flex: 1,
         display: 'flex',
