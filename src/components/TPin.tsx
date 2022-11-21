@@ -17,9 +17,9 @@ export default function TPin(props: { onPin: (pin: string) => void }) {
             }
         });
     }
-    function DotOrChar(props: any) {
-        if (props.pin.length >= props.pinIndex + 1) {
-            return <Text style={styles.dotText}>{props.pin[props.pinIndex]}</Text>;
+    function DotOrChar(props: { char: string | null }) {
+        if (props.char) {
+            return <Text style={styles.dotText}>{props.char}</Text>;
         } else {
             return <View style={styles.dot}></View>;
         }
@@ -27,11 +27,11 @@ export default function TPin(props: { onPin: (pin: string) => void }) {
     return (
         <>
             <View style={styles.dotcontainer}>
-                <DotOrChar pinIndex={0} pin={pin}></DotOrChar>
-                <DotOrChar pinIndex={1} pin={pin}></DotOrChar>
-                <DotOrChar pinIndex={2} pin={pin}></DotOrChar>
-                <DotOrChar pinIndex={3} pin={pin}></DotOrChar>
-                <DotOrChar pinIndex={4} pin={pin}></DotOrChar>
+                <DotOrChar char={pin.length > 0 ? pin[0] : null}></DotOrChar>
+                <DotOrChar char={pin.length > 1 ? pin[1] : null}></DotOrChar>
+                <DotOrChar char={pin.length > 2 ? pin[2] : null}></DotOrChar>
+                <DotOrChar char={pin.length > 3 ? pin[3] : null}></DotOrChar>
+                <DotOrChar char={pin.length > 4 ? pin[4] : null}></DotOrChar>
             </View>
             <View style={styles.grid}>
                 <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('1')}>
