@@ -61,12 +61,9 @@ export default function TPin(props: { onPin: (pin: string) => void }) {
                 <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('9')}>
                     <Text style={styles.text}>9</Text>
                 </TouchableOpacity>
-                <Text style={styles.gridItem}></Text>
-                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('0')}>
+                <TouchableOpacity style={styles.gridItemZero} onPress={() => onNumberPress('0')}>
                     <Text style={styles.text}>0</Text>
-                    {/* TODO justifycontent center instead of two empty spaces */}
                 </TouchableOpacity>
-                <Text style={styles.gridItem}></Text>
             </View>
         </>
     );
@@ -97,6 +94,15 @@ const styles = StyleSheet.create({
     },
     gridItem: {
         paddingTop: 20,
+        width: '33%',
+        height: 90,
+        justifyContent: 'center',
+        alignContent: 'center',
+    },
+    gridItemZero: {
+        paddingTop: 20,
+        marginLeft: '33%',
+        marginRight: '33%',
         width: '33%',
         height: 90,
         justifyContent: 'center',
