@@ -78,7 +78,9 @@ const styles = StyleSheet.create({
     },
     header: {
         marginTop: 20,
-        textAlign: 'center',
+        paddingLeft: '8%',
+        textAlign: 'left',
+        alignSelf: 'flex-start',
         fontFamily: 'Roboto',
         fontStyle: 'normal',
         fontWeight: '800',
@@ -86,8 +88,9 @@ const styles = StyleSheet.create({
     },
     headdescription: {
         marginTop: 7,
-        textAlign: 'center',
-        alignSelf: 'center',
+        paddingLeft: '8%',
+        textAlign: 'left',
+        alignSelf: 'flex-start',
         color: theme.colors.disabled,
     },
     buttonwrapper: {
