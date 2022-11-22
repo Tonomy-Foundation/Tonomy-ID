@@ -13,12 +13,12 @@ export default function CreateAccountContainer() {
                 <TH1 style={styles.headertext}>Would you like to add a fingerprint for added security?</TH1>
             </View>
             <View>
-                <Text style={styles.description}>This is easier than using your PIN every time</Text>
+                <Text style={styles.description}>This is easier than using your PIN every time.</Text>
             </View>
             <View style={styles.imagewrapper}>
                 <Image style={styles.image} source={require('../assets/images/fingerprint.png')}></Image>
             </View>
-            <View>
+            <View style={styles.buttonwrapper}>
                 <TButton style={styles.button} mode="contained">
                     Next
                 </TButton>
@@ -33,10 +33,17 @@ export default function CreateAccountContainer() {
 }
 
 const styles = StyleSheet.create({
+    buttonwrapper: {
+        paddingTop: 20,
+    },
     button: {
-        width: 90,
+        margin: 10,
+        alignSelf: 'center',
+        width: '90%',
     },
     image: {
+        marginTop: 50,
+        alignSelf: 'center',
         width: 200,
         height: 200,
     },
@@ -47,12 +54,18 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 18,
         marginTop: 7,
-        textAlign: 'left',
+        textAlign: 'center',
+        alignSelf: 'center',
         color: theme.colors.disabled,
     },
     headertext: {
-        fontSize: 35,
+        fontSize: 30,
+        marginTop: 20,
+        paddingLeft: 20,
         textAlign: 'left',
+        fontFamily: 'Roboto',
+        fontStyle: 'normal',
+        fontWeight: '800',
     },
     container: {
         flex: 1,
