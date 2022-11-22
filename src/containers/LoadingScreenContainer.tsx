@@ -20,9 +20,7 @@ export default function LoadingScreenContainer(props: LoadingScreenProps) {
                 <Image source={props.tonomyLogoUrl}></Image>
             </View>
             <View>
-                <Text>
-                    Brought to you by Tonomy
-                </Text>
+                <Text>Brought to you by Tonomy</Text>
             </View>
         </View>
     );
@@ -31,5 +29,5 @@ export default function LoadingScreenContainer(props: LoadingScreenProps) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    }
-})
+    },
+});

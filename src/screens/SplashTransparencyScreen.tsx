@@ -2,8 +2,14 @@ import React from 'react';
 import SplashScreenContainer from '../containers/SplashContainer';
 import { NavigationProp } from '@react-navigation/native';
 import settings from '../settings';
+import Storage from '../utils/storage';
 
 export default function SplashTransparencyScreen({ navigation }: { navigation: NavigationProp<any> }) {
+    const storeKey = () => {
+        const storage = new Storage();
+        storage.store('newUser', true);
+        navigation.navigate('home');
+    };
     return (
         <SplashScreenContainer
             navigation={navigation}
@@ -15,7 +21,7 @@ export default function SplashTransparencyScreen({ navigation }: { navigation: N
             linkUrl={settings.config.links.transparencyLearnMore}
             linkUrlText="Learn More"
             buttonText="GET STARTED"
-            buttonOnPress={() => navigation.navigate('home')}
+            buttonOnPress={storeKey}
         ></SplashScreenContainer>
     );
 }
