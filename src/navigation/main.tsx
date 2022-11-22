@@ -35,7 +35,7 @@ export default function MainNavigation() {
     const user = useUserStore();
     return (
         <NavigationContainer theme={theme}>
-            <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="fingerprint" screenOptions={defaultScreenOptions}>
                 {/* TODO: fix user.isLoggedIn() always returns true */}
                 {user.isLoggedIn() && false ? (
                     <>
