@@ -16,7 +16,7 @@
     "rules": {
         "eqeqeq": "error",
         "no-console": "warn",
-        "indent": ["error", 4],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
         "camelcase": "error",
         "prettier/prettier": "error",
         "react/display-name": "off",

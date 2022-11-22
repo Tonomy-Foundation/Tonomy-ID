@@ -3,8 +3,9 @@
   "compilerOptions": {
     "jsx": "react",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
   },
   "esModuleInterop": true,
   "allowJs": true,
+ 
 }
