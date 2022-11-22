@@ -72,14 +72,12 @@ export default function TPin(props: { onPin: (pin: string) => void }) {
 const styles = StyleSheet.create({
     text: {
         fontSize: 35,
-        // Color: '#000000',
         textAlign: 'center',
         alignSelf: 'center',
     },
     dotText: {
         padding: 10,
         fontSize: 35,
-        // Color: '#000000',
         textAlign: 'center',
         alignContent: 'center',
         alignSelf: 'center',
