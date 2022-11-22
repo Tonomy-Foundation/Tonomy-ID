@@ -5,6 +5,7 @@ import TButton from '../components/Tbutton';
 import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import theme from '../utils/theme';
+import FingerprintIcon from '../assets/icons/FingerprintIcon';
 
 export default function CreateAccountContainer() {
     return (
@@ -16,7 +17,7 @@ export default function CreateAccountContainer() {
                 <Text style={styles.description}>This is easier than using your PIN every time.</Text>
             </View>
             <View style={styles.imagewrapper}>
-                <Image style={styles.image} source={require('../assets/images/fingerprint.png')}></Image>
+                <FingerprintIcon style={styles.image}></FingerprintIcon>
             </View>
             <View style={styles.buttonwrapper}>
                 <TButton style={styles.button} mode="contained">
@@ -43,6 +44,7 @@ const styles = StyleSheet.create({
     },
     image: {
         marginTop: 50,
+        marginBottom: 30,
         alignSelf: 'center',
         width: 200,
         height: 200,
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
     },
     headertext: {
         fontSize: 30,
-        marginTop: 20,
+        marginTop: 40,
         paddingLeft: 20,
         textAlign: 'left',
         fontFamily: 'Roboto',
