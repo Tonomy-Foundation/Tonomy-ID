@@ -9,16 +9,13 @@ import settings from '../settings';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [pin, setPin] = useState('');
-    const handlePin = (p: string) => {
-        setPin(p);
-    };
     return (
         <View style={styles.head}>
             <Text style={styles.header}>
                 <TH1>Add a PIN</TH1>
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
-            <TPin onPin={handlePin}></TPin>
+            <TPin onPin={setPin}></TPin>
             <View style={styles.buttonwrapper}>
                 <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipbutton}>
                     Skip
