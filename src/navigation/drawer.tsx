@@ -12,8 +12,9 @@ export default function DrawerNavigation() {
     return (
         <Drawer.Navigator drawerContent={(props) => <CustomDrawer {...props} />} initialRouteName="t">
             <Drawer.Screen name="t" component={HomeScreen} />
-            <Drawer.Screen name="menu" component={MenuScreen} />
-            <Drawer.Screen name="createAccountUsername" component={CreateAccountUsernameScreen} />
+            <Drawer.Screen name="settings" component={HomeScreen} />
+            <Drawer.Screen name="help" component={HomeScreen} options={{ title: 'Help and Info' }} />
+            <Drawer.Screen name="logout" component={HomeScreen} />
         </Drawer.Navigator>
     );
 }

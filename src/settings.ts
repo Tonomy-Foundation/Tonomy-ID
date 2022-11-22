@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 const env = process.env.NODE_ENV || 'development';
 type ConfigType = {
     blockchainUrl: string;
@@ -10,9 +12,9 @@ type ConfigType = {
     ecosystemName: string;
     appSlogan: string;
     images: {
-        splash: string;
-        logo48: string;
-        logo1024: string;
+        splash: ImageSourcePropType;
+        logo48: ImageSourcePropType;
+        logo1024: ImageSourcePropType;
     };
     links: {
         usernameLearnMore: string;
@@ -42,7 +44,12 @@ const settings: SettingsType = {
 switch (env) {
     case 'development':
         config = require('./config/config.json');
+        // TODO find a better way switch images
+        config.images.logo1024 = require('./assets/tonomy/tonomy-logo1024.png');
+        config.images.logo48 = require('./assets/tonomy/tonomy-logo48.png');
+        config.images.splash = require('./assets/tonomy/tonomy-splash.png');
         sdk = require('tonomy-id-sdk');
+
         break;
     case 'staging':
         config = require('./config/config.staging.json');
@@ -56,6 +63,9 @@ switch (env) {
     case 'designonly':
         config = require('./config/config.json');
         sdk = require('./utils/mockSDK');
+        config.images.logo1024 = require('./assets/tonomy/tonomy-logo1024.png');
+        config.images.logo48 = require('./assets/tonomy/tonomy-logo48.png');
+        config.images.splash = require('./assets/tonomy/tonomy-splash.png');
         break;
 
     default:
