@@ -35,7 +35,7 @@ export default function MainNavigation() {
     const user = useUserStore();
     return (
         <NavigationContainer theme={theme}>
-            <Stack.Navigator initialRouteName="fingerprint" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>
                 {/* TODO: fix user.isLoggedIn() always returns true */}
                 {user.isLoggedIn() && false ? (
                     <>
@@ -70,7 +70,7 @@ export default function MainNavigation() {
                             options={{ ...defaultScreenOptions, title: 'Create New Account' }}
                             component={CreateAccountPasswordScreen}
                         />
-                        <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
+                        <Stack.Screen name="Fingerprint Registration" component={FingerprintUpdateScreen} />
                         <Stack.Screen name="pin" component={PinScreen} />
                         <Stack.Screen name="test" component={TestScreen} />
                     </>
