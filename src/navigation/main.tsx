@@ -9,7 +9,6 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
-import { customColors } from '../utils/theme';
 import {
     NavigationContainer,
     DarkTheme as NavigationDarkTheme,
@@ -30,8 +29,8 @@ export default function MainNavigation() {
         ...NavigationDefaultTheme,
         colors: {
             ...NavigationDefaultTheme.colors,
-            card: theme.colors.primary,
             text: 'white',
+            background: theme.colors.background,
         },
     };
 
