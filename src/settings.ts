@@ -1,6 +1,8 @@
 import { ImageSourcePropType } from 'react-native';
 
 const env = process.env.NODE_ENV || 'development';
+console.log(`NODE_ENV=${env}`);
+
 type ConfigType = {
     blockchainUrl: string;
     theme: {
@@ -26,9 +28,6 @@ type ConfigType = {
     expoProjectId: string;
     accountSuffix: string;
 };
-let config: ConfigType;
-
-let sdk: any;
 
 type SettingsType = {
     env: string;
@@ -36,6 +35,9 @@ type SettingsType = {
     isProduction: () => boolean;
     sdk: any;
 };
+
+let config: ConfigType;
+let sdk: any;
 const settings: SettingsType = {
     env,
     isProduction: () => settings.env === 'production',
