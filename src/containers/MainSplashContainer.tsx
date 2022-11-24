@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image, ImageSourcePropType } from 'react-native';
 import theme from '../utils/theme';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, StackActions, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import Storage from '../utils/storage';
 
@@ -12,9 +12,10 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             const storage = new Storage();
             const value = await storage.retrieve('newUser');
             const page = value ? 'home' : 'securitySplash';
-            navigation.navigate(page);
+            // this will prevent use from going back to this screen after the user navigated
+            navigation.dispatch(StackActions.replace(page));
         }, 300);
-    });
+    }, []);
     return (
         <View>
             <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>

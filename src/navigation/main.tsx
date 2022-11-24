@@ -11,6 +11,9 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
+
+import DrawerNavigation from './drawer';
+import settings from '../settings';
 import {
     NavigationContainer,
     DarkTheme as NavigationDarkTheme,
@@ -48,7 +51,7 @@ export default function MainNavigation() {
     };
 
     const noHeaderScreenOptions = { headerShown: false };
-    const CombinedDefaultTheme = merge(theme, navigationTheme);
+    const CombinedDefaultTheme = merge(navigationTheme, theme);
     return (
         <NavigationContainer theme={CombinedDefaultTheme}>
             <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>
@@ -60,6 +63,12 @@ export default function MainNavigation() {
                 ) : (
                     <>
                         <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
+                        <Stack.Screen
+                            name="test"
+                            component={DrawerNavigation}
+                            options={{ headerShown: false, title: settings.config.appName }}
+                        />
+
                         <Stack.Screen name="mainSplash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                         <Stack.Screen
                             name="securitySplash"
@@ -88,7 +97,6 @@ export default function MainNavigation() {
                         />
                         <Stack.Screen name="Fingerprint Registration" component={FingerprintUpdateScreen} />
                         <Stack.Screen name="pin" component={PinScreen} />
-                        <Stack.Screen name="test" component={TestScreen} />
                     </>
                 )}
             </Stack.Navigator>

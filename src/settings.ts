@@ -1,5 +1,4 @@
 const env = process.env.NODE_ENV || 'development';
-console.log(`NODE_ENV=${env}`);
 
 type ConfigType = {
     blockchainUrl: string;
@@ -44,7 +43,9 @@ const settings: SettingsType = {
 switch (env) {
     case 'development':
         config = require('./config/config.json');
+        // TODO find a better way switch images
         sdk = require('tonomy-id-sdk');
+
         break;
     case 'staging':
         config = require('./config/config.staging.json');

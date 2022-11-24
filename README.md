@@ -26,25 +26,25 @@ Features:
 
 ## Pre-run build (first time and each time new RN only packages are installed)
 
+This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app.
+
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (optional for staging) Run `export NODE_ENV=staging` for staging
 3. Run `npm run build:prepare`
 4. (optional for first time) Remove the following lines from `app.json`
 
 ```json
-"extra": {
-    "eas": {
+    "extra": {
+      "eas": {
         "projectId": "afffe2ee-9f93-4d18-9361-df30429cbd98"
+      }
     }
-}
 ```
 
-For future runs, make sure the `projectId` matches the one in [https://expo.dev/](https://expo.dev/) website.
-
-5. (optional for IOS only) Run `npm run build:ios:create` to create a device profile for your phone (you need to connect to an Apple Developer account - we do not have one yet)
-6. Run `npm run build:ios` or `npm run build:android` to build the app for your phone
-7. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
-8. Install the created app on your phone
+4. (for IOS only) Run `eas device:create` to create a device profile for your phone
+5. Run `eas build --profile development --platform ios` (ios) or `eas build --profile development --platform android` (android) to build the app for your phone
+6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
+7. Install the created app on your phone
 
 ## File structure of componets
 
