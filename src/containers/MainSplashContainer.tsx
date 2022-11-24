@@ -11,8 +11,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         setTimeout(async () => {
             const storage = new Storage();
             const value = await storage.retrieve('newUser');
+            const page = value ? 'home' : 'securitySplash';
             // this will prevent use from going back to this screen after the user navigated
-            value ? navigation.dispatch(StackActions.replace('home')) : navigation.navigate('securitySplash');
+            navigation.dispatch(StackActions.replace(page));
         }, 300);
     }, []);
     return (
