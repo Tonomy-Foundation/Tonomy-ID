@@ -2,8 +2,7 @@ import React from 'react';
 import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigation/drawer';
 
 import HomeScreen from '../screens/testScreen';
-import MenuScreen from '../screens/MenuScreen';
-import CustomDrawer from '../components/customDrawer';
+import CustomDrawer from '../components/CustomDrawer';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import { useTheme } from 'react-native-paper';
 
