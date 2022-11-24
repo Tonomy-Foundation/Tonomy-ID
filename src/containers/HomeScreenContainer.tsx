@@ -1,9 +1,8 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { Image, StyleSheet, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
-import { Text, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import { TCaption, TH1, TH2, TP } from '../components/THeadings';
 import TLink from '../components/TA';

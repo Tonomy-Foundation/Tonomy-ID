@@ -62,12 +62,13 @@ export default function MainNavigation() {
                     </>
                 ) : (
                     <>
+                        <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen
                             name="test"
                             component={DrawerNavigation}
                             options={{ headerShown: false, title: settings.config.appName }}
                         />
-                        <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
+
                         <Stack.Screen name="mainSplash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                         <Stack.Screen
                             name="securitySplash"

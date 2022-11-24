@@ -1,7 +1,7 @@
 {
     "blockchainUrl": "http://localhost:8888",
     "theme": {
-        "primaryColor": "#6200ee",
+        "primaryColor": "#67D7ED",
         "secondaryColor": "#03dac4",
         "tertiaryColor": "white"
     },
