@@ -51,7 +51,7 @@ export default function MainNavigation() {
     };
 
     const noHeaderScreenOptions = { headerShown: false };
-    const CombinedDefaultTheme = merge(theme, navigationTheme);
+    const CombinedDefaultTheme = merge(navigationTheme, theme);
     return (
         <NavigationContainer theme={CombinedDefaultTheme}>
             <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>

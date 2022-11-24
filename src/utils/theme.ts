@@ -11,7 +11,7 @@ const theme: Theme = {
         primary: settings.config.theme.primaryColor,
         accent: settings.config.theme.secondaryColor,
         background: 'white',
-        text: '#BEBEBE',
+        text: '#949494',
     },
 };
 

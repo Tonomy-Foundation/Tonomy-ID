@@ -20,6 +20,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
         container: {
             padding: 20,
             backgroundColor: theme.colors.background,
+            // backgroundColor: 'red',
         },
         logo: {
             height: 100,
@@ -34,7 +35,6 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
         },
         button: {
             alignItems: 'flex-start',
-            minWidth: 1000,
         },
     });
 
@@ -49,6 +49,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                             key={key}
                             onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
                             icon={icons[value.route.name]}
+                            color={theme.colors.text}
                         >
                             {value.options.title || value.route.name}
                         </TButton>
