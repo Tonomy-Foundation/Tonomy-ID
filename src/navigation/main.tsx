@@ -63,7 +63,7 @@ export default function MainNavigation() {
                 ) : (
                     <>
                         <Stack.Screen
-                            name="main"
+                            name="test"
                             component={DrawerNavigation}
                             options={{ headerShown: false, title: settings.config.appName }}
                         />
@@ -96,7 +96,6 @@ export default function MainNavigation() {
                         />
                         <Stack.Screen name="Fingerprint Registration" component={FingerprintUpdateScreen} />
                         <Stack.Screen name="pin" component={PinScreen} />
-                        <Stack.Screen name="test" component={TestScreen} />
                     </>
                 )}
             </Stack.Navigator>

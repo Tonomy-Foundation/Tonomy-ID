@@ -13,6 +13,8 @@ const icons = {
     logout: 'logout',
 };
 export default function CustomDrawer(props: DrawerContentComponentProps) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const logo1024 = require('../assets/tonomy/tonomy-logo1024.png');
     const theme = useTheme();
     const styles = StyleSheet.create({
         container: {
@@ -38,7 +40,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
 
     return (
         <DrawerContentScrollView {...props} style={styles.container}>
-            <Image source={settings.config.images.logo1024} style={styles.logo}></Image>
+            <Image source={logo1024} style={styles.logo}></Image>
             <View style={styles.menu}>
                 {Object.entries(props.descriptors).map(([key, value]) => {
                     return (
