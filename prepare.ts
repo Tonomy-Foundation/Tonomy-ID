@@ -3,7 +3,6 @@ import settings from './src/settings';
 import app from './app.default.json';
 import currentApp from './app.json';
 import myPackage from './package.json';
-import appPersonal from './app.json';
 
 const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
 const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
