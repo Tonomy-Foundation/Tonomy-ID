@@ -49,10 +49,6 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
 }
 
 const styles = StyleSheet.create({
-    body: {
-        marginTop: 100,
-        alignItems: 'center',
-    },
     image: {
         marginTop: 50,
         alignSelf: 'center',
