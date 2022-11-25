@@ -33,6 +33,7 @@ global.onunhandledrejection = function (error) {
 
 enum ApplicationErrors {
     UsernameTaken = 'UsernameTaken',
+    NoKeyFound = 'NoKeyFound',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
