@@ -74,13 +74,15 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                     >
                         {confirming ? 'Confirm' : 'Next'}
                     </TButton>
-                    <TButton
-                        mode="outlined"
-                        onPress={() => navigation.navigate('fingerprint')}
-                        style={styles.marginBottom}
-                    >
-                        Skip
-                    </TButton>
+                    {pin.length > 0 && !confirming && (
+                        <TButton
+                            mode="outlined"
+                            onPress={() => navigation.navigate('fingerprint')}
+                            style={styles.marginBottom}
+                        >
+                            Skip
+                        </TButton>
+                    )}
                 </View>
             }
         />
