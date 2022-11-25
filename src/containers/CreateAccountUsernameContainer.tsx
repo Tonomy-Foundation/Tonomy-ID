@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import TLink from '../components/TA';
-import { TH1 } from '../components/THeadings';
+import { TCaption, TH1, TP } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from 'tonomy-id-sdk';
-import theme from '../utils/theme';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
@@ -69,13 +68,13 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 </View>
             }
             footerHint={
-                <View style={styles.changeUsername}>
-                    <Text style={styles.greyText}>You can always change your username later</Text>
+                <View style={[styles.centeredText, styles.marginBottom]}>
+                    <TCaption>You can always change your username later</TCaption>
                 </View>
             }
             footer={
                 <View>
-                    <View style={styles.button}>
+                    <View style={styles.marginBottom}>
                         <TButton
                             onPress={onNext}
                             mode="contained"
@@ -86,10 +85,9 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                         </TButton>
                     </View>
                     <View style={styles.centeredText}>
-                        <Text style={styles.bottomMessage}>
-                            Already have an account?
-                            <TLink href="login">Login</TLink>
-                        </Text>
+                        <TP size={1}>
+                            Already have an account? <TLink href="login">Login</TLink>
+                        </TP>
                     </View>
                 </View>
             }
@@ -98,21 +96,10 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
 }
 
 const styles = StyleSheet.create({
-    button: {
+    marginBottom: {
         marginBottom: 16,
     },
     centeredText: {
         alignItems: 'center',
-    },
-    changeUsername: {
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    greyText: {
-        color: theme.colors.disabled,
-    },
-    bottomMessage: {
-        color: theme.colors.disabled,
-        fontSize: 16,
     },
 });
