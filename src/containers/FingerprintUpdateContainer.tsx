@@ -13,13 +13,13 @@ export default function CreateAccountContainer() {
             body={
                 <View>
                     <View>
-                        <TH1 style={styles.headertext}>Would you like to add a fingerprint for added security?</TH1>
+                        <TH1 style={styles.headerText}>Would you like to add a fingerprint for added security?</TH1>
                     </View>
                     <View>
                         <Text style={styles.description}>This is easier than using your PIN every time.</Text>
                     </View>
                     <View style={styles.container}>
-                        <View style={styles.imagewrapper}>
+                        <View style={styles.imageWrapper}>
                             <FingerprintIcon style={styles.image}></FingerprintIcon>
                         </View>
                     </View>
@@ -35,7 +35,7 @@ export default function CreateAccountContainer() {
                     </TButton>
                 </View>
             }
-        ></LayoutComponent>
+        />
     );
 }
 
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
     },
-    imagewrapper: {
+    imageWrapper: {
         padding: 40,
         alignSelf: 'center',
     },
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
 
         color: theme.colors.disabled,
     },
-    headertext: {
+    headerText: {
         fontSize: 30,
         marginTop: 40,
         textAlign: 'left',
