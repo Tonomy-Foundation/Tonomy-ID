@@ -3,11 +3,13 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import theme from '../utils/theme';
 
-export default function TPin(props: { onPin: (pin: string) => void }) {
-    const [pin, setPin] = useState('');
+export default function TPin(props: { pin?: string; onChange: (pin: string) => void }) {
+    const [pin, setPin] = useState(props.pin ? props.pin : '');
+
     useEffect(() => {
-        props.onPin(pin);
+        props.onChange(pin);
     }, [pin]);
+
     function onNumberPress(num: string) {
         setPin(function (pin) {
             if (pin.length === 5) {
@@ -17,6 +19,7 @@ export default function TPin(props: { onPin: (pin: string) => void }) {
             }
         });
     }
+
     function DotOrChar(props: { char: string | null }) {
         if (props.char) {
             return <Text style={styles.dotText}>{props.char}</Text>;
@@ -24,6 +27,7 @@ export default function TPin(props: { onPin: (pin: string) => void }) {
             return <View style={styles.dot}></View>;
         }
     }
+
     return (
         <>
             <View style={styles.dotcontainer}>

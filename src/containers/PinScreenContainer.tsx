@@ -6,25 +6,62 @@ import theme from '../utils/theme';
 import { NavigationProp } from '@react-navigation/native';
 import TPin from '../components/TPin';
 import settings from '../settings';
+import useUserStore from '../store/userStore';
+import { HelperText } from 'react-native-paper';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
+    const [confirming, setConfirming] = useState(false);
+    const [disabled, setDisabled] = useState(true);
     const [pin, setPin] = useState('');
+    const [confirmPin, setConfirmPin] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const user = useUserStore().user;
+
+    function onPinChange(pin: string) {
+        setPin(pin);
+        setDisabled(pin.length < 5);
+        setErrorMessage('');
+    }
+
+    async function onNext() {
+        setLoading(true);
+        if (confirming) {
+            if (pin === confirmPin) {
+                await user.savePIN(pin);
+                navigation.navigate('fingerprint');
+            } else {
+                setErrorMessage('PINs do not match');
+                setPin('');
+                setConfirmPin('');
+                setConfirming(false);
+            }
+        } else {
+            setConfirmPin(pin);
+            setPin('');
+            setConfirming(true);
+        }
+        setLoading(false);
+    }
+
     return (
         <View style={styles.head}>
             <Text style={styles.header}>
-                <TH1>Add a PIN</TH1>
+                <TH1>{confirming ? 'Repeat your PIN' : 'Add a PIN'}</TH1>
             </Text>
             <Text style={styles.headdescription}>This helps keep your account secure</Text>
-            <TPin onPin={setPin}></TPin>
+            <View>
+                <HelperText type="error" visible={errorMessage !== ''}>
+                    {errorMessage}
+                </HelperText>
+            </View>
+            <TPin pin={pin} onChange={onPinChange}></TPin>
             <View style={styles.buttonwrapper}>
                 <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipbutton}>
                     Skip
                 </TButton>
-                <TButton
-                    disabled={pin.length < 5}
-                    onPress={() => navigation.navigate('fingerprint')}
-                    style={styles.nextbutton}
-                >
+                <TButton disabled={disabled} loading={loading} onPress={onNext} style={styles.nextbutton}>
                     Next
                 </TButton>
             </View>
