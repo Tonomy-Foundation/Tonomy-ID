@@ -26,7 +26,9 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
             body={
                 <View style={commonStyles.alignItemsCenter}>
                     <TH1 style={commonStyles.marginBottom}>{props.title}</TH1>
-                    <TP size={2}>{props.subtitle}</TP>
+                    <TP size={2} style={commonStyles.textAlignCenter}>
+                        {props.subtitle}
+                    </TP>
                     <Image style={styles.image} source={props.imageSource}></Image>
                     <TInfoBox
                         align="center"
