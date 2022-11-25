@@ -25,9 +25,3 @@ export default function LoadingScreenContainer(props: LoadingScreenProps) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-});

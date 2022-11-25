@@ -71,7 +71,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 </View>
             }
             footerHint={
-                <View style={[commonStyles.centeredText, commonStyles.marginBottom]}>
+                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
                     <TCaption>You can always change your username later</TCaption>
                 </View>
             }
@@ -87,13 +87,13 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                             Next
                         </TButton>
                     </View>
-                    <View style={commonStyles.centeredText}>
+                    <View style={commonStyles.alignItemsCenter}>
                         <TP size={1}>
                             Already have an account? <TLink href="login">Login</TLink>
                         </TP>
                     </View>
                 </View>
             }
-        ></LayoutComponent>
+        />
     );
 }

@@ -31,7 +31,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                         ></Image>
                         <TH1 style={stylesColor.text}>Tonomy ID</TH1>
 
-                        <TP size={2} style={[commonStyles.alignTextCenter, stylesColor.text]}>
+                        <TP size={2} style={[commonStyles.textAlignCenter, stylesColor.text]}>
                             A blockchain reimagining what's possible Home to the fastest EVM
                         </TP>
                     </View>
@@ -53,7 +53,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                     >
                         Login
                     </TButton>
-                    <TCaption style={commonStyles.alignTextCenter}>
+                    <TCaption style={commonStyles.textAlignCenter}>
                         By creating an account, you agree to our <TLink>Terms & Conditions</TLink> and agree to &nbsp;
                         <TLink>Privacy Policy</TLink>
                     </TCaption>

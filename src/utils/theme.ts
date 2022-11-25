@@ -23,10 +23,10 @@ export const customColors = {
 };
 
 export const commonStyles = StyleSheet.create({
-    centeredText: {
+    alignItemsCenter: {
         alignItems: 'center',
     },
-    alignTextCenter: {
+    textAlignCenter: {
         textAlign: 'center',
     },
     marginBottom: {

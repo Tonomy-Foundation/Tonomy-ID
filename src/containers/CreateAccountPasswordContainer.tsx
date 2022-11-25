@@ -102,8 +102,8 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                     </View>
                 }
                 footerHint={
-                    <View style={[commonStyles.marginBottom, commonStyles.centeredText]}>
-                        <TP size={1} style={[styles.rememberPasswordText, commonStyles.alignTextCenter]}>
+                    <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                        <TP size={1} style={[styles.rememberPasswordText, commonStyles.textAlignCenter]}>
                             Please remember your master password for future use
                         </TP>
                     </View>
@@ -120,7 +120,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                                 Next
                             </TButton>
                         </View>
-                        <View style={commonStyles.centeredText}>
+                        <View style={commonStyles.alignItemsCenter}>
                             <TP size={1}>
                                 Already have an account? <TLink href="login">Login</TLink>
                             </TP>
