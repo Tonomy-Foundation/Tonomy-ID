@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 type layoutProps = {
     body: JSX.Element;
     footerHint?: JSX.Element;
-    footer: JSX.Element;
+    footer?: JSX.Element;
 };
 
 export default function LayoutComponent(props: layoutProps) {
