@@ -7,17 +7,16 @@ export default function TPin(props: { pin?: string; onChange: (pin: string) => v
     const [pin, setPin] = useState(props.pin ? props.pin : '');
 
     useEffect(() => {
-        props.onChange(pin);
-    }, [pin]);
+        if (props.pin !== undefined && props.pin !== pin) {
+            setPin(props.pin);
+        }
+    }, [props.pin]);
 
     function onNumberPress(num: string) {
-        setPin(function (pin) {
-            if (pin.length === 5) {
-                return pin;
-            } else {
-                return pin + num;
-            }
-        });
+        const newPin = pin.length === 5 ? pin : pin + num;
+
+        setPin(newPin);
+        props.onChange(newPin);
     }
 
     function DotOrChar(props: { char: string | null }) {

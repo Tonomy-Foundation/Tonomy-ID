@@ -25,9 +25,13 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
         setErrorMessage('');
     }
 
+    console.log(
+        `PinScreenContainer(), confirming: ${confirming}, loading: ${loading}, disabled: ${disabled}, pin: ${pin}, confirmPin: ${confirmPin}`
+    );
     async function onNext() {
         setLoading(true);
         if (confirming) {
+            console.log('onNext() confirming');
             if (pin === confirmPin) {
                 await user.savePIN(pin);
                 navigation.navigate('fingerprint');
@@ -40,6 +44,7 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
         } else {
             setConfirmPin(pin);
             setPin('');
+            setDisabled(true);
             setConfirming(true);
         }
         setLoading(false);
@@ -50,19 +55,19 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
             <Text style={styles.header}>
                 <TH1>{confirming ? 'Repeat your PIN' : 'Add a PIN'}</TH1>
             </Text>
-            <Text style={styles.headdescription}>This helps keep your account secure</Text>
+            <Text style={styles.headDescription}>This helps keep your account secure</Text>
             <View>
                 <HelperText type="error" visible={errorMessage !== ''}>
                     {errorMessage}
                 </HelperText>
             </View>
             <TPin pin={pin} onChange={onPinChange}></TPin>
-            <View style={styles.buttonwrapper}>
-                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipbutton}>
-                    Skip
+            <View style={styles.buttonWrapper}>
+                <TButton disabled={disabled} loading={loading} onPress={onNext} style={styles.nextButton}>
+                    {confirming ? 'Confirm' : 'Next'}
                 </TButton>
-                <TButton disabled={disabled} loading={loading} onPress={onNext} style={styles.nextbutton}>
-                    Next
+                <TButton onPress={() => navigation.navigate('fingerprint')} style={styles.skipButton}>
+                    Skip
                 </TButton>
             </View>
         </View>
@@ -85,29 +90,26 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         fontSize: 14,
     },
-    headdescription: {
+    headDescription: {
         marginTop: 7,
         paddingLeft: '8%',
         textAlign: 'left',
         alignSelf: 'flex-start',
         color: theme.colors.disabled,
     },
-    buttonwrapper: {
+    buttonWrapper: {
         marginTop: 20,
     },
-    skipbutton: {
+    skipButton: {
         marginBottom: 10,
         alignSelf: 'center',
         width: '90%',
-        backgroundColor: settings.config.theme.primaryColor,
+        backgroundColor: settings.config.theme.secondaryColor,
     },
-    nextbutton: {
+    nextButton: {
         marginBottom: 10,
         alignSelf: 'center',
         width: '90%',
         backgroundColor: settings.config.theme.primaryColor,
     },
 });
-function foreach(loop: number) {
-    throw new Error('Function not implemented.');
-}
