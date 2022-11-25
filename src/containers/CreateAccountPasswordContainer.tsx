@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
-import { TH1 } from '../components/THeadings';
+import { TCaption, TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
@@ -14,8 +14,8 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 
 export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
-    const [password, setPassword] = useState(!settings.isProduction() ? 'kh6oH0CZRz09*jmgZ7*d' : '');
-    const [password2, setPassword2] = useState(!settings.isProduction() ? 'kh6oH0CZRz09*jmgZ7*d' : '');
+    const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
+    const [password2, setPassword2] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [trxUrl, setTrxUrl] = useState('');
@@ -105,7 +105,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                                 label="Confirm Master Password"
                             />
                             <View style={styles.centeredText}>
-                                Minimum 12 characters with uppercase, numbers and symbols
+                                <TCaption>Minimum 12 characters with lower and uppercase letter and numbers</TCaption>
                             </View>
                         </View>
                         <View style={styles.centeredText}>
@@ -144,8 +144,8 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username}</Text> is already
-                        taken. Please choose another one.
+                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>{' '}
+                        is already taken. Please choose another one.
                     </Text>
                 </View>
             </TModal>
@@ -157,7 +157,8 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             >
                 <View>
                     <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>{user.storage.username}</Text>
+                        Your username is{' '}
+                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>
                     </Text>
                 </View>
                 <View style={styles.space}>
