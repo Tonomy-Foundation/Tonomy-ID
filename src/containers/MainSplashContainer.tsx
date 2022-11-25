@@ -4,6 +4,7 @@ import theme from '../utils/theme';
 import { NavigationProp, StackActions, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import Storage from '../utils/storage';
+import LayoutComponent from '../components/layout';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const user = useUserStore();
@@ -16,12 +17,17 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             navigation.dispatch(StackActions.replace(page));
         }, 300);
     }, []);
+
     return (
-        <View>
-            <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
-            <Image style={styles.tonomylogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
-            <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
-        </View>
+        <LayoutComponent
+            body={
+                <View>
+                    <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
+                    <Image style={styles.tonomylogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
+                    <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
+                </View>
+            }
+        />
     );
 }
 
