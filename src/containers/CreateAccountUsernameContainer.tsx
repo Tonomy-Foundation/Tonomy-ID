@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import TLink from '../components/TA';
 import { TCaption, TH1, TP } from '../components/THeadings';
@@ -10,6 +10,7 @@ import { randomString, SdkError, SdkErrors } from 'tonomy-id-sdk';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
+import { commonStyles } from '../utils/theme';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
@@ -49,14 +50,16 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 <View>
                     <TH1>Create your username</TH1>
 
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                    <View style={commonStyles.marginBottom}>
+                        <TInfoBox
+                            align="left"
+                            icon="security"
+                            description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
                          Foundation can see it."
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
-                    />
+                            linkUrl={settings.config.links.securityLearnMore}
+                            linkUrlText="Learn more"
+                        />
+                    </View>
 
                     <TUsername
                         errorText={errorMessage}
@@ -68,13 +71,13 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 </View>
             }
             footerHint={
-                <View style={[styles.centeredText, styles.marginBottom]}>
+                <View style={[commonStyles.centeredText, commonStyles.marginBottom]}>
                     <TCaption>You can always change your username later</TCaption>
                 </View>
             }
             footer={
                 <View>
-                    <View style={styles.marginBottom}>
+                    <View style={commonStyles.marginBottom}>
                         <TButton
                             onPress={onNext}
                             mode="contained"
@@ -84,7 +87,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                             Next
                         </TButton>
                     </View>
-                    <View style={styles.centeredText}>
+                    <View style={commonStyles.centeredText}>
                         <TP size={1}>
                             Already have an account? <TLink href="login">Login</TLink>
                         </TP>
@@ -94,12 +97,3 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         ></LayoutComponent>
     );
 }
-
-const styles = StyleSheet.create({
-    marginBottom: {
-        marginBottom: 16,
-    },
-    centeredText: {
-        alignItems: 'center',
-    },
-});

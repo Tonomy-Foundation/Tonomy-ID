@@ -8,7 +8,7 @@ import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { SdkError, SdkErrors } from 'tonomy-id-sdk';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
@@ -68,45 +68,49 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     }
 
     return (
-        <View style={layoutStyles.container}>
+        <>
             <LayoutComponent
                 body={
                     <View>
                         <View>
                             <TH1>Create your password</TH1>
 
-                            <TInfoBox
-                                align="left"
-                                icon="security"
-                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                linkUrl={settings.config.links.securityLearnMore}
-                                linkUrlText="Learn more"
-                            />
+                            <View style={commonStyles.marginBottom}>
+                                <TInfoBox
+                                    align="left"
+                                    icon="security"
+                                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                                    linkUrl={settings.config.links.securityLearnMore}
+                                    linkUrlText="Learn more"
+                                />
+                            </View>
 
                             <TPasswordInput
                                 value={password}
                                 onChangeText={setPassword}
                                 errorText={errorMessage}
                                 label="Master Password"
+                                style={commonStyles.marginBottom}
                             />
                             <TPasswordInput
                                 value={password2}
                                 onChangeText={setPassword2}
                                 label="Confirm Master Password"
+                                style={commonStyles.marginBottom}
                             />
                         </View>
                     </View>
                 }
                 footerHint={
-                    <View style={[styles.centeredText, styles.marginBottom]}>
-                        <TP size={1} style={styles.rememberPasswordText}>
+                    <View style={[commonStyles.marginBottom, commonStyles.centeredText]}>
+                        <TP size={1} style={[styles.rememberPasswordText, commonStyles.alignTextCenter]}>
                             Please remember your master password for future use
                         </TP>
                     </View>
                 }
                 footer={
                     <View>
-                        <View style={styles.marginBottom}>
+                        <View style={commonStyles.marginBottom}>
                             <TButton
                                 mode="contained"
                                 onPress={onNext}
@@ -116,7 +120,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                                 Next
                             </TButton>
                         </View>
-                        <View style={styles.centeredText}>
+                        <View style={commonStyles.centeredText}>
                             <TP size={1}>
                                 Already have an account? <TLink href="login">Login</TLink>
                             </TP>
@@ -155,15 +159,9 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                     </Text>
                 </View>
             </TModal>
-        </View>
+        </>
     );
 }
-
-const layoutStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-});
 
 const errorModalStyles = StyleSheet.create({
     marginTop: {
@@ -172,17 +170,7 @@ const errorModalStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-    centeredText: {
-        alignItems: 'center',
-    },
-    marginBottom: {
-        marginBottom: 16,
-    },
-
     rememberPasswordText: {
         color: theme.colors.error,
-    },
-    greyText: {
-        color: theme.colors.disabled,
     },
 });

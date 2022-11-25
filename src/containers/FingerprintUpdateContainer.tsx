@@ -4,6 +4,7 @@ import TButton from '../components/Tbutton';
 import { TH1, TP } from '../components/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
+import { commonStyles } from '../utils/theme';
 
 export default function CreateAccountContainer() {
     return (
@@ -23,10 +24,10 @@ export default function CreateAccountContainer() {
             }
             footer={
                 <View>
-                    <TButton style={styles.marginBottom} mode="contained">
+                    <TButton style={commonStyles.marginBottom} mode="contained">
                         Next
                     </TButton>
-                    <TButton style={styles.marginBottom} mode="outlined">
+                    <TButton style={commonStyles.marginBottom} mode="outlined">
                         Skip
                     </TButton>
                 </View>
@@ -45,8 +46,5 @@ const styles = StyleSheet.create({
     imageWrapper: {
         padding: 40,
         alignSelf: 'center',
-    },
-    marginBottom: {
-        marginBottom: 16,
     },
 });
