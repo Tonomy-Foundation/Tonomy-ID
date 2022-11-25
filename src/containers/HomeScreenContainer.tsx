@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import { TCaption, TH1, TH2, TP } from '../components/THeadings';
 import TLink from '../components/TA';
+import settings from '../settings';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const {
@@ -31,7 +32,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                         <TH1 style={stylesColor.text}>Tonomy ID</TH1>
 
                         <TP size={2} style={[styles.center, stylesColor.text]}>
-                            A blockchain reimagining what's possible Home to the fastest EVM
+                            {settings.config.appSlogan}
                         </TP>
                     </View>
                 </View>
