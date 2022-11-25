@@ -14,8 +14,8 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 
 export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
-    const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
-    const [password2, setPassword2] = useState(!settings.isProduction() ? 'Password123!' : '');
+    const [password, setPassword] = useState(!settings.isProduction() ? 'kh6oH0CZRz09*jmgZ7*d' : '');
+    const [password2, setPassword2] = useState(!settings.isProduction() ? 'kh6oH0CZRz09*jmgZ7*d' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [trxUrl, setTrxUrl] = useState('');
