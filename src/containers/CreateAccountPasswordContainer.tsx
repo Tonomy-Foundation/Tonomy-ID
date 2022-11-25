@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
-import { TH1 } from '../components/THeadings';
+import { TH1, TP } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
@@ -95,16 +95,18 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                                 label="Confirm Master Password"
                             />
                         </View>
-                        <View style={styles.centeredText}>
-                            <Text style={styles.rememberPasswordText}>
-                                Please remember your master password for future use
-                            </Text>
-                        </View>
+                    </View>
+                }
+                footerHint={
+                    <View style={[styles.centeredText, styles.marginBottom]}>
+                        <TP size={1} style={styles.rememberPasswordText}>
+                            Please remember your master password for future use
+                        </TP>
                     </View>
                 }
                 footer={
                     <View>
-                        <View style={styles.button}>
+                        <View style={styles.marginBottom}>
                             <TButton
                                 mode="contained"
                                 onPress={onNext}
@@ -115,9 +117,9 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                             </TButton>
                         </View>
                         <View style={styles.centeredText}>
-                            <Text style={styles.bottomMessage}>
+                            <TP size={1}>
                                 Already have an account? <TLink href="login">Login</TLink>
-                            </Text>
+                            </TP>
                         </View>
                     </View>
                 }
@@ -147,7 +149,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                         Your username is <Text style={{ color: theme.colors.primary }}>{user.storage.username}</Text>
                     </Text>
                 </View>
-                <View style={styles.space}>
+                <View style={errorModalStyles.marginTop}>
                     <Text>
                         See it on the blockchain <TLink href={trxUrl}>here</TLink>
                     </Text>
@@ -163,27 +165,24 @@ const layoutStyles = StyleSheet.create({
     },
 });
 
-const styles = StyleSheet.create({
-    space: {
+const errorModalStyles = StyleSheet.create({
+    marginTop: {
         marginTop: 6,
     },
-    button: {
-        marginTop: 24,
-        marginBottom: 16,
-    },
+});
+
+const styles = StyleSheet.create({
     centeredText: {
         alignItems: 'center',
     },
+    marginBottom: {
+        marginBottom: 16,
+    },
+
     rememberPasswordText: {
-        alignSelf: 'center',
-        marginTop: 40,
         color: theme.colors.error,
     },
     greyText: {
         color: theme.colors.disabled,
-    },
-    bottomMessage: {
-        color: theme.colors.disabled,
-        fontSize: 16,
     },
 });
