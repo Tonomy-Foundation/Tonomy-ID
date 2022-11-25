@@ -33,8 +33,6 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         setLoading(true);
         try {
             await user.savePassword(password);
-            user.storage.username = 'test42b2.dev.tonomy.id';
-            await user.storage.username;
             const res = await user.createPerson();
             // this only works when blockchainUrl === localhost || https://...
             setTrxUrl(
@@ -42,8 +40,20 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             );
         } catch (e) {
             // TODO catch password errors as well
-            if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
-                setShowUsernameErrorModal(true);
+            if (e instanceof SdkError) {
+                switch (e.code) {
+                    case SdkErrors.UsernameTaken:
+                        setShowUsernameErrorModal(true);
+                        break;
+                    case SdkErrors.PasswordFormatInvalid:
+                        setErrorMessage('Password is invalid.');
+                        break;
+                    case SdkErrors.PasswordTooCommon:
+                        setErrorMessage('Password contains words or phrases that are common in passwords.');
+                        break;
+                    default:
+                        throw e;
+                }
                 setLoading(false);
                 return;
             } else {
@@ -94,6 +104,9 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                                 onChangeText={setPassword2}
                                 label="Confirm Master Password"
                             />
+                            <View style={styles.centeredText}>
+                                Minimum 12 characters with uppercase, numbers and symbols
+                            </View>
                         </View>
                         <View style={styles.centeredText}>
                             <Text style={styles.rememberPasswordText}>
