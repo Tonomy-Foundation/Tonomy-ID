@@ -25,13 +25,9 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
         setErrorMessage('');
     }
 
-    console.log(
-        `PinScreenContainer(), confirming: ${confirming}, loading: ${loading}, disabled: ${disabled}, pin: ${pin}, confirmPin: ${confirmPin}`
-    );
     async function onNext() {
         setLoading(true);
         if (confirming) {
-            console.log('onNext() confirming');
             if (pin === confirmPin) {
                 await user.savePIN(pin);
                 navigation.navigate('fingerprint');
@@ -56,7 +52,7 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                 <TH1>{confirming ? 'Repeat your PIN' : 'Add a PIN'}</TH1>
             </Text>
             <Text style={styles.headDescription}>This helps keep your account secure</Text>
-            <View>
+            <View style={styles.centeredText}>
                 <HelperText type="error" visible={errorMessage !== ''}>
                     {errorMessage}
                 </HelperText>
@@ -96,6 +92,9 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         alignSelf: 'flex-start',
         color: theme.colors.disabled,
+    },
+    centeredText: {
+        alignItems: 'center',
     },
     buttonWrapper: {
         marginTop: 20,
