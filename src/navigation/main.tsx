@@ -95,7 +95,7 @@ export default function MainNavigation() {
                             options={{ title: 'Create New Account' }}
                             component={CreateAccountPasswordScreen}
                         />
-                        <Stack.Screen name="Fingerprint Registration" component={FingerprintUpdateScreen} />
+                        <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
                         <Stack.Screen name="pin" component={PinScreen} />
                     </>
                 )}

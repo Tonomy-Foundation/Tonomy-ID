@@ -92,9 +92,9 @@ export default class RNKeyManager implements KeyManager {
         return new PrivateKey(KeyType.K1, new Bytes(randomBytes(32)));
     }
 
-    async getKey(options: GetKeyOptions): Promise<PublicKey> {
+    async getKey(options: GetKeyOptions): Promise<PublicKey | null> {
         const key = await SecureStore.getItemAsync(options.level, { requireAuthentication: true });
-        if (!key) throw new Error('No key for this level');
+        if (!key) return null;
         const keyStore = JSON.parse(key) as KeyStorage;
         return keyStore.publicKey;
     }

@@ -6,8 +6,32 @@ import settings from '../settings';
 import theme from '../utils/theme';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
+import useUserStore from '../store/userStore';
+import { useNavigation } from '@react-navigation/native';
+const { KeyManagerLevel } = settings.sdk;
+export default function CreateAccountContainer({ password }: { password: string }) {
+    const user = useUserStore((state) => state.user);
+    const navigation = useNavigation();
+    const onNext = async () => {
+        try {
+            const key = await user.keyManager.getKey({ level: KeyManagerLevel.FINGERPRINT });
+            if (!key) {
+                await user.saveFingerprint();
+                await updateKeys();
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
-export default function CreateAccountContainer() {
+    const onSkip = () => {
+        updateKeys();
+    };
+
+    async function updateKeys() {
+        await user.updateKeys(password);
+        navigation.navigate('home');
+    }
     return (
         <LayoutComponent
             body={
@@ -27,10 +51,10 @@ export default function CreateAccountContainer() {
             }
             footer={
                 <View>
-                    <TButton style={styles.button} mode="contained">
+                    <TButton style={styles.button} onPress={onNext} mode="contained">
                         Next
                     </TButton>
-                    <TButton style={styles.button} mode="contained" color={settings.config.theme.secondaryColor}>
+                    <TButton style={styles.button} onPress={onSkip} mode="outlined">
                         Skip
                     </TButton>
                 </View>
