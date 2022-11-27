@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/atoms/Tbutton';
-import { TH1 } from '../components/THeadings';
+import { TH1 } from '../components/atoms/THeadings';
 import theme from '../utils/theme';
 import { NavigationProp } from '@react-navigation/native';
 import TPin from '../components/TPin';

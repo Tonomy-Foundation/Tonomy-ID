@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
-import { TH1, TP } from '../components/THeadings';
+import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
 import { commonStyles } from '../utils/theme';

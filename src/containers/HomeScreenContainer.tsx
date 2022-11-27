@@ -4,8 +4,8 @@ import TButton, { TButtonContained, TButtonOutlined, TButtonText } from '../comp
 import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
-import { TCaption, TH1, TH2, TP } from '../components/THeadings';
-import TLink from '../components/TA';
+import { TCaption, TH1, TH2, TP } from '../components/atoms/THeadings';
+import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {

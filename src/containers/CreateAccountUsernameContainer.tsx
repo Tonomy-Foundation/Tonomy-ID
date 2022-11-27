@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import TLink from '../components/TA';
-import { TCaption, TH1, TP } from '../components/THeadings';
+import TLink from '../components/atoms/TA';
+import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';

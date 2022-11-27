@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import TPasswordInput from '../components/TPasswordInput';
-import TLink from '../components/TA';
-import { TH1, TP } from '../components/THeadings';
+import TPasswordInput from '../components/molecules/TPasswordInput';
+import TLink from '../components/atoms/TA';
+import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
