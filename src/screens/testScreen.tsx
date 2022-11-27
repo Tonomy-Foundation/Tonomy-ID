@@ -1,5 +1,5 @@
 import React from 'react';
-import TButton from '../components/Tbutton';
+import TButton from '../components/atoms/Tbutton';
 import { Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import LayoutComponent from '../components/layout';

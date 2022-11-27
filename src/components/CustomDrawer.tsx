@@ -4,7 +4,7 @@ import { DrawerContentScrollView, DrawerContentComponentProps, DrawerItem } from
 import { Image, StyleSheet, View } from 'react-native';
 import settings from '../settings';
 import { IconButtonProps, Text } from 'react-native-paper';
-import TButton from './Tbutton';
+import TButton from './atoms/Tbutton';
 import { useTheme } from '@react-navigation/native';
 
 const icons = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native';
-import TButton from '../components/Tbutton';
+import TButton from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { TH1, TP } from '../components/THeadings';
 import theme, { commonStyles } from '../utils/theme';

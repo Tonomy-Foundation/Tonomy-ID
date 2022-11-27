@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/Tbutton';
+import TButton from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';

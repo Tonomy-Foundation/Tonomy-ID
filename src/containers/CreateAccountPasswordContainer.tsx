@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/Tbutton';
+import TButton from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
 import { TH1, TP } from '../components/THeadings';
