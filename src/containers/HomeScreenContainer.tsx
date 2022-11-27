@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import TButton from '../components/atoms/Tbutton';
+import TButton, { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
@@ -21,9 +21,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
         <LayoutComponent
             body={
                 <View style={styles.header}>
-                    <TButton mode="text" style={styles.headerButton}>
-                        Need Help?
-                    </TButton>
+                    <TButtonText style={styles.headerButton}>Need Help?</TButtonText>
                     <View style={styles.imgContainer}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
@@ -39,20 +37,18 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
             }
             footer={
                 <View>
-                    <TButton
-                        mode="contained"
+                    <TButtonContained
                         onPress={() => navigation.navigate('createAccountUsername')}
                         style={commonStyles.marginBottom}
                     >
                         Create Account
-                    </TButton>
-                    <TButton
-                        mode="outlined"
+                    </TButtonContained>
+                    <TButtonOutlined
                         onPress={() => navigation.navigate('fingerprint')}
                         style={commonStyles.marginBottom}
                     >
                         Login
-                    </TButton>
+                    </TButtonOutlined>
                     <TCaption style={commonStyles.textAlignCenter}>
                         By creating an account, you agree to our <TLink>Terms & Conditions</TLink> and agree to &nbsp;
                         <TLink>Privacy Policy</TLink>

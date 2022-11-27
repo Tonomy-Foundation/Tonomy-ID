@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
 import { TH1, TP } from '../components/THeadings';
@@ -111,14 +111,13 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButton
-                                mode="contained"
+                            <TButtonContained
                                 onPress={onNext}
                                 disabled={password.length === 0 || password2.length === 0 || loading}
                                 loading={loading}
                             >
                                 Next
-                            </TButton>
+                            </TButtonContained>
                         </View>
                         <View style={commonStyles.alignItemsCenter}>
                             <TP size={1}>

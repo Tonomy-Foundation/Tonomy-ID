@@ -10,3 +10,27 @@ export default function TButton(props: ButtonProps) {
         </Button>
     );
 }
+
+export function TButtonContained(props: ButtonProps) {
+    return (
+        <TButton mode="contained" {...props}>
+            {props.children}
+        </TButton>
+    );
+}
+
+export function TButtonOutlined(props: ButtonProps) {
+    return (
+        <TButton mode="outlined" {...props}>
+            {props.children}
+        </TButton>
+    );
+}
+
+export function TButtonText(props: ButtonProps) {
+    return (
+        <TButton mode="text" {...props}>
+            {props.children}
+        </TButton>
+    );
+}

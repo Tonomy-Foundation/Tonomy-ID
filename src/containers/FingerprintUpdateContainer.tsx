@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
@@ -24,10 +24,10 @@ export default function CreateAccountContainer() {
             }
             footer={
                 <View>
-                    <TButton style={commonStyles.marginBottom} mode="contained">
+                    <TButtonContained style={commonStyles.marginBottom}>
                         Next
                     </TButton>
-                    <TButton style={commonStyles.marginBottom} mode="outlined">
+                    <TButtonOutlined style={commonStyles.marginBottom}>
                         Skip
                     </TButton>
                 </View>

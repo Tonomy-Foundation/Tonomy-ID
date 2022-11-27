@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import TButton from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/Tbutton';
 import TLink from '../components/TA';
 import { TCaption, TH1, TP } from '../components/THeadings';
 import settings from '../settings';
@@ -78,14 +78,13 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
             footer={
                 <View>
                     <View style={commonStyles.marginBottom}>
-                        <TButton
+                        <TButtonContained
                             onPress={onNext}
-                            mode="contained"
                             disabled={username.length === 0 || loading}
                             loading={loading}
                         >
                             Next
-                        </TButton>
+                        </TButtonContained>
                     </View>
                     <View style={commonStyles.alignItemsCenter}>
                         <TP size={1}>

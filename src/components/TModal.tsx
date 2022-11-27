@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import theme from '../utils/theme';
-import TButton from './atoms/Tbutton';
+import { TButtonText } from './atoms/Tbutton';
 import TIconButton from './TIconButton';
 import { Modal } from 'react-native';
 
@@ -53,7 +53,7 @@ export default function TModal(props: ModalProps) {
                     </View>
                     {props.children}
                     <View style={styles.buttonView}>
-                        <TButton onPress={props.onPress} mode="text">
+                        <TButtonText onPress={props.onPress}>
                             <Text style={{ color: theme.colors.primary }}>
                                 {props.buttonLabel ? props.buttonLabel : 'OK'}
                             </Text>
