@@ -57,7 +57,7 @@ export default function TModal(props: ModalProps) {
                             <Text style={{ color: theme.colors.primary }}>
                                 {props.buttonLabel ? props.buttonLabel : 'OK'}
                             </Text>
-                        </TButton>
+                        </TButtonText>
                     </View>
                 </View>
             </View>

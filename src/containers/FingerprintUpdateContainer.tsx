@@ -24,12 +24,8 @@ export default function CreateAccountContainer() {
             }
             footer={
                 <View>
-                    <TButtonContained style={commonStyles.marginBottom}>
-                        Next
-                    </TButton>
-                    <TButtonOutlined style={commonStyles.marginBottom}>
-                        Skip
-                    </TButton>
+                    <TButtonContained style={commonStyles.marginBottom}>Next</TButtonContained>
+                    <TButtonOutlined style={commonStyles.marginBottom}>Skip</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>
