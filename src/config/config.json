@@ -1,5 +1,5 @@
 {
-    "blockchainUrl": "http://10.2.218.56:8888",
+    "blockchainUrl": "http://localhost:8888",
     "theme": {
         "primaryColor": "#67D7ED",
         "secondaryColor": "#03dac4",
