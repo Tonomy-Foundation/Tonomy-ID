@@ -1,7 +1,6 @@
 import fs from 'fs';
 import settings from './src/settings';
 import app from './app.default.json';
-import currentApp from './app.json';
 import myPackage from './package.json';
 
 const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
@@ -26,14 +25,6 @@ app.expo.version = myPackage.version;
 if (!['development', 'designonly'].includes(settings.env)) {
     console.log('Replacing expoProjectId');
     app.expo.extra.eas.projectId = settings.config.expoProjectId;
-} else {
-    if (currentApp.expo.extra?.eas?.projectId) {
-        console.log('Keeeping the same expoProjectId');
-        app.expo.extra.eas.projectId = currentApp.expo.extra.eas.projectId;
-    } else {
-        console.log('Not adding expoProjectId');
-        app.expo.extra = {} as any;
-    }
 }
 
 // Write app.json
