@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "scripts": {
         "build:prepare": "ts-node prepare.ts",
-        "build:ios:create": "eas device:create",
+        "build:ios:create": "npm run build:prepare && eas device:create",
         "build:ios": "npm run build:prepare && eas build --clear-cache --profile development --platform ios",
         "build:android": "npm run build:prepare && eas build --clear-cache --profile development --platform android",
         "start": "npm run build:prepare && expo start --dev-client --clear",
