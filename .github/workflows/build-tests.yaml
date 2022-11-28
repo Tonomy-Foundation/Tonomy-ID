@@ -1,0 +1,19 @@
+name: Run Tonomy-ID tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 16.14.1
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.1
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
