@@ -19,10 +19,10 @@ Features:
 
 ## Dependancies
 
-- [Expo](https://expo.dev)  v45.0.0
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
-- [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with npm
+- [Expo-cli](https://expo.dev)  v45.0.0 globally installed with `npm i -g expo-cli@5.5.1`
+- [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with `npm i -g eas-cli@2.2.1`
 
 ## Pre-run build (first time and each time new RN only packages are installed)
 
@@ -70,11 +70,13 @@ See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code
 
 # Standalone run
 
-1. clone the [tonomy id](https://github.com/Tonomy-Foundation/Tonomy-ID.git) repo and change the branch to `development` or run 
+1. clone the [tonomy id](https://github.com/Tonomy-Foundation/Tonomy-ID.git) repo and change the branch to `development` or run
+
 ```bash
 git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
 ```
-2. clone the [tonomy id sdk](https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git) repo and change the branch to `development` or run 
+
+2. clone the [tonomy id sdk](https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git) repo and change the branch to `development` or run
 
 ```bash
 git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
@@ -87,6 +89,7 @@ git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
 6. change to the `Tonomy-ID` directory and run `npm start`
 
 To do all steps at once:
+
 ```bash
 git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
 git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git

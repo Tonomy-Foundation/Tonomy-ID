@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, Image, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
-import { NavigationProp, StackActions, useNavigation } from '@react-navigation/native';
-import useUserStore from '../store/userStore';
+import { NavigationProp, StackActions } from '@react-navigation/native';
 import Storage from '../utils/storage';
 import LayoutComponent from '../components/layout';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
-    const user = useUserStore();
     useEffect(() => {
         setTimeout(async () => {
             const storage = new Storage();
@@ -15,7 +13,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             const page = value ? 'home' : 'securitySplash';
             // this will prevent use from going back to this screen after the user navigated
             navigation.dispatch(StackActions.replace(page));
-        }, 300);
+        }, 800);
     }, []);
 
     return (

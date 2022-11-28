@@ -1,12 +1,13 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import TButton, { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
-import { TCaption, TH1, TH2, TP } from '../components/atoms/THeadings';
+import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
+import settings from '../settings';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const {
@@ -27,10 +28,10 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                             style={[styles.logo, commonStyles.marginBottom]}
                             source={require('../assets/tonomy/tonomy-logo1024.png')}
                         ></Image>
-                        <TH1 style={stylesColor.text}>Tonomy ID</TH1>
+                        <TH1 style={stylesColor.text}>{settings.config.appName}</TH1>
 
                         <TP size={2} style={[commonStyles.textAlignCenter, stylesColor.text]}>
-                            A blockchain reimagining what's possible Home to the fastest EVM
+                            {settings.config.appSlogan}
                         </TP>
                     </View>
                 </View>

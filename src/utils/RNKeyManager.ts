@@ -3,6 +3,8 @@ import argon2 from 'react-native-argon2';
 import * as SecureStore from 'expo-secure-store';
 import settings from '../settings';
 import { KeyManager, GetKeyOptions, SignDataOptions, StoreKeyOptions } from 'tonomy-id-sdk';
+import { ApplicationErrors, throwError } from './errors';
+
 const {
     KeyManagerLevel,
     randomBytes,
@@ -11,6 +13,7 @@ const {
 
     decodeHex,
 } = settings.sdk;
+
 type KeyStorage = {
     privateKey: PrivateKey;
     publicKey: PublicKey;
@@ -57,12 +60,17 @@ export default class RNKeyManager implements KeyManager {
             keyStore.salt = randomString(32);
             keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
         }
-        await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), { requireAuthentication: true });
+        await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), {
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+        });
+
         return keyStore.publicKey;
     }
 
     async signData(options: SignDataOptions): Promise<string | Signature> {
-        const key = await SecureStore.getItemAsync(options.level, { requireAuthentication: true });
+        const key = await SecureStore.getItemAsync(options.level, {
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+        });
         if (!key) throw new Error('No key for this level');
         const keyStore = JSON.parse(key) as KeyStorage;
 
@@ -85,7 +93,9 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async removeKey(options: GetKeyOptions): Promise<void> {
-        await SecureStore.deleteItemAsync(options.level, { requireAuthentication: true });
+        await SecureStore.deleteItemAsync(options.level, {
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+        });
     }
 
     generateRandomPrivateKey(): PrivateKey {
@@ -93,8 +103,11 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async getKey(options: GetKeyOptions): Promise<PublicKey> {
-        const key = await SecureStore.getItemAsync(options.level, { requireAuthentication: true });
-        if (!key) throw new Error('No key for this level');
+        const key = await SecureStore.getItemAsync(options.level, {
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+        });
+        if (!key) throwError('No key for this level', ApplicationErrors.NoKeyFound);
+
         const keyStore = JSON.parse(key) as KeyStorage;
         return keyStore.publicKey;
     }

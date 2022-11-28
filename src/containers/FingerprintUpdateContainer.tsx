@@ -28,7 +28,7 @@ export default function CreateAccountContainer() {
                     <TButtonOutlined style={commonStyles.marginBottom}>Skip</TButtonOutlined>
                 </View>
             }
-        ></LayoutComponent>
+        />
     );
 }
 
