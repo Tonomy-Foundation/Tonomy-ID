@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/Tbutton';
 import TPasswordInput from '../components/TPasswordInput';
 import TLink from '../components/TA';
-import { TH1 } from '../components/THeadings';
+import { TCaption, TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
@@ -14,8 +14,8 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 
 export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
-    const [password, setPassword] = useState(!settings.isProduction() ? 'Password123!' : '');
-    const [password2, setPassword2] = useState(!settings.isProduction() ? 'Password123!' : '');
+    const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
+    const [password2, setPassword2] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [trxUrl, setTrxUrl] = useState('');
@@ -33,8 +33,6 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         setLoading(true);
         try {
             await user.savePassword(password);
-            user.storage.username = 'test42b2.dev.tonomy.id';
-            await user.storage.username;
             const res = await user.createPerson();
             // this only works when blockchainUrl === localhost || https://...
             setTrxUrl(
@@ -42,8 +40,20 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             );
         } catch (e) {
             // TODO catch password errors as well
-            if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
-                setShowUsernameErrorModal(true);
+            if (e instanceof SdkError) {
+                switch (e.code) {
+                    case SdkErrors.UsernameTaken:
+                        setShowUsernameErrorModal(true);
+                        break;
+                    case SdkErrors.PasswordFormatInvalid:
+                        setErrorMessage('Password is invalid.');
+                        break;
+                    case SdkErrors.PasswordTooCommon:
+                        setErrorMessage('Password contains words or phrases that are common in passwords.');
+                        break;
+                    default:
+                        throw e;
+                }
                 setLoading(false);
                 return;
             } else {
@@ -59,7 +69,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('fingerprint');
+        navigation.navigate('pin');
     }
 
     async function onUsernameErrorModalPress() {
@@ -94,6 +104,9 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                                 onChangeText={setPassword2}
                                 label="Confirm Master Password"
                             />
+                            <View style={styles.centeredText}>
+                                <TCaption>Minimum 12 characters with lower and uppercase letter and numbers</TCaption>
+                            </View>
                         </View>
                         <View style={styles.centeredText}>
                             <Text style={styles.rememberPasswordText}>
@@ -131,8 +144,8 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username}</Text> is already
-                        taken. Please choose another one.
+                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>{' '}
+                        is already taken. Please choose another one.
                     </Text>
                 </View>
             </TModal>
@@ -144,7 +157,8 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             >
                 <View>
                     <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>{user.storage.username}</Text>
+                        Your username is{' '}
+                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>
                     </Text>
                 </View>
                 <View style={styles.space}>

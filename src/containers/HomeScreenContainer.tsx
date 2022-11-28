@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import { TCaption, TH1, TH2, TP } from '../components/THeadings';
 import TLink from '../components/TA';
+import settings from '../settings';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const {
@@ -28,10 +29,10 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                             style={[styles.logo, styles.marginBottom]}
                             source={require('../assets/tonomy/tonomy-logo1024.png')}
                         ></Image>
-                        <TH1 style={stylesColor.text}>Tonomy ID</TH1>
+                        <TH1 style={stylesColor.text}>{settings.config.appName}</TH1>
 
                         <TP size={2} style={[styles.center, stylesColor.text]}>
-                            A blockchain reimagining what's possible Home to the fastest EVM
+                            {settings.config.appSlogan}
                         </TP>
                     </View>
                 </View>
@@ -45,7 +46,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                     >
                         Create Account
                     </TButton>
-                    <TButton mode="outlined" onPress={() => navigation.navigate('test')} style={styles.marginBottom}>
+                    <TButton mode="outlined" onPress={() => navigation.navigate('pin')} style={styles.marginBottom}>
                         Login
                     </TButton>
                     <TCaption style={[styles.center]}>
