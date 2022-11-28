@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/Tbutton';
-import { TH1 } from '../components/THeadings';
-import settings from '../settings';
-import theme from '../utils/theme';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
+import { commonStyles } from '../utils/theme';
 
 export default function CreateAccountContainer() {
     return (
@@ -13,26 +12,20 @@ export default function CreateAccountContainer() {
             body={
                 <View>
                     <View>
-                        <TH1 style={styles.headerText}>Would you like to add a fingerprint for added security?</TH1>
+                        <TH1>Would you like to add a fingerprint for added security?</TH1>
                     </View>
                     <View>
-                        <Text style={styles.description}>This is easier than using your PIN every time.</Text>
+                        <TP size={1}>This is easier than using your PIN every time.</TP>
                     </View>
-                    <View style={styles.container}>
-                        <View style={styles.imageWrapper}>
-                            <FingerprintIcon style={styles.image}></FingerprintIcon>
-                        </View>
+                    <View style={styles.imageWrapper}>
+                        <FingerprintIcon style={styles.image}></FingerprintIcon>
                     </View>
                 </View>
             }
             footer={
                 <View>
-                    <TButton style={styles.button} mode="contained">
-                        Next
-                    </TButton>
-                    <TButton style={styles.button} mode="contained" color={settings.config.theme.secondaryColor}>
-                        Skip
-                    </TButton>
+                    <TButtonContained style={commonStyles.marginBottom}>Next</TButtonContained>
+                    <TButtonOutlined style={commonStyles.marginBottom}>Skip</TButtonOutlined>
                 </View>
             }
         />
@@ -40,11 +33,6 @@ export default function CreateAccountContainer() {
 }
 
 const styles = StyleSheet.create({
-    button: {
-        margin: 10,
-        alignSelf: 'center',
-        width: '90%',
-    },
     image: {
         marginTop: 50,
         alignSelf: 'center',
@@ -54,24 +42,5 @@ const styles = StyleSheet.create({
     imageWrapper: {
         padding: 40,
         alignSelf: 'center',
-    },
-    description: {
-        fontSize: 18,
-        marginTop: 7,
-        paddingLeft: -20,
-        textAlign: 'left',
-
-        color: theme.colors.disabled,
-    },
-    headerText: {
-        fontSize: 30,
-        marginTop: 40,
-        textAlign: 'left',
-        fontFamily: 'Roboto',
-        fontStyle: 'normal',
-        fontWeight: '800',
-    },
-    container: {
-        flex: 1,
     },
 });

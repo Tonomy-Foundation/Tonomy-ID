@@ -4,7 +4,7 @@ import { SvgProps } from 'react-native-svg';
 import PrivacyIcon from '../assets/icons/PrivacyIcon';
 import SecurityIcon from '../assets/icons/SecurityIcon';
 import TransparencyIcon from '../assets/icons/TransparencyIcon';
-import TA from './TA';
+import TA from './atoms/TA';
 
 export type TInfoBoxProps = {
     icon: string;

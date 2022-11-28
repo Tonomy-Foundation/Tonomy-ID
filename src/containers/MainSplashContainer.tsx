@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
 import { NavigationProp, StackActions } from '@react-navigation/native';
 import Storage from '../utils/storage';
+import LayoutComponent from '../components/layout';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     useEffect(() => {
@@ -14,12 +15,17 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             navigation.dispatch(StackActions.replace(page));
         }, 800);
     }, []);
+
     return (
-        <View>
-            <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
-            <Image style={styles.tonomylogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
-            <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
-        </View>
+        <LayoutComponent
+            body={
+                <View>
+                    <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
+                    <Image style={styles.tonomylogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
+                    <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
+                </View>
+            }
+        />
     );
 }
 

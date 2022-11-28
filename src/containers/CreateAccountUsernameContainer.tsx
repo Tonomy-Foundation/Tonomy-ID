@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/Tbutton';
-import TLink from '../components/TA';
-import { TH1 } from '../components/THeadings';
+import { StyleSheet, View } from 'react-native';
+import { TButtonContained } from '../components/atoms/Tbutton';
+import TLink from '../components/atoms/TA';
+import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from 'tonomy-id-sdk';
-import theme from '../utils/theme';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
+import { commonStyles } from '../utils/theme';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
     let startUsername = '';
@@ -50,14 +50,16 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 <View>
                     <TH1>Create your username</TH1>
 
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                    <View style={commonStyles.marginBottom}>
+                        <TInfoBox
+                            align="left"
+                            icon="security"
+                            description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
                          Foundation can see it."
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
-                    />
+                            linkUrl={settings.config.links.securityLearnMore}
+                            linkUrlText="Learn more"
+                        />
+                    </View>
 
                     <TUsername
                         errorText={errorMessage}
@@ -69,50 +71,28 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 </View>
             }
             footerHint={
-                <View style={styles.changeUsername}>
-                    <Text style={styles.greyText}>You can always change your username later</Text>
+                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
+                    <TCaption>You can always change your username later</TCaption>
                 </View>
             }
             footer={
                 <View>
-                    <View style={styles.button}>
-                        <TButton
+                    <View style={commonStyles.marginBottom}>
+                        <TButtonContained
                             onPress={onNext}
-                            mode="contained"
                             disabled={username.length === 0 || loading}
                             loading={loading}
                         >
                             Next
-                        </TButton>
+                        </TButtonContained>
                     </View>
-                    <View style={styles.centeredText}>
-                        <Text style={styles.bottomMessage}>
-                            Already have an account?
-                            <TLink href="login">Login</TLink>
-                        </Text>
+                    <View style={commonStyles.alignItemsCenter}>
+                        <TP size={1}>
+                            Already have an account? <TLink href="login">Login</TLink>
+                        </TP>
                     </View>
                 </View>
             }
-        ></LayoutComponent>
+        />
     );
 }
-
-const styles = StyleSheet.create({
-    button: {
-        marginBottom: 16,
-    },
-    centeredText: {
-        alignItems: 'center',
-    },
-    changeUsername: {
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    greyText: {
-        color: theme.colors.disabled,
-    },
-    bottomMessage: {
-        color: theme.colors.disabled,
-        fontSize: 16,
-    },
-});

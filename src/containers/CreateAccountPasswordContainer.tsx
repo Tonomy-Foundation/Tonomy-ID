@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/Tbutton';
-import TPasswordInput from '../components/TPasswordInput';
-import TLink from '../components/TA';
-import { TCaption, TH1 } from '../components/THeadings';
+import { TButtonContained } from '../components/atoms/Tbutton';
+import TPasswordInput from '../components/molecules/TPasswordInput';
+import TLink from '../components/atoms/TA';
+import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { SdkError, SdkErrors } from 'tonomy-id-sdk';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
@@ -78,59 +78,64 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     }
 
     return (
-        <View style={layoutStyles.container}>
+        <>
             <LayoutComponent
                 body={
                     <View>
                         <View>
                             <TH1>Create your password</TH1>
 
-                            <TInfoBox
-                                align="left"
-                                icon="security"
-                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                linkUrl={settings.config.links.securityLearnMore}
-                                linkUrlText="Learn more"
-                            />
+                            <View style={commonStyles.marginBottom}>
+                                <TInfoBox
+                                    align="left"
+                                    icon="security"
+                                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                                    linkUrl={settings.config.links.securityLearnMore}
+                                    linkUrlText="Learn more"
+                                />
+                            </View>
 
                             <TPasswordInput
                                 value={password}
                                 onChangeText={setPassword}
                                 errorText={errorMessage}
                                 label="Master Password"
+                                style={commonStyles.marginBottom}
                             />
                             <TPasswordInput
                                 value={password2}
                                 onChangeText={setPassword2}
                                 label="Confirm Master Password"
+                                style={commonStyles.marginBottom}
                             />
-                            <View style={styles.centeredText}>
+                            <View style={commonStyles.alignItemsCenter}>
                                 <TCaption>Minimum 12 characters with lower and uppercase letter and numbers</TCaption>
                             </View>
                         </View>
-                        <View style={styles.centeredText}>
-                            <Text style={styles.rememberPasswordText}>
-                                Please remember your master password for future use
-                            </Text>
-                        </View>
+                    </View>
+                }
+                footerHint={
+                    <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                        <TP size={1} style={[styles.rememberPasswordText, commonStyles.textAlignCenter]}>
+                            Please remember your master password for future use
+                        </TP>
                     </View>
                 }
                 footer={
                     <View>
-                        <View style={styles.button}>
-                            <TButton
-                                mode="contained"
+                        <View style={commonStyles.marginBottom}>
+                            <TButtonContained
                                 onPress={onNext}
                                 disabled={password.length === 0 || password2.length === 0 || loading}
                                 loading={loading}
                             >
                                 Next
-                            </TButton>
+                            </TButtonContained>
                         </View>
-                        <View style={styles.centeredText}>
-                            <Text style={styles.bottomMessage}>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <TP size={1}>
                                 Already have an account? <TLink href="login">Login</TLink>
-                            </Text>
+                            </TP>
                         </View>
                     </View>
                 }
@@ -161,43 +166,24 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                         <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>
                     </Text>
                 </View>
-                <View style={styles.space}>
+                <View style={errorModalStyles.marginTop}>
                     <Text>
                         See it on the blockchain <TLink href={trxUrl}>here</TLink>
                     </Text>
                 </View>
             </TModal>
-        </View>
+        </>
     );
 }
 
-const layoutStyles = StyleSheet.create({
-    container: {
-        flex: 1,
+const errorModalStyles = StyleSheet.create({
+    marginTop: {
+        marginTop: 6,
     },
 });
 
 const styles = StyleSheet.create({
-    space: {
-        marginTop: 6,
-    },
-    button: {
-        marginTop: 24,
-        marginBottom: 16,
-    },
-    centeredText: {
-        alignItems: 'center',
-    },
     rememberPasswordText: {
-        alignSelf: 'center',
-        marginTop: 40,
         color: theme.colors.error,
-    },
-    greyText: {
-        color: theme.colors.disabled,
-    },
-    bottomMessage: {
-        color: theme.colors.disabled,
-        fontSize: 16,
     },
 });
