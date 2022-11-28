@@ -24,6 +24,7 @@ app.expo.version = myPackage.version;
 
 if (!['development', 'designonly'].includes(settings.env)) {
     console.log('Replacing expoProjectId');
+    // @ts-ignore
     app.expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
