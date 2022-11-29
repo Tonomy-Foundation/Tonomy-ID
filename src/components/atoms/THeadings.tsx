@@ -20,7 +20,7 @@ export function TH2(props: THProps) {
     );
 }
 
-type TPProps = React.ComponentProps<typeof Paragraph> & { size: 1 | 2 | 3 };
+type TPProps = React.ComponentProps<typeof Paragraph> & { size?: 1 | 2 | 3 };
 export function TP(props: TPProps) {
     return (
         // eslint-disable-next-line react/prop-types
