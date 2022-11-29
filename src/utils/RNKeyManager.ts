@@ -79,8 +79,8 @@ export default class RNKeyManager implements KeyManager {
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
             if (keyStore.hashedSaltedChallenge !== hashedSaltedChallenge) throw new Error('Challenge does not match');
         }
-
-        const privateKey = keyStore.privateKey;
+        console.warn(keyStore.privateKey);
+        const privateKey = PrivateKey.from(keyStore.privateKey);
         let digest: Checksum256;
         if (options.data instanceof String) {
             digest = Checksum256.hash(Bytes.from(options.data));

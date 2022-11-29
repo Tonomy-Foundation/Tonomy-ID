@@ -16,17 +16,16 @@ export default function CreateAccountContainer({ password }: { password: string 
     const navigation = useNavigation();
     const onNext = async () => {
         try {
-            const authenticated = LocalAuthentication.authenticateAsync({
-                promptMessage: 'Authenticate to create account',
-            });
+            const authenticated = LocalAuthentication.hasHardwareAsync();
             if (!authenticated) {
                 console.log("User didn't authenticate");
                 return;
             }
             // await user.saveFingerprint();
-            // await updateKeys();
+
+            await updateKeys();
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
     };
 
