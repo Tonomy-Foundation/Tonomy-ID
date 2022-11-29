@@ -13,9 +13,9 @@ export class ApplicationError extends Error {
 }
 
 export function throwError(message: string, code?: ApplicationErrors) {
-    const error = new ApplicationError(message);
+    let error = new ApplicationError(message);
     if (code) {
-        error.code = code;
+        error = new ApplicationError(code + ': ' + message);
     }
     throw error;
 }
@@ -33,6 +33,7 @@ global.onunhandledrejection = function (error) {
 
 enum ApplicationErrors {
     UsernameTaken = 'UsernameTaken',
+    NoKeyFound = 'NoKeyFound',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

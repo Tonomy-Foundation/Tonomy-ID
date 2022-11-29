@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet, Linking } from 'react-native';
-import settings from '../settings';
+import settings from '../../settings';
 
 type AProps = {
     href: string;

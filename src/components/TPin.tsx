@@ -3,30 +3,58 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import theme from '../utils/theme';
 
-export default function TPin(props: { onPin: (pin: string) => void }) {
-    const [pin, setPin] = useState('');
+function DotOrChar(props: { char: string | null }) {
+    if (props.char) {
+        return <Text style={[dotStyles.dotText]}>{props.char}</Text>;
+    } else {
+        return <View style={dotStyles.dot}></View>;
+    }
+}
+
+const dotStyles = StyleSheet.create({
+    dotTextView: {
+        height: 20,
+        width: 20,
+    },
+    dotText: {
+        padding: 10,
+        fontSize: 30,
+        textAlign: 'center',
+        alignContent: 'center',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    dot: {
+        height: 20,
+        width: 20,
+        margin: 10,
+        marginTop: 20,
+        marginBottom: 20,
+        borderRadius: 1000,
+        backgroundColor: theme.colors.disabled,
+    },
+});
+
+export default function TPin(props: { pin?: string; onChange: (pin: string) => void }) {
+    const [pin, setPin] = useState(props.pin ? props.pin : '');
+
     useEffect(() => {
-        props.onPin(pin);
-    }, [pin]);
-    function onNumberPress(num: string) {
-        setPin(function (pin) {
-            if (pin.length === 5) {
-                return pin;
-            } else {
-                return pin + num;
-            }
-        });
-    }
-    function DotOrChar(props: { char: string | null }) {
-        if (props.char) {
-            return <Text style={styles.dotText}>{props.char}</Text>;
-        } else {
-            return <View style={styles.dot}></View>;
+        if (props.pin !== undefined && props.pin !== pin) {
+            setPin(props.pin);
         }
+    }, [props.pin]);
+
+    function onNumberPress(num: string) {
+        const newPin = pin.length === 5 ? pin : pin + num;
+
+        setPin(newPin);
+        props.onChange(newPin);
     }
+
     return (
         <>
-            <View style={styles.dotcontainer}>
+            <View style={styles.dotContainer}>
                 <DotOrChar char={pin.length > 0 ? pin[0] : null}></DotOrChar>
                 <DotOrChar char={pin.length > 1 ? pin[1] : null}></DotOrChar>
                 <DotOrChar char={pin.length > 2 ? pin[2] : null}></DotOrChar>
@@ -70,39 +98,30 @@ export default function TPin(props: { onPin: (pin: string) => void }) {
 }
 
 const styles = StyleSheet.create({
+    dotContainer: {
+        alignContent: 'center',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
     text: {
         fontSize: 35,
         textAlign: 'center',
         alignSelf: 'center',
     },
-    dotText: {
-        padding: 10,
-        fontSize: 35,
-        textAlign: 'center',
-        alignContent: 'center',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    dotcontainer: {
-        alignContent: 'center',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
     gridItem: {
-        paddingTop: 20,
+        paddingTop: 10,
         width: '33%',
-        height: 90,
+        height: 70,
         justifyContent: 'center',
         alignContent: 'center',
     },
     gridItemZero: {
-        paddingTop: 20,
+        paddingTop: 10,
         marginLeft: '33%',
         marginRight: '33%',
         width: '33%',
-        height: 90,
+        height: 70,
         justifyContent: 'center',
         alignContent: 'center',
     },
@@ -111,14 +130,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         width: '90%',
-    },
-    dot: {
-        margin: 10,
-        marginTop: 20,
-        marginBottom: 20,
-        height: 20,
-        width: 20,
-        borderRadius: 1000,
-        backgroundColor: theme.colors.disabled,
     },
 });

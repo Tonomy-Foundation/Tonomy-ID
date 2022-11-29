@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import { DefaultTheme } from 'react-native-paper';
 import { Theme } from 'react-native-paper/src/types';
 import settings from '../settings';
@@ -20,5 +21,17 @@ export const customColors = {
     success: '#4CAF50',
     textBold: '#272727',
 };
+
+export const commonStyles = StyleSheet.create({
+    alignItemsCenter: {
+        alignItems: 'center',
+    },
+    textAlignCenter: {
+        textAlign: 'center',
+    },
+    marginBottom: {
+        marginBottom: 16,
+    },
+});
 
 export default theme;

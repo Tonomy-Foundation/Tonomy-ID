@@ -1,5 +1,5 @@
 import React from 'react';
-import TButton from '../components/Tbutton';
+import { TButtonContained } from '../components/atoms/Tbutton';
 import { Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import LayoutComponent from '../components/layout';
@@ -26,7 +26,7 @@ export default function HomeScreen({ navigation }: { navigation: NavigationProp<
             footerHint={<Text>Header</Text>}
             footer={
                 <View>
-                    <TButton mode="contained">test</TButton>
+                    <TButtonContained>test</TButtonContained>
                     <Text></Text>
                 </View>
             }

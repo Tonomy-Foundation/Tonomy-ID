@@ -1,11 +1,13 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import TButton from '../components/Tbutton';
+import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
-import { TCaption, TH1, TH2, TP } from '../components/THeadings';
-import TLink from '../components/TA';
+import { TCaption, TH1, TP } from '../components/atoms/THeadings';
+import TLink from '../components/atoms/TA';
+import { commonStyles } from '../utils/theme';
+import settings from '../settings';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const {
@@ -20,35 +22,35 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
         <LayoutComponent
             body={
                 <View style={styles.header}>
-                    <TButton mode="text" style={styles.headerButton}>
-                        Need Help?
-                    </TButton>
+                    <TButtonText style={styles.headerButton}>Need Help?</TButtonText>
                     <View style={styles.imgContainer}>
                         <Image
-                            style={[styles.logo, styles.marginBottom]}
+                            style={[styles.logo, commonStyles.marginBottom]}
                             source={require('../assets/tonomy/tonomy-logo1024.png')}
                         ></Image>
-                        <TH1 style={stylesColor.text}>Tonomy ID</TH1>
+                        <TH1 style={stylesColor.text}>{settings.config.appName}</TH1>
 
-                        <TP size={2} style={[styles.center, stylesColor.text]}>
-                            A blockchain reimagining what's possible Home to the fastest EVM
+                        <TP size={2} style={[commonStyles.textAlignCenter, stylesColor.text]}>
+                            {settings.config.appSlogan}
                         </TP>
                     </View>
                 </View>
             }
             footer={
                 <View>
-                    <TButton
-                        mode="contained"
+                    <TButtonContained
                         onPress={() => navigation.navigate('createAccountUsername')}
-                        style={styles.marginBottom}
+                        style={commonStyles.marginBottom}
                     >
                         Create Account
-                    </TButton>
-                    <TButton mode="outlined" onPress={() => navigation.navigate('test')} style={styles.marginBottom}>
+                    </TButtonContained>
+                    <TButtonOutlined
+                        onPress={() => navigation.navigate('fingerprint')}
+                        style={commonStyles.marginBottom}
+                    >
                         Login
-                    </TButton>
-                    <TCaption style={[styles.center]}>
+                    </TButtonOutlined>
+                    <TCaption style={commonStyles.textAlignCenter}>
                         By creating an account, you agree to our <TLink>Terms & Conditions</TLink> and agree to &nbsp;
                         <TLink>Privacy Policy</TLink>
                     </TCaption>
@@ -70,13 +72,9 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
     },
-    center: { textAlign: 'center' },
     logo: {
         alignSelf: 'center',
         height: '50%',
         resizeMode: 'contain',
-    },
-    marginBottom: {
-        marginBottom: 16,
     },
 });

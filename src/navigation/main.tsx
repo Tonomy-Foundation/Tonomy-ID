@@ -14,15 +14,9 @@ import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 
 import DrawerNavigation from './drawer';
 import settings from '../settings';
-import {
-    NavigationContainer,
-    DarkTheme as NavigationDarkTheme,
-    DefaultTheme as NavigationDefaultTheme,
-} from '@react-navigation/native';
-import { DarkTheme as PaperDarkTheme, useTheme } from 'react-native-paper';
+import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
+import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
-
-const CombinedDarkTheme = merge(NavigationDarkTheme, PaperDarkTheme);
 
 const Stack = createNativeStackNavigator();
 
@@ -95,8 +89,13 @@ export default function MainNavigation() {
                             options={{ title: 'Create New Account' }}
                             component={CreateAccountPasswordScreen}
                         />
-                        <Stack.Screen name="fingerprint" component={FingerprintUpdateScreen} />
-                        <Stack.Screen name="pin" component={PinScreen} />
+
+                        <Stack.Screen
+                            name="fingerprint"
+                            options={{ title: 'Fingerprint Registration' }}
+                            component={FingerprintUpdateScreen}
+                        />
+                        <Stack.Screen name="pin" options={{ title: 'PIN' }} component={PinScreen} />
                     </>
                 )}
             </Stack.Navigator>
