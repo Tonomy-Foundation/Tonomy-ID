@@ -1,5 +1,5 @@
 {
-    "blockchainUrl": "http://192.168.68.110:8888",
+    "blockchainUrl": "http://10.209.10.128:8888",
     "theme": {
         "primaryColor": "#67D7ED",
         "secondaryColor": "#03dac4",

@@ -9,16 +9,22 @@ import { useNavigation } from '@react-navigation/native';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 const { KeyManagerLevel } = settings.sdk;
+import * as LocalAuthentication from 'expo-local-authentication';
+
 export default function CreateAccountContainer({ password }: { password: string }) {
     const user = useUserStore((state) => state.user);
     const navigation = useNavigation();
     const onNext = async () => {
         try {
-            const key = await user.keyManager.getKey({ level: KeyManagerLevel.FINGERPRINT });
-            if (!key) {
-                await user.saveFingerprint();
-                await updateKeys();
+            const authenticated = LocalAuthentication.authenticateAsync({
+                promptMessage: 'Authenticate to create account',
+            });
+            if (!authenticated) {
+                console.log("User didn't authenticate");
+                return;
             }
+            // await user.saveFingerprint();
+            // await updateKeys();
         } catch (e) {
             console.log(e);
         }
