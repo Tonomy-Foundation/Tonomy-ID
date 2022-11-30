@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.4.1
-      - run: git clone -b development git@github.com:Tonomy-Foundation/Tonomy-ID-SDK.git ../Tonomy-ID-SDK
+      - run: git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git ../Tonomy-ID-SDK
       - run: cd ../Tonomy-ID-SDK
       - run: npm ci
       - run: ls ..
