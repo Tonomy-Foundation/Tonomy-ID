@@ -22,7 +22,9 @@ app.expo.android.adaptiveIcon.foregroundImage = settings.config.images.logo1024;
 app.expo.web.favicon = settings.config.images.logo48;
 app.expo.version = myPackage.version;
 
-if (settings.env !== 'development') {
+if (!['development', 'designonly'].includes(settings.env)) {
+    console.log('Replacing expoProjectId');
+    // @ts-ignore
     app.expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 

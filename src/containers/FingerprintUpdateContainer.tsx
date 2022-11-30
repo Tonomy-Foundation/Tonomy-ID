@@ -1,33 +1,46 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image } from 'react-native';
-import TButton from '../components/Tbutton';
-import { TH1 } from '../components/THeadings';
-import settings from '../settings';
+import { StyleSheet, Text, View } from 'react-native';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { TH1, TP } from '../components/atoms/THeadings';
+import FingerprintIcon from '../assets/icons/FingerprintIcon';
+import LayoutComponent from '../components/layout';
+import { commonStyles } from '../utils/theme';
 
 export default function CreateAccountContainer() {
     return (
-        <View style={styles.container}>
-            <View>
-                <TH1>Would you like to add a fingerprint for added security?</TH1>
-            </View>
-            <View>
-                <Text>This is easier than using your PIN every time</Text>
-            </View>
-            <Image source={require('../assets/images/fingerprint.png')}></Image>
-
-            <View>
-                <TButton>Next</TButton>
-                <TButton color={settings.config.theme.secondaryColor}>Skip</TButton>
-            </View>
-
-            <StatusBar style="auto" />
-        </View>
+        <LayoutComponent
+            body={
+                <View>
+                    <View>
+                        <TH1>Would you like to add a fingerprint for added security?</TH1>
+                    </View>
+                    <View>
+                        <TP size={1}>This is easier than using your PIN every time.</TP>
+                    </View>
+                    <View style={styles.imageWrapper}>
+                        <FingerprintIcon style={styles.image}></FingerprintIcon>
+                    </View>
+                </View>
+            }
+            footer={
+                <View>
+                    <TButtonContained style={commonStyles.marginBottom}>Next</TButtonContained>
+                    <TButtonOutlined style={commonStyles.marginBottom}>Skip</TButtonOutlined>
+                </View>
+            }
+        />
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    image: {
+        marginTop: 50,
+        alignSelf: 'center',
+        width: 200,
+        height: 200,
+    },
+    imageWrapper: {
+        padding: 40,
+        alignSelf: 'center',
     },
 });

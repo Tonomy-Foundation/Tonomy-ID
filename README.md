@@ -19,39 +19,36 @@ Features:
 
 ## Dependancies
 
-- [Expo](https://expo.dev)  v45.0.0
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
-- [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with npm
+- [Expo-cli](https://expo.dev)  v45.0.0 globally installed with `npm i -g expo-cli@5.5.1`
+- [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with `npm i -g eas-cli@2.2.1`
 
 ## Pre-run build (first time and each time new RN only packages are installed)
 
+This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app.
+
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
-2. (optional for staging) Run `export NODE_ENV=staging` for staging
-3. Run `npm run prepare`
-4. (optional for first time) Remove the following lines from `app.json`
+2. (optional for staging only) Run `export NODE_ENV=staging` for staging
+3. Run `npm run build:prepare`
+4. (optional for first time build) Remove the following lines from `app.default.json`
 
 ```json
-"extra": {
-    "eas": {
+    "extra": {
+      "eas": {
         "projectId": "afffe2ee-9f93-4d18-9361-df30429cbd98"
+      }
     }
-}
 ```
 
-For future runs, make sure the `projectId` matches the one in [https://expo.dev/](https://expo.dev/) website.
+4. (optional for IOS only) Run `eas device:create` to create a device profile for your phone
+5. Run `eas build --profile development --platform ios` (ios) or `eas build --profile development --platform android` (android) to build the app for your phone
+6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
+7. Install the created app on your phone
 
-5. (optional for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
-6. Run `npm run build:ios` or `npm run build:android` to build the app for your phone
-7. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
-8. Install the created app on your phone
+## File structure of components
 
-## Run
-
-1. Install packages with `npm install`.
-2. (optional) To run in staging mode call `export NODE_ENV=staging`
-3. Run `npm start` to start the development server.
-4. Scan the QR via your phone camera to run the app on your phone or login in the installed app on your phone and select the project
+[https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
 
 ## Linting
 
@@ -66,3 +63,42 @@ npm run lint
 Set the configuration variables in the desired file in `./src/config`
 
 `config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
+
+## Error handling
+
+See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code. All errors are either expected or unexpected, depending on weather the user will create the error, or somethig has gone wrong nothing to do with the user. This helps us distinguish errors that we should fix as developers. Please maintain the list of files and their error code numeration in [errors.ts](./src/utils/errors.ts).
+
+# Standalone run
+
+1. clone the [tonomy id](https://github.com/Tonomy-Foundation/Tonomy-ID.git) repo and change the branch to `development` or run
+
+```bash
+git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
+```
+
+2. clone the [tonomy id sdk](https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git) repo and change the branch to `development` or run
+
+```bash
+git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
+```
+
+3. run `npm install` in Tonomy-ID-SDK if it fails run it again, then in Tonomy-ID
+4. run `sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/` in the `Tonomy-ID` directory
+5. run `export NODE_ENV=designonly` to run the app standalone without the backend. for a whole app environment check this repo [link](https://github.com/Tonomy-Foundation/Tonomy-ID-Integration.git)
+5. check that you have followed all the steps in the `pre-run build` section
+6. change to the `Tonomy-ID` directory and run `npm start`
+
+To do all steps at once:
+
+```bash
+git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
+git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
+cd Tonomy-ID-SDK
+npm i
+npm i
+cd ../Tonomy-ID
+npm i
+sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/
+export NODE_ENV=designonly
+npm start
+```

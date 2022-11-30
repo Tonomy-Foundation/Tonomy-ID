@@ -1,52 +1,53 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native';
-import TButton from '../components/Tbutton';
+import { TButtonContained } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
-import { TH1 } from '../components/THeadings';
-import TA from '../components/TA';
+import { TH1, TP } from '../components/atoms/THeadings';
+import theme, { commonStyles } from '../utils/theme';
+import TInfoBox from '../components/TInfoBox';
+import LayoutComponent from '../components/layout';
 
 type SplashScreenContainerProps = {
     navigation: NavigationProp<any>;
     title: string;
     subtitle: string;
     imageSource: ImageSourcePropType;
+    icon: string;
     description: string;
-    learnMoreUrl: string;
+    linkUrl: string;
+    linkUrlText: string;
     buttonText: string;
     buttonOnPress: () => void;
 };
 
 export default function SplashScreenContainer(props: SplashScreenContainerProps) {
     return (
-        <View style={styles.container}>
-            <View>
-                <Text>
-                    <TH1>{props.title}</TH1>
-                </Text>
-            </View>
-            <View>
-                <Text>{props.subtitle}</Text>
-            </View>
-            <View>
-                <Image source={props.imageSource}></Image>
-            </View>
-            <View>
-                <Text>{props.description}</Text>
-            </View>
-            <View>
-                <Text>
-                    <TA href={props.learnMoreUrl}>Learn more</TA>
-                </Text>
-            </View>
-            <View>
-                <TButton onPress={props.buttonOnPress}>{props.buttonText}</TButton>
-            </View>
-        </View>
+        <LayoutComponent
+            body={
+                <View style={commonStyles.alignItemsCenter}>
+                    <TH1 style={commonStyles.marginBottom}>{props.title}</TH1>
+                    <TP size={2} style={commonStyles.textAlignCenter}>
+                        {props.subtitle}
+                    </TP>
+                    <Image style={styles.image} source={props.imageSource}></Image>
+                    <TInfoBox
+                        align="center"
+                        description={props.description}
+                        icon={props.icon}
+                        linkUrl={props.linkUrl}
+                        linkUrlText={props.linkUrlText}
+                    ></TInfoBox>
+                </View>
+            }
+            footer={<TButtonContained onPress={props.buttonOnPress}>{props.buttonText}</TButtonContained>}
+        />
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    image: {
+        marginTop: 50,
+        alignSelf: 'center',
+        height: 220,
     },
 });
