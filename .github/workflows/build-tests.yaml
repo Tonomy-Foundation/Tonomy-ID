@@ -17,9 +17,8 @@ jobs:
       - run: git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git ../Tonomy-ID-SDK
       - run: cd ../Tonomy-ID-SDK
       - run: npm ci
-      - run: ls ..
       - run: cd ../Tonomy-ID
-      - run: sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/
       - run: npm ci
+      - run: sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/
       - run: npm run build --if-present
       - run: npm test
