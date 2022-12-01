@@ -1,18 +1,18 @@
 import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
 import argon2 from 'react-native-argon2';
 import * as SecureStore from 'expo-secure-store';
-import settings from '../settings';
-import { KeyManager, GetKeyOptions, SignDataOptions, StoreKeyOptions } from 'tonomy-id-sdk';
-import { ApplicationErrors, throwError } from './errors';
-
-const {
+import {
+    KeyManager,
+    GetKeyOptions,
+    SignDataOptions,
+    StoreKeyOptions,
     KeyManagerLevel,
     randomBytes,
     randomString,
     sha256,
-
     decodeHex,
-} = settings.sdk;
+} from 'tonomy-id-sdk';
+import { ApplicationErrors, throwError } from './errors';
 
 type KeyStorage = {
     privateKey: PrivateKey;
