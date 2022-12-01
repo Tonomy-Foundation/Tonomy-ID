@@ -79,7 +79,6 @@ export default class RNKeyManager implements KeyManager {
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
             if (keyStore.hashedSaltedChallenge !== hashedSaltedChallenge) throw new Error('Challenge does not match');
         }
-        console.warn(keyStore.privateKey);
         const privateKey = PrivateKey.from(keyStore.privateKey);
         let digest: Checksum256;
         if (options.data instanceof String) {
@@ -103,7 +102,9 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async getKey(options: GetKeyOptions): Promise<PublicKey | null> {
-        const key = await SecureStore.getItemAsync(options.level, { requireAuthentication: true });
+        const key = await SecureStore.getItemAsync(options.level, {
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+        });
         if (!key) return null;
         const keyStore = JSON.parse(key) as KeyStorage;
         return keyStore.publicKey;

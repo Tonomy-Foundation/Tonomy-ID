@@ -27,7 +27,7 @@ export default function CreateAccountContainer({ password }: { password: string 
 
             await updateKeys();
         } catch (e) {
-            console.error(e);
+            //TODO: handle error with generic error component
         }
     };
 
@@ -50,6 +50,7 @@ export default function CreateAccountContainer({ password }: { password: string 
                 >
                     <View>
                         <TP>You don’t have your fingerprint registered, please register it with your device.</TP>
+                        {/* TODO: link to open settings */}
                     </View>
                 </TModal>
             )}
