@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
@@ -18,6 +18,13 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
             color: text,
         },
     });
+
+    useEffect(() => {
+        throwUnhandledError();
+
+        throw new Error('Unhandled error');
+    }, []);
+
     return (
         <LayoutComponent
             body={
@@ -58,6 +65,10 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
             }
         ></LayoutComponent>
     );
+}
+
+async function throwUnhandledError() {
+    throw new Error('Unhandled promise error');
 }
 
 const styles = StyleSheet.create({
