@@ -1,6 +1,7 @@
 import { Checksum256, Name } from '@greymass/eosio';
 import { PushTransactionResponse } from '@greymass/eosio/src/api/v1/types';
-import { GetPersonResponse, KeyManager, TonomyUsername, User as TUser } from 'tonomy-id-sdk';
+//@ts-ignore
+import { GetPersonResponse, KeyManager, TonomyUsername, User as TUser, App } from 'tonomy-id-sdk';
 
 function initialize(storage: any, keymanger: any, settings: any) {
     return new User(storage, keymanger, settings);
@@ -10,6 +11,8 @@ class User implements TUser {
     storage;
     keyManager: KeyManager;
     settings;
+    app: App;
+
     constructor(storage: any, keymanger: KeyManager, settings: any) {
         this.storage = storage;
         this.keyManager = keymanger;
