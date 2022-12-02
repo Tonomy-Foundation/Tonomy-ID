@@ -3,15 +3,25 @@ import TModal from './TModal';
 import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
 import { TButtonText } from './atoms/Tbutton';
+import { TP } from './atoms/THeadings';
 
 export type ModalProps = React.ComponentProps<typeof TModal> & {
     onPress: () => void;
     title?: string;
     error?: Error;
+    expected?: boolean;
 };
 
 export default function TErrorModal(props: ModalProps) {
     const [expanded, setExpanded] = useState(false);
+
+    function switchExpanded() {
+        setExpanded(!expanded);
+    }
+
+    if (props?.expected === false) {
+        // TODO: log to team
+    }
 
     return (
         <TModal
@@ -23,27 +33,33 @@ export default function TErrorModal(props: ModalProps) {
             iconColor={theme.colors.error}
         >
             {props.children}
+
             {props.error && (
                 <>
                     <View>
-                        <Text>{props.error.message}</Text>
+                        <TP size={1}>{props.error.message}</TP>
                     </View>
+
+                    {props?.expected === false && (
+                        <View>
+                            <Text>The Tonomy Foundation has automatically been notified of this error</Text>
+                        </View>
+                    )}
+
                     {expanded && (
                         <>
-                            <View>
-                                <Text>{props.error.message}</Text>
-                            </View>
-                            {props.error.stack && (
+                            {/* TODO Show Antelope error */}
+                            {props.error.cause && (
                                 <View>
                                     <Text>
-                                        <Text style={styles.boldText}>Stack:</Text> {props.error.stack}
+                                        <Text style={styles.boldText}>Cause:</Text> {props.error.cause}
                                     </Text>
                                 </View>
                             )}
                         </>
                     )}
                     <View>
-                        <TButtonText>{expanded ? 'Hide Error' : 'View Error'}</TButtonText>
+                        <TButtonText onPress={switchExpanded}>{expanded ? 'Hide Error' : 'View Error'}</TButtonText>
                     </View>
                 </>
             )}
