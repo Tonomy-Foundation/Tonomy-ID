@@ -7,12 +7,18 @@ import MainNavigation from './src/navigation/main';
 import 'expo-dev-client';
 import theme from './src/utils/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import setErrorHandlers from './src/utils/exceptions';
+import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
+
+setErrorHandlers();
 
 export default function App() {
     return (
         <PaperProvider theme={theme}>
             <SafeAreaProvider>
-                <MainNavigation></MainNavigation>
+                <ErrorHandlerContainer>
+                    <MainNavigation />
+                </ErrorHandlerContainer>
             </SafeAreaProvider>
         </PaperProvider>
     );
