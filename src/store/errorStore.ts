@@ -1,18 +1,18 @@
 import create from 'zustand';
 
 interface ErrorState {
-    error: Error | null;
+    error: Error | undefined;
     setError: (error: Error) => void;
     unSetError: () => void;
 }
 
 const useErrorStore = create<ErrorState>((set, get) => ({
-    error: null,
+    error: undefined,
     setError: (error: Error) => {
         set({ error });
     },
     unSetError: () => {
-        set({ error: null });
+        set({ error: undefined });
     },
 }));
 

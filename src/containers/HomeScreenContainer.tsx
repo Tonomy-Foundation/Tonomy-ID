@@ -21,20 +21,19 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
         },
     });
 
-    useErrorStore().setError(new Error('Jacks new error error'));
+    const errorStore = useErrorStore();
 
-    useEffect(() => {
-        // throws unhandled promise rejection. not caught
-        // throwUnhandledError();
-        // throws a JSException. caught with setJSExceptionHandler
-        // throw new Error('Unhandled error');
-    }, []);
+    function helpPress() {
+        errorStore.setError(new Error('Jacks new error error'));
+    }
 
     return (
         <LayoutComponent
             body={
                 <View style={styles.header}>
-                    <TButtonText style={styles.headerButton}>Need Help?</TButtonText>
+                    <TButtonText style={styles.headerButton} onPress={helpPress}>
+                        Need Help?
+                    </TButtonText>
                     <View style={styles.imgContainer}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
@@ -54,7 +53,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                         onPress={() => navigation.navigate('createAccountUsername')}
                         style={commonStyles.marginBottom}
                     >
-                        Create Account2222333
+                        Create Account
                     </TButtonContained>
                     <TButtonOutlined
                         onPress={() => navigation.navigate('fingerprint')}
