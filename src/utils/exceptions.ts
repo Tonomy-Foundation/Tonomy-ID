@@ -1,7 +1,8 @@
-import { Alert } from 'react-native';
+// import { Alert } from 'react-native';
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
+import { ErrorState } from '../store/errorStore';
 
-export default function setErrorHandlers() {
+export default function setErrorHandlers(errorStore: ErrorState) {
     global.onunhandledrejection = function (error) {
         console.error('onunhandledrejection()', error.reason);
 
@@ -9,35 +10,40 @@ export default function setErrorHandlers() {
         // this handler is called a second time by Bluebird with a custom "dom-event".
         // We need to filter this case out:
         if (error instanceof Error) {
-            console.error('onunhandledrejection()', error.message);
-            Alert.alert('onunhandledrejection()', `Unhandled Promise Rejection: ${error.message}`, [{ text: 'Close' }]);
-            // alert('onunhandledrejection()');
-            // TODO log error
-            // logError(error);  // Your custom error logging/reporting code
+            console.error('onunhandledrejection() Error', error.message);
+            // TODO report to TF
+
+            errorStore.setError({ error, title: 'Unhandled error', expected: false });
         }
     };
 
     setJSExceptionHandler((e: Error, isFatal) => {
         console.log('setJSExceptionHandler()', e.message, isFatal);
         console.error(JSON.stringify(e, null, 2));
-        // e.stack, e.message, e.cause, e.name
+        // TODO report to TF
+
         if (isFatal) {
-            Alert.alert(
-                'Unexpected error occurred',
-                `
-              Error: ${isFatal ? 'Fatal:' : ''} ${e.name} ${e.message}
-              We have reported this to our team ! Please close the app and start again!
-              `,
-                [
-                    {
-                        text: 'Close',
-                    },
-                ]
-            );
+            errorStore.setError({ error, title: 'Unexpected fatal error', expected: false });
+
+            // Alert.alert(
+            //     'Unexpected error occurred',
+            //     `
+            //   Error: ${isFatal ? 'Fatal:' : ''} ${e.name} ${e.message}
+            //   We have reported this to our team ! Please close the app and start again!
+            //   `,
+            //     [
+            //         {
+            //             text: 'Close',
+            //         },
+            //     ]
+            // );
+        } else {
+            errorStore.setError({ error: e, title: 'Unexpected error', expected: false });
         }
     }, true);
 
     setNativeExceptionHandler((errorString) => {
         console.error(`setNativeExceptionHandler(): ${errorString}`);
+        // TODO report to TF
     });
 }

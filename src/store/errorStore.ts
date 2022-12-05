@@ -1,6 +1,6 @@
 import create from 'zustand';
 
-interface ErrorState {
+export interface ErrorState {
     error?: Error;
     title?: string;
     expected?: boolean;

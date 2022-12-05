@@ -9,10 +9,13 @@ import theme from './src/utils/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import setErrorHandlers from './src/utils/exceptions';
 import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
-
-setErrorHandlers();
+import useErrorStore from './src/store/errorStore';
 
 export default function App() {
+    const errorStore = useErrorStore();
+
+    setErrorHandlers(errorStore);
+
     return (
         <PaperProvider theme={theme}>
             <SafeAreaProvider>
