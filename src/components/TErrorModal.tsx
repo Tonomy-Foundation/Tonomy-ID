@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
 import { TButtonText } from './atoms/Tbutton';
 import { TP } from './atoms/THeadings';
+import { HttpError, EosioUtil, SdkError } from 'tonomy-id-sdk';
 
 export type ModalProps = React.ComponentProps<typeof TModal> & {
     onPress: () => void;
@@ -20,7 +21,38 @@ export default function TErrorModal(props: ModalProps) {
     }
 
     if (props?.expected === false) {
-        // TODO: log to team
+        // TODO: log to Tonomy Foundation team
+    }
+
+    function isExpandableErrorType() {
+        return props?.error instanceof HttpError || props?.error instanceof EosioUtil.AntelopePushTransactionError;
+    }
+    function isExpandable() {
+        return isExpandableErrorType() || props?.code || props?.cause;
+    }
+
+    function ErrorDetails() {
+        if (props.error instanceof HttpError) {
+            return (
+                <View>
+                    <TP size={2}>Path: {props.error.path}</TP>
+                    <TP size={2}>Response: {props.error.response}</TP>
+                    <TP size={2}>SourceUrl: {props.error.sourceURL}</TP>
+                </View>
+            );
+        } else if (props.error instanceof EosioUtil.AntelopePushTransactionError) {
+            const trxError = props.error.error;
+
+            return (
+                <View>
+                    <TP size={2}>Trx error:</TP>
+                    <TP size={2}>Code: {trxError.code}</TP>
+                    <TP size={2}>Name: {trxError.name}</TP>
+                    <TP size={2}>What: {trxError.what}</TP>
+                    <TP size={2}>Details: {JSON.stringify(trxError.details, null, 2)}</TP>
+                </View>
+            );
+        }
     }
 
     return (
@@ -46,21 +78,34 @@ export default function TErrorModal(props: ModalProps) {
                         </View>
                     )}
 
-                    {expanded && (
+                    {isExpandable() && expanded && (
                         <>
-                            {/* TODO Show Antelope error */}
-                            {props.error.cause && (
-                                <View>
-                                    <Text>
-                                        <Text style={styles.boldText}>Cause:</Text> {props.error.cause}
-                                    </Text>
-                                </View>
+                            {expanded && (
+                                <>
+                                    {isExpandableErrorType() && <ErrorDetails />}
+                                    {props.error.code && (
+                                        <View>
+                                            <Text>
+                                                <Text style={styles.boldText}>Code:</Text> {props.error.code}
+                                            </Text>
+                                        </View>
+                                    )}
+                                    {props.error.cause && (
+                                        <View>
+                                            <Text>
+                                                <Text style={styles.boldText}>Cause:</Text> {props.error.cause}
+                                            </Text>
+                                        </View>
+                                    )}
+                                </>
                             )}
+                            <View>
+                                <TButtonText onPress={switchExpanded}>
+                                    {expanded ? 'Hide Error' : 'View Error'}
+                                </TButtonText>
+                            </View>
                         </>
                     )}
-                    <View>
-                        <TButtonText onPress={switchExpanded}>{expanded ? 'Hide Error' : 'View Error'}</TButtonText>
-                    </View>
                 </>
             )}
         </TModal>
