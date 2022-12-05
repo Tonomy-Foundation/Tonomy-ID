@@ -8,6 +8,8 @@ import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
+import { sleep } from '../utils/sleep';
+import useErrorStore from '../store/errorStore';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const {
@@ -19,10 +21,13 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
         },
     });
 
-    useEffect(() => {
-        throwUnhandledError();
+    useErrorStore().setError(new Error('Jacks new error error'));
 
-        throw new Error('Unhandled error');
+    useEffect(() => {
+        // throws unhandled promise rejection. not caught
+        // throwUnhandledError();
+        // throws a JSException. caught with setJSExceptionHandler
+        // throw new Error('Unhandled error');
     }, []);
 
     return (
@@ -49,7 +54,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                         onPress={() => navigation.navigate('createAccountUsername')}
                         style={commonStyles.marginBottom}
                     >
-                        Create Account
+                        Create Account2222333
                     </TButtonContained>
                     <TButtonOutlined
                         onPress={() => navigation.navigate('fingerprint')}
@@ -68,6 +73,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
 }
 
 async function throwUnhandledError() {
+    await sleep(4000);
     throw new Error('Unhandled promise error');
 }
 

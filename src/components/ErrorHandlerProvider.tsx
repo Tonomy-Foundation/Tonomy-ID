@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import useErrorStore from '../store/errorStore';
 import TErrorModal from './TErrorModal';
 
 export default function ErrorHandlerProvider(props: any) {
-    const [showModal, setShowModal] = useState(true);
+    const errorStore = useErrorStore();
+
+    const [showModal, setShowModal] = useState(errorStore.error !== null);
 
     async function onModalPress() {
+        errorStore.unSetError();
         setShowModal(false);
     }
-
-    const e1 = new Error('Jacks error');
 
     return (
         <>
             {props.children}
-            <TErrorModal visible={showModal} onPress={onModalPress} error={e1} />
+            <TErrorModal
+                visible={showModal}
+                onPress={onModalPress}
+                error={errorStore.error as Error}
+                expected={false}
+            />
         </>
     );
 }
-
-const errorModalStyles = StyleSheet.create({
-    marginTop: {
-        marginTop: 6,
-    },
-});
