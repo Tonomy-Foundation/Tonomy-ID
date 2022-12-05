@@ -53,6 +53,7 @@ export default function TErrorModal(props: ModalProps) {
                 </View>
             );
         }
+        throw new Error('Other error types should not be expandable');
     }
 
     return (
@@ -74,7 +75,7 @@ export default function TErrorModal(props: ModalProps) {
 
                     {props?.expected === false && (
                         <View>
-                            <Text>The Tonomy Foundation has automatically been notified of this error</Text>
+                            <Text>The Tonomy Foundation has been notified</Text>
                         </View>
                     )}
 
