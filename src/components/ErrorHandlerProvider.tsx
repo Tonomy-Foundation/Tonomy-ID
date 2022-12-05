@@ -14,14 +14,17 @@ export default function ErrorHandlerProvider(props: any) {
         setShowModal(false);
     }
 
-    const errorRef = useRef(useErrorStore.getState().error);
+    // gets the initial value of the error state
+    const errorRef = useRef(useErrorStore.getState());
 
     useEffect(
         () =>
             // subscribe to errorStore changes to update the modal
             // using the `errorStore` variable does not work as changes do not force a re-render
             useErrorStore.subscribe((state) => {
-                errorRef.current = state.error;
+                errorRef.current.error = state.error;
+                errorRef.current.title = state.title;
+                errorRef.current.expected = state.expected;
                 if (state.error) {
                     setShowModal(true);
                 }
@@ -32,7 +35,13 @@ export default function ErrorHandlerProvider(props: any) {
     return (
         <>
             {props.children}
-            <TErrorModal visible={showModal} onPress={onModalPress} error={errorRef.current} expected={false} />
+            <TErrorModal
+                visible={showModal}
+                onPress={onModalPress}
+                error={errorRef.current.error}
+                title={errorRef.current.title}
+                expected={errorRef.current.expected}
+            />
         </>
     );
 }

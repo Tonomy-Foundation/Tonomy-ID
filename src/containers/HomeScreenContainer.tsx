@@ -24,7 +24,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
     const errorStore = useErrorStore();
 
     function helpPress() {
-        errorStore.setError(new Error('Jacks new error error'));
+        errorStore.setError({ error: new Error('Jacks new error error'), title: 'Jack error' });
     }
 
     return (
