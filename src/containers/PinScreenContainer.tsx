@@ -7,6 +7,7 @@ import TPin from '../components/TPin';
 import useUserStore from '../store/userStore';
 import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
+import useErrorStore from '../store/errorStore';
 
 export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const [confirming, setConfirming] = useState(false);
@@ -17,6 +18,7 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
     const [errorMessage, setErrorMessage] = useState('');
 
     const user = useUserStore().user;
+    const errorStore = useErrorStore();
 
     function onPinChange(pin: string) {
         setPin(pin);
@@ -28,7 +30,13 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
         setLoading(true);
         if (confirming) {
             if (pin === confirmPin) {
-                await user.savePIN(pin);
+                try {
+                    await user.savePIN(pin);
+                } catch (e) {
+                    errorStore.setError({ error: e, expected: false });
+                    setLoading(false);
+                    return;
+                }
                 navigation.navigate('fingerprint');
             } else {
                 setErrorMessage('PINs do not match');

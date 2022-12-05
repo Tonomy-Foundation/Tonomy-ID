@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
@@ -8,8 +8,6 @@ import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
-import { sleep } from '../utils/sleep';
-import useErrorStore from '../store/errorStore';
 
 export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const {
@@ -21,19 +19,11 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
         },
     });
 
-    const errorStore = useErrorStore();
-
-    function helpPress() {
-        errorStore.setError({ error: new Error('Jacks new error error'), title: 'Jack error' });
-    }
-
     return (
         <LayoutComponent
             body={
                 <View style={styles.header}>
-                    <TButtonText style={styles.headerButton} onPress={helpPress}>
-                        Need Help?
-                    </TButtonText>
+                    <TButtonText style={styles.headerButton}>Need Help?</TButtonText>
                     <View style={styles.imgContainer}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
@@ -69,11 +59,6 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
             }
         ></LayoutComponent>
     );
-}
-
-async function throwUnhandledError() {
-    await sleep(4000);
-    throw new Error('Unhandled promise error');
 }
 
 const styles = StyleSheet.create({
