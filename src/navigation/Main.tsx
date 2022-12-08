@@ -33,7 +33,7 @@ export default function MainNavigation() {
             })}
         >
             <Tab.Screen name="home" options={{ tabBarLabel: 'Data' }} component={MainScreen} />
-            <Tab.Screen name="main" options={{ tabBarLabel: 'Not Data' }} component={MainScreen} />
+            <Tab.Screen name="notHome" options={{ tabBarLabel: 'Not Data' }} component={MainScreen} />
         </Tab.Navigator>
     );
 }

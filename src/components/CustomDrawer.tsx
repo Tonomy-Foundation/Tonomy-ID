@@ -2,7 +2,6 @@ import React from 'react';
 
 import { DrawerContentScrollView, DrawerContentComponentProps, DrawerItem } from '@react-navigation/drawer';
 import { Image, StyleSheet, View } from 'react-native';
-
 import TButton from './atoms/Tbutton';
 import { useTheme } from '@react-navigation/native';
 

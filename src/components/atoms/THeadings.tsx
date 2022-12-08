@@ -14,7 +14,7 @@ export function TH1(props: THProps) {
 
 export function TH2(props: THProps) {
     return (
-        <Text {...props} style={styles.h2}>
+        <Text {...props} style={[styles.h2]}>
             {props.children}
         </Text>
     );
