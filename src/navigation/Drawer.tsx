@@ -1,11 +1,12 @@
 import React from 'react';
 import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigation/drawer';
 
-import HomeScreen from '../screens/testScreen';
+import TestScreen from '../screens/testScreen';
 import CustomDrawer from '../components/CustomDrawer';
-import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import { useTheme } from 'react-native-paper';
-
+import MainScreen from '../screens/MainScreen';
+import settings from '../settings';
+import MainNavigation from './Main';
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigation() {
@@ -26,10 +27,10 @@ export default function DrawerNavigation() {
             initialRouteName="t"
             screenOptions={defaultScreenOptions}
         >
-            <Drawer.Screen name="t" component={HomeScreen} />
-            <Drawer.Screen name="settings" component={HomeScreen} />
-            <Drawer.Screen name="help" component={HomeScreen} options={{ title: 'Help and Info' }} />
-            <Drawer.Screen name="logout" component={HomeScreen} />
+            <Drawer.Screen name="main" options={{ title: settings.config.appName }} component={MainNavigation} />
+            <Drawer.Screen name="settings" component={TestScreen} />
+            <Drawer.Screen name="help" component={TestScreen} options={{ title: 'Help and Info' }} />
+            <Drawer.Screen name="logout" component={TestScreen} />
         </Drawer.Navigator>
     );
 }

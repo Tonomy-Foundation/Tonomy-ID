@@ -1,12 +1,12 @@
 {
-    "blockchainUrl": "http://localhost:8888",
+    "blockchainUrl": "http://192.168.68.109:8888",
     "theme": {
         "primaryColor": "#67D7ED",
         "secondaryColor": "#03dac4",
         "tertiaryColor": "white"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
-    "appName": "Tonomy ID Development",
+    "appName": "Tonomy ID",
     "ecosystemName": "Tonomy Development",
     "appSlogan": "Building ecosystems of trust",
     "images": {

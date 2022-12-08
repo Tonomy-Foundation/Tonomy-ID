@@ -12,7 +12,7 @@ import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 
-import DrawerNavigation from './drawer';
+import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
@@ -20,7 +20,7 @@ import merge from 'deepmerge';
 
 const Stack = createNativeStackNavigator();
 
-export default function MainNavigation() {
+export default function RootNavigation() {
     const user = useUserStore();
     const theme = useTheme();
     // https://reactnavigation.org/docs/native-stack-navigator/#options
