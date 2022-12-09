@@ -4,12 +4,18 @@ Tonomy ID is the cross-platform mobile wallet (Android and iOS) for public and p
 
 Tonomy ID is a React Native application in typescript.
 
-## Dependancies
+## Dependencies
 
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 - [Expo-cli](https://expo.dev)  v45.0.0 globally installed with `npm i -g expo-cli@5.5.1`
 - [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with `npm i -g eas-cli@2.2.1`
+
+## Install
+
+```bash
+npm i
+```
 
 ## Pre-run build (first time and each time new RN only packages are installed)
 
@@ -36,10 +42,9 @@ Having issues here or running the app? Checkout:
 
 https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROUBLESHOOT.md
 
-# Standalone run
+## Run
 
 ```bash
-npm i
 npm start
 ```
 
@@ -47,7 +52,17 @@ npm start
 
 [https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
 
-## Linting
+### Configuration
+
+Set the configuration variables in the desired file in `./src/config`
+
+`config.json` is used by default. Staging config file is choosing based on the value of environment variable `NODE_ENV`
+
+Other environment variables override the values in the config file:
+
+- BLOCKCHAIN_URL
+
+### Linting
 
 Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
 
@@ -55,16 +70,6 @@ Linting is done with `eslint`. Install the recommended VS Code plugin to see mar
 npm run lint
 ```
 
-### Configuration
-
-Set the configuration variables in the desired file in `./src/config`
-
-`config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
-
-Other environment variables override the values in the config file:
-
-- BLOCKCHAIN_URL
-
-## Error handling
+### Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
