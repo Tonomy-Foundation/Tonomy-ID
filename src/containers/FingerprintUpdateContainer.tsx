@@ -7,8 +7,6 @@ import LayoutComponent from '../components/layout';
 import useUserStore from '../store/userStore';
 import { useNavigation } from '@react-navigation/native';
 import { commonStyles } from '../utils/theme';
-import settings from '../settings';
-const { KeyManagerLevel } = settings.sdk;
 import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
 
