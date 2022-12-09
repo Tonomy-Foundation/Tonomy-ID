@@ -52,12 +52,13 @@ switch (env) {
         config = require('./config/config.json');
         // TODO add production config when ready
         break;
-    case 'designonly':
-        config = require('./config/config.json');
-        break;
-
     default:
         throw new Error('Unknown environment: ' + env);
+}
+
+if (process.env.BLOCKCHAIN_URL) {
+    console.log(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);
+    config.blockchainUrl = process.env.BLOCKCHAIN_URL;
 }
 
 settings.config = config;

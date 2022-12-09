@@ -29,7 +29,6 @@ Features:
 This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app.
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
-2. (optional for staging only) Run `export NODE_ENV=staging` for staging
 3. Run `npm run build:prepare`
 4. (optional for first time build) Remove the following lines from `app.default.json`
 
@@ -40,33 +39,15 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
       }
     }
 ```
-
-4. (optional for IOS only) Run `eas device:create` to create a device profile for your phone
-5. Run `eas build --profile development --platform ios` (ios) or `eas build --profile development --platform android` (android) to build the app for your phone
+4. (optional to connect to an existing project) change the value of "projectId" in `app.default.json` to the vale of the project in [https://expo.dev](https://expo.dev)
+5. (for IOS only) Run `npm run build:ios:create` to create a device profile for your phone 
+5. Run `npm run build:ios` (ios) or `npm run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
 7. Install the created app on your phone
 
-## File structure of components
+Having issues here or running the app? Checkout:
 
-[https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
-
-## Linting
-
-Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
-
-```bash
-npm run lint
-```
-
-### Configuration
-
-Set the configuration variables in the desired file in `./src/config`
-
-`config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
-
-## Error handling
-
-See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code. All errors are either expected or unexpected, depending on weather the user will create the error, or somethig has gone wrong nothing to do with the user. This helps us distinguish errors that we should fix as developers. Please maintain the list of files and their error code numeration in [errors.ts](./src/utils/errors.ts).
+https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROUBLESHOOT.md
 
 # Standalone run
 
@@ -102,3 +83,26 @@ sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/
 export NODE_ENV=designonly
 npm start
 ```
+
+
+## File structure of components
+
+[https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
+
+## Linting
+
+Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
+
+```bash
+npm run lint
+```
+
+### Configuration
+
+Set the configuration variables in the desired file in `./src/config`
+
+`config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
+
+## Error handling
+
+See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code. All errors are either expected or unexpected, depending on weather the user will create the error, or somethig has gone wrong nothing to do with the user. This helps us distinguish errors that we should fix as developers. Please maintain the list of files and their error code numeration in [errors.ts](./src/utils/errors.ts).
