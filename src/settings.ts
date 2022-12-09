@@ -31,11 +31,9 @@ type SettingsType = {
     env: string;
     config: ConfigType;
     isProduction: () => boolean;
-    sdk: any;
 };
 
 let config: ConfigType;
-let sdk: any;
 const settings: SettingsType = {
     env,
     isProduction: () => settings.env === 'production',
@@ -46,21 +44,16 @@ switch (env) {
     case 'development':
         config = require('./config/config.json');
         // TODO find a better way switch images
-        sdk = require('tonomy-id-sdk');
-
         break;
     case 'staging':
         config = require('./config/config.staging.json');
-        sdk = require('tonomy-id-sdk');
         break;
     case 'production':
         config = require('./config/config.json');
-        sdk = require('tonomy-id-sdk');
         // TODO add production config when ready
         break;
     case 'designonly':
         config = require('./config/config.json');
-        sdk = require('./utils/mockSDK');
         break;
 
     default:
@@ -68,6 +61,5 @@ switch (env) {
 }
 
 settings.config = config;
-settings.sdk = sdk;
 
 export default settings;

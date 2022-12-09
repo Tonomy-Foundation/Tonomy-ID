@@ -7,15 +7,17 @@ import LayoutComponent from '../components/layout';
 import useUserStore from '../store/userStore';
 import { useNavigation } from '@react-navigation/native';
 import { commonStyles } from '../utils/theme';
-import settings from '../settings';
-const { KeyManagerLevel } = settings.sdk;
 import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
+import useErrorStore from '../store/errorStore';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
     const user = useUserStore((state) => state.user);
+    const errorStore = useErrorStore();
+
     const navigation = useNavigation();
+
     const onNext = async () => {
         try {
             const authenticated = LocalAuthentication.isEnrolledAsync();
@@ -27,7 +29,7 @@ export default function CreateAccountContainer({ password }: { password: string 
 
             await updateKeys();
         } catch (e) {
-            //TODO: handle error with generic error component
+            errorStore.setError({ error: e, expected: false });
         }
     };
 

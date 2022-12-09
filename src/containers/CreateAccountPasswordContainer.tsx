@@ -74,7 +74,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('fingerprint', { password });
+        navigation.navigate('pin', { password });
     }
 
     async function onUsernameErrorModalPress() {
