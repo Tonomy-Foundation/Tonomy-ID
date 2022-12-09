@@ -18,6 +18,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
             color: text,
         },
     });
+
     return (
         <LayoutComponent
             body={
