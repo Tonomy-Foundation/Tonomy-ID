@@ -1,5 +1,5 @@
 {
-    "blockchainUrl": "http://localhost:8888",
+    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "theme": {
         "primaryColor": "#67D7ED",
         "secondaryColor": "#03dac4",
