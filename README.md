@@ -38,39 +38,10 @@ https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROU
 
 # Standalone run
 
-1. clone the [tonomy id](https://github.com/Tonomy-Foundation/Tonomy-ID.git) repo and change the branch to `development` or run
-
 ```bash
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
-```
-
-2. clone the [tonomy id sdk](https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git) repo and change the branch to `development` or run
-
-```bash
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
-```
-
-3. run `npm install` in Tonomy-ID-SDK if it fails run it again, then in Tonomy-ID
-4. run `sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/` in the `Tonomy-ID` directory
-5. run `export NODE_ENV=designonly` to run the app standalone without the backend. for a whole app environment check this repo [link](https://github.com/Tonomy-Foundation/Tonomy-ID-Integration.git)
-5. check that you have followed all the steps in the `pre-run build` section
-6. change to the `Tonomy-ID` directory and run `npm start`
-
-To do all steps at once:
-
-```bash
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
-cd Tonomy-ID-SDK
 npm i
-npm i
-cd ../Tonomy-ID
-npm i
-sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/
-export NODE_ENV=designonly
 npm start
 ```
-
 
 ## File structure of components
 
