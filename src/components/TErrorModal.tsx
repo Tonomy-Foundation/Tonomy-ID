@@ -21,6 +21,7 @@ export default function TErrorModal(props: ModalProps) {
     }
 
     if (props?.expected === false) {
+        console.log(props.error?.message, JSON.stringify(props.error, null, 2));
         // TODO: log to Tonomy Foundation team
     }
 

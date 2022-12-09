@@ -19,9 +19,8 @@ export default function App() {
     return (
         <PaperProvider theme={theme}>
             <SafeAreaProvider>
-                <ErrorHandlerContainer>
-                    <MainNavigation />
-                </ErrorHandlerContainer>
+                <ErrorHandlerContainer />
+                <MainNavigation />
             </SafeAreaProvider>
         </PaperProvider>
     );

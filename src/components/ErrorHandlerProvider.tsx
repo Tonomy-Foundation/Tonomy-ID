@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from './TErrorModal';
 
-export default function ErrorHandlerProvider(props: any) {
+export default function ErrorHandlerProvider() {
     const [showModal, setShowModal] = useState(false);
 
     const errorStore = useErrorStore();
@@ -33,15 +33,12 @@ export default function ErrorHandlerProvider(props: any) {
     );
 
     return (
-        <>
-            {props.children}
-            <TErrorModal
-                visible={showModal}
-                onPress={onModalPress}
-                error={errorRef.current.error}
-                title={errorRef.current.title}
-                expected={errorRef.current.expected}
-            />
-        </>
+        <TErrorModal
+            visible={showModal}
+            onPress={onModalPress}
+            error={errorRef.current.error}
+            title={errorRef.current.title}
+            expected={errorRef.current.expected}
+        />
     );
 }
