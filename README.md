@@ -65,7 +65,7 @@ Values for NODE_ENV
 - NODE_ENV=local - same as `development`. this resolves the `tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
 - NODE_ENV=staging - uses `./src/config/config.staging.json`
 - NODE_ENV=production - uses `./src/config/config.production.json`
- 
+
 Other environment variables override the values in the config file:
 
 - BLOCKCHAIN_URL
