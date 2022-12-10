@@ -17,10 +17,16 @@ import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
+import * as Linking from 'expo-linking';
+
+const prefix = Linking.createURL('/');
 
 const Stack = createNativeStackNavigator();
 
 export default function MainNavigation() {
+    const linking = {
+        prefixes: [prefix],
+    };
     const user = useUserStore();
     const theme = useTheme();
     // https://reactnavigation.org/docs/native-stack-navigator/#options
@@ -47,7 +53,7 @@ export default function MainNavigation() {
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
     return (
-        <NavigationContainer theme={CombinedDefaultTheme}>
+        <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>
                 {/* TODO: fix user.isLoggedIn() always returns true */}
                 {user.isLoggedIn() && false ? (
