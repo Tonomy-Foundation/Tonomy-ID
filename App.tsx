@@ -14,14 +14,6 @@ import * as Linking from 'expo-linking';
 
 export default function App() {
     const errorStore = useErrorStore();
-    const url = Linking.useURL();
-
-    if (url) {
-        const { hostname, path, queryParams } = Linking.parse(url);
-        console.log('hostname', hostname);
-        console.log('path', path);
-        console.log('queryParams', queryParams);
-    }
     setErrorHandlers(errorStore);
 
     return (

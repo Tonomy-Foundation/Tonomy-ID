@@ -19,7 +19,7 @@ import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 
-const prefix = Linking.createURL('/');
+const prefix = Linking.createURL('');
 
 const Stack = createNativeStackNavigator();
 
