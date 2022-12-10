@@ -52,12 +52,20 @@ npm start
 
 [https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
 
-### Configuration
+### Configuration and environment variables
 
 Set the configuration variables in the desired file in `./src/config`
 
 `config.json` is used by default. Staging config file is choosing based on the value of environment variable `NODE_ENV`
 
+Values for NODE_ENV
+
+- NODE_ENV=development - uses the default `./src/config/config.json`
+- NODE_ENV=test - same as `development`. this is set when `npm test` is run
+- NODE_ENV=local - same as `development`. this resolves the `tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- NODE_ENV=staging - uses `./src/config/config.staging.json`
+- NODE_ENV=production - uses `./src/config/config.production.json`
+ 
 Other environment variables override the values in the config file:
 
 - BLOCKCHAIN_URL
