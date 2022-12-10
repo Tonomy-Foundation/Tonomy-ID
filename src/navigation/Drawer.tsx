@@ -27,7 +27,7 @@ export default function DrawerNavigation() {
             initialRouteName="t"
             screenOptions={defaultScreenOptions}
         >
-            <Drawer.Screen name="main" options={{ title: settings.config.appName }} component={MainNavigation} />
+            <Drawer.Screen name="home" options={{ title: settings.config.appName }} component={MainNavigation} />
             <Drawer.Screen name="settings" component={TestScreen} />
             <Drawer.Screen name="help" component={TestScreen} options={{ title: 'Help and Info' }} />
             <Drawer.Screen name="logout" component={TestScreen} />

@@ -56,9 +56,9 @@ export default function RootNavigation() {
                     </>
                 ) : (
                     <>
-                        <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
+                        <Stack.Screen name="login-register" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen
-                            name="test"
+                            name="main"
                             component={DrawerNavigation}
                             options={{ headerShown: false, title: settings.config.appName }}
                         />

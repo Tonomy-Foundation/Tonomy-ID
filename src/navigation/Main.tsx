@@ -32,7 +32,7 @@ export default function MainNavigation() {
                 tabBarInactiveTintColor: theme.colors.background,
             })}
         >
-            <Tab.Screen name="home" options={{ tabBarLabel: 'Data' }} component={MainScreen} />
+            <Tab.Screen name="data" options={{ tabBarLabel: 'Data' }} component={MainScreen} />
             <Tab.Screen name="notHome" options={{ tabBarLabel: 'Not Data' }} component={MainScreen} />
         </Tab.Navigator>
     );
