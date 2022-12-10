@@ -10,15 +10,7 @@
         "preview": {
             "distribution": "internal"
         },
-        "production": {},
-
-        "designonly": {
-            "developmentClient": true,
-            "distribution": "internal",
-            "env": {
-                "NODE_ENV": "designonly"
-            }
-        }
+        "production": {}
     },
     "submit": {
         "production": {}

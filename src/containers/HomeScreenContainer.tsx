@@ -18,6 +18,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
             color: text,
         },
     });
+
     return (
         <LayoutComponent
             body={
@@ -44,10 +45,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                     >
                         Create Account
                     </TButtonContained>
-                    <TButtonOutlined
-                        onPress={() => navigation.navigate('fingerprint')}
-                        style={commonStyles.marginBottom}
-                    >
+                    <TButtonOutlined onPress={() => navigation.navigate('test')} style={commonStyles.marginBottom}>
                         Login
                     </TButtonOutlined>
                     <TCaption style={commonStyles.textAlignCenter}>

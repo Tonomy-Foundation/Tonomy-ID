@@ -1,18 +1,18 @@
 import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
 import argon2 from 'react-native-argon2';
 import * as SecureStore from 'expo-secure-store';
-import settings from '../settings';
-import { KeyManager, GetKeyOptions, SignDataOptions, StoreKeyOptions } from 'tonomy-id-sdk';
-import { ApplicationErrors, throwError } from './errors';
-
-const {
+import {
+    KeyManager,
+    GetKeyOptions,
+    SignDataOptions,
+    StoreKeyOptions,
     KeyManagerLevel,
     randomBytes,
     randomString,
     sha256,
-
     decodeHex,
-} = settings.sdk;
+} from 'tonomy-id-sdk';
+import { ApplicationErrors, throwError } from './errors';
 
 type KeyStorage = {
     privateKey: PrivateKey;
@@ -79,8 +79,7 @@ export default class RNKeyManager implements KeyManager {
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
             if (keyStore.hashedSaltedChallenge !== hashedSaltedChallenge) throw new Error('Challenge does not match');
         }
-
-        const privateKey = keyStore.privateKey;
+        const privateKey = PrivateKey.from(keyStore.privateKey);
         let digest: Checksum256;
         if (options.data instanceof String) {
             digest = Checksum256.hash(Bytes.from(options.data));
@@ -102,12 +101,11 @@ export default class RNKeyManager implements KeyManager {
         return new PrivateKey(KeyType.K1, new Bytes(randomBytes(32)));
     }
 
-    async getKey(options: GetKeyOptions): Promise<PublicKey> {
+    async getKey(options: GetKeyOptions): Promise<PublicKey | null> {
         const key = await SecureStore.getItemAsync(options.level, {
             requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
-        if (!key) throwError('No key for this level', ApplicationErrors.NoKeyFound);
-
+        if (!key) return null;
         const keyStore = JSON.parse(key) as KeyStorage;
         return keyStore.publicKey;
     }
