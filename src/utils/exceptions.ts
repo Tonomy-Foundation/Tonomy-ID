@@ -1,4 +1,3 @@
-// import { Alert } from 'react-native';
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { ErrorState } from '../store/errorStore';
 
@@ -40,8 +39,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         } else {
             errorStore.setError({ error: e, title: 'Unexpected error', expected: false });
         }
-    }, true);
-
+    }, false);
     setNativeExceptionHandler((errorString) => {
         console.error(`setNativeExceptionHandler(): ${errorString}`);
         // TODO report to TF

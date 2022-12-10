@@ -4,12 +4,18 @@ Tonomy ID is the cross-platform mobile wallet (Android and iOS) for public and p
 
 Tonomy ID is a React Native application in typescript.
 
-## Dependancies
+## Dependencies
 
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 - [Expo-cli](https://expo.dev)  v45.0.0 globally installed with `npm i -g expo-cli@5.5.1`
 - [Eas-cli](https://docs.expo.dev/workflow/expo-cli/) v2.2.1 globally installed with `npm i -g eas-cli@2.2.1`
+
+## Install
+
+```bash
+npm i
+```
 
 ## Pre-run build (first time and each time new RN only packages are installed)
 
@@ -36,47 +42,35 @@ Having issues here or running the app? Checkout:
 
 https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROUBLESHOOT.md
 
-# Standalone run
-
-1. clone the [tonomy id](https://github.com/Tonomy-Foundation/Tonomy-ID.git) repo and change the branch to `development` or run
+## Run
 
 ```bash
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
-```
-
-2. clone the [tonomy id sdk](https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git) repo and change the branch to `development` or run
-
-```bash
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
-```
-
-3. run `npm install` in Tonomy-ID-SDK if it fails run it again, then in Tonomy-ID
-4. run `sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/` in the `Tonomy-ID` directory
-5. run `export NODE_ENV=designonly` to run the app standalone without the backend. for a whole app environment check this repo [link](https://github.com/Tonomy-Foundation/Tonomy-ID-Integration.git)
-5. check that you have followed all the steps in the `pre-run build` section
-6. change to the `Tonomy-ID` directory and run `npm start`
-
-To do all steps at once:
-
-```bash
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID.git
-git clone -b development https://github.com/Tonomy-Foundation/Tonomy-ID-SDK.git
-cd Tonomy-ID-SDK
-npm i
-npm i
-cd ../Tonomy-ID
-npm i
-sudo cp -R  ../Tonomy-ID-SDK/. ./node_modules/tonomy-id-sdk/
-export NODE_ENV=designonly
 npm start
 ```
-
 
 ## File structure of components
 
 [https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
 
-## Linting
+### Configuration and environment variables
+
+Set the configuration variables in the desired file in `./src/config`
+
+`config.json` is used by default. Staging config file is choosing based on the value of environment variable `NODE_ENV`
+
+Values for NODE_ENV
+
+- NODE_ENV=development - uses the default `./src/config/config.json`
+- NODE_ENV=test - same as `development`. this is set when `npm test` is run
+- NODE_ENV=local - same as `development`. this resolves the `tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- NODE_ENV=staging - uses `./src/config/config.staging.json`
+- NODE_ENV=production - uses `./src/config/config.production.json`
+
+Other environment variables override the values in the config file:
+
+- BLOCKCHAIN_URL
+
+### Linting
 
 Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
 
@@ -84,16 +78,6 @@ Linting is done with `eslint`. Install the recommended VS Code plugin to see mar
 npm run lint
 ```
 
-### Configuration
-
-Set the configuration variables in the desired file in `./src/config`
-
-`config.json` is used by default. Staging config file is chosing based on the value of environment variable `NODE_ENV`
-
-Other environment variables override the values in the config file:
-
-- BLOCKCHAIN_URL
-
-## Error handling
+### Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
