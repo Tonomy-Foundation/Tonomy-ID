@@ -11,6 +11,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
+import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 
 import DrawerNavigation from './drawer';
 import settings from '../settings';
@@ -48,7 +49,7 @@ export default function MainNavigation() {
     const CombinedDefaultTheme = merge(navigationTheme, theme);
     return (
         <NavigationContainer theme={CombinedDefaultTheme}>
-            <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="qrScanner" screenOptions={defaultScreenOptions}>
                 {/* TODO: fix user.isLoggedIn() always returns true */}
                 {user.isLoggedIn() && false ? (
                     <>
@@ -56,6 +57,11 @@ export default function MainNavigation() {
                     </>
                 ) : (
                     <>
+                         <Stack.Screen
+                            name="qrScanner"
+                            options={{ title: 'Telos ID' }}
+                            component={QrCodeScanScreen}
+                        />
                         <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen
                             name="test"
