@@ -67,6 +67,8 @@ export default function MainContainer() {
 const styles = StyleSheet.create({
     container: {
         padding: 16,
+        flex: 1, //remove this when cards are added
+        justifyContent: 'center', //remove this when cards are added
     },
     header: {
         alignItems: 'center',

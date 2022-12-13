@@ -27,6 +27,7 @@ export default function DrawerNavigation() {
             initialRouteName="t"
             screenOptions={defaultScreenOptions}
         >
+            {/* change component to Main Navigation when bottom nav should be added */}
             <Drawer.Screen name="home" options={{ title: settings.config.appName }} component={MainScreen} />
             <Drawer.Screen name="settings" component={TestScreen} />
             <Drawer.Screen name="help" component={TestScreen} options={{ title: 'Help and Info' }} />
