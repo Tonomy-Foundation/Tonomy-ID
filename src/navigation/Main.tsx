@@ -12,7 +12,6 @@ export default function MainNavigation() {
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: false,
-
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName: React.ComponentProps<typeof Ionicons>['name'];
                     switch (route.name) {

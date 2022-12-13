@@ -32,6 +32,8 @@ export default function MainContainer() {
                     Scan Qr Code
                 </TButtonContained>
             </View>
+            {/*
+            Cards are in upcoming features 
             <View style={styles.marginTop}>
                 <TP size={2}>Upcoming features</TP>
                 <ScrollView horizontal={true}>
@@ -57,7 +59,7 @@ export default function MainContainer() {
                         </TCard.Content>
                     </TCard>
                 </ScrollView>
-            </View>
+            </View> */}
         </View>
     );
 }
