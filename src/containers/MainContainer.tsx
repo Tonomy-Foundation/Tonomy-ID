@@ -1,21 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { TonomyUsername, User } from 'tonomy-id-sdk';
 import QrIcon from '../assets/icons/QrIcon';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
 import useUserStore from '../store/userStore';
+import { ApplicationErrors, throwError } from '../utils/errors';
 
 export default function MainContainer() {
     const user = useUserStore((state) => state.user);
+    const [username, setUsername] = useState<TonomyUsername>({});
+    useEffect(() => {
+        setUserName();
+    }, []);
+
+    async function setUserName() {
+        const u = await user.storage.username;
+        if (!u) {
+            throwError('Username not found', ApplicationErrors.NoDataFound);
+        }
+        setUsername(u);
+    }
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TH2>{user.storage.username.username || 'username'}</TH2>
+                <TH2>{username.username}</TH2>
                 <QrIcon height="200" width="100%" style={styles.marginTop} />
                 <TButtonContained style={[styles.button, styles.marginTop]} icon="qrcode-scan">
-                    {' '}
                     Scan Qr Code
                 </TButtonContained>
             </View>

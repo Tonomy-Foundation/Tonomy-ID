@@ -23,6 +23,7 @@ export function throwError(message: string, code?: ApplicationErrors) {
 enum ApplicationErrors {
     UsernameTaken = 'UsernameTaken',
     NoKeyFound = 'NoKeyFound',
+    NoDataFound = 'NoDataFound', // No Data found in the storage
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
