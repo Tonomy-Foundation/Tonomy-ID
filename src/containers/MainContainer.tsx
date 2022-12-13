@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
-import Qricon from '../assets/icons/Qricon';
+import QrIcon from '../assets/icons/QrIcon';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
@@ -13,7 +13,7 @@ export default function MainContainer() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TH2>{user.storage.username.username || 'username'}</TH2>
-                <Qricon height="200" width="100%" style={styles.marginTop} />
+                <QrIcon height="200" width="100%" style={styles.marginTop} />
                 <TButtonContained style={[styles.button, styles.marginTop]} icon="qrcode-scan">
                     {' '}
                     Scan Qr Code

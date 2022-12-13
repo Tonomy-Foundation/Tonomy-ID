@@ -41,6 +41,7 @@ const settings: SettingsType = {
 
 switch (env) {
     case 'test':
+    case 'local':
     case 'development':
         config = require('./config/config.json');
         // TODO find a better way switch images

@@ -1,5 +1,4 @@
-// import { Alert } from 'react-native';
-import { setNativeExceptionHandler, setJSExceptionHandler } from 'react-native-exception-handler';
+import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { ErrorState } from '../store/errorStore';
 
 export default function setErrorHandlers(errorStore: ErrorState) {
@@ -40,10 +39,9 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         } else {
             errorStore.setError({ error: e, title: 'Unexpected error', expected: false });
         }
-    }, true);
-
-    // setNativeExceptionHandler((errorString) => {
-    //     console.error(`setNativeExceptionHandler(): ${errorString}`);
-    //     // TODO report to TF
-    // });
+    }, false);
+    setNativeExceptionHandler((errorString) => {
+        console.error(`setNativeExceptionHandler(): ${errorString}`);
+        // TODO report to TF
+    });
 }
