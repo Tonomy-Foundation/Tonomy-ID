@@ -15,6 +15,7 @@
     "dependencies": {
         "@greymass/eosio": "^0.6.4",
         "@react-native-async-storage/async-storage": "~1.17.3",
+        "@react-navigation/bottom-tabs": "^6.5.0",
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",

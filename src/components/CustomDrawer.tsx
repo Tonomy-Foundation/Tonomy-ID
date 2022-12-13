@@ -1,13 +1,12 @@
 import React from 'react';
 
-import { DrawerContentScrollView, DrawerContentComponentProps, DrawerItem } from '@react-navigation/drawer';
+import { DrawerContentScrollView, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Image, StyleSheet, View } from 'react-native';
-import settings from '../settings';
-import { IconButtonProps, Text } from 'react-native-paper';
 import TButton from './atoms/Tbutton';
 import { useTheme } from '@react-navigation/native';
 
 const icons = {
+    home: 'home',
     settings: 'cog',
     help: 'help-circle',
     logout: 'logout',

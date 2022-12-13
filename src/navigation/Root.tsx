@@ -12,7 +12,7 @@ import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 
-import DrawerNavigation from './drawer';
+import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
@@ -23,7 +23,7 @@ const prefix = Linking.createURL('');
 
 const Stack = createNativeStackNavigator();
 
-export default function MainNavigation() {
+export default function RootNavigation() {
     const linking = {
         prefixes: [prefix],
     };
@@ -62,9 +62,9 @@ export default function MainNavigation() {
                     </>
                 ) : (
                     <>
-                        <Stack.Screen name="home" options={noHeaderScreenOptions} component={HomeScreen} />
+                        <Stack.Screen name="login-register" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen
-                            name="test"
+                            name="main"
                             component={DrawerNavigation}
                             options={{ headerShown: false, title: settings.config.appName }}
                         />
