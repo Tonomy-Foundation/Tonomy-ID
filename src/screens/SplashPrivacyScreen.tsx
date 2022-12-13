@@ -15,7 +15,7 @@ export default function SplashPrivacyScreen({ navigation }: { navigation: Naviga
             linkUrl={settings.config.links.privacyLearnMore}
             linkUrlText="Learn More"
             buttonText="NEXT"
-            buttonOnPress={() => navigation.navigate('transparencySplash')}
+            buttonOnPress={() => navigation.navigate('SplashTransparency')}
         ></SplashScreenContainer>
     );
 }

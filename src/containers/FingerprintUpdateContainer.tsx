@@ -39,7 +39,7 @@ export default function CreateAccountContainer({ password }: { password: string 
 
     async function updateKeys() {
         await user.updateKeys(password);
-        navigation.navigate('main');
+        navigation.navigate('UserHome');
     }
     return (
         <>

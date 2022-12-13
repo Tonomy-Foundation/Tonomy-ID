@@ -24,13 +24,13 @@ export default function DrawerNavigation() {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawer {...props} />}
-            initialRouteName="t"
+            initialRouteName="UserHome"
             screenOptions={defaultScreenOptions}
         >
             {/* change component to Main Navigation when bottom nav should be added */}
-            <Drawer.Screen name="home" options={{ title: settings.config.appName }} component={MainScreen} />
-            <Drawer.Screen name="settings" component={TestScreen} />
-            <Drawer.Screen name="help" component={TestScreen} options={{ title: 'Help and Info' }} />
+            <Drawer.Screen name="UserHome" options={{ title: settings.config.appName }} component={MainScreen} />
+            <Drawer.Screen name="Settings" component={TestScreen} />
+            <Drawer.Screen name="Help" component={TestScreen} options={{ title: 'Help and Info' }} />
             <Drawer.Screen name="logout" component={TestScreen} />
         </Drawer.Navigator>
     );

@@ -21,7 +21,23 @@ import * as Linking from 'expo-linking';
 
 const prefix = Linking.createURL('');
 
-const Stack = createNativeStackNavigator();
+export type RouteStackParamList = {
+    Splash: undefined;
+    SplashSecurity: undefined;
+    SplashPrivacy: undefined;
+    SplashTransparency: undefined;
+    Home: undefined;
+    CreateAccountUsername: undefined;
+    CreateAccountPassword: undefined;
+    CreateAccountPin: { password: string };
+    CreateAccountFingerprint: { password: string };
+    Login: undefined;
+    UserHome: undefined;
+    Test: undefined;
+    Drawer: undefined;
+    Settings: undefined;
+};
+const Stack = createNativeStackNavigator<RouteStackParamList>();
 
 export default function RootNavigation() {
     const linking = {
@@ -54,54 +70,55 @@ export default function RootNavigation() {
     const CombinedDefaultTheme = merge(navigationTheme, theme);
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            <Stack.Navigator initialRouteName="mainSplash" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
                 {/* TODO: fix user.isLoggedIn() always returns true */}
                 {user.isLoggedIn() && false ? (
                     <>
-                        <Stack.Screen name="test" component={TestScreen} />
+                        <Stack.Screen name="Test" component={TestScreen} />
                     </>
                 ) : (
                     <>
-                        <Stack.Screen name="login-register" options={noHeaderScreenOptions} component={HomeScreen} />
+                        <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                         <Stack.Screen
-                            name="main"
+                            name="Drawer"
                             component={DrawerNavigation}
                             options={{ headerShown: false, title: settings.config.appName }}
                         />
 
-                        <Stack.Screen name="mainSplash" options={noHeaderScreenOptions} component={MainSplashScreen} />
+                        <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                         <Stack.Screen
-                            name="securitySplash"
+                            name="SplashSecurity"
                             options={noHeaderScreenOptions}
                             component={SplashSecurityScreen}
                         />
                         <Stack.Screen
-                            name="privacySplash"
+                            name="SplashPrivacy"
                             options={noHeaderScreenOptions}
                             component={SplashPrivacyScreen}
                         />
                         <Stack.Screen
-                            name="transparencySplash"
+                            name="SplashTransparency"
                             options={noHeaderScreenOptions}
                             component={SplashTransparencyScreen}
                         />
                         <Stack.Screen
-                            name="createAccountUsername"
+                            name="CreateAccountUsername"
                             options={{ title: 'Create New Account' }}
                             component={CreateAccountUsernameScreen}
                         />
                         <Stack.Screen
-                            name="createAccountPassword"
+                            name="CreateAccountPassword"
                             options={{ title: 'Create New Account' }}
                             component={CreateAccountPasswordScreen}
                         />
 
                         <Stack.Screen
-                            name="fingerprint"
+                            name="CreateAccountFingerprint"
                             options={{ title: 'Fingerprint Registration' }}
                             component={FingerprintUpdateScreen}
+                            initialParams={{ password: '' }}
                         />
-                        <Stack.Screen name="pin" options={{ title: 'PIN' }} component={PinScreen} />
+                        <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
                     </>
                 )}
             </Stack.Navigator>

@@ -43,7 +43,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         }
 
         setLoading(false);
-        navigation.navigate('createAccountPassword');
+        navigation.navigate('CreateAccountPassword');
     }
 
     return (

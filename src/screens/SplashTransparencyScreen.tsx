@@ -8,7 +8,7 @@ export default function SplashTransparencyScreen({ navigation }: { navigation: N
     const storeKey = () => {
         const storage = new Storage();
         storage.store('newUser', true);
-        navigation.navigate('home');
+        navigation.navigate('UserHome');
     };
     return (
         <SplashScreenContainer

@@ -74,12 +74,12 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('pin', { password });
+        navigation.navigate('CreateAccountPin', { password });
     }
 
     async function onUsernameErrorModalPress() {
         setShowUsernameErrorModal(false);
-        navigation.navigate('createAccountUsername');
+        navigation.navigate('CreateAccountUsername');
     }
 
     return (

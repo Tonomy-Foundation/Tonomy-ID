@@ -46,7 +46,7 @@ export default function PinScreenContainer({
                     return;
                 }
                 console.log('pin saved');
-                navigation.navigate('fingerprint', { password });
+                navigation.navigate('CreateAccountFingerprint', { password });
             } else {
                 setErrorMessage('PINs do not match');
                 setPin('');
@@ -94,7 +94,7 @@ export default function PinScreenContainer({
                     {!confirming && (
                         <TButton
                             mode="outlined"
-                            onPress={() => navigation.navigate('fingerprint', { password })}
+                            onPress={() => navigation.navigate('CreateAccountFingerprint', { password })}
                             style={styles.marginBottom}
                         >
                             Skip

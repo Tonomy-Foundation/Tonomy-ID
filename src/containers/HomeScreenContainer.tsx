@@ -40,12 +40,12 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
             footer={
                 <View>
                     <TButtonContained
-                        onPress={() => navigation.navigate('createAccountUsername')}
+                        onPress={() => navigation.navigate('CreateAccountUsername')}
                         style={commonStyles.marginBottom}
                     >
                         Create Account
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => navigation.navigate('main')} style={commonStyles.marginBottom}>
+                    <TButtonOutlined onPress={() => navigation.navigate('UserHome')} style={commonStyles.marginBottom}>
                         Login
                     </TButtonOutlined>
                     <TCaption style={commonStyles.textAlignCenter}>

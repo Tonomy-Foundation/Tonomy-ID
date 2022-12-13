@@ -15,7 +15,7 @@ export default function SplashSecurityScreen({ navigation }: { navigation: Navig
             linkUrl={settings.config.links.securityLearnMore}
             linkUrlText="Learn More"
             buttonText="NEXT"
-            buttonOnPress={() => navigation.navigate('privacySplash')}
+            buttonOnPress={() => navigation.navigate('SplashPrivacy')}
         ></SplashScreenContainer>
     );
 }
