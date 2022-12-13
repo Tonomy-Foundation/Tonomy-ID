@@ -41,7 +41,8 @@
         "react-native-svg": "13.4.0",
         "react-native-web": "~0.18.7",
         "tonomy-id-sdk": "github:Tonomy-Foundation/Tonomy-ID-SDK#development",
-        "zustand": "^4.1.1"
+        "zustand": "^4.1.1",
+        "expo-linking": "~3.2.3"
     },
     "devDependencies": {
         "@babel/core": "^7.19.3",
