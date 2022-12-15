@@ -8,12 +8,13 @@ import useUserStore from '../store/userStore';
 import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
+import { Props } from '../screens/FingerprintUpdateScreen';
 
 export default function PinScreenContainer({
     navigation,
     password,
 }: {
-    navigation: NavigationProp<any>;
+    navigation: Props['navigation'];
     password: string;
 }) {
     const [confirming, setConfirming] = useState(false);

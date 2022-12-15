@@ -36,6 +36,7 @@ export type RouteStackParamList = {
     Test: undefined;
     Drawer: undefined;
     Settings: undefined;
+    SSO: { jwt: string };
 };
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
@@ -120,7 +121,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
                         <Stack.Screen
-                            name="sso"
+                            name="SSO"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={SSOLoginScreen}
                         />

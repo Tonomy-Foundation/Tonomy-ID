@@ -2,11 +2,14 @@ import React from 'react';
 import SplashScreenContainer from '../containers/SplashContainer';
 import { NavigationProp } from '@react-navigation/native';
 import settings from '../settings';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function SplashSecurityScreen({ navigation }: { navigation: NavigationProp<any> }) {
+export type Props = NativeStackScreenProps<RouteStackParamList, 'SplashSecurity'>;
+export default function SplashSecurityScreen(props: Props) {
     return (
         <SplashScreenContainer
-            navigation={navigation}
+            navigation={props.navigation}
             title="Security"
             subtitle="You are in control of your identity"
             imageSource={require('../assets/images/security-splash.png')}
@@ -15,7 +18,7 @@ export default function SplashSecurityScreen({ navigation }: { navigation: Navig
             linkUrl={settings.config.links.securityLearnMore}
             linkUrlText="Learn More"
             buttonText="NEXT"
-            buttonOnPress={() => navigation.navigate('SplashPrivacy')}
+            buttonOnPress={() => props.navigation.navigate('SplashPrivacy')}
         ></SplashScreenContainer>
     );
 }

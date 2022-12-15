@@ -3,8 +3,11 @@ import SplashScreenContainer from '../containers/SplashContainer';
 import { NavigationProp } from '@react-navigation/native';
 import settings from '../settings';
 import Storage from '../utils/storage';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function SplashTransparencyScreen({ navigation }: { navigation: NavigationProp<any> }) {
+export type Props = NativeStackScreenProps<RouteStackParamList, 'SplashTransparency'>;
+export default function SplashTransparencyScreen({ navigation }: Props) {
     const storeKey = () => {
         const storage = new Storage();
         storage.store('newUser', true);

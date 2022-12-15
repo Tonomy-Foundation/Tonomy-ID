@@ -8,8 +8,9 @@ import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
+import { Props } from '../screens/homeScreen';
 
-export default function HomeScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function HomeScreenContainer({ navigation }: Props) {
     const {
         colors: { text },
     } = useTheme();
@@ -45,7 +46,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Naviga
                     >
                         Create Account
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => navigation.navigate('UserHome')} style={commonStyles.marginBottom}>
+                    <TButtonOutlined onPress={() => navigation.navigate('Drawer')} style={commonStyles.marginBottom}>
                         Login
                     </TButtonOutlined>
                     <TCaption style={commonStyles.textAlignCenter}>

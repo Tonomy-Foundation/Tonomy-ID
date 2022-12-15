@@ -2,11 +2,14 @@ import React from 'react';
 import SplashScreenContainer from '../containers/SplashContainer';
 import { NavigationProp } from '@react-navigation/native';
 import settings from '../settings';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function SplashPrivacyScreen({ navigation }: { navigation: NavigationProp<any> }) {
+export type Props = NativeStackScreenProps<RouteStackParamList, 'SplashPrivacy'>;
+export default function SplashPrivacyScreen(props: Props) {
     return (
         <SplashScreenContainer
-            navigation={navigation}
+            navigation={props.navigation}
             title="Privacy"
             subtitle="Only you control and see your personal information"
             imageSource={require('../assets/images/privacy-splash.png')}
@@ -15,7 +18,7 @@ export default function SplashPrivacyScreen({ navigation }: { navigation: Naviga
             linkUrl={settings.config.links.privacyLearnMore}
             linkUrlText="Learn More"
             buttonText="NEXT"
-            buttonOnPress={() => navigation.navigate('SplashTransparency')}
+            buttonOnPress={() => props.navigation.navigate('SplashTransparency')}
         ></SplashScreenContainer>
     );
 }

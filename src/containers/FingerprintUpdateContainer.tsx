@@ -10,13 +10,14 @@ import { commonStyles } from '../utils/theme';
 import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
+import { Props } from '../screens/FingerprintUpdateScreen';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
     const user = useUserStore((state) => state.user);
     const errorStore = useErrorStore();
 
-    const navigation = useNavigation();
+    const navigation = useNavigation<Props['navigation']>();
 
     const onNext = async () => {
         try {
