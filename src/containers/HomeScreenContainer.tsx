@@ -10,7 +10,7 @@ import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { Props } from '../screens/homeScreen';
 
-export default function HomeScreenContainer({ navigation }: Props) {
+export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const {
         colors: { text },
     } = useTheme();

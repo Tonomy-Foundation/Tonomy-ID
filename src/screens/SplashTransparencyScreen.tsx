@@ -11,7 +11,7 @@ export default function SplashTransparencyScreen({ navigation }: Props) {
     const storeKey = () => {
         const storage = new Storage();
         storage.store('newUser', true);
-        navigation.navigate('UserHome');
+        navigation.navigate('Home');
     };
     return (
         <SplashScreenContainer
