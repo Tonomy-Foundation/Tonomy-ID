@@ -28,5 +28,7 @@ if (!['development', 'designonly'].includes(settings.env)) {
     app.expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
+console.log(JSON.stringify(app, null, 2));
+
 // Write app.json
 fs.writeFileSync('./app.json', JSON.stringify(app, null, 2));

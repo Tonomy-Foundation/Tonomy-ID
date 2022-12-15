@@ -1,7 +1,10 @@
 import React from 'react';
 import CreateAccountPasswordContainer from '../containers/CreateAccountPasswordContainer';
 import { NavigationProp } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function CreateAccountScreen({ navigation }: { navigation: NavigationProp<any> }) {
-    return <CreateAccountPasswordContainer navigation={navigation}></CreateAccountPasswordContainer>;
+export type Props = NativeStackScreenProps<RouteStackParamList, 'CreateAccountPassword'>;
+export default function CreateAccountScreen(props: Props) {
+    return <CreateAccountPasswordContainer navigation={props.navigation}></CreateAccountPasswordContainer>;
 }
