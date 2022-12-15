@@ -23,7 +23,7 @@ export default function SSOLoginContainer() {
         origin: 'https://wax.atomichub.io',
         version: 1,
     });
-    const [checked, setChecked] = useState('unchecked');
+    const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<TonomyUsername>({});
     useEffect(() => {
         setUserName();
@@ -58,9 +58,7 @@ export default function SSOLoginContainer() {
                         <TLink to={app.origin}>{app.origin}</TLink>
                     </View>
                     <TP>
-                        <TCheckbox status={checked} onPress={toggleCheckbox}>
-                            tttt
-                        </TCheckbox>
+                        <TCheckbox status={checked} onPress={toggleCheckbox}></TCheckbox>
                         Stay signed in
                     </TP>
                 </View>
