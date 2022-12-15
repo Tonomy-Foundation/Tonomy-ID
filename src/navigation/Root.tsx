@@ -18,6 +18,7 @@ import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@re
 import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
+import SSOLoginScreen from '../screens/SSOLoginScreen';
 
 const prefix = Linking.createURL('');
 
@@ -102,6 +103,7 @@ export default function RootNavigation() {
                             component={FingerprintUpdateScreen}
                         />
                         <Stack.Screen name="pin" options={{ title: 'PIN' }} component={PinScreen} />
+                        <Stack.Screen name="sso" options={noHeaderScreenOptions} component={SSOLoginScreen} />
                     </>
                 )}
             </Stack.Navigator>
