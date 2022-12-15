@@ -11,6 +11,7 @@ import { ApplicationErrors, throwError } from '../utils/errors';
 import { TH1, TH2, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
+import settings from '../settings';
 
 export default function SSOLoginContainer() {
     const user = useUserStore((state) => state.user);
@@ -69,7 +70,7 @@ export default function SSOLoginContainer() {
                         align="left"
                         icon="security"
                         description="100% secure. Only your phone can authorize your app login."
-                        linkUrl="#"
+                        linkUrl={settings.config.links.securityLearnMore}
                         linkUrlText="Learn more"
                     />
                 </View>

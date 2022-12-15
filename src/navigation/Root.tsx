@@ -11,7 +11,6 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
-
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
@@ -103,7 +102,11 @@ export default function RootNavigation() {
                             component={FingerprintUpdateScreen}
                         />
                         <Stack.Screen name="pin" options={{ title: 'PIN' }} component={PinScreen} />
-                        <Stack.Screen name="sso" options={noHeaderScreenOptions} component={SSOLoginScreen} />
+                        <Stack.Screen
+                            name="sso"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={SSOLoginScreen}
+                        />
                     </>
                 )}
             </Stack.Navigator>
