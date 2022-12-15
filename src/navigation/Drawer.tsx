@@ -7,6 +7,7 @@ import { useTheme } from 'react-native-paper';
 import MainScreen from '../screens/MainScreen';
 import settings from '../settings';
 import MainNavigation from './Main';
+import SSOLoginScreen from '../screens/SSOLoginScreen';
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigation() {
@@ -32,6 +33,7 @@ export default function DrawerNavigation() {
             <Drawer.Screen name="settings" component={TestScreen} />
             <Drawer.Screen name="help" component={TestScreen} options={{ title: 'Help and Info' }} />
             <Drawer.Screen name="logout" component={TestScreen} />
+            <Drawer.Screen name="sso" options={{ title: 'test sso' }} component={SSOLoginScreen} />
         </Drawer.Navigator>
     );
 }
