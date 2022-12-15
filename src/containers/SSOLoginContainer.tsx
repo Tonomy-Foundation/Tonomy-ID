@@ -49,18 +49,18 @@ export default function SSOLoginContainer() {
                 <View style={styles.container}>
                     <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
 
-                    <TH1>{username.username}</TH1>
+                    <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>
                     {/* app dialog */}
                     <View style={[styles.AppDialog, styles.marginTop]}>
-                        <Image source={{ uri: app.logo_url }}></Image>
-                        <TH1>{app.app_name}</TH1>
-                        <TP>Wants you to log in to their application here:</TP>
+                        <Image style={styles.AppDialogImage} source={TonomyLogo}></Image>
+                        <TH1 style={commonStyles.textAlignCenter}>{app.app_name}</TH1>
+                        <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
                         <TLink to={app.origin}>{app.origin}</TLink>
                     </View>
-                    <TP>
+                    <View style={styles.checkbox}>
                         <TCheckbox status={checked} onPress={toggleCheckbox}></TCheckbox>
-                        Stay signed in
-                    </TP>
+                        <TP> Stay signed in</TP>
+                    </View>
                 </View>
             }
             footerHint={
@@ -106,10 +106,19 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         minHeight: 200,
     },
+
+    AppDialogImage: {
+        width: 50,
+        height: 50,
+    },
     marginTop: {
         marginTop: 10,
     },
     infoBox: {
         marginBottom: 32,
+    },
+    checkbox: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });
