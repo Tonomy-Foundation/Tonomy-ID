@@ -6,7 +6,8 @@ import { customColors } from '../../utils/theme';
 type THProps = React.ComponentProps<typeof Text>;
 export function TH1(props: THProps) {
     return (
-        <Text {...props} style={[styles.h1]}>
+        // eslint-disable-next-line react/prop-types
+        <Text {...props} style={[styles.h1, props.style]}>
             {props.children}
         </Text>
     );
@@ -14,7 +15,8 @@ export function TH1(props: THProps) {
 
 export function TH2(props: THProps) {
     return (
-        <Text {...props} style={[styles.h2]}>
+        // eslint-disable-next-line react/prop-types
+        <Text {...props} style={[styles.h2, props.style]}>
             {props.children}
         </Text>
     );
