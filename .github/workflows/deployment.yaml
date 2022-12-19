@@ -20,20 +20,20 @@ jobs:
                   node-version: 16.4.1
             - run: npm install
 
-            # https://github.com/expo/expo-github-action
-            - name: 🏗 Setup Expo
-              uses: expo/expo-github-action@v7
-              with:
-                expo-version: 47.0.0
-                expo-cache: false
-                eas-version: 3.1.0
-                eas-cache: false
-                packager: npm
-                token: ${{ secrets.EXPO_TOKEN }}
+            # # https://github.com/expo/expo-github-action
+            # - name: 🏗 Setup Expo
+            #   uses: expo/expo-github-action@v7
+            #   with:
+            #     expo-version: 47.0.0
+            #     expo-cache: false
+            #     eas-version: 3.1.0
+            #     eas-cache: false
+            #     packager: npm
+            #     token: ${{ secrets.EXPO_TOKEN }}
 
-            # - name: 🚀 Build and publish app
-            #   env:
-            #     NODE_ENV: staging
-            #     SUPER_SECRET: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
-            # - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}"" > google-service-key.json
-            # - run: npm run deploy:android
+            - name: 🚀 Build and publish app
+              env:
+                NODE_ENV: staging
+                SUPER_SECRET: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}"" > google-service-key.json
+            - run: npm run deploy:android
