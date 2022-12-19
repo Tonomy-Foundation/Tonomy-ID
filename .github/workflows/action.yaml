@@ -1,0 +1,64 @@
+name: Tonomy ID CI/CD
+
+on:
+    push:
+        branches:
+            - '*'
+            - development
+
+jobs:
+    build:
+        runs-on: ubuntu-20.04
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Build node_modules
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.4.1
+            - run: npm install
+
+            - name: Add built artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                name: node_modules
+                path: ./node_modules
+
+    test:
+        needs: build
+        runs-on: ubuntu-20.04
+        
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Get built from artifacts
+              uses: actions/download-artifact@v3
+              with:
+                name: node_modules
+                path: ./node_modules
+
+            - name: Unit tests
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.4.1
+            - run: npm test
+
+    deploy:
+        needs: [build, test]
+        runs-on: ubuntu-20.04
+        
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Get built from artifacts
+              uses: actions/download-artifact@v3
+              with:
+                name: node_modules
+                path: ./node_modules
+
+            - name: Deploy to app store
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.4.1
+            - run: npm run deploy:android
