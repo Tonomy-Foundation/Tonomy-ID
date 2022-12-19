@@ -7,7 +7,7 @@ on:
         #     - development
 
 jobs:
-    build:
+    deploy:
         runs-on: ubuntu-20.04
 
         steps:
@@ -32,8 +32,12 @@ jobs:
             #     token: ${{ secrets.EXPO_TOKEN }}
 
             - name: 🚀 Build and publish app
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.4.1
+            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}"" > google-service-key.json
+            - run: npm run deploy:android
+            - run: echo $NODE_ENV
               env:
                 NODE_ENV: staging
                 SUPER_SECRET: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
-            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}"" > google-service-key.json
-            - run: npm run deploy:android
