@@ -14,7 +14,7 @@ jobs:
             - name: 🏗 Setup repo
               uses: actions/checkout@v3
 
-            - name: 📦 Build node_modules
+            - name: 📦 Install
               uses: actions/setup-node@v3
               with:
                   node-version: 16.4.1
@@ -35,7 +35,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 16.4.1
-            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}"" > google-service-key.json
+            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > google-service-key.json
             - run: npm run deploy:android
             - run: echo $NODE_ENV
               env:
