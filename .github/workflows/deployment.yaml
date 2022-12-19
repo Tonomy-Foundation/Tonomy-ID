@@ -11,17 +11,19 @@ jobs:
         runs-on: ubuntu-20.04
         env:
           NODE_ENV: staging
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           TEST: ${{ secrets.TEST }}
+          SUPER_SECRET: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
 
         steps:
             - name: 🏗 Setup repo
               uses: actions/checkout@v3
 
-            # - name: 📦 Install
-            #   uses: actions/setup-node@v3
-            #   with:
-            #       node-version: 16.4.1
-            # - run: npm install
+            - name: 📦 Install
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.4.1
+            - run: npm install
 
             # # https://github.com/expo/expo-github-action
             # - name: 🏗 Setup Expo
@@ -38,12 +40,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 16.4.1
-              env:
-                NODE_ENV: staging
-                EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-                TEST: ${{ secrets.TEST }}
-                SUPER_SECRET: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
-            # - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
+            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
             - run: ls
             - run: echo "${TEST} -- $TEST -- ${{ env.TEST }}"
             - run: echo "${NODE_ENV} -- $NODE_ENV -- ${{ env.NODE_ENV }}"
