@@ -11,15 +11,16 @@ jobs:
         runs-on: ubuntu-20.04
 
         steps:
-            - uses: actions/checkout@v3
+            - name: 🏗 Setup repo
+              uses: actions/checkout@v3
 
-            - name: Build node_modules
+            - name: 📦 Build node_modules
               uses: actions/setup-node@v3
               with:
                   node-version: 16.4.1
             - run: npm install
 
-            - name: Add built artifacts
+            - name: 📦 Add built artifacts
               uses: actions/upload-artifact@v3
               with:
                 name: node_modules
@@ -30,35 +31,46 @@ jobs:
         runs-on: ubuntu-20.04
         
         steps:
-            - uses: actions/checkout@v3
+            - name: 🏗 Setup repo
+              uses: actions/checkout@v3
 
-            - name: Get built from artifacts
+            - name: 📦 Get built from artifacts
               uses: actions/download-artifact@v3
               with:
                 name: node_modules
                 path: ./node_modules
 
-            - name: Unit tests
+            - name: 🛠️ Unit tests
               uses: actions/setup-node@v3
               with:
                   node-version: 16.4.1
             - run: npm test
 
-    # deploy:
-    #     needs: [build, test]
-    #     runs-on: ubuntu-20.04
+    deploy:
+        needs: [build, test]
+        runs-on: ubuntu-20.04
         
-    #     steps:
-    #         - uses: actions/checkout@v3
+        steps:
+            - name: 🏗 Setup repo
+              uses: actions/checkout@v3
 
-    #         - name: Get built from artifacts
-    #           uses: actions/download-artifact@v3
-    #           with:
-    #             name: node_modules
-    #             path: ./node_modules
+            # https://github.com/expo/expo-github-action
+            - name: 🏗 Setup Expo
+              uses: expo/expo-github-action@v7
+              with:
+                expo-version: 47.0.0
+                expo-cache: false
+                eas-version: 3.1.0
+                eas-cache: false
+                packager: npm
+                token: ${{ secrets.EXPO_TOKEN }}
 
-    #         - name: Deploy to app store
-    #           uses: actions/setup-node@v3
-    #           with:
-    #               node-version: 16.4.1
-    #         - run: npm run deploy:android
+            - name: 📦 Get built from artifacts
+              uses: actions/download-artifact@v3
+              with:
+                name: node_modules
+                path: ./node_modules
+
+            - name: 🚀 Publish app
+                run: echo ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY}} > google-service-key.json
+                run: npm run deploy:android

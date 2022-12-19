@@ -13,6 +13,12 @@
         "production": {}
     },
     "submit": {
+        "staging": {
+            "android": {
+                "serviceAccountKeyPath": "./google-service-key.json",
+                "track": "production"    
+            }
+        },
         "production": {}
     }
 }
