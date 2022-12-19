@@ -14,11 +14,14 @@
     },
     "submit": {
         "staging": {
+            "autoIncrement": true,
             "android": {
                 "serviceAccountKeyPath": "./google-service-key.json",
                 "track": "production"    
             }
         },
-        "production": {}
+        "production": {
+            "autoIncrement": true
+        }
     }
 }
