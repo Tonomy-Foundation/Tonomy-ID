@@ -35,7 +35,8 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 16.4.1
-            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > google-service-key.json
+            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
+            - run: ls
             - run: echo $NODE_ENV
             - run: NODE_ENV=staging && npm run deploy:android
               env:
