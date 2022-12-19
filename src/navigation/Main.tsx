@@ -4,7 +4,12 @@ import MainScreen from '../screens/MainScreen';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from 'react-native-paper';
 
-const Tab = createBottomTabNavigator();
+export type RouteTabParamList = {
+    Data: undefined;
+    NotData: undefined;
+};
+
+const Tab = createBottomTabNavigator<RouteTabParamList>();
 
 export default function MainNavigation() {
     const theme = useTheme();
@@ -15,7 +20,7 @@ export default function MainNavigation() {
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName: React.ComponentProps<typeof Ionicons>['name'];
                     switch (route.name) {
-                        case 'main':
+                        case 'Data':
                             iconName = focused ? 'md-add-circle' : 'md-add-circle-outline';
                             break;
                         default:
@@ -31,8 +36,8 @@ export default function MainNavigation() {
                 tabBarInactiveTintColor: theme.colors.background,
             })}
         >
-            <Tab.Screen name="data" options={{ tabBarLabel: 'Data' }} component={MainScreen} />
-            <Tab.Screen name="notHome" options={{ tabBarLabel: 'Not Data' }} component={MainScreen} />
+            <Tab.Screen name="Data" options={{ tabBarLabel: 'Data' }} component={MainScreen} />
+            <Tab.Screen name="NotData" options={{ tabBarLabel: 'Not Data' }} component={MainScreen} />
         </Tab.Navigator>
     );
 }

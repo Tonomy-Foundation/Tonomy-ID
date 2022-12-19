@@ -1,12 +1,9 @@
 import React from 'react';
 import PinScreenContainer from '../containers/PinScreenContainer';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { RouteStackParamList } from '../navigation/Root';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export default function PinScreen({
-    route,
-    navigation,
-}: {
-    route: RouteProp<{ params: { password: string }; navigation: NavigationProp<any> }, 'params'>;
-}) {
-    return <PinScreenContainer password={route.params.password} navigation={navigation}></PinScreenContainer>;
+export type Props = NativeStackScreenProps<RouteStackParamList, 'CreateAccountPin'>;
+export default function PinScreen(props: Props) {
+    return <PinScreenContainer password={props.route.params.password} navigation={props.navigation} />;
 }

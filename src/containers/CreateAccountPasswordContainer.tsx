@@ -14,8 +14,9 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from '../components/TErrorModal';
+import { Props } from '../screens/CreateAccountPasswordScreen';
 
-export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [password2, setPassword2] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
@@ -74,12 +75,12 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('pin', { password });
+        navigation.navigate('CreateAccountPin', { password });
     }
 
     async function onUsernameErrorModalPress() {
         setShowUsernameErrorModal(false);
-        navigation.navigate('createAccountUsername');
+        navigation.navigate('CreateAccountUsername');
     }
 
     return (

@@ -12,8 +12,9 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
+import { Props } from '../screens/CreateAccountUsernameScreen';
 
-export default function CreateAccountUsernameContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function CreateAccountUsernameContainer({ navigation }: Props) {
     let startUsername = '';
     if (!settings.isProduction()) {
         startUsername = 'test' + randomString(2);
@@ -43,7 +44,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         }
 
         setLoading(false);
-        navigation.navigate('createAccountPassword');
+        navigation.navigate('CreateAccountPassword');
     }
 
     return (

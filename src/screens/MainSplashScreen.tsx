@@ -2,7 +2,10 @@ import React from 'react';
 import { NavigationProp } from '@react-navigation/native';
 import MainSplashScreenContainer from '../containers/MainSplashContainer';
 import settings from '../settings';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function MainSplashScreen({ navigation }: { navigation: NavigationProp<any> }) {
-    return <MainSplashScreenContainer navigation={navigation}></MainSplashScreenContainer>;
+export type Props = NativeStackScreenProps<RouteStackParamList, 'Splash'>;
+export default function MainSplashScreen(props: Props) {
+    return <MainSplashScreenContainer navigation={props.navigation}></MainSplashScreenContainer>;
 }

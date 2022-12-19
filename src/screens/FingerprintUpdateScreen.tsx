@@ -1,11 +1,10 @@
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import FingerprintUpdateContainer from '../containers/FingerprintUpdateContainer';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function FingerprintUpdateScreen({
-    route,
-}: {
-    route: RouteProp<{ params: { password: string } }, 'params'>;
-}) {
-    return <FingerprintUpdateContainer password={route.params.password}></FingerprintUpdateContainer>;
+export type Props = NativeStackScreenProps<RouteStackParamList, 'CreateAccountFingerprint'>;
+
+export default function FingerprintUpdateScreen(props: Props) {
+    return <FingerprintUpdateContainer password={props.route.params.password}></FingerprintUpdateContainer>;
 }
