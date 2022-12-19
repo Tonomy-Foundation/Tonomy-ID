@@ -11,18 +11,21 @@
         "preview": {
             "distribution": "internal"
         },
-        "production": {}
+        "staging": {
+            "autoIncrement": true
+        },
+        "production": {
+            "autoIncrement": true
+        }
     },
     "submit": {
         "staging": {
-            "autoIncrement": true,
             "android": {
                 "serviceAccountKeyPath": "./google-service-key.json",
                 "track": "production"    
             }
         },
         "production": {
-            "autoIncrement": true
         }
     }
 }
