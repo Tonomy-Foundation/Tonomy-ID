@@ -14,7 +14,6 @@ if (!/^([.]{1})([0-9a-z.]+)$/g.test(settings.config.accountSuffix))
 // Update app.json
 app.expo.android.package = identifier;
 app.expo.android.adaptiveIcon.foregroundImage = settings.config.images.logo1024;
-app.expo.android.versionCode = myPackage.version;
 app.expo.icon = settings.config.images.logo1024;
 app.expo.ios.bundleIdentifier = identifier;
 app.expo.name = settings.config.appName;

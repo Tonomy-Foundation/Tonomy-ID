@@ -25,7 +25,7 @@
                 "foregroundImage": "./src/assets/tonomy/tonomy-logo1024.png",
                 "backgroundColor": "#FFFFFF"
             },
-            "versionCode": "1.0.0",
+            "versionCode": 1,
             "package": "foundation.tonomy.tonomyid"
         },
         "web": {
