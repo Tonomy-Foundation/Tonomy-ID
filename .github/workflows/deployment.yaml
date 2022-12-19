@@ -9,6 +9,9 @@ on:
 jobs:
     deploy:
         runs-on: ubuntu-20.04
+        env:
+          NODE_ENV: staging
+          TEST: ${{ secrets.TEST }}
 
         steps:
             - name: 🏗 Setup repo
@@ -43,5 +46,5 @@ jobs:
             # - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
             - run: ls
             - run: echo "${TEST} -- $TEST -- ${{ env.TEST }}"
-            - run: echo $NODE_ENV
+            - run: echo "${NODE_ENV} -- $NODE_ENV -- ${{ env.NODE_ENV }}"
             - run: NODE_ENV=staging && npm run deploy:android
