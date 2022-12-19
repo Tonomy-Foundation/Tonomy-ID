@@ -12,6 +12,7 @@ if (!/^([.]{1})([0-9a-z.]+)$/g.test(settings.config.accountSuffix))
     throw new Error('Invalid account suffix ' + settings.config.accountSuffix);
 
 // Update app.json
+app.expo.scheme = slug;
 app.expo.name = settings.config.appName;
 app.expo.slug = slug;
 app.expo.ios.bundleIdentifier = identifier;
