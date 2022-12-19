@@ -54,6 +54,12 @@ jobs:
             - name: 🏗 Setup repo
               uses: actions/checkout@v3
 
+            - name: 📦 Get built from artifacts
+              uses: actions/download-artifact@v3
+              with:
+                name: node_modules
+                path: ./node_modules
+
             # https://github.com/expo/expo-github-action
             - name: 🏗 Setup Expo
               uses: expo/expo-github-action@v7
@@ -65,14 +71,9 @@ jobs:
                 packager: npm
                 token: ${{ secrets.EXPO_TOKEN }}
 
-            - name: 📦 Get built from artifacts
-              uses: actions/download-artifact@v3
-              with:
-                name: node_modules
-                path: ./node_modules
-
-            - name: 🚀 Publish app
+            - name: 🚀 Build and publish app
               env:
+                NODE_ENV: staging
                 SUPER_SECRET: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
             - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}"" > google-service-key.json
             - run: npm run deploy:android

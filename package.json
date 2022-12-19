@@ -6,7 +6,7 @@
         "build:ios:create": "npm run build:prepare && npx eas device:create",
         "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios",
         "build:android": "npm run build:prepare && npx eas build --platform android --clear-cache",
-        "deploy:android": "npm run build:prepare && npx eas build --platform android --clear-cache --auto-submit-with-profile=staging",
+        "deploy:android": "npm run build:prepare && npx eas build --platform android --clear-cache --auto-submit-with-profile=${NODE_ENV}",
         "start": "npm run build:prepare && npx expo start --dev-client --clear",
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
         "lint:fix": "npm run lint -- --fix",
