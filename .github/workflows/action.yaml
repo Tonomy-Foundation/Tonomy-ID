@@ -72,5 +72,7 @@ jobs:
                 path: ./node_modules
 
             - name: 🚀 Publish app
-                run: echo ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY}} > google-service-key.json
-                run: npm run deploy:android
+              env:
+                SUPER_SECRET: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+            - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}"" > google-service-key.json
+            - run: npm run deploy:android
