@@ -4,8 +4,8 @@
     "scripts": {
         "build:prepare": "ts-node prepare.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
-        "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios",
-        "build:android": "npm run build:prepare && npx eas build --platform android --clear-cache",
+        "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
+        "build:android": "npm run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
         "deploy:android": "npm run build:prepare && npx eas build --platform android --clear-cache --auto-submit-with-profile=${NODE_ENV}",
         "start": "npm run build:prepare && npx expo start --dev-client --clear",
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
@@ -44,7 +44,8 @@
         "react-native-svg": "13.4.0",
         "react-native-web": "~0.18.7",
         "tonomy-id-sdk": "github:Tonomy-Foundation/Tonomy-ID-SDK#development",
-        "zustand": "^4.1.1"
+        "zustand": "^4.1.1",
+        "expo-barcode-scanner": "~11.3.0"
     },
     "devDependencies": {
         "@babel/core": "^7.19.3",

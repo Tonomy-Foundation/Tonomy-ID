@@ -11,6 +11,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
+import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
@@ -36,6 +37,7 @@ export type RouteStackParamList = {
     Test: undefined;
     Drawer: undefined;
     Settings: undefined;
+    QrScanner: undefined;
     SSO: { jwt: string };
 };
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -69,6 +71,7 @@ export default function RootNavigation() {
 
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
+
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
@@ -85,7 +88,6 @@ export default function RootNavigation() {
                             component={DrawerNavigation}
                             options={{ headerShown: false, title: settings.config.appName }}
                         />
-
                         <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                         <Stack.Screen
                             name="SplashSecurity"
@@ -112,7 +114,6 @@ export default function RootNavigation() {
                             options={{ title: 'Create New Account' }}
                             component={CreateAccountPasswordScreen}
                         />
-
                         <Stack.Screen
                             name="CreateAccountFingerprint"
                             options={{ title: 'Fingerprint Registration' }}
@@ -120,6 +121,11 @@ export default function RootNavigation() {
                             initialParams={{ password: '' }}
                         />
                         <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
+                        <Stack.Screen
+                            name="QrScanner"
+                            options={{ title: settings.config.appName }}
+                            component={QrCodeScanScreen}
+                        />
                         <Stack.Screen
                             name="SSO"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
