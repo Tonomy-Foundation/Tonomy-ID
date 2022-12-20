@@ -8,9 +8,6 @@
             "developmentClient": true,
             "distribution": "internal"
         },
-        "preview": {
-            "distribution": "internal"
-        },
         "staging": {
             "autoIncrement": true
         },
