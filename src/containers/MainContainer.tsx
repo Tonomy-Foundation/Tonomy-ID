@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
-import { TonomyUsername, User } from 'tonomy-id-sdk';
+import { StyleSheet, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { TonomyUsername } from 'tonomy-id-sdk';
 import QrIcon from '../assets/icons/QrIcon';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import { TH2, TP } from '../components/atoms/THeadings';
-import TCard from '../components/TCard';
+import { TH2 } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import { ApplicationErrors, throwError } from '../utils/errors';
+import { QrCodeScanScreenProps } from '../screens/QrCodeScanScreen';
 
 export default function MainContainer() {
     const user = useUserStore((state) => state.user);
@@ -14,6 +15,8 @@ export default function MainContainer() {
     useEffect(() => {
         setUserName();
     }, []);
+
+    const navigation = useNavigation<QrCodeScanScreenProps['navigation']>();
 
     async function setUserName() {
         const u = await user.storage.username;
@@ -28,7 +31,11 @@ export default function MainContainer() {
             <View style={styles.header}>
                 <TH2>{username.username}</TH2>
                 <QrIcon height="200" width="100%" style={styles.marginTop} />
-                <TButtonContained style={[styles.button, styles.marginTop]} icon="qrcode-scan">
+                <TButtonContained
+                    style={[styles.button, styles.marginTop]}
+                    onPress={() => navigation.navigate('QrScanner')}
+                    icon="qrcode-scan"
+                >
                     Scan Qr Code
                 </TButtonContained>
             </View>

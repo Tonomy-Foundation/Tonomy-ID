@@ -3,8 +3,8 @@ import React from 'react';
 import FingerprintUpdateContainer from '../containers/FingerprintUpdateContainer';
 import { RouteStackParamList } from '../navigation/Root';
 
-export type Props = NativeStackScreenProps<RouteStackParamList, 'CreateAccountFingerprint'>;
+export type FingerprintUpdateScreenProps = NativeStackScreenProps<RouteStackParamList, 'CreateAccountFingerprint'>;
 
-export default function FingerprintUpdateScreen(props: Props) {
+export default function FingerprintUpdateScreen(props: FingerprintUpdateScreenProps) {
     return <FingerprintUpdateContainer password={props.route.params.password}></FingerprintUpdateContainer>;
 }
