@@ -5,6 +5,7 @@ import { TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
 import { commonStyles } from '../utils/theme';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+import QrScannerBorders from '../assets/images/QrScannerBorders';
 
 export const width = Dimensions.get('window').width * 0.01;
 export const height = Dimensions.get('window').height * 0.01;
@@ -62,8 +63,7 @@ export default function QrCodeScanContainer() {
                         >
                             Align QR Code within frame to scan
                         </TP>
-                        <Image
-                            source={require('../assets/images/qrScannerBorders.png')}
+                        <QrScannerBorders
                             style={{
                                 height: '75%',
                                 width: '75%',
