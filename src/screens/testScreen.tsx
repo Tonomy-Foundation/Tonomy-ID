@@ -3,8 +3,11 @@ import { TButtonContained } from '../components/atoms/Tbutton';
 import { Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import LayoutComponent from '../components/layout';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function HomeScreen({ navigation }: { navigation: NavigationProp<any> }) {
+export type Props = NativeStackScreenProps<RouteStackParamList, 'Test'>;
+export default function HomeScreen({ navigation }: Props) {
     return (
         <LayoutComponent
             body={

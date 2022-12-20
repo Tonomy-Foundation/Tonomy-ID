@@ -16,14 +16,14 @@ export type TInfoBoxProps = {
 
 function IconComponent(props: SvgProps & { icon: string }) {
     switch (props.icon) {
-    case 'security':
-        return <SecurityIcon {...props} />;
-    case 'privacy':
-        return <PrivacyIcon {...props} />;
-    case 'transparency':
-        return <TransparencyIcon {...props} />;
-    default:
-        throw new Error('Invalid icon name');
+        case 'security':
+            return <SecurityIcon {...props} />;
+        case 'privacy':
+            return <PrivacyIcon {...props} />;
+        case 'transparency':
+            return <TransparencyIcon {...props} />;
+        default:
+            throw new Error('Invalid icon name');
     }
 }
 
@@ -56,9 +56,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
         <View style={styles.infoContainer}>
             <IconComponent style={styles.icon} icon={props.icon} />
             <Text style={styles.description}>
-                {props.description}
-                {' '}
-                <TA href={props.linkUrl}>{props.linkUrlText}</TA>
+                {props.description} <TA href={props.linkUrl}>{props.linkUrlText}</TA>
             </Text>
         </View>
     );

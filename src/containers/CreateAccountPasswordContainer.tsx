@@ -12,8 +12,11 @@ import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
+import useErrorStore from '../store/errorStore';
+import TErrorModal from '../components/TErrorModal';
+import { Props } from '../screens/CreateAccountPasswordScreen';
 
-export default function CreateAccountPasswordContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [password2, setPassword2] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
@@ -23,6 +26,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
 
     const user = useUserStore().user;
+    const errorStore = useErrorStore();
 
     async function onNext() {
         if (password !== password2) {
@@ -39,26 +43,28 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
             );
         } catch (e) {
-            // TODO catch password errors as well
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:
                         setShowUsernameErrorModal(true);
                         break;
                     case SdkErrors.PasswordFormatInvalid:
-                        setErrorMessage('Password is invalid.');
+                        setErrorMessage(
+                            'Password must be 12 characters with upper and lowercase letters and one number'
+                        );
                         break;
                     case SdkErrors.PasswordTooCommon:
                         setErrorMessage('Password contains words or phrases that are common in passwords.');
                         break;
                     default:
-                        throw e;
+                        errorStore.setError({ error: e, expected: false });
                 }
                 setLoading(false);
                 return;
             } else {
+                errorStore.setError({ error: e, expected: false });
                 setLoading(false);
-                throw e;
+                return;
             }
         }
 
@@ -69,12 +75,12 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('pin');
+        navigation.navigate('CreateAccountPin', { password });
     }
 
     async function onUsernameErrorModalPress() {
         setShowUsernameErrorModal(false);
-        navigation.navigate('createAccountUsername');
+        navigation.navigate('CreateAccountUsername');
     }
 
     return (
@@ -140,12 +146,11 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                     </View>
                 }
             ></LayoutComponent>
-            <TModal
+            <TErrorModal
                 visible={showUsernameErrorModal}
                 onPress={onUsernameErrorModalPress}
-                icon="alert-circle"
-                iconColor={theme.colors.error}
                 title="Please choose another username"
+                expected={true}
             >
                 <View>
                     <Text>
@@ -153,7 +158,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                         is already taken. Please choose another one.
                     </Text>
                 </View>
-            </TModal>
+            </TErrorModal>
             <TModal
                 visible={showModal}
                 onPress={onModalPress}

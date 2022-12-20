@@ -20,20 +20,10 @@ export function throwError(message: string, code?: ApplicationErrors) {
     throw error;
 }
 
-global.onunhandledrejection = function (error) {
-    // Warning: when running in "remote debug" mode (JS environment is Chrome browser),
-    // this handler is called a second time by Bluebird with a custom "dom-event".
-    // We need to filter this case out:
-    if (error instanceof Error) {
-        console.log('onunhandledrejection()', error.message);
-        // TODO log error
-        // logError(error);  // Your custom error logging/reporting code
-    }
-};
-
 enum ApplicationErrors {
     UsernameTaken = 'UsernameTaken',
     NoKeyFound = 'NoKeyFound',
+    NoDataFound = 'NoDataFound', // No Data found in the storage
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

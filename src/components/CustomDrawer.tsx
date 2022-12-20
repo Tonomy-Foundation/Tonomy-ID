@@ -1,16 +1,18 @@
 import React from 'react';
 
-import { DrawerContentScrollView, DrawerContentComponentProps, DrawerItem } from '@react-navigation/drawer';
+import { DrawerContentScrollView, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Image, StyleSheet, View } from 'react-native';
-import settings from '../settings';
-import { IconButtonProps, Text } from 'react-native-paper';
 import TButton from './atoms/Tbutton';
 import { useTheme } from '@react-navigation/native';
+import { RouteDrawerParamList } from '../navigation/Drawer';
+import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
 
-const icons = {
-    settings: 'cog',
-    help: 'help-circle',
-    logout: 'logout',
+const icons: Record<keyof RouteDrawerParamList, IconSource> = {
+    UserHome: 'home',
+    Settings: 'cog',
+    Help: 'help-circle',
+    Logout: 'logout',
+    SSO: 'login',
 };
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires

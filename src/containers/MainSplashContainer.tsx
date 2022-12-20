@@ -4,16 +4,28 @@ import theme from '../utils/theme';
 import { NavigationProp, StackActions } from '@react-navigation/native';
 import Storage from '../utils/storage';
 import LayoutComponent from '../components/layout';
+import { sleep } from '../utils/sleep';
+import useErrorStore from '../store/errorStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
-    useEffect(() => {
-        setTimeout(async () => {
+    const errorStore = useErrorStore();
+
+    async function main() {
+        await sleep(800);
+
+        try {
             const storage = new Storage();
             const value = await storage.retrieve('newUser');
-            const page = value ? 'home' : 'securitySplash';
+            const page = value ? 'Home' : 'SplashSecurity';
             // this will prevent use from going back to this screen after the user navigated
             navigation.dispatch(StackActions.replace(page));
-        }, 800);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
+    useEffect(() => {
+        main();
     }, []);
 
     return (

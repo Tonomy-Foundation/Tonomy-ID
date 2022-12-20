@@ -7,8 +7,16 @@ import TPin from '../components/TPin';
 import useUserStore from '../store/userStore';
 import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
+import useErrorStore from '../store/errorStore';
+import { Props } from '../screens/FingerprintUpdateScreen';
 
-export default function PinScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function PinScreenContainer({
+    navigation,
+    password,
+}: {
+    navigation: Props['navigation'];
+    password: string;
+}) {
     const [confirming, setConfirming] = useState(false);
     const [disabled, setDisabled] = useState(true);
     const [pin, setPin] = useState('');
@@ -17,6 +25,7 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
     const [errorMessage, setErrorMessage] = useState('');
 
     const user = useUserStore().user;
+    const errorStore = useErrorStore();
 
     function onPinChange(pin: string) {
         setPin(pin);
@@ -28,8 +37,17 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
         setLoading(true);
         if (confirming) {
             if (pin === confirmPin) {
-                await user.savePIN(pin);
-                navigation.navigate('fingerprint');
+                console.log('saving pin');
+                try {
+                    await user.savePIN(pin);
+                } catch (e) {
+                    console.log('error saving pin', e);
+                    errorStore.setError({ error: e, expected: false });
+                    setLoading(false);
+                    return;
+                }
+                console.log('pin saved');
+                navigation.navigate('CreateAccountFingerprint', { password });
             } else {
                 setErrorMessage('PINs do not match');
                 setPin('');
@@ -77,7 +95,7 @@ export default function PinScreenContainer({ navigation }: { navigation: Navigat
                     {!confirming && (
                         <TButton
                             mode="outlined"
-                            onPress={() => navigation.navigate('fingerprint')}
+                            onPress={() => navigation.navigate('CreateAccountFingerprint', { password })}
                             style={styles.marginBottom}
                         >
                             Skip

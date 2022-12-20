@@ -1,6 +1,7 @@
 {
     "cli": {
-        "version": ">= 2.1.0"
+        "version": ">= 2.1.0",
+        "appVersionSource": "remote"
     },
     "build": {
         "development": {
@@ -10,17 +11,21 @@
         "preview": {
             "distribution": "internal"
         },
-        "production": {},
-
-        "designonly": {
-            "developmentClient": true,
-            "distribution": "internal",
-            "env": {
-                "NODE_ENV": "designonly"
-            }
+        "staging": {
+            "autoIncrement": true
+        },
+        "production": {
+            "autoIncrement": true
         }
     },
     "submit": {
-        "production": {}
+        "staging": {
+            "android": {
+                "serviceAccountKeyPath": "./google-service-key.json",
+                "track": "production"    
+            }
+        },
+        "production": {
+        }
     }
 }
