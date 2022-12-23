@@ -6,17 +6,20 @@ import Storage from '../utils/storage';
 import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
+import useSplashStore from '../store/splashStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
+
+    const splashStorage = useSplashStore();
 
     async function main() {
         await sleep(800);
 
         try {
-            const storage = new Storage();
-            const value = await storage.retrieve('newUser');
-            const page = value ? 'Home' : 'SplashSecurity';
+            const finishedSplash = await splashStorage.finishedSplash;
+            const page = finishedSplash ? 'Home' : 'SplashSecurity';
+
             // this will prevent use from going back to this screen after the user navigated
             navigation.dispatch(StackActions.replace(page));
         } catch (e) {
