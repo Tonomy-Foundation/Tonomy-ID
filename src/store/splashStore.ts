@@ -6,6 +6,6 @@ interface SplashState {
     finishedSplash: boolean;
 }
 
-const useSplashStore = createStorage<SplashState>('tonomyid.splash.', storageFactory);
+const splashStore = createStorage<SplashState>('tonomyid.splash.', storageFactory);
 
-export default useSplashStore;
+export default () => splashStore;
