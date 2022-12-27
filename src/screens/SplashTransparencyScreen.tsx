@@ -1,18 +1,22 @@
 import React from 'react';
 import SplashScreenContainer from '../containers/SplashContainer';
-import { NavigationProp } from '@react-navigation/native';
 import settings from '../settings';
-import Storage from '../utils/storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
+import splashStore from '../store/splashStore';
 
-export type Props = NativeStackScreenProps<RouteStackParamList, 'SplashTransparency'>;
-export default function SplashTransparencyScreen({ navigation }: Props) {
-    const storeKey = () => {
-        const storage = new Storage();
-        storage.store('newUser', true);
+export type SplashTransparencyScreenProps = NativeStackScreenProps<RouteStackParamList, 'SplashTransparency'>;
+
+export default function SplashTransparencyScreen({ navigation }: SplashTransparencyScreenProps) {
+    const splashStorage = splashStore();
+
+    const onButtonPress = async () => {
+        splashStorage.finishedSplash = true;
+        await splashStorage.finishedSplash;
+
         navigation.navigate('Home');
     };
+
     return (
         <SplashScreenContainer
             navigation={navigation}
@@ -24,7 +28,7 @@ export default function SplashTransparencyScreen({ navigation }: Props) {
             linkUrl={settings.config.links.transparencyLearnMore}
             linkUrlText="Learn More"
             buttonText="GET STARTED"
-            buttonOnPress={storeKey}
+            buttonOnPress={onButtonPress}
         ></SplashScreenContainer>
     );
 }

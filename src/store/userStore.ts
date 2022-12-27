@@ -1,8 +1,8 @@
 import create from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
-import Storage from '../utils/storage';
+import { storageFactory } from '../utils/storage';
 import settings from '../settings';
-import { User, SettingsType, UserStatus, initialize } from 'tonomy-id-sdk';
+import { User, UserStatus, createUserObject, setSettings } from 'tonomy-id-sdk';
 
 // TODO change this to be an instance of User class when we have implemented the RNKeyStore
 interface UserState {
@@ -11,13 +11,13 @@ interface UserState {
     isLoggedIn: () => Promise<boolean>;
 }
 
-const sdkSettings: SettingsType = {
+setSettings({
     blockchainUrl: settings.config.blockchainUrl,
-};
+});
 
 const useUserStore = create<UserState>((set, get) => ({
     username: null, // start by getting the username from tonomy persistent storage
-    user: initialize(new RNKeyManager(), new Storage(), sdkSettings),
+    user: createUserObject(new RNKeyManager(), storageFactory),
 
     isLoggedIn: async () => {
         const status = await get().user.storage.status;
