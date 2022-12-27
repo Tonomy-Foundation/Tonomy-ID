@@ -30,7 +30,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         setLoading(true);
 
         try {
-            await user.saveUsername(username, settings.config.accountSuffix);
+            await user.saveUsername(username);
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');

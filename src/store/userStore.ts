@@ -13,6 +13,7 @@ interface UserState {
 
 setSettings({
     blockchainUrl: settings.config.blockchainUrl,
+    accountSuffix: settings.config.accountSuffix,
 });
 
 const useUserStore = create<UserState>((set, get) => ({
