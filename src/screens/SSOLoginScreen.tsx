@@ -4,6 +4,7 @@ import SSOLoginContainer from '../containers/SSOLoginContainer';
 import { RouteStackParamList } from '../navigation/Root';
 
 export type Props = NativeStackScreenProps<RouteStackParamList, 'SSO'>;
+
 export default function SSOLoginScreen(props: Props) {
-    return <SSOLoginContainer></SSOLoginContainer>;
+    return <SSOLoginContainer />;
 }

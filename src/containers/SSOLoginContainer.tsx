@@ -7,14 +7,16 @@ import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore from '../store/userStore';
 import { TonomyUsername } from 'tonomy-id-sdk';
-import { ApplicationErrors, throwError } from '../utils/errors';
 import { TH1, TH2, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
+import { useNavigation } from '@react-navigation/core';
 
 export default function SSOLoginContainer() {
-    const user = useUserStore((state) => state.user);
+    const userStore = useUserStore();
+    const user = userStore.user;
+
     const [app, setApp] = useState({
         account_name: '',
         app_name: 'Atomic Hub',
@@ -24,26 +26,28 @@ export default function SSOLoginContainer() {
         origin: 'https://wax.atomichub.io',
         version: 1,
     });
-    const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
-    const [username, setUsername] = useState<TonomyUsername>({});
+    const [checked, setChecked] = useState<boolean>(false);
+    const [username, setUsername] = useState<TonomyUsername>({} as TonomyUsername);
+
+    const navigation = useNavigation();
+
+    async function setUserName() {
+        const username = await user.storage.username;
+        if (!username) {
+            await user.logout();
+            navigation.navigate('Home');
+        }
+        setUsername(username);
+    }
+
+    const toggleCheckbox = () => {
+        setChecked((state) => !state);
+    };
+
     useEffect(() => {
         setUserName();
     }, []);
 
-    async function setUserName() {
-        const u = await user.storage.username;
-        if (!u) {
-            throwError('Username not found', ApplicationErrors.NoDataFound);
-        }
-        setUsername(u);
-    }
-    const toggleCheckbox = () => {
-        if (checked === 'checked') {
-            setChecked('unchecked');
-        } else {
-            setChecked('checked');
-        }
-    };
     return (
         <LayoutComponent
             body={
