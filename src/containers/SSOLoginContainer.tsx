@@ -6,7 +6,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore from '../store/userStore';
-import { App, IDContract, JWTLoginPayload, TonomyUsername } from 'tonomy-id-sdk';
+import { UserApps, App, JWTLoginPayload, TonomyUsername } from 'tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/core';
 import { ApplicationErrors, throwError } from '../utils/errors';
 import useErrorStore from '../store/errorStore';
 
-export default function SSOLoginContainer({ jwt }: { jwt: string }) {
+export default function SSOLoginContainer({ requests }: { requests: string }) {
     const userStore = useUserStore();
     const user = userStore.user;
 
@@ -29,10 +29,10 @@ export default function SSOLoginContainer({ jwt }: { jwt: string }) {
         version: 1,
     });
     const [checked, setChecked] = useState<boolean>(false);
-    const [username, setUsername] = useState<TonomyUsername>({} as TonomyUsername);
-    const [jwtPayload, setJwtPayload] = useState<JWTLoginPayload>({} as JWTLoginPayload);
-    const [ssoApp, setSsoApp] = useState<App>({} as App);
-    const [tonomyApp, setTonomyApp] = useState<App>({} as App);
+    const [username, setUsername] = useState<TonomyUsername | undefined>(undefined);
+    const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
+    const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
+    const [ssoApp, setSsoApp] = useState<App | undefined>(undefined);
 
     const navigation = useNavigation();
     const errorStore = useErrorStore();
@@ -48,18 +48,25 @@ export default function SSOLoginContainer({ jwt }: { jwt: string }) {
 
     async function getLoginFromJwt() {
         try {
-            if (!jwt || jwt === '') {
-                throwError('No JWT provided', ApplicationErrors.InvalidJwt);
+            if (!requests || requests === '') {
+                throwError('No request provided', ApplicationErrors.NoRequestData);
             }
-            const verifiedJwt = await App.verifyLoginJWT(jwt);
-            if (!verifiedJwt) {
-                throwError('Invalid JWT', ApplicationErrors.InvalidJwt);
+            const jwtRequests = JSON.parse(requests);
+            if (jwtRequests.length === 0) {
+                throwError('No JWT provided', ApplicationErrors.NoRequestData);
             }
-            const payload = verifiedJwt.payload as JWTLoginPayload;
-            setJwtPayload(payload);
 
-            const app = await user.app.getApp(payload.origin);
-            setApp(app);
+            for (const jwt of jwtRequests) {
+                const verifiedJwt = await UserApps.verifyLoginJWT(jwt);
+                const payload = verifiedJwt.payload as JWTLoginPayload;
+                if (payload.origin === settings.config.ssoWebsiteOrigin) {
+                    setTonomyIdJwtPayload(payload);
+                } else {
+                    setSsoJwtPayload(payload);
+                    const app = await App.getApp(payload.origin);
+                    setApp(app);
+                }
+            }
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }

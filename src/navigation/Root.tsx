@@ -38,7 +38,7 @@ export type RouteStackParamList = {
     Drawer: undefined;
     Settings: undefined;
     QrScanner: undefined;
-    SSO: { jwt: string };
+    SSO: { requests: string };
 };
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
