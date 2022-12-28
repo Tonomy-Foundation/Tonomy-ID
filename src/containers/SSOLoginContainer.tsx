@@ -19,16 +19,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
     const userStore = useUserStore();
     const user = userStore.user;
 
-    const [app, setApp] = useState({
-        account_name: '',
-        app_name: 'Atomic Hub',
-        username_hash: '',
-        description: '',
-        logo_url: 'https://revieweek.com/wp-content/uploads/2021/09/atomichub-logo.png',
-        origin: 'https://wax.atomichub.io',
-        version: 1,
-    });
-    const [checked, setChecked] = useState<boolean>(false);
+    const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<TonomyUsername | undefined>(undefined);
     const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
     const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
@@ -64,7 +55,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
                 } else {
                     setSsoJwtPayload(payload);
                     const app = await App.getApp(payload.origin);
-                    setApp(app);
+                    setSsoApp(app);
                 }
             }
         } catch (e: any) {
@@ -72,9 +63,14 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
         }
     }
 
-    const toggleCheckbox = () => {
-        setChecked((state) => !state);
-    };
+    function toggleCheckbox() {
+        setChecked((state) => (state === 'checked' ? 'unchecked' : 'checked'));
+    }
+
+    async function onNext() {
+        // TODO
+        // navigation.navigate('PIN');
+    }
 
     useEffect(() => {
         setUserName();
@@ -87,17 +83,20 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
                 <View style={styles.container}>
                     <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
 
-                    <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>
-                    {/* app dialog */}
-                    <View style={[styles.AppDialog, styles.marginTop]}>
-                        <Image style={styles.AppDialogImage} source={TonomyLogo}></Image>
-                        <TH1 style={commonStyles.textAlignCenter}>{app.app_name}</TH1>
-                        <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                        <TLink to={app.origin}>{app.origin}</TLink>
-                    </View>
+                    {username?.username && <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>}
+
+                    {ssoApp && (
+                        <View style={[styles.AppDialog, styles.marginTop]}>
+                            <Image style={styles.AppDialogImage} source={TonomyLogo}></Image>
+                            <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
+                            <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
+                            <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
+                        </View>
+                    )}
+
                     <View style={styles.checkbox}>
                         <TCheckbox status={checked} onPress={toggleCheckbox}></TCheckbox>
-                        <TP> Stay signed in</TP>
+                        <TP>Stay signed in</TP>
                     </View>
                 </View>
             }
@@ -114,7 +113,9 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
             }
             footer={
                 <View>
-                    <TButtonContained style={commonStyles.marginBottom}>Next</TButtonContained>
+                    <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
+                        Next
+                    </TButtonContained>
                     <TButtonOutlined>Cancel</TButtonOutlined>
                 </View>
             }
