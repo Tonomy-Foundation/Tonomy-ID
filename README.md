@@ -67,6 +67,7 @@ Values for NODE_ENV
 Other environment variables override the values in the config file:
 
 - BLOCKCHAIN_URL
+- SSO_WEBSITE_ORIGIN
 
 ### Linting
 
