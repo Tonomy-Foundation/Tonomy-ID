@@ -6,14 +6,16 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore from '../store/userStore';
-import { TonomyUsername } from 'tonomy-id-sdk';
-import { TH1, TH2, TP } from '../components/atoms/THeadings';
+import { App, IDContract, JWTLoginPayload, TonomyUsername } from 'tonomy-id-sdk';
+import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { useNavigation } from '@react-navigation/core';
+import { ApplicationErrors, throwError } from '../utils/errors';
+import useErrorStore from '../store/errorStore';
 
-export default function SSOLoginContainer() {
+export default function SSOLoginContainer({ jwt }: { jwt: string }) {
     const userStore = useUserStore();
     const user = userStore.user;
 
@@ -28,8 +30,12 @@ export default function SSOLoginContainer() {
     });
     const [checked, setChecked] = useState<boolean>(false);
     const [username, setUsername] = useState<TonomyUsername>({} as TonomyUsername);
+    const [jwtPayload, setJwtPayload] = useState<JWTLoginPayload>({} as JWTLoginPayload);
+    const [ssoApp, setSsoApp] = useState<App>({} as App);
+    const [tonomyApp, setTonomyApp] = useState<App>({} as App);
 
     const navigation = useNavigation();
+    const errorStore = useErrorStore();
 
     async function setUserName() {
         const username = await user.storage.username;
@@ -40,12 +46,32 @@ export default function SSOLoginContainer() {
         setUsername(username);
     }
 
+    async function getLoginFromJwt() {
+        try {
+            if (!jwt || jwt === '') {
+                throwError('No JWT provided', ApplicationErrors.InvalidJwt);
+            }
+            const verifiedJwt = await App.verifyLoginJWT(jwt);
+            if (!verifiedJwt) {
+                throwError('Invalid JWT', ApplicationErrors.InvalidJwt);
+            }
+            const payload = verifiedJwt.payload as JWTLoginPayload;
+            setJwtPayload(payload);
+
+            const app = await user.app.getApp(payload.origin);
+            setApp(app);
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
     const toggleCheckbox = () => {
         setChecked((state) => !state);
     };
 
     useEffect(() => {
         setUserName();
+        getLoginFromJwt();
     }, []);
 
     return (
