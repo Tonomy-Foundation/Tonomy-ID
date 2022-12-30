@@ -79,8 +79,8 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
                     {username?.username && <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>}
 
                     {ssoApp && (
-                        <View style={[styles.AppDialog, styles.marginTop]}>
-                            <Image style={styles.AppDialogImage} source={{ uri: ssoApp.logoUrl }} />
+                        <View style={[styles.appDialog, styles.marginTop]}>
+                            <Image style={styles.appDialogImage} source={{ uri: ssoApp.logoUrl }} />
                             <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
                             <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
                             <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
     },
-    AppDialog: {
+    appDialog: {
         borderWidth: 1,
         borderColor: 'grey',
         borderStyle: 'solid',
@@ -138,10 +138,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         minHeight: 200,
     },
-
-    AppDialogImage: {
-        width: 50,
+    appDialogImage: {
+        aspectRatio: 1,
         height: 50,
+        resizeMode: 'contain',
     },
     marginTop: {
         marginTop: 10,
