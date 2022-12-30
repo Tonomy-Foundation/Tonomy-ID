@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/core';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList, useRootNavigator } from '../navigation/Root';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { openURL } from 'expo-linking';
 
 export default function SSOLoginContainer({ requests }: { requests: string }) {
     const userStore = useUserStore();
@@ -46,6 +47,8 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
                 const payload = jwt.payload as JWTLoginPayload;
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
+                    // TODO, but need to add this app to Bootstrap script first
+                    // const app = await App.getApp(payload.origin);
                 } else {
                     setSsoJwtPayload(payload);
                     const app = await App.getApp(payload.origin);
@@ -62,8 +65,10 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
     }
 
     async function onNext() {
-        // TODO
-        // navigation.navigate('PIN');
+        await UserApps.loginWithApp(ssoApp, ssoJwtPayload?.publicKey, password);
+
+        const callbackUrl = ssoApp?.origin + ssoJwtPayload?.callbackPath;
+        await openURL(callbackUrl);
     }
 
     useEffect(() => {
