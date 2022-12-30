@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
 import useUserStore from '../store/userStore';
-import { useNavigation } from '@react-navigation/native';
 import { commonStyles } from '../utils/theme';
 import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/FingerprintUpdateScreen';
+import { useRootNavigator } from '../navigation/Root';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
     const user = useUserStore((state) => state.user);
     const errorStore = useErrorStore();
 
-    const navigation = useNavigation<Props['navigation']>();
+    const navigation = useRootNavigator();
 
     const onNext = async () => {
         try {

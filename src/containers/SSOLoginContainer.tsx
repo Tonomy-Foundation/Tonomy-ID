@@ -12,8 +12,9 @@ import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { useNavigation } from '@react-navigation/core';
-import { ApplicationErrors, throwError } from '../utils/errors';
 import useErrorStore from '../store/errorStore';
+import { RouteStackParamList, useRootNavigator } from '../navigation/Root';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export default function SSOLoginContainer({ requests }: { requests: string }) {
     const userStore = useUserStore();
@@ -25,7 +26,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
     const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
     const [ssoApp, setSsoApp] = useState<App | undefined>(undefined);
 
-    const navigation = useNavigation();
+    const navigation = useRootNavigator();
     const errorStore = useErrorStore();
 
     async function setUserName() {
@@ -109,7 +110,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
                     <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
-                    <TButtonOutlined onPress={navigation.navigate('UserHome')}>Cancel</TButtonOutlined>
+                    <TButtonOutlined onPress={() => navigation.navigate('Home')}>Cancel</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>

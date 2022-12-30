@@ -19,6 +19,8 @@ import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/core';
 
 const prefix = Linking.createURL('');
 
@@ -136,4 +138,8 @@ export default function RootNavigation() {
             </Stack.Navigator>
         </NavigationContainer>
     );
+}
+
+export function useRootNavigator() {
+    return useNavigation<NativeStackScreenProps<RouteStackParamList>['navigation']>();
 }
