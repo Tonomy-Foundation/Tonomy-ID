@@ -39,17 +39,10 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
 
     async function getLoginFromJwt() {
         try {
-            if (!requests || requests === '') {
-                throwError('No request provided', ApplicationErrors.NoRequestData);
-            }
-            const jwtRequests = JSON.parse(requests);
-            if (jwtRequests.length === 0) {
-                throwError('No JWT provided', ApplicationErrors.NoRequestData);
-            }
+            const verifiedRequests = await UserApps.verifyRequests(requests);
 
-            for (const jwt of jwtRequests) {
-                const verifiedJwt = await UserApps.verifyLoginJWT(jwt);
-                const payload = verifiedJwt.payload as JWTLoginPayload;
+            for (const jwt of verifiedRequests) {
+                const payload = jwt.payload as JWTLoginPayload;
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
                 } else {
@@ -87,7 +80,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
 
                     {ssoApp && (
                         <View style={[styles.AppDialog, styles.marginTop]}>
-                            <Image style={styles.AppDialogImage} source={TonomyLogo}></Image>
+                            <Image style={styles.AppDialogImage} source={{ uri: ssoApp.logoUrl }} />
                             <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
                             <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
                             <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
@@ -116,7 +109,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
                     <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
-                    <TButtonOutlined>Cancel</TButtonOutlined>
+                    <TButtonOutlined onPress={navigation.navigate('UserHome')}>Cancel</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>
