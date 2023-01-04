@@ -23,6 +23,7 @@
         "babel-plugin-transform-builtin-extend": "^1.1.2",
         "deepmerge": "^4.2.2",
         "expo": "^47.0.0",
+        "expo-barcode-scanner": "~11.3.0",
         "expo-dev-client": "~2.0.1",
         "expo-linking": "~3.2.3",
         "expo-local-authentication": "~13.0.2",
@@ -44,8 +45,7 @@
         "react-native-svg": "13.4.0",
         "react-native-web": "~0.18.7",
         "tonomy-id-sdk": "github:Tonomy-Foundation/Tonomy-ID-SDK#development",
-        "zustand": "^4.1.1",
-        "expo-barcode-scanner": "~11.3.0"
+        "zustand": "^3.7.2"
     },
     "devDependencies": {
         "@babel/core": "^7.19.3",

@@ -25,6 +25,12 @@ app.expo.version = myPackage.version;
 
 if (!['development', 'designonly'].includes(settings.env)) {
     console.log('Replacing expoProjectId');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (!app.expo.extra) app.expo.extra = {};
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (!app.expo.extra.eas) app.expo.extra.eas = {};
     app.expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
