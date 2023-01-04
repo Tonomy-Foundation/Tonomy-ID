@@ -6,10 +6,14 @@ Tonomy ID is a React Native application in typescript.
 
 ## Dependencies
 
+MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
+
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 
 ## Install
+
+MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
 npm i
@@ -38,9 +42,11 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 
 Having issues here or running the app? Checkout:
 
-https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROUBLESHOOT.md
+<https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROUBLESHOOT.md>
 
 ## Run
+
+MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
 npm start
