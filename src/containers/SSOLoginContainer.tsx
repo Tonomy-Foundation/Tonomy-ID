@@ -68,7 +68,11 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
         try {
             await user.apps.loginWithApp(ssoApp, ssoJwtPayload?.publicKey);
 
-            const callbackUrl = ssoApp?.origin + ssoJwtPayload?.callbackPath;
+            let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+            callbackUrl += 'requests=' + requests;
+            callbackUrl += '&username=' + (await user.storage.username);
+            callbackUrl += '&accountName=' + (await user.storage.accountName.toString());
+
             await openURL(callbackUrl);
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
