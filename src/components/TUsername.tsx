@@ -27,6 +27,7 @@ export default function TUsername(props: TTextInputProps) {
 const styles = StyleSheet.create({
     username: {
         flexDirection: 'row',
+        alignItems: 'center',
     },
     usernameInput: {
         width: '60%',

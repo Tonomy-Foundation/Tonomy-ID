@@ -52,7 +52,21 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
             body={
                 <View>
                     <TH1>Create your username</TH1>
-
+                    <TP>Username</TP>
+                    <View style={styles.inputContainer}>
+                        <TUsername
+                            errorText={errorMessage}
+                            suffix={settings.config.accountSuffix}
+                            value={username}
+                            onChangeText={setUsername}
+                            style={styles.userInput}
+                        />
+                    </View>
+                    <TCaption style={styles.caption}>You can always change your username later</TCaption>
+                </View>
+            }
+            footerHint={
+                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
                     <View style={commonStyles.marginBottom}>
                         <TInfoBox
                             align="left"
@@ -63,19 +77,6 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                             linkUrlText="Learn more"
                         />
                     </View>
-
-                    <TUsername
-                        errorText={errorMessage}
-                        suffix={settings.config.accountSuffix}
-                        value={username}
-                        onChangeText={setUsername}
-                        label="Username"
-                    />
-                </View>
-            }
-            footerHint={
-                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                    <TCaption>You can always change your username later</TCaption>
                 </View>
             }
             footer={
@@ -99,3 +100,17 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         />
     );
 }
+
+const styles = StyleSheet.create({
+    caption: {
+        textAlign: 'right',
+    },
+    userInput: {
+        backgroundColor: 'transparent',
+        flex: 1,
+    },
+    inputContainer: {
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+    },
+});
