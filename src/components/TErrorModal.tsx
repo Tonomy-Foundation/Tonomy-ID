@@ -11,6 +11,9 @@ export type ModalProps = React.ComponentProps<typeof TModal> & {
     title?: string;
     error?: Error;
     expected?: boolean;
+    visible?: boolean;
+    code?: number;
+    cause?: string;
 };
 
 export default function TErrorModal(props: ModalProps) {
