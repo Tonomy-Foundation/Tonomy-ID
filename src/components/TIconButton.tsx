@@ -3,7 +3,7 @@ import { IconButton } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { customColors } from '../utils/theme';
 
-export type IconButtonProps = React.ComponentProps<typeof IconButton>;
+export type IconButtonProps = React.ComponentProps<typeof IconButton> & { color?: string };
 
 export default function TButton(props: IconButtonProps) {
     const styles = StyleSheet.create({

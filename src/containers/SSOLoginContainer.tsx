@@ -11,16 +11,13 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
-import { useNavigation } from '@react-navigation/core';
 import useErrorStore from '../store/errorStore';
-import { RouteStackParamList, useRootNavigator } from '../navigation/Root';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useRootNavigator } from '../navigation/Root';
 import { openURL } from 'expo-linking';
 
 export default function SSOLoginContainer({ requests }: { requests: string }) {
-    const userStore = useUserStore();
-    const user = userStore.user;
-
+    const user = useUserStore((state) => state.user);
+    const [app, setApp] = useState<App>({});
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<TonomyUsername | undefined>(undefined);
     const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
