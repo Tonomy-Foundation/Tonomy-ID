@@ -116,5 +116,6 @@ const styles = StyleSheet.create({
     },
     marginBottom: {
         marginBottom: 16,
+        fontSize: 15,
     },
 });

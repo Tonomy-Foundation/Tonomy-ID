@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
+import DeleteIcon from '../assets/icons/DeleteIcon';
 import theme from '../utils/theme';
+import TButton from './atoms/Tbutton';
 
 function DotOrChar(props: { char: string | null }) {
     if (props.char) {
@@ -52,6 +54,12 @@ export default function TPin(props: { pin?: string; onChange: (pin: string) => v
         props.onChange(newPin);
     }
 
+    const onDeletePress = () => {
+        const newPin = pin.substring(0, pin.length - 1);
+        setPin(newPin);
+        props.onChange(newPin);
+    };
+
     return (
         <>
             <View style={styles.dotContainer}>
@@ -92,6 +100,9 @@ export default function TPin(props: { pin?: string; onChange: (pin: string) => v
                 <TouchableOpacity style={styles.gridItemZero} onPress={() => onNumberPress('0')}>
                     <Text style={styles.text}>0</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.gridIcon} onPress={onDeletePress}>
+                    <DeleteIcon style={styles.icon} />
+                </TouchableOpacity>
             </View>
         </>
     );
@@ -119,7 +130,6 @@ const styles = StyleSheet.create({
     gridItemZero: {
         paddingTop: 10,
         marginLeft: '33%',
-        marginRight: '33%',
         width: '33%',
         height: 70,
         justifyContent: 'center',
@@ -130,5 +140,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         width: '90%',
+    },
+    gridIcon: {
+        paddingTop: 10,
+        width: '33%',
+        height: 70,
+        justifyContent: 'center',
+        alignContent: 'center',
+    },
+    icon: {
+        marginHorizontal: '33%',
     },
 });
