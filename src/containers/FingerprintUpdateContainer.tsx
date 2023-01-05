@@ -27,13 +27,15 @@ export default function CreateAccountContainer({ password }: { password: string 
             }
             await user.saveFingerprint();
 
+            await user.saveLocal();
             await updateKeys();
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     };
 
-    const onSkip = () => {
+    const onSkip = async () => {
+        await user.saveLocal();
         updateKeys();
     };
 
