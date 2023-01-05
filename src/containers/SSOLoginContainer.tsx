@@ -6,7 +6,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore from '../store/userStore';
-import { TonomyUsername } from 'tonomy-id-sdk';
+import { App, TonomyUsername } from 'tonomy-id-sdk';
 import { ApplicationErrors, throwError } from '../utils/errors';
 import { TH1, TH2, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -15,15 +15,7 @@ import settings from '../settings';
 
 export default function SSOLoginContainer() {
     const user = useUserStore((state) => state.user);
-    const [app, setApp] = useState({
-        account_name: '',
-        app_name: 'Atomic Hub',
-        username_hash: '',
-        description: '',
-        logo_url: 'https://revieweek.com/wp-content/uploads/2021/09/atomichub-logo.png',
-        origin: 'https://wax.atomichub.io',
-        version: 1,
-    });
+    const [app, setApp] = useState<App>({});
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<TonomyUsername>({});
     useEffect(() => {
