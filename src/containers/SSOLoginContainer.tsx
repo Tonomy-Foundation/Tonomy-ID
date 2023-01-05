@@ -13,7 +13,7 @@ import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { useRootNavigator } from '../navigation/Root';
-import { openURL } from 'expo-linking';
+import { openBrowserAsync } from 'expo-web-browser';
 
 export default function SSOLoginContainer({ requests }: { requests: string }) {
     const user = useUserStore((state) => state.user);
@@ -70,7 +70,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
             callbackUrl += '&username=' + (await user.storage.username);
             callbackUrl += '&accountName=' + (await user.storage.accountName.toString());
 
-            await openURL(callbackUrl);
+            openBrowserAsync(callbackUrl);
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
