@@ -49,7 +49,7 @@ export default function PinScreenContainer({
                 console.log('pin saved');
                 navigation.navigate('CreateAccountFingerprint', { password });
             } else {
-                setErrorMessage('PINs do not match');
+                setErrorMessage('Wrong PIN');
                 setPin('');
                 setConfirmPin('');
                 setConfirming(false);
