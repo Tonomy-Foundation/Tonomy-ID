@@ -11,12 +11,13 @@ jobs:
             - name: 🏗 Setup repo
               uses: actions/checkout@v3
 
-            - name: 📦 Build and test
+            - name: 📦 Build, test and lint
               uses: actions/setup-node@v3
               with:
                   node-version: 16.4.1
             - run: npm install
             - run: npm test
+            - run: npm lint
 
     build-apk:
         runs-on: ubuntu-20.04
