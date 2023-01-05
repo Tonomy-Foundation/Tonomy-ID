@@ -47,7 +47,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
                 const payload = jwt.payload as JWTLoginPayload;
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
-                    // TODO, but need to add this app to Bootstrap script first
+                    // TODO next line, but need to add this app to Bootstrap script first
                     // const app = await App.getApp(payload.origin);
                 } else {
                     setSsoJwtPayload(payload);
@@ -65,10 +65,14 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
     }
 
     async function onNext() {
-        await UserApps.loginWithApp(ssoApp, ssoJwtPayload?.publicKey, password);
+        try {
+            await user.apps.loginWithApp(ssoApp, ssoJwtPayload?.publicKey);
 
-        const callbackUrl = ssoApp?.origin + ssoJwtPayload?.callbackPath;
-        await openURL(callbackUrl);
+            const callbackUrl = ssoApp?.origin + ssoJwtPayload?.callbackPath;
+            await openURL(callbackUrl);
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+        }
     }
 
     useEffect(() => {
