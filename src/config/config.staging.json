@@ -18,9 +18,10 @@
         "usernameLearnMore": "#",
         "passwordLearnMore": "#",
         "privacyLearnMore": "#",
-        "transarencyLearnMore": "#",
+        "transparencyLearnMore": "#",
         "securityLearnMore": "#"
     },
     "expoProjectId": "b7d1c77f-3535-492c-8f55-0ba569ccdc93",
-    "accountSuffix": ".stag.tonomy.id"
+    "accountSuffix": ".stag.tonomy.id",
+    "ssoWebsiteOrigin": "https://tonomy-id-staging.tonomy.foundation"
 }

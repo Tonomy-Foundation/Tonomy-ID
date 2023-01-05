@@ -25,6 +25,7 @@ type ConfigType = {
     };
     expoProjectId: string;
     accountSuffix: string;
+    ssoWebsiteOrigin: string;
 };
 
 type SettingsType = {
@@ -60,6 +61,11 @@ switch (env) {
 if (process.env.BLOCKCHAIN_URL) {
     console.log(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);
     config.blockchainUrl = process.env.BLOCKCHAIN_URL;
+}
+
+if (process.env.SSO_WEBSITE_ORIGIN) {
+    console.log(`Using SSO_WEBSITE_ORIGIN from env:  ${process.env.SSO_WEBSITE_ORIGIN}`);
+    config.ssoWebsiteOrigin = process.env.SSO_WEBSITE_ORIGIN;
 }
 
 settings.config = config;
