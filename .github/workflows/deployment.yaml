@@ -12,6 +12,7 @@ jobs:
           NODE_ENV: staging
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          EXPO_APPLE_PASSWORD: ${{ secrets.EXPO_APPLE_PASSWORD }}
 
         steps:
             - name: 🏗 Setup repo
@@ -28,4 +29,4 @@ jobs:
               with:
                   node-version: 16.4.1
             - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
-            - run: npm run deploy:android
+            - run: npm run deploy
