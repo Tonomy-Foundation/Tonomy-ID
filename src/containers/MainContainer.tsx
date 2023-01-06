@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { TonomyUsername, User } from 'tonomy-id-sdk';
-import QrIcon from '../assets/icons/QrIcon';
+
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
@@ -27,7 +27,7 @@ export default function MainContainer() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TH2>{username.username}</TH2>
-                <QrIcon height="200" width="100%" style={styles.marginTop} />
+                <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
                 <TButtonContained style={[styles.button, styles.marginTop]} icon="qrcode-scan">
                     Scan Qr Code
                 </TButtonContained>
@@ -65,6 +65,11 @@ export default function MainContainer() {
 }
 
 const styles = StyleSheet.create({
+    image: {
+        width: 220,
+        height: 220,
+        resizeMode: 'contain',
+    },
     container: {
         padding: 16,
         flex: 1, //remove this when cards are added

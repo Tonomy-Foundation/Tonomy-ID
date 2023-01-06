@@ -49,5 +49,6 @@ const styles = StyleSheet.create({
         marginTop: 50,
         alignSelf: 'center',
         height: 220,
+        resizeMode: 'contain',
     },
 });

@@ -12,7 +12,7 @@ export default function SplashSecurityScreen(props: Props) {
             navigation={props.navigation}
             title="Security"
             subtitle="You are in control of your identity"
-            imageSource={require('../assets/images/security-splash.png')}
+            imageSource={require('../assets/animations/security.gif')}
             icon="security"
             description="Tonomy secures all transactions and data by only storing keys and your data on your phone - nowhere else!"
             linkUrl={settings.config.links.securityLearnMore}

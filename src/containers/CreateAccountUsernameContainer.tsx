@@ -10,7 +10,7 @@ import { randomString, SdkError, SdkErrors } from 'tonomy-id-sdk';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
-import { commonStyles } from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 
@@ -52,7 +52,20 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
             body={
                 <View>
                     <TH1>Create your username</TH1>
-
+                    <TP>Username</TP>
+                    <View style={styles.inputContainer}>
+                        <TUsername
+                            errorText={errorMessage}
+                            suffix={settings.config.accountSuffix}
+                            value={username}
+                            onChangeText={setUsername}
+                        />
+                    </View>
+                    <TCaption style={styles.caption}>You can always change your username later</TCaption>
+                </View>
+            }
+            footerHint={
+                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
                     <View style={commonStyles.marginBottom}>
                         <TInfoBox
                             align="left"
@@ -63,19 +76,6 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                             linkUrlText="Learn more"
                         />
                     </View>
-
-                    <TUsername
-                        errorText={errorMessage}
-                        suffix={settings.config.accountSuffix}
-                        value={username}
-                        onChangeText={setUsername}
-                        label="Username"
-                    />
-                </View>
-            }
-            footerHint={
-                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                    <TCaption>You can always change your username later</TCaption>
                 </View>
             }
             footer={
@@ -99,3 +99,13 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         />
     );
 }
+
+const styles = StyleSheet.create({
+    caption: {
+        textAlign: 'right',
+    },
+    inputContainer: {
+        borderWidth: 1,
+        borderColor: theme.colors.disabled,
+    },
+});

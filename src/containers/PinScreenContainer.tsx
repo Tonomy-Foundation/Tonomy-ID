@@ -48,7 +48,7 @@ export default function PinScreenContainer({
                 console.log('pin saved');
                 navigation.navigate('CreateAccountFingerprint', { password });
             } else {
-                setErrorMessage('PINs do not match');
+                setErrorMessage('Wrong PIN');
                 setPin('');
                 setConfirmPin('');
                 setConfirming(false);
@@ -115,5 +115,6 @@ const styles = StyleSheet.create({
     },
     marginBottom: {
         marginBottom: 16,
+        fontSize: 15,
     },
 });

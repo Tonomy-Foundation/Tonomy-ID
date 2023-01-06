@@ -27,10 +27,13 @@ export default function TUsername(props: TTextInputProps) {
 const styles = StyleSheet.create({
     username: {
         flexDirection: 'row',
+        textAlign: 'center',
     },
     usernameInput: {
         width: '60%',
         height: 45,
+        backgroundColor: 'transparent',
+        flex: 1,
     },
     accountSuffix: {
         width: '40%',
