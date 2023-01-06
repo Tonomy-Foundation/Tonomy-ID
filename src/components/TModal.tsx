@@ -12,6 +12,7 @@ export type ModalProps = React.ComponentProps<typeof Modal> & {
     iconColor?: string;
     title: string;
     buttonLabel?: string;
+    visible?: boolean;
 };
 
 const styles = StyleSheet.create({

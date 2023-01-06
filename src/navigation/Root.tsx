@@ -19,6 +19,8 @@ import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/core';
 
 const prefix = Linking.createURL('');
 
@@ -38,7 +40,7 @@ export type RouteStackParamList = {
     Drawer: undefined;
     Settings: undefined;
     QrScanner: undefined;
-    SSO: { jwt: string };
+    SSO: { requests: string };
 };
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
@@ -75,65 +77,53 @@ export default function RootNavigation() {
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
-                {/* TODO: fix user.isLoggedIn() always returns true */}
-                {user.isLoggedIn() && false ? (
-                    <>
-                        <Stack.Screen name="Test" component={TestScreen} />
-                    </>
-                ) : (
-                    <>
-                        <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
-                        <Stack.Screen
-                            name="Drawer"
-                            component={DrawerNavigation}
-                            options={{ headerShown: false, title: settings.config.appName }}
-                        />
-                        <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
-                        <Stack.Screen
-                            name="SplashSecurity"
-                            options={noHeaderScreenOptions}
-                            component={SplashSecurityScreen}
-                        />
-                        <Stack.Screen
-                            name="SplashPrivacy"
-                            options={noHeaderScreenOptions}
-                            component={SplashPrivacyScreen}
-                        />
-                        <Stack.Screen
-                            name="SplashTransparency"
-                            options={noHeaderScreenOptions}
-                            component={SplashTransparencyScreen}
-                        />
-                        <Stack.Screen
-                            name="CreateAccountUsername"
-                            options={{ title: 'Create New Account' }}
-                            component={CreateAccountUsernameScreen}
-                        />
-                        <Stack.Screen
-                            name="CreateAccountPassword"
-                            options={{ title: 'Create New Account' }}
-                            component={CreateAccountPasswordScreen}
-                        />
-                        <Stack.Screen
-                            name="CreateAccountFingerprint"
-                            options={{ title: 'Fingerprint Registration' }}
-                            component={FingerprintUpdateScreen}
-                            initialParams={{ password: '' }}
-                        />
-                        <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
-                        <Stack.Screen
-                            name="QrScanner"
-                            options={{ title: settings.config.appName }}
-                            component={QrCodeScanScreen}
-                        />
-                        <Stack.Screen
-                            name="SSO"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
-                            component={SSOLoginScreen}
-                        />
-                    </>
-                )}
+                <Stack.Screen name="Test" component={TestScreen} />
+                <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
+                <Stack.Screen
+                    name="Drawer"
+                    component={DrawerNavigation}
+                    options={{ headerShown: false, title: settings.config.appName }}
+                />
+                <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
+                <Stack.Screen name="SplashSecurity" options={noHeaderScreenOptions} component={SplashSecurityScreen} />
+                <Stack.Screen name="SplashPrivacy" options={noHeaderScreenOptions} component={SplashPrivacyScreen} />
+                <Stack.Screen
+                    name="SplashTransparency"
+                    options={noHeaderScreenOptions}
+                    component={SplashTransparencyScreen}
+                />
+                <Stack.Screen
+                    name="CreateAccountUsername"
+                    options={{ title: 'Create New Account' }}
+                    component={CreateAccountUsernameScreen}
+                />
+                <Stack.Screen
+                    name="CreateAccountPassword"
+                    options={{ title: 'Create New Account' }}
+                    component={CreateAccountPasswordScreen}
+                />
+                <Stack.Screen
+                    name="CreateAccountFingerprint"
+                    options={{ title: 'Fingerprint Registration' }}
+                    component={FingerprintUpdateScreen}
+                    initialParams={{ password: '' }}
+                />
+                <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
+                <Stack.Screen
+                    name="QrScanner"
+                    options={{ title: settings.config.appName }}
+                    component={QrCodeScanScreen}
+                />
+                <Stack.Screen
+                    name="SSO"
+                    options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                    component={SSOLoginScreen}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
+}
+
+export function useRootNavigator() {
+    return useNavigation<NativeStackScreenProps<RouteStackParamList>['navigation']>();
 }
