@@ -6,61 +6,101 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore from '../store/userStore';
-import { TonomyUsername } from 'tonomy-id-sdk';
-import { ApplicationErrors, throwError } from '../utils/errors';
-import { TH1, TH2, TP } from '../components/atoms/THeadings';
+import { UserApps, App, JWTLoginPayload, TonomyUsername } from 'tonomy-id-sdk';
+import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
+import useErrorStore from '../store/errorStore';
+import { useRootNavigator } from '../navigation/Root';
+import { openBrowserAsync } from 'expo-web-browser';
 
-export default function SSOLoginContainer() {
+export default function SSOLoginContainer({ requests }: { requests: string }) {
     const user = useUserStore((state) => state.user);
-    const [app, setApp] = useState({
-        account_name: '',
-        app_name: 'Atomic Hub',
-        username_hash: '',
-        description: '',
-        logo_url: 'https://revieweek.com/wp-content/uploads/2021/09/atomichub-logo.png',
-        origin: 'https://wax.atomichub.io',
-        version: 1,
-    });
+    const [app, setApp] = useState<App>({});
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
-    const [username, setUsername] = useState<TonomyUsername>({});
-    useEffect(() => {
-        setUserName();
-    }, []);
+    const [username, setUsername] = useState<TonomyUsername | undefined>(undefined);
+    const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
+    const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
+    const [ssoApp, setSsoApp] = useState<App | undefined>(undefined);
+
+    const navigation = useRootNavigator();
+    const errorStore = useErrorStore();
 
     async function setUserName() {
-        const u = await user.storage.username;
-        if (!u) {
-            throwError('Username not found', ApplicationErrors.NoDataFound);
+        const username = await user.storage.username;
+        if (!username) {
+            await user.logout();
+            navigation.navigate('Home');
         }
-        setUsername(u);
+        setUsername(username);
     }
-    const toggleCheckbox = () => {
-        if (checked === 'checked') {
-            setChecked('unchecked');
-        } else {
-            setChecked('checked');
+
+    async function getLoginFromJwt() {
+        try {
+            const verifiedRequests = await UserApps.verifyRequests(requests);
+
+            for (const jwt of verifiedRequests) {
+                const payload = jwt.payload as JWTLoginPayload;
+                if (payload.origin === settings.config.ssoWebsiteOrigin) {
+                    setTonomyIdJwtPayload(payload);
+                    // TODO next line, but need to add this app to Bootstrap script first
+                    // const app = await App.getApp(payload.origin);
+                } else {
+                    setSsoJwtPayload(payload);
+                    const app = await App.getApp(payload.origin);
+                    setSsoApp(app);
+                }
+            }
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
         }
-    };
+    }
+
+    function toggleCheckbox() {
+        setChecked((state) => (state === 'checked' ? 'unchecked' : 'checked'));
+    }
+
+    async function onNext() {
+        try {
+            await user.apps.loginWithApp(ssoApp, ssoJwtPayload?.publicKey);
+
+            let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+            callbackUrl += 'requests=' + requests;
+            callbackUrl += '&username=' + (await user.storage.username);
+            callbackUrl += '&accountName=' + (await user.storage.accountName.toString());
+
+            openBrowserAsync(callbackUrl);
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
+    useEffect(() => {
+        setUserName();
+        getLoginFromJwt();
+    }, []);
+
     return (
         <LayoutComponent
             body={
                 <View style={styles.container}>
                     <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
 
-                    <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>
-                    {/* app dialog */}
-                    <View style={[styles.AppDialog, styles.marginTop]}>
-                        <Image style={styles.AppDialogImage} source={TonomyLogo}></Image>
-                        <TH1 style={commonStyles.textAlignCenter}>{app.app_name}</TH1>
-                        <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                        <TLink to={app.origin}>{app.origin}</TLink>
-                    </View>
+                    {username?.username && <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>}
+
+                    {ssoApp && (
+                        <View style={[styles.appDialog, styles.marginTop]}>
+                            <Image style={styles.appDialogImage} source={{ uri: ssoApp.logoUrl }} />
+                            <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
+                            <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
+                            <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
+                        </View>
+                    )}
+
                     <View style={styles.checkbox}>
                         <TCheckbox status={checked} onPress={toggleCheckbox}></TCheckbox>
-                        <TP> Stay signed in</TP>
+                        <TP>Stay signed in</TP>
                     </View>
                 </View>
             }
@@ -77,8 +117,10 @@ export default function SSOLoginContainer() {
             }
             footer={
                 <View>
-                    <TButtonContained style={commonStyles.marginBottom}>Next</TButtonContained>
-                    <TButtonOutlined>Cancel</TButtonOutlined>
+                    <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
+                        Next
+                    </TButtonContained>
+                    <TButtonOutlined onPress={() => navigation.navigate('Home')}>Cancel</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>
@@ -95,7 +137,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
     },
-    AppDialog: {
+    appDialog: {
         borderWidth: 1,
         borderColor: 'grey',
         borderStyle: 'solid',
@@ -107,10 +149,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         minHeight: 200,
     },
-
-    AppDialogImage: {
-        width: 50,
+    appDialogImage: {
+        aspectRatio: 1,
         height: 50,
+        resizeMode: 'contain',
     },
     marginTop: {
         marginTop: 10,

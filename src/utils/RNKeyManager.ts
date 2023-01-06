@@ -12,7 +12,6 @@ import {
     sha256,
     decodeHex,
 } from 'tonomy-id-sdk';
-import { ApplicationErrors, throwError } from './errors';
 
 type KeyStorage = {
     privateKey: PrivateKey;

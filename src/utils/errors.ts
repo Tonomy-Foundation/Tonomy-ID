@@ -24,6 +24,8 @@ enum ApplicationErrors {
     UsernameTaken = 'UsernameTaken',
     NoKeyFound = 'NoKeyFound',
     NoDataFound = 'NoDataFound', // No Data found in the storage
+    NoRequestData = 'NoRequestData',
+    InvalidJwt = 'InvalidJwt',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
