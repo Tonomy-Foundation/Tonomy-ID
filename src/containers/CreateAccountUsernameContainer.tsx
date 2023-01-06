@@ -10,7 +10,7 @@ import { randomString, SdkError, SdkErrors } from 'tonomy-id-sdk';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
-import { commonStyles } from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 
@@ -111,6 +111,6 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         borderWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: theme.colors.disabled,
     },
 });
