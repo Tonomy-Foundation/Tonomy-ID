@@ -30,8 +30,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     usernameInput: {
+        backgroundColor: 'transparent',
         width: '60%',
         height: 45,
+        flex: 1,
     },
     accountSuffix: {
         width: '40%',

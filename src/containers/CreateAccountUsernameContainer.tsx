@@ -59,7 +59,6 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                             suffix={settings.config.accountSuffix}
                             value={username}
                             onChangeText={setUsername}
-                            style={styles.userInput}
                         />
                     </View>
                     <TCaption style={styles.caption}>You can always change your username later</TCaption>
@@ -104,10 +103,6 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
-    },
-    userInput: {
-        backgroundColor: 'transparent',
-        flex: 1,
     },
     inputContainer: {
         borderWidth: 1,
