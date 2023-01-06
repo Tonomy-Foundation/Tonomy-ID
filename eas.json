@@ -19,10 +19,14 @@
         "staging": {
             "android": {
                 "serviceAccountKeyPath": "./google-service-key.json",
-                "track": "production"    
+                "track": "production"
+            },
+            "ios": {
+                "appleId": "jack@tonomy.foundation",
+                "ascAppId": "1663471436",
+                "appleTeamId": "6BLD42QR78"
             }
         },
-        "production": {
-        }
+        "production": {}
     }
 }
