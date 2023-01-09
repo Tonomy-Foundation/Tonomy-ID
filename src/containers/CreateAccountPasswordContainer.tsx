@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
@@ -24,9 +24,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-
+    const [error, setError] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
+
+    useEffect(() => {
+        setError(!(password === password2));
+    }, [password, password2]);
 
     async function onNext() {
         if (password !== password2) {
@@ -91,21 +95,23 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                         <View>
                             <TH1 style={styles.headline}>Create password</TH1>
                             <View>
-                                <TP size={1} style={styles.labelText}>
+                                <TP size={1} style={error ? errorStyles.labelError : styles.labelText}>
                                     Password
                                 </TP>
                                 <TPasswordInput
                                     value={password}
                                     onChangeText={setPassword}
                                     errorText={errorMessage}
+                                    outlineColor={error ? theme.colors.error : theme.colors.primary}
                                     style={commonStyles.marginBottom}
                                 />
                             </View>
                             <View>
-                                <TP style={styles.labelText}>Confirm Password</TP>
+                                <TP style={error ? errorStyles.labelError : styles.labelText}>Confirm Password</TP>
                                 <TPasswordInput
                                     value={password2}
                                     onChangeText={setPassword2}
+                                    outlineColor={error ? theme.colors.error : theme.colors.primary}
                                     style={commonStyles.marginBottom}
                                 />
                             </View>
@@ -224,5 +230,14 @@ const styles = StyleSheet.create({
     },
     labelText: {
         color: theme.colors.primary,
+    },
+});
+
+const errorStyles = StyleSheet.create({
+    labelError: {
+        color: theme.colors.error,
+    },
+    inputError: {
+        borderColor: theme.colors.error,
     },
 });
