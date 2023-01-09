@@ -22,9 +22,11 @@
                 "track": "production"
             },
             "ios": {
-                "appleId": "jack@tonomy.foundation",
                 "ascAppId": "1663471436",
-                "appleTeamId": "6BLD42QR78"
+                "appleTeamId": "6BLD42QR78",
+                "ascApiKeyId": "G23U49XAYF",
+                "ascApiKeyPath": "./apple-asc-api-key.p8",
+                "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         },
         "production": {}
