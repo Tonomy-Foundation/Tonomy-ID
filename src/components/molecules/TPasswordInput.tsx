@@ -4,7 +4,7 @@ import TTextInput, { TTextInputProps } from './TTextInput';
 import theme from '../../utils/theme';
 
 export default function TPasswordInput(props: TTextInputProps) {
-    return <TTextInput {...props} secureTextEntry={true} style={styles.input} />;
+    return <TTextInput underlineColor="transparent" {...props} secureTextEntry={true} style={styles.input} />;
 }
 
 const styles = StyleSheet.create({
