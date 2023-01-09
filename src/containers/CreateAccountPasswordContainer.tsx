@@ -89,42 +89,62 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 body={
                     <View>
                         <View>
-                            <TH1>Create your password</TH1>
-
-                            <View style={commonStyles.marginBottom}>
-                                <TInfoBox
-                                    align="left"
-                                    icon="security"
-                                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                    linkUrl={settings.config.links.securityLearnMore}
-                                    linkUrlText="Learn more"
+                            <TH1 style={styles.headline}>Create password</TH1>
+                            <View>
+                                <TP size={1} style={styles.labelText}>
+                                    Password
+                                </TP>
+                                <TPasswordInput
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    errorText={errorMessage}
+                                    style={commonStyles.marginBottom}
                                 />
                             </View>
-
-                            <TPasswordInput
-                                value={password}
-                                onChangeText={setPassword}
-                                errorText={errorMessage}
-                                label="Master Password"
-                                style={commonStyles.marginBottom}
-                            />
-                            <TPasswordInput
-                                value={password2}
-                                onChangeText={setPassword2}
-                                label="Confirm Master Password"
-                                style={commonStyles.marginBottom}
-                            />
-                            <View style={commonStyles.alignItemsCenter}>
-                                <TCaption>Minimum 12 characters with lower and uppercase letter and numbers</TCaption>
+                            <View>
+                                <TP style={styles.labelText}>Confirm Password</TP>
+                                <TPasswordInput
+                                    value={password2}
+                                    onChangeText={setPassword2}
+                                    style={commonStyles.marginBottom}
+                                />
                             </View>
+                            <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                                <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
+                                    Remember your password for future use
+                                </TP>
+                            </View>
+                            {/* <View style={commonStyles.alignItemsCenter}>
+                                <TCaption>Minimum 12 characters with lower and uppercase letter and numbers</TCaption>
+                            </View> */}
                         </View>
                     </View>
                 }
                 footerHint={
-                    <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
-                        <TP size={1} style={[styles.rememberPasswordText, commonStyles.textAlignCenter]}>
-                            Please remember your master password for future use
-                        </TP>
+                    <View style={[commonStyles.marginBottom]}>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <TP size={1}>
+                                By continuing, you agree to our
+                                <TP size={1} style={styles.underline}>
+                                    {' '}
+                                    Terms & Conditions{' '}
+                                </TP>
+                                and agree to
+                                <TP size={1} style={styles.underline}>
+                                    {' '}
+                                    Privacy Policy
+                                </TP>
+                            </TP>
+                        </View>
+                        <View style={commonStyles.marginBottom}>
+                            <TInfoBox
+                                align="left"
+                                icon="security"
+                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                                linkUrl={settings.config.links.securityLearnMore}
+                                linkUrlText="Learn more"
+                            />
+                        </View>
                     </View>
                 }
                 footer={
@@ -135,7 +155,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 disabled={password.length === 0 || password2.length === 0 || loading}
                                 loading={loading}
                             >
-                                Next
+                                SIGN IN
                             </TButtonContained>
                         </View>
                         <View style={commonStyles.alignItemsCenter}>
@@ -190,5 +210,19 @@ const errorModalStyles = StyleSheet.create({
 const styles = StyleSheet.create({
     rememberPasswordText: {
         color: theme.colors.error,
+    },
+    headline: {
+        fontWeight: 'bold',
+    },
+    underline: {
+        color: theme.colors.primary,
+        textDecorationLine: 1,
+        textDecorationColor: theme.colors.primary,
+    },
+    passwordText: {
+        alignSelf: 'flex-end',
+    },
+    labelText: {
+        color: theme.colors.primary,
     },
 });
