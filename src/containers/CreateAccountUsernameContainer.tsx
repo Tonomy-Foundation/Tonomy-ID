@@ -65,8 +65,8 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 </View>
             }
             footerHint={
-                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                    <View style={commonStyles.marginBottom}>
+                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom, styles.asd]}>
+                    <View style={[commonStyles.marginBottom, styles.footerHint]}>
                         <TInfoBox
                             align="left"
                             icon="security"
@@ -107,5 +107,8 @@ const styles = StyleSheet.create({
     inputContainer: {
         borderWidth: 1,
         borderColor: theme.colors.disabled,
+    },
+    footerHint: {
+        width: 400,
     },
 });
