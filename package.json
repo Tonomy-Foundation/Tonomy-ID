@@ -1,12 +1,12 @@
 {
     "name": "tonomy-id",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "scripts": {
         "build:prepare": "ts-node prepare.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
         "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
         "build:android": "npm run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
-        "deploy:android": "npm run build:prepare && npx eas build --platform android --clear-cache --auto-submit-with-profile=${NODE_ENV}",
+        "deploy": "npm run build:prepare && npx eas build --platform all --clear-cache --auto-submit-with-profile=${NODE_ENV} --no-wait --non-interactive",
         "start": "npm run build:prepare && npx expo start --dev-client --clear",
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
         "lint:fix": "npm run lint -- --fix",
