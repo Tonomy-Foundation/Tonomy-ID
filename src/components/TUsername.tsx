@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
     username: {
         flexDirection: 'row',
         alignItems: 'center',
-
     },
     usernameInput: {
         backgroundColor: 'transparent',

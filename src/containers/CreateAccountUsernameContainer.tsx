@@ -65,7 +65,6 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 </View>
             }
             footerHint={
-
                 <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
                     <View style={commonStyles.marginBottom}>
                         <TInfoBox
