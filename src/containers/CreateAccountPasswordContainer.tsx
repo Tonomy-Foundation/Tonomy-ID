@@ -120,9 +120,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                     Remember your password for future use
                                 </TP>
                             </View>
-                            {/* <View style={commonStyles.alignItemsCenter}>
-                                <TCaption>Minimum 12 characters with lower and uppercase letter and numbers</TCaption>
-                            </View> */}
                         </View>
                     </View>
                 }
