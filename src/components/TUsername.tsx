@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, TextInput, HelperText } from 'react-native-paper';
@@ -10,7 +11,7 @@ export default function TUsername(props: TTextInputProps) {
     return (
         <View>
             <View style={styles.username}>
-                <TextInput underlineColor="transparent" style={styles.usernameInput} {...props} error={showError} />
+                <TextInput style={styles.usernameInput} {...props} error={showError} />
                 <Text style={styles.accountSuffix}>{'.people' + props.suffix}</Text>
             </View>
             {showError && (
@@ -27,12 +28,12 @@ export default function TUsername(props: TTextInputProps) {
 const styles = StyleSheet.create({
     username: {
         flexDirection: 'row',
-        alignItems: 'center',
+        textAlign: 'center',
     },
     usernameInput: {
-        backgroundColor: 'transparent',
         width: '60%',
         height: 45,
+        backgroundColor: 'transparent',
         flex: 1,
     },
     accountSuffix: {
