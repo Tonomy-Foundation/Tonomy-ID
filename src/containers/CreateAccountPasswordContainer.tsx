@@ -15,6 +15,7 @@ import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from '../components/TErrorModal';
 import { Props } from '../screens/CreateAccountPasswordScreen';
+import TA from '../components/atoms/TA';
 
 export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
@@ -126,17 +127,11 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 footerHint={
                     <View style={[commonStyles.marginBottom]}>
                         <View style={commonStyles.alignItemsCenter}>
-                            <TP size={1}>
+                            <TP size={1} style={commonStyles.textAlignCenter}>
                                 By continuing, you agree to our
-                                <TP size={1} style={styles.underline}>
-                                    {' '}
-                                    Terms & Conditions{' '}
-                                </TP>
-                                and agree to
-                                <TP size={1} style={styles.underline}>
-                                    {' '}
-                                    Privacy Policy
-                                </TP>
+                                <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
+                                and agree tonomy
+                                <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
                             </TP>
                         </View>
                         <View style={commonStyles.marginBottom}>
@@ -158,7 +153,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 disabled={password.length === 0 || password2.length === 0 || loading}
                                 loading={loading}
                             >
-                                SIGN IN
+                                CREATE ACCOUNT
                             </TButtonContained>
                         </View>
                         <View style={commonStyles.alignItemsCenter}>
@@ -216,11 +211,6 @@ const styles = StyleSheet.create({
     },
     headline: {
         fontWeight: 'bold',
-    },
-    underline: {
-        color: theme.colors.primary,
-        textDecorationLine: 1,
-        textDecorationColor: theme.colors.primary,
     },
     passwordText: {
         alignSelf: 'flex-end',

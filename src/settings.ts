@@ -17,6 +17,8 @@ type ConfigType = {
         logo1024: string;
     };
     links: {
+        privacyPolicy: string;
+        termsAndConditions: string;
         usernameLearnMore: string;
         passwordLearnMore: string;
         securityLearnMore: string;
