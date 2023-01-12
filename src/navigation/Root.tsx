@@ -21,6 +21,7 @@ import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/core';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const prefix = Linking.createURL('');
 
@@ -76,7 +77,7 @@ export default function RootNavigation() {
 
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="Settings" screenOptions={defaultScreenOptions}>
                 <Stack.Screen name="Test" component={TestScreen} />
                 <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                 <Stack.Screen
@@ -84,6 +85,11 @@ export default function RootNavigation() {
                     component={DrawerNavigation}
                     options={{ headerShown: false, title: settings.config.appName }}
                 />
+
+                <Stack.Screen name="Settings" 
+                options={{ title: 'Settings' }} 
+                component={SettingsScreen} />
+
                 <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                 <Stack.Screen name="SplashSecurity" options={noHeaderScreenOptions} component={SplashSecurityScreen} />
                 <Stack.Screen name="SplashPrivacy" options={noHeaderScreenOptions} component={SplashPrivacyScreen} />
