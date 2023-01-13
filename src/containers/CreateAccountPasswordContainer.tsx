@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
@@ -15,6 +15,7 @@ import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from '../components/TErrorModal';
 import { Props } from '../screens/CreateAccountPasswordScreen';
+import TA from '../components/atoms/TA';
 
 export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
@@ -24,9 +25,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-
+    const [error, setError] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
+
+    useEffect(() => {
+        setError(!(password === password2));
+    }, [password, password2]);
 
     async function onNext() {
         if (password !== password2) {
@@ -89,42 +94,55 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 body={
                     <View>
                         <View>
-                            <TH1>Create your password</TH1>
-
-                            <View style={commonStyles.marginBottom}>
-                                <TInfoBox
-                                    align="left"
-                                    icon="security"
-                                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                    linkUrl={settings.config.links.securityLearnMore}
-                                    linkUrlText="Learn more"
+                            <TH1 style={styles.headline}>Create password</TH1>
+                            <View>
+                                <TP size={1} style={error ? errorStyles.labelError : styles.labelText}>
+                                    Password
+                                </TP>
+                                <TPasswordInput
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    errorText={errorMessage}
+                                    outlineColor={error ? theme.colors.error : theme.colors.primary}
+                                    style={commonStyles.marginBottom}
                                 />
                             </View>
-
-                            <TPasswordInput
-                                value={password}
-                                onChangeText={setPassword}
-                                errorText={errorMessage}
-                                label="Master Password"
-                                style={commonStyles.marginBottom}
-                            />
-                            <TPasswordInput
-                                value={password2}
-                                onChangeText={setPassword2}
-                                label="Confirm Master Password"
-                                style={commonStyles.marginBottom}
-                            />
-                            <View style={commonStyles.alignItemsCenter}>
-                                <TCaption>Minimum 12 characters with lower and uppercase letter and numbers</TCaption>
+                            <View>
+                                <TP style={error ? errorStyles.labelError : styles.labelText}>Confirm Password</TP>
+                                <TPasswordInput
+                                    value={password2}
+                                    onChangeText={setPassword2}
+                                    outlineColor={error ? theme.colors.error : theme.colors.primary}
+                                    style={commonStyles.marginBottom}
+                                />
+                            </View>
+                            <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                                <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
+                                    Remember your password for future use
+                                </TP>
                             </View>
                         </View>
                     </View>
                 }
                 footerHint={
-                    <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
-                        <TP size={1} style={[styles.rememberPasswordText, commonStyles.textAlignCenter]}>
-                            Please remember your master password for future use
-                        </TP>
+                    <View style={[commonStyles.marginBottom]}>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <TP size={1} style={commonStyles.textAlignCenter}>
+                                By continuing, you agree to our
+                                <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
+                                and agree tonomy
+                                <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
+                            </TP>
+                        </View>
+                        <View style={commonStyles.marginBottom}>
+                            <TInfoBox
+                                align="left"
+                                icon="security"
+                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                                linkUrl={settings.config.links.securityLearnMore}
+                                linkUrlText="Learn more"
+                            />
+                        </View>
                     </View>
                 }
                 footer={
@@ -135,7 +153,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 disabled={password.length === 0 || password2.length === 0 || loading}
                                 loading={loading}
                             >
-                                Next
+                                CREATE ACCOUNT
                             </TButtonContained>
                         </View>
                         <View style={commonStyles.alignItemsCenter}>
@@ -190,5 +208,23 @@ const errorModalStyles = StyleSheet.create({
 const styles = StyleSheet.create({
     rememberPasswordText: {
         color: theme.colors.error,
+    },
+    headline: {
+        fontWeight: 'bold',
+    },
+    passwordText: {
+        alignSelf: 'flex-end',
+    },
+    labelText: {
+        color: theme.colors.primary,
+    },
+});
+
+const errorStyles = StyleSheet.create({
+    labelError: {
+        color: theme.colors.error,
+    },
+    inputError: {
+        borderColor: theme.colors.error,
     },
 });

@@ -10,7 +10,7 @@ export default function TUsername(props: TTextInputProps) {
     return (
         <View>
             <View style={styles.username}>
-                <TextInput style={styles.usernameInput} {...props} error={showError} />
+                <TextInput underlineColor="transparent" style={styles.usernameInput} {...props} error={showError} />
                 <Text style={styles.accountSuffix}>{'.people' + props.suffix}</Text>
             </View>
             {showError && (
@@ -27,12 +27,12 @@ export default function TUsername(props: TTextInputProps) {
 const styles = StyleSheet.create({
     username: {
         flexDirection: 'row',
-        textAlign: 'center',
+        alignItems: 'center',
     },
     usernameInput: {
+        backgroundColor: 'transparent',
         width: '60%',
         height: 45,
-        backgroundColor: 'transparent',
         flex: 1,
     },
     accountSuffix: {

@@ -15,6 +15,8 @@
         "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
     },
     "links": {
+        "privacyPolicyLearnMore": "#",
+        "tearmsAndConditionsLearnMore": "#",
         "usernameLearnMore": "#",
         "passwordLearnMore": "#",
         "privacyLearnMore": "#",
