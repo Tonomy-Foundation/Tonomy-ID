@@ -1,15 +1,14 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
-import { TCaption, TH1, TP } from '../components/atoms/THeadings';
+import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/homeScreen';
 import TUsername from '../components/TUsername';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
-import TButton, { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/Tbutton';
 import TLink from '../components/atoms/TA';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
@@ -49,7 +48,13 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
             footer={
                 <View>
                     <View style={commonStyles.marginBottom}>
-                        <TButtonContained>NEXT</TButtonContained>
+                        <TButtonContained
+                            onPress={() => {
+                                navigation.navigate('LoginPassword');
+                            }}
+                        >
+                            NEXT
+                        </TButtonContained>
                     </View>
                     <View style={commonStyles.alignItemsCenter}>
                         <TP size={1}>
