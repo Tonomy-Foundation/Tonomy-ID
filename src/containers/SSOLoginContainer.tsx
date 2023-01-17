@@ -43,13 +43,12 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
 
             for (const jwt of verifiedRequests) {
                 const payload = jwt.payload as JWTLoginPayload;
+                const app = await App.getApp(payload.origin);
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
-                    const app = await App.getApp(payload.origin);
                     setApp(app);
                 } else {
                     setSsoJwtPayload(payload);
-                    const app = await App.getApp(payload.origin);
                     setSsoApp(app);
                 }
             }
