@@ -8,7 +8,7 @@ import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/FingerprintUpdateScreen';
-
+import theme from '../utils/theme';
 export default function PinScreenContainer({
     navigation,
     password,
@@ -70,7 +70,7 @@ export default function PinScreenContainer({
                         <TH1>{confirming ? 'Repeat your PIN' : 'Add a PIN'}</TH1>
                     </View>
                     <View>
-                        <Text>This helps keep your account secure</Text>
+                        <Text style={styles.accountSecureText}>This helps keep your account secure</Text>
                     </View>
                     <View style={styles.centeredText}>
                         <HelperText type="error" visible={errorMessage !== ''}>
@@ -116,5 +116,8 @@ const styles = StyleSheet.create({
     marginBottom: {
         marginBottom: 16,
         fontSize: 15,
+    },
+    accountSecureText: {
+        color: theme.colors.placeholder,
     },
 });
