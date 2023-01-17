@@ -14,15 +14,16 @@ import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { useRootNavigator } from '../navigation/Root';
 import { openBrowserAsync } from 'expo-web-browser';
+import { PublicKey } from '@greymass/eosio';
 
 export default function SSOLoginContainer({ requests }: { requests: string }) {
     const user = useUserStore((state) => state.user);
-    const [app, setApp] = useState<App>({});
+    const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
-    const [username, setUsername] = useState<TonomyUsername | undefined>(undefined);
-    const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
-    const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload | undefined>(undefined);
-    const [ssoApp, setSsoApp] = useState<App | undefined>(undefined);
+    const [username, setUsername] = useState<TonomyUsername>();
+    const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload>();
+    const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload>();
+    const [ssoApp, setSsoApp] = useState<App>();
 
     const navigation = useRootNavigator();
     const errorStore = useErrorStore();
@@ -42,13 +43,12 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
 
             for (const jwt of verifiedRequests) {
                 const payload = jwt.payload as JWTLoginPayload;
+                const app = await App.getApp(payload.origin);
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
-                    // TODO next line, but need to add this app to Bootstrap script first
-                    // const app = await App.getApp(payload.origin);
+                    setApp(app);
                 } else {
                     setSsoJwtPayload(payload);
-                    const app = await App.getApp(payload.origin);
                     setSsoApp(app);
                 }
             }
@@ -63,14 +63,16 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
 
     async function onNext() {
         try {
-            await user.apps.loginWithApp(ssoApp, ssoJwtPayload?.publicKey);
-
             let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
             callbackUrl += 'requests=' + requests;
             callbackUrl += '&username=' + (await user.storage.username);
             callbackUrl += '&accountName=' + (await user.storage.accountName.toString());
-
-            openBrowserAsync(callbackUrl);
+            if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
+            if (app && tonomyIdJwtPayload && checked === 'checked') {
+                await user.apps.loginWithApp(app, PublicKey.from(tonomyIdJwtPayload?.publicKey));
+            }
+            console.log(callbackUrl);
+            await openBrowserAsync(callbackUrl);
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
