@@ -65,7 +65,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
         try {
             let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
             callbackUrl += 'requests=' + requests;
-            callbackUrl += '&username=' + (await user.storage.username);
+            callbackUrl += '&username=' + JSON.stringify(await user.storage.username);
             callbackUrl += '&accountName=' + (await user.storage.accountName.toString());
             if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
             if (app && tonomyIdJwtPayload && checked === 'checked') {
