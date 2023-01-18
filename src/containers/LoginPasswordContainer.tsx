@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useTheme } from 'react-native-paper';
-import TLink from '../components/atoms/TA';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
@@ -27,9 +26,10 @@ export default function LoginPasswordContainer({ navigation }: { navigation: Pro
                 <View>
                     <TH1>Password</TH1>
                     <View style={styles.container}>
-                        <TP size={1}>Password</TP>
-
-                        <TPasswordInput />
+                        <View style={styles.innerContainer}>
+                            <TP size={1}>Password</TP>
+                            <TPasswordInput />
+                        </View>
                     </View>
                 </View>
             }
@@ -49,10 +49,13 @@ export default function LoginPasswordContainer({ navigation }: { navigation: Pro
                     <View style={commonStyles.marginBottom}>
                         <TButtonContained>NEXT</TButtonContained>
                     </View>
-                    <View style={commonStyles.alignItemsCenter}>
-                        <TP size={1}>
-                            Don&apos;t have an account? <TLink href="signup">Sign up</TLink>
-                        </TP>
+                    <View style={styles.textContainer}>
+                        <TP size={1}>{"Don't have an account? "}</TP>
+                        <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
+                            <TP size={1} style={styles.link}>
+                                Sign up
+                            </TP>
+                        </TouchableOpacity>
                     </View>
                 </View>
             }
@@ -62,6 +65,18 @@ export default function LoginPasswordContainer({ navigation }: { navigation: Pro
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        marginVertical: '33%',
+        height: '100%',
+        justifyContent: 'center',
+    },
+    innerContainer: {
+        width: '100%',
+        height: '60%',
+    },
+    link: {
+        color: theme.colors.primary,
+    },
+    textContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
 });

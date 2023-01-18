@@ -9,7 +9,7 @@ import TUsername from '../components/TUsername';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import TLink from '../components/atoms/TA';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const {
@@ -56,10 +56,13 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                             NEXT
                         </TButtonContained>
                     </View>
-                    <View style={commonStyles.alignItemsCenter}>
-                        <TP size={1}>
-                            Don&apos;t have an account? <TLink href="signup">Sign up</TLink>
-                        </TP>
+                    <View style={styles.textContainer}>
+                        <TP size={1}>{"Don't have an account? "}</TP>
+                        <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
+                            <TP size={1} style={styles.link}>
+                                Sign up
+                            </TP>
+                        </TouchableOpacity>
                     </View>
                 </View>
             }
@@ -74,6 +77,14 @@ const styles = StyleSheet.create({
     },
     container: {
         width: '100%',
-        marginVertical: '33%',
+        height: '100%',
+        justifyContent: 'center',
+    },
+    link: {
+        color: theme.colors.primary,
+    },
+    textContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
 });
