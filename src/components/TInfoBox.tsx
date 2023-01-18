@@ -38,7 +38,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             borderRadius: 8,
             padding: 10,
             gap: 10,
-            width: '90%',
+            width: '100%',
         },
         icon: {
             alignSelf: 'center',

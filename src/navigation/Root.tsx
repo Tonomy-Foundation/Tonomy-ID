@@ -21,6 +21,8 @@ import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/core';
+import LoginUsernameScreen from '../screens/LoginUsernameScreen';
+import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 
 const prefix = Linking.createURL('');
 
@@ -34,7 +36,8 @@ export type RouteStackParamList = {
     CreateAccountPassword: undefined;
     CreateAccountPin: { password: string };
     CreateAccountFingerprint: { password: string };
-    Login: undefined;
+    LoginUsername: undefined;
+    LoginPassword: undefined;
     UserHome: undefined;
     Test: undefined;
     Drawer: undefined;
@@ -108,6 +111,8 @@ export default function RootNavigation() {
                     component={FingerprintUpdateScreen}
                     initialParams={{ password: '' }}
                 />
+                <Stack.Screen name="LoginUsername" options={{ title: 'Login' }} component={LoginUsernameScreen} />
+                <Stack.Screen name="LoginPassword" options={{ title: 'Login' }} component={LoginPasswordScreen} />
                 <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
                 <Stack.Screen
                     name="QrScanner"
