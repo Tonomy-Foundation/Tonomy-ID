@@ -8,8 +8,28 @@ import TLink from '../components/TA';
 import { TH1 } from '../components/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
+import 'react-native-get-random-values';
+import CryptoJS from 'crypto-js';
+
+const getRandomPassword = (length = 16) => {
+    return CryptoJS.lib.WordArray.random(length).toString();
+};
 
 export default function CreateAccountContainer({ navigation }: { navigation: NavigationProp<any> }) {
+    const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+    const [password, setPassword] = React.useState('');
+    const onPasswordChange = () => {
+        if (!showConfirmPassword) {
+            setPassword('');
+            setShowConfirmPassword(true);
+        }
+    };
+
+    React.useEffect(() => {
+        const password = getRandomPassword();
+        setPassword(password);
+    }, []);
+
     return (
         <View style={styles.container}>
             <View>
@@ -23,8 +43,8 @@ export default function CreateAccountContainer({ navigation }: { navigation: Nav
                     <TTextInput style={styles.usernameInput} label="Username" />
                     <Text style={styles.accountSuffix}>{settings.config.accountSuffix}</Text>
                 </View>
-                <TPasswordInput label="Password" />
-                <TPasswordInput label="Confirm Password" />
+                <TPasswordInput label="Password" onChangeText={onPasswordChange} value={password} />
+                {showConfirmPassword && <TPasswordInput label="Confirm Password" />}
             </View>
 
             <View>
