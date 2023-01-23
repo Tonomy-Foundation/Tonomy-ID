@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
@@ -10,8 +10,11 @@ import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import useUserStore from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const [username, setUsername] = useState('');
+    const { user } = useUserStore();
     const {
         colors: { text },
     } = useTheme();
@@ -21,6 +24,10 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
         },
     });
 
+    const onNext = () => {
+        navigation.navigate('LoginPassword', { username });
+    };
+
     return (
         <LayoutComponent
             body={
@@ -29,7 +36,11 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                     <View style={styles.container}>
                         <TP size={1}>Username</TP>
                         <View style={styles.inputContainer}>
-                            <TUsername suffix={settings.config.accountSuffix} />
+                            <TUsername
+                                value={username}
+                                onChangeText={setUsername}
+                                suffix={settings.config.accountSuffix}
+                            />
                         </View>
                     </View>
                 </View>
@@ -52,6 +63,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                             onPress={() => {
                                 navigation.navigate('LoginPassword');
                             }}
+                            disabled={username.length === 0}
                         >
                             NEXT
                         </TButtonContained>

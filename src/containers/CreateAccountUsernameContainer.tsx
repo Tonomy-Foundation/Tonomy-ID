@@ -23,7 +23,6 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const user = useUserStore().user;
     const errorStore = useErrorStore();
 
     async function onNext() {
