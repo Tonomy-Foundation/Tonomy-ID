@@ -61,7 +61,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                     <View style={commonStyles.marginBottom}>
                         <TButtonContained
                             onPress={() => {
-                                navigation.navigate('LoginPassword');
+                                navigation.navigate('LoginPassword', { username });
                             }}
                             disabled={username.length === 0}
                         >
