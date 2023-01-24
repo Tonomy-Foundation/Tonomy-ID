@@ -35,6 +35,7 @@ export default function LoginPasswordContainer({
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password
             );
+            navigation.navigate('UserHome');
         } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
@@ -121,7 +122,7 @@ export default function LoginPasswordContainer({
                 expected={true}
             >
                 <View>
-                    <Text>The username/password is incorrect! Create an account!</Text>
+                    <Text>The username/password is incorrect!</Text>
                 </View>
             </TErrorModal>
         </>
