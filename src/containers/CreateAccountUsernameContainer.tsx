@@ -25,6 +25,8 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 
     const errorStore = useErrorStore();
 
+    const { user } = useUserStore();
+
     async function onNext() {
         setLoading(true);
 
