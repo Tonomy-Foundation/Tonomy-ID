@@ -23,6 +23,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/core';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
+import LoginPinScreen from '../screens/LoginPinScreen';
 
 const prefix = Linking.createURL('');
 
@@ -35,6 +36,7 @@ export type RouteStackParamList = {
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
     CreateAccountPin: { password: string };
+    LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
     LoginUsername: undefined;
     LoginPassword: { username: string };
@@ -114,6 +116,7 @@ export default function RootNavigation() {
                 <Stack.Screen name="LoginUsername" options={{ title: 'Login' }} component={LoginUsernameScreen} />
                 <Stack.Screen name="LoginPassword" options={{ title: 'Login' }} component={LoginPasswordScreen} />
                 <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
+                <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 <Stack.Screen
                     name="QrScanner"
                     options={{ title: settings.config.appName }}
