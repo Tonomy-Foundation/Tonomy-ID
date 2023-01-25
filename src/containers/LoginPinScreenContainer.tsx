@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/atoms/Tbutton';
+import TButton, { TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1 } from '../components/atoms/THeadings';
 import TPin from '../components/TPin';
 import useUserStore from '../store/userStore';
@@ -30,7 +30,9 @@ export default function LoginPinScreenContainer({
         setDisabled(pin.length < 5);
         setErrorMessage('');
     }
-
+    function onSkip() {
+        navigation.navigate('UserHome');
+    }
     async function onNext() {
         setLoading(true);
         console.log(pin, confirmPin);
@@ -71,6 +73,9 @@ export default function LoginPinScreenContainer({
                     >
                         {'Next'}
                     </TButton>
+                    <TButtonOutlined onPress={onSkip} style={styles.marginBottom}>
+                        Skip
+                    </TButtonOutlined>
                 </View>
             }
         />
