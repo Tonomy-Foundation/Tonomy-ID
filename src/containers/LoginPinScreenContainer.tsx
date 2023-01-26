@@ -38,7 +38,7 @@ export default function LoginPinScreenContainer({
         console.log(pin, confirmPin);
         if (pin === confirmPin) {
             alert('User Will be On New Screen');
-            navigation.navigate('UserHome');
+            navigation.navigate('CreateAccountFingerprint', { password });
         } else {
             setErrorMessage('Wrong PIN');
             setPin('');
