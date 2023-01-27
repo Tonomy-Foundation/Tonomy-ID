@@ -18,11 +18,7 @@ export default function LoginPinScreenContainer({
 }) {
     const [disabled, setDisabled] = useState(true);
     const [pin, setPin] = useState('');
-    /***
-     * The Correct pin set 11111, it can be fetched and set of user from storage
-     *
-     * */
-    const [confirmPin, setConfirmPin] = useState('11111');
+    const [confirmPin, setConfirmPin] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -34,24 +30,16 @@ export default function LoginPinScreenContainer({
         setDisabled(pin.length < 5);
         setErrorMessage('');
     }
-    /***
-     *  Navigated to Create Finger Print Screen on Skip
-     *
-     * */
+    //  Navigated to Create Finger Print Screen on Skip
     function onSkip() {
         navigation.navigate('CreateAccountFingerprint');
     }
-    /***
-     * When the Next button is removed then it will be called when the 5 digits are entered
-     *
-     * */
+
+    // When the Next button is removed then it will be called when the 5 digits are entered
     async function onNext() {
         setLoading(true);
         console.log(pin, confirmPin);
-        /***
-         *  Navigated to Create Finger Print Screen if the Pin is Correct
-         *
-         * */
+        //    Navigated to Create Finger Print Screen if the Pin is Correct
         if (pin === confirmPin) {
             navigation.navigate('CreateAccountFingerprint');
         } else {
