@@ -9,14 +9,14 @@ import { commonStyles } from '../utils/theme';
 import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
-import { useRootNavigator } from '../navigation/Root';
+import { useNavigation } from '@react-navigation/native';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
     const user = useUserStore((state) => state.user);
     const errorStore = useErrorStore();
 
-    const navigation = useRootNavigator();
+    const navigation = useNavigation<>();
 
     const onNext = async () => {
         try {
