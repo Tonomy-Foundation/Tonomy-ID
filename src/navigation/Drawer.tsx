@@ -13,7 +13,7 @@ export type RouteDrawerParamList = {
     Settings: undefined;
     Help: undefined;
     Logout: undefined;
-    SSO: { jwt: string };
+    SSO: { requests: string; platform: 'mobile' | 'browser' };
 };
 
 const Drawer = createDrawerNavigator<RouteDrawerParamList>();
@@ -41,7 +41,6 @@ export default function DrawerNavigation() {
             {/* <Drawer.Screen name="Settings" component={TestScreen} /> */}
             {/* <Drawer.Screen name="Help" component={TestScreen} options={{ title: 'Help and Info' }} /> */}
             <Drawer.Screen name="Logout" component={TestScreen} />
-            <Drawer.Screen name="SSO" options={{ title: 'test sso' }} component={SSOLoginScreen} />
         </Drawer.Navigator>
     );
 }

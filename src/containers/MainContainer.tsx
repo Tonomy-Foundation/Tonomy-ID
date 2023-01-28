@@ -1,5 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
+
+import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { DrawerItemProps } from 'react-native-paper';
 import { TonomyUsername, User } from 'tonomy-id-sdk';
 
 import { TButtonContained } from '../components/atoms/Tbutton';
@@ -7,12 +11,21 @@ import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
 import useUserStore from '../store/userStore';
 import { ApplicationErrors, throwError } from '../utils/errors';
+import QrCodeScanContainer from './QrCodeScanContainer';
+
+import { MainScreenNavigationProp } from '../screens/MainScreen';
 
 export default function MainContainer() {
     const user = useUserStore((state) => state.user);
+    const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
     const [username, setUsername] = useState<TonomyUsername>({});
+    const [qrOpened, setQrOpened] = useState<boolean>(false);
     useEffect(() => {
         setUserName();
+        user.communication.onJwtToClient((data) => {
+            console.log(data);
+            navigation.navigate('SSO', { requests: data.requests, platform: 'browser' });
+        });
     }, []);
 
     async function setUserName() {
@@ -23,15 +36,35 @@ export default function MainContainer() {
         setUsername(u);
     }
 
+    function onScan({ data }: BarCodeScannerResult) {
+        user.communication.connectTonomy(data);
+        onClose();
+    }
+    function onClose() {
+        setQrOpened(false);
+    }
+
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TH2>{username.username}</TH2>
-                <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
-                <TButtonContained style={[styles.button, styles.marginTop]} icon="qrcode-scan">
-                    Scan Qr Code
-                </TButtonContained>
-            </View>
+            {!qrOpened && (
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <TH2>{username.username}</TH2>
+                        <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
+                        <TButtonContained
+                            style={[styles.button, styles.marginTop]}
+                            icon="qrcode-scan"
+                            onPress={() => {
+                                setQrOpened(true);
+                            }}
+                        >
+                            Scan Qr Code
+                        </TButtonContained>
+                    </View>
+                </View>
+            )}
+
+            {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
             {/*
             Cards are in upcoming features 
             <View style={styles.marginTop}>
