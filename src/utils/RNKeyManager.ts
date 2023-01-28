@@ -60,7 +60,8 @@ export default class RNKeyManager implements KeyManager {
             keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
         }
         await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), {
-            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            //TODO fix SDK so that no keys be stored if skipped
+            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
 
         return keyStore.publicKey;
@@ -68,7 +69,8 @@ export default class RNKeyManager implements KeyManager {
 
     async signData(options: SignDataOptions): Promise<string | Signature> {
         const key = await SecureStore.getItemAsync(options.level, {
-            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            //TODO fix SDK so that no keys be stored if skipped
+            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
         if (!key) throw new Error('No key for this level');
         const keyStore = JSON.parse(key) as KeyStorage;
@@ -92,7 +94,8 @@ export default class RNKeyManager implements KeyManager {
 
     async removeKey(options: GetKeyOptions): Promise<void> {
         await SecureStore.deleteItemAsync(options.level, {
-            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            //TODO fix SDK so that no keys be stored if skipped
+            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
     }
 
@@ -102,7 +105,8 @@ export default class RNKeyManager implements KeyManager {
 
     async getKey(options: GetKeyOptions): Promise<PublicKey | null> {
         const key = await SecureStore.getItemAsync(options.level, {
-            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            //TODO fix SDK so that no keys be stored if skipped
+            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
         if (!key) return null;
         const keyStore = JSON.parse(key) as KeyStorage;

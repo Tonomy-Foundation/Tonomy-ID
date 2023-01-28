@@ -16,7 +16,7 @@ export default function CreateAccountContainer({ password }: { password: string 
     const user = useUserStore((state) => state.user);
     const errorStore = useErrorStore();
 
-    const navigation = useNavigation<>();
+    const navigation = useNavigation();
 
     const onNext = async () => {
         try {
