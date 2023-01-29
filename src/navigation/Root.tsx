@@ -5,6 +5,7 @@ import TestScreen from '../screens/testScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import CreateAccountPasswordScreen from '../screens/CreateAccountPasswordScreen';
+import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import MainSplashScreen from '../screens/MainSplashScreen';
 import SplashSecurityScreen from '../screens/SplashSecurityScreen';
 import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
@@ -81,7 +82,7 @@ export default function RootNavigation() {
 
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="ConfirmPassword" screenOptions={defaultScreenOptions}>
                 <Stack.Screen name="Test" component={TestScreen} />
                 <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                 <Stack.Screen
@@ -127,6 +128,7 @@ export default function RootNavigation() {
                     options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                     component={SSOLoginScreen}
                 />
+                <Stack.Screen name="ConfirmPassword" options={{ title: 'Confirm Password' }} component={ConfirmPasswordScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
