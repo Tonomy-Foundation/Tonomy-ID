@@ -21,7 +21,7 @@ npm i
 
 ## Pre-run build (first time and each time new RN only packages are installed)
 
-This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app. You can't Run from the Official Expo App.  
+This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app. You can't Run from the Official Expo App.
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (for first time build only) Remove the following lines from `app.default.json`
@@ -34,16 +34,7 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
     }
 ```
 
-3. (to connect to an existing build in [https://expo.dev](https://expo.dev)) change the value of "projectId" in `app.default.json` to the vale of the project in [https://expo.dev](https://expo.dev)
-4. (for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
-5. Run `npm run build:ios` (ios) or `npm run build:android` (android) to build the app for your phone
-6. If your don't find error then proceed to step 7. If there is error while making the build
-
-    ```
-      Property 'projectId' does not exist on type '{}'.
-    ```
-
- please do update the app.default.json file with
+to
 
 ```json
     "extra": {
@@ -52,17 +43,12 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
     }
 ```
 
-and go the prepare.ts and add this before  the ' if ' condition ends
+3. If you have followed Step 2 then Skip 3. (to connect to an existing build in [https://expo.dev](https://expo.dev)) change the value of "projectId" in `app.default.json` to the vale of the project in [https://expo.dev](https://expo.dev)
 
-```typeScript
-        if (!app.expo.extra.eas) app.expo.extra.eas = {};
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        app.expo.extra.eas.projectId = settings.config.expoProjectId;
-```
-
-7. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build
-8. Install the created app on your phone
+4. (for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
+5. Run `npm run build:ios` (ios) or `npm run build:android` (android) to build the app for your phone
+6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
+7. Install the created app on your phone.
 
 Having issues here or running the app? Checkout:
 
