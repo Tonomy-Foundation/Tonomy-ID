@@ -29,6 +29,10 @@ export default function PinScreenContainer({
     function onPinChange(pin: string) {
         setPin(pin);
         setDisabled(pin.length < 5);
+        // also Disable next button on  confirm pin
+        if (pin.length) {
+            setDisabled(confirmPin.length < 5);
+        }
         setErrorMessage('');
     }
 
@@ -36,16 +40,16 @@ export default function PinScreenContainer({
         setLoading(true);
         if (confirming) {
             if (pin === confirmPin) {
-                console.log('saving pin');
                 try {
-                    await user.savePIN(pin);
+                    console.log('Pin is About to be saved');
+                    await user.savePIN(confirmPin);
+                    console.log('Pin Saved');
                 } catch (e) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
                     setLoading(false);
                     return;
                 }
-                console.log('pin saved');
                 navigation.navigate('CreateAccountFingerprint', { password });
             } else {
                 setErrorMessage('Wrong PIN');
