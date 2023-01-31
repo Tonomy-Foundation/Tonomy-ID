@@ -29,10 +29,6 @@ export default function PinScreenContainer({
     function onPinChange(pin: string) {
         setPin(pin);
         setDisabled(pin.length < 5);
-        // also Disable next button on  confirm pin
-        if (pin.length) {
-            setDisabled(confirmPin.length < 5);
-        }
         setErrorMessage('');
     }
 
