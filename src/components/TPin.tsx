@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import DeleteIcon from '../assets/icons/DeleteIcon';
+import { IconButton } from 'react-native-paper';
 import theme from '../utils/theme';
 import TButton from './atoms/Tbutton';
 
@@ -101,7 +101,7 @@ export default function TPin(props: { pin?: string; onChange: (pin: string) => v
                     <Text style={styles.text}>0</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.gridIcon} onPress={onDeletePress}>
-                    <DeleteIcon style={styles.icon} />
+                    <IconButton icon={'backspace-outline'} color="black" style={styles.icon} />
                 </TouchableOpacity>
             </View>
         </>
