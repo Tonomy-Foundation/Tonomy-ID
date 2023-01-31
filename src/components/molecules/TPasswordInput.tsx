@@ -10,7 +10,6 @@ export default function TPasswordInput(props: TTextInputProps) {
     const closedEyeImage = require('../../assets/images/closedEye.png');
 
     const toggleShowHideState = ()=>{
-        console.log('okay12334')
         setShowPassword(!showPassword);
     }
 
