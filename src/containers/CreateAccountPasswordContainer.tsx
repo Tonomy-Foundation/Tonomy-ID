@@ -22,31 +22,20 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password2, setPassword2] = useState(!settings.isProduction() ? '' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [confirmErrorMessage, setConfirmErrorMessage] = useState('');
-
     const [loading, setLoading] = useState(false);
     const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-    const [error, setError] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
-    const passwordRegex = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){12,}$/;
+
     useEffect(() => {
         if (password.length > 0) {
-            const isValid = passwordRegex.test(password);
-            if (isValid) {
-                setErrorMessage('');
-                setError(false);
-            } else {
-                setErrorMessage('Password must be 12 characters with upper and lowercase letters and one number');
-                setError(true);
-            }
+            setErrorMessage('');
         }
-        if (password !== password2) {
-            setError(true);
+        if (password !== password2 && password2.length > 0) {
             setConfirmErrorMessage('Passwords do not match');
         } else {
-            setError(false);
             setConfirmErrorMessage('');
         }
     }, [password, password2]);
