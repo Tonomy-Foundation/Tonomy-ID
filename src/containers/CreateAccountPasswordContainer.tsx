@@ -18,8 +18,8 @@ import { Props } from '../screens/CreateAccountPasswordScreen';
 import TA from '../components/atoms/TA';
 
 export default function CreateAccountPasswordContainer({ navigation }: Props) {
-    const [password, setPassword] = useState(!settings.isProduction() ? '' : '');
-    const [password2, setPassword2] = useState(!settings.isProduction() ? '' : '');
+    const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
+    const [password2, setPassword2] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [confirmErrorMessage, setConfirmErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
