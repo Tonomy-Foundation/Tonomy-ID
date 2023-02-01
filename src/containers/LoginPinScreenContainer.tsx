@@ -38,9 +38,15 @@ export default function LoginPinScreenContainer({
     // When the Next button is removed then it will be called when the 5 digits are entered
     async function onNext() {
         setLoading(true);
-        console.log(pin, confirmPin);
-        //    Navigated to Create Finger Print Screen if the Pin is Correct
         if (pin === confirmPin) {
+            try {
+                await user.savePIN(confirmPin);
+            } catch (e) {
+                console.log('error saving pin', e);
+                errorStore.setError({ error: e, expected: false });
+                setLoading(false);
+                return;
+            }
             navigation.navigate('CreateAccountFingerprint');
         } else {
             setErrorMessage('Wrong PIN');
