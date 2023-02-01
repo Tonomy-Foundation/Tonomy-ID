@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import TTextInput, { TTextInputProps } from './TTextInput';
-import theme from '../../utils/theme';
+import theme, { customColors } from '../../utils/theme';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function TPasswordInput(props: TTextInputProps) {
     const [showPassword, setShowPassword] = useState(false);
 
-    const openEyeImage = require('../../assets/images/openEye.png');
-    const closedEyeImage = require('../../assets/images/closedEye.png');
-
-    const toggleShowHideState = ()=>{
+    const toggleShowHideState = () => {
         setShowPassword(!showPassword);
     }
 
@@ -23,7 +21,7 @@ export default function TPasswordInput(props: TTextInputProps) {
                 style={styles.input}
             />
             <TouchableOpacity style={styles.showHideContainer} onPress={toggleShowHideState}>
-                <Image source={showPassword? closedEyeImage: openEyeImage} style={styles.showHideImage}/>
+                <Ionicons name={showPassword ? 'md-eye' : 'md-eye-off'} size={25} color={customColors.disabledButtonTextColor} />
             </TouchableOpacity>
         </View>
     );
@@ -44,11 +42,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 90000
-    },
-    showHideImage:{
-        tintColor: '#0000008A',
-        resizeMode:'contain',
-        height:26,
-        width:26,
     }
 });

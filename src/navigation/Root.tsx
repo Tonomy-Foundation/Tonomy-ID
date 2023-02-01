@@ -82,7 +82,7 @@ export default function RootNavigation() {
 
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            <Stack.Navigator initialRouteName="ConfirmPassword" screenOptions={defaultScreenOptions}>
+            <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
                 <Stack.Screen name="Test" component={TestScreen} />
                 <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                 <Stack.Screen
