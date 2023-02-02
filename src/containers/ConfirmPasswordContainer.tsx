@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import { Props } from '../screens/homeScreen';
-import theme, { commonStyles } from '../utils/theme';
+import { commonStyles } from '../utils/theme';
 
 export default function ConfirmPasswordContainer({
     navigation,
@@ -33,8 +33,8 @@ export default function ConfirmPasswordContainer({
                     <View>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
-                            // onPress={onNext} 
-                            // disabled={password.length === 0}
+                            // onPress={onNext}
+                            // disabled={password.length === 0}feature/422-Change-Password-UI
                             >
                                 NEXT
                             </TButtonContained>
@@ -52,5 +52,5 @@ const styles = StyleSheet.create({
     innerContainer: {
         width: '100%',
         height: '60%',
-    }
+    },
 });

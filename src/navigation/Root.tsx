@@ -47,6 +47,7 @@ export type RouteStackParamList = {
     Settings: undefined;
     QrScanner: undefined;
     SSO: { requests: string };
+    ConfirmPassword: undefined;
 };
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
@@ -128,7 +129,11 @@ export default function RootNavigation() {
                     options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                     component={SSOLoginScreen}
                 />
-                <Stack.Screen name="ConfirmPassword" options={{ title: 'Confirm Password' }} component={ConfirmPasswordScreen} />
+                <Stack.Screen
+                    name="ConfirmPassword"
+                    options={{ title: 'Confirm Password' }}
+                    component={ConfirmPasswordScreen}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );

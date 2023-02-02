@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import TTextInput, { TTextInputProps } from './TTextInput';
-import theme, { customColors } from '../../utils/theme';
+import { customColors } from '../../utils/theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function TPasswordInput(props: TTextInputProps) {
@@ -9,7 +9,7 @@ export default function TPasswordInput(props: TTextInputProps) {
 
     const toggleShowHideState = () => {
         setShowPassword(!showPassword);
-    }
+    };
 
     return (
         <View>
@@ -21,7 +21,11 @@ export default function TPasswordInput(props: TTextInputProps) {
                 style={styles.input}
             />
             <TouchableOpacity style={styles.showHideContainer} onPress={toggleShowHideState}>
-                <Ionicons name={showPassword ? 'md-eye' : 'md-eye-off'} size={25} color={customColors.disabledButtonTextColor} />
+                <Ionicons
+                    name={showPassword ? 'md-eye' : 'md-eye-off'}
+                    size={25}
+                    color={customColors.disabledButtonTextColor}
+                />
             </TouchableOpacity>
         </View>
     );
@@ -41,6 +45,6 @@ const styles = StyleSheet.create({
         top: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 90000
-    }
+        zIndex: 90000,
+    },
 });
