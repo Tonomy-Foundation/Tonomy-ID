@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/atoms/Tbutton';
+import TButton, { TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1 } from '../components/atoms/THeadings';
 import TPin from '../components/TPin';
 import useUserStore from '../store/userStore';
@@ -19,7 +19,7 @@ export default function LoginPinScreenContainer({
 }) {
     const [disabled, setDisabled] = useState(true);
     const [pin, setPin] = useState('');
-    const [confirmPin, setConfirmPin] = useState('11111');
+    const [confirmPin, setConfirmPin] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -32,13 +32,26 @@ export default function LoginPinScreenContainer({
         setErrorMessage('');
     }
 
+    //  Navigated to Create Finger Print Screen on Skip
+    function onSkip() {
+        navigation.navigate('CreateAccountFingerprint');
+    }
+
+    // When the Next button is removed then it will be called when the 5 digits are entered
     async function onNext() {
         setLoading(true);
-        console.log(pin, confirmPin);
 
         if (pin === confirmPin) {
-            alert('User Will be On New Screen');
-            navigation.navigate('UserHome');
+            try {
+                await user.savePIN(confirmPin);
+            } catch (e) {
+                console.log('error saving pin', e);
+                errorStore.setError({ error: e, expected: false });
+                setLoading(false);
+                return;
+            }
+
+            navigation.navigate('CreateAccountFingerprint');
         } else {
             setErrorMessage('Wrong PIN');
             setPin('');
@@ -74,6 +87,9 @@ export default function LoginPinScreenContainer({
                     >
                         {'Next'}
                     </TButton>
+                    <TButtonOutlined onPress={onSkip} style={styles.marginBottom}>
+                        Skip
+                    </TButtonOutlined>
                 </View>
             }
         />

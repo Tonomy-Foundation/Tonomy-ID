@@ -31,6 +31,8 @@ if (!['development', 'designonly'].includes(settings.env)) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     if (!app.expo.extra.eas) app.expo.extra.eas = {};
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     app.expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 

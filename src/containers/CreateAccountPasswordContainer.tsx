@@ -21,16 +21,23 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [password2, setPassword2] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
+    const [confirmErrorMessage, setConfirmErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-    const [error, setError] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
 
     useEffect(() => {
-        setError(!(password === password2));
+        if (password.length > 0) {
+            setErrorMessage('');
+        }
+        if (password !== password2 && password2.length > 0) {
+            setConfirmErrorMessage('Passwords do not match');
+        } else {
+            setConfirmErrorMessage('');
+        }
     }, [password, password2]);
 
     async function onNext() {
@@ -99,23 +106,31 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                         <View>
                             <TH1 style={styles.headline}>Create password</TH1>
                             <View>
-                                <TP size={1} style={error ? errorStyles.labelError : styles.labelText}>
+                                <TP
+                                    size={1}
+                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
+                                >
                                     Password
                                 </TP>
                                 <TPasswordInput
                                     value={password}
                                     onChangeText={setPassword}
                                     errorText={errorMessage}
-                                    outlineColor={error ? theme.colors.error : theme.colors.primary}
+                                    outlineColor={errorMessage.length > 0 ? theme.colors.error : theme.colors.primary}
                                     style={commonStyles.marginBottom}
                                 />
                             </View>
                             <View>
-                                <TP style={error ? errorStyles.labelError : styles.labelText}>Confirm Password</TP>
+                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
+                                    Confirm Password
+                                </TP>
                                 <TPasswordInput
                                     value={password2}
                                     onChangeText={setPassword2}
-                                    outlineColor={error ? theme.colors.error : theme.colors.primary}
+                                    errorText={confirmErrorMessage}
+                                    outlineColor={
+                                        confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
+                                    }
                                     style={commonStyles.marginBottom}
                                 />
                             </View>
@@ -153,7 +168,9 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
                                 onPress={onNext}
-                                disabled={password.length === 0 || password2.length === 0 || loading}
+                                disabled={
+                                    password.length === 0 || password2.length === 0 || password2 !== password || loading
+                                }
                                 loading={loading}
                             >
                                 CREATE ACCOUNT

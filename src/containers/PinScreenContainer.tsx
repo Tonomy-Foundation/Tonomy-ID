@@ -38,10 +38,8 @@ export default function PinScreenContainer({
 
         if (confirming) {
             if (pin === confirmPin) {
-                console.log('saving pin');
-
                 try {
-                    await user.savePIN(pin);
+                    await user.savePIN(confirmPin);
                 } catch (e) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
@@ -49,7 +47,6 @@ export default function PinScreenContainer({
                     return;
                 }
 
-                console.log('pin saved');
                 navigation.navigate('CreateAccountFingerprint', { password });
             } else {
                 setErrorMessage('Wrong PIN');

@@ -5,6 +5,7 @@ import TestScreen from '../screens/testScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import CreateAccountPasswordScreen from '../screens/CreateAccountPasswordScreen';
+import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import MainSplashScreen from '../screens/MainSplashScreen';
 import SplashSecurityScreen from '../screens/SplashSecurityScreen';
 import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
@@ -46,6 +47,7 @@ export type RouteStackParamList = {
     Settings: undefined;
     QrScanner: undefined;
     SSO: { requests: string; platform?: 'mobile' | 'browser' };
+    ConfirmPassword: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -122,6 +124,11 @@ export default function RootNavigation() {
                     name="SSO"
                     options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                     component={SSOLoginScreen}
+                />
+                <Stack.Screen
+                    name="ConfirmPassword"
+                    options={{ title: 'Confirm Password' }}
+                    component={ConfirmPasswordScreen}
                 />
             </Stack.Navigator>
         </NavigationContainer>

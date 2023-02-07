@@ -36,7 +36,7 @@ export default function LoginPasswordContainer({
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password
             );
-            navigation.navigate('LoginWithPin', {
+            navigation.navigate('CreateAccountPin', {
                 password: password,
             });
         } catch (e) {
