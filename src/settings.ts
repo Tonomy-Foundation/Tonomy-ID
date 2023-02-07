@@ -28,6 +28,7 @@ type ConfigType = {
     expoProjectId: string;
     accountSuffix: string;
     ssoWebsiteOrigin: string;
+    communicationUrl: string;
 };
 
 type SettingsType = {
@@ -68,6 +69,11 @@ if (process.env.BLOCKCHAIN_URL) {
 if (process.env.SSO_WEBSITE_ORIGIN) {
     console.log(`Using SSO_WEBSITE_ORIGIN from env:  ${process.env.SSO_WEBSITE_ORIGIN}`);
     config.ssoWebsiteOrigin = process.env.SSO_WEBSITE_ORIGIN;
+}
+
+if (process.env.REACT_APP_COMMUNICATION_URL) {
+    console.log(`Using communication microService from env: ${process.env.REACT_APP_COMMUNICATION_URL}`);
+    config.communicationUrl = process.env.REACT_APP_COMMUNICATION_URL;
 }
 
 settings.config = config;
