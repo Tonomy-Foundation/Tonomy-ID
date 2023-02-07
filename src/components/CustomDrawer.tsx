@@ -2,10 +2,11 @@ import React from 'react';
 
 import { DrawerContentScrollView, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Image, StyleSheet, View } from 'react-native';
-import TButton from './atoms/Tbutton';
+import TButton, { TButtonText } from './atoms/Tbutton';
 import { useTheme } from '@react-navigation/native';
 import { RouteDrawerParamList } from '../navigation/Drawer';
 import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const icons: Record<keyof RouteDrawerParamList, IconSource> = {
     UserHome: 'home',
@@ -41,23 +42,37 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     });
 
     return (
-        <DrawerContentScrollView {...props} style={styles.container}>
-            <Image source={logo1024} style={styles.logo}></Image>
-            <View style={styles.menu}>
-                {Object.entries(props.descriptors).map(([key, value]) => {
-                    return (
-                        <TButton
-                            style={styles.button}
-                            key={key}
-                            onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
-                            icon={icons[value.route.name]}
-                            color={theme.colors.text}
-                        >
-                            {value.options.title || value.route.name}
-                        </TButton>
-                    );
-                })}
+        <View style={{ flex: 1 }}>
+            <DrawerContentScrollView {...props} style={styles.container}>
+                <Image source={logo1024} style={styles.logo}></Image>
+                <View style={styles.menu}>
+                    {Object.entries(props.descriptors).map(([key, value]) => {
+                        return (
+                            <TButton
+                                style={styles.button}
+                                key={key}
+                                onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
+                                icon={icons[value.route.name]}
+                                color={theme.colors.text}
+                            >
+                                {value.options.title || value.route.name}
+                            </TButton>
+                        );
+                    })}
+                </View>
+            </DrawerContentScrollView>
+            <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#ccc' }}>
+                <TouchableOpacity
+                    onPress={async () => {
+                        // onShare();
+                    }}
+                    style={{ paddingVertical: 15 }}
+                >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TButtonText>Tell a Friend</TButtonText>
+                    </View>
+                </TouchableOpacity>
             </View>
-        </DrawerContentScrollView>
+        </View>
     );
 }

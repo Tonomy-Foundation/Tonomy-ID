@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
@@ -18,6 +18,10 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
         text: {
             color: text,
         },
+    });
+    useEffect(() => {
+        console.log('Checks the user if already Login then Navigate to Home');
+        // isLoggedIn
     });
 
     return (

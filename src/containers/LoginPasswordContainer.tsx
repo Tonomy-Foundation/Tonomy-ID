@@ -31,13 +31,17 @@ export default function LoginPasswordContainer({
     const onNext = async () => {
         setLoading(true);
         try {
-            user.login(
+            const loginData = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password
             );
             navigation.navigate('CreateAccountPin', {
                 password: password,
             });
+
+            // if (loginData.account_name) {
+
+            // }
         } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
