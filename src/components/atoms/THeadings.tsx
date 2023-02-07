@@ -4,6 +4,7 @@ import { Caption, Paragraph, Text } from 'react-native-paper';
 import { customColors } from '../../utils/theme';
 
 type THProps = React.ComponentProps<typeof Text>;
+
 export function TH1(props: THProps) {
     return (
         // eslint-disable-next-line react/prop-types
@@ -23,6 +24,7 @@ export function TH2(props: THProps) {
 }
 
 type TPProps = React.ComponentProps<typeof Paragraph> & { size?: 1 | 2 | 3 };
+
 export function TP(props: TPProps) {
     return (
         // eslint-disable-next-line react/prop-types
@@ -33,6 +35,7 @@ export function TP(props: TPProps) {
 }
 
 type TCaptionProps = React.ComponentProps<typeof Caption>;
+
 export function TCaption(props: TCaptionProps) {
     // eslint-disable-next-line react/prop-types
     return <Caption style={props.style}>{props.children}</Caption>;

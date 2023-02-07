@@ -16,9 +16,11 @@ import { Props } from '../screens/CreateAccountUsernameScreen';
 
 export default function CreateAccountUsernameContainer({ navigation }: Props) {
     let startUsername = '';
+
     if (!settings.isProduction()) {
         startUsername = 'test' + randomString(2);
     }
+
     const [username, setUsername] = useState(startUsername);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);

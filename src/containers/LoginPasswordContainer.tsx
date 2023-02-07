@@ -30,6 +30,7 @@ export default function LoginPasswordContainer({
     const user = useUserStore().user;
     const onNext = async () => {
         setLoading(true);
+
         try {
             user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
@@ -50,6 +51,7 @@ export default function LoginPasswordContainer({
                     default:
                         errorStore.setError({ error: e, expected: false });
                 }
+
                 setLoading(false);
                 return;
             } else {
@@ -130,6 +132,7 @@ export default function LoginPasswordContainer({
         </>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         width: '100%',

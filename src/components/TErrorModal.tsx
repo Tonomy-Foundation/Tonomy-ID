@@ -31,6 +31,7 @@ export default function TErrorModal(props: ModalProps) {
     function isExpandableErrorType() {
         return props?.error instanceof HttpError || props?.error instanceof EosioUtil.AntelopePushTransactionError;
     }
+
     function isExpandable() {
         return isExpandableErrorType() || props?.code || props?.cause;
     }
@@ -57,6 +58,7 @@ export default function TErrorModal(props: ModalProps) {
                 </View>
             );
         }
+
         throw new Error('Other error types should not be expandable');
     }
 

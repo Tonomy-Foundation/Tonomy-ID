@@ -46,9 +46,10 @@ export type RouteStackParamList = {
     Drawer: undefined;
     Settings: undefined;
     QrScanner: undefined;
-    SSO: { requests: string };
+    SSO: { requests: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
 };
+
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
 export default function RootNavigation() {
@@ -120,11 +121,6 @@ export default function RootNavigation() {
                 <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
                 <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 <Stack.Screen
-                    name="QrScanner"
-                    options={{ title: settings.config.appName }}
-                    component={QrCodeScanScreen}
-                />
-                <Stack.Screen
                     name="SSO"
                     options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                     component={SSOLoginScreen}
@@ -137,8 +133,4 @@ export default function RootNavigation() {
             </Stack.Navigator>
         </NavigationContainer>
     );
-}
-
-export function useRootNavigator() {
-    return useNavigation<NativeStackScreenProps<RouteStackParamList>['navigation']>();
 }
