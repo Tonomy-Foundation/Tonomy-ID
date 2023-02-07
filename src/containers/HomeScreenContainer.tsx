@@ -19,11 +19,6 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
             color: text,
         },
     });
-    useEffect(() => {
-        console.log('Checks the user if already Login then Navigate to Home');
-        // isLoggedIn
-    });
-
     return (
         <LayoutComponent
             body={

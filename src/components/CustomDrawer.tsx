@@ -7,6 +7,7 @@ import { useTheme } from '@react-navigation/native';
 import { RouteDrawerParamList } from '../navigation/Drawer';
 import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import useUserStore from '../store/userStore';
 
 const icons: Record<keyof RouteDrawerParamList, IconSource> = {
     UserHome: 'home',
@@ -18,6 +19,7 @@ const icons: Record<keyof RouteDrawerParamList, IconSource> = {
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const logo1024 = require('../assets/tonomy/tonomy-logo1024.png');
+    const { user } = useUserStore();
     const theme = useTheme();
     const styles = StyleSheet.create({
         container: {
@@ -47,7 +49,20 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                 <Image source={logo1024} style={styles.logo}></Image>
                 <View style={styles.menu}>
                     {Object.entries(props.descriptors).map(([key, value]) => {
-                        return (
+                        return value.route.name === 'Logout' ? (
+                            <TButton
+                                style={styles.button}
+                                key={key}
+                                onPress={() => {
+                                    user.logout();
+                                    props.navigation.getParent()?.navigate('Splash');
+                                }}
+                                icon={icons[value.route.name]}
+                                color={theme.colors.text}
+                            >
+                                {value.options.title || value.route.name}
+                            </TButton>
+                        ) : (
                             <TButton
                                 style={styles.button}
                                 key={key}
@@ -61,7 +76,8 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     })}
                 </View>
             </DrawerContentScrollView>
-            <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#ccc' }}>
+            {/* Can be Used in Future , Will be discussed too  */}
+            {/* <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#ccc' }}>
                 <TouchableOpacity
                     onPress={async () => {
                         // onShare();
@@ -69,10 +85,11 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     style={{ paddingVertical: 15 }}
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <TButtonText>Tell a Friend</TButtonText>
+                        <Icon name="logout"> </Icon>    
+                    <TButtonText>Logout</TButtonText>
                     </View>
                 </TouchableOpacity>
-            </View>
+            </View> */}
         </View>
     );
 }
