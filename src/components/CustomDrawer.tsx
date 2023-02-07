@@ -53,9 +53,9 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                             <TButton
                                 style={styles.button}
                                 key={key}
-                                onPress={() => {
-                                    user.logout();
-                                    props.navigation.getParent()?.navigate('Splash');
+                                onPress={async () => {
+                                    await user.logout();
+                                    props.navigation.getParent()?.navigate('Home');
                                 }}
                                 icon={icons[value.route.name]}
                                 color={theme.colors.text}

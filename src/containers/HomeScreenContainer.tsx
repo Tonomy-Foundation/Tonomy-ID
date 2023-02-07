@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { Props } from '../screens/homeScreen';
+import useUserStore from '../store/userStore';
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const {
@@ -18,6 +19,13 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
         text: {
             color: text,
         },
+    });
+    const user = useUserStore().user;
+    useEffect(() => {
+        async function checkUser() {
+            (await user.isLoggedIn()) && navigation.navigate('Test');
+        }
+        checkUser();
     });
     return (
         <LayoutComponent
