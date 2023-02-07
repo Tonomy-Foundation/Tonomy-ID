@@ -9,6 +9,7 @@ import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/FingerprintUpdateScreen';
 import theme from '../utils/theme';
+
 export default function PinScreenContainer({
     navigation,
     password,
@@ -34,9 +35,11 @@ export default function PinScreenContainer({
 
     async function onNext() {
         setLoading(true);
+
         if (confirming) {
             if (pin === confirmPin) {
                 console.log('saving pin');
+
                 try {
                     await user.savePIN(pin);
                 } catch (e) {
@@ -45,6 +48,7 @@ export default function PinScreenContainer({
                     setLoading(false);
                     return;
                 }
+
                 console.log('pin saved');
                 navigation.navigate('CreateAccountFingerprint', { password });
             } else {
@@ -59,6 +63,7 @@ export default function PinScreenContainer({
             setDisabled(true);
             setConfirming(true);
         }
+
         setLoading(false);
     }
 

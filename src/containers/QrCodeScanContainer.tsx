@@ -16,6 +16,7 @@ export default function QrCodeScanContainer(props: {
     useEffect(() => {
         const getBarCodeScannerPermissions = async () => {
             const { status } = await BarCodeScanner.requestPermissionsAsync();
+
             setHasPermission(status === 'granted');
         };
 
@@ -43,30 +44,6 @@ export default function QrCodeScanContainer(props: {
                 )}
                 {scanned && <TButtonContained onPress={() => setScanned(false)}> Tap to Scan Again</TButtonContained>}
             </View>
-            {/* <View
-                style={{
-                    position: 'absolute',
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <TP
-                    size={2}
-                    style={{
-                        color: 'white',
-                    }}
-                >
-                    Align QR Code within frame to scan
-                </TP>
-                <QrScannerBorders
-                    style={{
-                        height: '75%',
-                        width: '75%',
-                    }}
-                />
-            </View> */}
 
             <View>
                 <TButtonOutlined style={commonStyles.marginBottom} onPress={() => props.onClose()}>

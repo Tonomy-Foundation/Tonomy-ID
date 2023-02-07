@@ -1,25 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
-
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { DrawerItemProps } from 'react-native-paper';
 import { TonomyUsername, User } from 'tonomy-id-sdk';
-
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
 import useUserStore from '../store/userStore';
 import { ApplicationErrors, throwError } from '../utils/errors';
 import QrCodeScanContainer from './QrCodeScanContainer';
-
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 
 export default function MainContainer() {
     const user = useUserStore((state) => state.user);
     const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
-    const [username, setUsername] = useState<TonomyUsername>({});
+    const [username, setUsername] = useState<TonomyUsername>();
     const [qrOpened, setQrOpened] = useState<boolean>(false);
+
     useEffect(() => {
         setUserName();
         user.communication.onJwtToClient((data) => {
@@ -30,9 +28,11 @@ export default function MainContainer() {
 
     async function setUserName() {
         const u = await user.storage.username;
+
         if (!u) {
             throwError('Username not found', ApplicationErrors.NoDataFound);
         }
+
         setUsername(u);
     }
 
@@ -40,6 +40,7 @@ export default function MainContainer() {
         user.communication.connectTonomy(data);
         onClose();
     }
+
     function onClose() {
         setQrOpened(false);
     }

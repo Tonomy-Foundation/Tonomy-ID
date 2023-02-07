@@ -30,6 +30,7 @@ export default function DrawerNavigation() {
         headerTitleAlign: 'left',
         headerTintColor: theme.dark ? theme.colors.text : 'white',
     };
+
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawer {...props} />}

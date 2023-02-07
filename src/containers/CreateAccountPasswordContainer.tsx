@@ -40,9 +40,11 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         }
 
         setLoading(true);
+
         try {
             await user.savePassword(password);
             const res = await user.createPerson();
+
             // this only works when blockchainUrl === localhost || https://...
             setTrxUrl(
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
@@ -64,6 +66,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                     default:
                         errorStore.setError({ error: e, expected: false });
                 }
+
                 setLoading(false);
                 return;
             } else {

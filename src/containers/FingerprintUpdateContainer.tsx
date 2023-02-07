@@ -21,10 +21,12 @@ export default function CreateAccountContainer({ password }: { password: string 
     const onNext = async () => {
         try {
             const authenticated = LocalAuthentication.isEnrolledAsync();
+
             if (!authenticated) {
                 setShowModal(true);
                 return;
             }
+
             await user.saveFingerprint();
 
             await user.saveLocal();
@@ -43,6 +45,7 @@ export default function CreateAccountContainer({ password }: { password: string 
         await user.updateKeys(password);
         navigation.navigate('Drawer');
     }
+
     return (
         <>
             {showModal && (

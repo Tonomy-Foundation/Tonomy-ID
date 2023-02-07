@@ -13,12 +13,14 @@ const Tab = createBottomTabNavigator<RouteTabParamList>();
 
 export default function MainNavigation() {
     const theme = useTheme();
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: false,
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName: React.ComponentProps<typeof Ionicons>['name'];
+
                     switch (route.name) {
                         case 'Data':
                             iconName = focused ? 'md-add-circle' : 'md-add-circle-outline';
@@ -27,6 +29,7 @@ export default function MainNavigation() {
                             iconName = focused ? 'md-home' : 'md-home-outline';
                             break;
                     }
+
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarStyle: {

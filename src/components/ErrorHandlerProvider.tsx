@@ -25,6 +25,7 @@ export default function ErrorHandlerProvider() {
                 errorRef.current.error = state.error;
                 errorRef.current.title = state.title;
                 errorRef.current.expected = state.expected;
+
                 if (state.error) {
                     setShowModal(true);
                 }

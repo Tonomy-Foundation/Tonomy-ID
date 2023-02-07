@@ -9,6 +9,7 @@ import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/FingerprintUpdateScreen';
 import theme from '../utils/theme';
+
 export default function LoginPinScreenContainer({
     navigation,
     password,
@@ -34,6 +35,7 @@ export default function LoginPinScreenContainer({
     async function onNext() {
         setLoading(true);
         console.log(pin, confirmPin);
+
         if (pin === confirmPin) {
             alert('User Will be On New Screen');
             navigation.navigate('UserHome');
@@ -42,6 +44,7 @@ export default function LoginPinScreenContainer({
             setPin('');
         }
     }
+
     return (
         <LayoutComponent
             body={

@@ -42,6 +42,7 @@ export default class RNKeyManager implements KeyManager {
 
         const bytes = Bytes.from(result.rawHash, 'hex');
         const privateKey = new PrivateKey(KeyType.K1, bytes);
+
         return {
             privateKey,
             salt,
@@ -54,11 +55,13 @@ export default class RNKeyManager implements KeyManager {
             privateKey: options.privateKey,
             publicKey: options.privateKey.toPublic(),
         };
+
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
             if (!options.challenge) throw new Error('Challenge missing');
             keyStore.salt = randomString(32);
             keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
         }
+
         await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), {
             //TODO fix SDK so that no keys be stored if skipped
             // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
@@ -72,16 +75,20 @@ export default class RNKeyManager implements KeyManager {
             //TODO fix SDK so that no keys be stored if skipped
             // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
+
         if (!key) throw new Error('No key for this level');
         const keyStore = JSON.parse(key) as KeyStorage;
 
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
             if (!options.challenge) throw new Error('Challenge missing');
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
+
             if (keyStore.hashedSaltedChallenge !== hashedSaltedChallenge) throw new Error('Challenge does not match');
         }
+
         const privateKey = PrivateKey.from(keyStore.privateKey);
         let digest: Checksum256;
+
         if (options.data instanceof String) {
             digest = Checksum256.hash(Bytes.from(options.data));
         } else {
@@ -89,6 +96,7 @@ export default class RNKeyManager implements KeyManager {
         }
 
         const signature = privateKey.signDigest(digest);
+
         return signature;
     }
 
@@ -108,8 +116,10 @@ export default class RNKeyManager implements KeyManager {
             //TODO fix SDK so that no keys be stored if skipped
             // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
+
         if (!key) return null;
         const keyStore = JSON.parse(key) as KeyStorage;
+
         return keyStore.publicKey;
     }
 }

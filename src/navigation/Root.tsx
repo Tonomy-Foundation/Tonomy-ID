@@ -47,6 +47,7 @@ export type RouteStackParamList = {
     QrScanner: undefined;
     SSO: { requests: string; platform?: 'mobile' | 'browser' };
 };
+
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
 export default function RootNavigation() {

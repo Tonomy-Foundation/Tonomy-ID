@@ -21,6 +21,7 @@ const useUserStore = create<UserState>((set, get) => ({
 
     isLoggedIn: async () => {
         const status = await get().user.storage.status;
+
         return status && status === UserStatus.READY;
     },
 

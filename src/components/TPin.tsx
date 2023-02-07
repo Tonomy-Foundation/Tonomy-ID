@@ -56,6 +56,7 @@ export default function TPin(props: { pin?: string; onChange: (pin: string) => v
 
     const onDeletePress = () => {
         const newPin = pin.substring(0, pin.length - 1);
+
         setPin(newPin);
         props.onChange(newPin);
     };

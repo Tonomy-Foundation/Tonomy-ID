@@ -37,10 +37,12 @@ export default function SSOLoginContainer({
 
     async function setUserName() {
         const username = await user.storage.username;
+
         if (!username) {
             await user.logout();
             navigation.navigate('Home');
         }
+
         setUsername(username);
     }
 
@@ -51,6 +53,7 @@ export default function SSOLoginContainer({
             for (const jwt of verifiedRequests) {
                 const payload = jwt.payload as JWTLoginPayload;
                 const app = await App.getApp(payload.origin);
+
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
                     setApp(app);
@@ -72,13 +75,16 @@ export default function SSOLoginContainer({
         try {
             const accountName = await user.storage.accountName.toString();
             let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+
             callbackUrl += 'requests=' + requests;
             callbackUrl += '&username=' + (await user.storage.username);
             callbackUrl += '&accountName=' + accountName;
             if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
+
             if (app && tonomyIdJwtPayload && checked === 'checked') {
                 await user.apps.loginWithApp(app, PublicKey.from(tonomyIdJwtPayload?.publicKey));
             }
+
             if (platform === 'mobile') {
                 await openBrowserAsync(callbackUrl);
             } else {
