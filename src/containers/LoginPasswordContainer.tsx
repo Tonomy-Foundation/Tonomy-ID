@@ -49,6 +49,7 @@ export default function LoginPasswordContainer({
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:
                     case SdkErrors.PasswordFormatInvalid:
+                        // case SdkErrors.PasswordInValid:
                         setShowUsernameErrorModal(true);
                         break;
                     case SdkErrors.AccountDoesntExist:
