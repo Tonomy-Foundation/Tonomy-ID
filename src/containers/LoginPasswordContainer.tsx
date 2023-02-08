@@ -11,9 +11,10 @@ import TErrorModal from '../components/TErrorModal';
 import TInfoBox from '../components/TInfoBox';
 import { Props } from '../screens/homeScreen';
 import settings from '../settings';
-import errorStore from '../store/errorStore';
+// import errorStore from '../store/errorStore';
 import useUserStore from '../store/userStore';
 import theme, { commonStyles } from '../utils/theme';
+import useErrorStore from '../store/errorStore';
 
 export default function LoginPasswordContainer({
     navigation,
@@ -22,6 +23,7 @@ export default function LoginPasswordContainer({
     navigation: Props['navigation'];
     username: string;
 }) {
+    const errorsStore = useErrorStore();
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -32,30 +34,34 @@ export default function LoginPasswordContainer({
         setLoading(true);
 
         try {
-            user.login(
+            const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password
             );
-            navigation.navigate('CreateAccountPin', {
-                password: password,
-            });
-        } catch (e) {
+
+            if (result?.account_name !== undefined) {
+                navigation.navigate('CreateAccountPin', {
+                    password: password,
+                });
+            }
+        } catch (e: any) {
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:
+                    case SdkErrors.PasswordFormatInvalid:
                         setShowUsernameErrorModal(true);
                         break;
                     case SdkErrors.AccountDoesntExist:
                         setErrorMessage('Account does not exist');
                         break;
                     default:
-                        errorStore.setError({ error: e, expected: false });
+                        errorsStore.setError({ error: e, expected: false });
                 }
 
                 setLoading(false);
                 return;
             } else {
-                errorStore.setError({ error: e, expected: false });
+                errorsStore.setError({ error: e, expected: false });
                 setLoading(false);
                 return;
             }
@@ -73,7 +79,7 @@ export default function LoginPasswordContainer({
 
     async function onUsernameErrorModalPress() {
         setShowUsernameErrorModal(false);
-        navigation.navigate('CreateAccountUsername');
+        // navigation.navigate('CreateAccountUsername');
     }
 
     return (
