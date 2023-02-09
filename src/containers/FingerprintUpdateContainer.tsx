@@ -31,7 +31,7 @@ export default function CreateAccountContainer({ password }: { password: string 
 
             await user.saveLocal();
             await updateKeys();
-        } catch (e) {
+        } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
     };

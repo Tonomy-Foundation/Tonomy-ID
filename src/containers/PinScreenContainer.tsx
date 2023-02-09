@@ -40,7 +40,7 @@ export default function PinScreenContainer({
             if (pin === confirmPin) {
                 try {
                     await user.savePIN(confirmPin);
-                } catch (e) {
+                } catch (e: any) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
                     setLoading(false);
