@@ -38,10 +38,6 @@ export default function LoginPasswordContainer({
             navigation.navigate('CreateAccountPin', {
                 password: password,
             });
-
-            // if (loginData.account_name) {
-
-            // }
         } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
