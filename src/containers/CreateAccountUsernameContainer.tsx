@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TLink from '../components/atoms/TA';
@@ -27,13 +27,19 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 
     const errorStore = useErrorStore();
 
-    const { user } = useUserStore();
+    const user = useUserStore();
+
+    useEffect(() => {
+        user.setStatus('creatingAccount');
+    }, []);
 
     async function onNext() {
         setLoading(true);
 
         try {
-            await user.saveUsername(username);
+            await user.user.saveUsername(username);
+            setLoading(false);
+            navigation.navigate('CreateAccountPassword');
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
@@ -45,9 +51,6 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 return;
             }
         }
-
-        setLoading(false);
-        navigation.navigate('CreateAccountPassword');
     }
 
     return (

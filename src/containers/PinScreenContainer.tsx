@@ -24,7 +24,7 @@ export default function PinScreenContainer({
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const user = useUserStore().user;
+    const store = useUserStore();
     const errorStore = useErrorStore();
 
     function onPinChange(pin: string) {
@@ -39,15 +39,19 @@ export default function PinScreenContainer({
         if (confirming) {
             if (pin === confirmPin) {
                 try {
-                    await user.savePIN(confirmPin);
-                } catch (e) {
-                    console.log('error saving pin', e);
+                    await store.user.savePIN(confirmPin);
+                    store.updatePin(true);
+
+                    if (!store.checkBiometric()) {
+                        navigation.navigate('CreateAccountFingerprint', { password });
+                    } else {
+                        navigation.navigate('UserHome');
+                    }
+                } catch (e: any) {
                     errorStore.setError({ error: e, expected: false });
                     setLoading(false);
                     return;
                 }
-
-                navigation.navigate('CreateAccountFingerprint', { password });
             } else {
                 setErrorMessage('Wrong PIN');
                 setPin('');

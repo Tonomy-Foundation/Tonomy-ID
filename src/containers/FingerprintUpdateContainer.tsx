@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
-    const user = useUserStore((state) => state.user);
+    const store = useUserStore();
     const errorStore = useErrorStore();
 
     const navigation = useNavigation();
@@ -27,22 +27,23 @@ export default function CreateAccountContainer({ password }: { password: string 
                 return;
             }
 
-            await user.saveFingerprint();
+            await store.user.saveFingerprint();
 
-            await user.saveLocal();
+            await store.user.saveLocal();
             await updateKeys();
+            store.updateBiometric(true);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     };
 
     const onSkip = async () => {
-        await user.saveLocal();
+        await store.user.saveLocal();
         updateKeys();
     };
 
     async function updateKeys() {
-        await user.updateKeys(password);
+        await store.user.updateKeys(password);
         navigation.navigate('Drawer');
     }
 

@@ -14,7 +14,7 @@ import useUserStore from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
-    const { user } = useUserStore();
+    const user = useUserStore();
     const {
         colors: { text },
     } = useTheme();
@@ -23,6 +23,10 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
             color: text,
         },
     });
+
+    useEffect(() => {
+        user.setStatus('LoggingIn');
+    }, []);
 
     const onNext = () => {
         navigation.navigate('LoginPassword', { username });
