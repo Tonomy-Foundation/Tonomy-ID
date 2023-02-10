@@ -32,6 +32,13 @@ export default function CreateAccountContainer({ password }: { password: string 
             await store.user.saveLocal();
             await updateKeys();
             store.updateBiometric(true);
+
+            if (store.checkPin() && store.checkBiometric()) {
+                store.updateBiometric(false);
+                store.updatePin(false);
+            }
+
+            navigation.navigate('Drawer');
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
