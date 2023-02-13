@@ -34,7 +34,6 @@ export default function LoginPasswordContainer({
         setLoading(true);
 
         try {
-
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password
