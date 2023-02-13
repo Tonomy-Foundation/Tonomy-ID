@@ -121,5 +121,6 @@ const styles = StyleSheet.create({
     },
     accountSecureText: {
         color: theme.colors.placeholder,
+        textAlign: 'center',
     },
 });
