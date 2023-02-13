@@ -44,8 +44,10 @@ export function TCaption(props: TCaptionProps) {
 const styles = StyleSheet.create({
     h1: {
         fontSize: 30,
+        marginTop: 15,
         marginBottom: 8,
         color: customColors.textBold,
+        textAlign: 'center',
     },
     h2: {
         fontSize: 24,
@@ -58,5 +60,6 @@ const styles = StyleSheet.create({
     },
     s1: {
         fontSize: 16,
+        textAlign: 'center',
     },
 });
