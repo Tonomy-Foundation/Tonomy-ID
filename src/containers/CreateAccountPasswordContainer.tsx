@@ -33,6 +33,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         if (password.length > 0) {
             setErrorMessage('');
         }
+
         if (password !== password2 && password2.length > 0) {
             setConfirmErrorMessage('Passwords do not match');
         } else {
@@ -56,7 +57,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             setTrxUrl(
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
             );
-        } catch (e) {
+        } catch (e: any) {
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:

@@ -25,6 +25,8 @@ type ConfigType = {
         securityLearnMore: string;
         privacyLearnMore: string;
         transparencyLearnMore: string;
+        privacyPolicy: string;
+        termsAndConditions: string;
     };
     expoProjectId: string;
     accountSuffix: string;
