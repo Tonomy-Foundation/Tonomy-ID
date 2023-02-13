@@ -23,7 +23,18 @@
         "react/no-children-prop": "off",
         "react/react-in-jsx-scope": "off",
         "react-hooks/rules-of-hooks": "error",
-        "react-hooks/exhaustive-deps": "warn"
+        "react-hooks/exhaustive-deps": "warn",
+        "padding-line-between-statements": [
+            "warn",
+            { "blankLine": "always", "prev": "block-like", "next": "*" },
+            { "blankLine": "always", "prev": "block", "next": "*" },
+            { "blankLine": "always", "prev": "*", "next": ["block","block-like"] },
+            { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*"},
+            { "blankLine": "any",    "prev": ["const", "let", "var"], "next": ["const", "let", "var"]},
+            { "blankLine": "always", "prev": ["export", "import"], "next": "*"},
+            { "blankLine": "any", "prev": "import", "next": "import"},
+            { "blankLine": "any", "prev": "export", "next": "export"}
+        ]
     },
     "parserOptions": {
         "ecmaVersion": 6,

@@ -16,6 +16,7 @@ const icons: Record<keyof RouteDrawerParamList, IconSource> = {
     Logout: 'logout',
     SSO: 'login',
 };
+
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const logo1024 = require('../assets/tonomy/tonomy-logo1024.png');

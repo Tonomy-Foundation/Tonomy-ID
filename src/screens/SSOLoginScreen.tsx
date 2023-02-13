@@ -6,5 +6,7 @@ import { RouteStackParamList } from '../navigation/Root';
 export type SSOLoginScreenProps = NativeStackScreenProps<RouteStackParamList, 'SSO'>;
 
 export default function SSOLoginScreen(props: SSOLoginScreenProps) {
-    return <SSOLoginContainer requests={props.route.params.requests} />;
+    return (
+        <SSOLoginContainer requests={props.route.params.requests} platform={props.route.params.platform ?? 'mobile'} />
+    );
 }

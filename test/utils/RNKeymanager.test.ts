@@ -33,6 +33,7 @@ jest.mock('react-native-argon2', () => {
 // mock expo secure store
 jest.mock('expo-secure-store', () => {
     const storage: any = {};
+
     return {
         setItemAsync: jest.fn(async (key: string, value: string, options) => {
             storage[key] = value;
@@ -48,8 +49,10 @@ jest.mock('expo-secure-store', () => {
 
 describe('RNKeyManager', () => {
     const rn = new RNKeyManager();
+
     it('can generate a private key from a password', async () => {
         const { privateKey, salt } = await rn.generatePrivateKeyFromPassword('test');
+
         expect(privateKey).toBeInstanceOf(PrivateKey);
         expect(salt).toBeInstanceOf(Checksum256);
     });
@@ -60,6 +63,7 @@ describe('RNKeyManager', () => {
             level: KeyManagerLevel.PASSWORD,
             challenge: 'test',
         });
+
         expect(publicKey).toBeInstanceOf(PublicKey);
     });
 
@@ -75,6 +79,7 @@ describe('RNKeyManager', () => {
             level: KeyManagerLevel.PASSWORD,
         });
         const pub = PublicKey.from(key);
+
         expect(pub).toBeInstanceOf(PublicKey);
     });
 
@@ -82,6 +87,7 @@ describe('RNKeyManager', () => {
         const salt = randomBytes(32);
         const hash = await rn.generatePrivateKeyFromPassword('test', Checksum256.from(salt));
         const hash2 = await rn.generatePrivateKeyFromPassword('test', Checksum256.from(salt));
+
         expect(hash2).toEqual(hash);
     });
 
@@ -90,6 +96,7 @@ describe('RNKeyManager', () => {
         const salt: string = encodeHex('12345678901234567890123456789012'); // salt
         const encodedSalt: Checksum256 = Checksum256.from(Bytes.from(salt));
         const res = await rn.generatePrivateKeyFromPassword('password', encodedSalt);
+
         // react
         expect(res.privateKey.toString()).toBe('PVT_K1_pPnFBQwMSQgjAenyLdMHoeFQBtazFBYEWeA12FtKpm5PEY4fc');
     });

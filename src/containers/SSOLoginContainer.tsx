@@ -12,11 +12,18 @@ import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
-import { useRootNavigator } from '../navigation/Root';
+
 import { openBrowserAsync } from 'expo-web-browser';
 import { PublicKey } from '@greymass/eosio';
+import { useNavigation } from '@react-navigation/native';
 
-export default function SSOLoginContainer({ requests }: { requests: string }) {
+export default function SSOLoginContainer({
+    requests,
+    platform,
+}: {
+    requests: string;
+    platform: 'mobile' | 'browser';
+}) {
     const user = useUserStore((state) => state.user);
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
@@ -25,15 +32,17 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
     const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
 
-    const navigation = useRootNavigator();
+    const navigation = useNavigation();
     const errorStore = useErrorStore();
 
     async function setUserName() {
         const username = await user.storage.username;
+
         if (!username) {
             await user.logout();
             navigation.navigate('Home');
         }
+
         setUsername(username);
     }
 
@@ -44,6 +53,7 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
             for (const jwt of verifiedRequests) {
                 const payload = jwt.payload as JWTLoginPayload;
                 const app = await App.getApp(payload.origin);
+
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
                     setApp(app);
@@ -63,16 +73,24 @@ export default function SSOLoginContainer({ requests }: { requests: string }) {
 
     async function onNext() {
         try {
+            const accountName = await user.storage.accountName.toString();
             let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+
             callbackUrl += 'requests=' + requests;
             callbackUrl += '&username=' + (await user.storage.username);
-            callbackUrl += '&accountName=' + (await user.storage.accountName.toString());
+            callbackUrl += '&accountName=' + accountName;
             if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
+
             if (app && tonomyIdJwtPayload && checked === 'checked') {
                 await user.apps.loginWithApp(app, PublicKey.from(tonomyIdJwtPayload?.publicKey));
             }
-            console.log(callbackUrl);
-            await openBrowserAsync(callbackUrl);
+
+            if (platform === 'mobile') {
+                await openBrowserAsync(callbackUrl);
+            } else {
+                user.communication.sendJwtToBrowser(requests, accountName);
+                navigation.navigate('Drawer', { screen: 'UserHome' });
+            }
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }

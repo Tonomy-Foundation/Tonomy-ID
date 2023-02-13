@@ -14,9 +14,11 @@ export class ApplicationError extends Error {
 
 export function throwError(message: string, code?: ApplicationErrors) {
     let error = new ApplicationError(message);
+
     if (code) {
         error = new ApplicationError(code + ': ' + message);
     }
+
     throw error;
 }
 
@@ -46,11 +48,13 @@ namespace ApplicationErrors {
      */
     export function from(value: number | string): ApplicationErrors {
         let index: number;
+
         if (typeof value !== 'number') {
             index = ApplicationErrors.indexFor(value as ApplicationErrors);
         } else {
             index = value;
         }
+
         return Object.values(ApplicationErrors)[index] as ApplicationErrors;
     }
 }

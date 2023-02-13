@@ -16,9 +16,11 @@ import { Props } from '../screens/CreateAccountUsernameScreen';
 
 export default function CreateAccountUsernameContainer({ navigation }: Props) {
     let startUsername = '';
+
     if (!settings.isProduction()) {
         startUsername = 'test' + randomString(2);
     }
+
     const [username, setUsername] = useState(startUsername);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 
         try {
             await user.saveUsername(username);
-        } catch (e) {
+        } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
                 setLoading(false);

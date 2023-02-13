@@ -9,6 +9,7 @@ import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/FingerprintUpdateScreen';
 import theme from '../utils/theme';
+
 export default function LoginPinScreenContainer({
     navigation,
     password,
@@ -30,6 +31,7 @@ export default function LoginPinScreenContainer({
         setDisabled(pin.length < 5);
         setErrorMessage('');
     }
+
     //  Navigated to Create Finger Print Screen on Skip
     function onSkip() {
         navigation.navigate('CreateAccountFingerprint');
@@ -38,6 +40,7 @@ export default function LoginPinScreenContainer({
     // When the Next button is removed then it will be called when the 5 digits are entered
     async function onNext() {
         setLoading(true);
+
         if (pin === confirmPin) {
             try {
                 await user.savePIN(confirmPin);
@@ -47,12 +50,14 @@ export default function LoginPinScreenContainer({
                 setLoading(false);
                 return;
             }
+
             navigation.navigate('CreateAccountFingerprint');
         } else {
             setErrorMessage('Wrong PIN');
             setPin('');
         }
     }
+
     return (
         <LayoutComponent
             body={
