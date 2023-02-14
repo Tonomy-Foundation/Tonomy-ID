@@ -49,32 +49,28 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
             <DrawerContentScrollView {...props} style={styles.container}>
                 <Image source={logo1024} style={styles.logo}></Image>
                 <View style={styles.menu}>
-                    {Object.entries(props.descriptors).map(([key, value]) => {
-                        return value.route.name === 'Logout' ? (
-                            <TButton
-                                style={styles.button}
-                                key={key}
-                                onPress={async () => {
-                                    await user.logout();
-                                    props.navigation.getParent()?.navigate('Home');
-                                }}
-                                icon={icons[value.route.name]}
-                                color={theme.colors.text}
-                            >
-                                {value.options.title || value.route.name}
-                            </TButton>
-                        ) : (
-                            <TButton
-                                style={styles.button}
-                                key={key}
-                                onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
-                                icon={icons[value.route.name]}
-                                color={theme.colors.text}
-                            >
-                                {value.options.title || value.route.name}
-                            </TButton>
-                        );
-                    })}
+                    {Object.entries(props.descriptors).map(([key, value]) => (
+                        <TButton
+                            style={styles.button}
+                            key={key}
+                            onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
+                            icon={icons[value.route.name]}
+                            color={theme.colors.text}
+                        >
+                            {value.options.title || value.route.name}
+                        </TButton>
+                    ))}
+                    <TButton
+                        style={styles.button}
+                        onPress={async () => {
+                            await user.logout();
+                            props.navigation.getParent()?.navigate('Home');
+                        }}
+                        icon={icons['Logout']}
+                        color={theme.colors.text}
+                    >
+                        {'Logout'}
+                    </TButton>
                 </View>
             </DrawerContentScrollView>
             {/* Can be Used in Future , Will be discussed too  */}

@@ -21,10 +21,12 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
         },
     });
     const user = useUserStore().user;
+
     useEffect(() => {
         async function checkUser() {
             (await user.isLoggedIn()) && navigation.navigate('Drawer');
         }
+
         checkUser();
     });
     return (
