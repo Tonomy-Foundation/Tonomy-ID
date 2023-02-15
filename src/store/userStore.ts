@@ -8,14 +8,18 @@ import { User, UserStatus, createUserObject, setSettings } from 'tonomy-id-sdk';
 // type UserStats ={
 
 // }
-type statusData = 'isLoggedIn' | 'creatingAccount' | 'NotLoggedIn' | 'LoggingIn';
+export enum StatusData {
+    IS_LOGGED_IN,
+    CREATING_ACCOUNT,
+    NOT_LOGGED_IN,
+    LOGGING_IN,
+}
+
 interface UserState {
     user: User;
     hasCompletedPin: boolean;
     hasCompletedBiometric: boolean;
-    status: statusData;
-    getStatus: () => statusData;
-    setStatus: (statusData) => void;
+    status: StatusData;
     checkPin: () => boolean;
     updatePin: (pin) => void;
     checkBiometric: () => boolean;

@@ -37,16 +37,16 @@ export default function LoginPasswordContainer({
                 password
             );
 
-            if (!store.checkPin())
+            if (!store.hasCompletedPin) {
                 navigation.navigate('CreateAccountPin', {
                     password: password,
                 });
-            else {
-                if (!store.checkBiometric()) {
+            } else {
+                if (!store.hasCompletedBiometric) {
                     navigation.navigate('CreateAccountFingerprint', {
                         password: password,
                     });
-                } else navigation.navigate('UserHome');
+                } else navigation.navigate('Drawer');
             }
         } catch (e) {
             if (e instanceof SdkError) {

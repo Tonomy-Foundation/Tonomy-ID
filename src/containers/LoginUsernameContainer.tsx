@@ -10,7 +10,7 @@ import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import useUserStore from '../store/userStore';
+import useUserStore, { StatusData } from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
@@ -25,7 +25,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
     });
 
     useEffect(() => {
-        user.setStatus('LoggingIn');
+        user.status = StatusData.LOGGING_IN;
     }, []);
 
     const onNext = () => {

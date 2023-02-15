@@ -5,7 +5,7 @@ import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
-import useUserStore from '../store/userStore';
+import useUserStore, { StatusData } from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from 'tonomy-id-sdk';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
@@ -30,7 +30,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
     const user = useUserStore();
 
     useEffect(() => {
-        user.setStatus('creatingAccount');
+        user.status = StatusData.CREATING_ACCOUNT;
     }, []);
 
     async function onNext() {
