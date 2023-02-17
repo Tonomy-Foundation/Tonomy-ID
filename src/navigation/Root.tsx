@@ -12,6 +12,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
+
 import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
@@ -25,6 +26,7 @@ import { useNavigation } from '@react-navigation/core';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
+import FaceIdUpdateScreen from '../screens/FaceIDUpdateScreen';
 
 const prefix = Linking.createURL('');
 
@@ -39,6 +41,8 @@ export type RouteStackParamList = {
     CreateAccountPin: { password: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
+    FaceIDUpdateScreen: { password: string };
+
     LoginUsername: undefined;
     LoginPassword: { username: string };
     UserHome: undefined;
@@ -116,6 +120,13 @@ export default function RootNavigation() {
                     component={FingerprintUpdateScreen}
                     initialParams={{ password: '' }}
                 />
+                <Stack.Screen
+                    name="FaceIDUpdateScreen"
+                    options={{ title: 'Face Id ' }}
+                    component={FaceIdUpdateScreen}
+                    initialParams={{ password: '' }}
+                />
+
                 <Stack.Screen name="LoginUsername" options={{ title: 'Login' }} component={LoginUsernameScreen} />
                 <Stack.Screen name="LoginPassword" options={{ title: 'Login' }} component={LoginPasswordScreen} />
                 <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
