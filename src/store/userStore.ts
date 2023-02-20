@@ -40,24 +40,33 @@ const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
 
     setStatus: async (statusData) => {
-        await AsynStorage.setItem('statusData', statusData);
+        await AsynStorage.setItem('statusData', String(statusData));
         set({ status: statusData });
     },
     checkBiometric: async () => {
-        return await AsynStorage.getItem('pinStatus');
+        const data = await AsynStorage.getItem('pinStatus');
+
+        if (!data) return null;
+        return JSON.parse(data);
     },
     checkPin: async () => {
-        return await AsynStorage.getItem('bioStatus');
+        const data = await AsynStorage.getItem('bioStatus');
+
+        if (!data) return null;
+        return JSON.parse(data);
     },
     getStatus: async () => {
-        return await AsynStorage.getItem('statusData');
+        const data = await AsynStorage.getItem('statusData');
+
+        if (!data) return null;
+        return JSON.parse(data);
     },
     updatePin: async (pinStatus) => {
         set({ hasCompletedPin: pinStatus });
-        await AsynStorage.setItem('pinStatus', pinStatus);
+        await AsynStorage.setItem('pinStatus', String(pinStatus));
     },
     updateBiometric: async (bioStatus) => {
-        await AsynStorage.setItem('bioStatus', bioStatus);
+        await AsynStorage.setItem('bioStatus', String(bioStatus));
         set({ hasCompletedBiometric: bioStatus });
     },
     isLoggedIn: async () => {
