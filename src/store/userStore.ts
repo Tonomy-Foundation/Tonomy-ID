@@ -3,6 +3,7 @@ import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
 import { User, UserStatus, createUserObject, setSettings } from 'tonomy-id-sdk';
+import AsynStorage from '@react-native-async-storage/async-storage';
 
 // TODO change this to be an instance of User class when we have implemented the RNKeyStore
 // type UserStats ={
@@ -20,10 +21,11 @@ interface UserState {
     hasCompletedPin: boolean;
     hasCompletedBiometric: boolean;
     status: StatusData;
+    setStatus: (statusData) => void;
     checkPin: () => boolean;
-    updatePin: (pin) => void;
+    updatePin: (pinStatus) => void;
     checkBiometric: () => boolean;
-    updateBiometric: (pin) => void;
+    updateBiometric: (bioStatus) => void;
     logout: () => void;
     isLoggedIn: () => Promise<boolean>;
 }
@@ -37,34 +39,34 @@ setSettings({
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
 
-    setStatus: (statusData) => {
-        set((state) => ({ ...state, status: statusData }));
+    setStatus: async (statusData) => {
+        await AsynStorage.setItem('statusData', statusData);
+        set({ status: statusData });
     },
-    checkBiometric: () => {
-        return get().hasCompletedBiometric;
+    checkBiometric: async () => {
+        return await AsynStorage.getItem('pinStatus');
     },
-    checkPin: () => {
-        return get().hasCompletedPin;
+    checkPin: async () => {
+        return await AsynStorage.getItem('bioStatus');
     },
-
-    getStatus: () => {
-        return get().status;
+    getStatus: async () => {
+        return await AsynStorage.getItem('statusData');
     },
-    updatePin: () => {
-        set((state) => ({ ...state, hasCompletedPin: true }));
+    updatePin: async (pinStatus) => {
+        set({ hasCompletedPin: pinStatus });
+        await AsynStorage.setItem('pinStatus', pinStatus);
     },
-    updateBiometric: () => {
-        set((state) => ({ ...state, hasCompletedBiometric: true }));
+    updateBiometric: async (bioStatus) => {
+        await AsynStorage.setItem('bioStatus', bioStatus);
+        set({ hasCompletedBiometric: bioStatus });
     },
-
     isLoggedIn: async () => {
         const status = await get().user.storage.status;
 
         return status && status === UserStatus.READY;
     },
-
     logout: async () => {
-        await get().user.logout();
+        await set().user.logout();
     },
 }));
 

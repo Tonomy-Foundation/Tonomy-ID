@@ -31,11 +31,11 @@ export default function CreateAccountContainer({ password }: { password: string 
 
             await store.user.saveLocal();
             await updateKeys();
-            store.updateBiometric(true);
+            await store.updateBiometric(true);
 
-            if (store.hasCompletedPin && store.hasCompletedBiometric) {
-                store.hasCompletedBiometric = false;
-                store.hasCompletedPin = false;
+            if ((await store.checkPin()) && (await store.checkBiometric())) {
+                store.updateBiometric(false);
+                store.updatePin(false);
             }
 
             navigation.navigate('Drawer');

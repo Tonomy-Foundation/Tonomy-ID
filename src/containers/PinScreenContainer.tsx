@@ -40,9 +40,9 @@ export default function PinScreenContainer({
             if (pin === confirmPin) {
                 try {
                     await store.user.savePIN(confirmPin);
-                    store.hasCompletedPin = true;
+                    await store.updatePin(true);
 
-                    if (!store.hasCompletedBiometric) {
+                    if (!(await store.checkBiometric())) {
                         navigation.navigate('CreateAccountFingerprint', { password });
                     } else {
                         navigation.navigate('Drawer');

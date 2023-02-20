@@ -37,12 +37,12 @@ export default function LoginPasswordContainer({
                 password
             );
 
-            if (!store.hasCompletedPin) {
+            if (!(await store.checkPin())) {
                 navigation.navigate('CreateAccountPin', {
                     password: password,
                 });
             } else {
-                if (!store.hasCompletedBiometric) {
+                if (!(await store.checkBiometric())) {
                     navigation.navigate('CreateAccountFingerprint', {
                         password: password,
                     });

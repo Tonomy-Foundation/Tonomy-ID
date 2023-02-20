@@ -14,7 +14,7 @@ import useUserStore, { StatusData } from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
-    const user = useUserStore();
+    const store = useUserStore();
     const {
         colors: { text },
     } = useTheme();
@@ -25,7 +25,11 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
     });
 
     useEffect(() => {
-        user.status = StatusData.LOGGING_IN;
+        async function updateStatus() {
+            await store.setStatus(StatusData.LOGGING_IN);
+        }
+
+        updateStatus();
     }, []);
 
     const onNext = () => {

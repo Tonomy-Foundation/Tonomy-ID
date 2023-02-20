@@ -27,17 +27,21 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 
     const errorStore = useErrorStore();
 
-    const user = useUserStore();
+    const store = useUserStore();
 
     useEffect(() => {
-        user.status = StatusData.CREATING_ACCOUNT;
+        async function updateStatus() {
+            await store.setStatus(StatusData.CREATING_ACCOUNT);
+        }
+
+        updateStatus();
     }, []);
 
     async function onNext() {
         setLoading(true);
 
         try {
-            await user.user.saveUsername(username);
+            await store.user.saveUsername(username);
             setLoading(false);
             navigation.navigate('CreateAccountPassword');
         } catch (e) {
