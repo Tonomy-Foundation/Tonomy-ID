@@ -45,6 +45,7 @@ export default function PinScreenContainer({
                     if (!(await store.checkBiometric())) {
                         navigation.navigate('CreateAccountFingerprint', { password });
                     } else {
+                        await store.removeFlags();
                         navigation.navigate('Drawer');
                     }
                 } catch (e: any) {

@@ -34,8 +34,7 @@ export default function CreateAccountContainer({ password }: { password: string 
             await store.updateBiometric(true);
 
             if ((await store.checkPin()) && (await store.checkBiometric())) {
-                store.updateBiometric(false);
-                store.updatePin(false);
+                await store.removeFlags();
             }
 
             navigation.navigate('Drawer');

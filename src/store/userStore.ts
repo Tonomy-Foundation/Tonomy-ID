@@ -28,6 +28,7 @@ interface UserState {
     updateBiometric: (bioStatus) => void;
     logout: () => void;
     isLoggedIn: () => Promise<boolean>;
+    removeFlags: () => void;
 }
 
 setSettings({
@@ -39,18 +40,22 @@ setSettings({
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
 
+    removeFlags: async () => {
+        await AsynStorage.removeItem('pinStatus');
+        await AsynStorage.removeItem('bioStatus');
+    },
     setStatus: async (statusData) => {
         await AsynStorage.setItem('statusData', String(statusData));
         set({ status: statusData });
     },
     checkBiometric: async () => {
-        const data = await AsynStorage.getItem('pinStatus');
+        const data = await AsynStorage.getItem('bioStatus');
 
         if (!data) return null;
         return JSON.parse(data);
     },
     checkPin: async () => {
-        const data = await AsynStorage.getItem('bioStatus');
+        const data = await AsynStorage.getItem('pinStatus');
 
         if (!data) return null;
         return JSON.parse(data);
