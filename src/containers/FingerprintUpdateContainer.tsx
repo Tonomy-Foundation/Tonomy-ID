@@ -31,9 +31,9 @@ export default function CreateAccountContainer({ password }: { password: string 
 
             await store.user.saveLocal();
             await updateKeys();
-            await store.updateBiometric(true);
+            await store.setBiometric(true);
 
-            if ((await store.checkPin()) && (await store.checkBiometric())) {
+            if ((await store.getPin()) && (await store.getBiometric())) {
                 await store.removeFlags();
             }
 
