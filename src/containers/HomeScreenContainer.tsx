@@ -20,15 +20,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
             color: text,
         },
     });
-    const user = useUserStore().user;
 
-    useEffect(() => {
-        async function checkUser() {
-            (await user.isLoggedIn()) && navigation.navigate('Drawer');
-        }
-
-        checkUser();
-    });
     return (
         <LayoutComponent
             body={

@@ -7,11 +7,14 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useSplashStore from '../store/splashStore';
+import useUserStore from '../store/userStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
 
+    // add the routing from home screen
     const splashStorage = useSplashStore();
+    const user = useUserStore().user;
 
     async function main() {
         await sleep(800);
@@ -19,6 +22,11 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         try {
             const finishedSplash = await splashStorage.finishedSplash;
             const page = finishedSplash ? 'Home' : 'SplashSecurity';
+
+            if (await user.isLoggedIn()) {
+                navigation.navigate('Drawer');
+                return;
+            }
 
             // this will prevent use from going back to this screen after the user navigated
             navigation.dispatch(StackActions.replace(page));
