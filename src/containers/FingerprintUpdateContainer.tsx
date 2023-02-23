@@ -16,8 +16,7 @@ export default function CreateAccountContainer({ password }: { password: string 
     const [showModal, setShowModal] = useState(false);
     const user = useUserStore((state) => state.user);
     const errorStore = useErrorStore();
-    const device = 'ios';
-    // device ===""
+    const device = Platform.OS;
 
     const navigation = useNavigation();
 
@@ -88,7 +87,7 @@ export default function CreateAccountContainer({ password }: { password: string 
                         </View>
                         <View style={styles.imageWrapper}>
                             {device === 'ios' ? (
-                                <FaceIdIcon style={{ ...styles.image }} />
+                                <FaceIdIcon style={{ ...styles.image, padding: 80 }} />
                             ) : (
                                 <FingerprintIcon style={styles.image} />
                             )}
