@@ -7,14 +7,12 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useSplashStore from '../store/splashStore';
-import useUserStore from '../store/userStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
 
     // add the routing from home screen
     const splashStorage = useSplashStore();
-    const user = useUserStore().user;
 
     async function main() {
         await sleep(800);

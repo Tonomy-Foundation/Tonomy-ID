@@ -19,11 +19,10 @@ import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/core';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
+import { UserStatus } from 'tonomy-id-sdk';
 
 const prefix = Linking.createURL('');
 
@@ -81,19 +80,32 @@ export default function RootNavigation() {
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
     // Determine the routes
-    const [initialRouteName, setInitialRouteName] = useState<'Splash' | 'UserHome'>('Splash');
-    const user = useUserStore();
+    const [initialRouteName, setInitialRouteName] = useState<'Splash' | 'UserHome' | 'CreateAccountPin' | 'LoginWithPin'>('Splash');
+    const user = useUserStore().user;
 
-    async function setInitialRoute(user: UserState) {
-        if (await user.isLoggedIn()) {
-            setInitialRouteName('UserHome');
-        } else {
-            setInitialRouteName('Splash');
+    async function setInitialRoute() {
+        const userStatus = await user.getStatus()
+        console.log('userStatus', userStatus);
+
+        switch (userStatus) {
+            case UserStatus.READY:
+                setInitialRouteName('UserHome');
+                break;
+            case UserStatus.CREATING_ACCOUNT:
+                setInitialRouteName('CreateAccountPin');
+                break;
+            case UserStatus.LOGGING_IN:
+                setInitialRouteName('LoginWithPin');
+                break;
+            default:
+                // NOTE: user will be sent to the Create Account/Login screen if they have already gone through the splash screens
+                setInitialRouteName('Splash');
+                break;
         }
     }
 
     useEffect(() => {
-        setInitialRoute(user);
+        setInitialRoute();
     }, []);
 
     return (
