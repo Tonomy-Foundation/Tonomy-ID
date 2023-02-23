@@ -11,6 +11,8 @@ import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
 import FaceIdIcon from '../assets/icons/FaceIdIcon';
+import TInfoBox from '../components/TInfoBox';
+import settings from '../settings';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
@@ -92,6 +94,17 @@ export default function CreateAccountContainer({ password }: { password: string 
                                 <FingerprintIcon style={styles.image} />
                             )}
                         </View>
+                    </View>
+                }
+                footerHint={
+                    <View style={commonStyles.marginBottom}>
+                        <TInfoBox
+                            align="left"
+                            icon="security"
+                            description="100% private. Your fingerprint data never leaves your phone."
+                            linkUrl={settings.config.links.securityLearnMore}
+                            linkUrlText="Learn more"
+                        />
                     </View>
                 }
                 footer={
