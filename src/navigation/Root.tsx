@@ -81,12 +81,12 @@ export default function RootNavigation() {
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
     // Determine the routes
-    const [initialRouteName, setInitialRouteName] = useState<'Splash' | 'Drawer'>('Splash');
+    const [initialRouteName, setInitialRouteName] = useState<'Splash' | 'UserHome'>('Splash');
     const user = useUserStore();
 
     async function setInitialRoute(user: UserState) {
         if (await user.isLoggedIn()) {
-            setInitialRouteName('Drawer');
+            setInitialRouteName('UserHome');
         } else {
             setInitialRouteName('Splash');
         }
