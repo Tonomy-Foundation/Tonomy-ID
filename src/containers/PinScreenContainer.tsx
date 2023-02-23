@@ -33,14 +33,6 @@ export default function PinScreenContainer({
         setErrorMessage('');
     }
 
-    function checkAndNavigate() {
-        if (Platform.OS === 'ios') {
-            navigation.navigate('FaceIDUpdateScreen', { password });
-        } else {
-            navigation.navigate('CreateAccountFingerprint', { password });
-        }
-    }
-
     async function onNext() {
         setLoading(true);
 
@@ -48,7 +40,7 @@ export default function PinScreenContainer({
             if (pin === confirmPin) {
                 try {
                     await user.savePIN(confirmPin);
-                    checkAndNavigate();
+                    navigation.navigate('CreateAccountFingerprint', { password });
                 } catch (e: any) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
@@ -101,7 +93,11 @@ export default function PinScreenContainer({
                         {confirming ? 'Confirm' : 'Next'}
                     </TButton>
                     {!confirming && (
-                        <TButton mode="outlined" onPress={() => checkAndNavigate()} style={styles.marginBottom}>
+                        <TButton
+                            mode="outlined"
+                            onPress={() => navigation.navigate('CreateAccountFingerprint', { password })}
+                            style={styles.marginBottom}
+                        >
                             Skip
                         </TButton>
                     )}

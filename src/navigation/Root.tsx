@@ -26,7 +26,7 @@ import { useNavigation } from '@react-navigation/core';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
-import FaceIdUpdateScreen from '../screens/FaceIDUpdateScreen';
+import { Platform } from 'react-native';
 
 const prefix = Linking.createURL('');
 
@@ -41,7 +41,6 @@ export type RouteStackParamList = {
     CreateAccountPin: { password: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
-    FaceIDUpdateScreen: { password: string };
 
     LoginUsername: undefined;
     LoginPassword: { username: string };
@@ -114,16 +113,11 @@ export default function RootNavigation() {
                     options={{ title: 'Create New Account' }}
                     component={CreateAccountPasswordScreen}
                 />
+
                 <Stack.Screen
                     name="CreateAccountFingerprint"
-                    options={{ title: 'Fingerprint Registration' }}
+                    options={{ title: Platform.OS === 'ios' ? 'Face Id Registration ' : 'Fingerprint Registration' }}
                     component={FingerprintUpdateScreen}
-                    initialParams={{ password: '' }}
-                />
-                <Stack.Screen
-                    name="FaceIDUpdateScreen"
-                    options={{ title: 'Face Id ' }}
-                    component={FaceIdUpdateScreen}
                     initialParams={{ password: '' }}
                 />
 

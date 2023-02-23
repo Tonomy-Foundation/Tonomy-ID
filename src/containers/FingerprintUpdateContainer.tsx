@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
@@ -10,11 +10,14 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
+import FaceIdIcon from '../assets/icons/FaceIdIcon';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
     const user = useUserStore((state) => state.user);
     const errorStore = useErrorStore();
+    const device = 'ios';
+    // device ===""
 
     const navigation = useNavigation();
 
@@ -56,7 +59,11 @@ export default function CreateAccountContainer({ password }: { password: string 
                     icon="info"
                 >
                     <View>
-                        <TP>You don’t have your fingerprint registered, please register it with your device.</TP>
+                        <TP>
+                            {device === 'ios'
+                                ? 'You don’t have your Face Id registered, please register it with your device.'
+                                : 'You don’t have your Fingerprint registered, please register it with your device.'}
+                        </TP>
                         {/* TODO: link to open settings */}
                     </View>
                 </TModal>
@@ -66,13 +73,25 @@ export default function CreateAccountContainer({ password }: { password: string 
                 body={
                     <View>
                         <View>
-                            <TH1>Would you like to add a fingerprint for added security?</TH1>
+                            <TH1>
+                                {device === 'ios'
+                                    ? 'Would you like to add a Face Id for added security?'
+                                    : 'Would you like to add a fingerprint for added security?'}{' '}
+                            </TH1>
                         </View>
                         <View>
-                            <TP size={1}>This is easier than using your PIN every time.</TP>
+                            <TP size={1}>
+                                {device === 'ios'
+                                    ? 'This is easier than using your Face Id every time.'
+                                    : 'This is easier than using your PIN every time.'}
+                            </TP>
                         </View>
                         <View style={styles.imageWrapper}>
-                            <FingerprintIcon style={styles.image}></FingerprintIcon>
+                            {device === 'ios' ? (
+                                <FaceIdIcon style={{ ...styles.image }} />
+                            ) : (
+                                <FingerprintIcon style={styles.image} />
+                            )}
                         </View>
                     </View>
                 }
