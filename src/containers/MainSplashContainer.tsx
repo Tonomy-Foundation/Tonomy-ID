@@ -23,11 +23,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             const finishedSplash = await splashStorage.finishedSplash;
             const page = finishedSplash ? 'Home' : 'SplashSecurity';
 
-            if (await user.isLoggedIn()) {
-                navigation.navigate('Drawer');
-                return;
-            }
-
             // this will prevent use from going back to this screen after the user navigated
             navigation.dispatch(StackActions.replace(page));
         } catch (e) {

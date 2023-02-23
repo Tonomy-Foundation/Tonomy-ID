@@ -1,7 +1,6 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import HomeScreen from '../screens/homeScreen';
-import TestScreen from '../screens/testScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import CreateAccountPasswordScreen from '../screens/CreateAccountPasswordScreen';
@@ -56,9 +55,9 @@ export default function RootNavigation() {
     const linking = {
         prefixes: [prefix],
     };
-    const user = useUserStore();
+
+    // Setup styles
     const theme = useTheme();
-    // https://reactnavigation.org/docs/native-stack-navigator/#options
     const navigationTheme: typeof NavigationDefaultTheme = {
         ...NavigationDefaultTheme,
         colors: {
@@ -67,7 +66,6 @@ export default function RootNavigation() {
             background: theme.colors.background,
         },
     };
-
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerStyle: {
             backgroundColor: theme.colors.primary,
@@ -82,10 +80,25 @@ export default function RootNavigation() {
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
+    // Determine the routes
+    const [initialRouteName, setInitialRouteName] = useState<'Splash' | 'Drawer'>('Splash');
+    const user = useUserStore().user;
+
+    useEffect(() => {
+        async function main() {
+            if (await user.isLoggedIn()) {
+                setInitialRouteName('Drawer');
+            } else {
+                setInitialRouteName('Splash');
+            }
+        }
+
+        main();
+    }, []);
+
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
-                <Stack.Screen name="Test" component={TestScreen} />
+            <Stack.Navigator initialRouteName={initialRouteName} screenOptions={defaultScreenOptions}>
                 <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                 <Stack.Screen
                     name="Drawer"
