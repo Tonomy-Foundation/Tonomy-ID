@@ -9,7 +9,7 @@ import MainSplashScreen from '../screens/MainSplashScreen';
 import SplashSecurityScreen from '../screens/SplashSecurityScreen';
 import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserState } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 import DrawerNavigation from './Drawer';
@@ -82,18 +82,18 @@ export default function RootNavigation() {
 
     // Determine the routes
     const [initialRouteName, setInitialRouteName] = useState<'Splash' | 'Drawer'>('Splash');
-    const user = useUserStore().user;
+    const user = useUserStore();
+
+    async function setInitialRoute(user: UserState) {
+        if (await user.isLoggedIn()) {
+            setInitialRouteName('Drawer');
+        } else {
+            setInitialRouteName('Splash');
+        }
+    }
 
     useEffect(() => {
-        async function main() {
-            if (await user.isLoggedIn()) {
-                setInitialRouteName('Drawer');
-            } else {
-                setInitialRouteName('Splash');
-            }
-        }
-
-        main();
+        setInitialRoute(user);
     }, []);
 
     return (

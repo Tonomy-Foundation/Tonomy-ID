@@ -5,7 +5,7 @@ import settings from '../settings';
 import { User, UserStatus, createUserObject, setSettings } from 'tonomy-id-sdk';
 
 // TODO change this to be an instance of User class when we have implemented the RNKeyStore
-interface UserState {
+export interface UserState {
     user: User;
     isLoggedIn: () => Promise<boolean>;
 }
