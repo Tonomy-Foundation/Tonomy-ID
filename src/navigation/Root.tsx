@@ -80,13 +80,17 @@ export default function RootNavigation() {
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
     // Determine the routes
-    const [initialRouteName, setInitialRouteName] = useState<'Splash' | 'UserHome' | 'CreateAccountPin' | 'LoginWithPin'>('Splash');
+    const [initialRouteName, setInitialRouteName] = useState<
+        'Splash' | 'UserHome' | 'CreateAccountPin' | 'LoginWithPin'
+    >('Splash');
     const user = useUserStore().user;
 
     async function setInitialRoute() {
-        const userStatus = await user.getStatus()
-        console.log('userStatus', userStatus);
+        const userStatus = await user.getStatus();
 
+        console.log('userStatus', userStatus); // this is working :)
+
+        // this part is not working
         switch (userStatus) {
             case UserStatus.READY:
                 setInitialRouteName('UserHome');
