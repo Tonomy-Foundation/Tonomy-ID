@@ -5,7 +5,7 @@ import TonomyLogo from '../assets/tonomy/tonomy-logo1024.png';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 import { UserApps, App, JWTLoginPayload, TonomyUsername } from 'tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -24,7 +24,7 @@ export default function SSOLoginContainer({
     requests: string;
     platform: 'mobile' | 'browser';
 }) {
-    const user = useUserStore((state) => state.user);
+    const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<TonomyUsername>();
@@ -40,7 +40,7 @@ export default function SSOLoginContainer({
 
         if (!username) {
             await user.logout();
-            navigation.navigate('Home');
+            setStatus(UserStatus.NOT_LOGGED_IN);
         }
 
         setUsername(username);
