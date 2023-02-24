@@ -77,7 +77,7 @@ export default function TPin(props: { pin?: string; onChange: (pin: string) => v
                 <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('2')}>
                     <Text style={styles.text}>2</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('2')}>
+                <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('3')}>
                     <Text style={styles.text}>3</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.gridItem} onPress={() => onNumberPress('4')}>
