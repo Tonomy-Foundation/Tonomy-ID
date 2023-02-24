@@ -29,10 +29,13 @@ export default function CreateAccountContainer({ password }: { password: string 
                 return;
             }
 
-            await user.saveFingerprint();
-
-            await user.saveLocal();
-            await updateKeys();
+            if (authenticated?.success === true) {
+                await user.saveFingerprint();
+                await user.saveLocal();
+                await updateKeys();
+            } else {
+                console.log('create a modal to show failure message');
+            }
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
