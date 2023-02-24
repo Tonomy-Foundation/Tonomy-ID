@@ -22,7 +22,7 @@ export default function CreateAccountContainer({ password }: { password: string 
 
     const onNext = async () => {
         try {
-            const authenticated = LocalAuthentication.isEnrolledAsync();
+            const authenticated = await LocalAuthentication.authenticateAsync();
 
             if (!authenticated) {
                 setShowModal(true);
