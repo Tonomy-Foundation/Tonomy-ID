@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
+    permissions: write-all
     env:
       NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -23,7 +24,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          version-type: "patch"
+          tag-prefix: "v"
 
       # TODO should make this version management  better
       # - run: git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
