@@ -96,3 +96,7 @@ npm run lint
 ### Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
+
+## Releases
+
+Release versioning is done automatically with [https://github.com/marketplace/actions/automated-version-bump](automated-version-bump). This will do a major, minor or patch release based on words in the commits. See [Workflow](https://github.com/marketplace/actions/automated-version-bump#workflow) for details.
