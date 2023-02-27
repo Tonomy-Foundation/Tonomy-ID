@@ -8,7 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
-    permissions: write-all
+    permissions:
+      actions: write
     env:
       NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
