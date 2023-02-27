@@ -2,14 +2,13 @@ name: Tonomy ID Continuous Deployment
 
 on:
   push:
-    # branches:
-    #   - development
+    branches:
+      - development
 
 jobs:
   deploy:
     runs-on: ubuntu-20.04
     permissions:
-      actions: write
       contents: write
     env:
       NODE_ENV: staging
