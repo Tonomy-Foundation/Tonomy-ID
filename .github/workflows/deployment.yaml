@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     permissions:
       actions: write
+      contents: write
     env:
       NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
