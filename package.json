@@ -2,7 +2,7 @@
     "name": "tonomy-id",
     "version": "0.1.5",
     "scripts": {
-        "build:prepare": "npx ts-node prepare.ts",
+        "build:prepare": "ts-node prepare.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
         "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
         "build:android": "npm run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
