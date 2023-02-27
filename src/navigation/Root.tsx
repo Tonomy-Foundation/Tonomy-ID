@@ -1,7 +1,6 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import HomeScreen from '../screens/homeScreen';
-import TestScreen from '../screens/testScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import CreateAccountPasswordScreen from '../screens/CreateAccountPasswordScreen';
@@ -10,7 +9,7 @@ import MainSplashScreen from '../screens/MainSplashScreen';
 import SplashSecurityScreen from '../screens/SplashSecurityScreen';
 import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserState } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 import DrawerNavigation from './Drawer';
@@ -20,11 +19,10 @@ import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/core';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
+import { UserStatus } from 'tonomy-id-sdk';
 
 const prefix = Linking.createURL('');
 
@@ -56,9 +54,9 @@ export default function RootNavigation() {
     const linking = {
         prefixes: [prefix],
     };
-    const user = useUserStore();
+
+    // Setup styles
     const theme = useTheme();
-    // https://reactnavigation.org/docs/native-stack-navigator/#options
     const navigationTheme: typeof NavigationDefaultTheme = {
         ...NavigationDefaultTheme,
         colors: {
@@ -67,7 +65,6 @@ export default function RootNavigation() {
             background: theme.colors.background,
         },
     };
-
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerStyle: {
             // backgroundColor: theme.colors.,
@@ -84,10 +81,42 @@ export default function RootNavigation() {
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
+    // Determine the routes
+    const [initialRouteName, setInitialRouteName] = useState<
+        'Splash' | 'UserHome' | 'CreateAccountPin' | 'LoginWithPin'
+    >('Splash');
+    const user = useUserStore().user;
+
+    async function setInitialRoute() {
+        const userStatus = await user.getStatus();
+
+        console.log('userStatus', userStatus); // this is working :)
+
+        // this part is not working
+        switch (userStatus) {
+            case UserStatus.READY:
+                setInitialRouteName('UserHome');
+                break;
+            case UserStatus.CREATING_ACCOUNT:
+                setInitialRouteName('CreateAccountPin');
+                break;
+            case UserStatus.LOGGING_IN:
+                setInitialRouteName('LoginWithPin');
+                break;
+            default:
+                // NOTE: user will be sent to the Create Account/Login screen if they have already gone through the splash screens
+                setInitialRouteName('Splash');
+                break;
+        }
+    }
+
+    useEffect(() => {
+        setInitialRoute();
+    }, []);
+
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            <Stack.Navigator initialRouteName="Splash" screenOptions={defaultScreenOptions}>
-                <Stack.Screen name="Test" component={TestScreen} />
+            <Stack.Navigator initialRouteName={initialRouteName} screenOptions={defaultScreenOptions}>
                 <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                 <Stack.Screen
                     name="Drawer"
