@@ -7,13 +7,15 @@ assignees: ''
 
 ---
 
-Please replace the example bug report below with the information about your bug :)
+Testing and reporting process: <https://www.notion.so/tonomy-foundation/Tonomy-ID-3960924e3e324c28b5a11ba465c22a99?p=4a084f9e43df413695425289ca017446&showMoveTo=true>
 
-## Steps to replicate the issue
+Please replace the example bug report below with the information about your bug
 
 "it doesn't work" is not a bug report!
 
 Be very concise! Say what you did on which screen!
+
+## Steps to replicate the issue
 
 1. I open app for the first time
 2. I click through the **three splash screens**
