@@ -1,12 +1,15 @@
 name: Tonomy ID Continuous Deployment
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - development
 
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-20.04
     permissions:
       contents: write
