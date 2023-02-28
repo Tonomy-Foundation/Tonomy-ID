@@ -10,10 +10,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import setErrorHandlers from './src/utils/exceptions';
 import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
 import useErrorStore from './src/store/errorStore';
-import * as Linking from 'expo-linking';
 
 export default function App() {
     const errorStore = useErrorStore();
+
     setErrorHandlers(errorStore);
 
     return (
