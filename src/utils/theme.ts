@@ -32,6 +32,10 @@ export const commonStyles = StyleSheet.create({
     marginBottom: {
         marginBottom: 16,
     },
+    marginTopTextCenter: {
+        marginTop: 16,
+        textAlign: 'center',
+    },
 });
 
 export default theme;

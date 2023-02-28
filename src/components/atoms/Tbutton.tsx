@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 
 export type ButtonProps = React.ComponentProps<typeof Button>;
 
@@ -13,7 +13,8 @@ export default function TButton(props: ButtonProps) {
 
 export function TButtonContained(props: ButtonProps) {
     return (
-        <TButton mode="contained" {...props}>
+        // eslint-disable-next-line react/prop-types
+        <TButton mode="contained" {...props} style={{ ...props.style, borderRadius: 15 }}>
             {props.children}
         </TButton>
     );
@@ -21,7 +22,8 @@ export function TButtonContained(props: ButtonProps) {
 
 export function TButtonOutlined(props: ButtonProps) {
     return (
-        <TButton mode="outlined" {...props}>
+        // eslint-disable-next-line react/prop-types
+        <TButton mode="outlined" {...props} style={{ ...props.style, borderRadius: 15 }}>
             {props.children}
         </TButton>
     );

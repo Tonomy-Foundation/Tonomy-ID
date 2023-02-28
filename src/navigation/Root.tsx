@@ -66,13 +66,15 @@ export default function RootNavigation() {
     };
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerStyle: {
-            backgroundColor: theme.colors.primary,
+            // backgroundColor: theme.colors.,
+            backgroundColor: '#F9F9F9',
         },
         headerTitleStyle: {
             fontSize: 24,
+            color: 'black',
         },
         headerTitleAlign: 'center',
-        headerTintColor: theme.dark ? theme.colors.text : 'white',
+        headerTintColor: theme.dark ? theme.colors.text : 'black',
     };
 
     const noHeaderScreenOptions = { headerShown: false };
