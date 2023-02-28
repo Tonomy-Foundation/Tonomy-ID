@@ -3,16 +3,14 @@ import SplashScreenContainer from '../containers/SplashContainer';
 import settings from '../settings';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
-import splashStore from '../store/splashStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 
 export type SplashTransparencyScreenProps = NativeStackScreenProps<RouteStackParamList, 'SplashTransparency'>;
 
 export default function SplashTransparencyScreen({ navigation }: SplashTransparencyScreenProps) {
-    const splashStorage = splashStore();
-
+    const { setStatus } = useUserStore();
     const onButtonPress = async () => {
-        splashStorage.finishedSplash = true;
-        await splashStorage.finishedSplash;
+        await setStatus(UserStatus.NOT_LOGGED_IN);
 
         navigation.navigate('Home');
     };
