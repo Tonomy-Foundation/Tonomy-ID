@@ -1,12 +1,15 @@
 name: Tonomy ID Continuous Deployment
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - development
 
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-20.04
     permissions:
       contents: write
@@ -26,14 +29,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag-prefix: "v"
-
-      # TODO should make this version management  better
-      # - run: git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-      # - run: git config user.name "$GITHUB_ACTOR"
-      # - run: npm version patch --force
-      # - run: VERSION=$(node -p "require('./package.json').version")
-      # - run: git tag ${VERSION}
-      # - run: git push "https://$GITHUB_ACTOR:${{ secrets.ACCESS_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" --follow-tags
 
       - name: 📦 Install
         uses: actions/setup-node@v3
