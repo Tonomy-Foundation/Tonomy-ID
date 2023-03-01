@@ -11,6 +11,7 @@ import useSplashStore from '../store/splashStore';
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
 
+    // add the routing from home screen
     const splashStorage = useSplashStore();
 
     async function main() {

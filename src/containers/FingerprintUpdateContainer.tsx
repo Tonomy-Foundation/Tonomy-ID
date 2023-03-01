@@ -46,7 +46,8 @@ export default function CreateAccountContainer({ password }: { password: string 
 
     const onSkip = async () => {
         await user.saveLocal();
-        updateKeys();
+        await updateKeys();
+        navigation.navigate('Drawer');
     };
 
     async function updateKeys() {
