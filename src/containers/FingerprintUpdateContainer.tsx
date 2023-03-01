@@ -4,7 +4,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 import { commonStyles } from '../utils/theme';
 import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
@@ -16,7 +16,8 @@ import settings from '../settings';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
-    const user = useUserStore((state) => state.user);
+    const userStore = useUserStore();
+    const user = userStore.user;
     const errorStore = useErrorStore();
     const device = Platform.OS;
 
@@ -48,7 +49,7 @@ export default function CreateAccountContainer({ password }: { password: string 
 
     async function updateKeys() {
         await user.updateKeys(password);
-        navigation.navigate('Drawer');
+        userStore.setStatus(UserStatus.LOGGED_IN);
     }
 
     return (

@@ -7,7 +7,7 @@ import { useTheme } from '@react-navigation/native';
 import { RouteDrawerParamList } from '../navigation/Drawer';
 import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 
 const icons: Record<keyof RouteDrawerParamList, IconSource> = {
     UserHome: 'home',
@@ -20,7 +20,7 @@ const icons: Record<keyof RouteDrawerParamList, IconSource> = {
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const logo1024 = require('../assets/tonomy/tonomy-logo1024.png');
-    const { user } = useUserStore();
+    const { user, setStatus } = useUserStore();
     const theme = useTheme();
     const styles = StyleSheet.create({
         container: {
@@ -64,7 +64,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         style={styles.button}
                         onPress={async () => {
                             await user.logout();
-                            props.navigation.getParent()?.navigate('Home');
+                            setStatus(UserStatus.NOT_LOGGED_IN);
                         }}
                         icon={icons['Logout']}
                         color={theme.colors.text}

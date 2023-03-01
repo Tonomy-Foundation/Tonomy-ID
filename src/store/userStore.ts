@@ -2,11 +2,21 @@ import create from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
-import { User, UserStatus, createUserObject, setSettings } from 'tonomy-id-sdk';
+import { User, createUserObject, setSettings } from 'tonomy-id-sdk';
+import { createStorage } from 'tonomy-id-sdk';
 
-// TODO change this to be an instance of User class when we have implemented the RNKeyStore
+export enum UserStatus {
+    NONE = 'NONE',
+    NOT_LOGGED_IN = 'NOT_LOGGED_IN',
+    LOGGED_IN = 'LOGGED_IN',
+}
+
 export interface UserState {
     user: User;
+    status: UserStatus;
+    getStatus(): UserStatus;
+    setStatus(newStatus: UserStatus): void;
+    initializeStatusFromStorage(): Promise<void>;
 }
 
 setSettings({
@@ -15,8 +25,32 @@ setSettings({
     communicationUrl: settings.config.communicationUrl,
 });
 
+interface UserStorageState {
+    status: UserStatus;
+}
+const userStorage = createStorage<UserStorageState>('tonomyid.user.', storageFactory);
+
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
+    status: UserStatus.NONE,
+    getStatus: () => {
+        const status = get().status;
+
+        return status;
+    },
+    setStatus: (newStatus: UserStatus) => {
+        set({ status: newStatus });
+
+        // Async call to update the status in the storage
+        userStorage.status = newStatus;
+    },
+    initializeStatusFromStorage: async () => {
+        let status = await userStorage.status;
+
+        if (!status) status = UserStatus.NONE;
+
+        set({ status: status });
+    },
 }));
 
 export default useUserStore;

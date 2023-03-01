@@ -6,23 +6,33 @@ import Storage from '../utils/storage';
 import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
-import useSplashStore from '../store/splashStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
 
-    // add the routing from home screen
-    const splashStorage = useSplashStore();
+    const { initializeStatusFromStorage, getStatus } = useUserStore();
 
     async function main() {
         await sleep(800);
 
         try {
-            const finishedSplash = await splashStorage.finishedSplash;
-            const page = finishedSplash ? 'Home' : 'SplashSecurity';
+            await initializeStatusFromStorage();
+            const status = getStatus();
 
-            // this will prevent use from going back to this screen after the user navigated
-            navigation.dispatch(StackActions.replace(page));
+            switch (status) {
+                case UserStatus.NONE:
+                    navigation.dispatch(StackActions.replace('SplashSecurity'));
+                    break;
+                case UserStatus.NOT_LOGGED_IN:
+                    navigation.dispatch(StackActions.replace('Home'));
+                    break;
+                case UserStatus.LOGGED_IN:
+                    // Do nothing. status state will automatically navigate user to UserHome
+                    break;
+                default:
+                    throw new Error('Unknown status: ' + status);
+            }
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
