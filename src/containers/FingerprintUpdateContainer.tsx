@@ -15,6 +15,7 @@ import settings from '../settings';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
+    const [authFailed, setAuthFail] = useState(false);
     const userStore = useUserStore();
     const user = userStore.user;
     const errorStore = useErrorStore();
@@ -23,17 +24,22 @@ export default function CreateAccountContainer({ password }: { password: string 
 
     const onNext = async () => {
         try {
-            const authenticated = LocalAuthentication.isEnrolledAsync();
+            const isAuthorized = await LocalAuthentication.isEnrolledAsync();
 
-            if (!authenticated) {
+            if (!isAuthorized) {
                 setShowModal(true);
                 return;
             }
 
-            await user.saveFingerprint();
+            const authenticated = await LocalAuthentication.authenticateAsync();
 
-            await user.saveLocal();
-            await updateKeys();
+            if (authenticated?.success === true) {
+                await user.saveFingerprint();
+                await user.saveLocal();
+                await updateKeys();
+            } else {
+                setAuthFail(true);
+            }
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -55,12 +61,16 @@ export default function CreateAccountContainer({ password }: { password: string 
             {showModal && (
                 <TModal
                     onPress={() => setShowModal(false)}
-                    buttonLabel="cancel"
-                    title="Fingerprint not registered!"
-                    icon="info"
+                    buttonLabel={authFailed === true ? 'ok' : 'cancel'}
+                    title={authFailed === true ? 'Authentication Failed' : 'Fingerprint not registered!'}
+                    icon={authFailed === true ? 'danger' : 'info'}
                 >
                     <View>
-                        <TP>You don’t have your fingerprint registered, please register it with your device.</TP>
+                        <TP>
+                            {authFailed === true
+                                ? 'You have failed to Authenticate, please try again'
+                                : 'You don’t have your fingerprint registered, please register it with your device'}
+                        </TP>
                         {/* TODO: link to open settings */}
                     </View>
                 </TModal>
