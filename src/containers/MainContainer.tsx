@@ -22,9 +22,16 @@ export default function MainContainer() {
         loginToService();
         setUserName();
         user.communication.subscribeMessage((m) => {
+            console.log('REcieved from sso');
+
             const message = new Message(m);
 
-            navigation.navigate('SSO', { requests: message.jwt, platform: 'browser' });
+            console.log(message.getPayload());
+
+            navigation.navigate('SSO', {
+                requests: JSON.stringify(message.getPayload().requests),
+                platform: 'browser',
+            });
         });
     }, []);
 
