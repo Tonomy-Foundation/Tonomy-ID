@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
@@ -16,6 +16,7 @@ import settings from '../settings';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
+    const [authFailed, setAuthFail] = useState(false);
     const userStore = useUserStore();
     const user = userStore.user;
     const errorStore = useErrorStore();
@@ -25,17 +26,28 @@ export default function CreateAccountContainer({ password }: { password: string 
 
     const onNext = async () => {
         try {
-            const authenticated = LocalAuthentication.isEnrolledAsync();
+            const isSupported = await LocalAuthentication.hasHardwareAsync();
 
-            if (!authenticated) {
-                setShowModal(true);
-                return;
+            if (isSupported) {
+                const isAuthorized = await LocalAuthentication.isEnrolledAsync();
+
+                if (!isAuthorized) {
+                    setShowModal(true);
+                    return;
+                }
+
+                const authenticated = await LocalAuthentication.authenticateAsync();
+
+                if (authenticated?.success === true) {
+                    await user.saveFingerprint();
+                    await user.saveLocal();
+                    await updateKeys();
+                } else {
+                    setAuthFail(true);
+                }
+            } else {
+                await onSkip();
             }
-
-            await user.saveFingerprint();
-
-            await user.saveLocal();
-            await updateKeys();
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -52,20 +64,33 @@ export default function CreateAccountContainer({ password }: { password: string 
         userStore.setStatus(UserStatus.LOGGED_IN);
     }
 
+    const openAppSettings = () => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL('app-settings:');
+        } else {
+            Linking.openSettings();
+        }
+    };
+
     return (
         <>
             {showModal && (
                 <TModal
+                    enableLinkButton={true}
+                    linkButtonText={'Settings'}
+                    linkOnPress={openAppSettings}
                     onPress={() => setShowModal(false)}
-                    buttonLabel="cancel"
-                    title="Fingerprint not registered!"
-                    icon="info"
+                    buttonLabel={authFailed === true ? 'ok' : 'cancel'}
+                    title={authFailed === true ? 'Authentication Failed' : 'Fingerprint not registered!'}
+                    icon={authFailed === true ? 'danger' : 'cancel'}
                 >
                     <View>
                         <TP>
-                            {device === 'ios'
-                                ? 'You don’t have your Face Id registered, please register it with your device.'
-                                : 'You don’t have your Fingerprint registered, please register it with your device.'}
+                            {authFailed === true
+                                ? 'You have failed to Authenticate, please try again'
+                                : device === 'ios'
+                                    ? 'You don’t have your Face Id registered, please register it with your device.'
+                                    : 'You don’t have your Fingerprint registered, please register it with your device.'}
                         </TP>
                         {/* TODO: link to open settings */}
                     </View>
