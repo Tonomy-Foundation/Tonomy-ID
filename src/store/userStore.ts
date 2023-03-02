@@ -2,8 +2,7 @@ import create from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
-import { User, createUserObject, setSettings } from 'tonomy-id-sdk';
-import { createStorage } from 'tonomy-id-sdk';
+import { User, createUserObject, setSettings, createStorage } from '@tonomy/tonomy-id-sdk';
 
 export enum UserStatus {
     NONE = 'NONE',

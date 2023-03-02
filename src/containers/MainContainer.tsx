@@ -3,7 +3,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { DrawerItemProps } from 'react-native-paper';
-import { TonomyUsername, User } from 'tonomy-id-sdk';
+import { Message, TonomyUsername, User } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
@@ -19,12 +19,21 @@ export default function MainContainer() {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
 
     useEffect(() => {
+        loginToService();
         setUserName();
-        user.communication.onJwtToClient((data) => {
-            console.log(data);
-            navigation.navigate('SSO', { requests: data.requests, platform: 'browser' });
+        user.communication.subscribeMessage((m) => {
+            const message = new Message(m);
+
+            navigation.navigate('SSO', { requests: message.jwt, platform: 'browser' });
         });
     }, []);
+
+    //TODO: this should be moved to a store or a provider or a hook
+    async function loginToService() {
+        const message = await user.signMessage({});
+
+        user.communication.login(message);
+    }
 
     async function setUserName() {
         const u = await user.storage.username;
@@ -36,8 +45,11 @@ export default function MainContainer() {
         setUsername(u);
     }
 
-    function onScan({ data }: BarCodeScannerResult) {
-        user.communication.connectTonomy(data);
+    async function onScan({ data }: BarCodeScannerResult) {
+        //TODO: change to typed messages
+        const message = await user.signMessage({ type: 'ack' }, data);
+
+        user.communication.sendMessage(message);
         onClose();
     }
 

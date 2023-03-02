@@ -11,6 +11,7 @@ if (process.env.NODE_ENV === 'local') {
     // see https://medium.com/@alielmajdaoui/linking-local-packages-in-react-native-the-right-way-2ac6587dcfa2
 
     const sdkPath = __dirname + '/../Tonomy-ID-SDK';
+
     config.resolver.nodeModulesPath = [sdkPath];
     config.watchFolders.push(sdkPath);
 }
