@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -22,33 +22,39 @@ export default function CreateAccountContainer({ password }: { password: string 
     const user = userStore.user;
     const errorStore = useErrorStore();
     const device = Platform.OS;
-
     const navigation = useNavigation();
+
+    useEffect(() => {
+        async function checkHardware() {
+            const isSupported = await LocalAuthentication.hasHardwareAsync();
+
+            if (!isSupported) {
+                await onSkip();
+            }
+        }
+
+        checkHardware();
+    }, [])
 
     const onNext = async () => {
         try {
-            const isSupported = await LocalAuthentication.hasHardwareAsync();
+            const isAuthorized = await LocalAuthentication.isEnrolledAsync();
 
-            if (isSupported) {
-                const isAuthorized = await LocalAuthentication.isEnrolledAsync();
-
-                if (!isAuthorized) {
-                    setShowModal(true);
-                    return;
-                }
-
-                const authenticated = await LocalAuthentication.authenticateAsync();
-
-                if (authenticated?.success === true) {
-                    await user.saveFingerprint();
-                    await user.saveLocal();
-                    await updateKeys();
-                } else {
-                    setAuthFail(true);
-                }
-            } else {
-                await onSkip();
+            if (!isAuthorized) {
+                setShowModal(true);
+                return;
             }
+
+            const authenticated = await LocalAuthentication.authenticateAsync();
+
+            if (authenticated?.success === true) {
+                await user.saveFingerprint();
+                await user.saveLocal();
+                await updateKeys();
+            } else {
+                setAuthFail(true);
+            }
+
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }

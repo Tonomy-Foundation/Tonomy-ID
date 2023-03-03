@@ -23,7 +23,6 @@ import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
-import { Platform } from 'react-native';
 
 const prefix = Linking.createURL('');
 

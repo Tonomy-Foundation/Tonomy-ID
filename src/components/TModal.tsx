@@ -15,7 +15,7 @@ export type ModalProps = React.ComponentProps<typeof Modal> & {
     visible?: boolean;
     enableLinkButton?: boolean;
     linkButtonText?: string;
-    linkOnPress: () => void;
+    linkOnPress?: () => void;
 };
 
 const styles = StyleSheet.create({
