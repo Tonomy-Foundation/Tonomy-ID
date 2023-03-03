@@ -54,6 +54,14 @@ export default function MainContainer() {
 
     async function onScan({ data }: BarCodeScannerResult) {
         //TODO: change to typed messages
+
+        /**
+         * the data object is what the user scanned
+         * right now we only have did
+         * when the user scans and get the did of the tonomy sso website
+         * the user send an ack message to the sso website.
+         * then closes the QR scanner container
+         */
         const message = await user.signMessage({ type: 'ack' }, data);
 
         user.communication.sendMessage(message);
