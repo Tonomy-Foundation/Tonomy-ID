@@ -17,7 +17,7 @@ export default function TPasswordInput(props: TTextInputProps) {
                 underlineColor="transparent"
                 mode="outlined"
                 {...props}
-                secureTextEntry={showPassword ? true : false}
+                secureTextEntry={showPassword ? false : true}
                 style={styles.input}
             />
             <TouchableOpacity style={styles.showHideContainer} onPress={toggleShowHideState}>
