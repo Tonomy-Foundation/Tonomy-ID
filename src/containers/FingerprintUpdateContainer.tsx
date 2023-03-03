@@ -52,6 +52,7 @@ export default function CreateAccountContainer({ password }: { password: string 
                 await user.saveLocal();
                 await updateKeys();
             } else {
+                setShowModal(true);
                 setAuthFail(true);
             }
 
@@ -86,7 +87,10 @@ export default function CreateAccountContainer({ password }: { password: string 
                     enableLinkButton={true}
                     linkButtonText={'Settings'}
                     linkOnPress={openAppSettings}
-                    onPress={() => setShowModal(false)}
+                    onPress={() => {
+                        setShowModal(false);
+                        setAuthFail(false);
+                    }}
                     buttonLabel={authFailed === true ? 'ok' : 'cancel'}
                     title={authFailed === true ? 'Authentication Failed' : 'Fingerprint not registered!'}
                     icon={authFailed === true ? 'danger' : 'cancel'}
