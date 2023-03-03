@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
 import { TButtonText } from './atoms/Tbutton';
 import { TP } from './atoms/THeadings';
-import { HttpError, EosioUtil, SdkError } from 'tonomy-id-sdk';
+import { HttpError, EosioUtil, SdkError } from '@tonomy/tonomy-id-sdk';
 
 export type ModalProps = React.ComponentProps<typeof TModal> & {
     onPress: () => void;

@@ -6,7 +6,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, JWTLoginPayload, TonomyUsername } from 'tonomy-id-sdk';
+import { UserApps, App, JWTLoginPayload, TonomyUsername } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -31,6 +31,7 @@ export default function SSOLoginContainer({
     const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload>();
     const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
+    const [recieverDid, setRecieverDid] = useState<string>();
 
     const navigation = useNavigation();
     const errorStore = useErrorStore();
@@ -51,11 +52,12 @@ export default function SSOLoginContainer({
             const verifiedRequests = await UserApps.verifyRequests(requests);
 
             for (const jwt of verifiedRequests) {
-                const payload = jwt.payload as JWTLoginPayload;
+                const payload = jwt.getPayload() as JWTLoginPayload;
                 const app = await App.getApp(payload.origin);
 
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyIdJwtPayload(payload);
+                    setRecieverDid(jwt.getSender());
                     setApp(app);
                 } else {
                     setSsoJwtPayload(payload);
@@ -88,7 +90,9 @@ export default function SSOLoginContainer({
             if (platform === 'mobile') {
                 await openBrowserAsync(callbackUrl);
             } else {
-                user.communication.sendJwtToBrowser(requests, accountName);
+                const message = await user.signMessage({ requests, accountName }, recieverDid);
+
+                user.communication.sendMessage(message);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e: any) {

@@ -11,7 +11,8 @@ import {
     randomString,
     sha256,
     decodeHex,
-} from 'tonomy-id-sdk';
+    createSigner,
+} from '@tonomy/tonomy-id-sdk';
 
 type KeyStorage = {
     privateKey: PrivateKey;
@@ -87,17 +88,25 @@ export default class RNKeyManager implements KeyManager {
         }
 
         const privateKey = PrivateKey.from(keyStore.privateKey);
-        let digest: Checksum256;
 
-        if (options.data instanceof String) {
-            digest = Checksum256.hash(Bytes.from(options.data));
+        if (options.outputType === 'jwt') {
+            if (typeof options.data !== 'string') throw new Error('data must be a string');
+            const signer = createSigner(privateKey as any);
+
+            return (await signer(options.data)) as string;
         } else {
-            digest = options.data as Checksum256;
+            let digest: Checksum256;
+
+            if (options.data instanceof String) {
+                digest = Checksum256.hash(Bytes.from(options.data));
+            } else {
+                digest = options.data as Checksum256;
+            }
+
+            const signature = privateKey.signDigest(digest);
+
+            return signature;
         }
-
-        const signature = privateKey.signDigest(digest);
-
-        return signature;
     }
 
     async removeKey(options: GetKeyOptions): Promise<void> {
