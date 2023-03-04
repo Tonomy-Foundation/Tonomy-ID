@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+/* eslint-disable prettier/prettier */
+import React, { useEffect, useState } from 'react';
+import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
@@ -10,6 +11,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
+import FaceIdIcon from '../assets/icons/FaceIdIcon';
 import TInfoBox from '../components/TInfoBox';
 import settings from '../settings';
 
@@ -19,8 +21,20 @@ export default function CreateAccountContainer({ password }: { password: string 
     const userStore = useUserStore();
     const user = userStore.user;
     const errorStore = useErrorStore();
-
+    const device = Platform.OS;
     const navigation = useNavigation();
+
+    useEffect(() => {
+        async function checkHardware() {
+            const isSupported = await LocalAuthentication.hasHardwareAsync();
+
+            if (!isSupported) {
+                await onSkip();
+            }
+        }
+
+        checkHardware();
+    }, [])
 
     const onNext = async () => {
         try {
@@ -38,8 +52,10 @@ export default function CreateAccountContainer({ password }: { password: string 
                 await user.saveLocal();
                 await updateKeys();
             } else {
+                setShowModal(true);
                 setAuthFail(true);
             }
+
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -56,20 +72,36 @@ export default function CreateAccountContainer({ password }: { password: string 
         userStore.setStatus(UserStatus.LOGGED_IN);
     }
 
+    const openAppSettings = () => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL('app-settings:');
+        } else {
+            Linking.openSettings();
+        }
+    };
+
     return (
         <>
             {showModal && (
                 <TModal
-                    onPress={() => setShowModal(false)}
+                    enableLinkButton={true}
+                    linkButtonText={'Settings'}
+                    linkOnPress={openAppSettings}
+                    onPress={() => {
+                        setShowModal(false);
+                        setAuthFail(false);
+                    }}
                     buttonLabel={authFailed === true ? 'ok' : 'cancel'}
                     title={authFailed === true ? 'Authentication Failed' : 'Fingerprint not registered!'}
-                    icon={authFailed === true ? 'danger' : 'info'}
+                    icon={authFailed === true ? 'danger' : 'cancel'}
                 >
                     <View>
                         <TP>
                             {authFailed === true
                                 ? 'You have failed to Authenticate, please try again'
-                                : 'You don’t have your fingerprint registered, please register it with your device'}
+                                : device === 'ios'
+                                    ? 'You don’t have your Face Id registered, please register it with your device.'
+                                    : 'You don’t have your Fingerprint registered, please register it with your device.'}
                         </TP>
                         {/* TODO: link to open settings */}
                     </View>
@@ -80,17 +112,25 @@ export default function CreateAccountContainer({ password }: { password: string 
                 body={
                     <View>
                         <View>
-                            <TH1 style={commonStyles.marginTopTextCenter}>
-                                Would you like to add a fingerprint for added security?
+                            <TH1>
+                                {device === 'ios'
+                                    ? 'Would you like to add a Face Id for added security?'
+                                    : 'Would you like to add a fingerprint for added security?'}{' '}
                             </TH1>
                         </View>
                         <View>
-                            <TP style={commonStyles.textAlignCenter} size={1}>
-                                This is easier than using your PIN every time.
+                            <TP size={1}>
+                                {device === 'ios'
+                                    ? 'This is easier than using your Face Id every time.'
+                                    : 'This is easier than using your PIN every time.'}
                             </TP>
                         </View>
                         <View style={styles.imageWrapper}>
-                            <FingerprintIcon style={styles.image}></FingerprintIcon>
+                            {device === 'ios' ? (
+                                <FaceIdIcon style={{ ...styles.image, padding: 80 }} />
+                            ) : (
+                                <FingerprintIcon style={styles.image} />
+                            )}
                         </View>
                     </View>
                 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/atoms/Tbutton';
 import { TH1 } from '../components/atoms/THeadings';
 import TPin from '../components/TPin';
@@ -40,14 +40,13 @@ export default function PinScreenContainer({
             if (pin === confirmPin) {
                 try {
                     await user.savePIN(confirmPin);
+                    navigation.navigate('CreateAccountFingerprint', { password });
                 } catch (e: any) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
                     setLoading(false);
                     return;
                 }
-
-                navigation.navigate('CreateAccountFingerprint', { password });
             } else {
                 setErrorMessage('Wrong PIN');
                 setPin('');

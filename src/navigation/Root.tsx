@@ -11,6 +11,7 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
+
 import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
@@ -36,6 +37,7 @@ export type RouteStackParamList = {
     CreateAccountPin: { password: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
+
     LoginUsername: undefined;
     LoginPassword: { username: string };
     UserHome: undefined;
