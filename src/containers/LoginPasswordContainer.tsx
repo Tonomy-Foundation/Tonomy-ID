@@ -12,7 +12,7 @@ import TInfoBox from '../components/TInfoBox';
 import { Props } from '../screens/homeScreen';
 import settings from '../settings';
 // import errorStore from '../store/errorStore';
-import useUserStore from '../store/userStore';
+import useUserStore, { NAVIGATION_STATUS } from '../store/userStore';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 
@@ -38,6 +38,8 @@ export default function LoginPasswordContainer({
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password
             );
+
+            await store.setNavigationStatus(NAVIGATION_STATUS.LOGGING_IN);
 
             if (result?.account_name !== undefined) {
                 if (!(await store.getPin())) {

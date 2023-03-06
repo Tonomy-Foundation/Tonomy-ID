@@ -6,7 +6,7 @@ import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
-import useUserStore from '../store/userStore';
+import useUserStore, { NAVIGATION_STATUS } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
@@ -26,7 +26,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-    const user = useUserStore().user;
+    const store = useUserStore();
     const errorStore = useErrorStore();
 
     useEffect(() => {
@@ -50,8 +50,10 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         setLoading(true);
 
         try {
-            await user.savePassword(password);
-            const res = await user.createPerson();
+            await store.user.savePassword(password);
+            const res = await store.user.createPerson();
+
+            await store.setNavigationStatus(NAVIGATION_STATUS.CREATING_ACCOUNT);
 
             // this only works when blockchainUrl === localhost || https://...
             setTrxUrl(
@@ -193,7 +195,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>{' '}
+                        Username <Text style={{ color: theme.colors.primary }}>{store.storage.username.username}</Text>{' '}
                         is already taken. Please choose another one.
                     </Text>
                 </View>
@@ -207,7 +209,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 <View>
                     <Text>
                         Your username is{' '}
-                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>
+                        <Text style={{ color: theme.colors.primary }}>{store.storage.username.username}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>

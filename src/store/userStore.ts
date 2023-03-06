@@ -5,10 +5,8 @@ import settings from '../settings';
 import { User, createUserObject, setSettings, createStorage } from '@tonomy/tonomy-id-sdk';
 import AsynStorage from '@react-native-async-storage/async-storage';
 
-export enum RegLogStatus {
-    IS_LOGGED_IN = 'IS_LOGGED_IN',
+export enum NAVIGATION_STATUS {
     CREATING_ACCOUNT = 'CREATING_ACCOUNT',
-    NOT_LOGGED_IN = 'CREATING_ACCOUNT',
     LOGGING_IN = 'LOGGING_IN',
 }
 export enum UserStatus {
@@ -20,12 +18,10 @@ export enum UserStatus {
 export interface UserState {
     user: User;
     status: UserStatus;
-    regLogStatus: RegLogStatus;
-    setRegLogStatus: (regLogStatus) => void;
+    navigationStatus: NAVIGATION_STATUS;
+    setNavigationStatus: (navigationStatus) => void;
     getPin: () => boolean;
     setPin: (pinStatus) => void;
-    getBiometric: () => boolean;
-    setBiometric: (bioStatus) => void;
     logout: () => void;
     removeFlags: () => void;
     getStatus(): UserStatus;
@@ -48,34 +44,24 @@ const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
 
-    setRegLogStatus: async (regLogStatus) => {
-        await AsynStorage.setItem('statusData', String(regLogStatus));
-        set({ regLogStatus: regLogStatus });
+    setRegLogStatus: async (navigationStatus) => {
+        await AsynStorage.setItem('statusData', String(navigationStatus));
+        set({ regLogStatus: navigationStatus });
     },
 
     removeFlags: async () => {
         await AsynStorage.removeItem('pinStatus');
-        await AsynStorage.removeItem('bioStatus');
     },
-    getBiometric: async () => {
-        const data = await AsynStorage.getItem('bioStatus');
 
-        if (!data) return null;
-        return JSON.parse(data);
-    },
-    getPin: async () => {
+    getPin: async (): boolean => {
         const data = await AsynStorage.getItem('pinStatus');
 
-        if (!data) return null;
+        if (!data) return false;
         return JSON.parse(data);
     },
     setPin: async (pinStatus) => {
         await AsynStorage.setItem('pinStatus', String(pinStatus));
     },
-    setBiometric: async (bioStatus) => {
-        await AsynStorage.setItem('bioStatus', String(bioStatus));
-    },
-
     getStatus: () => {
         const status = get().status;
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
@@ -10,11 +10,9 @@ import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import useUserStore, { RegLogStatus } from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
-    const store = useUserStore();
     const {
         colors: { text },
     } = useTheme();
@@ -23,14 +21,6 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
             color: text,
         },
     });
-
-    useEffect(() => {
-        async function updateStatus() {
-            await store.setRegLogStatus(RegLogStatus.LOGGING_IN);
-        }
-
-        updateStatus();
-    }, []);
 
     return (
         <LayoutComponent
