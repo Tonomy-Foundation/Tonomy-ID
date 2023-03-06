@@ -51,6 +51,11 @@ export default function CreateAccountContainer({ password }: { password: string 
                 await user.saveFingerprint();
                 await user.saveLocal();
                 await updateKeys();
+                await userStore.setBiometric(true);
+
+                if ((await userStore.getPin()) && (await userStore.getBiometric())) {
+                    await userStore.removeFlags()
+                }
             } else {
                 setShowModal(true);
                 setAuthFail(true);

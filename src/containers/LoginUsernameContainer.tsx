@@ -10,11 +10,11 @@ import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import useUserStore from '../store/userStore';
+import useUserStore, { RegLogStatus } from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
-    const { user } = useUserStore();
+    const store = useUserStore();
     const {
         colors: { text },
     } = useTheme();
@@ -24,9 +24,13 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
         },
     });
 
-    const onNext = () => {
-        navigation.navigate('LoginPassword', { username });
-    };
+    useEffect(() => {
+        async function updateStatus() {
+            await store.setRegLogStatus(RegLogStatus.LOGGING_IN);
+        }
+
+        updateStatus();
+    }, []);
 
     return (
         <LayoutComponent

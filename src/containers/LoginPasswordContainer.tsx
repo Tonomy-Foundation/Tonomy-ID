@@ -29,20 +29,26 @@ export default function LoginPasswordContainer({
     const [errorMessage, setErrorMessage] = useState('');
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const [loading, setLoading] = useState(false);
-    const user = useUserStore().user;
+    const store = useUserStore();
     const onNext = async () => {
         setLoading(true);
 
         try {
-            const result = await user.login(
+            const result = await store.user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password
             );
 
             if (result?.account_name !== undefined) {
-                navigation.navigate('CreateAccountPin', {
-                    password: password,
-                });
+                if (!(await store.getPin())) {
+                    navigation.navigate('CreateAccountPin', {
+                        password: password,
+                    });
+                } else {
+                    navigation.navigate('CreateAccountFingerprint', {
+                        password: password,
+                    });
+                }
             }
         } catch (e: any) {
             if (e instanceof SdkError) {

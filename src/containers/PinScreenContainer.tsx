@@ -24,7 +24,7 @@ export default function PinScreenContainer({
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const user = useUserStore().user;
+    const store = useUserStore();
     const errorStore = useErrorStore();
 
     function onPinChange(pin: string) {
@@ -39,7 +39,8 @@ export default function PinScreenContainer({
         if (confirming) {
             if (pin === confirmPin) {
                 try {
-                    await user.savePIN(confirmPin);
+                    await store.user.savePIN(confirmPin);
+                    await store.setPin(true);
                     navigation.navigate('CreateAccountFingerprint', { password });
                 } catch (e: any) {
                     console.log('error saving pin', e);

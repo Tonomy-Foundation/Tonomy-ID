@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
-import useUserStore from '../store/userStore';
+import useUserStore, { RegLogStatus } from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import TUsername from '../components/TUsername';
 import TInfoBox from '../components/TInfoBox';
@@ -27,13 +27,21 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 
     const errorStore = useErrorStore();
 
-    const { user } = useUserStore();
+    const store = useUserStore();
+
+    useEffect(() => {
+        async function updateStatus() {
+            await store.setRegLogStatus(RegLogStatus.CREATING_ACCOUNT);
+        }
+
+        updateStatus();
+    }, []);
 
     async function onNext() {
         setLoading(true);
 
         try {
-            await user.saveUsername(username);
+            await store.user.saveUsername(username);
         } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
