@@ -1,18 +1,34 @@
 {
-  "cli": {
-    "version": ">= 2.1.0"
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
+    "cli": {
+        "version": ">= 2.1.0",
+        "appVersionSource": "remote"
     },
-    "preview": {
-      "distribution": "internal"
+    "build": {
+        "development": {
+            "developmentClient": true,
+            "distribution": "internal"
+        },
+        "staging": {
+            "autoIncrement": true
+        },
+        "production": {
+            "autoIncrement": true
+        }
     },
-    "production": {}
-  },
-  "submit": {
-    "production": {}
-  }
+    "submit": {
+        "staging": {
+            "android": {
+                "serviceAccountKeyPath": "./google-service-key.json",
+                "track": "production"
+            },
+            "ios": {
+                "ascAppId": "1663471436",
+                "appleTeamId": "6BLD42QR78",
+                "ascApiKeyId": "G23U49XAYF",
+                "ascApiKeyPath": "./apple-asc-api-key.p8",
+                "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
+            }
+        },
+        "production": {}
+    }
 }

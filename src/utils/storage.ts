@@ -1,22 +1,32 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PersistentStorage } from '@tonomy/tonomy-id-sdk';
 
-import { PersistantStorage } from 'tonomy-id-sdk';
+export default class Storage implements PersistentStorage {
+    [x: string]: any;
+    scope: string;
 
-export default class Storage implements PersistantStorage {
-  [x: string]: any;
+    constructor(scope: string) {
+        this.scope = scope;
+    }
 
-  async retrieve(key: string): Promise<any> {
-    const data = await AsyncStorage.getItem(key);
-    return data;
-  }
+    async retrieve(key: string): Promise<any> {
+        const data = await AsyncStorage.getItem(key);
 
-  async store(key: string, value: any): Promise<void> {
-    await AsyncStorage.setItem(key, value);
-  }
+        if (!data) return null;
+        return JSON.parse(data);
+    }
 
-  async clear(): Promise<void> {
-    await AsyncStorage.clear();
-  }
+    async store(key: string, value: any): Promise<void> {
+        const str = JSON.stringify(value);
 
+        await AsyncStorage.setItem(key, str);
+    }
 
+    async clear(): Promise<void> {
+        await AsyncStorage.clear();
+    }
+}
+
+export function storageFactory(scope: string): PersistentStorage {
+    return new Storage(scope);
 }

@@ -1,12 +1,30 @@
 {
-    "blockchainUrl": "http://localhost:8888",
+    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "theme": {
-        "primaryColor": "#571AFF",
-        "secondaryColor": "#1AD6FF",
-        "tertiaryColor": "#CBCAF9"
+        "primaryColor": "#67D7ED",
+        "secondaryColor": "#03dac4",
+        "tertiaryColor": "white"
     },
-    "appName": "Telos ID",
-    "appSlogan": "The fastest EVM",
-    "appLogoUrl": "https://telos.net/wp-content/uploads/2018/09/telos-logo.png",
-    "accountSuffix": ".telos.id"
+    "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
+    "appName": "Tonomy ID Development",
+    "ecosystemName": "Tonomy Development",
+    "appSlogan": "Building ecosystems of trust",
+    "images": {
+        "splash": "./src/assets/tonomy/tonomy-splash.png",
+        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
+        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+    },
+    "links": {
+        "privacyPolicyLearnMore": "#",
+        "tearmsAndConditionsLearnMore": "#",
+        "usernameLearnMore": "#",
+        "passwordLearnMore": "#",
+        "privacyLearnMore": "#",
+        "transparencyLearnMore": "#",
+        "securityLearnMore": "#"
+    },
+    "expoProjectId": "18ee7c2e-dba4-4c3d-8bd1-712e0c19b901",
+    "accountSuffix": ".dev.tonomy.id",
+    "ssoWebsiteOrigin": "https://tonomy-id-staging.tonomy.foundation",
+    "communicationUrl": "ws:localhost:5000"
 }
