@@ -101,7 +101,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
 
     return (
         <>
-            <ScrollView keyboardShouldPersistTaps={'never'}>
+            <ScrollView keyboardShouldPersistTaps={'handled'}>
                 <LayoutComponent
                     body={
                         <View style={[commonStyles.marginBottom]}>
@@ -239,10 +239,7 @@ const errorModalStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
     footerText: {
-        marginTop: 20,
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'flex-end',
+        marginTop: '30%',
     },
     rememberPasswordText: {
         color: theme.colors.error,
