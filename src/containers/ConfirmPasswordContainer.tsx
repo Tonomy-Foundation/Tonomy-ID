@@ -33,8 +33,8 @@ export default function ConfirmPasswordContainer({
                     <View>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
-                            // onPress={onNext}
-                            // disabled={password.length === 0}feature/422-Change-Password-UI
+                                onPress={() => navigation.navigate('SetPassword')}
+                                // disabled={password.length === 0}feature/422-Change-Password-UI
                             >
                                 NEXT
                             </TButtonContained>
@@ -45,6 +45,7 @@ export default function ConfirmPasswordContainer({
         </>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
