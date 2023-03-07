@@ -9,9 +9,15 @@
             "distribution": "internal"
         },
         "staging": {
+            "env": {
+                "NODE_ENV": "staging"
+            },
             "autoIncrement": true
         },
         "production": {
+            "env": {
+                "NODE_ENV": "production"
+            },
             "autoIncrement": true
         }
     },
