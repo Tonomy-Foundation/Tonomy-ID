@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TLink from '../components/atoms/TA';
@@ -101,90 +101,101 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
 
     return (
         <>
-            <LayoutComponent
-                body={
-                    <View>
+            <ScrollView keyboardShouldPersistTaps={'never'}>
+                <LayoutComponent
+                    body={
+                        <View style={[commonStyles.marginBottom]}>
+                            <View>
+                                <TH1 style={styles.headline}>Create password</TH1>
+                                <View>
+                                    <TP
+                                        size={1}
+                                        style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
+                                    >
+                                        Password
+                                    </TP>
+                                    <TPasswordInput
+                                        value={password}
+                                        onChangeText={setPassword}
+                                        errorText={errorMessage}
+                                        outlineColor={
+                                            errorMessage.length > 0 ? theme.colors.error : theme.colors.primary
+                                        }
+                                        style={commonStyles.marginBottom}
+                                    />
+                                </View>
+                                <View>
+                                    <TP
+                                        style={
+                                            confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText
+                                        }
+                                    >
+                                        Confirm Password
+                                    </TP>
+                                    <TPasswordInput
+                                        value={password2}
+                                        onChangeText={setPassword2}
+                                        errorText={confirmErrorMessage}
+                                        outlineColor={
+                                            confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
+                                        }
+                                        style={commonStyles.marginBottom}
+                                    />
+                                </View>
+                                <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                                    <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
+                                        Remember your password for future use
+                                    </TP>
+                                </View>
+                            </View>
+                        </View>
+                    }
+                    footerHint={
+                        <View style={[commonStyles.marginBottom, styles.footerText]}>
+                            <View style={commonStyles.alignItemsCenter}>
+                                <TP size={1} style={commonStyles.textAlignCenter}>
+                                    By continuing, you agree to our
+                                    <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
+                                    and agree tonomy
+                                    <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
+                                </TP>
+                            </View>
+                            <View style={commonStyles.marginBottom}>
+                                <TInfoBox
+                                    align="left"
+                                    icon="security"
+                                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                                    linkUrl={settings.config.links.securityLearnMore}
+                                    linkUrlText="Learn more"
+                                />
+                            </View>
+                        </View>
+                    }
+                    footer={
                         <View>
-                            <TH1 style={styles.headline}>Create password</TH1>
-                            <View>
-                                <TP
-                                    size={1}
-                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
-                                >
-                                    Password
-                                </TP>
-                                <TPasswordInput
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    errorText={errorMessage}
-                                    outlineColor={errorMessage.length > 0 ? theme.colors.error : theme.colors.primary}
-                                    style={commonStyles.marginBottom}
-                                />
-                            </View>
-                            <View>
-                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
-                                    Confirm Password
-                                </TP>
-                                <TPasswordInput
-                                    value={password2}
-                                    onChangeText={setPassword2}
-                                    errorText={confirmErrorMessage}
-                                    outlineColor={
-                                        confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
+                            <View style={commonStyles.marginBottom}>
+                                <TButtonContained
+                                    onPress={onNext}
+                                    disabled={
+                                        password.length === 0 ||
+                                        password2.length === 0 ||
+                                        password2 !== password ||
+                                        loading
                                     }
-                                    style={commonStyles.marginBottom}
-                                />
+                                    loading={loading}
+                                >
+                                    CREATE ACCOUNT
+                                </TButtonContained>
                             </View>
-                            <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
-                                <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
-                                    Remember your password for future use
+                            <View style={commonStyles.alignItemsCenter}>
+                                <TP size={1}>
+                                    Already have an account? <TLink href="login">Login</TLink>
                                 </TP>
                             </View>
                         </View>
-                    </View>
-                }
-                footerHint={
-                    <View style={[commonStyles.marginBottom]}>
-                        <View style={commonStyles.alignItemsCenter}>
-                            <TP size={1} style={commonStyles.textAlignCenter}>
-                                By continuing, you agree to our
-                                <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
-                                and agree tonomy
-                                <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
-                            </TP>
-                        </View>
-                        <View style={commonStyles.marginBottom}>
-                            <TInfoBox
-                                align="left"
-                                icon="security"
-                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                linkUrl={settings.config.links.securityLearnMore}
-                                linkUrlText="Learn more"
-                            />
-                        </View>
-                    </View>
-                }
-                footer={
-                    <View>
-                        <View style={commonStyles.marginBottom}>
-                            <TButtonContained
-                                onPress={onNext}
-                                disabled={
-                                    password.length === 0 || password2.length === 0 || password2 !== password || loading
-                                }
-                                loading={loading}
-                            >
-                                CREATE ACCOUNT
-                            </TButtonContained>
-                        </View>
-                        <View style={commonStyles.alignItemsCenter}>
-                            <TP size={1}>
-                                Already have an account? <TLink href="login">Login</TLink>
-                            </TP>
-                        </View>
-                    </View>
-                }
-            ></LayoutComponent>
+                    }
+                ></LayoutComponent>
+            </ScrollView>
             <TErrorModal
                 visible={showUsernameErrorModal}
                 onPress={onUsernameErrorModalPress}
@@ -227,6 +238,12 @@ const errorModalStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+    footerText: {
+        marginTop: 20,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    },
     rememberPasswordText: {
         color: theme.colors.error,
     },
