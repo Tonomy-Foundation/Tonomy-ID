@@ -8,6 +8,7 @@ import AsynStorage from '@react-native-async-storage/async-storage';
 export enum NAVIGATION_STATUS {
     CREATING_ACCOUNT = 'CREATING_ACCOUNT',
     LOGGING_IN = 'LOGGING_IN',
+    NONE = 'NONE',
 }
 export enum UserStatus {
     NONE = 'NONE',
@@ -19,6 +20,7 @@ export interface UserState {
     user: User;
     status: UserStatus;
     navigationStatus: NAVIGATION_STATUS;
+    getNavigationStatus: () => NAVIGATION_STATUS;
     setNavigationStatus: (navigationStatus) => void;
     getPin: () => boolean;
     setPin: (pinStatus) => void;
@@ -44,13 +46,20 @@ const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
 
-    setRegLogStatus: async (navigationStatus) => {
-        await AsynStorage.setItem('statusData', String(navigationStatus));
-        set({ regLogStatus: navigationStatus });
+    getNavigationStatus: async (): NAVIGATION_STATUS => {
+        const data = await AsynStorage.getItem('navigationStatus');
+
+        if (!data) return NAVIGATION_STATUS.NONE;
+        return JSON.parse(data);
+    },
+    setNavigationStatus: async (navigationStatus: NAVIGATION_STATUS) => {
+        await AsynStorage.setItem('navigationStatus', String(navigationStatus));
+        set({ navigationStatus: navigationStatus });
     },
 
     removeFlags: async () => {
         await AsynStorage.removeItem('pinStatus');
+        set({ navigationStatus: NAVIGATION_STATUS.NONE });
     },
 
     getPin: async (): boolean => {
@@ -59,7 +68,7 @@ const useUserStore = create<UserState>((set, get) => ({
         if (!data) return false;
         return JSON.parse(data);
     },
-    setPin: async (pinStatus) => {
+    setPin: async (pinStatus: boolean) => {
         await AsynStorage.setItem('pinStatus', String(pinStatus));
     },
     getStatus: () => {

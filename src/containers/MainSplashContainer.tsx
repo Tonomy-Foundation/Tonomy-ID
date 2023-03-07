@@ -6,12 +6,26 @@ import Storage from '../utils/storage';
 import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
-import useUserStore, { UserStatus } from '../store/userStore';
+import useUserStore, { NAVIGATION_STATUS, UserStatus } from '../store/userStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
-
-    const { initializeStatusFromStorage, getStatus } = useUserStore();
+    const checkStatusAndNavigate = (status: UserStatus) => {
+        switch (status) {
+            case UserStatus.NONE:
+                navigation.dispatch(StackActions.replace('SplashSecurity'));
+                break;
+            case UserStatus.NOT_LOGGED_IN:
+                navigation.dispatch(StackActions.replace('Home'));
+                break;
+            case UserStatus.LOGGED_IN:
+                // Do nothing. status state will automatically navigate user to UserHome
+                break;
+            default:
+                throw new Error('Unknown status: ' + status);
+        }
+    };
+    const { initializeStatusFromStorage, getStatus, getPin, navigationStatus } = useUserStore();
 
     async function main() {
         await sleep(800);
@@ -20,19 +34,17 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             await initializeStatusFromStorage();
             const status = getStatus();
 
-            switch (status) {
-                case UserStatus.NONE:
-                    navigation.dispatch(StackActions.replace('SplashSecurity'));
-                    break;
-                case UserStatus.NOT_LOGGED_IN:
-                    navigation.dispatch(StackActions.replace('Home'));
-                    break;
-                case UserStatus.LOGGED_IN:
-                    // Do nothing. status state will automatically navigate user to UserHome
-                    break;
-                default:
-                    throw new Error('Unknown status: ' + status);
-            }
+            // if (
+            //     navigationStatus === NAVIGATION_STATUS.LOGGING_IN ||
+            //     navigationStatus === NAVIGATION_STATUS.CREATING_ACCOUNT
+            // ) {
+            //     if ((await getPin()) === false) {
+            //         navigation.dispatch(StackActions.replace('CreateAccountPin'));
+            //         return;
+            //     }
+            // }
+
+            checkStatusAndNavigate(status);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }

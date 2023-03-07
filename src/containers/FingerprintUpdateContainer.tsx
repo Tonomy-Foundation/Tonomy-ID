@@ -52,7 +52,7 @@ export default function CreateAccountContainer({ password }: { password: string 
                 await user.saveLocal();
                 await updateKeys();
 
-                if ((await userStore.getPin())) {
+                if (await userStore.getPin()) {
                     await userStore.removeFlags()
                 }
             } else {
