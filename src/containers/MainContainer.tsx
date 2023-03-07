@@ -39,7 +39,7 @@ export default function MainContainer() {
     async function loginToService() {
         const message = await user.signMessage({});
 
-        user.communication.login(message);
+        await user.communication.login(message);
     }
 
     async function setUserName() {
