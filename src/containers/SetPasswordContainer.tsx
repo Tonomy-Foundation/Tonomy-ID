@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
-import TLink from '../components/atoms/TA';
-import { TCaption, TH1, TP } from '../components/atoms/THeadings';
-import settings from '../settings';
-import { NavigationProp } from '@react-navigation/native';
-import useUserStore from '../store/userStore';
-import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+
+import { TP } from '../components/atoms/THeadings';
+
 import theme, { commonStyles } from '../utils/theme';
-import TModal from '../components/TModal';
-import TInfoBox from '../components/TInfoBox';
+
 import LayoutComponent from '../components/layout';
-import useErrorStore from '../store/errorStore';
-import TErrorModal from '../components/TErrorModal';
+
 import { Props } from '../screens/CreateAccountPasswordScreen';
 import TA from '../components/atoms/TA';
 
@@ -22,20 +17,15 @@ export default function SetPasswordContainer({ navigation }: Props) {
         <>
             <LayoutComponent
                 body={
-                    <View>
-                        <View>
+                    <View style={styles.container}>
+                        <View style={styles.innerContainer}>
                             <View>
-                                <TP size={1}>Password</TP>
+                                <TP size={1}>New master password</TP>
                                 <TPasswordInput style={commonStyles.marginBottom} />
                             </View>
                             <View>
-                                <TP>Confirm Password</TP>
+                                <TP>Confirm new master password</TP>
                                 <TPasswordInput style={commonStyles.marginBottom} />
-                            </View>
-                            <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
-                                <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
-                                    Remember your password for future use
-                                </TP>
                             </View>
                         </View>
                     </View>
@@ -50,13 +40,16 @@ export default function SetPasswordContainer({ navigation }: Props) {
     );
 }
 
-const errorModalStyles = StyleSheet.create({
-    marginTop: {
-        marginTop: 6,
-    },
-});
-
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    innerContainer: {
+        width: '100%',
+        height: '60%',
+    },
     rememberPasswordText: {
         color: theme.colors.error,
     },
@@ -68,14 +61,5 @@ const styles = StyleSheet.create({
     },
     labelText: {
         color: theme.colors.primary,
-    },
-});
-
-const errorStyles = StyleSheet.create({
-    labelError: {
-        color: theme.colors.error,
-    },
-    inputError: {
-        borderColor: theme.colors.error,
     },
 });
