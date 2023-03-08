@@ -239,7 +239,7 @@ const errorModalStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
     footerText: {
-        marginTop: '30%',
+        marginTop: 30,
     },
     rememberPasswordText: {
         color: theme.colors.error,
