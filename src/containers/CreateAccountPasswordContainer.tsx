@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, KeyboardAvoidingView } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TLink from '../components/atoms/TA';
@@ -101,65 +101,59 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
 
     return (
         <>
-            <ScrollView keyboardShouldPersistTaps={'handled'}>
-                <LayoutComponent
-                    body={
-                        <View style={[commonStyles.marginBottom]}>
+            <LayoutComponent
+                body={
+                    <View style={[commonStyles.marginBottom]}>
+                        <View>
+                            <TH1 style={styles.headline}>Create password</TH1>
                             <View>
-                                <TH1 style={styles.headline}>Create password</TH1>
-                                <View>
-                                    <TP
-                                        size={1}
-                                        style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
-                                    >
-                                        Password
-                                    </TP>
-                                    <TPasswordInput
-                                        value={password}
-                                        onChangeText={setPassword}
-                                        errorText={errorMessage}
-                                        outlineColor={
-                                            errorMessage.length > 0 ? theme.colors.error : theme.colors.primary
-                                        }
-                                        style={commonStyles.marginBottom}
-                                    />
-                                </View>
-                                <View>
-                                    <TP
-                                        style={
-                                            confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText
-                                        }
-                                    >
-                                        Confirm Password
-                                    </TP>
-                                    <TPasswordInput
-                                        value={password2}
-                                        onChangeText={setPassword2}
-                                        errorText={confirmErrorMessage}
-                                        outlineColor={
-                                            confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
-                                        }
-                                        style={commonStyles.marginBottom}
-                                    />
-                                </View>
-                                <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
-                                    <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
-                                        Remember your password for future use
-                                    </TP>
-                                </View>
+                                <TP
+                                    size={1}
+                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
+                                >
+                                    Password
+                                </TP>
+                                <TPasswordInput
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    errorText={errorMessage}
+                                    outlineColor={errorMessage.length > 0 ? theme.colors.error : theme.colors.primary}
+                                    style={commonStyles.marginBottom}
+                                />
                             </View>
-                        </View>
-                    }
-                    footerHint={
-                        <View style={[commonStyles.marginBottom, styles.footerText]}>
-                            <View style={commonStyles.alignItemsCenter}>
-                                <TP size={1} style={commonStyles.textAlignCenter}>
-                                    By continuing, you agree to our
-                                    <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
-                                    and agree tonomy
-                                    <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
+                            <View>
+                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
+                                    Confirm Password
+                                </TP>
+                                <TPasswordInput
+                                    value={password2}
+                                    onChangeText={setPassword2}
+                                    errorText={confirmErrorMessage}
+                                    outlineColor={
+                                        confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
+                                    }
+                                    style={commonStyles.marginBottom}
+                                />
+                            </View>
+                            <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                                <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
+                                    Remember your password for future use
                                 </TP>
                             </View>
+                        </View>
+                    </View>
+                }
+                footerHint={
+                    <KeyboardAvoidingView behavior="padding" style={[commonStyles.alignItemsCenter, styles.footerText]}>
+                        <View style={[commonStyles.alignItemsCenter]}>
+                            <TP size={1} style={commonStyles.textAlignCenter}>
+                                By continuing, you agree to our
+                                <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
+                                and agree tonomy
+                                <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
+                            </TP>
+                        </View>
+                        <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
                             <View style={commonStyles.marginBottom}>
                                 <TInfoBox
                                     align="left"
@@ -170,32 +164,29 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 />
                             </View>
                         </View>
-                    }
-                    footer={
-                        <View>
-                            <View style={commonStyles.marginBottom}>
-                                <TButtonContained
-                                    onPress={onNext}
-                                    disabled={
-                                        password.length === 0 ||
-                                        password2.length === 0 ||
-                                        password2 !== password ||
-                                        loading
-                                    }
-                                    loading={loading}
-                                >
-                                    CREATE ACCOUNT
-                                </TButtonContained>
-                            </View>
-                            <View style={commonStyles.alignItemsCenter}>
-                                <TP size={1}>
-                                    Already have an account? <TLink href="login">Login</TLink>
-                                </TP>
-                            </View>
+                    </KeyboardAvoidingView>
+                }
+                footer={
+                    <View>
+                        <View style={commonStyles.marginBottom}>
+                            <TButtonContained
+                                onPress={onNext}
+                                disabled={
+                                    password.length === 0 || password2.length === 0 || password2 !== password || loading
+                                }
+                                loading={loading}
+                            >
+                                CREATE ACCOUNT
+                            </TButtonContained>
                         </View>
-                    }
-                ></LayoutComponent>
-            </ScrollView>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <TP size={1}>
+                                Already have an account? <TLink href="login">Login</TLink>
+                            </TP>
+                        </View>
+                    </View>
+                }
+            ></LayoutComponent>
             <TErrorModal
                 visible={showUsernameErrorModal}
                 onPress={onUsernameErrorModalPress}
@@ -239,7 +230,7 @@ const errorModalStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
     footerText: {
-        marginTop: 30,
+        flex: 1,
     },
     rememberPasswordText: {
         color: theme.colors.error,
