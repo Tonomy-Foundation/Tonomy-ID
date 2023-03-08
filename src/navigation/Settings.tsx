@@ -1,23 +1,13 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Platform } from 'react-native';
-import HomeScreen from '../screens/homeScreen';
-import useUserStore, { UserStatus } from '../store/userStore';
-import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 
-import DrawerNavigation from './Drawer';
-import settings from '../settings';
-import { NavigationContainer, DefaultTheme as NavigationDefaultTheme, useNavigation } from '@react-navigation/native';
+import { DefaultTheme as NavigationDefaultTheme, useNavigation } from '@react-navigation/native';
 import { IconButton, useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
-import SSOLoginScreen from '../screens/SSOLoginScreen';
-import LoginUsernameScreen from '../screens/LoginUsernameScreen';
-import LoginPasswordScreen from '../screens/LoginPasswordScreen';
-import LoginPinScreen from '../screens/LoginPinScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import TIconButton from '../components/TIconButton';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import SetPasswordScreen from '../screens/SetPasswordScreen';
 
@@ -52,7 +42,12 @@ export default function SettingsNavigation() {
     const backButton = () => {
         return (
             <TouchableOpacity onPress={() => navigation.navigate('UserHome')}>
-                <IconButton icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'} size={32} />
+                <IconButton
+                    icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'}
+                    size={Platform.OS === 'android' ? 26 : 38}
+                    color="black"
+                    style={Platform.OS === 'android' ? styles.androidIcon : styles.iosIcon}
+                />
             </TouchableOpacity>
         );
     };
@@ -78,7 +73,7 @@ export default function SettingsNavigation() {
         <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
             <Stack.Screen
                 name="Settings"
-                options={{ title: 'Settings', headerLeft: backButton }}
+                options={{ title: 'Settings', headerLeft: backButton, headerBackButtonMenuEnabled: true }}
                 component={SettingsScreen}
             />
             <Stack.Screen
@@ -90,3 +85,16 @@ export default function SettingsNavigation() {
         </Stack.Navigator>
     );
 }
+
+const styles = StyleSheet.create({
+    iosIcon: {
+        paddingBottom: 10,
+        marginLeft: -30,
+        marginTop: -2,
+    },
+    androidIcon: {
+        paddingBottom: 10,
+        marginLeft: -4,
+        marginBottom: -10,
+    },
+});
