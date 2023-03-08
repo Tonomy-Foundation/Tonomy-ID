@@ -103,43 +103,38 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         <>
             <LayoutComponent
                 body={
-                    <View style={[commonStyles.marginBottom]}>
+                    <View>
+                        <TH1 style={styles.headline}>Create password</TH1>
                         <View>
-                            <TH1 style={styles.headline}>Create password</TH1>
-                            <View>
-                                <TP
-                                    size={1}
-                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
-                                >
-                                    Password
-                                </TP>
-                                <TPasswordInput
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    errorText={errorMessage}
-                                    outlineColor={errorMessage.length > 0 ? theme.colors.error : theme.colors.primary}
-                                    style={commonStyles.marginBottom}
-                                />
-                            </View>
-                            <View>
-                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
-                                    Confirm Password
-                                </TP>
-                                <TPasswordInput
-                                    value={password2}
-                                    onChangeText={setPassword2}
-                                    errorText={confirmErrorMessage}
-                                    outlineColor={
-                                        confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
-                                    }
-                                    style={commonStyles.marginBottom}
-                                />
-                            </View>
-                            <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
-                                <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
-                                    Remember your password for future use
-                                </TP>
-                            </View>
+                            <TP size={1} style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
+                                Password
+                            </TP>
+                            <TPasswordInput
+                                value={password}
+                                onChangeText={setPassword}
+                                errorText={errorMessage}
+                                outlineColor={errorMessage.length > 0 ? theme.colors.error : theme.colors.primary}
+                                style={commonStyles.marginBottom}
+                            />
+                        </View>
+                        <View>
+                            <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
+                                Confirm Password
+                            </TP>
+                            <TPasswordInput
+                                value={password2}
+                                onChangeText={setPassword2}
+                                errorText={confirmErrorMessage}
+                                outlineColor={
+                                    confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
+                                }
+                                style={commonStyles.marginBottom}
+                            />
+                        </View>
+                        <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                            <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
+                                Remember your password for future use
+                            </TP>
                         </View>
                     </View>
                 }
@@ -153,21 +148,19 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
                             </TP>
                         </View>
-                        <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                            <View style={commonStyles.marginBottom}>
-                                <TInfoBox
-                                    align="left"
-                                    icon="security"
-                                    description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                    linkUrl={settings.config.links.securityLearnMore}
-                                    linkUrlText="Learn more"
-                                />
-                            </View>
+                        <View style={commonStyles.marginBottom}>
+                            <TInfoBox
+                                align="left"
+                                icon="security"
+                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                                linkUrl={settings.config.links.securityLearnMore}
+                                linkUrlText="Learn more"
+                            />
                         </View>
                     </KeyboardAvoidingView>
                 }
                 footer={
-                    <View>
+                    <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
                                 onPress={onNext}
@@ -231,6 +224,9 @@ const errorModalStyles = StyleSheet.create({
 const styles = StyleSheet.create({
     footerText: {
         flex: 1,
+    },
+    createAccountMargin: {
+        marginTop: 30,
     },
     rememberPasswordText: {
         color: theme.colors.error,
