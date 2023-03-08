@@ -20,12 +20,10 @@ export default function ConfirmPasswordContainer({
         <>
             <LayoutComponent
                 body={
-                    <View>
-                        <View style={styles.container}>
-                            <View style={styles.innerContainer}>
-                                <TP size={1}>Enter current master password</TP>
-                                <TPasswordInput value={password} onChangeText={setPassword} />
-                            </View>
+                    <View style={styles.container}>
+                        <View style={styles.innerContainer}>
+                            <TP size={1}>Enter current master password</TP>
+                            <TPasswordInput value={password} onChangeText={setPassword} />
                         </View>
                     </View>
                 }
@@ -48,7 +46,9 @@ export default function ConfirmPasswordContainer({
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
     },
     innerContainer: {
         width: '100%',
