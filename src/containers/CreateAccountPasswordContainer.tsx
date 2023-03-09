@@ -142,7 +142,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                     </View>
                 }
                 footerHint={
-                    <View style={[commonStyles.alignItemsCenter, styles.footerText]}>
+                    <View
+                        style={[
+                            commonStyles.alignItemsCenter,
+                            styles.footerText,
+                            errorMessage || confirmErrorMessage ? styles.createAccountMargin : {},
+                        ]}
+                    >
                         <View style={[commonStyles.alignItemsCenter]}>
                             <TP size={1} style={commonStyles.textAlignCenter}>
                                 By continuing, you agree to our
@@ -227,7 +233,6 @@ const errorModalStyles = StyleSheet.create({
 const styles = StyleSheet.create({
     footerText: {
         flex: 1,
-        marginTop: 40,
     },
     createAccountMargin: {
         marginTop: 30,
