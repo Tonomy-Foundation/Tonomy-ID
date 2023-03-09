@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TLink from '../components/atoms/TA';
@@ -29,7 +28,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
-    const height = useHeaderHeight();
 
     useEffect(() => {
         if (password.length > 0) {
@@ -101,7 +99,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         navigation.navigate('CreateAccountUsername');
     }
 
-    console.log(errorMessage);
     return (
         <>
             <LayoutComponent
