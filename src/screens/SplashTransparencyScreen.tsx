@@ -8,10 +8,10 @@ import useUserStore, { UserStatus } from '../store/userStore';
 export type SplashTransparencyScreenProps = NativeStackScreenProps<RouteStackParamList, 'SplashTransparency'>;
 
 export default function SplashTransparencyScreen({ navigation }: SplashTransparencyScreenProps) {
-    const { user, setStatus } = useUserStore();
+    const { setStatus } = useUserStore();
     const onButtonPress = async () => {
         await setStatus(UserStatus.NOT_LOGGED_IN);
-        await user.logout();
+
         navigation.navigate('Home');
     };
 
