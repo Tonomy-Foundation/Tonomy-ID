@@ -39,7 +39,7 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     setStatus: (newStatus: UserStatus) => {
         set({ status: newStatus });
-
+        console.log('newStatus', newStatus);
         // Async call to update the status in the storage
         userStorage.status = newStatus;
     },

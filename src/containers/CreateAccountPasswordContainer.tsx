@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TLink from '../components/atoms/TA';
@@ -28,6 +29,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
+    const height = useHeaderHeight();
 
     useEffect(() => {
         if (password.length > 0) {
@@ -99,6 +101,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         navigation.navigate('CreateAccountUsername');
     }
 
+    console.log(errorMessage);
     return (
         <>
             <LayoutComponent
@@ -139,7 +142,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                     </View>
                 }
                 footerHint={
-                    <KeyboardAvoidingView behavior="padding" style={[commonStyles.alignItemsCenter, styles.footerText]}>
+                    <View style={[commonStyles.alignItemsCenter, styles.footerText]}>
                         <View style={[commonStyles.alignItemsCenter]}>
                             <TP size={1} style={commonStyles.textAlignCenter}>
                                 By continuing, you agree to our
@@ -157,7 +160,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 linkUrlText="Learn more"
                             />
                         </View>
-                    </KeyboardAvoidingView>
+                    </View>
                 }
                 footer={
                     <View style={styles.createAccountMargin}>
@@ -224,6 +227,7 @@ const errorModalStyles = StyleSheet.create({
 const styles = StyleSheet.create({
     footerText: {
         flex: 1,
+        marginTop: 40,
     },
     createAccountMargin: {
         marginTop: 30,
