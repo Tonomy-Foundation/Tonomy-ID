@@ -11,7 +11,7 @@ import useUserStore, { UserStatus } from '../store/userStore';
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
 
-    const { initializeStatusFromStorage, getStatus } = useUserStore();
+    const { user, initializeStatusFromStorage, getStatus } = useUserStore();
 
     async function main() {
         await sleep(800);
@@ -25,6 +25,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     navigation.dispatch(StackActions.replace('SplashSecurity'));
                     break;
                 case UserStatus.NOT_LOGGED_IN:
+                    user.logout();
                     navigation.dispatch(StackActions.replace('Home'));
                     break;
                 case UserStatus.LOGGED_IN:
