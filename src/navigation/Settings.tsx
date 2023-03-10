@@ -2,16 +2,13 @@ import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react
 import React from 'react';
 import { Platform } from 'react-native';
 
-import { DefaultTheme as NavigationDefaultTheme, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { IconButton, useTheme } from 'react-native-paper';
-import merge from 'deepmerge';
-import * as Linking from 'expo-linking';
+
 import SettingsScreen from '../screens/SettingsScreen';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import SetPasswordScreen from '../screens/SetPasswordScreen';
-
-const prefix = Linking.createURL('');
 
 export type RouteStackParamList = {
     Splash: undefined;
@@ -26,14 +23,7 @@ const Stack = createNativeStackNavigator<RouteStackParamList>();
 export default function SettingsNavigation() {
     // Setup styles
     const theme = useTheme();
-    const navigationTheme: typeof NavigationDefaultTheme = {
-        ...NavigationDefaultTheme,
-        colors: {
-            ...NavigationDefaultTheme.colors,
-            text: 'white',
-            background: theme.colors.background,
-        },
-    };
+
     const navigation = useNavigation();
     const backButton = () => {
         return (
