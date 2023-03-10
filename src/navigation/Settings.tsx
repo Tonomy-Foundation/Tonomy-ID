@@ -24,10 +24,6 @@ export type RouteStackParamList = {
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
 export default function SettingsNavigation() {
-    const linking = {
-        prefixes: [prefix],
-    };
-
     // Setup styles
     const theme = useTheme();
     const navigationTheme: typeof NavigationDefaultTheme = {
@@ -65,9 +61,6 @@ export default function SettingsNavigation() {
         headerTitleAlign: 'center',
         headerTintColor: theme.dark ? theme.colors.text : 'black',
     };
-
-    const noHeaderScreenOptions = { headerShown: false };
-    const CombinedDefaultTheme = merge(navigationTheme, theme);
 
     return (
         <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
