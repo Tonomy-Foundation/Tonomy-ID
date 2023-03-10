@@ -6,7 +6,8 @@ import MainScreen from '../screens/MainScreen';
 import settings from '../settings';
 import MainNavigation from './Main';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
-import ChangePinScreen from '../screens/ChangePinScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import SettingsNavigation from './Settings';
 
 export type RouteDrawerParamList = {
     UserHome: undefined;
@@ -41,9 +42,14 @@ export default function DrawerNavigation() {
         >
             {/* change component to Main Navigation when bottom nav should be added */}
             <Drawer.Screen name="UserHome" options={{ title: 'Home' }} component={MainScreen} />
-            <Drawer.Screen name="ChangePin" options={{ title: 'Change Pin' }} component={ChangePinScreen} />
+            {/* <Drawer.Screen name="ChangePin" options={{ title: 'Change Pin' }} component={ChangePinScreen} /> */}
 
             {/* <Drawer.Screen name="Settings" component={TestScreen} /> */}
+            <Drawer.Screen
+                name="Settings"
+                options={{ title: 'Settings', headerShown: false }}
+                component={SettingsNavigation}
+            />
             {/* <Drawer.Screen name="Help" component={TestScreen} options={{ title: 'Help and Info' }} /> */}
             {/* <Drawer.Screen name="Logout" component={TestScreen} /> */}
         </Drawer.Navigator>

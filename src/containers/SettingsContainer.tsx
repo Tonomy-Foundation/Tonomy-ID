@@ -6,15 +6,17 @@ import { commonStyles } from '../utils/theme';
 
 import { IconButton } from 'react-native-paper';
 import TNavigationButton from '../components/TNavigationButton';
-export default function SettingsContainer() {
+import { Props } from '../screens/SettingsScreen';
+
+export default function SettingsContainer({ navigation }: Props) {
     return (
         <LayoutComponent
             body={
                 <View style={{}}>
                     <TP size={1}>SECURITY</TP>
                     <TNavigationButton
-                        onPress={function (): void {
-                            throw new Error('Function not implemented.');
+                        onPress={() => {
+                            navigation.navigate('ConfirmPassword');
                         }}
                         title={'Password'}
                         icon={'cog'}
