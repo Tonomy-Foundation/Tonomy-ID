@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, StackActions } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
@@ -21,6 +21,15 @@ export default function MainContainer() {
     useEffect(() => {
         loginToService();
         setUserName();
+
+        if (!username?.username) {
+            navigation.dispatch(StackActions.replace('Home'));
+        }
+
+        // const keyValid = async () => await user.checkKeysStillValid();
+        // const result = keyValid().catch(console.error);
+
+        // console.log('keywal', result);
         user.communication.subscribeMessage((m) => {
             console.log('REcieved from sso');
 

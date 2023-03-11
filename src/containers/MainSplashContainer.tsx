@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
 import { NavigationProp, StackActions } from '@react-navigation/native';
-import Storage from '../utils/storage';
 import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
@@ -10,11 +9,38 @@ import useUserStore, { UserStatus } from '../store/userStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
-
     const { user, initializeStatusFromStorage, getStatus } = useUserStore();
+
+    const userLogout = () => {
+        user.logout();
+        navigation.dispatch(StackActions.replace('Home'));
+    };
+    const checkKeys = async () => {
+        await sleep(800);
+
+        try {
+            await user.checkKeysStillValid();
+        } catch (e) {
+            if (e.code === 'KeyNotFound') {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    title: 'tst',
+                });
+                userLogout();
+            }
+        }
+    };
 
     async function main() {
         await sleep(800);
+
+        const username = await user.storage.username;
+        const userStatus = await user.getStatus();
+
+        if (userStatus === 'READY' && UserStatus.LOGGED_IN) {
+            checkKeys();
+        }
 
         try {
             await initializeStatusFromStorage();
@@ -25,11 +51,13 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     navigation.dispatch(StackActions.replace('SplashSecurity'));
                     break;
                 case UserStatus.NOT_LOGGED_IN:
-                    user.logout();
-                    navigation.dispatch(StackActions.replace('Home'));
+                    userLogout();
                     break;
                 case UserStatus.LOGGED_IN:
-                    // Do nothing. status state will automatically navigate user to UserHome
+                    if (!username?.username) {
+                        userLogout();
+                    }
+
                     break;
                 default:
                     throw new Error('Unknown status: ' + status);
