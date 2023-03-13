@@ -3,6 +3,7 @@
 __generated__
 web-build
 bare-apps
+app.json
 
 # macOS
 .DS_Store
@@ -17,6 +18,7 @@ yarn-error.log
 
 # Env
 .envrc.local
+
 
 # Emacs
 *~

@@ -1,18 +1,24 @@
 import React from 'react';
 import SplashScreenContainer from '../containers/SplashContainer';
 import { NavigationProp } from '@react-navigation/native';
+import settings from '../settings';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
 
-export default function SplashSecurityScreen({ navigation }: { navigation: NavigationProp<any> }) {
+export type Props = NativeStackScreenProps<RouteStackParamList, 'SplashSecurity'>;
+export default function SplashSecurityScreen(props: Props) {
     return (
         <SplashScreenContainer
-            navigation={navigation}
+            navigation={props.navigation}
             title="Security"
             subtitle="You are in control of your identity"
-            imageSource={require("../assets/security-splash.png")}
+            imageSource={require('../assets/animations/security.gif')}
+            icon="security"
             description="Tonomy secures all transactions and data by only storing keys and your data on your phone - nowhere else!"
-            learnMoreUrl="http://example.com"
+            linkUrl={settings.config.links.securityLearnMore}
+            linkUrlText="Learn More"
             buttonText="NEXT"
-            buttonOnPress={() => navigation.navigate('privacySplash')}
+            buttonOnPress={() => props.navigation.navigate('SplashPrivacy')}
         ></SplashScreenContainer>
     );
 }
