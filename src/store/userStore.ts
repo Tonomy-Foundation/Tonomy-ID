@@ -13,7 +13,6 @@ export enum UserStatus {
 export interface UserState {
     user: User;
     status: UserStatus;
-    key: boolean;
     getStatus(): UserStatus;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
@@ -33,7 +32,6 @@ const userStorage = createStorage<UserStorageState>('tonomyid.user.', storageFac
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
-    key: false,
     getStatus: () => {
         const status = get().status;
 
