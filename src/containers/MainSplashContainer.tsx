@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
 import { NavigationProp, StackActions } from '@react-navigation/native';
@@ -9,10 +9,12 @@ import useUserStore, { UserStatus } from '../store/userStore';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, getStatus } = useUserStore();
+    const { user, initializeStatusFromStorage, getStatus, setStatus } = useUserStore();
 
     const userLogout = () => {
         user.logout();
+        setStatus(UserStatus.NOT_LOGGED_IN);
+
         navigation.dispatch(StackActions.replace('Home'));
     };
     const checkKeys = async () => {
@@ -22,12 +24,13 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             await user.checkKeysStillValid();
         } catch (e) {
             if (e.code === 'KeyNotFound') {
+                user.logout();
                 errorStore.setError({
                     error: e,
                     expected: false,
                     title: 'tst',
                 });
-                userLogout();
+                return;
             }
         }
     };
@@ -39,7 +42,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         const userStatus = await user.getStatus();
 
         if (userStatus === 'READY' && UserStatus.LOGGED_IN) {
-            checkKeys();
+            await checkKeys();
+            // if (!getKeyExists()) userLogout();
         }
 
         try {
@@ -58,6 +62,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         userLogout();
                     }
 
+                    // if (user.getKeyExists)
                     break;
                 default:
                     throw new Error('Unknown status: ' + status);
