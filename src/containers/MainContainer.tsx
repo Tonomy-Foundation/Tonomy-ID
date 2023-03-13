@@ -65,7 +65,7 @@ export default function MainContainer() {
          */
         const message = await user.signMessage({ type: 'ack' }, data);
 
-        user.communication.sendMessage(message);
+        await user.communication.sendMessage(message);
         onClose();
     }
 
