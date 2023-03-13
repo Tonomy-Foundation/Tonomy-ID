@@ -6,31 +6,21 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
+import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, getStatus, setStatus } = useUserStore();
-
-    const userLogout = () => {
-        user.logout();
-        setStatus(UserStatus.NOT_LOGGED_IN);
-
-        navigation.dispatch(StackActions.replace('Home'));
-    };
+    const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
     const checkKeys = async () => {
-        await sleep(800);
-
         try {
             await user.checkKeysStillValid();
         } catch (e) {
-            if (e.code === 'KeyNotFound') {
-                user.logout();
+            if (e.code === SdkErrors.KeyNotFound) {
+                logout();
                 errorStore.setError({
                     error: e,
                     expected: false,
-                    title: 'tst',
                 });
-                return;
             }
         }
     };
@@ -43,7 +33,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
         if (userStatus === 'READY' && UserStatus.LOGGED_IN) {
             await checkKeys();
-            // if (!getKeyExists()) userLogout();
         }
 
         try {
@@ -55,14 +44,14 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     navigation.dispatch(StackActions.replace('SplashSecurity'));
                     break;
                 case UserStatus.NOT_LOGGED_IN:
-                    userLogout();
+                    logout();
+                    navigation.dispatch(StackActions.replace('Home'));
                     break;
                 case UserStatus.LOGGED_IN:
                     if (!username?.username) {
-                        userLogout();
+                        logout();
                     }
 
-                    // if (user.getKeyExists)
                     break;
                 default:
                     throw new Error('Unknown status: ' + status);

@@ -16,6 +16,7 @@ export interface UserState {
     getStatus(): UserStatus;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
+    logout(): Promise<void>;
 }
 
 setSettings({
@@ -49,6 +50,15 @@ const useUserStore = create<UserState>((set, get) => ({
         if (!status) status = UserStatus.NONE;
 
         set({ status: status });
+    },
+    logout: async () => {
+        set({ status: UserStatus.NOT_LOGGED_IN });
+
+        // Async call to update the status in the storage
+        userStorage.status = UserStatus.NOT_LOGGED_IN;
+        const user = createUserObject(new RNKeyManager(), storageFactory);
+
+        user.logout();
     },
 }));
 
