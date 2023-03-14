@@ -207,3 +207,5 @@ web-build/
 dist/
 
 # @end expo-cli
+
+/android
