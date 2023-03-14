@@ -11,6 +11,7 @@ import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
+
     const checkKeys = async () => {
         try {
             await user.checkKeysStillValid();

@@ -30,6 +30,12 @@ interface UserStorageState {
 }
 const userStorage = createStorage<UserStorageState>('tonomyid.user.', storageFactory);
 const userObject = createUserObject(new RNKeyManager(), storageFactory);
+const setStatusFunc = (set, newStatus) => {
+    set({ status: newStatus });
+    // Async call to update the status in the storage
+    userStorage.status = newStatus;
+};
+
 const useUserStore = create<UserState>((set, get) => ({
     user: userObject,
     status: UserStatus.NONE,
@@ -39,10 +45,7 @@ const useUserStore = create<UserState>((set, get) => ({
         return status;
     },
     setStatus: (newStatus: UserStatus) => {
-        set({ status: newStatus });
-
-        // Async call to update the status in the storage
-        userStorage.status = newStatus;
+        setStatusFunc(set, newStatus);
     },
     initializeStatusFromStorage: async () => {
         let status = await userStorage.status;
@@ -52,11 +55,8 @@ const useUserStore = create<UserState>((set, get) => ({
         set({ status: status });
     },
     logout: async () => {
-        set({ status: UserStatus.NOT_LOGGED_IN });
-
-        // Async call to update the status in the storage
-        userStorage.status = UserStatus.NOT_LOGGED_IN;
         userObject.logout();
+        setStatusFunc(set, UserStatus.NOT_LOGGED_IN);
     },
 }));
 
