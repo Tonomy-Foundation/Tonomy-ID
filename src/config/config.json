@@ -25,6 +25,6 @@
     },
     "expoProjectId": "18ee7c2e-dba4-4c3d-8bd1-712e0c19b901",
     "accountSuffix": ".dev.tonomy.id",
-    "ssoWebsiteOrigin": "https://tonomy-id-staging.tonomy.foundation",
+    "ssoWebsiteOrigin": "https://sso.staging.tonomy.foundation",
     "communicationUrl": "ws:localhost:5000"
 }
