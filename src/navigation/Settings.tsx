@@ -9,6 +9,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import SetPasswordScreen from '../screens/SetPasswordScreen';
+import ChangePinScreen from '../screens/ChangePinScreen';
 
 export type RouteStackParamList = {
     Splash: undefined;
@@ -16,6 +17,7 @@ export type RouteStackParamList = {
     ChangePassword: undefined;
     ConfirmPassword: undefined;
     SetPassword: undefined;
+    ChangePin: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -65,6 +67,7 @@ export default function SettingsNavigation() {
                 component={ConfirmPasswordScreen}
             />
             <Stack.Screen name="SetPassword" options={{ title: 'Set Password' }} component={SetPasswordScreen} />
+            <Stack.Screen name="ChangePin" options={{ title: 'Change Pin' }} component={ChangePinScreen} />
         </Stack.Navigator>
     );
 }

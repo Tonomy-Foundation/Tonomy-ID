@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import TButton, { TButtonContained } from '../components/atoms/Tbutton';
@@ -7,7 +8,7 @@ import useUserStore from '../store/userStore';
 import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/FingerprintUpdateScreen';
+import { Props } from '../screens/ChangePinScreen';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
@@ -30,14 +31,13 @@ export default function ChangePinScreenContainer({ navigation }: { navigation: P
         setErrorMessage('');
     }
 
-    async function onNext() {
+    async function confirmAndSavePin() {
         setLoading(true);
 
         if (confirming) {
             if (pin === confirmPin) {
                 try {
-                    await user.savePIN(confirmPin);
-                    navigation.navigate('CreateAccountFingerprint', { password });
+                    // await user.savePIN(confirmPin);
                 } catch (e: any) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
@@ -60,13 +60,24 @@ export default function ChangePinScreenContainer({ navigation }: { navigation: P
         setLoading(false);
     }
 
+    async function checkPin() {
+        // Logic for Checking pin
+        // if correct then allow to enter and confirm then check  and update pin
+        // else show error to enter correct pin
+        setChecked(true);
+    }
+
     return (
         <LayoutComponent
             body={
                 <View style={styles.header}>
                     <View>
                         <TH1 style={commonStyles.marginTopTextCenter}>
-                            {checked === false ? 'Enter current PIN ' : confirming ? 'Repeat your PIN' : 'Add a PIN'}
+                            {checked === false
+                                ? 'Enter current PIN '
+                                : confirming
+                                    ? 'Repeat your PIN'
+                                    : 'Create new Pin'}
                         </TH1>
                     </View>
                     <View style={styles.centeredText}>
@@ -94,7 +105,7 @@ export default function ChangePinScreenContainer({ navigation }: { navigation: P
                         mode="contained"
                         disabled={disabled}
                         loading={loading}
-                        onPress={onNext}
+                        onPress={checked === false ? checkPin : confirmAndSavePin}
                         style={styles.marginBottom}
                     >
                         {confirming ? 'Confirm' : 'Next'}
@@ -102,8 +113,10 @@ export default function ChangePinScreenContainer({ navigation }: { navigation: P
                     {!confirming && (
                         <TButtonContained
                             mode="outlined"
-                            onPress={() => navigation.navigate('CreateAccountFingerprint', { password })}
-                            style={styles.marginBottom}
+                            onPress={() => {
+                                navigation.goBack();
+                            }}
+                            style={{ ...styles.marginBottom, borderColor: theme.colors.primary }}
                         >
                             Cancel
                         </TButtonContained>
