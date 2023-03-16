@@ -16,6 +16,7 @@ export interface UserState {
     getStatus(): UserStatus;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
+    logout(): Promise<void>;
 }
 
 setSettings({
@@ -48,6 +49,10 @@ const useUserStore = create<UserState>((set, get) => ({
         if (!status) status = UserStatus.NONE;
 
         set({ status: status });
+    },
+    logout: async () => {
+        get().setStatus(UserStatus.NOT_LOGGED_IN);
+        await get().user.logout();
     },
 }));
 
