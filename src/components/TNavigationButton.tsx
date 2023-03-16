@@ -9,11 +9,16 @@ export type NavigationButtonProps = {
     icon?: string;
     title: string;
     description?: string;
+    disabled?: boolean;
 };
 
 export default function TNavigationButton(props: NavigationButtonProps) {
     return (
-        <TouchableOpacity onPress={props.onPress} style={[styles.button, commonStyles.marginBottom]}>
+        <TouchableOpacity
+            onPress={props.onPress}
+            style={[styles.button, commonStyles.marginBottom]}
+            disabled={props.disabled}
+        >
             {props.icon && (
                 <View style={styles.iconContainer}>
                     <IconButton icon={props.icon} />
@@ -25,7 +30,7 @@ export default function TNavigationButton(props: NavigationButtonProps) {
                     <TCaption>{props.description}</TCaption>
                 </View>
             ) : (
-                <View style={styles.titleContainer}>
+                <View style={{ ...styles.titleContainer }}>
                     <TP>{props.title}</TP>
                 </View>
             )}
