@@ -1,4 +1,4 @@
-import create from 'zustand';
+import create, { useStore } from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
@@ -43,6 +43,8 @@ const useUserStore = create<UserState>((set, get) => ({
         userStorage.status = newStatus;
     },
     initializeStatusFromStorage: async () => {
+        await get().user.intializeFromStorage();
+
         let status = await userStorage.status;
 
         if (!status) status = UserStatus.NONE;
