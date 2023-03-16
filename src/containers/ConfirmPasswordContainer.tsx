@@ -20,12 +20,10 @@ export default function ConfirmPasswordContainer({
         <>
             <LayoutComponent
                 body={
-                    <View>
-                        <View style={styles.container}>
-                            <View style={styles.innerContainer}>
-                                <TP size={1}>Enter current master password</TP>
-                                <TPasswordInput value={password} onChangeText={setPassword} />
-                            </View>
+                    <View style={styles.container}>
+                        <View style={styles.innerContainer}>
+                            <TP size={1}>Enter current master password</TP>
+                            <TPasswordInput value={password} onChangeText={setPassword} />
                         </View>
                     </View>
                 }
@@ -33,8 +31,8 @@ export default function ConfirmPasswordContainer({
                     <View>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
-                            // onPress={onNext}
-                            // disabled={password.length === 0}feature/422-Change-Password-UI
+                                onPress={() => navigation.navigate('SetPassword')}
+                                // disabled={password.length === 0}feature/422-Change-Password-UI
                             >
                                 NEXT
                             </TButtonContained>
@@ -45,9 +43,12 @@ export default function ConfirmPasswordContainer({
         </>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
     },
     innerContainer: {
         width: '100%',
