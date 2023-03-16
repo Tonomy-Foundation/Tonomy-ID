@@ -19,7 +19,9 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
-
+        with:
+          token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+        
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
         env:
