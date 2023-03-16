@@ -1,4 +1,4 @@
-import create, { useStore } from 'zustand';
+import create from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
