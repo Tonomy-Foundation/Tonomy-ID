@@ -92,7 +92,7 @@ export default function SSOLoginContainer({
             } else {
                 const message = await user.signMessage({ requests, accountName }, recieverDid);
 
-                user.communication.sendMessage(message);
+                await user.communication.sendMessage(message);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e: any) {

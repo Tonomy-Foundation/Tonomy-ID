@@ -19,21 +19,24 @@ export default function MainContainer() {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
 
     useEffect(() => {
-        loginToService();
-        setUserName();
+        async function main() {
+            await loginToService();
+            await setUserName();
+            user.communication.subscribeMessage((m) => {
+                console.log('REcieved from sso');
 
-        user.communication.subscribeMessage((m) => {
-            console.log('REcieved from sso');
+                const message = new Message(m);
 
-            const message = new Message(m);
+                console.log(message.getPayload());
 
-            console.log(message.getPayload());
-
-            navigation.navigate('SSO', {
-                requests: JSON.stringify(message.getPayload().requests),
-                platform: 'browser',
+                navigation.navigate('SSO', {
+                    requests: JSON.stringify(message.getPayload().requests),
+                    platform: 'browser',
+                });
             });
-        });
+        }
+
+        main();
     }, []);
 
     //TODO: this should be moved to a store or a provider or a hook
