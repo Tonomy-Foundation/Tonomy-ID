@@ -24,8 +24,6 @@ jobs:
         uses: "phips28/gh-action-bump-version@master"
         env:
           GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
-        with:
-          tag-prefix: "v"
 
       - name: 📦 Install
         uses: actions/setup-node@v3
