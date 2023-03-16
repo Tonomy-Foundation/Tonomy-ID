@@ -3,6 +3,8 @@ import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
 import { User, createUserObject, setSettings, createStorage } from '@tonomy/tonomy-id-sdk';
+import useErrorStore from '../store/errorStore';
+import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -43,16 +45,25 @@ const useUserStore = create<UserState>((set, get) => ({
         // Async call to update the status in the storage
         userStorage.status = newStatus;
     },
+    logout: async () => {
+        get().setStatus(UserStatus.NOT_LOGGED_IN);
+        await get().user.logout();
+    },
     initializeStatusFromStorage: async () => {
+        try {
+            await get().user.intializeFromStorage();
+        } catch (e) {
+            if (e.code === SdkErrors.KeyNotFound) {
+                await get().user.logout();
+                useErrorStore.getState().setError({ error: e, expected: false });
+            }
+        }
+
         let status = await userStorage.status;
 
         if (!status) status = UserStatus.NONE;
 
         set({ status: status });
-    },
-    logout: async () => {
-        get().setStatus(UserStatus.NOT_LOGGED_IN);
-        await get().user.logout();
     },
 }));
 

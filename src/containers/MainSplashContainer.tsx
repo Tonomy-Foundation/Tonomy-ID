@@ -6,35 +6,15 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
 
-    const checkKeys = async () => {
-        try {
-            await user.checkKeysStillValid();
-        } catch (e) {
-            if (e.code === SdkErrors.KeyNotFound) {
-                logout();
-                errorStore.setError({
-                    error: e,
-                    expected: false,
-                });
-            }
-        }
-    };
-
     async function main() {
         await sleep(800);
 
         const username = await user.storage.username;
-        const userStatus = await user.getStatus();
-
-        if (userStatus === 'READY' && UserStatus.LOGGED_IN) {
-            await checkKeys();
-        }
 
         try {
             await initializeStatusFromStorage();
