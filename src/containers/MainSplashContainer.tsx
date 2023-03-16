@@ -2,19 +2,39 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
 import { NavigationProp, StackActions } from '@react-navigation/native';
-import Storage from '../utils/storage';
 import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
+import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
+    const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
 
-    const { user, initializeStatusFromStorage, getStatus } = useUserStore();
+    const checkKeys = async () => {
+        try {
+            await user.checkKeysStillValid();
+        } catch (e) {
+            if (e.code === SdkErrors.KeyNotFound) {
+                logout();
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                });
+            }
+        }
+    };
 
     async function main() {
         await sleep(800);
+
+        const username = await user.storage.username;
+        const userStatus = await user.getStatus();
+
+        if (userStatus === 'READY' && UserStatus.LOGGED_IN) {
+            await checkKeys();
+        }
 
         try {
             await initializeStatusFromStorage();
@@ -25,11 +45,14 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     navigation.dispatch(StackActions.replace('SplashSecurity'));
                     break;
                 case UserStatus.NOT_LOGGED_IN:
-                    user.logout();
+                    logout();
                     navigation.dispatch(StackActions.replace('Home'));
                     break;
                 case UserStatus.LOGGED_IN:
-                    // Do nothing. status state will automatically navigate user to UserHome
+                    if (!username?.username) {
+                        logout();
+                    }
+
                     break;
                 default:
                     throw new Error('Unknown status: ' + status);
