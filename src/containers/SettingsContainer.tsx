@@ -23,7 +23,9 @@ export default function SettingsContainer({ navigation }: Props) {
                     />
                     <TNavigationButton
                         onPress={function (): void {
-                            navigation.navigate('ChangePin');
+                            navigation.navigate('ChangePin', {
+                                action: 'CHANGE_PIN',
+                            });
                         }}
                         title={'PIN'}
                         icon={'lock'}

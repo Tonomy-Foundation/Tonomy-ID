@@ -133,6 +133,7 @@ export default function RootNavigation() {
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
+                    {/* <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} /> */}
                     <Stack.Screen
                         name="Drawer"
                         component={DrawerNavigation}

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import TButton from '../components/atoms/Tbutton';
@@ -9,13 +10,17 @@ import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/FingerprintUpdateScreen';
 import theme, { commonStyles } from '../utils/theme';
+import TInfoBox from '../components/TInfoBox';
+import settings from '../settings';
 
 export default function PinScreenContainer({
     navigation,
     password,
+    action,
 }: {
     navigation: Props['navigation'];
-    password: string;
+    password?: string;
+    action?: string;
 }) {
     const [confirming, setConfirming] = useState(false);
     const [disabled, setDisabled] = useState(true);
@@ -23,7 +28,7 @@ export default function PinScreenContainer({
     const [confirmPin, setConfirmPin] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-
+    const [matched, setMatched] = useState<boolean>(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
 
@@ -33,14 +38,33 @@ export default function PinScreenContainer({
         setErrorMessage('');
     }
 
+    async function checkPin() {
+        // Logic for Checking pin
+        // if correct then allow to enter and confirm then check  and update pin
+        // else show error to enter correct pin
+
+        setMatched(true);
+        setErrorMessage('');
+
+        // setErrorMessage('Wrong PIN');
+    }
+
     async function onNext() {
         setLoading(true);
 
         if (confirming) {
             if (pin === confirmPin) {
                 try {
-                    await user.savePIN(confirmPin);
-                    navigation.navigate('CreateAccountFingerprint', { password });
+                    if (action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') {
+                        await user.savePIN(confirmPin);
+                        navigation.navigate('CreateAccountFingerprint', { password });
+                    } else if (action === 'ADD_NEW') {
+                        await user.savePIN(confirmPin);
+                        navigation.goBack();
+                    } else if (action === 'CHANGE_PIN') {
+                        await user.savePIN(confirmPin);
+                        navigation.goBack();
+                    }
                 } catch (e: any) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
@@ -69,12 +93,20 @@ export default function PinScreenContainer({
                 <View style={styles.header}>
                     <View>
                         <TH1 style={commonStyles.marginTopTextCenter}>
-                            {confirming ? 'Repeat your PIN' : 'Add a PIN'}
+                            {action === 'CHANGE_PIN'
+                                ? matched === false
+                                    ? 'Enter current Pin'
+                                    : confirming
+                                        ? 'Repeat your PIN'
+                                        : 'Add a PIN'
+                                : ''}
+
+                            {(action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') ? (confirming ? 'Repeat your PIN' : 'Add a PIN') : ''}
                         </TH1>
                     </View>
                     <View>
                         <Text style={{ ...styles.accountSecureText, ...commonStyles.textAlignCenter }}>
-                            This helps keep your account secure
+                            {action !== 'CHANGE_PIN' && 'This helps keep your account secure'}
                         </Text>
                     </View>
                     <View style={styles.centeredText}>
@@ -85,13 +117,24 @@ export default function PinScreenContainer({
                     <TPin pin={pin} onChange={onPinChange}></TPin>
                 </View>
             }
+            footerHint={
+                <View style={commonStyles.marginBottom}>
+                    <TInfoBox
+                        align="left"
+                        icon="security"
+                        description="100% private. Your PIN data never leave your phone. Learn more"
+                        linkUrl={settings.config.links.securityLearnMore}
+                        linkUrlText="Learn more"
+                    />
+                </View>
+            }
             footer={
                 <View>
                     <TButton
                         mode="contained"
                         disabled={disabled}
                         loading={loading}
-                        onPress={onNext}
+                        onPress={action === 'CHANGE_PIN' ? (matched === false ? checkPin : onNext) : onNext}
                         style={styles.marginBottom}
                     >
                         {confirming ? 'Confirm' : 'Next'}
@@ -99,10 +142,14 @@ export default function PinScreenContainer({
                     {!confirming && (
                         <TButton
                             mode="outlined"
-                            onPress={() => navigation.navigate('CreateAccountFingerprint', { password })}
+                            onPress={() => {
+                                action === 'CHANGE_PIN'
+                                    ? navigation.goBack()
+                                    : navigation.navigate('CreateAccountFingerprint', { password });
+                            }}
                             style={styles.marginBottom}
                         >
-                            Skip
+                            {action === 'CHANGE_PIN' ? 'Cancel' : 'Skip'}
                         </TButton>
                     )}
                 </View>
