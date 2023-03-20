@@ -22,7 +22,7 @@ export default function PinSettingsContainer({ navigation }: Props) {
     return (
         <LayoutComponent
             body={
-                <View style={{}}>
+                <View style={{ marginTop: 40 }}>
                     <TNavigationButton
                         disabled={!pinStatus}
                         onPress={function (): void {

@@ -31,7 +31,14 @@ export default function TNavigationButton(props: NavigationButtonProps) {
                 </View>
             ) : (
                 <View style={{ ...styles.titleContainer }}>
-                    <TP>{props.title}</TP>
+                    <TP
+                        style={{
+                            fontWeight: `${props?.disabled === true ? '100' : 'bold'}`,
+                            color: `${props?.disabled === true ? 'gray' : 'black'}`,
+                        }}
+                    >
+                        {props.title}
+                    </TP>
                 </View>
             )}
             <IconButton icon={'chevron-right'} style={styles.chevronStyle} />

@@ -10,12 +10,7 @@ import PinScreen from '../screens/PinScreen';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
 
 export type RouteStackParamList = {
-    AddPin: undefined;
-    Splash: undefined;
-    Settings: undefined;
     PinSettings: undefined;
-    ChangePin: undefined;
-    RemovePin: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
