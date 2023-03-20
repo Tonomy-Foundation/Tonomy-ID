@@ -23,7 +23,7 @@ export default function SettingsContainer({ navigation }: Props) {
                     />
                     <TNavigationButton
                         onPress={function (): void {
-                            throw new Error('Function not implemented.');
+                            navigation.navigate('PinSettings');
                         }}
                         title={'PIN'}
                         icon={'lock'}

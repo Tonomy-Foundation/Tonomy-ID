@@ -5,19 +5,11 @@ import { Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { IconButton, useTheme } from 'react-native-paper';
 
-import SettingsScreen from '../screens/SettingsScreen';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
-import SetPasswordScreen from '../screens/SetPasswordScreen';
 import PinScreen from '../screens/PinScreen';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
 
 export type RouteStackParamList = {
-    Splash: undefined;
-    Settings: undefined;
-    ChangePassword: undefined;
-    ConfirmPassword: undefined;
-    SetPassword: undefined;
     PinSettings: undefined;
 };
 
@@ -30,7 +22,7 @@ export default function SettingsNavigation() {
     const navigation = useNavigation();
     const backButton = () => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate('UserHome')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                 <IconButton
                     icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'}
                     size={Platform.OS === 'android' ? 26 : 38}
@@ -56,19 +48,12 @@ export default function SettingsNavigation() {
     };
 
     return (
-        <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
+        <Stack.Navigator initialRouteName={'PinSettings'} screenOptions={defaultScreenOptions}>
             <Stack.Screen
-                name="Settings"
+                name="PinSettings"
                 options={{ title: 'Settings', headerLeft: backButton, headerBackButtonMenuEnabled: true }}
-                component={SettingsScreen}
+                component={PinSettingsScreen}
             />
-            <Stack.Screen
-                name="ConfirmPassword"
-                options={{ title: 'Confirm Password ' }}
-                component={ConfirmPasswordScreen}
-            />
-            <Stack.Screen name="SetPassword" options={{ title: 'Set Password' }} component={SetPasswordScreen} />
-            <Stack.Screen name="PinSettings" options={{ title: 'Pin Settings' }} component={PinSettingsScreen} />
         </Stack.Navigator>
     );
 }
