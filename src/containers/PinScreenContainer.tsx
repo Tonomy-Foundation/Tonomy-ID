@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import TButton from '../components/atoms/Tbutton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1 } from '../components/atoms/THeadings';
 import TPin from '../components/TPin';
 import useUserStore from '../store/userStore';
@@ -130,7 +130,7 @@ export default function PinScreenContainer({
             }
             footer={
                 <View>
-                    <TButton
+                    <TButtonContained
                         mode="contained"
                         disabled={disabled}
                         loading={loading}
@@ -138,9 +138,9 @@ export default function PinScreenContainer({
                         style={styles.marginBottom}
                     >
                         {confirming ? 'Confirm' : 'Next'}
-                    </TButton>
+                    </TButtonContained>
                     {!confirming && (
-                        <TButton
+                        <TButtonOutlined
                             mode="outlined"
                             onPress={() => {
                                 action === 'CHANGE_PIN'
@@ -150,7 +150,7 @@ export default function PinScreenContainer({
                             style={styles.marginBottom}
                         >
                             {action === 'CHANGE_PIN' ? 'Cancel' : 'Skip'}
-                        </TButton>
+                        </TButtonOutlined>
                     )}
                 </View>
             }
