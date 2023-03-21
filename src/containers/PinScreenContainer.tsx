@@ -42,7 +42,8 @@ export default function PinScreenContainer({
         // Logic for Checking pin
         // if correct then allow to enter and confirm then check  and update pin
         // else show error to enter correct pin
-
+        setPin('');
+        setDisabled(true)
         setMatched(true);
         setErrorMessage('');
 
@@ -97,8 +98,8 @@ export default function PinScreenContainer({
                                 ? matched === false
                                     ? 'Enter current Pin'
                                     : confirming
-                                        ? 'Repeat your PIN'
-                                        : 'Add a PIN'
+                                        ? 'Repeat new PIN'
+                                        : 'Create new Pin'
                                 : ''}
 
                             {(action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') ? (confirming ? 'Repeat your PIN' : 'Add a PIN') : ''}
