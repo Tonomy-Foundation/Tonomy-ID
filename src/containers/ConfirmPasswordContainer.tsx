@@ -6,6 +6,8 @@ import LayoutComponent from '../components/layout';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import { Props } from '../screens/homeScreen';
 import { commonStyles } from '../utils/theme';
+import useUserStore from '../store/userStore';
+import { KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 
 export default function ConfirmPasswordContainer({
     navigation,
@@ -15,6 +17,19 @@ export default function ConfirmPasswordContainer({
     username: string;
 }) {
     const [password, setPassword] = useState('');
+    const { user } = useUserStore();
+    const checkPassword = async () => {
+        // Checks the Password matches
+        // if(matches)
+        // {
+        // await user.keyManager.removeKey({ level: KeyManagerLevel.PIN });
+        // navigation.goBack();
+        // }
+        // else
+        // {
+        // show Modal Password incorrect
+        // }
+    };
 
     return (
         <>
@@ -32,7 +47,7 @@ export default function ConfirmPasswordContainer({
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
                                 onPress={() => navigation.navigate('SetPassword')}
-                                // disabled={password.length === 0}feature/422-Change-Password-UI
+                            // disabled={password.length === 0}feature/422-Change-Password-UI
                             >
                                 NEXT
                             </TButtonContained>

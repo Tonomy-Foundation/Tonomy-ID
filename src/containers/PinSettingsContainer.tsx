@@ -37,6 +37,7 @@ export default function PinSettingsContainer({ navigation }: Props) {
                     secondButtonColor="red"
                     secondButtonOnPress={() => {
                         setShowModal(false);
+                        navigation.navigate('ConfirmPassword');
                         // navigate to password challenge
                     }}
                 >
