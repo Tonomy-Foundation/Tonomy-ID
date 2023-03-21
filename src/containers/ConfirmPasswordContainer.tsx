@@ -12,9 +12,11 @@ import { KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 export default function ConfirmPasswordContainer({
     navigation,
     username,
+    action,
 }: {
     navigation: Props['navigation'];
     username: string;
+    action?: string;
 }) {
     const [password, setPassword] = useState('');
     const { user } = useUserStore();
@@ -46,8 +48,12 @@ export default function ConfirmPasswordContainer({
                     <View>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
-                                onPress={() => navigation.navigate('SetPassword')}
-                            // disabled={password.length === 0}feature/422-Change-Password-UI
+                                onPress={() => {
+                                    if (action === 'PASSWORD_CHALLENGE') {
+                                        checkPassword();
+                                    } else navigation.navigate('SetPassword');
+                                }}
+                                disabled={password.length === 0}
                             >
                                 NEXT
                             </TButtonContained>
