@@ -59,7 +59,7 @@ export default function PinScreenContainer({
                     if (action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') {
                         await user.savePIN(confirmPin);
                         navigation.navigate('CreateAccountFingerprint', { password });
-                    } else if (action === 'ADD_NEW') {
+                    } else if (action === 'ADD_PIN') {
                         await user.savePIN(confirmPin);
                         navigation.goBack();
                     } else if (action === 'CHANGE_PIN') {
