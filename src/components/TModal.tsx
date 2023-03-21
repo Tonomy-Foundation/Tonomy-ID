@@ -13,9 +13,10 @@ export type ModalProps = React.ComponentProps<typeof Modal> & {
     title: string;
     buttonLabel?: string;
     visible?: boolean;
-    enableLinkButton?: boolean;
-    linkButtonText?: string;
-    linkOnPress?: () => void;
+    enableSecondButton?: boolean;
+    secondButtonText?: string;
+    secondButtonColor?: string;
+    secondButtonOnPress?: () => void;
 };
 
 const styles = StyleSheet.create({
@@ -57,9 +58,16 @@ export default function TModal(props: ModalProps) {
                     </View>
                     {props.children}
                     <View style={styles.buttonView}>
-                        {props.enableLinkButton && (
-                            <TButtonText onPress={props.linkOnPress}>
-                                <Text style={{ color: theme.colors.accent }}>{props.linkButtonText}</Text>
+                        {props?.enableSecondButton && (
+                            <TButtonText onPress={props.secondButtonOnPress}>
+                                <Text
+                                    style={{
+                                        color: props?.secondButtonColor || theme.colors.accent,
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {props.secondButtonText}
+                                </Text>
                             </TButtonText>
                         )}
                         <TButtonText onPress={props.onPress}>

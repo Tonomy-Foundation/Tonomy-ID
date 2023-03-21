@@ -84,9 +84,9 @@ export default function CreateAccountContainer({ password }: { password: string 
         <>
             {showModal && (
                 <TModal
-                    enableLinkButton={true}
-                    linkButtonText={'Settings'}
-                    linkOnPress={openAppSettings}
+                    enableSecondButton={true}
+                    secondButtonText={'Settings'}
+                    secondButtonOnPress={openAppSettings}
                     onPress={() => {
                         setShowModal(false);
                         setAuthFail(false);
@@ -103,7 +103,6 @@ export default function CreateAccountContainer({ password }: { password: string 
                                     ? 'You don’t have your Face Id registered, please register it with your device.'
                                     : 'You don’t have your Fingerprint registered, please register it with your device.'}
                         </TP>
-                        {/* TODO: link to open settings */}
                     </View>
                 </TModal>
             )}
