@@ -22,10 +22,8 @@ export default function MainContainer() {
         async function main() {
             await loginToService();
             await setUserName();
-            user.communication.subscribeMessage((m) => {
+            user.communication.subscribeMessage((message) => {
                 console.log('REcieved from sso');
-
-                const message = new Message(m);
 
                 console.log(message.getPayload());
 
