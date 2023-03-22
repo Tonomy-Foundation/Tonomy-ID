@@ -4,38 +4,46 @@ import LayoutComponent from '../components/layout';
 
 import TNavigationButton from '../components/TNavigationButton';
 import { Props } from '../screens/SettingsScreen';
+import useUserStore from '../store/userStore';
+import { KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 
 export default function PinSettingsContainer({ navigation }: Props) {
-    const [pinStatus, setPinStatus] = useState<boolean>(false);
+    const [pinExist, setPinExist] = useState<boolean>(false);
+    const { user } = useUserStore();
 
     useEffect(() => {
-        // Check the Pin Status
-        // if User has already Added the Pin
-        //  then disable the "add Pin" Button and Enable the "Change Pin" and "Remove Pin" Buttons
-        // else
-        //  then enable the "add Pin" Button and disable the "Change Pin" and "Remove Pin" Buttons
-        setPinStatus(false);
+        async function checkPinStatus() {
+            const pinFound = await user.apps.keyManager.getKey({ level: KeyManagerLevel.PIN });
+
+            if (pinFound) {
+                setPinExist(true);
+            } else {
+                setPinExist(false);
+            }
+        }
+
+        checkPinStatus();
     }, []);
     return (
         <LayoutComponent
             body={
                 <View style={{ marginTop: 40 }}>
                     <TNavigationButton
-                        disabled={!pinStatus}
+                        disabled={pinExist}
                         onPress={function (): void {
                             throw new Error('Function not implemented.');
                         }}
                         title={'Add Pin'}
                     />
                     <TNavigationButton
-                        disabled={pinStatus}
+                        disabled={!pinExist}
                         onPress={function (): void {
                             navigation.navigate('ChangePin', { action: 'CHANGE_PIN' });
                         }}
                         title={'Change Pin'}
                     />
                     <TNavigationButton
-                        disabled={pinStatus}
+                        disabled={!pinExist}
                         onPress={function (): void {
                             throw new Error('Function not implemented.');
                         }}

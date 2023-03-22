@@ -9,6 +9,7 @@ import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/FingerprintUpdateScreen';
 import theme from '../utils/theme';
+import { KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 
 export default function LoginPinScreenContainer({
     navigation,
