@@ -10,13 +10,10 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import SetPasswordScreen from '../screens/SetPasswordScreen';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
-<<<<<<< HEAD
 import FaceIdSettingsContainer from '../containers/FaceIdSettingsContainer';
 import FaceIdSettingsScreen from '../screens/FaceIdSettingsScreen';
 import FingerprintSettingsScreen from '../screens/FingerprintSettingsScreen';
-=======
 import PinScreen from '../screens/PinScreen';
->>>>>>> development
 
 export type RouteStackParamList = {
     Splash: undefined;
@@ -25,12 +22,9 @@ export type RouteStackParamList = {
     ConfirmPassword: undefined;
     SetPassword: undefined;
     PinSettings: undefined;
-<<<<<<< HEAD
     FaceIdSettings: undefined;
     FingerprintSettings: undefined;
-=======
     ChangePin: { action: string };
->>>>>>> development
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
