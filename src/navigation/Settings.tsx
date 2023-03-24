@@ -9,8 +9,11 @@ import SettingsScreen from '../screens/SettingsScreen';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import SetPasswordScreen from '../screens/SetPasswordScreen';
-import PinScreen from '../screens/PinScreen';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
+import FaceIdSettingsContainer from '../containers/FaceIdSettingsContainer';
+import FaceIdSettingsScreen from '../screens/FaceIdSettingsScreen';
+import FingerprintSettingsScreen from '../screens/FingerprintSettingsScreen';
+import PinScreen from '../screens/PinScreen';
 
 export type RouteStackParamList = {
     Splash: undefined;
@@ -19,6 +22,9 @@ export type RouteStackParamList = {
     ConfirmPassword: undefined;
     SetPassword: undefined;
     PinSettings: undefined;
+    FaceIdSettings: undefined;
+    FingerprintSettings: undefined;
+    ChangePin: { action: string };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -69,6 +75,14 @@ export default function SettingsNavigation() {
             />
             <Stack.Screen name="SetPassword" options={{ title: 'Set Password' }} component={SetPasswordScreen} />
             <Stack.Screen name="PinSettings" options={{ title: 'Pin Settings' }} component={PinSettingsScreen} />
+            <Stack.Screen name="FaceIdSettings" options={{ title: 'Face ID' }} component={FaceIdSettingsScreen} />
+            <Stack.Screen
+                name="FingerprintSettings"
+                options={{ title: 'Fingerprint' }}
+                component={FingerprintSettingsScreen}
+            />
+            <Stack.Screen name="ChangePin" options={{ title: 'Change Pin' }} component={PinScreen} />
+            <Stack.Screen name="AddPin" options={{ title: 'Add Pin' }} component={PinScreen} />
         </Stack.Navigator>
     );
 }
