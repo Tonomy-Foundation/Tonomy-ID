@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Image, BackHandler } from 'react-native';
 import { DrawerItemProps } from 'react-native-paper';
 import { Message, TonomyUsername, User } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
@@ -37,6 +37,14 @@ export default function MainContainer() {
         }
 
         main();
+
+        const backAction = () => {
+            BackHandler.exitApp();
+        };
+
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+        return () => backHandler.remove();
     }, []);
 
     //TODO: this should be moved to a store or a provider or a hook
