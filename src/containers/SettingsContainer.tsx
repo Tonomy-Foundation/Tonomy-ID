@@ -43,7 +43,7 @@ export default function SettingsContainer({ navigation }: Props) {
                                 navigation.navigate('FaceIdSettings');
                             }}
                             title={'FaceID'}
-                            icon={<FaceIdIcon style={{ maxWidth: 24, marginHorizontal: 14 }} />}
+                            icon={<FaceIdIcon style={styles.faceIdIcon} />}
                         />
                     )}
                     <TP size={1}>AUTONOMOUS ACCOUNT RECOVERY</TP>
@@ -96,3 +96,7 @@ export default function SettingsContainer({ navigation }: Props) {
         ></LayoutComponent>
     );
 }
+
+const styles = StyleSheet.create({
+    faceIdIcon: { maxWidth: 24, marginHorizontal: 14 },
+});
