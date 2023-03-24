@@ -3,10 +3,6 @@ import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigatio
 import CustomDrawer from '../components/CustomDrawer';
 import { useTheme } from 'react-native-paper';
 import MainScreen from '../screens/MainScreen';
-import settings from '../settings';
-import MainNavigation from './Main';
-import SSOLoginScreen from '../screens/SSOLoginScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 import SettingsNavigation from './Settings';
 
 export type RouteDrawerParamList = {
@@ -14,6 +10,8 @@ export type RouteDrawerParamList = {
     Settings: undefined;
     Help: undefined;
     Logout: undefined;
+    ChangePin: undefined;
+
     SSO: { requests: string; platform: 'mobile' | 'browser' };
 };
 
@@ -40,13 +38,12 @@ export default function DrawerNavigation() {
         >
             {/* change component to Main Navigation when bottom nav should be added */}
             <Drawer.Screen name="UserHome" options={{ title: 'Home' }} component={MainScreen} />
+
             <Drawer.Screen
                 name="Settings"
                 options={{ title: 'Settings', headerShown: false }}
                 component={SettingsNavigation}
             />
-            {/* <Drawer.Screen name="Help" component={TestScreen} options={{ title: 'Help and Info' }} /> */}
-            {/* <Drawer.Screen name="Logout" component={TestScreen} /> */}
         </Drawer.Navigator>
     );
 }

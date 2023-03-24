@@ -2,7 +2,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 
-import { RouteStackParamList } from '../navigation/Pin';
+import { RouteStackParamList } from '../navigation/Settings';
 import PinSettingsContainer from '../containers/PinSettingsContainer';
 
 export type Props = NativeStackScreenProps<RouteStackParamList, 'PinSettings'>;
