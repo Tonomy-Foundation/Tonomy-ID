@@ -91,7 +91,10 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
 
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('CreateAccountPin', { password });
+        navigation.navigate('CreateAccountPin', {
+            password,
+            action: 'CREATE_ACCOUNT',
+        });
     }
 
     async function onUsernameErrorModalPress() {

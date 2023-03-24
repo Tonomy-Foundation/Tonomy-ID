@@ -42,6 +42,7 @@ export default function LoginPasswordContainer({
             if (result?.account_name !== undefined) {
                 navigation.navigate('CreateAccountPin', {
                     password: password,
+                    action: 'LOGIN_ACCOUNT',
                 });
             }
         } catch (e: any) {
