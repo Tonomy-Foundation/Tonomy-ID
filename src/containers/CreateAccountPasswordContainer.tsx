@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TLink from '../components/atoms/TA';
@@ -181,10 +181,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 CREATE ACCOUNT
                             </TButtonContained>
                         </View>
-                        <View style={commonStyles.alignItemsCenter}>
-                            <TP size={1}>
-                                Already have an account? <TLink href="login">Login</TLink>
-                            </TP>
+                        <View style={styles.textContainer}>
+                            <TP size={1}>Already have an account? </TP>
+                            <TouchableOpacity onPress={() => navigation.navigate('LoginUsername')}>
+                                <TP size={1} style={styles.link}>
+                                    Login
+                                </TP>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 }
@@ -248,6 +251,13 @@ const styles = StyleSheet.create({
     },
     labelText: {
         color: theme.colors.primary,
+    },
+    link: {
+        color: theme.colors.primary,
+    },
+    textContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
 });
 
