@@ -30,7 +30,7 @@ export const commonStyles = StyleSheet.create({
         textAlign: 'center',
     },
     marginBottom: {
-        marginBottom: 16,
+        marginBottom: 14,
     },
     marginTopTextCenter: {
         marginTop: 16,
