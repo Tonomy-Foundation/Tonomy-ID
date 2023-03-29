@@ -50,6 +50,11 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         navigation.navigate('CreateAccountPassword');
     }
 
+    const onTextChange = (value) => {
+        setUsername(value);
+        if (errorMessage !== '') setErrorMessage('');
+    };
+
     return (
         <LayoutComponent
             body={
