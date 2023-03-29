@@ -9,7 +9,12 @@ import {
     randomString,
     sha256,
     createSigner,
+    throwError,
+    SdkErrors,
+    KeyStorage,
+    CheckKeyOptions,
 } from '@tonomy/tonomy-id-sdk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type KeyStorage = {
     privateKey: PrivateKey;
@@ -19,13 +24,6 @@ type KeyStorage = {
     salt?: string;
 };
 export default class RNKeyManager implements KeyManager {
-    keys: any;
-
-    constructor() {
-        this.keys = {};
-    }
-
-    // store key in object
     async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
         const keyStore: KeyStorage = {
             privateKey: options.privateKey,
@@ -33,36 +31,36 @@ export default class RNKeyManager implements KeyManager {
         };
 
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
-            if (!options.challenge) throw new Error('Challenge missing');
+            if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
             keyStore.salt = randomString(32);
             keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
         }
 
-        await SecureStore.setItemAsync(options.level, JSON.stringify(keyStore), {
-            //TODO fix SDK so that no keys be stored if skipped
-            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+        // Store the private key is secure storage
+        await SecureStore.setItemAsync('tonomy.id.key.' + options.level, keyStore.privateKey.toString(), {
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
+
+        // Store the rest of the data in async storage
+        const store = keyStore.privateKey as any;
+
+        delete store.privateKey;
+        await AsyncStorage.setItem('tonomy.id.key.' + options.level, JSON.stringify(store));
 
         return keyStore.publicKey;
     }
 
     async signData(options: SignDataOptions): Promise<string | Signature> {
-        const key = await SecureStore.getItemAsync(options.level, {
-            //TODO fix SDK so that no keys be stored if skipped
-            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
-        });
-
-        if (!key) throw new Error('No key for this level');
-        const keyStore = JSON.parse(key) as KeyStorage;
-
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
-            if (!options.challenge) throw new Error('Challenge missing');
-            const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
-
-            if (keyStore.hashedSaltedChallenge !== hashedSaltedChallenge) throw new Error('Challenge does not match');
+            if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
+            await this.checkKey({ level: options.level, challenge: options.challenge });
         }
 
-        const privateKey = PrivateKey.from(keyStore.privateKey);
+        const secureData = await SecureStore.getItemAsync(options.level, {
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+        });
+
+        const privateKey = PrivateKey.from(secureData);
 
         if (options.outputType === 'jwt') {
             if (typeof options.data !== 'string') throw new Error('data must be a string');
@@ -84,21 +82,33 @@ export default class RNKeyManager implements KeyManager {
         }
     }
 
+    async checkKey(options: CheckKeyOptions): Promise<boolean> {
+        const asyncStorageData = await AsyncStorage.getItem('tonomy.id.key.' + options.level);
+
+        if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
+
+        const keyStore: KeyStorage = JSON.parse(asyncStorageData);
+
+        if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
+            if (!options.challenge) throw new Error('Challenge missing');
+            const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
+
+            return keyStore.hashedSaltedChallenge !== hashedSaltedChallenge;
+        } else throw throwError('Invalid Level', SdkErrors.InvalidKeyLevel);
+    }
+
     async removeKey(options: GetKeyOptions): Promise<void> {
         await SecureStore.deleteItemAsync(options.level, {
-            //TODO fix SDK so that no keys be stored if skipped
-            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
     }
 
     async getKey(options: GetKeyOptions): Promise<PublicKey | null> {
-        const key = await SecureStore.getItemAsync(options.level, {
-            //TODO fix SDK so that no keys be stored if skipped
-            // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
-        });
+        const asyncStorageData = await AsyncStorage.getItem('tonomy.id.key.' + options.level);
 
-        if (!key) return null;
-        const keyStore = JSON.parse(key) as KeyStorage;
+        if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
+
+        const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
         return keyStore.publicKey;
     }
