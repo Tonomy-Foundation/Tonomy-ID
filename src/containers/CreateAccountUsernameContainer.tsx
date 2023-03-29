@@ -57,12 +57,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                     <TH1>Create your username</TH1>
                     <TP>Username</TP>
                     <View style={styles.inputContainer}>
-                        <TUsername
-                            errorText={errorMessage}
-                            // suffix={settings.config.accountSuffix}
-                            value={username}
-                            onChangeText={setUsername}
-                        />
+                        <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
                     </View>
                     <TCaption style={styles.caption}>You can always change your username later</TCaption>
                 </View>
