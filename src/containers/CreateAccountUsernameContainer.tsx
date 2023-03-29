@@ -50,6 +50,11 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         navigation.navigate('CreateAccountPassword');
     }
 
+    const onTextChange = (value) => {
+        setUsername(value);
+        if (errorMessage !== '') setErrorMessage('');
+    };
+
     return (
         <LayoutComponent
             body={
@@ -61,7 +66,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                             errorText={errorMessage}
                             suffix={settings.config.accountSuffix}
                             value={username}
-                            onChangeText={setUsername}
+                            onChangeText={onTextChange}
                         />
                     </View>
                     <TCaption style={styles.caption}>You can always change your username later</TCaption>
