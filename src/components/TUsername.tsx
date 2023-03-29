@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text, TextInput, HelperText } from 'react-native-paper';
+import { TextInput, HelperText } from 'react-native-paper';
 
-export type TTextInputProps = React.ComponentProps<typeof TextInput> & { errorText?: string; suffix: string };
+export type TTextInputProps = React.ComponentProps<typeof TextInput> & { errorText?: string };
 
 export default function TUsername(props: TTextInputProps) {
     const showError: boolean = !!props.errorText && props.errorText.length > 0;
@@ -11,7 +11,6 @@ export default function TUsername(props: TTextInputProps) {
         <View>
             <View style={styles.username}>
                 <TextInput underlineColor="transparent" style={styles.usernameInput} {...props} error={showError} />
-                <Text style={styles.accountSuffix}>{'.people' + props.suffix}</Text>
             </View>
             {showError && (
                 <View>
