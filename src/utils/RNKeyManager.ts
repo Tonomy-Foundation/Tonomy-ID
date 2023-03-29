@@ -38,7 +38,7 @@ export default class RNKeyManager implements KeyManager {
 
         // Store the private key is secure storage
         await SecureStore.setItemAsync('tonomy.id.key.' + options.level, keyStore.privateKey.toString(), {
-            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
 
         // Store the rest of the data in async storage
@@ -57,7 +57,7 @@ export default class RNKeyManager implements KeyManager {
         }
 
         const secureData = await SecureStore.getItemAsync(options.level, {
-            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
 
         const privateKey = PrivateKey.from(secureData);
@@ -99,7 +99,7 @@ export default class RNKeyManager implements KeyManager {
 
     async removeKey(options: GetKeyOptions): Promise<void> {
         await SecureStore.deleteItemAsync(options.level, {
-            requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
+            requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
     }
 
