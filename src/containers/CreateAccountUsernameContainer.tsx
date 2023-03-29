@@ -59,7 +59,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                     <View style={styles.inputContainer}>
                         <TUsername
                             errorText={errorMessage}
-                            suffix={settings.config.accountSuffix}
+                            // suffix={settings.config.accountSuffix}
                             value={username}
                             onChangeText={setUsername}
                         />

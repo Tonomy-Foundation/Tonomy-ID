@@ -38,7 +38,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                             <TUsername
                                 value={username}
                                 onChangeText={setUsername}
-                                suffix={settings.config.accountSuffix}
+                                // suffix={settings.config.accountSuffix}
                             />
                         </View>
                     </View>
