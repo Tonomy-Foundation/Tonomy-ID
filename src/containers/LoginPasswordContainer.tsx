@@ -15,6 +15,7 @@ import settings from '../settings';
 import useUserStore from '../store/userStore';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
 
 export default function LoginPasswordContainer({
     navigation,
@@ -36,7 +37,8 @@ export default function LoginPasswordContainer({
         try {
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
-                password
+                password,
+                { keyFromPasswordFn: generatePrivateKeyFromPassword }
             );
 
             if (result?.account_name !== undefined) {

@@ -1,5 +1,4 @@
-import { Bytes, Checksum256, KeyType, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
-import argon2 from 'react-native-argon2';
+import { Bytes, Checksum256, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
 import * as SecureStore from 'expo-secure-store';
 import {
     KeyManager,
@@ -7,10 +6,8 @@ import {
     SignDataOptions,
     StoreKeyOptions,
     KeyManagerLevel,
-    randomBytes,
     randomString,
     sha256,
-    decodeHex,
     createSigner,
 } from '@tonomy/tonomy-id-sdk';
 
@@ -26,28 +23,6 @@ export default class RNKeyManager implements KeyManager {
 
     constructor() {
         this.keys = {};
-    }
-
-    async generatePrivateKeyFromPassword(
-        password: string,
-        salt?: Checksum256 | undefined
-    ): Promise<{ privateKey: PrivateKey; salt: Checksum256 }> {
-        if (!salt) salt = Checksum256.from(randomBytes(32));
-        const result = await argon2(password, decodeHex(salt.hexString), {
-            mode: 'argon2id',
-            iterations: 3,
-            memory: 16384,
-            parallelism: 1,
-            hashLength: 32,
-        });
-
-        const bytes = Bytes.from(result.rawHash, 'hex');
-        const privateKey = new PrivateKey(KeyType.K1, bytes);
-
-        return {
-            privateKey,
-            salt,
-        };
     }
 
     // store key in object
@@ -114,10 +89,6 @@ export default class RNKeyManager implements KeyManager {
             //TODO fix SDK so that no keys be stored if skipped
             // requireAuthentication: options.level === KeyManagerLevel.FINGERPRINT,
         });
-    }
-
-    generateRandomPrivateKey(): PrivateKey {
-        return new PrivateKey(KeyType.K1, new Bytes(randomBytes(32)));
     }
 
     async getKey(options: GetKeyOptions): Promise<PublicKey | null> {
