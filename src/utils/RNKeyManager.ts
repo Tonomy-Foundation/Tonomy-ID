@@ -65,7 +65,7 @@ export default class RNKeyManager implements KeyManager {
                 throwError('Invalid PIN', SdkErrors.PinInvalid);
         }
 
-        const secureData = await SecureStore.getItemAsync(options.level, {
+        const secureData = await SecureStore.getItemAsync(KEY_STORAGE_NAMESPACE + options.level, {
             requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
 
@@ -102,7 +102,7 @@ export default class RNKeyManager implements KeyManager {
             if (!options.challenge) throw new Error('Challenge missing');
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
 
-            return keyStore.hashedSaltedChallenge !== hashedSaltedChallenge;
+            return keyStore.hashedSaltedChallenge === hashedSaltedChallenge;
         } else throw throwError('Invalid Level', SdkErrors.InvalidKeyLevel);
     }
 
