@@ -61,7 +61,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 <View>
                     <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
                     <View style={styles.innerContainer}>
-                        <TP>Username</TP>
+                        <TP style={styles.inputHeader}>Username</TP>
                         <View style={styles.inputContainer}>
                             <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
                         </View>
@@ -112,6 +112,10 @@ const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
         fontSize: 14,
+        color: '#939393',
+    },
+    inputHeader: {
+        color: '#939393',
     },
     inputContainer: {
         borderWidth: 1,

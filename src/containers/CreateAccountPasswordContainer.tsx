@@ -112,7 +112,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                             <View>
                                 <TP
                                     size={1}
-                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
+                                    style={
+                                        errorMessage.length > 0
+                                            ? errorStyles.labelError
+                                            : password.length <= 0
+                                            ? styles.defaultInputName
+                                            : styles.labelText
+                                    }
                                 >
                                     Password
                                 </TP>
@@ -125,7 +131,15 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 />
                             </View>
                             <View>
-                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
+                                <TP
+                                    style={
+                                        confirmErrorMessage.length > 0
+                                            ? errorStyles.labelError
+                                            : password2.length <= 0
+                                            ? styles.defaultInputName
+                                            : styles.labelText
+                                    }
+                                >
                                     Confirm Password
                                 </TP>
                                 <TPasswordInput
@@ -207,7 +221,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 <View>
                     <Text>
                         Username{' '}
-                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>{' '}
+                        {/* <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>{' '} */}
                         is already taken. Please choose another one.
                     </Text>
                 </View>
@@ -221,7 +235,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 <View>
                     <Text>
                         Your username is{' '}
-                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>
+                        {/* <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text> */}
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
@@ -270,6 +284,9 @@ const styles = StyleSheet.create({
     innerContainer: {
         height: '90%',
         justifyContent: 'center',
+    },
+    defaultInputName: {
+        color: '#939393',
     },
 });
 
