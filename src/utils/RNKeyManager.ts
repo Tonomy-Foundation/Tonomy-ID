@@ -46,7 +46,7 @@ export default class RNKeyManager implements KeyManager {
         });
 
         // Store the rest of the data in async storage
-        const store = keyStore.privateKey as any;
+        const store = keyStore as any;
 
         delete store.privateKey;
         await AsyncStorage.setItem(KEY_STORAGE_NAMESPACE + options.level, JSON.stringify(store));
@@ -115,7 +115,7 @@ export default class RNKeyManager implements KeyManager {
     async getKey(options: GetKeyOptions): Promise<PublicKey> {
         const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 
-        if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
+        if (!asyncStorageData) throwError(`No key for level ${options.level}`, SdkErrors.KeyNotFound);
 
         const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
