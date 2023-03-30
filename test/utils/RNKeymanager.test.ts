@@ -48,6 +48,25 @@ jest.mock('expo-secure-store', () => {
     };
 });
 
+// mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () => {
+    const storage: any = {};
+
+    return {
+        getItem: jest.fn(async (key: string, callback?) => {
+            return storage[key];
+        }),
+
+        setItem: jest.fn(async (key: string, value: string, callback?) => {
+            storage[key] = value;
+        }),
+
+        removeItem: jest.fn(async (key: string, callback?) => {
+            delete storage[key];
+        }),
+    };
+});
+
 describe('RN Key Manager', () => {
     const rn = new RNKeyManager();
 
@@ -70,7 +89,7 @@ describe('RN Key Manager', () => {
 
     // get key password
     it('can get a key password', async () => {
-        const { privateKey, salt } = await generatePrivateKeyFromPassword('test');
+        const { privateKey } = await generatePrivateKeyFromPassword('test');
         const publicKey = await rn.storeKey({
             privateKey,
             level: KeyManagerLevel.PASSWORD,
@@ -79,9 +98,9 @@ describe('RN Key Manager', () => {
         const key = await rn.getKey({
             level: KeyManagerLevel.PASSWORD,
         });
-        const pub = PublicKey.from(key);
 
-        expect(pub).toBeInstanceOf(PublicKey);
+        expect(key).toBeInstanceOf(PublicKey);
+        expect(key.toString()).toEqual(publicKey.toString());
     });
 
     it('generates same private key from same salt', async () => {

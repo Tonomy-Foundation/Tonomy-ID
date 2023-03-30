@@ -119,6 +119,6 @@ export default class RNKeyManager implements KeyManager {
 
         const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
-        return keyStore.publicKey;
+        return PublicKey.from(keyStore.publicKey);
     }
 }
