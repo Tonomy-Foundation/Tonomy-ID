@@ -107,7 +107,7 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async removeKey(options: GetKeyOptions): Promise<void> {
-        await SecureStore.deleteItemAsync(options.level, {
+        await SecureStore.deleteItemAsync(KEY_STORAGE_NAMESPACE + options.level, {
             requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
     }
