@@ -13,6 +13,7 @@ import {
     SdkErrors,
     KeyStorage,
     CheckKeyOptions,
+    STORAGE_NAMESPACE,
 } from '@tonomy/tonomy-id-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -23,6 +24,9 @@ type KeyStorage = {
     hashedSaltedChallenge?: string;
     salt?: string;
 };
+
+const KEY_STORAGE_NAMESPACE = STORAGE_NAMESPACE + 'key.';
+
 export default class RNKeyManager implements KeyManager {
     async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
         const keyStore: KeyStorage = {
@@ -37,7 +41,7 @@ export default class RNKeyManager implements KeyManager {
         }
 
         // Store the private key is secure storage
-        await SecureStore.setItemAsync('tonomy.id.key.' + options.level, keyStore.privateKey.toString(), {
+        await SecureStore.setItemAsync(KEY_STORAGE_NAMESPACE + options.level, keyStore.privateKey.toString(), {
             requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
 
@@ -45,7 +49,7 @@ export default class RNKeyManager implements KeyManager {
         const store = keyStore.privateKey as any;
 
         delete store.privateKey;
-        await AsyncStorage.setItem('tonomy.id.key.' + options.level, JSON.stringify(store));
+        await AsyncStorage.setItem(KEY_STORAGE_NAMESPACE + options.level, JSON.stringify(store));
 
         return keyStore.publicKey;
     }
@@ -88,7 +92,7 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async checkKey(options: CheckKeyOptions): Promise<boolean> {
-        const asyncStorageData = await AsyncStorage.getItem('tonomy.id.key.' + options.level);
+        const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 
         if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
 
@@ -109,7 +113,7 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async getKey(options: GetKeyOptions): Promise<PublicKey> {
-        const asyncStorageData = await AsyncStorage.getItem('tonomy.id.key.' + options.level);
+        const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 
         if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
 
