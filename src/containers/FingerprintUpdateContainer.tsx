@@ -62,8 +62,14 @@ export default function CreateAccountContainer({ password }: { password: string 
     };
 
     const onSkip = async () => {
-        await user.saveLocal();
-        await updateKeys();
+        try {
+            await user.saveLocal();
+            await updateKeys();
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+            return;
+        }
+
         navigation.navigate('Drawer');
     };
 

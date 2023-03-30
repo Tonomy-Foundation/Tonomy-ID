@@ -25,7 +25,7 @@ export default function LoginPasswordContainer({
     username: string;
 }) {
     const errorsStore = useErrorStore();
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const user = useUserStore().user;
