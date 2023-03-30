@@ -30,6 +30,7 @@ const layoutStyles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
+        backgroundColor: '#FDFEFF',
     },
     body: { flex: 3 },
     footerHint: { flex: 1, justifyContent: 'flex-end' },
