@@ -59,10 +59,12 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         <LayoutComponent
             body={
                 <View>
-                    <TH1>Create your username</TH1>
-                    <TP>Username</TP>
-                    <View style={styles.inputContainer}>
-                        <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
+                    <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
+                    <View style={styles.innerContainer}>
+                        <TP>Username</TP>
+                        <View style={styles.inputContainer}>
+                            <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
+                        </View>
                     </View>
                 </View>
             }
