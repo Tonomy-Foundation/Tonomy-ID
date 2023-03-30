@@ -10,7 +10,13 @@ export default function TUsername(props: TTextInputProps) {
     return (
         <View>
             <View style={styles.username}>
-                <TextInput underlineColor="transparent" style={styles.usernameInput} {...props} error={showError} />
+                <TextInput
+                    underlineColor="transparent"
+                    activeUnderlineColor="transparent"
+                    style={styles.usernameInput}
+                    {...props}
+                    error={showError}
+                />
             </View>
             {showError && (
                 <View>
