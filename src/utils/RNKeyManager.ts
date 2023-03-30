@@ -53,7 +53,12 @@ export default class RNKeyManager implements KeyManager {
     async signData(options: SignDataOptions): Promise<string | Signature> {
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
             if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
-            await this.checkKey({ level: options.level, challenge: options.challenge });
+            const validChallenge = await this.checkKey({ level: options.level, challenge: options.challenge });
+
+            if (!validChallenge && options.level === KeyManagerLevel.PASSWORD)
+                throwError('Invalid password', SdkErrors.PasswordInvalid);
+            if (!validChallenge && options.level === KeyManagerLevel.PIN)
+                throwError('Invalid PIN', SdkErrors.PinInvalid);
         }
 
         const secureData = await SecureStore.getItemAsync(options.level, {
@@ -103,7 +108,7 @@ export default class RNKeyManager implements KeyManager {
         });
     }
 
-    async getKey(options: GetKeyOptions): Promise<PublicKey | null> {
+    async getKey(options: GetKeyOptions): Promise<PublicKey> {
         const asyncStorageData = await AsyncStorage.getItem('tonomy.id.key.' + options.level);
 
         if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
