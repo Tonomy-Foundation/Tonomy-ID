@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, ThemeProvider } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import TUsername from '../components/TUsername';
@@ -50,21 +50,23 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         navigation.navigate('CreateAccountPassword');
     }
 
+    const onTextChange = (value) => {
+        setUsername(value);
+        if (errorMessage !== '') setErrorMessage('');
+    };
+
     return (
         <LayoutComponent
             body={
                 <View>
-                    <TH1>Create your username</TH1>
-                    <TP>Username</TP>
-                    <View style={styles.inputContainer}>
-                        <TUsername
-                            errorText={errorMessage}
-                            suffix={settings.config.accountSuffix}
-                            value={username}
-                            onChangeText={setUsername}
-                        />
+                    <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
+                    <View style={styles.innerContainer}>
+                        <TP>Username</TP>
+                        <View style={styles.inputContainer}>
+                            <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
+                        </View>
+                        <TCaption style={styles.caption}>You can always change your username later</TCaption>
                     </View>
-                    <TCaption style={styles.caption}>You can always change your username later</TCaption>
                 </View>
             }
             footerHint={
@@ -72,7 +74,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                     <View style={commonStyles.marginBottom}>
                         <TInfoBox
                             align="left"
-                            icon="security"
+                            icon="privacy"
                             description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
                          Foundation can see it."
                             linkUrl={settings.config.links.securityLearnMore}
@@ -92,10 +94,13 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                             Next
                         </TButtonContained>
                     </View>
-                    <View style={commonStyles.alignItemsCenter}>
-                        <TP size={1}>
-                            Already have an account? <TLink href="login">Login</TLink>
-                        </TP>
+                    <View style={styles.textContainer}>
+                        <TP size={1}>Already have an account? </TP>
+                        <TouchableOpacity onPress={() => navigation.navigate('LoginUsername')}>
+                            <TP size={1} style={styles.link}>
+                                Login
+                            </TP>
+                        </TouchableOpacity>
                     </View>
                 </View>
             }
@@ -106,9 +111,31 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
+        fontSize: 14,
     },
     inputContainer: {
         borderWidth: 1,
+        height: 60,
+        justifyContent: 'center',
         borderColor: theme.colors.disabled,
+        borderRadius: 6,
+    },
+    link: {
+        color: theme.colors.primary,
+    },
+    textContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    headTitle: {
+        marginTop: 20,
+        fontSize: 24,
+    },
+    outerContainer: {
+        flex: 1,
+    },
+    innerContainer: {
+        justifyContent: 'center',
+        height: '90%',
     },
 });

@@ -6,10 +6,11 @@ import { TCaption, TP } from './atoms/THeadings';
 
 export type NavigationButtonProps = {
     onPress: () => void;
-    icon?: string;
+    icon?: string | React.ReactNode;
     title: string;
     description?: string;
     disabled?: boolean;
+    color?: string;
 };
 
 export default function TNavigationButton(props: NavigationButtonProps) {
@@ -19,11 +20,12 @@ export default function TNavigationButton(props: NavigationButtonProps) {
             style={[styles.button, commonStyles.marginBottom]}
             disabled={props.disabled}
         >
-            {props.icon && (
+            {props.icon && typeof props.icon === 'string' && (
                 <View style={styles.iconContainer}>
                     <IconButton icon={props.icon} />
                 </View>
             )}
+            {props.icon && typeof props.icon === 'object' && <View style={styles.iconContainer}>{props.icon}</View>}
             {props.description ? (
                 <View style={styles.textContainer}>
                     <TP>{props.title}</TP>

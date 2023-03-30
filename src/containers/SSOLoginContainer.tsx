@@ -111,7 +111,9 @@ export default function SSOLoginContainer({
                 <View style={styles.container}>
                     <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
 
-                    {username?.username && <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>}
+                    {username?.username && (
+                        <TH1 style={commonStyles.textAlignCenter}>{username?.getBaseUsername()}</TH1>
+                    )}
 
                     {ssoApp && (
                         <View style={[styles.appDialog, styles.marginTop]}>
