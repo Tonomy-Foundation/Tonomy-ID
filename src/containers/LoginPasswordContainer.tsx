@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         width: '100%',
-        height: '60%',
+        height: '100%',
+        justifyContent: 'center',
     },
     link: {
         color: theme.colors.primary,

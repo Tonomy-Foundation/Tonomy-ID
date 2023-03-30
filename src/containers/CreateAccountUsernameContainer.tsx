@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         height: 60,
         justifyContent: 'center',
         borderColor: theme.colors.disabled,
-        borderRadius: 6,
+        borderRadius: 8,
     },
     link: {
         color: theme.colors.primary,
