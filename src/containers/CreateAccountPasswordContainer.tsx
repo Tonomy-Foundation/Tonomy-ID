@@ -107,37 +107,42 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             <LayoutComponent
                 body={
                     <View>
-                        <TH1 style={styles.headline}>Create password</TH1>
-                        <View>
-                            <TP size={1} style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
-                                Password
-                            </TP>
-                            <TPasswordInput
-                                value={password}
-                                onChangeText={setPassword}
-                                errorText={errorMessage}
-                                outlineColor={errorMessage.length > 0 ? theme.colors.error : theme.colors.primary}
-                                style={commonStyles.marginBottom}
-                            />
-                        </View>
-                        <View>
-                            <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
-                                Confirm Password
-                            </TP>
-                            <TPasswordInput
-                                value={password2}
-                                onChangeText={setPassword2}
-                                errorText={confirmErrorMessage}
-                                outlineColor={
-                                    confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
-                                }
-                                style={commonStyles.marginBottom}
-                            />
-                        </View>
-                        <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
-                            <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
-                                Remember your password for future use
-                            </TP>
+                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Create password</TH1>
+                        <View style={styles.innerContainer}>
+                            <View>
+                                <TP
+                                    size={1}
+                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
+                                >
+                                    Password
+                                </TP>
+                                <TPasswordInput
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    errorText={errorMessage}
+                                    outlineColor={errorMessage.length > 0 ? theme.colors.error : theme.colors.primary}
+                                    style={commonStyles.marginBottom}
+                                />
+                            </View>
+                            <View>
+                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
+                                    Confirm Password
+                                </TP>
+                                <TPasswordInput
+                                    value={password2}
+                                    onChangeText={setPassword2}
+                                    errorText={confirmErrorMessage}
+                                    outlineColor={
+                                        confirmErrorMessage.length > 0 ? theme.colors.error : theme.colors.primary
+                                    }
+                                    style={commonStyles.marginBottom}
+                                />
+                            </View>
+                            <View style={[commonStyles.marginBottom, commonStyles.alignItemsCenter]}>
+                                <TP size={1} style={[styles.rememberPasswordText, styles.passwordText]}>
+                                    Remember your password for future use
+                                </TP>
+                            </View>
                         </View>
                     </View>
                 }
@@ -197,10 +202,12 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 onPress={onUsernameErrorModalPress}
                 title="Please choose another username"
                 expected={true}
+                icon={''}
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>{' '}
+                        Username{' '}
+                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>{' '}
                         is already taken. Please choose another one.
                     </Text>
                 </View>
@@ -214,7 +221,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 <View>
                     <Text>
                         Your username is{' '}
-                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>
+                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
@@ -244,7 +251,8 @@ const styles = StyleSheet.create({
         color: theme.colors.error,
     },
     headline: {
-        fontWeight: 'bold',
+        marginTop: 20,
+        fontSize: 24,
     },
     passwordText: {
         alignSelf: 'flex-end',
@@ -257,6 +265,10 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    innerContainer: {
+        height: '90%',
         justifyContent: 'center',
     },
 });
