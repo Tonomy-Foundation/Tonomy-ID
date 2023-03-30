@@ -31,7 +31,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
         <LayoutComponent
             body={
                 <View>
-                    <TH1>Username</TH1>
+                    <TH1 style={commonStyles.textAlignCenter}>Username</TH1>
                     <View style={styles.container}>
                         <TP size={1}>Username</TP>
                         <View style={styles.inputContainer}>
