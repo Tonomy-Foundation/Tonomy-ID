@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { BackHandler, Image, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';

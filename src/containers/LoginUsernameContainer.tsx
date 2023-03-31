@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -9,7 +9,6 @@ import TUsername from '../components/TUsername';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import useUserStore from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
@@ -36,11 +35,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                     <View style={styles.container}>
                         <TP size={1}>Username</TP>
                         <View style={styles.inputContainer}>
-                            <TUsername
-                                value={username}
-                                onChangeText={setUsername}
-                                suffix={settings.config.accountSuffix}
-                            />
+                            <TUsername value={username} onChangeText={setUsername} />
                         </View>
                     </View>
                 </View>

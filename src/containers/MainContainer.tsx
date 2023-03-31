@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Image, BackHandler } from 'react-native';
 import { DrawerItemProps } from 'react-native-paper';
 import { Message, TonomyUsername, User } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
@@ -79,7 +79,7 @@ export default function MainContainer() {
             {!qrOpened && (
                 <View style={styles.container}>
                     <View style={styles.header}>
-                        <TH2>{username?.username}</TH2>
+                        <TH2>{username?.getBaseUsername()}</TH2>
                         <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
                         <TButtonContained
                             style={[styles.button, styles.marginTop]}

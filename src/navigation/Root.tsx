@@ -34,7 +34,7 @@ export type RouteStackParamList = {
     Home: undefined;
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
-    CreateAccountPin: { password: string };
+    CreateAccountPin: { password: string; action: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
 
@@ -133,6 +133,7 @@ export default function RootNavigation() {
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
+                    {/* <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} /> */}
                     <Stack.Screen
                         name="Drawer"
                         component={DrawerNavigation}

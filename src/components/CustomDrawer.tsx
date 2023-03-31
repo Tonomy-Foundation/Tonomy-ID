@@ -14,6 +14,7 @@ const icons: Record<keyof RouteDrawerParamList, IconSource> = {
     Settings: 'cog',
     Help: 'help-circle',
     Logout: 'logout',
+    ChangePin: 'security',
     SSO: 'login',
 };
 
