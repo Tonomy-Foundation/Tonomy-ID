@@ -215,7 +215,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 <View>
                     <Text>
                         Username{' '}
-                        {/* <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>{' '} */}
+                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>{' '}
                         is already taken. Please choose another one.
                     </Text>
                 </View>
@@ -229,7 +229,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 <View>
                     <Text>
                         Your username is{' '}
-                        {/* <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text> */}
+                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
