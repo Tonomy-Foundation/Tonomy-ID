@@ -59,12 +59,14 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         <LayoutComponent
             body={
                 <View>
-                    <TH1>Create your username</TH1>
-                    <TP>Username</TP>
-                    <View style={styles.inputContainer}>
-                        <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
+                    <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
+                    <View style={styles.innerContainer}>
+                        <TP style={styles.inputHeader}>Username</TP>
+                        <View style={styles.inputContainer}>
+                            <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
+                        </View>
+                        <TCaption style={styles.caption}>You can always change your username later</TCaption>
                     </View>
-                    <TCaption style={styles.caption}>You can always change your username later</TCaption>
                 </View>
             }
             footerHint={
@@ -109,11 +111,18 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
+        fontSize: 14,
+        color: '#939393',
+    },
+    inputHeader: {
+        color: '#939393',
     },
     inputContainer: {
         borderWidth: 1,
         borderColor: theme.colors.disabled,
+        borderRadius: 8,
     },
+    innerContainer: { height: '100%', justifyContent: 'center' },
     link: {
         color: theme.colors.primary,
     },

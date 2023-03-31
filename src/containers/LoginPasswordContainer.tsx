@@ -90,7 +90,7 @@ export default function LoginPasswordContainer({
             <LayoutComponent
                 body={
                     <View>
-                        <TH1>Password</TH1>
+                        <TH1 style={commonStyles.textAlignCenter}>Password</TH1>
                         <View style={styles.container}>
                             <View style={styles.innerContainer}>
                                 <TP size={1}>Password</TP>
@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         width: '100%',
-        height: '60%',
+        height: '100%',
+        justifyContent: 'center',
     },
     link: {
         color: theme.colors.primary,

@@ -112,7 +112,10 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                             <View>
                                 <TP
                                     size={1}
-                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
+                                    style={[
+                                        errorMessage.length > 0 ? errorStyles.labelError : {},
+                                        password.length <= 0 ? styles.defaultInputName : styles.labelText,
+                                    ]}
                                 >
                                     Password
                                 </TP>
@@ -125,7 +128,12 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 />
                             </View>
                             <View>
-                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
+                                <TP
+                                    style={[
+                                        confirmErrorMessage.length > 0 ? errorStyles.labelError : {},
+                                        password2.length <= 0 ? styles.defaultInputName : styles.labelText,
+                                    ]}
+                                >
                                     Confirm Password
                                 </TP>
                                 <TPasswordInput
@@ -270,6 +278,9 @@ const styles = StyleSheet.create({
     innerContainer: {
         height: '90%',
         justifyContent: 'center',
+    },
+    defaultInputName: {
+        color: '#939393',
     },
 });
 

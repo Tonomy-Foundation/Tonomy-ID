@@ -25,6 +25,7 @@ export default function DrawerNavigation() {
         },
         headerTitleStyle: {
             fontSize: 24,
+            color: '#474D4C',
         },
         headerTitleAlign: 'left',
         headerTintColor: theme.dark ? theme.colors.text : 'white',
