@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.8.1",
+    "version": "0.8.3",
     "scripts": {
         "build:prepare": "ts-node prepare.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
@@ -20,7 +20,7 @@
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "latest",
+        "@tonomy/tonomy-id-sdk": "^0.3.23",
         "babel-plugin-transform-builtin-extend": "^1.1.2",
         "deepmerge": "^4.2.2",
         "expo": "^47.0.0",

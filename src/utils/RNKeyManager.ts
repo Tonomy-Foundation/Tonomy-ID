@@ -131,4 +131,8 @@ export default class RNKeyManager implements KeyManager {
 
         return keyStore.publicKey;
     }
+
+    async checkKey(): Promise<boolean> {
+        throw new Error('function not implemented');
+    }
 }
