@@ -152,7 +152,7 @@ export default function SSOLoginContainer({
                     <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => navigation.navigate('Home')}>Cancel</TButtonOutlined>
+                    <TButtonOutlined onPress={() => navigation.navigate('UserHome')}>Cancel</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>
