@@ -6,7 +6,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, JWTLoginPayload, TonomyUsername } from '@tonomy/tonomy-id-sdk';
+import { UserApps, App, JWTLoginPayload, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -43,6 +43,14 @@ export default function SSOLoginContainer({
             await user.logout();
             setStatus(UserStatus.NOT_LOGGED_IN);
         }
+
+        const baseUsername = TonomyUsername.fromUsername(
+            username?.username,
+            AccountType.PERSON,
+            settings.config.accountSuffix
+        ).getBaseUsername();
+
+        setUsername(baseUsername);
 
         setUsername(username);
     }
@@ -111,7 +119,7 @@ export default function SSOLoginContainer({
                 <View style={styles.container}>
                     <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
 
-                    {username?.username && <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>}
+                    {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 
                     {ssoApp && (
                         <View style={[styles.appDialog, styles.marginTop]}>
@@ -144,7 +152,7 @@ export default function SSOLoginContainer({
                     <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => navigation.navigate('Home')}>Cancel</TButtonOutlined>
+                    <TButtonOutlined onPress={() => navigation.navigate('UserHome')}>Cancel</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>

@@ -21,16 +21,6 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
         },
     });
 
-    useEffect(() => {
-        const backAction = () => {
-            BackHandler.exitApp();
-        };
-
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-        return () => backHandler.remove();
-    }, []);
-
     return (
         <LayoutComponent
             body={

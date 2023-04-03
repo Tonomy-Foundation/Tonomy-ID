@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: 'transparent',
         marginBottom: 4,
-        borderRadius: 6,
+        borderRadius: 8,
     },
     showHideContainer: {
         width: 60,
