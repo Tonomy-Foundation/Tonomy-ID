@@ -73,7 +73,7 @@ export default function RootNavigation() {
         },
         headerTitleStyle: {
             fontSize: 24,
-            color: 'black',
+            color: '#474D4C',
         },
         headerTitleAlign: 'center',
         headerTintColor: theme.dark ? theme.colors.text : 'black',

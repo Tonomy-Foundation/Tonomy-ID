@@ -37,14 +37,6 @@ export default function MainContainer() {
         }
 
         main();
-
-        const backAction = () => {
-            BackHandler.exitApp();
-        };
-
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-        return () => backHandler.remove();
     }, []);
 
     //TODO: this should be moved to a store or a provider or a hook
