@@ -7,7 +7,7 @@ import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { SdkError, SdkErrors, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
@@ -28,6 +28,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
         if (password.length > 0) {
@@ -89,6 +90,22 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         setShowModal(true);
     }
 
+    async function setUserName() {
+        const username = await user.storage.username.username;
+
+        const baseUsername = TonomyUsername.fromUsername(
+            username,
+            AccountType.PERSON,
+            settings.config.accountSuffix
+        ).getBaseUsername();
+
+        setUsername(baseUsername);
+    }
+
+    useEffect(() => {
+        setUserName();
+    }, []);
+
     async function onModalPress() {
         setShowModal(false);
         navigation.navigate('CreateAccountPin', {
@@ -112,10 +129,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                             <View>
                                 <TP
                                     size={1}
-                                    style={[
-                                        errorMessage.length > 0 ? errorStyles.labelError : {},
-                                        password.length <= 0 ? styles.defaultInputName : styles.labelText,
-                                    ]}
+                                    style={errorMessage.length > 0 ? errorStyles.labelError : styles.labelText}
                                 >
                                     Password
                                 </TP>
@@ -128,12 +142,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 />
                             </View>
                             <View>
-                                <TP
-                                    style={[
-                                        confirmErrorMessage.length > 0 ? errorStyles.labelError : {},
-                                        password2.length <= 0 ? styles.defaultInputName : styles.labelText,
-                                    ]}
-                                >
+                                <TP style={confirmErrorMessage.length > 0 ? errorStyles.labelError : styles.labelText}>
                                     Confirm Password
                                 </TP>
                                 <TPasswordInput
@@ -214,9 +223,8 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             >
                 <View>
                     <Text>
-                        Username{' '}
-                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>{' '}
-                        is already taken. Please choose another one.
+                        Username <Text style={{ color: theme.colors.primary }}>{username}</Text> is already taken.
+                        Please choose another one.
                     </Text>
                 </View>
             </TErrorModal>
@@ -228,8 +236,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             >
                 <View>
                     <Text>
-                        Your username is{' '}
-                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.getBaseUsername()}</Text>
+                        Your username is <Text style={{ color: theme.colors.primary }}>{username}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
@@ -278,9 +285,6 @@ const styles = StyleSheet.create({
     innerContainer: {
         height: '90%',
         justifyContent: 'center',
-    },
-    defaultInputName: {
-        color: '#939393',
     },
 });
 
