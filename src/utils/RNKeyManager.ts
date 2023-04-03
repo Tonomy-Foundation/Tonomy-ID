@@ -69,10 +69,12 @@ export default class RNKeyManager implements KeyManager {
             requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
 
+        if (!secureData) throwError(`Key missing for level ${options.level}`, SdkErrors.KeyNotFound);
+
         const privateKey = PrivateKey.from(secureData);
 
         if (options.outputType === 'jwt') {
-            if (typeof options.data !== 'string') throw new Error('data must be a string');
+            if (typeof options.data !== 'string') throwError('data must be a string', SdkErrors.invalidDataType);
             const signer = createSigner(privateKey as any);
 
             return (await signer(options.data)) as string;
@@ -99,11 +101,11 @@ export default class RNKeyManager implements KeyManager {
         const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
-            if (!options.challenge) throw new Error('Challenge missing');
+            if (!options.challenge) throwError('Challenge missing', SdkErrors.missingChallenge);
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
 
             return keyStore.hashedSaltedChallenge === hashedSaltedChallenge;
-        } else throw throwError('Invalid Level', SdkErrors.InvalidKeyLevel);
+        } else throwError('Invalid Level', SdkErrors.InvalidKeyLevel);
     }
 
     async removeKey(options: GetKeyOptions): Promise<void> {
@@ -120,9 +122,5 @@ export default class RNKeyManager implements KeyManager {
         const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
         return PublicKey.from(keyStore.publicKey);
-    }
-
-    async checkKey(): Promise<boolean> {
-        throw new Error('function not implemented');
     }
 }

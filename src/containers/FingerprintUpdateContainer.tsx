@@ -69,8 +69,6 @@ export default function CreateAccountContainer({ password }: { password: string 
             errorStore.setError({ error: e, expected: false });
             return;
         }
-
-        navigation.navigate('Drawer');
     };
 
     async function updateKeys() {
