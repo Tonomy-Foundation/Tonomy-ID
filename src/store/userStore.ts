@@ -2,9 +2,15 @@ import create from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
-import { User, createUserObject, setSettings, createStorage } from '@tonomy/tonomy-id-sdk';
+import {
+    User,
+    createUserObject,
+    setSettings,
+    createStorage,
+    SdkErrors,
+    STORAGE_NAMESPACE,
+} from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
-import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -30,7 +36,7 @@ setSettings({
 interface UserStorageState {
     status: UserStatus;
 }
-const userStorage = createStorage<UserStorageState>('tonomyid.user.', storageFactory);
+const userStorage = createStorage<UserStorageState>(STORAGE_NAMESPACE + 'store.', storageFactory);
 
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),

@@ -4,7 +4,7 @@ import { TButtonContained } from '../components/atoms/Tbutton';
 import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
-import { NavigationProp, ThemeProvider } from '@react-navigation/native';
+import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import TUsername from '../components/TUsername';
@@ -61,7 +61,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 <View>
                     <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
                     <View style={styles.innerContainer}>
-                        <TP>Username</TP>
+                        <TP style={styles.inputHeader}>Username</TP>
                         <View style={styles.inputContainer}>
                             <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
                         </View>
@@ -71,10 +71,10 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
             }
             footerHint={
                 <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                    <View style={commonStyles.marginBottom}>
+                    <View style={styles.marginBottom}>
                         <TInfoBox
                             align="left"
-                            icon="privacy"
+                            icon="security"
                             description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
                          Foundation can see it."
                             linkUrl={settings.config.links.securityLearnMore}
@@ -112,14 +112,17 @@ const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
         fontSize: 14,
+        color: '#939393',
+    },
+    inputHeader: {
+        color: '#939393',
     },
     inputContainer: {
         borderWidth: 1,
-        height: 60,
-        justifyContent: 'center',
         borderColor: theme.colors.disabled,
-        borderRadius: 6,
+        borderRadius: 8,
     },
+    innerContainer: { height: '100%', justifyContent: 'center' },
     link: {
         color: theme.colors.primary,
     },
@@ -127,15 +130,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
     },
-    headTitle: {
-        marginTop: 20,
-        fontSize: 24,
-    },
-    outerContainer: {
-        flex: 1,
-    },
-    innerContainer: {
-        justifyContent: 'center',
-        height: '90%',
+    marginBottom: {
+        marginBottom: 14,
     },
 });
