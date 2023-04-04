@@ -12,6 +12,8 @@ import { Props } from '../screens/FingerprintUpdateScreen';
 import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import settings from '../settings';
+import { SdkErrors } from '@tonomy/tonomy-id-sdk';
+import TModal from '../components/TModal';
 
 export default function PinScreenContainer({
     navigation,
@@ -31,6 +33,8 @@ export default function PinScreenContainer({
     const [matched, setMatched] = useState<boolean>(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
+    const [showModal, setShowModal] = useState(false);
+
 
     function onPinChange(pin: string) {
         setPin(pin);
@@ -39,15 +43,24 @@ export default function PinScreenContainer({
     }
 
     async function checkPin() {
-        // Logic for Checking pin
-        // if correct then allow to enter and confirm then check  and update pin
-        // else show error to enter correct pin
-        setPin('');
-        setDisabled(true)
-        setMatched(true);
-        setErrorMessage('');
 
-        // setErrorMessage('Wrong PIN');
+        try {
+
+            const result = await user.checkPin(pin);
+
+            if (result) {
+                setPin('');
+                setDisabled(true)
+                setMatched(true);
+            }
+        }
+        catch (e: any) {
+            switch (e.code) {
+                case (SdkErrors.PinInvalid):
+                    setErrorMessage('Wrong PIN');
+            }
+        }
+
     }
 
     async function onNext() {
@@ -64,7 +77,7 @@ export default function PinScreenContainer({
                         navigation.goBack();
                     } else if (action === 'CHANGE_PIN') {
                         await user.savePIN(confirmPin);
-                        navigation.goBack();
+                        setShowModal(true);
                     }
                 } catch (e: any) {
                     console.log('error saving pin', e);
@@ -89,73 +102,94 @@ export default function PinScreenContainer({
     }
 
     return (
-        <LayoutComponent
-            body={
-                <View style={styles.header}>
-                    <View>
-                        <TH1 style={commonStyles.marginTopTextCenter}>
-                            {action === 'CHANGE_PIN'
-                                ? matched === false
-                                    ? 'Enter current Pin'
-                                    : confirming
-                                        ? 'Repeat new PIN'
-                                        : 'Create new Pin'
-                                : ''}
+        <>
+            <LayoutComponent
+                body={
+                    <View style={styles.header}>
+                        <View>
+                            <TH1 style={commonStyles.marginTopTextCenter}>
+                                {action === 'CHANGE_PIN'
+                                    ? matched === false
+                                        ? 'Enter current Pin'
+                                        : confirming
+                                            ? 'Repeat new PIN'
+                                            : 'Enter new Pin'
+                                    : ''}
 
-                            {(action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') ? (confirming ? 'Repeat your PIN' : 'Add a PIN') : ''}
-                        </TH1>
+                                {(action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') ? (confirming ? 'Repeat your PIN' : 'Add a PIN') : ''}
+                            </TH1>
+                        </View>
+                        <View>
+                            <Text style={{ ...styles.accountSecureText, ...commonStyles.textAlignCenter }}>
+                                {action !== 'CHANGE_PIN' && 'This helps keep your account secure'}
+                            </Text>
+                        </View>
+                        <View style={styles.centeredText}>
+                            <HelperText type="error" visible={errorMessage !== ''}>
+                                {errorMessage}
+                            </HelperText>
+                        </View>
+                        <TPin pin={pin} onChange={onPinChange}></TPin>
                     </View>
+
+                }
+                footerHint={
+                    <View style={commonStyles.marginBottom}>
+                        <TInfoBox
+                            align="left"
+                            icon="security"
+                            description="100% private. Your PIN data never leave your phone. Learn more"
+                            linkUrl={settings.config.links.securityLearnMore}
+                            linkUrlText="Learn more"
+                        />
+                    </View>
+                }
+                footer={
                     <View>
-                        <Text style={{ ...styles.accountSecureText, ...commonStyles.textAlignCenter }}>
-                            {action !== 'CHANGE_PIN' && 'This helps keep your account secure'}
-                        </Text>
-                    </View>
-                    <View style={styles.centeredText}>
-                        <HelperText type="error" visible={errorMessage !== ''}>
-                            {errorMessage}
-                        </HelperText>
-                    </View>
-                    <TPin pin={pin} onChange={onPinChange}></TPin>
-                </View>
-            }
-            footerHint={
-                <View style={commonStyles.marginBottom}>
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="100% private. Your PIN data never leave your phone. Learn more"
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
-                    />
-                </View>
-            }
-            footer={
-                <View>
-                    <TButtonContained
-                        mode="contained"
-                        disabled={disabled}
-                        loading={loading}
-                        onPress={action === 'CHANGE_PIN' ? (matched === false ? checkPin : onNext) : onNext}
-                        style={styles.marginBottom}
-                    >
-                        {confirming ? 'Confirm' : 'Next'}
-                    </TButtonContained>
-                    {!confirming && (
-                        <TButtonOutlined
-                            mode="outlined"
-                            onPress={() => {
-                                action === 'CHANGE_PIN'
-                                    ? navigation.goBack()
-                                    : navigation.navigate('CreateAccountFingerprint', { password });
-                            }}
+                        <TButtonContained
+                            mode="contained"
+                            disabled={disabled}
+                            loading={loading}
+                            onPress={action === 'CHANGE_PIN' ? (matched === false ? checkPin : onNext) : onNext}
                             style={styles.marginBottom}
                         >
-                            {action === 'CHANGE_PIN' ? 'Cancel' : 'Skip'}
-                        </TButtonOutlined>
-                    )}
+                            {confirming ? 'Confirm' : 'Next'}
+                        </TButtonContained>
+                        {!confirming && (
+                            <TButtonOutlined
+                                mode="outlined"
+                                onPress={() => {
+                                    action === 'CHANGE_PIN'
+                                        ? navigation.goBack()
+                                        : navigation.navigate('CreateAccountFingerprint', { password });
+                                }}
+                                style={styles.marginBottom}
+                            >
+                                {action === 'CHANGE_PIN' ? 'Cancel' : 'Skip'}
+                            </TButtonOutlined>
+                        )}
+                    </View>
+                }
+
+            />
+            <TModal
+                visible={showModal}
+                onPress={() => {
+                    navigation.goBack();
+                }}
+                icon="check"
+                title={"Pin Changed"}
+            >
+                <View>
+                    <Text>
+                        Your Pin has been updated
+                    </Text>
                 </View>
-            }
-        />
+            </TModal >
+
+        </>
+
+
     );
 }
 
@@ -173,4 +207,6 @@ const styles = StyleSheet.create({
     accountSecureText: {
         color: theme.colors.placeholder,
     },
+
 });
+
