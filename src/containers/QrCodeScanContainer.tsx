@@ -5,6 +5,7 @@ import { TP } from '../components/atoms/THeadings';
 import { commonStyles } from '../utils/theme';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import QrScannerBorders from '../assets/images/QrScannerBorders';
+import { ActivityIndicator } from 'react-native-paper';
 
 export default function QrCodeScanContainer(props: {
     onClose?: () => void;
@@ -30,10 +31,8 @@ export default function QrCodeScanContainer(props: {
 
     return (
         <View>
-            <View>
-                {hasPermission === null && <TP size={2}>Requesting for camera permission</TP>}
-                {hasPermission === false && <TP size={3}>No access to camera</TP>}
-                {hasPermission === true && (
+            {hasPermission === true && (
+                <View>
                     <BarCodeScanner
                         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                         style={{
@@ -41,28 +40,23 @@ export default function QrCodeScanContainer(props: {
                             height: '90%',
                         }}
                     />
-                )}
-                {scanned && <TButtonContained onPress={() => setScanned(false)}> Tap to Scan Again</TButtonContained>}
-            </View>
-
-            <View>
-                <TButtonOutlined style={commonStyles.marginBottom} onPress={() => props.onClose()}>
-                    Cancel
-                </TButtonOutlined>
-            </View>
+                    <View>
+                        <TButtonOutlined style={commonStyles.marginBottom} onPress={() => props.onClose()}>
+                            Cancel
+                        </TButtonOutlined>
+                        {scanned && (
+                            <TButtonContained onPress={() => setScanned(false)}> Tap to Scan Again</TButtonContained>
+                        )}
+                    </View>
+                </View>
+            )}
+            {hasPermission !== true && (
+                <View>
+                    {hasPermission === null && <TP size={2}>Requesting for camera permission</TP>}
+                    {hasPermission === false && <TP size={3}>No access to camera</TP>}
+                    <ActivityIndicator animating={true}></ActivityIndicator>
+                </View>
+            )}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    image: {
-        marginTop: 50,
-        alignSelf: 'center',
-        width: 200,
-        height: 200,
-    },
-    imageWrapper: {
-        padding: 40,
-        alignSelf: 'center',
-    },
-});

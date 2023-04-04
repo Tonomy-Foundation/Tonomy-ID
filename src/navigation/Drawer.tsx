@@ -21,14 +21,16 @@ export default function DrawerNavigation() {
     const theme = useTheme();
     const defaultScreenOptions: DrawerNavigationOptions = {
         headerStyle: {
-            backgroundColor: theme.colors.primary,
+            // backgroundColor: theme.colors.,
+            backgroundColor: '#F9F9F9',
+            shadowColor: '#4D4D4D',
         },
         headerTitleStyle: {
             fontSize: 24,
             color: '#474D4C',
         },
-        headerTitleAlign: 'left',
-        headerTintColor: theme.dark ? theme.colors.text : 'white',
+        headerTitleAlign: 'center',
+        headerTintColor: theme.dark ? theme.colors.text : 'black',
     };
 
     return (

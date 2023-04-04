@@ -66,6 +66,7 @@ export default function RootNavigation() {
             background: theme.colors.background,
         },
     };
+
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerStyle: {
             // backgroundColor: theme.colors.,

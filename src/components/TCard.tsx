@@ -15,14 +15,25 @@ function TCard({ children, ...props }: TCardPropType) {
         });
     });
 
-    return <Card {...props}>{subComponents.map((component) => component)}</Card>;
+    return (
+        <Card {...props} elevation={4} mode="elevated">
+            {subComponents.map((component) => component)}
+        </Card>
+    );
 }
 
 const Title = (props) => <Card.Title {...props} />;
 
 TCard.Title = Title;
 
-const Cover = (props) => <Card.Cover {...props} />;
+const Cover = (props: any) => {
+    const style = {
+        width: 190,
+        height: 130,
+    };
+
+    return <Card.Cover {...props} style={[style, props.style]} />;
+};
 
 TCard.Cover = Cover;
 
@@ -34,7 +45,7 @@ const Action = (props) => <Card.Actions {...props} />;
 
 TCard.Action = Action;
 
-const Badge = (props: { style?: any }) => {
+const Badge = (props: any) => {
     const style = { position: 'absolute', top: 8, left: 8, textAlign: 'center' };
 
     return <TBadge {...props} style={[style, props.style]} />;

@@ -5,7 +5,7 @@ type TBadgeProps = React.ComponentProps<typeof Badge> & { style?: any };
 
 export default function TBadge(props: TBadgeProps) {
     const theme = useTheme();
-    const style = { backgroundColor: theme.colors.primary, color: 'white' };
+    const style = { backgroundColor: '#7660E7', color: 'white' };
 
     return <Badge {...props} style={[style, props.style]}></Badge>;
 }

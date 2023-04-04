@@ -12,6 +12,7 @@ import { ApplicationErrors, throwError } from '../utils/errors';
 import QrCodeScanContainer from './QrCodeScanContainer';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import settings from '../settings';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MainContainer() {
     const user = useUserStore((state) => state.user);
@@ -83,12 +84,10 @@ export default function MainContainer() {
         setQrOpened(false);
     }
 
-    console.log('username', username);
-
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {!qrOpened && (
-                <View style={styles.container}>
+                <View style={styles.content}>
                     <View style={styles.header}>
                         <TH2>{username}</TH2>
                         <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
@@ -102,54 +101,65 @@ export default function MainContainer() {
                             Scan Qr Code
                         </TButtonContained>
                     </View>
+
+                    <View style={[styles.marginTop, styles.card]}>
+                        <TP size={2}>SUGGESTED APPS:</TP>
+                        <ScrollView horizontal={true}>
+                            <TCard style={styles.card}>
+                                <TCard.Cover source={{ uri: 'https://source.unsplash.com/random/' }} />
+                                <TCard.Badge> Coming Soon</TCard.Badge>
+                                <TCard.Content>
+                                    <TP>Credential sharing</TP>
+                                </TCard.Content>
+                            </TCard>
+                            <TCard style={styles.card}>
+                                <TCard.Cover source={{ uri: 'https://source.unsplash.com/random?login,SSO' }} />
+                                <TCard.Content>
+                                    <TP>SSO Login</TP>
+                                </TCard.Content>
+                            </TCard>
+
+                            <TCard style={styles.card}>
+                                <TCard.Badge> Coming Soon</TCard.Badge>
+
+                                <TCard.Cover
+                                    source={{ uri: 'https://source.unsplash.com/random?transactions,crypto' }}
+                                />
+                                <TCard.Content>
+                                    <TP>Transaction signing</TP>
+                                </TCard.Content>
+                            </TCard>
+                        </ScrollView>
+                    </View>
                 </View>
             )}
 
             {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
-            {/*
-            Cards are in upcoming features 
-            <View style={styles.marginTop}>
-                <TP size={2}>Upcoming features</TP>
-                <ScrollView horizontal={true}>
-                    <TCard style={styles.card}>
-                        <TCard.Cover source={{ uri: 'https://source.unsplash.com/random/' }} />
-                        <TCard.Badge> Coming Soon</TCard.Badge>
-                        <TCard.Content>
-                            <TP>Credential sharing</TP>
-                        </TCard.Content>
-                    </TCard>
-                    <TCard style={styles.card}>
-                        <TCard.Cover source={{ uri: 'https://source.unsplash.com/random?login,SSO' }} />
-                        <TCard.Content>
-                            <TP>SSO Login</TP>
-                        </TCard.Content>
-                    </TCard>
-                    <TCard style={styles.card}>
-                        <TCard.Badge> Coming Soon</TCard.Badge>
-
-                        <TCard.Cover source={{ uri: 'https://source.unsplash.com/random?transactions,crypto' }} />
-                        <TCard.Content>
-                            <TP>Transaction signing</TP>
-                        </TCard.Content>
-                    </TCard>
-                </ScrollView>
-            </View> */}
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     image: {
-        width: 220,
-        height: 220,
+        width: 200,
+        height: 190,
         resizeMode: 'contain',
+        marginTop: 20,
+        marginBottom: 20,
     },
     container: {
         padding: 16,
-        flex: 1, //remove this when cards are added
-        justifyContent: 'center', //remove this when cards are added
+        flex: 1,
+    },
+    content: {
+        flex: 1,
     },
     header: {
+        // justifyContent: 'center',
+        flex: 1,
+        // // flexGrow: 1,
+        flexDirection: 'column',
+        // flexWrap: 'nowrap',
         alignItems: 'center',
     },
     button: {
@@ -158,9 +168,11 @@ const styles = StyleSheet.create({
     marginTop: {
         marginTop: 32,
     },
+    cards: {
+        flex: 1,
+    },
     card: {
-        width: 250,
-        marginVertical: 16,
         marginRight: 16,
+        marginVertical: 16,
     },
 });
