@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
-import { TH1, TP } from '../components/atoms/THeadings';
+import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/homeScreen';
 import TUsername from '../components/TUsername';
@@ -13,6 +13,7 @@ import useUserStore from '../store/userStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const { user } = useUserStore();
     const {
         colors: { text },
@@ -23,8 +24,13 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
         },
     });
 
-    const onNext = () => {
-        navigation.navigate('LoginPassword', { username });
+    useEffect(() => {
+        setErrorMessage('');
+    }, [username]);
+
+    const onNext = async () => {
+        if (await user.usernameExists(username)) navigation.navigate('LoginPassword', { username });
+        else setErrorMessage('Username does not exist');
     };
 
     return (
@@ -37,6 +43,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                         <View style={styles.inputContainer}>
                             <TUsername value={username} onChangeText={setUsername} />
                         </View>
+                        <TCaption style={styles.errorStyles}>{errorMessage}</TCaption>
                     </View>
                 </View>
             }
@@ -54,12 +61,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
             footer={
                 <View>
                     <View style={commonStyles.marginBottom}>
-                        <TButtonContained
-                            onPress={() => {
-                                navigation.navigate('LoginPassword', { username });
-                            }}
-                            disabled={username.length === 0}
-                        >
+                        <TButtonContained onPress={onNext} disabled={username.length === 0}>
                             NEXT
                         </TButtonContained>
                     </View>
@@ -96,5 +98,10 @@ const styles = StyleSheet.create({
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
+    },
+    errorStyles: {
+        textAlign: 'right',
+        color: theme.colors.error,
+        fontSize: 14,
     },
 });
