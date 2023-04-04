@@ -22,10 +22,8 @@ export default function MainContainer() {
     useEffect(() => {
         async function main() {
             await loginToService();
-            user.communication.subscribeMessage((m) => {
+            user.communication.subscribeMessage((message) => {
                 console.log('REcieved from sso');
-
-                const message = new Message(m);
 
                 console.log(message.getPayload());
 
