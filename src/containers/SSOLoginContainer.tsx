@@ -51,8 +51,6 @@ export default function SSOLoginContainer({
         ).getBaseUsername();
 
         setUsername(baseUsername);
-
-        setUsername(username);
     }
 
     async function getLoginFromJwt() {
