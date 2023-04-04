@@ -20,7 +20,7 @@ export default function TErrorModal(props: ModalProps) {
     const [expanded, setExpanded] = useState(false);
 
     function switchExpanded() {
-        setExpanded(!expanded);
+        setExpanded((expanded) => !expanded);
     }
 
     if (props?.expected === false) {
@@ -40,9 +40,12 @@ export default function TErrorModal(props: ModalProps) {
         if (props.error instanceof HttpError) {
             return (
                 <View>
-                    <TP size={2}>Path: {props.error.path}</TP>
-                    <TP size={2}>Response: {props.error.response}</TP>
-                    <TP size={2}>SourceUrl: {props.error.sourceURL}</TP>
+                    <TP size={1}>Http error:</TP>
+                    {props.error.cause && <Text style={styles.greyText}>Cause: {props.error.cause}</Text>}
+                    {props.error.code && <Text style={styles.greyText}>HTTP Code: {props.error.code}</Text>}
+                    <Text>Path: {props.error.path}</Text>
+                    <Text>Response: {props.error.response}</Text>
+                    <Text>SourceUrl: {props.error.sourceURL}</Text>
                 </View>
             );
         } else if (props.error instanceof EosioUtil.AntelopePushTransactionError) {
@@ -50,11 +53,13 @@ export default function TErrorModal(props: ModalProps) {
 
             return (
                 <View>
-                    <TP size={2}>Trx error:</TP>
-                    <TP size={2}>Code: {trxError.code}</TP>
-                    <TP size={2}>Name: {trxError.name}</TP>
-                    <TP size={2}>What: {trxError.what}</TP>
-                    <TP size={2}>Details: {JSON.stringify(trxError.details, null, 2)}</TP>
+                    <TP size={1}>Trx error:</TP>
+                    {props.error.cause && <Text style={styles.greyText}>Cause: {props.error.cause}</Text>}
+                    {props.error.code && <Text style={styles.greyText}>HTTP Code: {props.error.code}</Text>}
+                    <Text style={styles.greyText}>Antelope Code: {trxError.code}</Text>
+                    <Text style={styles.greyText}>Name: {trxError.name}</Text>
+                    <Text style={styles.greyText}>What: {trxError.what}</Text>
+                    <Text style={styles.greyText}>Details: {JSON.stringify(trxError.details, null, 2)}</Text>
                 </View>
             );
         }
@@ -85,25 +90,11 @@ export default function TErrorModal(props: ModalProps) {
                         </View>
                     )}
 
-                    {isExpandable() && expanded && (
+                    {isExpandable() && (
                         <>
                             {expanded && (
                                 <>
-                                    {isExpandableErrorType() && <ErrorDetails />}
-                                    {props.error.code && (
-                                        <View>
-                                            <Text>
-                                                <Text style={styles.boldText}>Code:</Text> {props.error.code}
-                                            </Text>
-                                        </View>
-                                    )}
-                                    {props.error.cause && (
-                                        <View>
-                                            <Text>
-                                                <Text style={styles.boldText}>Cause:</Text> {props.error.cause}
-                                            </Text>
-                                        </View>
-                                    )}
+                                    <ErrorDetails />
                                 </>
                             )}
                             <View>
@@ -122,5 +113,8 @@ export default function TErrorModal(props: ModalProps) {
 const styles = StyleSheet.create({
     boldText: {
         fontWeight: 'bold',
+    },
+    greyText: {
+        color: theme.colors.disabled,
     },
 });

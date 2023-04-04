@@ -5,7 +5,6 @@ import { RouteStackParamList } from '../navigation/Root';
 
 export type Props = NativeStackScreenProps<RouteStackParamList, 'LoginPassword'>;
 export default function LoginPasswordScreen(props: Props) {
-    console.log('Parametros', props);
     return (
         <LoginPasswordContainer
             username={props.route.params.username}

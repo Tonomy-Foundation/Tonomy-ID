@@ -15,6 +15,7 @@ import settings from '../settings';
 import useUserStore from '../store/userStore';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
 
 export default function LoginPasswordContainer({
     navigation,
@@ -24,10 +25,8 @@ export default function LoginPasswordContainer({
     username: string;
 }) {
     const errorsStore = useErrorStore();
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState(false);
+    const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
-    const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const user = useUserStore().user;
     const onNext = async () => {
@@ -36,7 +35,8 @@ export default function LoginPasswordContainer({
         try {
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
-                password
+                password,
+                { keyFromPasswordFn: generatePrivateKeyFromPassword }
             );
 
             if (result?.account_name !== undefined) {
@@ -50,14 +50,13 @@ export default function LoginPasswordContainer({
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:
+                    case SdkErrors.PasswordInvalid:
                     case SdkErrors.PasswordFormatInvalid:
-                        // case SdkErrors.PasswordInValid:
-                        setShowUsernameErrorModal(true);
-                        break;
                     case SdkErrors.AccountDoesntExist:
-                        setErrorMessage('Account does not exist');
+                        setErrorMessage('Username or password are incorrect. Please try again.');
                         break;
                     default:
+                        setErrorMessage('');
                         errorsStore.setError({ error: e, expected: false });
                 }
 
@@ -80,11 +79,6 @@ export default function LoginPasswordContainer({
         },
     });
 
-    async function onUsernameErrorModalPress() {
-        setShowUsernameErrorModal(false);
-        // navigation.navigate('CreateAccountUsername');
-    }
-
     return (
         <>
             <LayoutComponent
@@ -94,7 +88,7 @@ export default function LoginPasswordContainer({
                         <View style={styles.container}>
                             <View style={styles.innerContainer}>
                                 <TP size={1}>Password</TP>
-                                <TPasswordInput value={password} onChangeText={setPassword} />
+                                <TPasswordInput value={password} onChangeText={setPassword} errorText={errorMessage} />
                             </View>
                         </View>
                     </View>
@@ -113,7 +107,7 @@ export default function LoginPasswordContainer({
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={password.length === 0}>
+                            <TButtonContained onPress={onNext} disabled={password.length === 0} loading={loading}>
                                 NEXT
                             </TButtonContained>
                         </View>
@@ -128,16 +122,6 @@ export default function LoginPasswordContainer({
                     </View>
                 }
             ></LayoutComponent>
-            <TErrorModal
-                visible={showUsernameErrorModal}
-                onPress={onUsernameErrorModalPress}
-                title="Wrong Username/Password"
-                expected={true}
-            >
-                <View>
-                    <Text>The username/password is incorrect!</Text>
-                </View>
-            </TErrorModal>
         </>
     );
 }

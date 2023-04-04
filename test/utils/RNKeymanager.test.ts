@@ -3,6 +3,7 @@ import { KeyManagerLevel, randomBytes, encodeHex } from '@tonomy/tonomy-id-sdk';
 import RNKeyManager from '../../src/utils/RNKeyManager';
 import * as argon2 from 'react-native-argon2';
 import arg from 'argon2';
+import { generatePrivateKeyFromPassword } from '../../src/utils/keys';
 
 const mockarg = arg;
 
@@ -47,17 +48,36 @@ jest.mock('expo-secure-store', () => {
     };
 });
 
-describe('RNKeyManager', () => {
+// mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () => {
+    const storage: any = {};
+
+    return {
+        getItem: jest.fn(async (key: string, callback?) => {
+            return storage[key];
+        }),
+
+        setItem: jest.fn(async (key: string, value: string, callback?) => {
+            storage[key] = value;
+        }),
+
+        removeItem: jest.fn(async (key: string, callback?) => {
+            delete storage[key];
+        }),
+    };
+});
+
+describe('RN Key Manager', () => {
     const rn = new RNKeyManager();
 
     it('can generate a private key from a password', async () => {
-        const { privateKey, salt } = await rn.generatePrivateKeyFromPassword('test');
+        const { privateKey, salt } = await generatePrivateKeyFromPassword('test');
 
         expect(privateKey).toBeInstanceOf(PrivateKey);
         expect(salt).toBeInstanceOf(Checksum256);
     });
     it('can store a key password', async () => {
-        const { privateKey, salt } = await rn.generatePrivateKeyFromPassword('test');
+        const { privateKey, salt } = await generatePrivateKeyFromPassword('test');
         const publicKey = await rn.storeKey({
             privateKey,
             level: KeyManagerLevel.PASSWORD,
@@ -69,7 +89,7 @@ describe('RNKeyManager', () => {
 
     // get key password
     it('can get a key password', async () => {
-        const { privateKey, salt } = await rn.generatePrivateKeyFromPassword('test');
+        const { privateKey } = await generatePrivateKeyFromPassword('test');
         const publicKey = await rn.storeKey({
             privateKey,
             level: KeyManagerLevel.PASSWORD,
@@ -78,15 +98,15 @@ describe('RNKeyManager', () => {
         const key = await rn.getKey({
             level: KeyManagerLevel.PASSWORD,
         });
-        const pub = PublicKey.from(key);
 
-        expect(pub).toBeInstanceOf(PublicKey);
+        expect(key).toBeInstanceOf(PublicKey);
+        expect(key.toString()).toEqual(publicKey.toString());
     });
 
     it('generates same private key from same salt', async () => {
         const salt = randomBytes(32);
-        const hash = await rn.generatePrivateKeyFromPassword('test', Checksum256.from(salt));
-        const hash2 = await rn.generatePrivateKeyFromPassword('test', Checksum256.from(salt));
+        const hash = await generatePrivateKeyFromPassword('test', Checksum256.from(salt));
+        const hash2 = await generatePrivateKeyFromPassword('test', Checksum256.from(salt));
 
         expect(hash2).toEqual(hash);
     });
@@ -95,7 +115,7 @@ describe('RNKeyManager', () => {
     it('generates same private key as integration argon', async () => {
         const salt: string = encodeHex('12345678901234567890123456789012'); // salt
         const encodedSalt: Checksum256 = Checksum256.from(Bytes.from(salt));
-        const res = await rn.generatePrivateKeyFromPassword('password', encodedSalt);
+        const res = await generatePrivateKeyFromPassword('password', encodedSalt);
 
         // react
         expect(res.privateKey.toString()).toBe('PVT_K1_pPnFBQwMSQgjAenyLdMHoeFQBtazFBYEWeA12FtKpm5PEY4fc');

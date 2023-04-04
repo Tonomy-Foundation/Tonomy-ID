@@ -16,6 +16,7 @@ import useErrorStore from '../store/errorStore';
 import TErrorModal from '../components/TErrorModal';
 import { Props } from '../screens/CreateAccountPasswordScreen';
 import TA from '../components/atoms/TA';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
 
 export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
@@ -51,7 +52,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         setLoading(true);
 
         try {
-            await user.savePassword(password);
+            await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
             const res = await user.createPerson();
 
             // this only works when blockchainUrl === localhost || https://...
