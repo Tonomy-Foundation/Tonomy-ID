@@ -3,7 +3,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, BackHandler } from 'react-native';
 import { DrawerItemProps } from 'react-native-paper';
-import { Message, TonomyUsername, User } from '@tonomy/tonomy-id-sdk';
+import { Message, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
@@ -11,21 +11,19 @@ import useUserStore from '../store/userStore';
 import { ApplicationErrors, throwError } from '../utils/errors';
 import QrCodeScanContainer from './QrCodeScanContainer';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
+import settings from '../settings';
 
 export default function MainContainer() {
     const user = useUserStore((state) => state.user);
     const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
-    const [username, setUsername] = useState<TonomyUsername>();
+    const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
 
     useEffect(() => {
         async function main() {
             await loginToService();
-            await setUserName();
-            user.communication.subscribeMessage((m) => {
+            user.communication.subscribeMessage((message) => {
                 console.log('REcieved from sso');
-
-                const message = new Message(m);
 
                 console.log(message.getPayload());
 
@@ -37,6 +35,7 @@ export default function MainContainer() {
         }
 
         main();
+        setUserName();
     }, []);
 
     //TODO: this should be moved to a store or a provider or a hook
@@ -53,7 +52,13 @@ export default function MainContainer() {
             throwError('Username not found', ApplicationErrors.NoDataFound);
         }
 
-        setUsername(u);
+        const baseUsername = TonomyUsername.fromUsername(
+            u?.username,
+            AccountType.PERSON,
+            settings.config.accountSuffix
+        ).getBaseUsername();
+
+        setUsername(baseUsername);
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
@@ -76,12 +81,14 @@ export default function MainContainer() {
         setQrOpened(false);
     }
 
+    console.log('username', username);
+
     return (
         <View style={styles.container}>
             {!qrOpened && (
                 <View style={styles.container}>
                     <View style={styles.header}>
-                        <TH2>{username?.getBaseUsername()}</TH2>
+                        <TH2>{username}</TH2>
                         <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
                         <TButtonContained
                             style={[styles.button, styles.marginTop]}
