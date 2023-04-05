@@ -10,6 +10,7 @@ import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import useUserStore from '../store/userStore';
+import { TError } from '../components/TError';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
@@ -29,8 +30,12 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
     }, [username]);
 
     const onNext = async () => {
-        if (await user.usernameExists(username)) navigation.navigate('LoginPassword', { username });
-        else setErrorMessage('Username does not exist');
+        try {
+            if (await user.usernameExists(username)) navigation.navigate('LoginPassword', { username });
+            else setErrorMessage('Username does not exist');
+        } catch (error) {
+            throw new Error('Error when checking username');
+        }
     };
 
     return (
@@ -43,7 +48,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                         <View style={styles.inputContainer}>
                             <TUsername value={username} onChangeText={setUsername} />
                         </View>
-                        <TCaption style={styles.errorStyles}>{errorMessage}</TCaption>
+                        <TError>{errorMessage}</TError>
                     </View>
                 </View>
             }
@@ -98,10 +103,5 @@ const styles = StyleSheet.create({
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-    },
-    errorStyles: {
-        textAlign: 'right',
-        color: theme.colors.error,
-        fontSize: 14,
     },
 });
