@@ -11,11 +11,13 @@ import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import useUserStore from '../store/userStore';
 import { TError } from '../components/TError';
+import useErrorStore from '../store/errorStore';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const { user } = useUserStore();
+    const errorStore = useErrorStore();
     const {
         colors: { text },
     } = useTheme();
@@ -33,8 +35,8 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
         try {
             if (await user.usernameExists(username)) navigation.navigate('LoginPassword', { username });
             else setErrorMessage('Username does not exist');
-        } catch (error) {
-            throw new Error('Error when checking username');
+        } catch (error: any) {
+            errorStore.setError({ error, expected: false });
         }
     };
 
