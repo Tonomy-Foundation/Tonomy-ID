@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type layoutProps = {
@@ -9,9 +9,24 @@ type layoutProps = {
 };
 
 export default function LayoutComponent(props: layoutProps) {
+    const [keyboardStatusShown, setKeyboardStatusShown] = useState<boolean>();
+
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboardStatusShown(true);
+        });
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboardStatusShown(false);
+        });
+
+        return () => {
+            showSubscription.remove();
+            hideSubscription.remove();
+        };
+    }, []);
     return (
         <SafeAreaView style={layoutStyles.container}>
-            {props.body && <View style={layoutStyles.body}>{props.body}</View>}
+            {props.body && <View style={[layoutStyles.body, { flex: keyboardStatusShown ? 2 : 3 }]}>{props.body}</View>}
             {props.footerHint ? (
                 <View style={layoutStyles.footerHint}>{props.footerHint}</View>
             ) : (
