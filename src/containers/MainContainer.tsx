@@ -3,7 +3,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, BackHandler } from 'react-native';
 import { DrawerItemProps } from 'react-native-paper';
-import { Message, TonomyUsername, User } from '@tonomy/tonomy-id-sdk';
+import { Message, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import TCard from '../components/TCard';
@@ -11,32 +11,34 @@ import useUserStore from '../store/userStore';
 import { ApplicationErrors, throwError } from '../utils/errors';
 import QrCodeScanContainer from './QrCodeScanContainer';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
+import settings from '../settings';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function MainContainer() {
     const user = useUserStore((state) => state.user);
     const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
-    const [username, setUsername] = useState<TonomyUsername>();
+    const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
+    const [isLoadingView, setIsLoadingView] = useState(false);
 
     useEffect(() => {
         async function main() {
             await loginToService();
-            await setUserName();
-            user.communication.subscribeMessage((m) => {
+            user.communication.subscribeMessage((message) => {
                 console.log('REcieved from sso');
 
-                const message = new Message(m);
-
-                console.log(message.getPayload());
+                console.log('messaeg payload', message.getPayload());
 
                 navigation.navigate('SSO', {
                     requests: JSON.stringify(message.getPayload().requests),
                     platform: 'browser',
                 });
+                setIsLoadingView(false);
             });
         }
 
         main();
+        setUserName();
     }, []);
 
     //TODO: this should be moved to a store or a provider or a hook
@@ -53,10 +55,18 @@ export default function MainContainer() {
             throwError('Username not found', ApplicationErrors.NoDataFound);
         }
 
-        setUsername(u);
+        const baseUsername = TonomyUsername.fromUsername(
+            u?.username,
+            AccountType.PERSON,
+            settings.config.accountSuffix
+        ).getBaseUsername();
+
+        setUsername(baseUsername);
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
+        setIsLoadingView(true);
+
         //TODO: change to typed messages
 
         /**
@@ -76,27 +86,60 @@ export default function MainContainer() {
         setQrOpened(false);
     }
 
+    const MainView = () => {
+        const isFocused = useIsFocused();
+
+        if (!isFocused) {
+            return null;
+        }
+
+        return (
+            <>
+                {!qrOpened && (
+                    <View style={styles.container}>
+                        <View style={styles.header}>
+                            <TH2>{username}</TH2>
+                            <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
+                            <TButtonContained
+                                style={[styles.button, styles.marginTop]}
+                                icon="qrcode-scan"
+                                onPress={() => {
+                                    setQrOpened(true);
+                                }}
+                            >
+                                Scan Qr Code
+                            </TButtonContained>
+                        </View>
+                    </View>
+                )}
+
+                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
+            </>
+        );
+    };
+
     return (
         <View style={styles.container}>
-            {!qrOpened && (
-                <View style={styles.container}>
-                    <View style={styles.header}>
-                        <TH2>{username?.getBaseUsername()}</TH2>
-                        <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
-                        <TButtonContained
-                            style={[styles.button, styles.marginTop]}
-                            icon="qrcode-scan"
-                            onPress={() => {
-                                setQrOpened(true);
-                            }}
-                        >
-                            Scan Qr Code
-                        </TButtonContained>
-                    </View>
+            {isLoadingView ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image alt="Tonomy Logo" source={require('../assets/tonomy/connecting.png')}></Image>
+                    <TP
+                        style={{
+                            paddingHorizontal: 30,
+                            marginHorizontal: 10,
+                            paddingVertical: 30,
+                            marginTop: 10,
+                            textAlign: 'center',
+                        }}
+                        size={1}
+                    >
+                        Linking to your web app and receiving data. Please remain connected
+                    </TP>
                 </View>
+            ) : (
+                <MainView />
             )}
 
-            {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
             {/*
             Cards are in upcoming features 
             <View style={styles.marginTop}>
