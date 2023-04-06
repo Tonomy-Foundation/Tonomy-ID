@@ -121,18 +121,9 @@ export default function MainContainer() {
     return (
         <View style={styles.container}>
             {isLoadingView ? (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={styles.requestView}>
                     <Image alt="Tonomy Logo" source={require('../assets/tonomy/connecting.png')}></Image>
-                    <TP
-                        style={{
-                            paddingHorizontal: 30,
-                            marginHorizontal: 10,
-                            paddingVertical: 30,
-                            marginTop: 10,
-                            textAlign: 'center',
-                        }}
-                        size={1}
-                    >
+                    <TP style={styles.requestText} size={1}>
                         Linking to your web app and receiving data. Please remain connected
                     </TP>
                 </View>
@@ -173,6 +164,18 @@ export default function MainContainer() {
 }
 
 const styles = StyleSheet.create({
+    requestView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    requestText: {
+        paddingHorizontal: 30,
+        marginHorizontal: 10,
+        paddingVertical: 30,
+        marginTop: 10,
+        textAlign: 'center',
+    },
     image: {
         width: 220,
         height: 220,
