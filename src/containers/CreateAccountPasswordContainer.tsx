@@ -121,7 +121,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     }
 
     return (
-        <>
+        <View style={{flex:1}}>
             <LayoutComponent
                 body={
                     <View>
@@ -246,7 +246,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                     </Text>
                 </View>
             </TModal>
-        </>
+        </View>
     );
 }
 

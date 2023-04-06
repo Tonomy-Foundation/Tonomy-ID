@@ -34,7 +34,7 @@ export default function TPasswordInput(props: TTextInputProps) {
 const styles = StyleSheet.create({
     input: {
         backgroundColor: 'transparent',
-        marginBottom: 4,
+        marginBottom: 7,
         borderRadius: 8,
     },
     showHideContainer: {
