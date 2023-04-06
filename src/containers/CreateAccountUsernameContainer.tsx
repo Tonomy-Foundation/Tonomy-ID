@@ -122,15 +122,12 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.disabled,
         borderRadius: 8,
     },
-    innerContainer: { height: '100%', justifyContent: 'center' },
+    innerContainer: { height: '90%', justifyContent: 'center' },
     link: {
         color: theme.colors.primary,
     },
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-    },
-    marginBottom: {
-        marginBottom: 14,
-    },
+    }
 });
