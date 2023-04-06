@@ -129,5 +129,5 @@ const styles = StyleSheet.create({
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-    }
+    },
 });
