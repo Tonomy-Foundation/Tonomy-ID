@@ -21,15 +21,11 @@ export default function MainContainer() {
         async function main() {
             await loginToService();
             user.communication.subscribeMessage((message) => {
-                console.log('REcieved from sso');
-
-                console.log(message.getPayload());
-
                 navigation.navigate('SSO', {
                     requests: JSON.stringify(message.getPayload().requests),
                     platform: 'browser',
                 });
-            });
+            }, type: MessageType.LOGIN_REQUEST);
         }
 
         main();
@@ -69,7 +65,7 @@ export default function MainContainer() {
          * the user send an ack message to the sso website.
          * then closes the QR scanner container
          */
-        const message = await user.signMessage({ type: 'ack' }, { recipient: data });
+        const message = await user.signMessage({}, { recipient: data, type: MessageType.IDENTIFY });
 
         await user.communication.sendMessage(message);
         onClose();

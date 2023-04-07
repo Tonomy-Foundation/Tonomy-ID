@@ -96,7 +96,10 @@ export default function SSOLoginContainer({
             if (platform === 'mobile') {
                 await openBrowserAsync(callbackUrl);
             } else {
-                const message = await user.signMessage({ requests, accountName }, { recipient: recieverDid });
+                const message = await user.signMessage(
+                    { requests, accountName },
+                    { recipient: recieverDid, type: MessageType.LOGIN_REQUEST_RESPONSE }
+                );
 
                 await user.communication.sendMessage(message);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
