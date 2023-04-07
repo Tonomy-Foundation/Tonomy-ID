@@ -63,7 +63,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                     <View style={styles.innerContainer}>
                         <TP style={styles.inputHeader}>Username</TP>
                         <View style={styles.inputContainer}>
-                            <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
+                            <TUsername errorText={errorMessage} value={username} onChangeText={onTextChange} />
                         </View>
                         <TCaption style={styles.caption}>You can always change your username later</TCaption>
                     </View>
@@ -122,15 +122,12 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.disabled,
         borderRadius: 8,
     },
-    innerContainer: { height: '100%', justifyContent: 'center' },
+    innerContainer: { height: '90%', justifyContent: 'center' },
     link: {
         color: theme.colors.primary,
     },
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-    },
-    marginBottom: {
-        marginBottom: 14,
     },
 });
