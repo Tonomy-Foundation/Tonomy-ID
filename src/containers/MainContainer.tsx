@@ -1,12 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image, BackHandler } from 'react-native';
-import { DrawerItemProps } from 'react-native-paper';
-import { Message, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
+import { StyleSheet, View, Image } from 'react-native';
+import { MessageType, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import { TH2, TP } from '../components/atoms/THeadings';
-import TCard from '../components/TCard';
+import { TH2 } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import { ApplicationErrors, throwError } from '../utils/errors';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -40,7 +38,7 @@ export default function MainContainer() {
 
     //TODO: this should be moved to a store or a provider or a hook
     async function loginToService() {
-        const message = await user.signMessage({});
+        const message = await user.signMessage({}, { type: MessageType.SERVICE_LOGIN });
 
         await user.communication.login(message);
     }
@@ -71,7 +69,7 @@ export default function MainContainer() {
          * the user send an ack message to the sso website.
          * then closes the QR scanner container
          */
-        const message = await user.signMessage({ type: 'ack' }, data);
+        const message = await user.signMessage({ type: 'ack' }, { recipient: data });
 
         await user.communication.sendMessage(message);
         onClose();
