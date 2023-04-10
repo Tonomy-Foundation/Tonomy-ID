@@ -39,6 +39,9 @@ export const commonStyles = StyleSheet.create({
     borderRadius: {
         borderRadius: 20,
     },
+    marginTop: {
+        marginTop: 12,
+    },
 });
 
 export default theme;

@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     createAccountMargin: {
-        marginTop: 30,
+        marginTop: 35,
     },
     rememberPasswordText: {
         color: theme.colors.error,
