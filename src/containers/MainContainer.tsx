@@ -46,7 +46,7 @@ export default function MainContainer() {
         try {
             await user.communication.login(message);
         } catch (e: any) {
-            if (e instanceof CommunicationError && e.exception.error.status === 401) {
+            if (e instanceof CommunicationError && e.exception.status === 401) {
                 await userStore.logout();
             } else {
                 throw e;
@@ -75,26 +75,34 @@ export default function MainContainer() {
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
-        //TODO: change to typed messages
+        try {
+            /**
+             * the data object is what the user scanned
+             * right now we only have did
+             * when the user scans and get the did of the tonomy sso website
+             * the user send an ack message to the sso website.
+             * then closes the QR scanner container
+             */
+            const message = await user.signMessage({}, { recipient: data, type: MessageType.IDENTIFY });
 
-        /**
-         * the data object is what the user scanned
-         * right now we only have did
-         * when the user scans and get the did of the tonomy sso website
-         * the user send an ack message to the sso website.
-         * then closes the QR scanner container
-         */
-        const message = await user.signMessage({}, { recipient: data, type: MessageType.IDENTIFY });
-
-        await user.communication.sendMessage(message);
-        onClose();
+            await user.communication.sendMessage(message);
+        } catch (e: any) {
+            if (e instanceof CommunicationError && e.exception?.status === 404) {
+                console.error('User probably needs to refresh the page. See notes in MainContainer.tsx');
+                // User probably has scanned a QR code on a website that is not logged into Tonomy Communication
+                // They probably need to refresh the page
+                // TODO: tell the user to retry the login by refreshing
+            } else {
+                errorStore.setError({ error: e, expected: false });
+            }
+        } finally {
+            onClose();
+        }
     }
 
     function onClose() {
         setQrOpened(false);
     }
-
-    console.log('username', username);
 
     return (
         <View style={styles.container}>

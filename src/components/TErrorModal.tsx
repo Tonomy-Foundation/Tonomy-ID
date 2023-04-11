@@ -70,7 +70,7 @@ export default function TErrorModal(props: ModalProps) {
                 </View>
             );
         } else if (props.error instanceof CommunicationError) {
-            const exception = (props.error as CommunicationError).exception.error;
+            const exception = (props.error as CommunicationError).exception;
 
             return (
                 <View>
