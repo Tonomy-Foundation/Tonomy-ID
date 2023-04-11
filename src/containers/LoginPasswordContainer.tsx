@@ -129,7 +129,7 @@ export default function LoginPasswordContainer({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: '100%',
+        height: '90%',
         justifyContent: 'center',
     },
     innerContainer: {
