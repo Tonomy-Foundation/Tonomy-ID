@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import { MessageType, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
+import { MessageType, TonomyUsername, AccountType, CommunicationError } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2 } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
@@ -10,22 +10,29 @@ import { ApplicationErrors, throwError } from '../utils/errors';
 import QrCodeScanContainer from './QrCodeScanContainer';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import settings from '../settings';
+import useErrorStore from '../store/errorStore';
 
 export default function MainContainer() {
-    const user = useUserStore((state) => state.user);
+    const userStore = useUserStore();
+    const user = userStore.user;
     const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
+    const errorStore = useErrorStore();
 
     useEffect(() => {
         async function main() {
-            await loginToService();
-            user.communication.subscribeMessage((message) => {
-                navigation.navigate('SSO', {
-                    requests: JSON.stringify(message.getPayload().requests),
-                    platform: 'browser',
-                });
-            }, type: MessageType.LOGIN_REQUEST);
+            try {
+                await loginToService();
+                user.communication.subscribeMessage((message) => {
+                    navigation.navigate('SSO', {
+                        requests: JSON.stringify(message.getPayload().requests),
+                        platform: 'browser',
+                    });
+                }, MessageType.LOGIN_REQUEST);
+            } catch (e: any) {
+                errorStore.setError({ error: e, expected: false });
+            }
         }
 
         main();
@@ -36,23 +43,35 @@ export default function MainContainer() {
     async function loginToService() {
         const message = await user.signMessage({}, { type: MessageType.COMMUNICATION_LOGIN });
 
-        await user.communication.login(message);
+        try {
+            await user.communication.login(message);
+        } catch (e: any) {
+            if (e instanceof CommunicationError && e.exception.error.status === 401) {
+                await userStore.logout();
+            } else {
+                throw e;
+            }
+        }
     }
 
     async function setUserName() {
-        const u = await user.storage.username;
+        try {
+            const u = await user.storage.username;
 
-        if (!u) {
-            throwError('Username not found', ApplicationErrors.NoDataFound);
+            if (!u) {
+                throwError('Username not found', ApplicationErrors.NoDataFound);
+            }
+
+            const baseUsername = TonomyUsername.fromUsername(
+                u?.username,
+                AccountType.PERSON,
+                settings.config.accountSuffix
+            ).getBaseUsername();
+
+            setUsername(baseUsername);
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
         }
-
-        const baseUsername = TonomyUsername.fromUsername(
-            u?.username,
-            AccountType.PERSON,
-            settings.config.accountSuffix
-        ).getBaseUsername();
-
-        setUsername(baseUsername);
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
