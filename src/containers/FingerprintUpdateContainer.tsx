@@ -34,7 +34,7 @@ export default function CreateAccountContainer({ password }: { password: string 
         }
 
         checkHardware();
-    }, [])
+    }, []);
 
     const onNext = async () => {
         try {
@@ -52,10 +52,10 @@ export default function CreateAccountContainer({ password }: { password: string 
                 await user.saveLocal();
                 await updateKeys();
             } else {
+                if (authenticated.error === 'user_cancel') return;
                 setShowModal(true);
                 setAuthFail(true);
             }
-
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -104,8 +104,8 @@ export default function CreateAccountContainer({ password }: { password: string 
                             {authFailed === true
                                 ? 'You have failed to Authenticate, please try again'
                                 : device === 'ios'
-                                    ? 'You don’t have your Face Id registered, please register it with your device.'
-                                    : 'You don’t have your Fingerprint registered, please register it with your device.'}
+                                ? 'You don’t have your Face Id registered, please register it with your device.'
+                                : 'You don’t have your Fingerprint registered, please register it with your device.'}
                         </TP>
                         {/* TODO: link to open settings */}
                     </View>
