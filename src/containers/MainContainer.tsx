@@ -34,7 +34,7 @@ export default function MainContainer() {
 
     //TODO: this should be moved to a store or a provider or a hook
     async function loginToService() {
-        const message = await user.signMessage({}, { type: MessageType.SERVICE_LOGIN });
+        const message = await user.signMessage({}, { type: MessageType.COMMUNICATION_LOGIN });
 
         await user.communication.login(message);
     }
