@@ -34,7 +34,7 @@ export default function CreateAccountContainer({ password }: { password: string 
         }
 
         checkHardware();
-    }, [])
+    }, []);
 
     const onNext = async () => {
         try {
@@ -52,10 +52,10 @@ export default function CreateAccountContainer({ password }: { password: string 
                 await user.saveLocal();
                 await updateKeys();
             } else {
+                if (authenticated.error === 'user_cancel') return;
                 setShowModal(true);
                 setAuthFail(true);
             }
-
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
