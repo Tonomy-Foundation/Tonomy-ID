@@ -104,8 +104,8 @@ export default function CreateAccountContainer({ password }: { password: string 
                             {authFailed === true
                                 ? 'You have failed to Authenticate, please try again'
                                 : device === 'ios'
-                                    ? 'You don’t have your Face Id registered, please register it with your device.'
-                                    : 'You don’t have your Fingerprint registered, please register it with your device.'}
+                                ? 'You don’t have your Face Id registered, please register it with your device.'
+                                : 'You don’t have your Fingerprint registered, please register it with your device.'}
                         </TP>
                         {/* TODO: link to open settings */}
                     </View>
