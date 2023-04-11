@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.13.1",
+    "version": "0.15.1",
     "scripts": {
         "build:prepare": "ts-node prepare.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
@@ -50,6 +50,7 @@
     },
     "devDependencies": {
         "@babel/core": "^7.19.3",
+        "@types/jest": "^29.5.0",
         "@types/react": "~18.0.24",
         "@types/react-native": "~0.70.6",
         "@types/react-native-base64": "^0.2.0",

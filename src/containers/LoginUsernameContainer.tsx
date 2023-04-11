@@ -32,8 +32,15 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
     }, [username]);
 
     const onNext = async () => {
+        if (username.includes(' ')) {
+            setErrorMessage('Username must not contain spaces');
+            return;
+        }
+
+        const slugUsername = username.toLowerCase().trim();
+
         try {
-            if (await user.usernameExists(username)) navigation.navigate('LoginPassword', { username });
+            if (await user.usernameExists(slugUsername)) navigation.navigate('LoginPassword', { username });
             else setErrorMessage('Username does not exist');
         } catch (error: any) {
             errorStore.setError({ error, expected: false });
