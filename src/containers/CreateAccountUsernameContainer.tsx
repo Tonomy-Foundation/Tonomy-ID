@@ -30,10 +30,17 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
     const { user } = useUserStore();
 
     async function onNext() {
+        if (username.includes(' ')) {
+            setErrorMessage('Username must not contain spaces');
+            return;
+        }
+
         setLoading(true);
 
+        const slugUsername = username.toLowerCase().trim();
+
         try {
-            await user.saveUsername(username);
+            await user.saveUsername(slugUsername);
         } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
@@ -84,7 +91,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 </View>
             }
             footer={
-                <View>
+                <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
                         <TButtonContained
                             onPress={onNext}

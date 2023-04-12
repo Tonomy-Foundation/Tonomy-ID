@@ -11,6 +11,7 @@ import QrCodeScanContainer from './QrCodeScanContainer';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function MainContainer() {
     const userStore = useUserStore();
@@ -18,6 +19,7 @@ export default function MainContainer() {
     const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
+    const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
 
     useEffect(() => {
@@ -29,6 +31,7 @@ export default function MainContainer() {
                         requests: JSON.stringify(message.getPayload().requests),
                         platform: 'browser',
                     });
+                    setIsLoadingView(false);
                 }, MessageType.LOGIN_REQUEST);
             } catch (e: any) {
                 errorStore.setError({ error: e, expected: false });
@@ -75,6 +78,8 @@ export default function MainContainer() {
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
+        setIsLoadingView(true);
+
         try {
             /**
              * the data object is what the user scanned
@@ -104,27 +109,51 @@ export default function MainContainer() {
         setQrOpened(false);
     }
 
+    const MainView = () => {
+        const isFocused = useIsFocused();
+
+        if (!isFocused) {
+            return null;
+        }
+
+        return (
+            <>
+                {!qrOpened && (
+                    <View style={styles.container}>
+                        <View style={styles.header}>
+                            <TH2>{username}</TH2>
+                            <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
+                            <TButtonContained
+                                style={[styles.button, styles.marginTop]}
+                                icon="qrcode-scan"
+                                onPress={() => {
+                                    setQrOpened(true);
+                                }}
+                            >
+                                Scan Qr Code
+                            </TButtonContained>
+                        </View>
+                    </View>
+                )}
+
+                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
+            </>
+        );
+    };
+
     return (
         <View style={styles.container}>
-            {!qrOpened && (
-                <View style={styles.container}>
-                    <View style={styles.header}>
-                        <TH2>{username}</TH2>
-                        <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
-                        <TButtonContained
-                            style={[styles.button, styles.marginTop]}
-                            icon="qrcode-scan"
-                            onPress={() => {
-                                setQrOpened(true);
-                            }}
-                        >
-                            Scan Qr Code
-                        </TButtonContained>
-                    </View>
+            {isLoadingView ? (
+                <View style={styles.requestView}>
+                    <Image alt="Tonomy Logo" source={require('../assets/tonomy/connecting.png')}></Image>
+                    <TP style={styles.requestText} size={1}>
+                        Linking to your web app and receiving data. Please remain connected
+                    </TP>
                 </View>
+            ) : (
+                <MainView />
             )}
 
-            {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
             {/*
             Cards are in upcoming features 
             <View style={styles.marginTop}>
@@ -158,6 +187,18 @@ export default function MainContainer() {
 }
 
 const styles = StyleSheet.create({
+    requestView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    requestText: {
+        paddingHorizontal: 30,
+        marginHorizontal: 10,
+        paddingVertical: 30,
+        marginTop: 10,
+        textAlign: 'center',
+    },
     image: {
         width: 220,
         height: 220,
