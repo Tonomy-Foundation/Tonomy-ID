@@ -5,6 +5,7 @@ import { TP } from '../components/atoms/THeadings';
 import { commonStyles } from '../utils/theme';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import QrScannerBorders from '../assets/images/QrScannerBorders';
+import useErrorStore from '../store/errorStore';
 
 export default function QrCodeScanContainer(props: {
     onClose?: () => void;
@@ -12,12 +13,17 @@ export default function QrCodeScanContainer(props: {
 }) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);
     const [scanned, setScanned] = useState(false);
+    const errorStore = useErrorStore();
 
     useEffect(() => {
         const getBarCodeScannerPermissions = async () => {
-            const { status } = await BarCodeScanner.requestPermissionsAsync();
+            try {
+                const { status } = await BarCodeScanner.requestPermissionsAsync();
 
-            setHasPermission(status === 'granted');
+                setHasPermission(status === 'granted');
+            } catch (e: any) {
+                errorStore.setError({ error: e, expected: false });
+            }
         };
 
         getBarCodeScannerPermissions();
