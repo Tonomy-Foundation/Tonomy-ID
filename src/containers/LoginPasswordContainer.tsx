@@ -105,7 +105,7 @@ export default function LoginPasswordContainer({
                     </View>
                 }
                 footer={
-                    <View>
+                    <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={password.length === 0} loading={loading}>
                                 NEXT
