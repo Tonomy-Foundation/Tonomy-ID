@@ -91,7 +91,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 </View>
             }
             footer={
-                <View>
+                <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
                         <TButtonContained
                             onPress={onNext}

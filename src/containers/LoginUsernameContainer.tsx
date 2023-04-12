@@ -74,7 +74,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                 </View>
             }
             footer={
-                <View>
+                <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
                         <TButtonContained onPress={onNext} disabled={username.length === 0}>
                             NEXT
