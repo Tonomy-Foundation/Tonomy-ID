@@ -6,7 +6,15 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, JWTLoginPayload, TonomyUsername, AccountType, MessageType } from '@tonomy/tonomy-id-sdk';
+import {
+    UserApps,
+    App,
+    JWTLoginPayload,
+    TonomyUsername,
+    AccountType,
+    MessageType,
+    LoginRequest,
+} from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -59,6 +67,7 @@ export default function SSOLoginContainer({
 
     async function getLoginFromJwt() {
         try {
+            const loginRequests = JSON.parse(requests).map((request: string) => new LoginRequest(request));
             const verifiedRequests = await UserApps.verifyRequests(requests);
 
             for (const jwt of verifiedRequests) {
