@@ -82,6 +82,8 @@ export default function SSOLoginContainer({
     async function onNext() {
         try {
             const accountName = await user.storage.accountName.toString();
+            const username = (await user.getUsername()).username?.split('.')[0];;
+
             let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
 
             callbackUrl += 'requests=' + requests;
@@ -96,7 +98,7 @@ export default function SSOLoginContainer({
             if (platform === 'mobile') {
                 await openBrowserAsync(callbackUrl);
             } else {
-                const message = await user.signMessage({ requests, accountName }, recieverDid);
+                const message = await user.signMessage({ requests, accountName, username }, recieverDid);
 
                 await user.communication.sendMessage(message);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
