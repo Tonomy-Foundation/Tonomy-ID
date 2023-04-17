@@ -6,7 +6,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, JWTLoginPayload, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
+import { UserApps, App, JWTLoginPayload, TonomyUsername, AccountType, MessageType } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -37,20 +37,24 @@ export default function SSOLoginContainer({
     const errorStore = useErrorStore();
 
     async function setUserName() {
-        const username = await user.storage.username;
+        try {
+            const username = await user.storage.username;
 
-        if (!username) {
-            await user.logout();
-            setStatus(UserStatus.NOT_LOGGED_IN);
+            if (!username) {
+                await user.logout();
+                setStatus(UserStatus.NOT_LOGGED_IN);
+            }
+
+            const baseUsername = TonomyUsername.fromUsername(
+                username?.username,
+                AccountType.PERSON,
+                settings.config.accountSuffix
+            ).getBaseUsername();
+
+            setUsername(baseUsername);
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
         }
-
-        const baseUsername = TonomyUsername.fromUsername(
-            username?.username,
-            AccountType.PERSON,
-            settings.config.accountSuffix
-        ).getBaseUsername();
-
-        setUsername(baseUsername);
     }
 
     async function getLoginFromJwt() {
@@ -96,7 +100,10 @@ export default function SSOLoginContainer({
             if (platform === 'mobile') {
                 await openBrowserAsync(callbackUrl);
             } else {
-                const message = await user.signMessage({ requests, accountName }, recieverDid);
+                const message = await user.signMessage(
+                    { requests, accountName },
+                    { recipient: recieverDid, type: MessageType.LOGIN_REQUEST_RESPONSE }
+                );
 
                 await user.communication.sendMessage(message);
                 navigation.navigate('Drawer', { screen: 'UserHome' });

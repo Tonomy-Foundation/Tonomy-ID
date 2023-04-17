@@ -105,7 +105,7 @@ export default function LoginPasswordContainer({
                     </View>
                 }
                 footer={
-                    <View>
+                    <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={password.length === 0} loading={loading}>
                                 NEXT
@@ -129,7 +129,7 @@ export default function LoginPasswordContainer({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: '100%',
+        height: '90%',
         justifyContent: 'center',
     },
     innerContainer: {

@@ -30,10 +30,17 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
     const { user } = useUserStore();
 
     async function onNext() {
+        if (username.includes(' ')) {
+            setErrorMessage('Username must not contain spaces');
+            return;
+        }
+
         setLoading(true);
 
+        const slugUsername = username.toLowerCase().trim();
+
         try {
-            await user.saveUsername(username);
+            await user.saveUsername(slugUsername);
         } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
@@ -63,7 +70,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                     <View style={styles.innerContainer}>
                         <TP style={styles.inputHeader}>Username</TP>
                         <View style={styles.inputContainer}>
-                            <TUsername errorText={errorMessage} value={username} onChangeText={setUsername} />
+                            <TUsername errorText={errorMessage} value={username} onChangeText={onTextChange} />
                         </View>
                         <TCaption style={styles.caption}>You can always change your username later</TCaption>
                     </View>
@@ -84,7 +91,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 </View>
             }
             footer={
-                <View>
+                <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
                         <TButtonContained
                             onPress={onNext}
@@ -122,15 +129,12 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.disabled,
         borderRadius: 8,
     },
-    innerContainer: { height: '100%', justifyContent: 'center' },
+    innerContainer: { height: '90%', justifyContent: 'center' },
     link: {
         color: theme.colors.primary,
     },
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-    },
-    marginBottom: {
-        marginBottom: 14,
     },
 });
