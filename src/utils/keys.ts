@@ -8,17 +8,14 @@ import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
  */
 async function testKeyGenerator() {
     try {
-        console.log('Testing key generator');
         const saltInput = Checksum256.from(sha256('testsalt'));
 
-        const key = await generatePrivateKeyFromPassword('testpassword', saltInput);
+        const { privateKey, salt } = await generatePrivateKeyFromPassword('testpassword', saltInput);
 
-        if (key.salt.toString() !== '4edf07edc95b2fdcbcaf2378fd12d8ac212c2aa6e326c59c3e629be3039d6432')
+        if (salt.toString() !== '4edf07edc95b2fdcbcaf2378fd12d8ac212c2aa6e326c59c3e629be3039d6432')
             throw new Error('generatePrivateKeyFromPassword() test: Salt is not correct');
-        if (key.privateKey.toString() !== 'PVT_K1_NXkZkJyhrPzSCpfe2uXbaw8xcKH95e9Gw5LdhkrzMSJwoZL6x')
+        if (privateKey.toString() !== 'PVT_K1_NXkZkJyhrPzSCpfe2uXbaw8xcKH95e9Gw5LdhkrzMSJwoZL6x')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
-
-        console.log('Key generator test passed');
     } catch (e) {
         console.error(e);
     }
