@@ -5,8 +5,11 @@ import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
  * This is to ensure it creates the same values as the Tonomy-ID SDK and https://argon2.online
+ *
+ * This needs to be executed at runtime as the react-native-argon2 library cannot run in nodejs
  */
 async function testKeyGenerator() {
+    // See equivalent test in crypto.test.ts in Tonomy-ID-SDK
     try {
         const saltInput = Checksum256.from(sha256('testsalt'));
 
