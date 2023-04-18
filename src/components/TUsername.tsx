@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TextInput, HelperText } from 'react-native-paper';
+import theme from '../utils/theme';
+import { TCaption } from './atoms/THeadings';
 
 export type TTextInputProps = React.ComponentProps<typeof TextInput> & { errorText?: string };
 
@@ -9,22 +11,18 @@ export default function TUsername(props: TTextInputProps) {
 
     return (
         <View>
-            <View style={styles.username}>
-                <TextInput
-                    underlineColor="transparent"
-                    activeUnderlineColor="transparent"
-                    style={styles.usernameInput}
-                    {...props}
-                    error={showError}
-                />
-            </View>
-            {showError && (
-                <View>
-                    <HelperText type="error" visible={showError}>
-                        {props.errorText}
-                    </HelperText>
+            <View style={styles.inputContainer}>
+                <View style={styles.username}>
+                    <TextInput
+                        underlineColor="transparent"
+                        activeUnderlineColor="transparent"
+                        style={styles.usernameInput}
+                        {...props}
+                    />
                 </View>
-            )}
+            </View>
+
+            {showError && <TCaption style={styles.errorStyles}>{props.errorText}</TCaption>}
         </View>
     );
 }
@@ -40,10 +38,20 @@ const styles = StyleSheet.create({
         height: 45,
         flex: 1,
     },
+    inputContainer: {
+        borderWidth: 1,
+        borderColor: theme.colors.disabled,
+        borderRadius: 8,
+    },
     accountSuffix: {
         width: '40%',
         marginLeft: 14,
         textAlignVertical: 'bottom',
         fontSize: 16,
+    },
+    errorStyles: {
+        textAlign: 'right',
+        color: theme.colors.error,
+        fontSize: 14,
     },
 });
