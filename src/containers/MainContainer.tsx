@@ -143,27 +143,19 @@ export default function MainContainer() {
                             <TP size={2}>SUGGESTED APPS:</TP>
                             <ScrollView horizontal={true}>
                                 <TCard style={styles.card}>
-                                    <TCard.Cover source={{ uri: 'https://source.unsplash.com/random/' }} />
-                                    <TCard.Badge> Coming Soon</TCard.Badge>
-                                    <TCard.Content>
-                                        <TP>Credential sharing</TP>
-                                    </TCard.Content>
-                                </TCard>
-                                <TCard style={styles.card}>
-                                    <TCard.Cover source={{ uri: 'https://source.unsplash.com/random?login,SSO' }} />
-                                    <TCard.Content>
-                                        <TP>SSO Login</TP>
-                                    </TCard.Content>
-                                </TCard>
-
-                                <TCard style={styles.card}>
-                                    <TCard.Badge> Coming Soon</TCard.Badge>
-
                                     <TCard.Cover
-                                        source={{ uri: 'https://source.unsplash.com/random?transactions,crypto' }}
+                                        source={{ uri: 'https://source.unsplash.com/random?particpiant,civil' }}
                                     />
+                                    <TCard.Badge>Coming Soon</TCard.Badge>
                                     <TCard.Content>
-                                        <TP>Transaction signing</TP>
+                                        <TP>Tonomy Participant</TP>
+                                    </TCard.Content>
+                                </TCard>
+                                <TCard style={styles.card}>
+                                    <TCard.Cover source={{ uri: 'https://source.unsplash.com/random?DAO' }} />
+                                    <TCard.Badge>Coming Soon</TCard.Badge>
+                                    <TCard.Content>
+                                        <TP>Tonomy DAO</TP>
                                     </TCard.Content>
                                 </TCard>
                             </ScrollView>

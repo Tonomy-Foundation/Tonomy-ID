@@ -136,7 +136,6 @@ export default function PinScreenContainer({
             footer={
                 <View>
                     <TButtonContained
-                        mode="contained"
                         disabled={disabled}
                         loading={loading}
                         onPress={action === 'CHANGE_PIN' ? (matched === false ? checkPin : onNext) : onNext}
@@ -146,7 +145,6 @@ export default function PinScreenContainer({
                     </TButtonContained>
                     {!confirming && (
                         <TButtonOutlined
-                            mode="outlined"
                             onPress={() => {
                                 action === 'CHANGE_PIN'
                                     ? navigation.goBack()

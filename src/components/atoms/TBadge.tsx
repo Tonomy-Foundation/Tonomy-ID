@@ -1,11 +1,23 @@
 import React from 'react';
-import { Badge, useTheme } from 'react-native-paper';
+import { Badge } from 'react-native-paper';
+import { useAppTheme } from '../../utils/theme';
+import { Text, View } from 'react-native';
 
-type TBadgeProps = React.ComponentProps<typeof Badge> & { style?: any };
+type TBadgeProps = React.ComponentProps<typeof Text> & { style?: any };
 
 export default function TBadge(props: TBadgeProps) {
-    const theme = useTheme();
-    const style = { backgroundColor: '#7660E7', color: 'white' };
+    const theme = useAppTheme();
+    const style = {
+        backgroundColor: theme.colors.accent2,
+        color: theme.colors.accent,
+        padding: 4,
+        borderRadius: 20,
+        fontSize: 10,
+    };
 
-    return <Badge {...props} style={[style, props.style]}></Badge>;
+    return (
+        <Text {...props} style={[props.style, style]}>
+            {props.children}
+        </Text>
+    );
 }
