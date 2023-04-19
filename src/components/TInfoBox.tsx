@@ -31,8 +31,6 @@ function IconComponent(props: SvgProps & { icon: string }) {
 export default function TInfoBox(props: TInfoBoxProps) {
     const styles = StyleSheet.create({
         infoContainer: {
-            // flexGrow: 1,
-            // flexShrink: 2,
             alignContent: 'stretch',
             flexDirection: props.align === 'center' ? 'column' : 'row',
             marginTop: 20,
@@ -51,19 +49,21 @@ export default function TInfoBox(props: TInfoBoxProps) {
             textAlign: props.align === 'center' ? 'center' : 'left',
             alignSelf: props.align === 'center' ? 'center' : 'auto',
             justifyContent: props.align === 'center' ? 'center' : 'flex-start',
-            flex: 1,
+            flex: props.align === 'center' ? 0 : 1,
         },
     });
 
     return (
         <View style={styles.infoContainer}>
             <IconComponent style={styles.icon} icon={props.icon} />
-            <TP style={styles.description}>
-                {props.description}{' '}
-                <TA style={styles.description} href={props.linkUrl}>
-                    {props.linkUrlText}
-                </TA>
-            </TP>
+            <View style={styles.description}>
+                <TP>
+                    {props.description}{' '}
+                    <TA style={styles.description} href={props.linkUrl}>
+                        {props.linkUrlText}
+                    </TA>
+                </TP>
+            </View>
         </View>
     );
 }

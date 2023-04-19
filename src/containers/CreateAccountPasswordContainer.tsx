@@ -165,7 +165,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                     </View>
                 }
                 footerHint={
-                    <View style={{ flex: 1 }}>
+                    <View>
                         <View>
                             <TP size={1} style={commonStyles.textAlignCenter}>
                                 By continuing, you agree to our

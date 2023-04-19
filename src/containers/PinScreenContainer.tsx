@@ -123,13 +123,15 @@ export default function PinScreenContainer({
                 </View>
             }
             footerHint={
-                <TInfoBox
-                    align="left"
-                    icon="security"
-                    description="100% private. Your PIN data never leave your phone. Learn more"
-                    linkUrl={settings.config.links.securityLearnMore}
-                    linkUrlText="Learn more"
-                />
+                <View style={commonStyles.marginBottom}>
+                    <TInfoBox
+                        align="left"
+                        icon="security"
+                        description="100% private. Your PIN data never leave your phone. Learn more"
+                        linkUrl={settings.config.links.securityLearnMore}
+                        linkUrlText="Learn more"
+                    />
+                </View>
             }
             footer={
                 <View>
