@@ -123,8 +123,11 @@ export default function MainContainer() {
                 {!qrOpened && (
                     <View style={styles.content}>
                         <View style={styles.header}>
-                            <TH2>{username}</TH2>
-                            <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
+                            <TH2 style={styles.marginTop}>{username}</TH2>
+                            <Image
+                                source={require('../assets/animations/qr-code.gif')}
+                                style={[styles.image, styles.marginTop]}
+                            />
                             <TButtonContained
                                 style={[styles.button, styles.marginTop]}
                                 icon="qrcode-scan"
@@ -175,7 +178,7 @@ export default function MainContainer() {
         <SafeAreaView style={styles.container}>
             {isLoadingView ? (
                 <View style={styles.requestView}>
-                    <Image alt="Tonomy Logo" source={require('../assets/tonomy/connecting.png')}></Image>
+                    <Image source={require('../assets/tonomy/connecting.png')}></Image>
                     <TP style={styles.requestText} size={1}>
                         Linking to your web app and receiving data. Please remain connected
                     </TP>
@@ -217,7 +220,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        // justifyContent: 'center',
         flex: 1,
         // // flexGrow: 1,
         flexDirection: 'column',
@@ -225,10 +227,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
-        transform: [{ scale: 1.2 }],
+        width: '60%',
     },
     marginTop: {
-        marginTop: 32,
+        marginTop: 28,
     },
     cards: {
         flex: 1,

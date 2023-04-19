@@ -1,39 +1,101 @@
 import React from 'react';
-import { Button, Text } from 'react-native-paper';
-import { commonStyles } from '../../utils/theme';
+import theme, { commonStyles, useAppTheme } from '../../utils/theme';
+import { Text, TouchableOpacity } from 'react-native';
+import { IconButton } from 'react-native-paper';
 
-export type ButtonProps = React.ComponentProps<typeof Button>;
+type CustomButtonProps = {
+    theme?: 'primary' | 'secondary';
+    stretched?: boolean;
+    size?: 'large' | 'medium';
+    color?: string;
+    icon?: string;
+};
+export type ButtonProps = React.ComponentProps<typeof TouchableOpacity> & CustomButtonProps;
 
 export default function TButton(props: ButtonProps) {
+    const theme = useAppTheme();
+    const sizes: Record<ButtonProps['size'], number> = {
+        large: 15,
+        medium: 14,
+    };
+    const textStyle = {
+        color: props.color ?? getColorBasedOnTheme(props.theme),
+        fontSize: sizes[props.size ?? 'large'],
+        textAlign: 'center',
+        fontWeight: '500',
+    };
+
+    const buttonStyle = {
+        paddingHorizontal: props.size === 'large' ? 22 : 16,
+        paddingVertical: props.size === 'large' ? 14 : 11,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    };
+
     return (
-        <Button {...props} dark>
-            {props.children}
-        </Button>
+        // eslint-disable-next-line react/prop-types
+        <TouchableOpacity {...props} style={[buttonStyle, commonStyles.borderRadius, props.style]}>
+            {props.icon && (
+                <IconButton
+                    icon={props.icon}
+                    color={textStyle.color}
+                    size={textStyle.fontSize}
+                    style={{ margin: 0, marginRight: 6 }}
+                ></IconButton>
+            )}
+            <Text style={textStyle}>{props.children}</Text>
+        </TouchableOpacity>
     );
 }
 
 export function TButtonContained(props: ButtonProps) {
+    const theme = useAppTheme();
+    const color = theme.colors.white;
+    const style = {
+        backgroundColor: getColorBasedOnTheme(props.theme),
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+
+        elevation: 4,
+    };
+
     return (
         // eslint-disable-next-line react/prop-types
-        <TButton mode="contained" {...props} style={[{ ...props.style }, commonStyles.borderRadius]}>
+        <TButton {...props} style={[props.style, style]} color={color}>
             {props.children}
         </TButton>
     );
 }
 
 export function TButtonOutlined(props: ButtonProps) {
+    const style = {
+        borderColor: getColorBasedOnTheme(props.theme),
+        borderWidth: 1,
+    };
+
     return (
         // eslint-disable-next-line react/prop-types
-        <TButton mode="outlined" {...props} style={[{ ...props.style }, commonStyles.borderRadius]}>
+        <TButton {...props} style={[props.style, style]}>
             {props.children}
         </TButton>
     );
 }
 
 export function TButtonText(props: ButtonProps) {
-    return (
-        <TButton mode="text" {...props}>
-            {props.children}
-        </TButton>
-    );
+    return <TButton {...props}>{props.children}</TButton>;
+}
+
+function getColorBasedOnTheme(buttonTheme: ButtonProps['theme'] = 'primary'): string {
+    const colors: Record<ButtonProps['theme'], string> = {
+        primary: theme.colors.primary,
+        secondary: theme.colors.secondary,
+    };
+
+    return colors[buttonTheme];
 }

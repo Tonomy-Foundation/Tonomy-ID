@@ -25,14 +25,13 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     const theme = useTheme();
     const styles = StyleSheet.create({
         container: {
-            padding: 20,
             backgroundColor: theme.colors.background,
-            // backgroundColor: 'red',
         },
         logo: {
             height: 100,
             width: 100,
             resizeMode: 'cover',
+            margin: 16,
         },
         menu: {
             paddingVertical: 16,
@@ -41,7 +40,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
             marginTop: 40,
         },
         button: {
-            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
         },
     });
 

@@ -23,6 +23,7 @@ import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
+import { AppTheme, useAppTheme } from '../utils/theme';
 
 const prefix = Linking.createURL('');
 
@@ -57,7 +58,7 @@ export default function RootNavigation() {
     };
 
     // Setup styles
-    const theme = useTheme();
+    const theme = useAppTheme();
     const navigationTheme: typeof NavigationDefaultTheme = {
         ...NavigationDefaultTheme,
         colors: {
@@ -70,11 +71,11 @@ export default function RootNavigation() {
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerStyle: {
             // backgroundColor: theme.colors.,
-            backgroundColor: '#F9F9F9',
+            backgroundColor: theme.colors.headerFooter,
         },
         headerTitleStyle: {
             fontSize: 24,
-            color: '#474D4C',
+            color: theme.colors.text,
         },
         headerTitleAlign: 'center',
         headerTintColor: theme.dark ? theme.colors.text : 'black',

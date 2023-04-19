@@ -12,15 +12,6 @@ import { Props } from '../screens/homeScreen';
 import useUserStore from '../store/userStore';
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const {
-        colors: { text },
-    } = useTheme();
-    const stylesColor = StyleSheet.create({
-        text: {
-            color: text,
-        },
-    });
-
     return (
         <LayoutComponent
             body={
@@ -31,9 +22,9 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                             style={[styles.logo, commonStyles.marginBottom]}
                             source={require('../assets/tonomy/tonomy-logo1024.png')}
                         ></Image>
-                        <TH1 style={stylesColor.text}>{settings.config.appName}</TH1>
+                        <TH1 style={commonStyles.marginBottom}>{settings.config.appName}</TH1>
 
-                        <TP size={2} style={[commonStyles.textAlignCenter, stylesColor.text]}>
+                        <TP size={1} style={[commonStyles.textAlignCenter]}>
                             {settings.config.appSlogan}
                         </TP>
                     </View>
@@ -72,12 +63,12 @@ const styles = StyleSheet.create({
     },
     imgContainer: {
         flex: 1,
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
         alignItems: 'center',
     },
     logo: {
         alignSelf: 'center',
-        height: '50%',
+        height: '40%',
         resizeMode: 'contain',
     },
 });

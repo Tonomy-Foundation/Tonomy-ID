@@ -43,20 +43,24 @@ export function TCaption(props: TCaptionProps) {
 
 const styles = StyleSheet.create({
     h1: {
-        fontSize: 30,
+        fontSize: 24,
         marginBottom: 8,
-        color: customColors.textBold,
+        fontWeight: 'bold',
     },
     h2: {
         fontSize: 24,
+        fontWeight: '600',
     },
-    s3: {
+    s4: {
         fontSize: 20,
     },
-    s2: {
+    s3: {
         fontSize: 18,
     },
-    s1: {
+    s2: {
         fontSize: 16,
+    },
+    s1: {
+        fontSize: 14,
     },
 });
