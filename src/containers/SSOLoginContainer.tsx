@@ -86,6 +86,8 @@ export default function SSOLoginContainer({
     async function onNext() {
         try {
             const accountName = await user.storage.accountName.toString();
+            const username = (await user.getUsername()).getBaseUsername();
+
             let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
 
             callbackUrl += 'requests=' + requests;
@@ -101,7 +103,7 @@ export default function SSOLoginContainer({
                 await openBrowserAsync(callbackUrl);
             } else {
                 const message = await user.signMessage(
-                    { requests, accountName },
+                    { requests, accountName, username },
                     { recipient: recieverDid, type: MessageType.LOGIN_REQUEST_RESPONSE }
                 );
 
