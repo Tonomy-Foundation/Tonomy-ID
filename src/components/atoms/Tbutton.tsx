@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import theme, { commonStyles, useAppTheme } from '../../utils/theme';
 import { Text, TouchableOpacity } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -9,17 +9,23 @@ type CustomButtonProps = {
     size?: 'large' | 'medium';
     color?: string;
     icon?: string;
+    disabled?: boolean;
 };
 export type ButtonProps = React.ComponentProps<typeof TouchableOpacity> & CustomButtonProps;
 
 export default function TButton(props: ButtonProps) {
     const theme = useAppTheme();
+
+    const getColor = () => {
+        if (props.color) return props.color;
+        return props.disabled ? 'grey' : getColorBasedOnTheme(props.theme);
+    };
     const sizes: Record<ButtonProps['size'], number> = {
         large: 15,
         medium: 14,
     };
     const textStyle = {
-        color: props.color ?? getColorBasedOnTheme(props.theme),
+        color: getColor(),
         fontSize: sizes[props.size ?? 'large'],
         textAlign: 'center',
         fontWeight: '500',
@@ -53,7 +59,9 @@ export function TButtonContained(props: ButtonProps) {
     const theme = useAppTheme();
     const color = theme.colors.white;
     const style = {
-        backgroundColor: getColorBasedOnTheme(props.theme),
+        backgroundColor: props.disabled ? theme.colors.primary2 : getColorBasedOnTheme(props.theme),
+    };
+    const shadowStyle = {
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -67,7 +75,7 @@ export function TButtonContained(props: ButtonProps) {
 
     return (
         // eslint-disable-next-line react/prop-types
-        <TButton {...props} style={[props.style, style]} color={color}>
+        <TButton {...props} style={[props.style, style, !props.disabled ? shadowStyle : null]} color={color}>
             {props.children}
         </TButton>
     );
@@ -75,7 +83,7 @@ export function TButtonContained(props: ButtonProps) {
 
 export function TButtonOutlined(props: ButtonProps) {
     const style = {
-        borderColor: getColorBasedOnTheme(props.theme),
+        borderColor: props.disabled ? 'grey' : getColorBasedOnTheme(props.theme),
         borderWidth: 1,
     };
 

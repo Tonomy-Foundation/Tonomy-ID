@@ -5,6 +5,7 @@ import PrivacyIcon from '../assets/icons/PrivacyIcon';
 import SecurityIcon from '../assets/icons/SecurityIcon';
 import TransparencyIcon from '../assets/icons/TransparencyIcon';
 import TA from './atoms/TA';
+import { TP } from './atoms/THeadings';
 
 export type TInfoBoxProps = {
     icon: string;
@@ -30,14 +31,15 @@ function IconComponent(props: SvgProps & { icon: string }) {
 export default function TInfoBox(props: TInfoBoxProps) {
     const styles = StyleSheet.create({
         infoContainer: {
-            flex: 0,
+            // flexGrow: 1,
+            // flexShrink: 2,
+            alignContent: 'stretch',
             flexDirection: props.align === 'center' ? 'column' : 'row',
             marginTop: 20,
             alignSelf: 'center',
             backgroundColor: '#e1f2e2',
             borderRadius: 8,
-            padding: 10,
-            gap: 10,
+            padding: 16,
             width: '100%',
         },
         icon: {
@@ -48,16 +50,20 @@ export default function TInfoBox(props: TInfoBoxProps) {
         description: {
             textAlign: props.align === 'center' ? 'center' : 'left',
             alignSelf: props.align === 'center' ? 'center' : 'auto',
-            width: '90%',
+            justifyContent: props.align === 'center' ? 'center' : 'flex-start',
+            flex: 1,
         },
     });
 
     return (
         <View style={styles.infoContainer}>
             <IconComponent style={styles.icon} icon={props.icon} />
-            <Text style={styles.description}>
-                {props.description} <TA href={props.linkUrl}>{props.linkUrlText}</TA>
-            </Text>
+            <TP style={styles.description}>
+                {props.description}{' '}
+                <TA style={styles.description} href={props.linkUrl}>
+                    {props.linkUrlText}
+                </TA>
+            </TP>
         </View>
     );
 }
