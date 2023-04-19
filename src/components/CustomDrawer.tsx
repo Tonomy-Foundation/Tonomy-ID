@@ -6,8 +6,8 @@ import TButton, { TButtonText } from './atoms/Tbutton';
 import { useTheme } from '@react-navigation/native';
 import { RouteDrawerParamList } from '../navigation/Drawer';
 import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import useUserStore, { UserStatus } from '../store/userStore';
+import { useAppTheme } from '../utils/theme';
 
 const icons: Record<keyof RouteDrawerParamList, IconSource> = {
     UserHome: 'home',
@@ -22,7 +22,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const logo1024 = require('../assets/tonomy/tonomy-logo1024.png');
     const { user, setStatus } = useUserStore();
-    const theme = useTheme();
+    const theme = useAppTheme();
     const styles = StyleSheet.create({
         container: {
             backgroundColor: theme.colors.background,
@@ -35,7 +35,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
         },
         menu: {
             paddingVertical: 16,
-            borderTopColor: theme.colors.border,
+            borderTopColor: theme.colors.grey3,
             borderTopWidth: 1,
             marginTop: 40,
         },
@@ -55,7 +55,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                             key={key}
                             onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
                             icon={icons[value.route.name]}
-                            color={theme.colors.text}
+                            color={theme.colors.grey2}
                         >
                             {value.options.title || value.route.name}
                         </TButton>
@@ -67,7 +67,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                             setStatus(UserStatus.NOT_LOGGED_IN);
                         }}
                         icon={icons['Logout']}
-                        color={theme.colors.text}
+                        color={theme.colors.grey2}
                     >
                         {'Logout'}
                     </TButton>

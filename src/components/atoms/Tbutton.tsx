@@ -18,7 +18,7 @@ export default function TButton(props: ButtonProps) {
 
     const getColor = () => {
         if (props.color) return props.color;
-        return props.disabled ? 'grey' : getColorBasedOnTheme(props.theme);
+        return props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme);
     };
     const sizes: Record<ButtonProps['size'], number> = {
         large: 15,
@@ -83,7 +83,7 @@ export function TButtonContained(props: ButtonProps) {
 
 export function TButtonOutlined(props: ButtonProps) {
     const style = {
-        borderColor: props.disabled ? 'grey' : getColorBasedOnTheme(props.theme),
+        borderColor: props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme),
         borderWidth: 1,
     };
 

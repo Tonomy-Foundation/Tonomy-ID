@@ -21,6 +21,10 @@ const theme = {
         textGray: '#868686',
         white: '#FDFEFF',
         headerFooter: '#F9F9F9',
+        grey: '#313938',
+        grey1: '#5B6261',
+        grey2: '#939393',
+        grey3: '#BEBEBE',
     },
 };
 
