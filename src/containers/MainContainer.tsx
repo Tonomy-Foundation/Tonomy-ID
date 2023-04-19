@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
-        width: '60%',
+        width: '50%',
     },
     marginTop: {
         marginTop: 28,
