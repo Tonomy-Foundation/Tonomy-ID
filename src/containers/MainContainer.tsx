@@ -2,7 +2,14 @@ import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import { MessageType, TonomyUsername, AccountType, CommunicationError } from '@tonomy/tonomy-id-sdk';
+import {
+    TonomyUsername,
+    AccountType,
+    CommunicationError,
+    AuthenticationMessage,
+    LoginRequestsMessage,
+    IdentifyMessage,
+} from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
@@ -27,12 +34,14 @@ export default function MainContainer() {
             try {
                 await loginToService();
                 user.communication.subscribeMessage((message) => {
+                    const loginRequestsMessage = new LoginRequestsMessage(message);
+
                     navigation.navigate('SSO', {
-                        requests: JSON.stringify(message.getPayload().requests),
+                        requests: loginRequestsMessage.getPayload().requests,
                         platform: 'browser',
                     });
                     setIsLoadingView(false);
-                }, MessageType.LOGIN_REQUEST);
+                }, LoginRequestsMessage.getType());
             } catch (e: any) {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -44,7 +53,8 @@ export default function MainContainer() {
 
     //TODO: this should be moved to a store or a provider or a hook
     async function loginToService() {
-        const message = await user.signMessage({}, { type: MessageType.COMMUNICATION_LOGIN });
+        const issuer = await user.getIssuer();
+        const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
         try {
             await user.communication.login(message);
@@ -81,16 +91,11 @@ export default function MainContainer() {
         setIsLoadingView(true);
 
         try {
-            /**
-             * the data object is what the user scanned
-             * right now we only have did
-             * when the user scans and get the did of the tonomy sso website
-             * the user send an ack message to the sso website.
-             * then closes the QR scanner container
-             */
-            const message = await user.signMessage({}, { recipient: data, type: MessageType.IDENTIFY });
+            // Connect to the browser using their did:jwk
+            const issuer = await user.getIssuer();
+            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, data);
 
-            await user.communication.sendMessage(message);
+            await user.communication.sendMessage(identifyMessage);
         } catch (e: any) {
             if (e instanceof CommunicationError && e.exception?.status === 404) {
                 console.error('User probably needs to refresh the page. See notes in MainContainer.tsx');

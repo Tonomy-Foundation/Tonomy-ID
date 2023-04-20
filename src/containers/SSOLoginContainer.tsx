@@ -9,35 +9,33 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import {
     UserApps,
     App,
-    JWTLoginPayload,
     TonomyUsername,
     AccountType,
-    MessageType,
     LoginRequest,
+    LoginRequestPayload,
+    LoginRequestResponseMessage,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
-
 import { openBrowserAsync } from 'expo-web-browser';
-import { PublicKey } from '@greymass/eosio';
 import { useNavigation } from '@react-navigation/native';
 
 export default function SSOLoginContainer({
     requests,
     platform,
 }: {
-    requests: string;
+    requests: LoginRequest[];
     platform: 'mobile' | 'browser';
 }) {
     const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<TonomyUsername>();
-    const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload>();
-    const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload>();
+    const [tonomyLoginRequestPayload, setTonomyLoginRequestPayload] = useState<LoginRequestPayload>();
+    const [ssoLoginRequestPayload, setSsoLoginRequestPayload] = useState<LoginRequestPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
     const [recieverDid, setRecieverDid] = useState<string>();
 
@@ -67,19 +65,18 @@ export default function SSOLoginContainer({
 
     async function getLoginFromJwt() {
         try {
-            const loginRequests = JSON.parse(requests).map((request: string) => new LoginRequest(request));
-            const verifiedRequests = await UserApps.verifyRequests(requests);
+            await UserApps.verifyRequests(requests);
 
-            for (const jwt of verifiedRequests) {
-                const payload = jwt.getPayload() as JWTLoginPayload;
+            for (const request of requests) {
+                const payload = request.getPayload();
                 const app = await App.getApp(payload.origin);
 
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
-                    setTonomyIdJwtPayload(payload);
-                    setRecieverDid(jwt.getSender());
+                    setTonomyLoginRequestPayload(payload);
+                    setRecieverDid(request.getSender());
                     setApp(app);
                 } else {
-                    setSsoJwtPayload(payload);
+                    setSsoLoginRequestPayload(payload);
                     setSsoApp(app);
                 }
             }
@@ -94,24 +91,34 @@ export default function SSOLoginContainer({
 
     async function onNext() {
         try {
-            const accountName = await user.storage.accountName.toString();
-            let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+            const accountName = await user.storage.accountName;
 
-            callbackUrl += 'requests=' + requests;
-            callbackUrl += '&username=' + (await user.storage.username);
-            callbackUrl += '&accountName=' + accountName;
-            if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
+            if (ssoApp && ssoLoginRequestPayload)
+                await user.apps.loginWithApp(ssoApp, ssoLoginRequestPayload.publicKey);
 
-            if (app && tonomyIdJwtPayload && checked === 'checked') {
-                await user.apps.loginWithApp(app, PublicKey.from(tonomyIdJwtPayload?.publicKey));
+            if (app && tonomyLoginRequestPayload && checked === 'checked') {
+                await user.apps.loginWithApp(app, tonomyLoginRequestPayload.publicKey);
             }
 
             if (platform === 'mobile') {
+                let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+
+                callbackUrl += 'requests=' + requests;
+                callbackUrl += '&username=' + (await user.storage.username);
+                callbackUrl += '&accountName=' + accountName.toString();
+
                 await openBrowserAsync(callbackUrl);
             } else {
-                const message = await user.signMessage(
-                    { requests, accountName },
-                    { recipient: recieverDid, type: MessageType.LOGIN_REQUEST_RESPONSE }
+                const issuer = await user.getIssuer();
+                const message = await LoginRequestResponseMessage.signMessage(
+                    {
+                        success: true,
+                        requests,
+                        accountName,
+                        username: await user.getUsername(),
+                    },
+                    issuer,
+                    recieverDid
                 );
 
                 await user.communication.sendMessage(message);

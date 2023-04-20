@@ -4,6 +4,7 @@ import CustomDrawer from '../components/CustomDrawer';
 import { useTheme } from 'react-native-paper';
 import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
+import { LoginRequest } from '@tonomy/tonomy-id-sdk';
 
 export type RouteDrawerParamList = {
     UserHome: undefined;
@@ -12,7 +13,7 @@ export type RouteDrawerParamList = {
     Logout: undefined;
     ChangePin: undefined;
 
-    SSO: { requests: string; platform: 'mobile' | 'browser' };
+    SSO: { requests: LoginRequest[]; platform: 'mobile' | 'browser' };
 };
 
 const Drawer = createDrawerNavigator<RouteDrawerParamList>();
