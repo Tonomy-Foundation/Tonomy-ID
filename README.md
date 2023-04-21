@@ -62,6 +62,11 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 npm start
 ```
 
+Testing Staging Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
+
+1. modify `"appName": "Tonomy ID Development"` in `config.staging.json`
+2. run `NODE_ENV=staging npm start`
+
 ## File structure of components
 
 [https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
