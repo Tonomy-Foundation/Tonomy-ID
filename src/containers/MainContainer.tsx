@@ -212,9 +212,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
-        // // flexGrow: 1,
         flexDirection: 'column',
-        // flexWrap: 'nowrap',
         alignItems: 'center',
     },
     button: {

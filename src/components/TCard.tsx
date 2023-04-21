@@ -53,6 +53,7 @@ const Content = (props: any) => {
         backgroundColor: theme.colors.grey6,
         borderBottomEndRadius: radius,
         borderBottomStartRadius: radius,
+        paddingHorizontal: 8,
     };
 
     return <Card.Content {...props} style={[style, props.style]} />;
