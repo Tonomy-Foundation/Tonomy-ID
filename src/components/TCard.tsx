@@ -1,10 +1,18 @@
 import React from 'react';
 import { Card } from 'react-native-paper';
 import TBadge from './atoms/TBadge';
+import { commonStyles, useAppTheme } from '../utils/theme';
 
 type TCardPropType = React.ComponentProps<typeof Card> & { style?: any };
+const radius = 5;
 
 function TCard({ children, ...props }: TCardPropType) {
+    const theme = useAppTheme();
+    const style = {
+        borderWidth: 1,
+        borderColor: theme.colors.grey5,
+        borderRadius: radius,
+    };
     const subComponentList = Object.keys(TCard);
 
     const subComponents = subComponentList.map((key) => {
@@ -16,7 +24,7 @@ function TCard({ children, ...props }: TCardPropType) {
     });
 
     return (
-        <Card {...props} elevation={4} mode="elevated">
+        <Card {...props} elevation={4} mode="elevated" style={[style, props.style]}>
             {subComponents.map((component) => component)}
         </Card>
     );
@@ -30,6 +38,8 @@ const Cover = (props: any) => {
     const style = {
         width: 190,
         height: 130,
+        borderTopEndRadius: radius,
+        borderTopStartRadius: radius,
     };
 
     return <Card.Cover {...props} style={[style, props.style]} />;
@@ -37,7 +47,16 @@ const Cover = (props: any) => {
 
 TCard.Cover = Cover;
 
-const Content = (props) => <Card.Content {...props} />;
+const Content = (props: any) => {
+    const theme = useAppTheme();
+    const style = {
+        backgroundColor: theme.colors.grey6,
+        borderBottomEndRadius: radius,
+        borderBottomStartRadius: radius,
+    };
+
+    return <Card.Content {...props} style={[style, props.style]} />;
+};
 
 TCard.Content = Content;
 

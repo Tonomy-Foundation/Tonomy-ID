@@ -25,6 +25,9 @@ const theme = {
         grey1: '#5B6261',
         grey2: '#939393',
         grey3: '#BEBEBE',
+        grey4: '#F9F9F9',
+        grey5: '#E4E4E4',
+        grey6: '#F4F4F4',
     },
 };
 
