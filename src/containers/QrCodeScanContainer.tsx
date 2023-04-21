@@ -43,14 +43,15 @@ export default function QrCodeScanContainer(props: {
     };
 
     return (
-        <LayoutComponent
-            body={
-                <View style={styles.flex}>
-                    {hasPermission === true && (
-                        <View style={styles.QRContainer}>
-                            <View style={styles.QROverlay}>
-                                <TP style={styles.colorWhite}>Align QR Code within frame to scan</TP>
-                                <QrScannerBorders style={styles.QRBorder}></QrScannerBorders>
+        <>
+            {hasPermission === true && (
+                <>
+                    <View style={styles.QRContainer}>
+                        <View style={styles.QROverlay}>
+                            <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
+                                <TP size={3} style={[styles.colorWhite, commonStyles.marginBottom]}>
+                                    Align QR Code within frame to scan
+                                </TP>
                                 <IconButton
                                     icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
                                     onPress={toggleFlashLight}
@@ -58,40 +59,36 @@ export default function QrCodeScanContainer(props: {
                                     style={[styles.iconButton]}
                                 ></IconButton>
                             </View>
-                            <Camera
-                                flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
-                                barCodeScannerSettings={{
-                                    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-                                }}
-                                onBarCodeScanned={handleBarCodeScanned}
-                                style={styles.QR}
-                            />
-                        </View>
-                    )}
 
-                    {hasPermission !== true && (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator animating={true}></ActivityIndicator>
-                            {hasPermission === null && <TP size={2}>Requesting for camera permission</TP>}
-                            {hasPermission === false && <TP size={3}>No access to camera</TP>}
+                            <QrScannerBorders style={commonStyles.marginBottom}></QrScannerBorders>
+
+                            <View style={commonStyles.marginBottom}>
+                                <TButtonContained
+                                    size="huge"
+                                    style={commonStyles.marginBottom}
+                                    onPress={() => (props.onClose ? props.onClose() : null)}
+                                >
+                                    Cancel
+                                </TButtonContained>
+                                {scanned && (
+                                    <TButtonContained onPress={() => setScanned(false)} size="huge">
+                                        Tap to Scan Again
+                                    </TButtonContained>
+                                )}
+                            </View>
                         </View>
-                    )}
-                </View>
-            }
-            footer={
-                <View>
-                    <TButtonOutlined
-                        style={commonStyles.marginBottom}
-                        onPress={() => (props.onClose ? props.onClose() : null)}
-                    >
-                        Cancel
-                    </TButtonOutlined>
-                    {scanned && (
-                        <TButtonContained onPress={() => setScanned(false)}> Tap to Scan Again</TButtonContained>
-                    )}
-                </View>
-            }
-        ></LayoutComponent>
+                    </View>
+                    <Camera
+                        flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
+                        barCodeScannerSettings={{
+                            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+                        }}
+                        onBarCodeScanned={handleBarCodeScanned}
+                        style={StyleSheet.absoluteFill}
+                    />
+                </>
+            )}
+        </>
     );
 }
 
@@ -107,8 +104,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     QRContainer: {
+        flex: 1,
         position: 'relative',
-        marginBottom: 16,
     },
     QROverlay: {
         flex: 1,
@@ -119,8 +116,9 @@ const styles = StyleSheet.create({
         bottom: 0,
         zIndex: 1,
         alignItems: 'center',
-        justifyContent: 'space-around',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        padding: 16,
+        justifyContent: 'space-between',
     },
 
     flex: {
