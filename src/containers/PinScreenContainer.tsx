@@ -95,9 +95,7 @@ export default function PinScreenContainer({
                     <View>
                         <TH1 style={commonStyles.marginTopTextCenter}>
                             {action === 'CHANGE_PIN'
-                                ? matched === false
-                                    ? 'Enter current Pin'
-                                    : confirming
+                                ? (matched === false ? 'Enter current Pin' : confirming)
                                     ? 'Repeat new PIN'
                                     : 'Create new Pin'
                                 : ''}
