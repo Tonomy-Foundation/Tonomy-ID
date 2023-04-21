@@ -162,6 +162,7 @@ export default function MainContainer() {
                         </View>
                     </View>
                 )}
+                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
             </View>
         );
     };
@@ -178,8 +179,6 @@ export default function MainContainer() {
             ) : (
                 <MainView />
             )}
-
-            {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
         </SafeAreaView>
     );
 }
