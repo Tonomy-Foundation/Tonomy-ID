@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { StyleSheet, View } from 'react-native';
+import { TButtonContained } from '../components/atoms/Tbutton';
 import { TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
@@ -8,7 +8,6 @@ import QrScannerBorders from '../assets/images/QrScannerBorders';
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
-import LayoutComponent from '../components/layout';
 
 export default function QrCodeScanContainer(props: {
     onClose?: () => void;

@@ -46,12 +46,12 @@ export function TP(props: TPProps) {
 type TCaptionProps = React.ComponentProps<typeof Caption>;
 
 export function TCaption(props: TCaptionProps) {
-    // eslint-disable-next-line react/prop-types
     const theme = useAppTheme();
     const style = {
         color: theme.colors.textGray,
     };
 
+    // eslint-disable-next-line react/prop-types
     return <Caption style={[style, styles.s1, props.style]}>{props.children}</Caption>;
 }
 
