@@ -59,8 +59,9 @@ export default function QrCodeScanContainer(props: {
                                     style={[styles.iconButton]}
                                 ></IconButton>
                             </View>
-
-                            <QrScannerBorders style={commonStyles.marginBottom}></QrScannerBorders>
+                            <View>
+                                <QrScannerBorders style={commonStyles.marginBottom}></QrScannerBorders>
+                            </View>
 
                             <View style={commonStyles.marginBottom}>
                                 <TButtonContained
@@ -88,32 +89,23 @@ export default function QrCodeScanContainer(props: {
                     />
                 </>
             )}
+            {hasPermission !== true && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator animating={true}></ActivityIndicator>
+                    {hasPermission === null && <TP size={2}>Requesting for camera permission</TP>}
+                    {hasPermission === false && <TP size={3}>No access to camera</TP>}
+                </View>
+            )}
         </>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    QR: {
-        height: 420,
-        width: '100%',
-        borderRadius: 4,
-    },
     QRContainer: {
         flex: 1,
-        position: 'relative',
     },
     QROverlay: {
-        flex: 1,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        ...StyleSheet.absoluteFillObject,
         zIndex: 1,
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -121,9 +113,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
 
-    flex: {
-        flex: 1,
-    },
     colorWhite: {
         color: theme.colors.white,
     },
