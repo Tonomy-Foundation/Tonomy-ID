@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { commonStyles } from '../utils/theme';
+import { commonStyles, useAppTheme } from '../utils/theme';
 import { TCaption, TP } from './atoms/THeadings';
 
 export type NavigationButtonProps = {
@@ -14,6 +14,7 @@ export type NavigationButtonProps = {
 };
 
 export default function TNavigationButton(props: NavigationButtonProps) {
+    const theme = useAppTheme();
     const getAlignmentBasenOnDescription = () => {
         return props.description ? 'flex-start' : 'center';
     };
@@ -32,8 +33,7 @@ export default function TNavigationButton(props: NavigationButtonProps) {
             <View style={{ ...styles.titleContainer }}>
                 <TP
                     style={{
-                        fontWeight: `${props?.disabled === false ? 'bold' : '100'}`,
-                        color: `${props?.disabled === false ? 'black' : 'gray'}`,
+                        color: `${props?.disabled === false ? theme.colors.text : theme.colors.textGray}`,
                     }}
                 >
                     {props.title}

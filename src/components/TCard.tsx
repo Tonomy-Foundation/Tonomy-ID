@@ -54,6 +54,7 @@ const Content = (props: any) => {
         borderBottomEndRadius: radius,
         borderBottomStartRadius: radius,
         paddingHorizontal: 8,
+        paddingVertical: 5,
     };
 
     return <Card.Content {...props} style={[style, props.style]} />;

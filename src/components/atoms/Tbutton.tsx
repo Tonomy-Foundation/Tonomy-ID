@@ -62,7 +62,7 @@ export function TButtonContained(props: ButtonProps) {
         backgroundColor: props.disabled ? theme.colors.primary2 : getColorBasedOnTheme(props.theme),
     };
     const shadowStyle = {
-        shadowColor: '#000',
+        shadowColor: theme.colors.shadowDark,
         shadowOffset: {
             width: 0,
             height: 2,
