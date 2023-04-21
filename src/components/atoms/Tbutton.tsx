@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Children, useEffect } from 'react';
 import theme, { commonStyles, useAppTheme } from '../../utils/theme';
 import { Text, TouchableOpacity } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -6,7 +6,7 @@ import { IconButton } from 'react-native-paper';
 type CustomButtonProps = {
     theme?: 'primary' | 'secondary';
     stretched?: boolean;
-    size?: 'large' | 'medium';
+    size?: 'large' | 'medium' | 'huge';
     color?: string;
     icon?: string;
     disabled?: boolean;
@@ -21,7 +21,8 @@ export default function TButton(props: ButtonProps) {
         return props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme);
     };
     const sizes: Record<ButtonProps['size'], number> = {
-        large: 15,
+        huge: 18,
+        large: 16,
         medium: 14,
     };
     const textStyle = {
@@ -32,8 +33,8 @@ export default function TButton(props: ButtonProps) {
     };
 
     const buttonStyle = {
-        paddingHorizontal: props.size === 'large' ? 22 : 16,
-        paddingVertical: props.size === 'large' ? 14 : 11,
+        paddingHorizontal: props.size !== 'large' ? 16 : 22,
+        paddingVertical: props.size !== 'large' ? 11 : 14,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

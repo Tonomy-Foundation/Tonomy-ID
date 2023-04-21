@@ -33,7 +33,7 @@ export default function TNavigationButton(props: NavigationButtonProps) {
             <View style={{ ...styles.titleContainer }}>
                 <TP
                     style={{
-                        color: `${props?.disabled === false ? theme.colors.text : theme.colors.textGray}`,
+                        color: `${props?.disabled ? theme.colors.textGray : theme.colors.text}`,
                     }}
                 >
                     {props.title}

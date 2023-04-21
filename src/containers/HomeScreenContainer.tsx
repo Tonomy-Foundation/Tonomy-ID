@@ -4,7 +4,7 @@ import { TButtonContained, TButtonOutlined, TButtonText } from '../components/at
 import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
-import { TCaption, TH1, TP } from '../components/atoms/THeadings';
+import { TCaption, TH1, TH4 } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
@@ -24,9 +24,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                         ></Image>
                         <TH1 style={commonStyles.marginBottom}>{settings.config.appName}</TH1>
 
-                        <TP size={1} style={[commonStyles.textAlignCenter]}>
-                            {settings.config.appSlogan}
-                        </TP>
+                        <TH4 style={[commonStyles.textAlignCenter]}>{settings.config.appSlogan}</TH4>
                     </View>
                 </View>
             }
@@ -63,7 +61,7 @@ const styles = StyleSheet.create({
     },
     imgContainer: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
     },
     logo: {

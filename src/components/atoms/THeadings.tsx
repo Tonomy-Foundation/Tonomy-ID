@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Caption, Paragraph, Text } from 'react-native-paper';
-import { customColors } from '../../utils/theme';
+import { customColors, useAppTheme } from '../../utils/theme';
 
 type THProps = React.ComponentProps<typeof Text>;
 
@@ -23,6 +23,15 @@ export function TH2(props: THProps) {
     );
 }
 
+export function TH4(props: THProps) {
+    return (
+        // eslint-disable-next-line react/prop-types
+        <Text {...props} style={[styles.h4, props.style]}>
+            {props.children}
+        </Text>
+    );
+}
+
 type TPProps = React.ComponentProps<typeof Paragraph> & { size?: 1 | 2 | 3 };
 
 export function TP(props: TPProps) {
@@ -38,7 +47,12 @@ type TCaptionProps = React.ComponentProps<typeof Caption>;
 
 export function TCaption(props: TCaptionProps) {
     // eslint-disable-next-line react/prop-types
-    return <Caption style={props.style}>{props.children}</Caption>;
+    const theme = useAppTheme();
+    const style = {
+        color: theme.colors.textGray,
+    };
+
+    return <Caption style={[style, styles.s1, props.style]}>{props.children}</Caption>;
 }
 
 const styles = StyleSheet.create({
@@ -50,6 +64,9 @@ const styles = StyleSheet.create({
     h2: {
         fontSize: 24,
         fontWeight: '600',
+    },
+    h4: {
+        fontSize: 16,
     },
     s4: {
         fontSize: 20,

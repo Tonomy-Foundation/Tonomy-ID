@@ -8,6 +8,7 @@ import QrScannerBorders from '../assets/images/QrScannerBorders';
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
+import LayoutComponent from '../components/layout';
 
 export default function QrCodeScanContainer(props: {
     onClose?: () => void;
@@ -65,7 +66,7 @@ export default function QrCodeScanContainer(props: {
                             style={styles.QR}
                         />
                     </View>
-                    <View>
+                    <View style={styles.buttonsContianer}>
                         <TButtonOutlined
                             style={commonStyles.marginBottom}
                             onPress={() => (props.onClose ? props.onClose() : null)}
@@ -96,8 +97,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     QR: {
-        height: 480,
-        width: Dimensions.get('screen').width - 32,
+        height: 470,
+        width: Dimensions.get('window').width - 24,
     },
     QRContainer: {
         position: 'relative',
@@ -131,5 +132,8 @@ const styles = StyleSheet.create({
     iconButton: {
         borderColor: theme.colors.white,
         borderWidth: 1,
+    },
+    buttonsContianer: {
+        paddingTop: 16,
     },
 });

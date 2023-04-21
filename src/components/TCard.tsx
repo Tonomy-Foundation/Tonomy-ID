@@ -50,11 +50,13 @@ TCard.Cover = Cover;
 const Content = (props: any) => {
     const theme = useAppTheme();
     const style = {
-        backgroundColor: theme.colors.grey6,
+        backgroundColor: theme.colors.grey4,
         borderBottomEndRadius: radius,
         borderBottomStartRadius: radius,
         paddingHorizontal: 8,
         paddingVertical: 5,
+        borderTopWidth: 1,
+        borderColor: theme.colors.grey5,
     };
 
     return <Card.Content {...props} style={[style, props.style]} />;

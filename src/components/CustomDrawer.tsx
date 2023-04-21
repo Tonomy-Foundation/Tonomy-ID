@@ -27,17 +27,24 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
         container: {
             backgroundColor: theme.colors.background,
         },
+        logoContainer: {
+            justifyContent: 'center',
+            alignItems: 'center',
+            // flex: 1,
+            padding: 16,
+        },
         logo: {
+            // marginHorizontal: 'auto',
             height: 100,
             width: 100,
             resizeMode: 'cover',
-            margin: 16,
+            // margin: 16,
         },
         menu: {
             paddingVertical: 16,
             borderTopColor: theme.colors.grey3,
-            borderTopWidth: 1,
-            marginTop: 40,
+            // borderTopWidth: 1,
+            marginTop: 16,
         },
         button: {
             justifyContent: 'flex-start',
@@ -47,7 +54,10 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     return (
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView {...props} style={styles.container}>
-                <Image source={logo1024} style={styles.logo}></Image>
+                {/* <View style={styles.logoContainer}>
+                    <Image source={logo1024} style={styles.logo}></Image>
+                </View> */}
+
                 <View style={styles.menu}>
                     {Object.entries(props.descriptors).map(([key, value]) => (
                         <TButton
@@ -56,6 +66,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                             onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
                             icon={icons[value.route.name]}
                             color={theme.colors.grey2}
+                            size="huge"
                         >
                             {value.options.title || value.route.name}
                         </TButton>
@@ -68,6 +79,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         }}
                         icon={icons['Logout']}
                         color={theme.colors.grey2}
+                        size="huge"
                     >
                         {'Logout'}
                     </TButton>

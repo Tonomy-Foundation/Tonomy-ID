@@ -137,7 +137,7 @@ export default function MainContainer() {
                                     setQrOpened(true);
                                 }}
                             >
-                                Scan Qr Code
+                                Scan QR Code
                             </TButtonContained>
                         </View>
 
