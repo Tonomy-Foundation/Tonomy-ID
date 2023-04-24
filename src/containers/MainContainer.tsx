@@ -14,8 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
-import TonomyDAOImage from '../assets/images/tonomy-dao.png';
-import TonomyPartImage from '../assets/images/tonomy-p.png';
 
 export default function MainContainer() {
     const userStore = useUserStore();
@@ -145,14 +143,14 @@ export default function MainContainer() {
                             <TP size={2}>SUGGESTED APPS:</TP>
                             <ScrollView horizontal={true} style={styles.scrollView}>
                                 <TCard style={styles.card}>
-                                    <TCard.Cover source={TonomyDAOImage} />
+                                    <TCard.Cover source={require('../assets/images/tonomy-dao.png')} />
                                     <TCard.Badge>Coming Soon</TCard.Badge>
                                     <TCard.Content>
                                         <TP>Tonomy Participant</TP>
                                     </TCard.Content>
                                 </TCard>
                                 <TCard style={styles.card}>
-                                    <TCard.Cover source={TonomyPartImage} />
+                                    <TCard.Cover source={require('../assets/images/tonomy-p.png')} />
                                     <TCard.Badge>Coming Soon</TCard.Badge>
                                     <TCard.Content>
                                         <TP>Tonomy DAO</TP>
