@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, ScrollView } from 'react-native';
 import {
     TonomyUsername,
     AccountType,
@@ -9,11 +9,7 @@ import {
     AuthenticationMessage,
     LoginRequestsMessage,
     IdentifyMessage,
-    TonomyUsername,
-    AccountType,
-    CommunicationError,
 } from '@tonomy/tonomy-id-sdk';
-import { StyleSheet, View, Image, ScrollView } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
