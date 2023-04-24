@@ -13,14 +13,11 @@ function TCard({ children, ...props }: TCardPropType) {
         borderColor: theme.colors.grey5,
         borderRadius: radius,
     };
-    const subComponentList = Object.keys(TCard);
 
-    const subComponents = subComponentList.map((key) => {
-        return React.Children.map(children, (child) => {
-            const childType = child && child.type && (child.type.displayName || child.type.name);
+    // console.log(Object.entries(TCard));
 
-            return childType.includes(key) ? child : null;
-        });
+    const subComponents = React.Children.map(children, (child) => {
+        return React.isValidElement(child) ? React.cloneElement(child) : child;
     });
 
     return (
@@ -32,6 +29,7 @@ function TCard({ children, ...props }: TCardPropType) {
 
 const Title = (props) => <Card.Title {...props} />;
 
+Title.displayName = 'Title';
 TCard.Title = Title;
 
 const Cover = (props: any) => {
@@ -45,6 +43,7 @@ const Cover = (props: any) => {
     return <Card.Cover {...props} style={[style, props.style]} />;
 };
 
+Cover.displayName = 'Title';
 TCard.Cover = Cover;
 
 const Content = (props: any) => {
@@ -62,10 +61,12 @@ const Content = (props: any) => {
     return <Card.Content {...props} style={[style, props.style]} />;
 };
 
+Content.displayName = 'Title';
 TCard.Content = Content;
 
 const Action = (props) => <Card.Actions {...props} />;
 
+Action.displayName = 'Title';
 TCard.Action = Action;
 
 const Badge = (props: any) => {
@@ -74,6 +75,7 @@ const Badge = (props: any) => {
     return <TBadge {...props} style={[style, props.style]} />;
 };
 
+Badge.displayName = 'Title';
 TCard.Badge = Badge;
 
 export default TCard;
