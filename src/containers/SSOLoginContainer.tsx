@@ -27,7 +27,7 @@ export default function SSOLoginContainer({
     const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
-    const [username, setUsername] = useState<TonomyUsername>();
+    const [username, setUsername] = useState<string>();
     const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload>();
     const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
@@ -45,11 +45,11 @@ export default function SSOLoginContainer({
                 setStatus(UserStatus.NOT_LOGGED_IN);
             }
 
-            const baseUsername = TonomyUsername.fromUsername(
-                username?.username,
-                AccountType.PERSON,
-                settings.config.accountSuffix
-            ).getBaseUsername();
+            if (!username.username) {
+                throw new Error('Username not found');
+            }
+
+            const baseUsername = TonomyUsername.fromFullUsername(username.username).getBaseUsername() as string;
 
             setUsername(baseUsername);
         } catch (e: any) {
@@ -86,12 +86,13 @@ export default function SSOLoginContainer({
     async function onNext() {
         try {
             const accountName = await user.storage.accountName.toString();
-            const username = (await user.getUsername()).getBaseUsername();
+
+            const username = await user.getUsername();
 
             let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
 
             callbackUrl += 'requests=' + requests;
-            callbackUrl += '&username=' + (await user.storage.username);
+            callbackUrl += '&username=' + username.username;
             callbackUrl += '&accountName=' + accountName;
             if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
 
@@ -103,7 +104,7 @@ export default function SSOLoginContainer({
                 await openBrowserAsync(callbackUrl);
             } else {
                 const message = await user.signMessage(
-                    { requests, accountName, username },
+                    { requests, accountName, username: username.username },
                     { recipient: recieverDid, type: MessageType.LOGIN_REQUEST_RESPONSE }
                 );
 
