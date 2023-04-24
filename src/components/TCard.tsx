@@ -1,10 +1,18 @@
 import React from 'react';
 import { Card } from 'react-native-paper';
 import TBadge from './atoms/TBadge';
+import { commonStyles, useAppTheme } from '../utils/theme';
 
 type TCardPropType = React.ComponentProps<typeof Card> & { style?: any };
+const radius = 5;
 
 function TCard({ children, ...props }: TCardPropType) {
+    const theme = useAppTheme();
+    const style = {
+        borderWidth: 1,
+        borderColor: theme.colors.grey5,
+        borderRadius: radius,
+    };
     const subComponentList = Object.keys(TCard);
 
     const subComponents = subComponentList.map((key) => {
@@ -15,18 +23,44 @@ function TCard({ children, ...props }: TCardPropType) {
         });
     });
 
-    return <Card {...props}>{subComponents.map((component) => component)}</Card>;
+    return (
+        <Card {...props} elevation={4} mode="elevated" style={[style, props.style]}>
+            {subComponents.map((component) => component)}
+        </Card>
+    );
 }
 
 const Title = (props) => <Card.Title {...props} />;
 
 TCard.Title = Title;
 
-const Cover = (props) => <Card.Cover {...props} />;
+const Cover = (props: any) => {
+    const style = {
+        width: 190,
+        height: 130,
+        borderTopEndRadius: radius,
+        borderTopStartRadius: radius,
+    };
+
+    return <Card.Cover {...props} style={[style, props.style]} />;
+};
 
 TCard.Cover = Cover;
 
-const Content = (props) => <Card.Content {...props} />;
+const Content = (props: any) => {
+    const theme = useAppTheme();
+    const style = {
+        backgroundColor: theme.colors.grey4,
+        borderBottomEndRadius: radius,
+        borderBottomStartRadius: radius,
+        paddingHorizontal: 8,
+        paddingVertical: 5,
+        borderTopWidth: 1,
+        borderColor: theme.colors.grey5,
+    };
+
+    return <Card.Content {...props} style={[style, props.style]} />;
+};
 
 TCard.Content = Content;
 
@@ -34,7 +68,7 @@ const Action = (props) => <Card.Actions {...props} />;
 
 TCard.Action = Action;
 
-const Badge = (props: { style?: any }) => {
+const Badge = (props: any) => {
     const style = { position: 'absolute', top: 8, left: 8, textAlign: 'center' };
 
     return <TBadge {...props} style={[style, props.style]} />;

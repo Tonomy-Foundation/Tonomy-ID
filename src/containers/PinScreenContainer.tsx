@@ -43,7 +43,7 @@ export default function PinScreenContainer({
         // if correct then allow to enter and confirm then check  and update pin
         // else show error to enter correct pin
         setPin('');
-        setDisabled(true)
+        setDisabled(true);
         setMatched(true);
         setErrorMessage('');
 
@@ -95,14 +95,16 @@ export default function PinScreenContainer({
                     <View>
                         <TH1 style={commonStyles.marginTopTextCenter}>
                             {action === 'CHANGE_PIN'
-                                ? matched === false
-                                    ? 'Enter current Pin'
-                                    : confirming
-                                        ? 'Repeat new PIN'
-                                        : 'Create new Pin'
+                                ? (matched === false ? 'Enter current Pin' : confirming)
+                                    ? 'Repeat new PIN'
+                                    : 'Create new Pin'
                                 : ''}
 
-                            {(action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') ? (confirming ? 'Repeat your PIN' : 'Add a PIN') : ''}
+                            {action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT'
+                                ? confirming
+                                    ? 'Repeat your PIN'
+                                    : 'Add a PIN'
+                                : ''}
                         </TH1>
                     </View>
                     <View>
@@ -132,7 +134,6 @@ export default function PinScreenContainer({
             footer={
                 <View>
                     <TButtonContained
-                        mode="contained"
                         disabled={disabled}
                         loading={loading}
                         onPress={action === 'CHANGE_PIN' ? (matched === false ? checkPin : onNext) : onNext}
@@ -142,7 +143,6 @@ export default function PinScreenContainer({
                     </TButtonContained>
                     {!confirming && (
                         <TButtonOutlined
-                            mode="outlined"
                             onPress={() => {
                                 action === 'CHANGE_PIN'
                                     ? navigation.goBack()

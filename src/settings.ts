@@ -6,8 +6,11 @@ type ConfigType = {
     blockchainUrl: string;
     theme: {
         primaryColor: string;
+        primaryColor2: string;
         secondaryColor: string;
+        secondaryColor2: string;
         tertiaryColor: string;
+        tertiaryColor2: string;
     };
     appName: string;
     ecosystemName: string;

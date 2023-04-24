@@ -4,7 +4,7 @@ import { TButtonContained, TButtonOutlined, TButtonText } from '../components/at
 import { NavigationProp } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
-import { TCaption, TH1, TP } from '../components/atoms/THeadings';
+import { TCaption, TH1, TH4 } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
@@ -12,15 +12,6 @@ import { Props } from '../screens/homeScreen';
 import useUserStore from '../store/userStore';
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const {
-        colors: { text },
-    } = useTheme();
-    const stylesColor = StyleSheet.create({
-        text: {
-            color: text,
-        },
-    });
-
     return (
         <LayoutComponent
             body={
@@ -31,11 +22,9 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                             style={[styles.logo, commonStyles.marginBottom]}
                             source={require('../assets/tonomy/tonomy-logo1024.png')}
                         ></Image>
-                        <TH1 style={stylesColor.text}>{settings.config.appName}</TH1>
+                        <TH1 style={commonStyles.marginBottom}>{settings.config.appName}</TH1>
 
-                        <TP size={2} style={[commonStyles.textAlignCenter, stylesColor.text]}>
-                            {settings.config.appSlogan}
-                        </TP>
+                        <TH4 style={[commonStyles.textAlignCenter]}>{settings.config.appSlogan}</TH4>
                     </View>
                 </View>
             }
@@ -77,7 +66,7 @@ const styles = StyleSheet.create({
     },
     logo: {
         alignSelf: 'center',
-        height: '50%',
+        height: '40%',
         resizeMode: 'contain',
     },
 });

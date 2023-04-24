@@ -79,18 +79,14 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                 </View>
             }
             footerHint={
-                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                    <View style={styles.marginBottom}>
-                        <TInfoBox
-                            align="left"
-                            icon="security"
-                            description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                <TInfoBox
+                    align="left"
+                    icon="security"
+                    description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
                          Foundation can see it."
-                            linkUrl={settings.config.links.securityLearnMore}
-                            linkUrlText="Learn more"
-                        />
-                    </View>
-                </View>
+                    linkUrl={settings.config.links.securityLearnMore}
+                    linkUrlText="Learn more"
+                />
             }
             footer={
                 <View style={commonStyles.marginTop}>

@@ -2,13 +2,16 @@
     "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "theme": {
         "primaryColor": "#67D7ED",
-        "secondaryColor": "#03dac4",
-        "tertiaryColor": "white"
+        "primaryColor2": "#D2F3FA",
+        "secondaryColor": "#FF505F",
+        "secondaryColor2": "#E76773",
+        "tertiaryColor": "#7660E7",
+        "tertiaryColor2": "#CFC8F7"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
     "appName": "Tonomy ID Development",
     "ecosystemName": "Tonomy Development",
-    "appSlogan": "Building ecosystems of trust",
+    "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
         "logo48": "./src/assets/tonomy/tonomy-logo48.png",
