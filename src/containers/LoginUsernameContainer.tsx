@@ -55,7 +55,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                     <TH1 style={commonStyles.textAlignCenter}>Username</TH1>
                     <View style={styles.container}>
                         <TP size={1}>Username</TP>
-                        <View style={styles.inputContainer}>
+                        <View>
                             <TUsername value={username} onChangeText={setUsername} />
                         </View>
                         <TError>{errorMessage}</TError>
@@ -95,13 +95,6 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
 }
 
 const styles = StyleSheet.create({
-    inputContainer: {
-        borderWidth: 1,
-        height: 60,
-        justifyContent: 'center',
-        borderColor: theme.colors.disabled,
-        borderRadius: 8,
-    },
     container: {
         width: '100%',
         height: '100%',

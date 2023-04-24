@@ -27,7 +27,7 @@ export default function LayoutComponent(props: layoutProps) {
     return (
         <SafeAreaView style={layoutStyles.container}>
             {props.body && <View style={[layoutStyles.body, { flex: keyboardStatusShown ? 2 : 3 }]}>{props.body}</View>}
-            {props.footerHint ? (
+            {props.footerHint && !keyboardStatusShown ? (
                 <View style={layoutStyles.footerHint}>{props.footerHint}</View>
             ) : (
                 <View style={layoutStyles.footerHint}>
@@ -44,10 +44,10 @@ const layoutStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'space-between',
-        paddingHorizontal: 20,
+        padding: 16,
         backgroundColor: '#FDFEFF',
     },
     body: { flex: 3 },
     footerHint: { flex: 1, justifyContent: 'flex-end' },
-    footer: { flex: 1, gap: 40, flexDirection: 'column', justifyContent: 'flex-start' },
+    footer: { flex: 1.2, flexDirection: 'column', justifyContent: 'flex-start' },
 });

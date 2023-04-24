@@ -9,7 +9,11 @@ import {
     AuthenticationMessage,
     LoginRequestsMessage,
     IdentifyMessage,
+    TonomyUsername,
+    AccountType,
+    CommunicationError,
 } from '@tonomy/tonomy-id-sdk';
+import { StyleSheet, View, Image, ScrollView } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
@@ -17,8 +21,10 @@ import { ApplicationErrors, throwError } from '../utils/errors';
 import QrCodeScanContainer from './QrCodeScanContainer';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import settings from '../settings';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
+import TCard from '../components/TCard';
 
 export default function MainContainer() {
     const userStore = useUserStore();
@@ -79,7 +85,7 @@ export default function MainContainer() {
                 u?.username,
                 AccountType.PERSON,
                 settings.config.accountSuffix
-            ).getBaseUsername();
+            ).getBaseUsername() as string;
 
             setUsername(baseUsername);
         } catch (e: any) {
@@ -122,12 +128,15 @@ export default function MainContainer() {
         }
 
         return (
-            <>
+            <View style={styles.content}>
                 {!qrOpened && (
-                    <View style={styles.container}>
+                    <View style={styles.content}>
                         <View style={styles.header}>
-                            <TH2>{username}</TH2>
-                            <Image source={require('../assets/animations/qr-code.gif')} style={styles.image} />
+                            <TH2 style={styles.marginTop}>{username}</TH2>
+                            <Image
+                                source={require('../assets/animations/qr-code.gif')}
+                                style={[styles.image, styles.marginTop]}
+                            />
                             <TButtonContained
                                 style={[styles.button, styles.marginTop]}
                                 icon="qrcode-scan"
@@ -135,22 +144,41 @@ export default function MainContainer() {
                                     setQrOpened(true);
                                 }}
                             >
-                                Scan Qr Code
+                                Scan QR Code
                             </TButtonContained>
+                        </View>
+
+                        <View style={[styles.marginTop, styles.card]}>
+                            <TP size={2}>SUGGESTED APPS:</TP>
+                            <ScrollView horizontal={true} style={styles.scrollView}>
+                                <TCard style={styles.card}>
+                                    <TCard.Cover source={require('../assets/images/tonomy-dao.png')} />
+                                    <TCard.Badge>Coming Soon</TCard.Badge>
+                                    <TCard.Content>
+                                        <TP>Tonomy Participant</TP>
+                                    </TCard.Content>
+                                </TCard>
+                                <TCard style={styles.card}>
+                                    <TCard.Cover source={require('../assets/images/tonomy-p.png')} />
+                                    <TCard.Badge>Coming Soon</TCard.Badge>
+                                    <TCard.Content>
+                                        <TP>Tonomy DAO</TP>
+                                    </TCard.Content>
+                                </TCard>
+                            </ScrollView>
                         </View>
                     </View>
                 )}
-
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
-            </>
+            </View>
         );
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {isLoadingView ? (
                 <View style={styles.requestView}>
-                    <Image alt="Tonomy Logo" source={require('../assets/tonomy/connecting.png')}></Image>
+                    <Image source={require('../assets/tonomy/connecting.png')}></Image>
                     <TP style={styles.requestText} size={1}>
                         Linking to your web app and receiving data. Please remain connected
                     </TP>
@@ -158,36 +186,7 @@ export default function MainContainer() {
             ) : (
                 <MainView />
             )}
-
-            {/*
-            Cards are in upcoming features 
-            <View style={styles.marginTop}>
-                <TP size={2}>Upcoming features</TP>
-                <ScrollView horizontal={true}>
-                    <TCard style={styles.card}>
-                        <TCard.Cover source={{ uri: 'https://source.unsplash.com/random/' }} />
-                        <TCard.Badge> Coming Soon</TCard.Badge>
-                        <TCard.Content>
-                            <TP>Credential sharing</TP>
-                        </TCard.Content>
-                    </TCard>
-                    <TCard style={styles.card}>
-                        <TCard.Cover source={{ uri: 'https://source.unsplash.com/random?login,SSO' }} />
-                        <TCard.Content>
-                            <TP>SSO Login</TP>
-                        </TCard.Content>
-                    </TCard>
-                    <TCard style={styles.card}>
-                        <TCard.Badge> Coming Soon</TCard.Badge>
-
-                        <TCard.Cover source={{ uri: 'https://source.unsplash.com/random?transactions,crypto' }} />
-                        <TCard.Content>
-                            <TP>Transaction signing</TP>
-                        </TCard.Content>
-                    </TCard>
-                </ScrollView>
-            </View> */}
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -205,27 +204,38 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     image: {
-        width: 220,
-        height: 220,
+        width: 200,
+        height: 190,
         resizeMode: 'contain',
+        marginTop: 20,
+        marginBottom: 20,
     },
     container: {
         padding: 16,
-        flex: 1, //remove this when cards are added
-        justifyContent: 'center', //remove this when cards are added
+        flex: 1,
+    },
+    content: {
+        flex: 1,
     },
     header: {
+        flex: 1,
+        flexDirection: 'column',
         alignItems: 'center',
     },
     button: {
-        transform: [{ scale: 1.2 }],
+        width: '50%',
     },
     marginTop: {
-        marginTop: 32,
+        marginTop: 28,
+    },
+    cards: {
+        flex: 1,
     },
     card: {
-        width: 250,
-        marginVertical: 16,
         marginRight: 16,
+        marginVertical: 16,
+    },
+    scrollView: {
+        marginRight: -20,
     },
 });

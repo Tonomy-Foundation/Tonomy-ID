@@ -69,26 +69,24 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                     <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
                     <View style={styles.innerContainer}>
                         <TP style={styles.inputHeader}>Username</TP>
-                        <View style={styles.inputContainer}>
-                            <TUsername errorText={errorMessage} value={username} onChangeText={onTextChange} />
-                        </View>
-                        <TCaption style={styles.caption}>You can always change your username later</TCaption>
+
+                        <TUsername errorText={errorMessage} value={username} onChangeText={onTextChange} />
+
+                        {errorMessage.length <= 0 && (
+                            <TCaption style={styles.caption}>You can always change your username later</TCaption>
+                        )}
                     </View>
                 </View>
             }
             footerHint={
-                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                    <View style={styles.marginBottom}>
-                        <TInfoBox
-                            align="left"
-                            icon="security"
-                            description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                <TInfoBox
+                    align="left"
+                    icon="security"
+                    description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
                          Foundation can see it."
-                            linkUrl={settings.config.links.securityLearnMore}
-                            linkUrlText="Learn more"
-                        />
-                    </View>
-                </View>
+                    linkUrl={settings.config.links.securityLearnMore}
+                    linkUrlText="Learn more"
+                />
             }
             footer={
                 <View style={commonStyles.marginTop}>
@@ -123,11 +121,6 @@ const styles = StyleSheet.create({
     },
     inputHeader: {
         color: '#939393',
-    },
-    inputContainer: {
-        borderWidth: 1,
-        borderColor: theme.colors.disabled,
-        borderRadius: 8,
     },
     innerContainer: { height: '90%', justifyContent: 'center' },
     link: {

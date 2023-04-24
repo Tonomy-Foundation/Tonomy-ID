@@ -51,11 +51,11 @@ export default function SSOLoginContainer({
                 setStatus(UserStatus.NOT_LOGGED_IN);
             }
 
-            const baseUsername = TonomyUsername.fromUsername(
-                username?.username,
-                AccountType.PERSON,
-                settings.config.accountSuffix
-            ).getBaseUsername();
+            if (!username.username) {
+                throw new Error('Username not found');
+            }
+
+            const baseUsername = TonomyUsername.fromFullUsername(username.username).getBaseUsername() as string;
 
             setUsername(baseUsername);
         } catch (e: any) {
@@ -93,6 +93,13 @@ export default function SSOLoginContainer({
         try {
             const accountName = await user.storage.accountName;
 
+            const username = await user.getUsername();
+
+            let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+
+            callbackUrl += 'requests=' + requests;
+            callbackUrl += '&username=' + username.username;
+            callbackUrl += '&accountName=' + accountName.toString();
             if (ssoApp && ssoLoginRequestPayload)
                 await user.apps.loginWithApp(ssoApp, ssoLoginRequestPayload.publicKey);
 

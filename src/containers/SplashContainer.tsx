@@ -30,16 +30,22 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
                         {props.subtitle}
                     </TP>
                     <Image style={styles.image} source={props.imageSource}></Image>
-                    <TInfoBox
-                        align="center"
-                        description={props.description}
-                        icon={props.icon}
-                        linkUrl={props.linkUrl}
-                        linkUrlText={props.linkUrlText}
-                    ></TInfoBox>
                 </View>
             }
-            footer={<TButtonContained onPress={props.buttonOnPress}>{props.buttonText}</TButtonContained>}
+            footerHint={
+                <TInfoBox
+                    align="center"
+                    description={props.description}
+                    icon={props.icon}
+                    linkUrl={props.linkUrl}
+                    linkUrlText={props.linkUrlText}
+                ></TInfoBox>
+            }
+            footer={
+                <View style={styles.footer}>
+                    <TButtonContained onPress={props.buttonOnPress}>{props.buttonText}</TButtonContained>
+                </View>
+            }
         />
     );
 }
@@ -53,5 +59,8 @@ const styles = StyleSheet.create({
     },
     title: {
         marginBottom: 20,
+    },
+    footer: {
+        marginTop: 30,
     },
 });

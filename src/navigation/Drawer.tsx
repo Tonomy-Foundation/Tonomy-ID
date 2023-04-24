@@ -1,10 +1,10 @@
 import React from 'react';
 import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigation/drawer';
 import CustomDrawer from '../components/CustomDrawer';
-import { useTheme } from 'react-native-paper';
 import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
 import { LoginRequest } from '@tonomy/tonomy-id-sdk';
+import { useAppTheme } from '../utils/theme';
 
 export type RouteDrawerParamList = {
     UserHome: undefined;
@@ -19,17 +19,17 @@ export type RouteDrawerParamList = {
 const Drawer = createDrawerNavigator<RouteDrawerParamList>();
 
 export default function DrawerNavigation() {
-    const theme = useTheme();
+    const theme = useAppTheme();
     const defaultScreenOptions: DrawerNavigationOptions = {
         headerStyle: {
-            backgroundColor: theme.colors.primary,
+            shadowColor: theme.colors.shadow,
         },
         headerTitleStyle: {
             fontSize: 24,
-            color: '#474D4C',
+            color: theme.colors.text,
         },
-        headerTitleAlign: 'left',
-        headerTintColor: theme.dark ? theme.colors.text : 'white',
+        headerTitleAlign: 'center',
+        headerTintColor: theme.colors.text,
     };
 
     return (

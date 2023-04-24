@@ -165,14 +165,8 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                     </View>
                 }
                 footerHint={
-                    <View
-                        style={[
-                            commonStyles.alignItemsCenter,
-                            styles.footerText,
-                            errorMessage || confirmErrorMessage ? styles.createAccountMargin : {},
-                        ]}
-                    >
-                        <View style={[commonStyles.alignItemsCenter]}>
+                    <View>
+                        <View>
                             <TP size={1} style={commonStyles.textAlignCenter}>
                                 By continuing, you agree to our
                                 <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
@@ -180,15 +174,14 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
                             </TP>
                         </View>
-                        <View style={commonStyles.marginBottom}>
-                            <TInfoBox
-                                align="left"
-                                icon="security"
-                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                linkUrl={settings.config.links.securityLearnMore}
-                                linkUrlText="Learn more"
-                            />
-                        </View>
+
+                        <TInfoBox
+                            align="left"
+                            icon="security"
+                            description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                            linkUrl={settings.config.links.securityLearnMore}
+                            linkUrlText="Learn more"
+                        />
                     </View>
                 }
                 footer={
