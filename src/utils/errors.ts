@@ -28,6 +28,7 @@ enum ApplicationErrors {
     NoDataFound = 'NoDataFound', // No Data found in the storage
     NoRequestData = 'NoRequestData',
     InvalidJwt = 'InvalidJwt',
+    MissingParams = 'MissingParams',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

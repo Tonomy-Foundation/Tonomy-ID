@@ -12,7 +12,10 @@ import {
     TonomyUsername,
     LoginRequest,
     LoginRequestPayload,
+    LoginRequestMessagePayload,
     LoginRequestResponseMessage,
+    base64UrlToStr,
+    strToBase64Url,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -21,14 +24,10 @@ import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { openBrowserAsync } from 'expo-web-browser';
 import { useNavigation } from '@react-navigation/native';
+import { throwError } from '../utils/errors';
+import { ApplicationErrors } from '../utils/errors';
 
-export default function SSOLoginContainer({
-    requests,
-    platform,
-}: {
-    requests: LoginRequest[];
-    platform: 'mobile' | 'browser';
-}) {
+export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
@@ -60,8 +59,15 @@ export default function SSOLoginContainer({
         }
     }
 
-    async function getLoginFromJwt() {
+    async function getLoginRequestFromParams() {
         try {
+            const parsedPayload = JSON.parse(base64UrlToStr(payload));
+
+            if (!parsedPayload || !parsedPayload.requests)
+                throwError('No requests found in payload', ApplicationErrors.MissingParams);
+
+            const requests = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+
             await UserApps.verifyRequests(requests);
 
             for (const request of requests) {
@@ -97,27 +103,23 @@ export default function SSOLoginContainer({
                 await user.apps.loginWithApp(app, tonomyLoginRequestPayload.publicKey);
             }
 
+            const responsePayload = {
+                success: true,
+                requests: [tonomyLoginRequestPayload, ssoLoginRequestPayload],
+                accountName,
+                username: await user.getUsername(),
+            };
+
             if (platform === 'mobile') {
                 // TODO need to fix this to be base64Url
                 let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
 
-                callbackUrl += 'requests=' + requests;
-                callbackUrl += '&username=' + (await user.storage.username);
-                callbackUrl += '&accountName=' + accountName.toString();
+                callbackUrl += 'payload=' + strToBase64Url(JSON.stringify(responsePayload));
 
                 await openBrowserAsync(callbackUrl);
             } else {
                 const issuer = await user.getIssuer();
-                const message = await LoginRequestResponseMessage.signMessage(
-                    {
-                        success: true,
-                        requests,
-                        accountName,
-                        username: await user.getUsername(),
-                    },
-                    issuer,
-                    recieverDid
-                );
+                const message = await LoginRequestResponseMessage.signMessage(responsePayload, issuer, recieverDid);
 
                 await user.communication.sendMessage(message);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
@@ -134,7 +136,7 @@ export default function SSOLoginContainer({
 
     useEffect(() => {
         setUserName();
-        getLoginFromJwt();
+        getLoginRequestFromParams();
     }, []);
 
     return (
