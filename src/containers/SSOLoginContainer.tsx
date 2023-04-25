@@ -10,7 +10,6 @@ import {
     UserApps,
     App,
     TonomyUsername,
-    AccountType,
     LoginRequest,
     LoginRequestPayload,
     LoginRequestResponseMessage,
@@ -55,9 +54,7 @@ export default function SSOLoginContainer({
                 throw new Error('Username not found');
             }
 
-            const baseUsername = TonomyUsername.fromFullUsername(username.username).getBaseUsername() as string;
-
-            setUsername(baseUsername);
+            setUsername(username);
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -93,13 +90,6 @@ export default function SSOLoginContainer({
         try {
             const accountName = await user.storage.accountName;
 
-            const username = await user.getUsername();
-
-            let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
-
-            callbackUrl += 'requests=' + requests;
-            callbackUrl += '&username=' + username.username;
-            callbackUrl += '&accountName=' + accountName.toString();
             if (ssoApp && ssoLoginRequestPayload)
                 await user.apps.loginWithApp(ssoApp, ssoLoginRequestPayload.publicKey);
 
@@ -108,6 +98,7 @@ export default function SSOLoginContainer({
             }
 
             if (platform === 'mobile') {
+                // TODO need to fix this to be base64Url
                 let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
 
                 callbackUrl += 'requests=' + requests;
@@ -134,6 +125,11 @@ export default function SSOLoginContainer({
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
+    }
+
+    async function onCancel() {
+        // TODO send a message to the sso website that the login was cancelled
+        navigation.navigate('UserHome');
     }
 
     useEffect(() => {
@@ -180,7 +176,7 @@ export default function SSOLoginContainer({
                     <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => navigation.navigate('UserHome')}>Cancel</TButtonOutlined>
+                    <TButtonOutlined onPress={onCancel}>Cancel</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>
