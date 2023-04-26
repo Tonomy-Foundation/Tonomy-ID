@@ -6,6 +6,7 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
+import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
     const errorStore = useErrorStore();
@@ -13,8 +14,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
     async function main() {
         await sleep(800);
-
-        const username = await user.getUsername();
 
         try {
             await initializeStatusFromStorage();
@@ -29,15 +28,21 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     navigation.dispatch(StackActions.replace('Home'));
                     break;
                 case UserStatus.LOGGED_IN:
-                    if (!username?.username) {
-                        logout();
+                    try {
+                        await user.getUsername();
+                    } catch (e: any) {
+                        if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+                            logout();
+                        } else {
+                            throw e;
+                        }
                     }
 
                     break;
                 default:
                     throw new Error('Unknown status: ' + status);
             }
-        } catch (e) {
+        } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
     }

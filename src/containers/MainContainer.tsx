@@ -76,13 +76,7 @@ export default function MainContainer() {
         try {
             const u = await user.getUsername();
 
-            if (!u) {
-                throwError('Username not found', ApplicationErrors.NoDataFound);
-            }
-
-            const baseUsername = u.getBaseUsername();
-
-            setUsername(baseUsername);
+            setUsername(u.getBaseUsername());
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }
