@@ -12,7 +12,6 @@ import {
     TonomyUsername,
     LoginRequest,
     LoginRequestPayload,
-    LoginRequestMessagePayload,
     LoginRequestResponseMessage,
     base64UrlToStr,
     strToBase64Url,
@@ -31,7 +30,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
-    const [username, setUsername] = useState<TonomyUsername>();
+    const [username, setUsername] = useState<string>();
     const [tonomyLoginRequestPayload, setTonomyLoginRequestPayload] = useState<LoginRequestPayload>();
     const [ssoLoginRequestPayload, setSsoLoginRequestPayload] = useState<LoginRequestPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
@@ -53,7 +52,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 throw new Error('Username not found');
             }
 
-            setUsername(username);
+            setUsername(username.getBaseUsername());
         } catch (e: any) {
             errorStore.setError({ error: e, expected: false });
         }

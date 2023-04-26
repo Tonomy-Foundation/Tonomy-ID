@@ -3,7 +3,6 @@ import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigatio
 import CustomDrawer from '../components/CustomDrawer';
 import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
-import { LoginRequest } from '@tonomy/tonomy-id-sdk';
 import { useAppTheme } from '../utils/theme';
 
 export type RouteDrawerParamList = {
@@ -12,8 +11,7 @@ export type RouteDrawerParamList = {
     Help: undefined;
     Logout: undefined;
     ChangePin: undefined;
-
-    SSO: { requests: LoginRequest[]; platform: 'mobile' | 'browser' };
+    SSO: { payload: string; platform: 'mobile' | 'browser' };
 };
 
 const Drawer = createDrawerNavigator<RouteDrawerParamList>();

@@ -22,8 +22,7 @@ import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
-import { LoginRequest } from '@tonomy/tonomy-id-sdk';
-import { AppTheme, useAppTheme } from '../utils/theme';
+import { useAppTheme } from '../utils/theme';
 
 const prefix = Linking.createURL('');
 
@@ -38,7 +37,6 @@ export type RouteStackParamList = {
     CreateAccountPin: { password: string; action: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
-
     LoginUsername: undefined;
     LoginPassword: { username: string };
     UserHome: undefined;

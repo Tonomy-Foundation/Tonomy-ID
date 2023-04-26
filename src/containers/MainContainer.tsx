@@ -9,6 +9,7 @@ import {
     AuthenticationMessage,
     LoginRequestsMessage,
     IdentifyMessage,
+    strToBase64Url,
 } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -37,9 +38,11 @@ export default function MainContainer() {
                 await loginToService();
                 user.communication.subscribeMessage((message) => {
                     const loginRequestsMessage = new LoginRequestsMessage(message);
+                    const payload = loginRequestsMessage.getPayload();
+                    const base64UrlPayload = strToBase64Url(JSON.stringify(payload));
 
                     navigation.navigate('SSO', {
-                        requests: loginRequestsMessage.getPayload().requests,
+                        payload: base64UrlPayload,
                         platform: 'browser',
                     });
                     setIsLoadingView(false);
