@@ -9,7 +9,6 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import {
     UserApps,
     App,
-    TonomyUsername,
     LoginRequest,
     LoginRequestPayload,
     LoginRequestResponseMessage,
@@ -31,6 +30,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<string>();
+    const [loginRequests, setLoginRequests] = useState<LoginRequest[]>();
     const [tonomyLoginRequestPayload, setTonomyLoginRequestPayload] = useState<LoginRequestPayload>();
     const [ssoLoginRequestPayload, setSsoLoginRequestPayload] = useState<LoginRequestPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
@@ -65,7 +65,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (!parsedPayload || !parsedPayload.requests)
                 throwError('No requests found in payload', ApplicationErrors.MissingParams);
 
-            const requests = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+            const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+
+            setLoginRequests(requests);
 
             await UserApps.verifyRequests(requests);
 
@@ -75,7 +77,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
                     setTonomyLoginRequestPayload(payload);
-                    setRecieverDid(request.getSender());
+                    setRecieverDid(request.getIssuer());
                     setApp(app);
                 } else {
                     setSsoLoginRequestPayload(payload);
@@ -104,7 +106,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             const responsePayload = {
                 success: true,
-                requests: [tonomyLoginRequestPayload, ssoLoginRequestPayload],
+                requests: loginRequests,
                 accountName,
                 username: await user.getUsername(),
             };
