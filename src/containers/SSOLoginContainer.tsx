@@ -41,15 +41,11 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     async function setUserName() {
         try {
-            const username = await user.storage.username;
+            const username = await user.getUsername();
 
             if (!username) {
                 await user.logout();
                 setStatus(UserStatus.NOT_LOGGED_IN);
-            }
-
-            if (!username.username) {
-                throw new Error('Username not found');
             }
 
             setUsername(username.getBaseUsername());

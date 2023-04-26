@@ -92,9 +92,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     }
 
     async function setUserName() {
-        const username = await user.storage.username;
+        try {
+            const username = await user.getUsername();
 
-        setUsername(username.getBaseUsername());
+            setUsername(username.getBaseUsername());
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+        }
     }
 
     useEffect(() => {

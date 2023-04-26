@@ -14,7 +14,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     async function main() {
         await sleep(800);
 
-        const username = await user.storage.username;
+        const username = await user.getUsername();
 
         try {
             await initializeStatusFromStorage();

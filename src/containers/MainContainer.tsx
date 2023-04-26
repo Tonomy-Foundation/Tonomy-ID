@@ -74,17 +74,13 @@ export default function MainContainer() {
 
     async function setUserName() {
         try {
-            const u = await user.storage.username;
+            const u = await user.getUsername();
 
             if (!u) {
                 throwError('Username not found', ApplicationErrors.NoDataFound);
             }
 
-            const baseUsername = TonomyUsername.fromUsername(
-                u?.username,
-                AccountType.PERSON,
-                settings.config.accountSuffix
-            ).getBaseUsername() as string;
+            const baseUsername = u.getBaseUsername();
 
             setUsername(baseUsername);
         } catch (e: any) {
