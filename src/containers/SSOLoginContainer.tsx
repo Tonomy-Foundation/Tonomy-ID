@@ -35,6 +35,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     const [ssoLoginRequestPayload, setSsoLoginRequestPayload] = useState<LoginRequestPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
     const [recieverDid, setRecieverDid] = useState<string>();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const navigation = useNavigation();
     const errorStore = useErrorStore();
@@ -91,6 +92,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     async function onNext() {
         try {
+            setLoading(true);
             const accountName = await user.storage.accountName;
 
             if (ssoApp && ssoLoginRequestPayload)
@@ -113,15 +115,18 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
                 callbackUrl += 'payload=' + strToBase64Url(JSON.stringify(responsePayload));
 
+                setLoading(false);
                 await openBrowserAsync(callbackUrl);
             } else {
                 const issuer = await user.getIssuer();
                 const message = await LoginRequestResponseMessage.signMessage(responsePayload, issuer, recieverDid);
 
                 await user.communication.sendMessage(message);
+                setLoading(false);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e: any) {
+            setLoading(false);
             errorStore.setError({ error: e, expected: false });
         }
     }
@@ -172,7 +177,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             }
             footer={
                 <View>
-                    <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
+                    <TButtonContained disabled={loading} style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
                     <TButtonOutlined onPress={onCancel}>Cancel</TButtonOutlined>
