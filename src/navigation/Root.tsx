@@ -1,5 +1,5 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import HomeScreen from '../screens/homeScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
@@ -12,7 +12,6 @@ import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 
-import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
@@ -23,7 +22,7 @@ import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
-import { AppTheme, useAppTheme } from '../utils/theme';
+import { useAppTheme } from '../utils/theme';
 
 const prefix = Linking.createURL('');
 
@@ -38,7 +37,6 @@ export type RouteStackParamList = {
     CreateAccountPin: { password: string; action: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
-
     LoginUsername: undefined;
     LoginPassword: { username: string };
     UserHome: undefined;
@@ -46,7 +44,7 @@ export type RouteStackParamList = {
     Drawer: undefined;
     Settings: undefined;
     QrScanner: undefined;
-    SSO: { requests: string; platform?: 'mobile' | 'browser' };
+    SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
 };
 

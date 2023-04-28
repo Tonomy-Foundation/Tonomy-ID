@@ -11,8 +11,7 @@ export type RouteDrawerParamList = {
     Help: undefined;
     Logout: undefined;
     ChangePin: undefined;
-
-    SSO: { requests: string; platform: 'mobile' | 'browser' };
+    SSO: { payload: string; platform: 'mobile' | 'browser' };
 };
 
 const Drawer = createDrawerNavigator<RouteDrawerParamList>();

@@ -55,7 +55,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
             const res = await user.createPerson();
 
-            // this only works when blockchainUrl === localhost || https://...
+            // this only works when blockchainUrl === http://localhost || https:// but not with http://ip-address
             setTrxUrl(
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
             );
@@ -92,15 +92,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     }
 
     async function setUserName() {
-        const username = await user.storage.username.username;
+        try {
+            const username = await user.getUsername();
 
-        const baseUsername = TonomyUsername.fromUsername(
-            username,
-            AccountType.PERSON,
-            settings.config.accountSuffix
-        ).getBaseUsername();
-
-        setUsername(baseUsername);
+            setUsername(username.getBaseUsername());
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+        }
     }
 
     useEffect(() => {
