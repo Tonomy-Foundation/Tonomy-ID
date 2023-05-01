@@ -1,15 +1,12 @@
 name: Tonomy ID Continuous Deployment
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - development
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-20.04
     permissions:
       contents: write
@@ -22,24 +19,19 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
-
+        with:
+          token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+        
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag-prefix: "v"
-
-      - name: 📦 Install
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.4.1
-      - run: npm install
+          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
 
       - name: 🚀 Build and publish app
         uses: actions/setup-node@v3
         with:
-          node-version: 16.4.1
+          node-version: 18.12.1
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - run: npm ci
       - run: npm run deploy

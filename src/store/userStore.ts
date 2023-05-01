@@ -2,7 +2,15 @@ import create from 'zustand';
 import RNKeyManager from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
-import { User, createUserObject, setSettings, createStorage } from '@tonomy/tonomy-id-sdk';
+import {
+    User,
+    createUserObject,
+    setSettings,
+    createStorage,
+    SdkErrors,
+    STORAGE_NAMESPACE,
+} from '@tonomy/tonomy-id-sdk';
+import useErrorStore from '../store/errorStore';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -16,6 +24,7 @@ export interface UserState {
     getStatus(): UserStatus;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
+    logout(): Promise<void>;
 }
 
 setSettings({
@@ -27,7 +36,7 @@ setSettings({
 interface UserStorageState {
     status: UserStatus;
 }
-const userStorage = createStorage<UserStorageState>('tonomyid.user.', storageFactory);
+const userStorage = createStorage<UserStorageState>(STORAGE_NAMESPACE + 'store.', storageFactory);
 
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
@@ -39,11 +48,23 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     setStatus: (newStatus: UserStatus) => {
         set({ status: newStatus });
-
         // Async call to update the status in the storage
         userStorage.status = newStatus;
     },
+    logout: async () => {
+        get().setStatus(UserStatus.NOT_LOGGED_IN);
+        await get().user.logout();
+    },
     initializeStatusFromStorage: async () => {
+        try {
+            await get().user.intializeFromStorage();
+        } catch (e: any) {
+            if (e.code === SdkErrors.KeyNotFound) {
+                await get().user.logout();
+                useErrorStore.getState().setError({ error: e, expected: false });
+            }
+        }
+
         let status = await userStorage.status;
 
         if (!status) status = UserStatus.NONE;

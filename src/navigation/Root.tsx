@@ -1,5 +1,5 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import HomeScreen from '../screens/homeScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
@@ -12,7 +12,6 @@ import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 
-import QrCodeScanScreen from '../screens/QrCodeScanScreen';
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
@@ -23,6 +22,7 @@ import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
+import { useAppTheme } from '../utils/theme';
 
 const prefix = Linking.createURL('');
 
@@ -34,10 +34,9 @@ export type RouteStackParamList = {
     Home: undefined;
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
-    CreateAccountPin: { password: string };
+    CreateAccountPin: { password: string; action: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
-
     LoginUsername: undefined;
     LoginPassword: { username: string };
     UserHome: undefined;
@@ -45,7 +44,7 @@ export type RouteStackParamList = {
     Drawer: undefined;
     Settings: undefined;
     QrScanner: undefined;
-    SSO: { requests: string; platform?: 'mobile' | 'browser' };
+    SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
 };
 
@@ -57,7 +56,7 @@ export default function RootNavigation() {
     };
 
     // Setup styles
-    const theme = useTheme();
+    const theme = useAppTheme();
     const navigationTheme: typeof NavigationDefaultTheme = {
         ...NavigationDefaultTheme,
         colors: {
@@ -66,14 +65,14 @@ export default function RootNavigation() {
             background: theme.colors.background,
         },
     };
+
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerStyle: {
-            // backgroundColor: theme.colors.,
-            backgroundColor: '#F9F9F9',
+            backgroundColor: theme.colors.headerFooter,
         },
         headerTitleStyle: {
             fontSize: 24,
-            color: 'black',
+            color: theme.colors.text,
         },
         headerTitleAlign: 'center',
         headerTintColor: theme.dark ? theme.colors.text : 'black',
@@ -133,6 +132,7 @@ export default function RootNavigation() {
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
+                    {/* <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} /> */}
                     <Stack.Screen
                         name="Drawer"
                         component={DrawerNavigation}

@@ -6,14 +6,15 @@ import TButton, { TButtonText } from './atoms/Tbutton';
 import { useTheme } from '@react-navigation/native';
 import { RouteDrawerParamList } from '../navigation/Drawer';
 import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import useUserStore, { UserStatus } from '../store/userStore';
+import { useAppTheme } from '../utils/theme';
 
 const icons: Record<keyof RouteDrawerParamList, IconSource> = {
     UserHome: 'home',
     Settings: 'cog',
     Help: 'help-circle',
     Logout: 'logout',
+    ChangePin: 'security',
     SSO: 'login',
 };
 
@@ -21,33 +22,42 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const logo1024 = require('../assets/tonomy/tonomy-logo1024.png');
     const { user, setStatus } = useUserStore();
-    const theme = useTheme();
+    const theme = useAppTheme();
     const styles = StyleSheet.create({
         container: {
-            padding: 20,
             backgroundColor: theme.colors.background,
-            // backgroundColor: 'red',
+        },
+        logoContainer: {
+            justifyContent: 'center',
+            alignItems: 'center',
+            // flex: 1,
+            padding: 16,
         },
         logo: {
+            // marginHorizontal: 'auto',
             height: 100,
             width: 100,
             resizeMode: 'cover',
+            // margin: 16,
         },
         menu: {
             paddingVertical: 16,
-            borderTopColor: theme.colors.border,
-            borderTopWidth: 1,
-            marginTop: 40,
+            borderTopColor: theme.colors.grey3,
+            // borderTopWidth: 1,
+            marginTop: 16,
         },
         button: {
-            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
         },
     });
 
     return (
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView {...props} style={styles.container}>
-                <Image source={logo1024} style={styles.logo}></Image>
+                {/* <View style={styles.logoContainer}>
+                    <Image source={logo1024} style={styles.logo}></Image>
+                </View> */}
+
                 <View style={styles.menu}>
                     {Object.entries(props.descriptors).map(([key, value]) => (
                         <TButton
@@ -55,7 +65,8 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                             key={key}
                             onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
                             icon={icons[value.route.name]}
-                            color={theme.colors.text}
+                            color={theme.colors.grey2}
+                            size="huge"
                         >
                             {value.options.title || value.route.name}
                         </TButton>
@@ -67,7 +78,8 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                             setStatus(UserStatus.NOT_LOGGED_IN);
                         }}
                         icon={icons['Logout']}
-                        color={theme.colors.text}
+                        color={theme.colors.grey2}
+                        size="huge"
                     >
                         {'Logout'}
                     </TButton>

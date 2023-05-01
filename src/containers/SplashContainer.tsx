@@ -25,21 +25,27 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
         <LayoutComponent
             body={
                 <View style={commonStyles.alignItemsCenter}>
-                    <TH1 style={commonStyles.marginBottom}>{props.title}</TH1>
+                    <TH1 style={styles.title}>{props.title}</TH1>
                     <TP size={2} style={commonStyles.textAlignCenter}>
                         {props.subtitle}
                     </TP>
                     <Image style={styles.image} source={props.imageSource}></Image>
-                    <TInfoBox
-                        align="center"
-                        description={props.description}
-                        icon={props.icon}
-                        linkUrl={props.linkUrl}
-                        linkUrlText={props.linkUrlText}
-                    ></TInfoBox>
                 </View>
             }
-            footer={<TButtonContained onPress={props.buttonOnPress}>{props.buttonText}</TButtonContained>}
+            footerHint={
+                <TInfoBox
+                    align="center"
+                    description={props.description}
+                    icon={props.icon}
+                    linkUrl={props.linkUrl}
+                    linkUrlText={props.linkUrlText}
+                ></TInfoBox>
+            }
+            footer={
+                <View style={styles.footer}>
+                    <TButtonContained onPress={props.buttonOnPress}>{props.buttonText}</TButtonContained>
+                </View>
+            }
         />
     );
 }
@@ -50,5 +56,11 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         height: 220,
         resizeMode: 'contain',
+    },
+    title: {
+        marginBottom: 20,
+    },
+    footer: {
+        marginTop: 30,
     },
 });

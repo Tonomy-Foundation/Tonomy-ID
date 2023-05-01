@@ -6,8 +6,11 @@ type ConfigType = {
     blockchainUrl: string;
     theme: {
         primaryColor: string;
+        primaryColor2: string;
         secondaryColor: string;
+        secondaryColor2: string;
         tertiaryColor: string;
+        tertiaryColor2: string;
     };
     appName: string;
     ecosystemName: string;
@@ -57,7 +60,7 @@ switch (env) {
         config = require('./config/config.staging.json');
         break;
     case 'production':
-        config = require('./config/config.json');
+        config = require('./config/config.staging.json');
         // TODO add production config when ready
         break;
     default:

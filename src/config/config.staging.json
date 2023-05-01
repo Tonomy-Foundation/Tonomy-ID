@@ -1,14 +1,17 @@
 {
     "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "theme": {
-        "primaryColor": "#6200ee",
-        "secondaryColor": "#03dac4",
-        "tertiaryColor": "white"
+        "primaryColor": "#67D7ED",
+        "primaryColor2": "#D2F3FA",
+        "secondaryColor": "#FF505F",
+        "secondaryColor2": "#E76773",
+        "tertiaryColor": "#7660E7",
+        "tertiaryColor2": "#CFC8F7"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
     "appName": "Tonomy ID Staging",
     "ecosystemName": "Tonomy Staging",
-    "appSlogan": "Building ecosystems of trust",
+    "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
         "logo48": "./src/assets/tonomy/tonomy-logo48.png",
@@ -25,6 +28,6 @@
     },
     "expoProjectId": "b7d1c77f-3535-492c-8f55-0ba569ccdc93",
     "accountSuffix": ".stag.tonomy.id",
-    "ssoWebsiteOrigin": "https://tonomy-id-staging.tonomy.foundation",
+    "ssoWebsiteOrigin": "https://sso.staging.tonomy.foundation",
     "communicationUrl": "wss://communication-api-staging.tonomy.foundation"
 }

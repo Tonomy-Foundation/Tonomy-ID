@@ -9,7 +9,7 @@ Tonomy ID is a React Native application in typescript.
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
-- [Nodejs](https://nodejs.org) v16.4.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
+- [Nodejs](https://nodejs.org) v18.12.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 
 ## Install
 
@@ -61,6 +61,21 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 ```bash
 npm start
 ```
+
+### Run with the staging environment and build
+
+Testing Staging Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
+
+1. modify `"appName": "Tonomy ID Development"` in `config.staging.json`
+2. run `NODE_ENV=staging npm start`
+3. connect via QR and bundle and load the app
+4. share phone
+5. scroll down, click to open the dev menu
+6. click settings
+7. turn on minifying
+8. turn off dev mode
+
+This is now running in production mode connected to the staging environment.
 
 ## File structure of components
 

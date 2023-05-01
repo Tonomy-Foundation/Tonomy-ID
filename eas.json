@@ -16,7 +16,7 @@
         },
         "production": {
             "env": {
-                "NODE_ENV": "production"
+                "NODE_ENV": "staging"
             },
             "autoIncrement": true
         }

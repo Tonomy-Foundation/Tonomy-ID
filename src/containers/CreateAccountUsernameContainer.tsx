@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
@@ -30,10 +30,17 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
     const { user } = useUserStore();
 
     async function onNext() {
+        if (username.includes(' ')) {
+            setErrorMessage('Username must not contain spaces');
+            return;
+        }
+
         setLoading(true);
 
+        const slugUsername = username.toLowerCase().trim();
+
         try {
-            await user.saveUsername(username);
+            await user.saveUsername(slugUsername);
         } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
@@ -50,39 +57,39 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
         navigation.navigate('CreateAccountPassword');
     }
 
+    const onTextChange = (value) => {
+        setUsername(value);
+        if (errorMessage !== '') setErrorMessage('');
+    };
+
     return (
         <LayoutComponent
             body={
                 <View>
-                    <TH1>Create your username</TH1>
-                    <TP>Username</TP>
-                    <View style={styles.inputContainer}>
-                        <TUsername
-                            errorText={errorMessage}
-                            suffix={settings.config.accountSuffix}
-                            value={username}
-                            onChangeText={setUsername}
-                        />
+                    <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
+                    <View style={styles.innerContainer}>
+                        <TP style={styles.inputHeader}>Username</TP>
+
+                        <TUsername errorText={errorMessage} value={username} onChangeText={onTextChange} />
+
+                        {errorMessage.length <= 0 && (
+                            <TCaption style={styles.caption}>You can always change your username later</TCaption>
+                        )}
                     </View>
-                    <TCaption style={styles.caption}>You can always change your username later</TCaption>
                 </View>
             }
             footerHint={
-                <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                    <View style={commonStyles.marginBottom}>
-                        <TInfoBox
-                            align="left"
-                            icon="security"
-                            description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
+                <TInfoBox
+                    align="left"
+                    icon="security"
+                    description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
                          Foundation can see it."
-                            linkUrl={settings.config.links.securityLearnMore}
-                            linkUrlText="Learn more"
-                        />
-                    </View>
-                </View>
+                    linkUrl={settings.config.links.securityLearnMore}
+                    linkUrlText="Learn more"
+                />
             }
             footer={
-                <View>
+                <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
                         <TButtonContained
                             onPress={onNext}
@@ -92,10 +99,13 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
                             Next
                         </TButtonContained>
                     </View>
-                    <View style={commonStyles.alignItemsCenter}>
-                        <TP size={1}>
-                            Already have an account? <TLink href="login">Login</TLink>
-                        </TP>
+                    <View style={styles.textContainer}>
+                        <TP size={1}>Already have an account? </TP>
+                        <TouchableOpacity onPress={() => navigation.navigate('LoginUsername')}>
+                            <TP size={1} style={styles.link}>
+                                Login
+                            </TP>
+                        </TouchableOpacity>
                     </View>
                 </View>
             }
@@ -106,9 +116,18 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
+        fontSize: 14,
+        color: '#939393',
     },
-    inputContainer: {
-        borderWidth: 1,
-        borderColor: theme.colors.disabled,
+    inputHeader: {
+        color: '#939393',
+    },
+    innerContainer: { height: '90%', justifyContent: 'center' },
+    link: {
+        color: theme.colors.primary,
+    },
+    textContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
 });

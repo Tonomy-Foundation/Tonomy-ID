@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TLink from '../components/atoms/TA';
@@ -7,7 +7,7 @@ import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { SdkError, SdkErrors, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
@@ -16,6 +16,7 @@ import useErrorStore from '../store/errorStore';
 import TErrorModal from '../components/TErrorModal';
 import { Props } from '../screens/CreateAccountPasswordScreen';
 import TA from '../components/atoms/TA';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
 
 export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
@@ -28,6 +29,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const user = useUserStore().user;
     const errorStore = useErrorStore();
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
         if (password.length > 0) {
@@ -50,10 +52,10 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         setLoading(true);
 
         try {
-            await user.savePassword(password);
+            await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
             const res = await user.createPerson();
 
-            // this only works when blockchainUrl === localhost || https://...
+            // this only works when blockchainUrl === http://localhost || https:// but not with http://ip-address
             setTrxUrl(
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
             );
@@ -89,9 +91,26 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         setShowModal(true);
     }
 
+    async function setUserName() {
+        try {
+            const username = await user.getUsername();
+
+            setUsername(username.getBaseUsername());
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
+    useEffect(() => {
+        setUserName();
+    }, []);
+
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('CreateAccountPin', { password });
+        navigation.navigate('CreateAccountPin', {
+            password,
+            action: 'CREATE_ACCOUNT',
+        });
     }
 
     async function onUsernameErrorModalPress() {
@@ -104,8 +123,8 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             <LayoutComponent
                 body={
                     <View>
-                        <View>
-                            <TH1 style={styles.headline}>Create password</TH1>
+                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Create password</TH1>
+                        <View style={styles.innerContainer}>
                             <View>
                                 <TP
                                     size={1}
@@ -144,8 +163,8 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                     </View>
                 }
                 footerHint={
-                    <View style={[commonStyles.marginBottom]}>
-                        <View style={commonStyles.alignItemsCenter}>
+                    <View>
+                        <View>
                             <TP size={1} style={commonStyles.textAlignCenter}>
                                 By continuing, you agree to our
                                 <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
@@ -153,19 +172,18 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
                             </TP>
                         </View>
-                        <View style={commonStyles.marginBottom}>
-                            <TInfoBox
-                                align="left"
-                                icon="security"
-                                description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
-                                linkUrl={settings.config.links.securityLearnMore}
-                                linkUrlText="Learn more"
-                            />
-                        </View>
+
+                        <TInfoBox
+                            align="left"
+                            icon="security"
+                            description="Your password is never sent or stored or seen except on your phone. Nobody, not even Tonomy Foundation, can pretend to be you."
+                            linkUrl={settings.config.links.securityLearnMore}
+                            linkUrlText="Learn more"
+                        />
                     </View>
                 }
                 footer={
-                    <View>
+                    <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
                                 onPress={onNext}
@@ -177,10 +195,13 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 CREATE ACCOUNT
                             </TButtonContained>
                         </View>
-                        <View style={commonStyles.alignItemsCenter}>
-                            <TP size={1}>
-                                Already have an account? <TLink href="login">Login</TLink>
-                            </TP>
+                        <View style={styles.textContainer}>
+                            <TP size={1}>Already have an account? </TP>
+                            <TouchableOpacity onPress={() => navigation.navigate('LoginUsername')}>
+                                <TP size={1} style={styles.link}>
+                                    Login
+                                </TP>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 }
@@ -190,11 +211,12 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 onPress={onUsernameErrorModalPress}
                 title="Please choose another username"
                 expected={true}
+                icon={''}
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>{' '}
-                        is already taken. Please choose another one.
+                        Username <Text style={{ color: theme.colors.primary }}>{username}</Text> is already taken.
+                        Please choose another one.
                     </Text>
                 </View>
             </TErrorModal>
@@ -206,8 +228,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             >
                 <View>
                     <Text>
-                        Your username is{' '}
-                        <Text style={{ color: theme.colors.primary }}>{user.storage.username.username}</Text>
+                        Your username is <Text style={{ color: theme.colors.primary }}>{username}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
@@ -227,17 +248,35 @@ const errorModalStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+    footerText: {
+        flex: 1,
+    },
+    createAccountMargin: {
+        marginTop: 35,
+    },
     rememberPasswordText: {
         color: theme.colors.error,
     },
     headline: {
-        fontWeight: 'bold',
+        marginTop: 20,
+        fontSize: 24,
     },
     passwordText: {
         alignSelf: 'flex-end',
     },
     labelText: {
         color: theme.colors.primary,
+    },
+    link: {
+        color: theme.colors.primary,
+    },
+    textContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    innerContainer: {
+        height: '90%',
+        justifyContent: 'center',
     },
 });
 

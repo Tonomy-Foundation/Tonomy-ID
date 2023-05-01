@@ -6,61 +6,78 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, JWTLoginPayload, TonomyUsername } from '@tonomy/tonomy-id-sdk';
+import {
+    UserApps,
+    App,
+    LoginRequest,
+    LoginRequestPayload,
+    LoginRequestResponseMessage,
+    base64UrlToStr,
+    strToBase64Url,
+} from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
-
 import { openBrowserAsync } from 'expo-web-browser';
-import { PublicKey } from '@greymass/eosio';
 import { useNavigation } from '@react-navigation/native';
+import { throwError } from '../utils/errors';
+import { ApplicationErrors } from '../utils/errors';
 
-export default function SSOLoginContainer({
-    requests,
-    platform,
-}: {
-    requests: string;
-    platform: 'mobile' | 'browser';
-}) {
+export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
     const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
-    const [username, setUsername] = useState<TonomyUsername>();
-    const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload>();
-    const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload>();
+    const [username, setUsername] = useState<string>();
+    const [loginRequests, setLoginRequests] = useState<LoginRequest[]>();
+    const [tonomyLoginRequestPayload, setTonomyLoginRequestPayload] = useState<LoginRequestPayload>();
+    const [ssoLoginRequestPayload, setSsoLoginRequestPayload] = useState<LoginRequestPayload>();
     const [ssoApp, setSsoApp] = useState<App>();
     const [recieverDid, setRecieverDid] = useState<string>();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const navigation = useNavigation();
     const errorStore = useErrorStore();
 
     async function setUserName() {
-        const username = await user.storage.username;
+        try {
+            const username = await user.getUsername();
 
-        if (!username) {
-            await user.logout();
-            setStatus(UserStatus.NOT_LOGGED_IN);
+            if (!username) {
+                await user.logout();
+                setStatus(UserStatus.NOT_LOGGED_IN);
+            }
+
+            setUsername(username.getBaseUsername());
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
         }
-
-        setUsername(username);
     }
 
-    async function getLoginFromJwt() {
+    async function getLoginRequestFromParams() {
         try {
-            const verifiedRequests = await UserApps.verifyRequests(requests);
+            const parsedPayload = JSON.parse(base64UrlToStr(payload));
 
-            for (const jwt of verifiedRequests) {
-                const payload = jwt.getPayload() as JWTLoginPayload;
+            if (!parsedPayload || !parsedPayload.requests)
+                throwError('No requests found in payload', ApplicationErrors.MissingParams);
+
+            const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+
+            setLoginRequests(requests);
+
+            await UserApps.verifyRequests(requests);
+
+            for (const request of requests) {
+                const payload = request.getPayload();
                 const app = await App.getApp(payload.origin);
 
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
-                    setTonomyIdJwtPayload(payload);
-                    setRecieverDid(jwt.getSender());
+                    setTonomyLoginRequestPayload(payload);
+                    setRecieverDid(request.getIssuer());
                     setApp(app);
                 } else {
-                    setSsoJwtPayload(payload);
+                    setSsoLoginRequestPayload(payload);
                     setSsoApp(app);
                 }
             }
@@ -75,34 +92,53 @@ export default function SSOLoginContainer({
 
     async function onNext() {
         try {
-            const accountName = await user.storage.accountName.toString();
-            let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+            setLoading(true);
+            const accountName = await user.storage.accountName;
 
-            callbackUrl += 'requests=' + requests;
-            callbackUrl += '&username=' + (await user.storage.username);
-            callbackUrl += '&accountName=' + accountName;
-            if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
+            if (ssoApp && ssoLoginRequestPayload)
+                await user.apps.loginWithApp(ssoApp, ssoLoginRequestPayload.publicKey);
 
-            if (app && tonomyIdJwtPayload && checked === 'checked') {
-                await user.apps.loginWithApp(app, PublicKey.from(tonomyIdJwtPayload?.publicKey));
+            if (app && tonomyLoginRequestPayload && checked === 'checked') {
+                await user.apps.loginWithApp(app, tonomyLoginRequestPayload.publicKey);
             }
 
+            const responsePayload = {
+                success: true,
+                requests: loginRequests,
+                accountName,
+                username: await user.getUsername(),
+            };
+
             if (platform === 'mobile') {
+                // TODO need to fix this to be base64Url
+                let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+
+                callbackUrl += 'payload=' + strToBase64Url(JSON.stringify(responsePayload));
+
+                setLoading(false);
                 await openBrowserAsync(callbackUrl);
             } else {
-                const message = await user.signMessage({ requests, accountName }, recieverDid);
+                const issuer = await user.getIssuer();
+                const message = await LoginRequestResponseMessage.signMessage(responsePayload, issuer, recieverDid);
 
-                user.communication.sendMessage(message);
+                await user.communication.sendMessage(message);
+                setLoading(false);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e: any) {
+            setLoading(false);
             errorStore.setError({ error: e, expected: false });
         }
     }
 
+    async function onCancel() {
+        // TODO send a message to the sso website that the login was cancelled
+        navigation.navigate('UserHome');
+    }
+
     useEffect(() => {
         setUserName();
-        getLoginFromJwt();
+        getLoginRequestFromParams();
     }, []);
 
     return (
@@ -111,7 +147,7 @@ export default function SSOLoginContainer({
                 <View style={styles.container}>
                     <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
 
-                    {username?.username && <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>}
+                    {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 
                     {ssoApp && (
                         <View style={[styles.appDialog, styles.marginTop]}>
@@ -141,10 +177,10 @@ export default function SSOLoginContainer({
             }
             footer={
                 <View>
-                    <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
+                    <TButtonContained disabled={loading} style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => navigation.navigate('Home')}>Cancel</TButtonOutlined>
+                    <TButtonOutlined onPress={onCancel}>Cancel</TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>
