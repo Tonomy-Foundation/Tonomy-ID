@@ -53,7 +53,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             flex: props.align === 'center' ? 0 : 1,
         },
         link: {
-            color: customColors.success,
+            color: customColors.linkColor,
         },
     });
 

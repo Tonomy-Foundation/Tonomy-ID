@@ -41,6 +41,7 @@ export const customColors = {
     disabledButtonTextColor: 'darkgrey',
     success: '#4CAF50',
     textBold: '#272727',
+    linkColor: '#67D7ED',
 };
 
 export const commonStyles = StyleSheet.create({
