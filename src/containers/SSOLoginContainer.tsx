@@ -12,8 +12,8 @@ import {
     LoginRequest,
     LoginRequestPayload,
     LoginRequestResponseMessage,
-    base64UrlToStr,
-    strToBase64Url,
+    base64UrlToObj,
+    objToBase64Url,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -57,7 +57,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     async function getLoginRequestFromParams() {
         try {
-            const parsedPayload = JSON.parse(base64UrlToStr(payload));
+            const parsedPayload = base64UrlToObj(payload);
 
             if (!parsedPayload || !parsedPayload.requests)
                 throwError('No requests found in payload', ApplicationErrors.MissingParams);
@@ -113,7 +113,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 // TODO need to fix this to be base64Url
                 let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
 
-                callbackUrl += 'payload=' + strToBase64Url(JSON.stringify(responsePayload));
+                callbackUrl += 'payload=' + objToBase64Url(responsePayload);
 
                 setLoading(false);
                 await openBrowserAsync(callbackUrl);
