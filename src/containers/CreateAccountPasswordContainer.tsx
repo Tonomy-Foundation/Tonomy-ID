@@ -6,7 +6,7 @@ import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import { NavigationProp } from '@react-navigation/native';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
@@ -27,7 +27,9 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     const [trxUrl, setTrxUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-    const user = useUserStore().user;
+    const userStore = useUserStore();
+    const user = userStore.user;
+
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
 
@@ -107,10 +109,21 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
 
     async function onModalPress() {
         setShowModal(false);
-        navigation.navigate('CreateAccountPin', {
-            password,
-            action: 'CREATE_ACCOUNT',
-        });
+
+        try {
+            await user.saveLocal();
+            await updateKeys();
+        } catch (e: any) {
+            errorStore.setError({ error: e, expected: false });
+            return;
+        }
+    }
+
+    console.log('Usersttaus', UserStatus);
+
+    async function updateKeys() {
+        await user.updateKeys(password);
+        userStore.setStatus(UserStatus.LOGGED_IN);
     }
 
     async function onUsernameErrorModalPress() {
