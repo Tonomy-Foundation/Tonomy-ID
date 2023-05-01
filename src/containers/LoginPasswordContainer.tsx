@@ -12,7 +12,7 @@ import TInfoBox from '../components/TInfoBox';
 import { Props } from '../screens/homeScreen';
 import settings from '../settings';
 // import errorStore from '../store/errorStore';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
@@ -28,7 +28,14 @@ export default function LoginPasswordContainer({
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const user = useUserStore().user;
+    const userStore = useUserStore();
+    const user = userStore.user;
+
+    async function updateKeys() {
+        await user.updateKeys(password);
+        userStore.setStatus(UserStatus.LOGGED_IN);
+    }
+
     const onNext = async () => {
         setLoading(true);
 
@@ -41,10 +48,14 @@ export default function LoginPasswordContainer({
 
             if (result?.account_name !== undefined) {
                 setPassword('');
-                navigation.navigate('CreateAccountPin', {
-                    password: password,
-                    action: 'LOGIN_ACCOUNT',
-                });
+
+                try {
+                    await user.saveLocal();
+                    await updateKeys();
+                } catch (e: any) {
+                    errorsStore.setError({ error: e, expected: false });
+                    return;
+                }
             }
         } catch (e: any) {
             if (e instanceof SdkError) {

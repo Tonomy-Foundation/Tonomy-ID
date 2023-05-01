@@ -119,8 +119,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         }
     }
 
-    console.log('Usersttaus', UserStatus);
-
     async function updateKeys() {
         await user.updateKeys(password);
         userStore.setStatus(UserStatus.LOGGED_IN);
