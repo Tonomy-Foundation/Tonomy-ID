@@ -11,7 +11,8 @@
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
         "lint:fix": "npm run lint -- --fix",
         "test": "jest",
-        "testDebug": "jest -o --watch --coverage=false"
+        "testDebug": "jest -o --watch --coverage=false",
+        "typeCheck": "tsc --noEmit --pretty --skipLibCheck -p ./tsconfig.json"
     },
     "dependencies": {
         "@greymass/eosio": "^0.6.4",

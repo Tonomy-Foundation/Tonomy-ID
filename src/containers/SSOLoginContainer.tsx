@@ -85,10 +85,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         }
     }
 
-    function toggleCheckbox() {
-        setChecked((state) => (state === 'checked' ? 'unchecked' : 'checked'));
-    }
-
     async function onNext() {
         try {
             setNextLoading(true);
@@ -101,11 +97,11 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 receiverDid
             );
 
+            setNextLoading(false);
+
             if (platform === 'mobile') {
-                setNextLoading(false);
                 await openBrowserAsync(callbackUrl);
             } else {
-                setNextLoading(false);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e: any) {
@@ -158,11 +154,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                             <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
                         </View>
                     )}
-
-                    <View style={styles.checkbox}>
-                        <TCheckbox status={checked} onPress={toggleCheckbox}></TCheckbox>
-                        <TP>Stay signed in</TP>
-                    </View>
                 </View>
             }
             footerHint={
