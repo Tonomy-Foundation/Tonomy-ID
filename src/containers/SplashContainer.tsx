@@ -34,7 +34,7 @@ export default function SplashScreenContainer(props: SplashScreenContainerProps)
             }
             footerHint={
                 <TInfoBox
-                    align="center"
+                    align="left"
                     description={props.description}
                     icon={props.icon}
                     linkUrl={props.linkUrl}
