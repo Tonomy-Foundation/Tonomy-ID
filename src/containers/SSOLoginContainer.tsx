@@ -116,7 +116,10 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             const callbackUrl = await user.apps.terminateLoginRequest(
                 [ssoLoginRequest, appLoginRequest],
                 platform,
-                SdkErrors.UserCancelled,
+                {
+                    code: SdkErrors.UserCancelled,
+                    reason: 'User cancelled login request',
+                },
                 receiverDid
             );
 
