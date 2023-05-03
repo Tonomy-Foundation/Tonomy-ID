@@ -113,21 +113,25 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onCancel() {
         try {
             setCancelLoading(true);
-            const callbackUrl = await user.apps.terminateLoginRequest(
+            const res = await UserApps.terminateLoginRequest(
                 [ssoLoginRequest, appLoginRequest],
-                platform,
+                platform === 'browser' ? 'message' : 'url',
                 {
                     code: SdkErrors.UserCancelled,
                     reason: 'User cancelled login request',
                 },
-                receiverDid
+                {
+                    issuer: await user.getIssuer(),
+                    messageRecipient: receiverDid,
+                }
             );
 
             if (platform === 'mobile') {
                 setNextLoading(false);
-                await openBrowserAsync(callbackUrl);
+                await openBrowserAsync(res);
             } else {
                 setNextLoading(false);
+                await user.communication.sendMessage(res);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e: any) {
