@@ -53,7 +53,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             flex: props.align === 'center' ? 0 : 1,
         },
         link: {
-            color: customColors.linkColor,
+            color: customColors.success,
         },
     });
 
@@ -63,7 +63,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             <View style={styles.description}>
                 <TP>
                     {props.description}{' '}
-                    <TA style={[styles.description, styles.link]} href={props.linkUrl}>
+                    <TA style={[styles.description]} href={props.linkUrl}>
                         {props.linkUrlText}
                     </TA>
                 </TP>
