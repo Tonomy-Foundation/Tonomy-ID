@@ -38,8 +38,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             alignSelf: 'center',
             backgroundColor: '#e1f2e2',
             borderRadius: 8,
-            paddingHorizontal: 16,
-            paddingVertical: 8,
+            padding: 16,
             width: '100%',
         },
         icon: {
@@ -56,13 +55,17 @@ export default function TInfoBox(props: TInfoBoxProps) {
         link: {
             color: customColors.success,
         },
+        paragraph: {
+            textAlign: props.align,
+            textAlignVertical: 'center',
+        },
     });
 
     return (
         <View style={styles.infoContainer}>
             <IconComponent style={styles.icon} icon={props.icon} />
             <View style={styles.description}>
-                <TP>
+                <TP style={styles.paragraph}>
                     {props.description}{' '}
                     <TA style={[styles.description, styles.link]} href={props.linkUrl}>
                         {props.linkUrlText}
