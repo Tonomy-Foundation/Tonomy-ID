@@ -28,7 +28,6 @@ import { ApplicationErrors } from '../utils/errors';
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
-    const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<string>();
     const [loginRequests, setLoginRequests] = useState<LoginRequest[]>();
     const [tonomyLoginRequestPayload, setTonomyLoginRequestPayload] = useState<LoginRequestPayload>();
@@ -86,10 +85,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         }
     }
 
-    function toggleCheckbox() {
-        setChecked((state) => (state === 'checked' ? 'unchecked' : 'checked'));
-    }
-
     async function onNext() {
         try {
             setLoading(true);
@@ -98,7 +93,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (ssoApp && ssoLoginRequestPayload)
                 await user.apps.loginWithApp(ssoApp, ssoLoginRequestPayload.publicKey);
 
-            if (app && tonomyLoginRequestPayload && checked === 'checked') {
+            if (app && tonomyLoginRequestPayload) {
                 await user.apps.loginWithApp(app, tonomyLoginRequestPayload.publicKey);
             }
 
@@ -157,11 +152,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                             <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
                         </View>
                     )}
-
-                    <View style={styles.checkbox}>
-                        <TCheckbox status={checked} onPress={toggleCheckbox}></TCheckbox>
-                        <TP>Stay signed in</TP>
-                    </View>
                 </View>
             }
             footerHint={
