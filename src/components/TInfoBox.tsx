@@ -34,17 +34,18 @@ export default function TInfoBox(props: TInfoBoxProps) {
         infoContainer: {
             alignContent: 'stretch',
             flexDirection: props.align === 'center' ? 'column' : 'row',
-            marginTop: 20,
+            // marginTop: 20,
             alignSelf: 'center',
             backgroundColor: '#e1f2e2',
             borderRadius: 8,
-            padding: 16,
+            paddingHorizontal: 16,
+            paddingVertical: 8,
             width: '100%',
         },
         icon: {
             alignSelf: 'center',
             marginBottom: props.align === 'center' ? 5 : 0,
-            marginRight: props.align === 'center' ? 0 : 8,
+            marginRight: props.align === 'center' ? 0 : 5,
         },
         description: {
             textAlign: props.align === 'center' ? 'center' : 'left',
