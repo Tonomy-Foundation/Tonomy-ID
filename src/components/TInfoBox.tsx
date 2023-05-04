@@ -34,7 +34,6 @@ export default function TInfoBox(props: TInfoBoxProps) {
         infoContainer: {
             alignContent: 'stretch',
             flexDirection: props.align === 'center' ? 'column' : 'row',
-            // marginTop: 20,
             alignSelf: 'center',
             backgroundColor: '#e1f2e2',
             borderRadius: 8,
