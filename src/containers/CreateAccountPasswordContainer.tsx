@@ -167,15 +167,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 }
                 footerHint={
                     <View>
-                        <View>
-                            <TP size={1} style={commonStyles.textAlignCenter}>
-                                By continuing, you agree to our
-                                <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
-                                and agree tonomy
-                                <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
-                            </TP>
-                        </View>
-
                         <TInfoBox
                             align="left"
                             icon="security"
@@ -205,6 +196,14 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                     Login
                                 </TP>
                             </TouchableOpacity>
+                        </View>
+                        <View>
+                            <TP size={1} style={commonStyles.textAlignCenter}>
+                                By continuing, you agree to our
+                                <TA href={settings.config.links.termsAndConditions}> Terms & Conditions </TA>
+                                and agree tonomy
+                                <TA href={settings.config.links.privacyPolicy}> Privacy Policy </TA>
+                            </TP>
                         </View>
                     </View>
                 }
@@ -255,13 +254,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     createAccountMargin: {
-        marginTop: 35,
+        marginTop: 15,
     },
     rememberPasswordText: {
         color: theme.colors.error,
     },
     headline: {
-        marginTop: 20,
+        marginTop: 5,
         fontSize: 24,
     },
     passwordText: {
@@ -278,7 +277,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     innerContainer: {
-        height: '90%',
+        marginTop: 10,
         justifyContent: 'center',
     },
 });

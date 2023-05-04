@@ -63,7 +63,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                 </View>
             }
             footerHint={
-                <View style={commonStyles.marginBottom}>
+                <View>
                     <TInfoBox
                         align="left"
                         icon="privacy"
@@ -96,8 +96,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        height: '100%',
+        marginTop: 10,
         justifyContent: 'center',
     },
     link: {
