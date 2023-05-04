@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     inputHeader: {
         color: '#939393',
     },
-    innerContainer: { height: '90%', justifyContent: 'center' },
+    innerContainer: { marginTop: 10, justifyContent: 'center' },
     link: {
         color: theme.colors.primary,
     },
