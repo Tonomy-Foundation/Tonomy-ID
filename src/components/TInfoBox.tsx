@@ -34,17 +34,16 @@ export default function TInfoBox(props: TInfoBoxProps) {
         infoContainer: {
             alignContent: 'stretch',
             flexDirection: props.align === 'center' ? 'column' : 'row',
-            marginTop: 20,
             alignSelf: 'center',
             backgroundColor: '#e1f2e2',
             borderRadius: 8,
-            padding: 16,
+            padding: 14,
             width: '100%',
         },
         icon: {
             alignSelf: 'center',
             marginBottom: props.align === 'center' ? 5 : 0,
-            marginRight: props.align === 'center' ? 0 : 8,
+            marginRight: props.align === 'center' ? 0 : 5,
         },
         description: {
             textAlign: props.align === 'center' ? 'center' : 'left',
@@ -55,13 +54,17 @@ export default function TInfoBox(props: TInfoBoxProps) {
         link: {
             color: customColors.success,
         },
+        paragraph: {
+            textAlign: props.align,
+            textAlignVertical: 'center',
+        },
     });
 
     return (
         <View style={styles.infoContainer}>
             <IconComponent style={styles.icon} icon={props.icon} />
             <View style={styles.description}>
-                <TP>
+                <TP style={styles.paragraph}>
                     {props.description}{' '}
                     <TA style={[styles.description]} href={props.linkUrl}>
                         {props.linkUrlText}

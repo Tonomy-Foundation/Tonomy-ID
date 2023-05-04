@@ -99,7 +99,7 @@ export default function LoginPasswordContainer({
                     </View>
                 }
                 footerHint={
-                    <View style={commonStyles.marginBottom}>
+                    <View>
                         <TInfoBox
                             align="left"
                             icon="security"
@@ -133,13 +133,10 @@ export default function LoginPasswordContainer({
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        height: '90%',
         justifyContent: 'center',
     },
     innerContainer: {
-        width: '100%',
-        height: '100%',
+        marginTop: 10,
         justifyContent: 'center',
     },
     link: {
