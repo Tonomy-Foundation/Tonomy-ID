@@ -30,7 +30,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     const { user, setStatus } = useUserStore();
     const [app, setApp] = useState<App>();
     const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
-    const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
     const [username, setUsername] = useState<string>();
     const [ssoApp, setSsoApp] = useState<App>();
     const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
