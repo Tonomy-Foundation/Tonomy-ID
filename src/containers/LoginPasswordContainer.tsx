@@ -48,6 +48,7 @@ export default function LoginPasswordContainer({
 
             if (result?.account_name !== undefined) {
                 setPassword('');
+                setErrorMessage('');
                 await user.saveLocal();
                 await updateKeys();
             }
