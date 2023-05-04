@@ -67,7 +67,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             <View style={styles.description}>
                 <TP style={styles.paragraph}>
                     {props.description}{' '}
-                    <TA style={[styles.description, styles.link]} href={props.linkUrl}>
+                    <TA style={[styles.description]} href={props.linkUrl}>
                         {props.linkUrlText}
                     </TA>
                 </TP>
