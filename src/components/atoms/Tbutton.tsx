@@ -20,7 +20,7 @@ export default function TButton(props: ButtonProps) {
         if (props.color) return props.color;
         return props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme);
     };
-    const sizes: Record<string, number> = {
+    const sizes: Record<keyof CustomButtonProps['size'], number> = {
         huge: 18,
         large: 16,
         medium: 14,
@@ -105,7 +105,7 @@ export function TButtonText(props: ButtonProps) {
 }
 
 function getColorBasedOnTheme(buttonTheme: ButtonProps['theme'] = 'primary'): string {
-    const colors: Record<string, string> = {
+    const colors: Record<keyof ButtonProps['theme'], string> = {
         primary: theme.colors.primary,
         secondary: theme.colors.secondary,
     };
