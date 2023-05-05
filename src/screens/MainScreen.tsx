@@ -1,9 +1,9 @@
 import { DrawerScreenProps } from '@react-navigation/drawer';
 import React from 'react';
 import MainContainer from '../containers/MainContainer';
-import { RouteDrawerParamList } from '../navigation/Drawer';
+import { DrawerStackParamList } from '../navigation/Drawer';
 
-export type MainScreenNavigationProp = DrawerScreenProps<RouteDrawerParamList, 'UserHome'>;
+export type MainScreenNavigationProp = DrawerScreenProps<DrawerStackParamList, 'UserHome'>;
 export default function MainScreen() {
     return <MainContainer></MainContainer>;
 }

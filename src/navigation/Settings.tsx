@@ -14,7 +14,7 @@ import FaceIdSettingsScreen from '../screens/FaceIdSettingsScreen';
 import FingerprintSettingsScreen from '../screens/FingerprintSettingsScreen';
 import PinScreen from '../screens/PinScreen';
 
-export type RouteStackParamList = {
+export type SettingsStackParamList = {
     Splash: undefined;
     Settings: undefined;
     ChangePassword: undefined;
@@ -27,7 +27,7 @@ export type RouteStackParamList = {
     ChangePin: { action: string };
 };
 
-const Stack = createNativeStackNavigator<RouteStackParamList>();
+const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
 export default function SettingsNavigation() {
     // Setup styles

@@ -3,12 +3,12 @@ import React from 'react';
 import { DrawerContentScrollView, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { StyleSheet, View } from 'react-native';
 import TButton from './atoms/Tbutton';
-import { RouteDrawerParamList } from '../navigation/Drawer';
+import { DrawerStackParamList } from '../navigation/Drawer';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { useAppTheme } from '../utils/theme';
 
 // https://callstack.github.io/react-native-paper/docs/guides/icons/
-const icons: Record<keyof RouteDrawerParamList, string> = {
+const icons: Record<keyof DrawerStackParamList, string> = {
     UserHome: 'home',
     Settings: 'cog',
     Help: 'help-circle',

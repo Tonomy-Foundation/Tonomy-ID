@@ -3,9 +3,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 
 import FaceIdSettingsContainer from '../containers/FaceIdSettingsContainer';
-import { RouteStackParamList } from '../navigation/Settings';
+import { SettingsStackParamList } from '../navigation/Settings';
 
-export type Props = NativeStackScreenProps<RouteStackParamList, 'FaceIdSettings'>;
+export type Props = NativeStackScreenProps<SettingsStackParamList, 'FaceIdSettings'>;
 export default function PinSettingsScreen({ navigation }: { navigation: NavigationProp<any> }) {
     return <FaceIdSettingsContainer navigation={navigation}></FaceIdSettingsContainer>;
 }
