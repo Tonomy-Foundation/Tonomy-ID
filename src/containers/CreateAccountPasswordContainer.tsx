@@ -58,7 +58,8 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             const res = await user.createPerson();
 
             await user.saveLocal();
-            await updateKeys();
+            await user.updateKeys(password);
+
             setUserName();
 
             // this only works when blockchainUrl === http://localhost || https:// but not with http://ip-address
@@ -93,7 +94,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         }
 
         setLoading(false);
-
         setShowModal(true);
     }
 
@@ -108,12 +108,8 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
     }
 
     async function onModalPress() {
-        setShowModal(false);
-    }
-
-    async function updateKeys() {
-        await user.updateKeys(password);
         userStore.setStatus(UserStatus.LOGGED_IN);
+        setShowModal(false);
     }
 
     async function onUsernameErrorModalPress() {
