@@ -20,7 +20,7 @@ export default function TButton(props: ButtonProps) {
         if (props.color) return props.color;
         return props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme);
     };
-    const sizes: Record<ButtonProps['size'], number> = {
+    const sizes: Record<string, number> = {
         huge: 18,
         large: 16,
         medium: 14,
@@ -28,8 +28,8 @@ export default function TButton(props: ButtonProps) {
     const textStyle = {
         color: getColor(),
         fontSize: sizes[props.size ?? 'large'],
-        textAlign: 'center',
-        fontWeight: '500',
+        textAlign: 'center' as const,
+        fontWeight: '500' as const,
     };
 
     const buttonStyle = {
@@ -41,8 +41,12 @@ export default function TButton(props: ButtonProps) {
     };
 
     return (
-        // eslint-disable-next-line react/prop-types
-        <TouchableOpacity {...props} style={[buttonStyle, commonStyles.borderRadius, props.style]}>
+        <TouchableOpacity
+            {...props}
+            // @ts-expect-error style props do not match
+            // eslint-disable-next-line react/prop-types
+            style={{ ...buttonStyle, ...commonStyles.borderRadius, ...{ style: props.style } }}
+        >
             {props.icon && (
                 <IconButton
                     icon={props.icon}
@@ -51,7 +55,7 @@ export default function TButton(props: ButtonProps) {
                     style={{ margin: 0, marginRight: 6 }}
                 ></IconButton>
             )}
-            <Text style={textStyle}>{props.children}</Text>
+            <Text style={textStyle}> {props.children}</Text>
         </TouchableOpacity>
     );
 }
@@ -101,7 +105,7 @@ export function TButtonText(props: ButtonProps) {
 }
 
 function getColorBasedOnTheme(buttonTheme: ButtonProps['theme'] = 'primary'): string {
-    const colors: Record<ButtonProps['theme'], string> = {
+    const colors: Record<string, string> = {
         primary: theme.colors.primary,
         secondary: theme.colors.secondary,
     };
