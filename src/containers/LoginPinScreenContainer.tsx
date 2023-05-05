@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton, { TButtonOutlined } from '../components/atoms/Tbutton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH1 } from '../components/atoms/THeadings';
 import TPin from '../components/TPin';
 import useUserStore from '../store/userStore';
@@ -8,6 +8,7 @@ import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/FingerprintUpdateScreen';
+
 import theme from '../utils/theme';
 
 export default function LoginPinScreenContainer({
@@ -34,7 +35,7 @@ export default function LoginPinScreenContainer({
 
     //  Navigated to Create Finger Print Screen on Skip
     function onSkip() {
-        navigation.navigate('CreateAccountFingerprint');
+        navigation.navigate('CreateAccountFingerprint', { password });
     }
 
     // When the Next button is removed then it will be called when the 5 digits are entered
@@ -51,7 +52,7 @@ export default function LoginPinScreenContainer({
                 return;
             }
 
-            navigation.navigate('CreateAccountFingerprint');
+            navigation.navigate('CreateAccountFingerprint', { password });
         } else {
             setErrorMessage('Wrong PIN');
             setPin('');
@@ -78,15 +79,9 @@ export default function LoginPinScreenContainer({
             }
             footer={
                 <View>
-                    <TButton
-                        mode="contained"
-                        disabled={disabled}
-                        loading={loading}
-                        onPress={onNext}
-                        style={styles.marginBottom}
-                    >
+                    <TButtonContained disabled={loading} onPress={onNext} style={styles.marginBottom}>
                         {'Next'}
-                    </TButton>
+                    </TButtonContained>
                     <TButtonOutlined onPress={onSkip} style={styles.marginBottom}>
                         Skip
                     </TButtonOutlined>

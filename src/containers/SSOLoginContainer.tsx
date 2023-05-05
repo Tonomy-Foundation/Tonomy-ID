@@ -1,21 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
-import TonomyLogo from '../assets/tonomy/tonomy-logo1024.png';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
-import TCheckbox from '../components/molecules/TCheckbox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import {
-    UserApps,
-    App,
-    LoginRequest,
-    LoginRequestPayload,
-    LoginRequestResponseMessage,
-    base64UrlToObj,
-    objToBase64Url,
-    SdkErrors,
-} from '@tonomy/tonomy-id-sdk';
+import { UserApps, App, LoginRequest, base64UrlToObj, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -87,6 +76,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onNext() {
         try {
             setNextLoading(true);
+            if (!app || !appLoginRequest || !ssoApp || !ssoLoginRequest) throw new Error('Missing params');
             const callbackUrl = await user.apps.acceptLoginRequest(
                 [
                     { app: ssoApp, request: ssoLoginRequest },
@@ -112,6 +102,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onCancel() {
         try {
             setCancelLoading(true);
+            if (!ssoLoginRequest || !appLoginRequest) throw new Error('Missing params');
             const res = await UserApps.terminateLoginRequest(
                 [ssoLoginRequest, appLoginRequest],
                 platform === 'browser' ? 'message' : 'url',
@@ -148,7 +139,10 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
+                    <Image
+                        style={[styles.logo, commonStyles.marginBottom]}
+                        source={require('../assets/tonomy/tonomy-logo1024.png')}
+                    ></Image>
 
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 

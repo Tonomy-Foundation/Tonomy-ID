@@ -10,7 +10,6 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import SetPasswordScreen from '../screens/SetPasswordScreen';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
-import FaceIdSettingsContainer from '../containers/FaceIdSettingsContainer';
 import FaceIdSettingsScreen from '../screens/FaceIdSettingsScreen';
 import FingerprintSettingsScreen from '../screens/FingerprintSettingsScreen';
 import PinScreen from '../screens/PinScreen';
@@ -23,6 +22,7 @@ export type RouteStackParamList = {
     SetPassword: undefined;
     PinSettings: undefined;
     FaceIdSettings: undefined;
+    FingerprintUpdate: { password: string };
     FingerprintSettings: undefined;
     ChangePin: { action: string };
 };
