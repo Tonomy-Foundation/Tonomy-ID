@@ -4,7 +4,7 @@ import { TButtonContained } from '../components/atoms/Tbutton';
 import { TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
 import TPasswordInput from '../components/molecules/TPasswordInput';
-import { Props } from '../screens/homeScreen';
+import { Props } from '../screens/ConfirmPasswordScreen';
 import { commonStyles } from '../utils/theme';
 
 export default function ConfirmPasswordContainer({

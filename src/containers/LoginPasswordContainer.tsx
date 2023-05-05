@@ -7,7 +7,7 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TInfoBox from '../components/TInfoBox';
-import { Props } from '../screens/homeScreen';
+import { Props } from '../screens/HomeScreen';
 import settings from '../settings';
 // import errorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';

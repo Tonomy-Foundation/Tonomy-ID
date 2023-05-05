@@ -8,7 +8,7 @@ import { TCaption, TH1, TH4 } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
-import { Props } from '../screens/homeScreen';
+import { Props } from '../screens/HomeScreen';
 import useUserStore from '../store/userStore';
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {

@@ -1,6 +1,5 @@
 import HomeScreenContainer from '../containers/HomeScreenContainer';
-import { NavigationProp } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
 
