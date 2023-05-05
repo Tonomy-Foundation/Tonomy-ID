@@ -30,9 +30,10 @@ export default function ConfirmPasswordContainer({
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
+                            {/* TODO: navigate to change password screen */}
                             <TButtonContained
-                                onPress={() => navigation.navigate('SetPassword')}
-                                // disabled={password.length === 0}feature/422-Change-Password-UI
+                                onPress={() => navigation.navigate('Home')}
+                                disabled={password.length === 0}
                             >
                                 NEXT
                             </TButtonContained>
