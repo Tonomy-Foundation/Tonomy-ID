@@ -18,6 +18,7 @@ jobs:
             - run: npm ci
             - run: npm test
             - run: npm run lint
+            - run: npm run typeCheck
 
     check-sdk-version:
         runs-on: ubuntu-20.04
@@ -34,6 +35,8 @@ jobs:
             - run: npm update --silent @tonomy/tonomy-id-sdk
             - run: echo "PACKAGE_LOCK_SHA256_NEW=$(sha256sum package-lock.json)" >> $GITHUB_ENV
             - run: if [ "$PACKAGE_LOCK_SHA256_NEW" != "$PACKAGE_LOCK_SHA256_OLD" ]; then exit 1; fi
+            # if this step fails, try run `npm update @tonomy/tonomy-id-sdk` and
+            # then commit changes to package.json and package-lock.json
 
     build-apk:
         runs-on: ubuntu-20.04

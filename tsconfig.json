@@ -5,7 +5,17 @@
     "strict": true,
     "esModuleInterop": true,
     "noImplicitAny": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "experimentalDecorators": true, // needed for @greymass/eosio
+    "useUnknownInCatchVariables": false, // needed for @greymass/eosio
   },
-  "esModuleInterop": true,
-  "allowJs": true,
+  "include": [
+    "App.tsx",
+    "src/**/*",
+    "test/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+  ]
 }
