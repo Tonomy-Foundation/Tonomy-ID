@@ -7,13 +7,7 @@ import TPasswordInput from '../components/molecules/TPasswordInput';
 import { Props } from '../screens/ConfirmPasswordScreen';
 import { commonStyles } from '../utils/theme';
 
-export default function ConfirmPasswordContainer({
-    navigation,
-    username,
-}: {
-    navigation: Props['navigation'];
-    username: string;
-}) {
+export default function ConfirmPasswordContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [password, setPassword] = useState('');
 
     return (
