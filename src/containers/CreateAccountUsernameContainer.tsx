@@ -91,11 +91,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
             footer={
                 <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
-                        <TButtonContained
-                            onPress={onNext}
-                            disabled={username.length === 0 || loading}
-                            loading={loading}
-                        >
+                        <TButtonContained onPress={onNext} disabled={username.length === 0 || loading}>
                             Next
                         </TButtonContained>
                     </View>

@@ -53,6 +53,7 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         setLoading(true);
 
         try {
+            // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
             await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
             const res = await user.createPerson();
 
@@ -183,7 +184,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 disabled={
                                     password.length === 0 || password2.length === 0 || password2 !== password || loading
                                 }
-                                loading={loading}
                             >
                                 CREATE ACCOUNT
                             </TButtonContained>
@@ -212,7 +212,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 onPress={onUsernameErrorModalPress}
                 title="Please choose another username"
                 expected={true}
-                icon={''}
             >
                 <View>
                     <Text>

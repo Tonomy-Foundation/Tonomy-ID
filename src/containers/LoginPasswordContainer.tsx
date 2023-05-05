@@ -43,6 +43,7 @@ export default function LoginPasswordContainer({
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password,
+                // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
                 { keyFromPasswordFn: generatePrivateKeyFromPassword }
             );
 
@@ -113,7 +114,7 @@ export default function LoginPasswordContainer({
                 footer={
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={password.length === 0} loading={loading}>
+                            <TButtonContained onPress={onNext} disabled={password.length === 0 || loading}>
                                 NEXT
                             </TButtonContained>
                         </View>
