@@ -27,9 +27,12 @@ type KeyStorage = {
 const KEY_STORAGE_NAMESPACE = STORAGE_NAMESPACE + 'key.';
 
 export default class RNKeyManager implements KeyManager {
+    // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
     async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
         const keyStore: KeyStorage = {
+            // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
             privateKey: options.privateKey,
+            // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
             publicKey: options.privateKey.toPublic(),
         };
 
@@ -53,6 +56,7 @@ export default class RNKeyManager implements KeyManager {
         return keyStore.publicKey;
     }
 
+    // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
     async signData(options: SignDataOptions): Promise<string | Signature> {
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
             if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
@@ -83,6 +87,7 @@ export default class RNKeyManager implements KeyManager {
             if (options.data instanceof String) {
                 digest = Checksum256.hash(Bytes.from(options.data));
             } else {
+                // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
                 digest = options.data as Checksum256;
             }
 
@@ -113,6 +118,7 @@ export default class RNKeyManager implements KeyManager {
         });
     }
 
+    // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
     async getKey(options: GetKeyOptions): Promise<PublicKey> {
         const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 

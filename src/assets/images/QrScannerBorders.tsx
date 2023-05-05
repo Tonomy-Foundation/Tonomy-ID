@@ -2,8 +2,13 @@ import React from 'react';
 import { SvgProps, SvgXml } from 'react-native-svg';
 import theme from '../../utils/theme';
 
-export default function PrivacyIcon(props: SvgProps) {
-    const color = props.color ? props.color : theme.colors.primary;
+export default function QrScannerBorders(props: SvgProps) {
+    let color = theme.colors.primary;
+
+    if (props.color && typeof props.color === 'string') {
+        color = props.color;
+    }
+
     const xml = `
     <svg width="244" height="252" viewBox="0 0 244 252" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 105.576L2 14C2 7.37259 7.37258 2 14 2L103.158 2" stroke="${color}" stroke-width="4" stroke-linecap="round"/>

@@ -39,6 +39,7 @@ interface UserStorageState {
 const userStorage = createStorage<UserStorageState>(STORAGE_NAMESPACE + 'store.', storageFactory);
 
 const useUserStore = create<UserState>((set, get) => ({
+    // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
     getStatus: () => {
