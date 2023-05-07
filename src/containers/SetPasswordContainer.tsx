@@ -2,17 +2,12 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
-
 import { TP } from '../components/atoms/THeadings';
-
 import theme, { commonStyles } from '../utils/theme';
-
 import LayoutComponent from '../components/layout';
+import { Props } from '../screens/SetPasswordScreen';
 
-import { Props } from '../screens/CreateAccountPasswordScreen';
-import TA from '../components/atoms/TA';
-
-export default function SetPasswordContainer({ navigation }: Props) {
+export default function SetPasswordContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
         <>
             <LayoutComponent

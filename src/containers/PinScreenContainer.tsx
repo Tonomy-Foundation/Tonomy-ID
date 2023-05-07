@@ -8,7 +8,7 @@ import useUserStore from '../store/userStore';
 import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/FingerprintUpdateScreen';
+import { Props } from '../screens/PinScreen';
 import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import settings from '../settings';

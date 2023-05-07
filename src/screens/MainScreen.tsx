@@ -4,6 +4,7 @@ import MainContainer from '../containers/MainContainer';
 import { DrawerStackParamList } from '../navigation/Drawer';
 
 export type MainScreenNavigationProp = DrawerScreenProps<DrawerStackParamList, 'UserHome'>;
+
 export default function MainScreen() {
     return <MainContainer></MainContainer>;
 }

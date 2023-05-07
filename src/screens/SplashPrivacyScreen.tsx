@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import SplashScreenContainer from '../containers/SplashContainer';
-import { NavigationProp } from '@react-navigation/native';
 import settings from '../settings';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
 
 export type Props = NativeStackScreenProps<RouteStackParamList, 'SplashPrivacy'>;
+
 export default function SplashPrivacyScreen(props: Props) {
     return (
         <SplashScreenContainer

@@ -14,7 +14,7 @@ import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 
-export default function CreateAccountUsernameContainer({ navigation }: Props) {
+export default function CreateAccountUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
 
     if (!settings.isProduction()) {

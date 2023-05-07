@@ -7,7 +7,7 @@ import useUserStore from '../store/userStore';
 import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/FingerprintUpdateScreen';
+import { Props } from '../screens/LoginPinScreen';
 
 import theme from '../utils/theme';
 
