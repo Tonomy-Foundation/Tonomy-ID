@@ -67,7 +67,7 @@ export default function PinScreenContainer({
                         await user.savePIN(confirmPin);
                         navigation.goBack();
                     }
-                } catch (e: any) {
+                } catch (e) {
                     console.log('error saving pin', e);
                     errorStore.setError({ error: e, expected: false });
                     setLoading(false);

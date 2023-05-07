@@ -51,7 +51,7 @@ export default function LoginPasswordContainer({
                 await user.saveLocal();
                 await updateKeys();
             }
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:

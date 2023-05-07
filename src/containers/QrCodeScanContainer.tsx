@@ -24,7 +24,7 @@ export default function QrCodeScanContainer(props: {
                 const { status } = await BarCodeScanner.requestPermissionsAsync();
 
                 setHasPermission(status === 'granted');
-            } catch (e: any) {
+            } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }
         };

@@ -31,7 +31,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 case UserStatus.LOGGED_IN:
                     try {
                         await user.getUsername();
-                    } catch (e: any) {
+                    } catch (e) {
                         if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                             logout();
                         } else {
@@ -43,7 +43,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 default:
                     throw new Error('Unknown status: ' + status);
             }
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }

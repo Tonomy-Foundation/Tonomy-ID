@@ -41,7 +41,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
 
         try {
             await user.saveUsername(slugUsername);
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
                 setLoading(false);

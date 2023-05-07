@@ -66,7 +66,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             setTrxUrl(
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
             );
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:
@@ -102,7 +102,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
             const username = await user.getUsername();
 
             setUsername(username.getBaseUsername());
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }

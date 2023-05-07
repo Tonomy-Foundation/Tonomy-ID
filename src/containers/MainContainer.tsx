@@ -43,7 +43,7 @@ export default function MainContainer() {
                     });
                     setIsLoadingView(false);
                 }, LoginRequestsMessage.getType());
-            } catch (e: any) {
+            } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }
         }
@@ -59,7 +59,7 @@ export default function MainContainer() {
 
         try {
             await user.communication.login(message);
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof CommunicationError && e.exception.status === 401) {
                 await userStore.logout();
             } else {
@@ -73,7 +73,7 @@ export default function MainContainer() {
             const u = await user.getUsername();
 
             setUsername(u.getBaseUsername());
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }
@@ -87,7 +87,7 @@ export default function MainContainer() {
             const identifyMessage = await IdentifyMessage.signMessage({}, issuer, data);
 
             await user.communication.sendMessage(identifyMessage);
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof CommunicationError && e.exception?.status === 404) {
                 console.error('User probably needs to refresh the page. See notes in MainContainer.tsx');
                 // User probably has scanned a QR code on a website that is not logged into Tonomy Communication

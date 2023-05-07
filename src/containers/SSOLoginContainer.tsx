@@ -39,7 +39,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             }
 
             setUsername(username.getBaseUsername());
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }
@@ -68,7 +68,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     setSsoApp(app);
                 }
             }
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }
@@ -93,7 +93,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             } else {
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
-        } catch (e: any) {
+        } catch (e) {
             setNextLoading(false);
             errorStore.setError({ error: e, expected: false });
         }
@@ -124,7 +124,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 await user.communication.sendMessage(res);
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
-        } catch (e: any) {
+        } catch (e) {
             setCancelLoading(false);
             errorStore.setError({ error: e, expected: false });
         }
