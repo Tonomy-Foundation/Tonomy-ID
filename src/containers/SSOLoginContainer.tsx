@@ -91,6 +91,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (platform === 'mobile') {
                 await openBrowserAsync(callbackUrl);
             } else {
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e) {
@@ -122,6 +124,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             } else {
                 setNextLoading(false);
                 await user.communication.sendMessage(res);
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         } catch (e) {

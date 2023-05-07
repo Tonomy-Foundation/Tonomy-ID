@@ -11,11 +11,9 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
-
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
-import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
@@ -133,7 +131,6 @@ export default function RootNavigation() {
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
-                    {/* <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} /> */}
                     <Stack.Screen
                         name="Drawer"
                         component={DrawerNavigation}

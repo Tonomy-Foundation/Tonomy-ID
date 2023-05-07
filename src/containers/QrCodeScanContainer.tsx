@@ -8,11 +8,9 @@ import QrScannerBorders from '../assets/images/QrScannerBorders';
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
+import { Props } from '../screens/QrCodeScanScreen';
 
-export default function QrCodeScanContainer(props: {
-    onClose?: () => void;
-    onScan: (result: BarCodeScannerResult) => void;
-}) {
+export default function QrCodeScanContainer(props: Props) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);
     const [scanned, setScanned] = useState(false);
     const [isFlashlightOn, setFlashLightOn] = useState(false);

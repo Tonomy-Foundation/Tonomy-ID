@@ -1,10 +1,8 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
 import { Platform } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 import { IconButton, useTheme } from 'react-native-paper';
-
 import SettingsScreen from '../screens/SettingsScreen';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
@@ -12,7 +10,7 @@ import SetPasswordScreen from '../screens/SetPasswordScreen';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
 import FaceIdSettingsScreen from '../screens/FaceIdSettingsScreen';
 import FingerprintSettingsScreen from '../screens/FingerprintSettingsScreen';
-import PinScreen from '../screens/PinScreen';
+// import PinScreen from '../screens/PinScreen';
 
 export type SettingsStackParamList = {
     Splash: undefined;
@@ -24,7 +22,8 @@ export type SettingsStackParamList = {
     FaceIdSettings: undefined;
     FingerprintUpdate: { password: string };
     FingerprintSettings: undefined;
-    ChangePin: { action: string };
+    // ChangePin: { action: string };
+    // AddPin: { action: string };
 };
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
@@ -36,6 +35,8 @@ export default function SettingsNavigation() {
     const navigation = useNavigation();
     const backButton = () => {
         return (
+            // @ts-expect-error no overload matches this call
+            // TODO fix type error
             <TouchableOpacity onPress={() => navigation.navigate('UserHome')}>
                 <IconButton
                     icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'}
@@ -81,8 +82,8 @@ export default function SettingsNavigation() {
                 options={{ title: 'Fingerprint' }}
                 component={FingerprintSettingsScreen}
             />
-            <Stack.Screen name="ChangePin" options={{ title: 'Change Pin' }} component={PinScreen} />
-            <Stack.Screen name="AddPin" options={{ title: 'Add Pin' }} component={PinScreen} />
+            {/* <Stack.Screen name="ChangePin" options={{ title: 'Change Pin' }} component={PinScreen} />
+            <Stack.Screen name="AddPin" options={{ title: 'Add Pin' }} component={PinScreen} /> */}
         </Stack.Navigator>
     );
 }
