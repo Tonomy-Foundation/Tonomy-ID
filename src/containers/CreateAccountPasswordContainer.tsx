@@ -53,7 +53,6 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         setLoading(true);
 
         try {
-            // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
             await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
             const res = await user.createPerson();
 

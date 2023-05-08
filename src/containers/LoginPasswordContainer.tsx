@@ -41,7 +41,6 @@ export default function LoginPasswordContainer({
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 password,
-                // @ts-expect-error incompatible types coming from @greymass/eosio different installed versions
                 { keyFromPasswordFn: generatePrivateKeyFromPassword }
             );
 
