@@ -4,12 +4,12 @@ import MainScreen from '../screens/MainScreen';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from 'react-native-paper';
 
-export type RouteTabParamList = {
+export type MainTabParamList = {
     Data: undefined;
     NotData: undefined;
 };
 
-const Tab = createBottomTabNavigator<RouteTabParamList>();
+const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainNavigation() {
     const theme = useTheme();

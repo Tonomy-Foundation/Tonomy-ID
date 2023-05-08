@@ -4,7 +4,7 @@ import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
-import { Props } from '../screens/homeScreen';
+import { Props } from '../screens/LoginUsernameScreen';
 import TUsername from '../components/TUsername';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';

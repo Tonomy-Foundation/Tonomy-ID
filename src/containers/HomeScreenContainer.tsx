@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { BackHandler, Image, StyleSheet, View } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
-import { NavigationProp } from '@react-navigation/native';
-import { useTheme } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import { TCaption, TH1, TH4 } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
-import { Props } from '../screens/homeScreen';
-import useUserStore from '../store/userStore';
+import { Props } from '../screens/HomeScreen';
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (

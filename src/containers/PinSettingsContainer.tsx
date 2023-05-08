@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import LayoutComponent from '../components/layout';
-
 import TNavigationButton from '../components/TNavigationButton';
-import { Props } from '../screens/SettingsScreen';
+import { Props } from '../screens/PinSettingsScreen';
 
-export default function PinSettingsContainer({ navigation }: Props) {
+export default function PinSettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [pinStatus, setPinStatus] = useState<boolean>(false);
 
     useEffect(() => {
@@ -30,6 +29,8 @@ export default function PinSettingsContainer({ navigation }: Props) {
                     <TNavigationButton
                         disabled={pinStatus}
                         onPress={function (): void {
+                            // @ts-expect-error argument type error
+                            // TODO fix type error
                             navigation.navigate('ChangePin', { action: 'CHANGE_PIN' });
                         }}
                         title={'Change Pin'}

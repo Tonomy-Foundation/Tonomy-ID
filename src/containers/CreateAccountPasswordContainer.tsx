@@ -3,11 +3,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
 import TLink from '../components/atoms/TA';
-import { TCaption, TH1, TP } from '../components/atoms/THeadings';
+import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
-import { NavigationProp } from '@react-navigation/native';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { SdkError, SdkErrors, TonomyUsername, AccountType } from '@tonomy/tonomy-id-sdk';
+import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
@@ -18,7 +17,7 @@ import { Props } from '../screens/CreateAccountPasswordScreen';
 import TA from '../components/atoms/TA';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
 
-export default function CreateAccountPasswordContainer({ navigation }: Props) {
+export default function CreateAccountPasswordContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [password2, setPassword2] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
@@ -58,14 +57,15 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             const res = await user.createPerson();
 
             await user.saveLocal();
-            await updateKeys();
+            await user.updateKeys(password);
+
             setUserName();
 
             // this only works when blockchainUrl === http://localhost || https:// but not with http://ip-address
             setTrxUrl(
                 `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
             );
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:
@@ -93,7 +93,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
         }
 
         setLoading(false);
-
         setShowModal(true);
     }
 
@@ -102,18 +101,14 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
             const username = await user.getUsername();
 
             setUsername(username.getBaseUsername());
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }
 
     async function onModalPress() {
-        setShowModal(false);
-    }
-
-    async function updateKeys() {
-        await user.updateKeys(password);
         userStore.setStatus(UserStatus.LOGGED_IN);
+        setShowModal(false);
     }
 
     async function onUsernameErrorModalPress() {
@@ -184,7 +179,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                                 disabled={
                                     password.length === 0 || password2.length === 0 || password2 !== password || loading
                                 }
-                                loading={loading}
                             >
                                 CREATE ACCOUNT
                             </TButtonContained>
@@ -213,7 +207,6 @@ export default function CreateAccountPasswordContainer({ navigation }: Props) {
                 onPress={onUsernameErrorModalPress}
                 title="Please choose another username"
                 expected={true}
-                icon={''}
             >
                 <View>
                     <Text>

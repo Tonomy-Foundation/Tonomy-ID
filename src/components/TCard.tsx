@@ -22,7 +22,7 @@ function TCard({ children, ...props }: TCardPropType) {
 
     return (
         <Card {...props} elevation={4} mode="elevated" style={[style, props.style]}>
-            {subComponents.map((component) => component)}
+            {subComponents?.map((component) => component)}
         </Card>
     );
 }

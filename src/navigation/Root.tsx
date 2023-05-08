@@ -1,6 +1,6 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
-import HomeScreen from '../screens/homeScreen';
+import HomeScreen from '../screens/HomeScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import CreateAccountPasswordScreen from '../screens/CreateAccountPasswordScreen';
@@ -11,11 +11,9 @@ import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
 import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
-
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
-import { useTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
@@ -42,6 +40,7 @@ export type RouteStackParamList = {
     UserHome: undefined;
     Test: undefined;
     Drawer: undefined;
+    SetPassword: undefined;
     Settings: undefined;
     QrScanner: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
@@ -132,7 +131,6 @@ export default function RootNavigation() {
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
-                    {/* <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} /> */}
                     <Stack.Screen
                         name="Drawer"
                         component={DrawerNavigation}

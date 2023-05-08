@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Caption, Paragraph, Text } from 'react-native-paper';
-import { customColors, useAppTheme } from '../../utils/theme';
+import { useAppTheme } from '../../utils/theme';
 
 type THProps = React.ComponentProps<typeof Text>;
 
