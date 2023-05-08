@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import TLink from '../components/atoms/TA';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
-import { NavigationProp } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import TUsername from '../components/TUsername';
@@ -13,6 +11,7 @@ import LayoutComponent from '../components/layout';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
+import { formatUsername } from '../utils/username';
 
 export default function CreateAccountUsernameContainer({ navigation }: Props) {
     let startUsername = '';
@@ -37,10 +36,10 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
 
         setLoading(true);
 
-        const slugUsername = username.toLowerCase().trim();
+        const formattedUsername = username.toLowerCase();
 
         try {
-            await user.saveUsername(slugUsername);
+            await user.saveUsername(formattedUsername);
         } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
@@ -58,7 +57,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
     }
 
     const onTextChange = (value) => {
-        setUsername(value);
+        setUsername(formatUsername(value));
         if (errorMessage !== '') setErrorMessage('');
     };
 
