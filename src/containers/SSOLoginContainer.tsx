@@ -4,7 +4,7 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, LoginRequest, base64UrlToObj, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { UserApps, App, LoginRequest, base64UrlToObj, SdkErrors, SdkError } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -15,13 +15,17 @@ import { useNavigation } from '@react-navigation/native';
 import { throwError } from '../utils/errors';
 import { ApplicationErrors } from '../utils/errors';
 
+type AppData = {
+    app: App;
+    loginRequest: LoginRequest;
+    showConsent: boolean;
+};
+
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, setStatus } = useUserStore();
-    const [app, setApp] = useState<App>();
-    const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
     const [username, setUsername] = useState<string>();
-    const [ssoApp, setSsoApp] = useState<App>();
-    const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
+    const [sso, setSso] = useState<AppData>();
+    const [externalApp, setExternalApp] = useState<AppData>();
     const [receiverDid, setReceiverDid] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(false);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
@@ -44,7 +48,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         }
     }
 
-    async function getLoginRequestFromParams() {
+    async function getAndVerifyAppData() {
         try {
             const parsedPayload = base64UrlToObj(payload);
 
@@ -59,15 +63,28 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 const payload = request.getPayload();
                 const app = await App.getApp(payload.origin);
 
+                const showConsent = true;
+
+                // try {
+                //     await UserApps.verifyKeyExistsForApp(await user.getAccountName(), { publicKey: payload.publicKey });
+                //     showConsent = false;
+                // } catch (e) {
+                //     if (e instanceof SdkError && e.code === SdkErrors.UserNotLoggedInWithThisApp) {
+                //         // Never consented
+                //         showConsent = true;
+                //     } else {
+                //         throw e;
+                //     }
+                // }
+
                 if (payload.origin === settings.config.ssoWebsiteOrigin) {
-                    setAppLoginRequest(request);
                     setReceiverDid(request.getIssuer());
-                    setApp(app);
+                    setSso({ app, loginRequest: request, showConsent });
                 } else {
-                    setSsoLoginRequest(request);
-                    setSsoApp(app);
+                    setExternalApp({ app, loginRequest: request, showConsent });
                 }
             }
+            // TODO need to handle case where showConsent === false for both...
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -76,11 +93,11 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onNext() {
         try {
             setNextLoading(true);
-            if (!app || !appLoginRequest || !ssoApp || !ssoLoginRequest) throw new Error('Missing params');
+            if (!externalApp || !sso) throw new Error('Missing params');
             const callbackUrl = await user.apps.acceptLoginRequest(
                 [
-                    { app: ssoApp, request: ssoLoginRequest },
-                    { app, request: appLoginRequest },
+                    { app: sso.app, request: sso.loginRequest },
+                    { app: externalApp.app, request: externalApp.loginRequest },
                 ],
                 platform,
                 receiverDid
@@ -104,9 +121,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onCancel() {
         try {
             setCancelLoading(true);
-            if (!ssoLoginRequest || !appLoginRequest) throw new Error('Missing params');
+            if (!sso || !externalApp) throw new Error('Missing params');
             const res = await UserApps.terminateLoginRequest(
-                [ssoLoginRequest, appLoginRequest],
+                [sso.loginRequest, externalApp.loginRequest],
                 platform === 'browser' ? 'message' : 'url',
                 {
                     code: SdkErrors.UserCancelled,
@@ -136,7 +153,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     useEffect(() => {
         setUserName();
-        getLoginRequestFromParams();
+        getAndVerifyAppData();
     }, []);
 
     return (
@@ -150,12 +167,12 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 
-                    {ssoApp && (
+                    {externalApp && (
                         <View style={[styles.appDialog, styles.marginTop]}>
-                            <Image style={styles.appDialogImage} source={{ uri: ssoApp.logoUrl }} />
-                            <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
+                            <Image style={styles.appDialogImage} source={{ uri: externalApp.app.logoUrl }} />
+                            <TH1 style={commonStyles.textAlignCenter}>{externalApp.app.appName}</TH1>
                             <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                            <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
+                            <TLink to={externalApp.app.origin}>{externalApp.app.origin}</TLink>
                         </View>
                     )}
                 </View>
