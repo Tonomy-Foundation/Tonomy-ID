@@ -22,51 +22,14 @@ import TCard from '../components/TCard';
 export default function MainContainer() {
     const userStore = useUserStore();
     const user = userStore.user;
-    const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
 
     useEffect(() => {
-        async function main() {
-            try {
-                await loginToService();
-                user.communication.subscribeMessage((message) => {
-                    const loginRequestsMessage = new LoginRequestsMessage(message);
-                    const payload = loginRequestsMessage.getPayload();
-                    const base64UrlPayload = objToBase64Url(payload);
-
-                    navigation.navigate('SSO', {
-                        payload: base64UrlPayload,
-                        platform: 'browser',
-                    });
-                    setIsLoadingView(false);
-                }, LoginRequestsMessage.getType());
-            } catch (e) {
-                errorStore.setError({ error: e, expected: false });
-            }
-        }
-
-        main();
         setUserName();
     }, []);
-
-    //TODO: this should be moved to a store or a provider or a hook
-    async function loginToService() {
-        const issuer = await user.getIssuer();
-        const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-
-        try {
-            await user.communication.login(message);
-        } catch (e) {
-            if (e instanceof CommunicationError && e.exception.status === 401) {
-                await userStore.logout();
-            } else {
-                throw e;
-            }
-        }
-    }
 
     async function setUserName() {
         try {
@@ -79,7 +42,7 @@ export default function MainContainer() {
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
-        setIsLoadingView(true);
+        // setIsLoadingView(true);
 
         try {
             // Connect to the browser using their did:jwk
