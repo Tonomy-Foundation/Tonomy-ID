@@ -1,16 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, View, StyleSheet, Platform, ScrollView } from 'react-native';
-import { TCaption, TP } from '../components/atoms/THeadings';
-import LayoutComponent from '../components/layout';
-import { commonStyles } from '../utils/theme';
-
-import { IconButton } from 'react-native-paper';
+import { StyleSheet, Platform, ScrollView } from 'react-native';
 import TNavigationButton from '../components/TNavigationButton';
 import { Props } from '../screens/SettingsScreen';
 import FaceIdIcon from '../assets/icons/FaceIdIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { TP } from '../components/atoms/THeadings';
 
-export default function SettingsContainer({ navigation }: Props) {
+export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
         <SafeAreaView>
             <ScrollView style={{ padding: 16 }}>

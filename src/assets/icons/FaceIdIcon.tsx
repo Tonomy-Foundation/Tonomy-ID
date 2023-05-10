@@ -3,7 +3,6 @@ import { SvgProps, SvgXml } from 'react-native-svg';
 import { customColors } from '../../utils/theme';
 
 export default function FaceIdIcon(props: SvgProps) {
-    const color = props.color ? props.color : customColors.success;
     const xml = `
     <svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

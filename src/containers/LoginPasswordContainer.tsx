@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { AccountType, SdkError, SdkErrors, TonomyUsername } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
 import TPasswordInput from '../components/molecules/TPasswordInput';
-import TErrorModal from '../components/TErrorModal';
 import TInfoBox from '../components/TInfoBox';
-import { Props } from '../screens/homeScreen';
+import { Props } from '../screens/LoginPasswordScreen';
 import settings from '../settings';
 // import errorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
@@ -52,7 +50,7 @@ export default function LoginPasswordContainer({
                 await user.saveLocal();
                 await updateKeys();
             }
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:
@@ -113,7 +111,7 @@ export default function LoginPasswordContainer({
                 footer={
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={password.length === 0} loading={loading}>
+                            <TButtonContained onPress={onNext} disabled={password.length === 0 || loading}>
                                 NEXT
                             </TButtonContained>
                         </View>

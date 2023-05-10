@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
 
 export type Props = NativeStackScreenProps<RouteStackParamList, 'ConfirmPassword'>;
+
 export default function ConfirmPasswordScreen(props: Props) {
     return <ConfirmPasswordContainer navigation={props.navigation}></ConfirmPasswordContainer>;
 }

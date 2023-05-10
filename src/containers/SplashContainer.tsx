@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Image, ImageSourcePropType } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { NavigationProp } from '@react-navigation/native';
 import { TH1, TP } from '../components/atoms/THeadings';
-import theme, { commonStyles } from '../utils/theme';
+import { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 

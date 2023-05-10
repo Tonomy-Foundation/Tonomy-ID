@@ -11,7 +11,6 @@ import {
     createSigner,
     throwError,
     SdkErrors,
-    KeyStorage,
     CheckKeyOptions,
     STORAGE_NAMESPACE,
 } from '@tonomy/tonomy-id-sdk';
@@ -74,7 +73,7 @@ export default class RNKeyManager implements KeyManager {
         const privateKey = PrivateKey.from(secureData);
 
         if (options.outputType === 'jwt') {
-            if (typeof options.data !== 'string') throwError('data must be a string', SdkErrors.invalidDataType);
+            if (typeof options.data !== 'string') throwError('data must be a string', SdkErrors.InvalidData);
             const signer = createSigner(privateKey as any);
 
             return (await signer(options.data)) as string;
@@ -101,7 +100,7 @@ export default class RNKeyManager implements KeyManager {
         const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
-            if (!options.challenge) throwError('Challenge missing', SdkErrors.missingChallenge);
+            if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
 
             return keyStore.hashedSaltedChallenge === hashedSaltedChallenge;

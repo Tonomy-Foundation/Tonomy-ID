@@ -13,7 +13,7 @@ import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
 
-export default function CreateAccountUsernameContainer({ navigation }: Props) {
+export default function CreateAccountUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
 
     if (!settings.isProduction()) {
@@ -90,11 +90,7 @@ export default function CreateAccountUsernameContainer({ navigation }: Props) {
             footer={
                 <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
-                        <TButtonContained
-                            onPress={onNext}
-                            disabled={username.length === 0 || loading}
-                            loading={loading}
-                        >
+                        <TButtonContained onPress={onNext} disabled={username.length === 0 || loading}>
                             Next
                         </TButtonContained>
                     </View>

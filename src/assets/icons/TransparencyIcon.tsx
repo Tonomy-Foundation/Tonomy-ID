@@ -3,7 +3,12 @@ import { SvgProps, SvgXml } from 'react-native-svg';
 import { customColors } from '../../utils/theme';
 
 export default function TransparencyIcon(props: SvgProps) {
-    const color = props.color ? props.color : customColors.success;
+    let color = customColors.success;
+
+    if (props.color && typeof props.color === 'string') {
+        color = props.color;
+    }
+
     const xml = `
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clip-path="url(#clip0_928_6925)">

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import TModal from './TModal';
 import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
 import { TButtonText } from './atoms/Tbutton';
 import { TP } from './atoms/THeadings';
-import { HttpError, EosioUtil, CommunicationError } from '@tonomy/tonomy-id-sdk';
+import { HttpError, EosioUtil, CommunicationError, AntelopePushTransactionError } from '@tonomy/tonomy-id-sdk';
+import { Modal } from 'react-native';
 
-export type ModalProps = React.ComponentProps<typeof TModal> & {
+export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
     onPress: () => void;
     title?: string;
     error?: Error;
@@ -16,7 +17,7 @@ export type ModalProps = React.ComponentProps<typeof TModal> & {
     cause?: string;
 };
 
-export default function TErrorModal(props: ModalProps) {
+export default function TErrorModal(props: TErrorModalProps) {
     const [expanded, setExpanded] = useState(false);
 
     function switchExpanded() {
@@ -47,21 +48,19 @@ export default function TErrorModal(props: ModalProps) {
             return (
                 <View>
                     <TP size={1}>Http error:</TP>
-                    {error.cause && <Text style={styles.greyText}>Cause: {error.cause}</Text>}
                     {error.code && <Text style={styles.greyText}>HTTP Code: {error.code}</Text>}
                     <Text>Path: {error.path}</Text>
-                    <Text>Response: {error.response}</Text>
+                    <Text>Response: {JSON.stringify(error.response, null, 2)}</Text>
                     <Text>SourceUrl: {error.sourceURL}</Text>
                 </View>
             );
-        } else if (props.error instanceof EosioUtil.AntelopePushTransactionError) {
-            const error = props.error as EosioUtil.AntelopePushTransactionError;
+        } else if (props.error instanceof AntelopePushTransactionError) {
+            const error = props.error as AntelopePushTransactionError;
             const trxError = error.error;
 
             return (
                 <View>
                     <TP size={1}>Trx error:</TP>
-                    {error.cause && <Text style={styles.greyText}>Cause: {error.cause}</Text>}
                     {error.code && <Text style={styles.greyText}>HTTP Code: {error.code}</Text>}
                     <Text style={styles.greyText}>Antelope Code: {trxError.code}</Text>
                     <Text style={styles.greyText}>Name: {trxError.name}</Text>
@@ -95,7 +94,6 @@ export default function TErrorModal(props: ModalProps) {
             iconColor={theme.colors.error}
         >
             {props.children}
-
             {props.error && (
                 <>
                     <View>
