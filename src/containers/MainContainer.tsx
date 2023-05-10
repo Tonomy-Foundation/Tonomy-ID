@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
+import TSpinner from '../components/atoms/TSpinner';
 
 export default function MainContainer() {
     const userStore = useUserStore();
@@ -25,7 +26,7 @@ export default function MainContainer() {
     const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
-    const [isLoadingView, setIsLoadingView] = useState(false);
+    const [isLoadingView, setIsLoadingView] = useState(true);
     const errorStore = useErrorStore();
 
     useEffect(() => {
@@ -165,8 +166,9 @@ export default function MainContainer() {
                 <View style={styles.requestView}>
                     <Image source={require('../assets/tonomy/connecting.png')}></Image>
                     <TP style={styles.requestText} size={1}>
-                        Linking to your web app and receiving data. Please remain connected
+                        Linking to your web app and receiving data.
                     </TP>
+                    <TSpinner style={{ marginBottom: 12 }} />
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
