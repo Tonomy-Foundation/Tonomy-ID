@@ -139,6 +139,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             if (e instanceof CommunicationError && e.exception.status === 404) {
                 // User cancelled in the browser, so can just navigate back to home
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             } else {
                 errorStore.setError({
