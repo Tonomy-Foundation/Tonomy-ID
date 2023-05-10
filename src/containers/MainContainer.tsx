@@ -9,7 +9,7 @@ import {
     IdentifyMessage,
     objToBase64Url,
 } from '@tonomy/tonomy-id-sdk';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -167,6 +167,7 @@ export default function MainContainer() {
                     <TP style={styles.requestText} size={1}>
                         Linking to your web app and receiving data. Please remain connected
                     </TP>
+                    <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
                 <MainView />
