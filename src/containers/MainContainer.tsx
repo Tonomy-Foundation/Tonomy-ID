@@ -26,7 +26,7 @@ export default function MainContainer() {
     const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
-    const [isLoadingView, setIsLoadingView] = useState(true);
+    const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
 
     useEffect(() => {
