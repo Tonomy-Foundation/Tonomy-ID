@@ -12,9 +12,7 @@ export default function ErrorHandlerProvider() {
     async function onModalPress() {
         const onClose = errorStore.onClose;
 
-        console.log('onModalPress1', onClose);
         errorStore.unSetError();
-        console.log('onModalPress2', onClose);
         if (onClose) await onClose();
         setShowModal(false);
     }
