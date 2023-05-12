@@ -2,7 +2,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, ScrollView } from 'react-native';
 import { CommunicationError, IdentifyMessage } from '@tonomy/tonomy-id-sdk';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
+import TSpinner from '../components/atoms/TSpinner';
 
 export default function MainContainer() {
     const userStore = useUserStore();
@@ -121,8 +122,10 @@ export default function MainContainer() {
                 <View style={styles.requestView}>
                     <Image source={require('../assets/tonomy/connecting.png')}></Image>
                     <TP style={styles.requestText} size={1}>
-                        Linking to your web app and receiving data. Please remain connected
+                        Linking to your web app and receiving data.
                     </TP>
+                    <TSpinner style={{ marginBottom: 12 }} />
+                    <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
                 <MainView />
