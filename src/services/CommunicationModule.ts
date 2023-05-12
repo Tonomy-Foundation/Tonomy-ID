@@ -35,7 +35,6 @@ export default function CommunicationModule() {
     function listenToMessages(): number {
         try {
             return user.communication.subscribeMessage((message) => {
-                console.log(message);
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();
                 const base64UrlPayload = objToBase64Url(payload);

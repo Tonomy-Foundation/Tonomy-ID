@@ -1,19 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, ScrollView } from 'react-native';
-import {
-    CommunicationError,
-    AuthenticationMessage,
-    LoginRequestsMessage,
-    IdentifyMessage,
-    objToBase64Url,
-} from '@tonomy/tonomy-id-sdk';
+import { CommunicationError, IdentifyMessage } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
-import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
@@ -52,6 +44,7 @@ export default function MainContainer() {
             await user.communication.sendMessage(identifyMessage);
         } catch (e) {
             if (e instanceof CommunicationError && e.exception?.status === 404) {
+                // happens if sso site not connected to communication service
                 console.error('User probably needs to refresh the page. See notes in MainContainer.tsx');
                 // User probably has scanned a QR code on a website that is not logged into Tonomy Communication
                 // They probably need to refresh the page
