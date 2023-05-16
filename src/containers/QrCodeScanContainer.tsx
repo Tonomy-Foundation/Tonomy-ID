@@ -35,8 +35,8 @@ export default function QrCodeScanContainer(props: Props) {
     };
 
     const handleBarCodeScanned = (result: BarCodeScannerResult) => {
+        if (!scanned) props.onScan(result);
         setScanned(true);
-        props.onScan(result);
     };
 
     return (

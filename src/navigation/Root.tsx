@@ -21,6 +21,7 @@ import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
+import CommunicationModule from '../services/CommunicationModule';
 
 const prefix = Linking.createURL('');
 
@@ -130,18 +131,21 @@ export default function RootNavigation() {
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
-                <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
-                    <Stack.Screen
-                        name="Drawer"
-                        component={DrawerNavigation}
-                        options={{ headerShown: false, title: settings.config.appName }}
-                    />
-                    <Stack.Screen
-                        name="SSO"
-                        options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
-                        component={SSOLoginScreen}
-                    />
-                </Stack.Navigator>
+                <>
+                    <CommunicationModule />
+                    <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
+                        <Stack.Screen
+                            name="Drawer"
+                            component={DrawerNavigation}
+                            options={{ headerShown: false, title: settings.config.appName }}
+                        />
+                        <Stack.Screen
+                            name="SSO"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={SSOLoginScreen}
+                        />
+                    </Stack.Navigator>
+                </>
             )}
         </NavigationContainer>
     );
