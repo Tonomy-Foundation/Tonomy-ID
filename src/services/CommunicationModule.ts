@@ -1,12 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import { AuthenticationMessage, CommunicationError, LoginRequestsMessage, objToBase64Url } from '@tonomy/tonomy-id-sdk';
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
+import { RouteStackParamList } from '../navigation/Root';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [identifier, setIdentifier] = useState(-1);
 
@@ -46,6 +47,7 @@ export default function CommunicationModule() {
             }, LoginRequestsMessage.getType());
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
+            return -1;
         }
     }
 
