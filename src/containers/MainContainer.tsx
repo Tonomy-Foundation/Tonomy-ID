@@ -1,19 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, ScrollView } from 'react-native';
-import {
-    CommunicationError,
-    AuthenticationMessage,
-    LoginRequestsMessage,
-    IdentifyMessage,
-    objToBase64Url,
-} from '@tonomy/tonomy-id-sdk';
+import { CommunicationError, IdentifyMessage } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
-import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
@@ -23,51 +15,14 @@ import TSpinner from '../components/atoms/TSpinner';
 export default function MainContainer() {
     const userStore = useUserStore();
     const user = userStore.user;
-    const navigation = useNavigation<MainScreenNavigationProp['navigation']>();
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
 
     useEffect(() => {
-        async function main() {
-            try {
-                await loginToService();
-                user.communication.subscribeMessage((message) => {
-                    const loginRequestsMessage = new LoginRequestsMessage(message);
-                    const payload = loginRequestsMessage.getPayload();
-                    const base64UrlPayload = objToBase64Url(payload);
-
-                    navigation.navigate('SSO', {
-                        payload: base64UrlPayload,
-                        platform: 'browser',
-                    });
-                    setIsLoadingView(false);
-                }, LoginRequestsMessage.getType());
-            } catch (e) {
-                errorStore.setError({ error: e, expected: false });
-            }
-        }
-
-        main();
         setUserName();
     }, []);
-
-    //TODO: this should be moved to a store or a provider or a hook
-    async function loginToService() {
-        const issuer = await user.getIssuer();
-        const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-
-        try {
-            await user.communication.login(message);
-        } catch (e) {
-            if (e instanceof CommunicationError && e.exception.status === 401) {
-                await userStore.logout();
-            } else {
-                throw e;
-            }
-        }
-    }
 
     async function setUserName() {
         try {
@@ -80,7 +35,7 @@ export default function MainContainer() {
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
-        setIsLoadingView(true);
+        // setIsLoadingView(true);
 
         try {
             // Connect to the browser using their did:jwk
@@ -90,6 +45,7 @@ export default function MainContainer() {
             await user.communication.sendMessage(identifyMessage);
         } catch (e) {
             if (e instanceof CommunicationError && e.exception?.status === 404) {
+                // happens if sso site not connected to communication service
                 console.error('User probably needs to refresh the page. See notes in MainContainer.tsx');
                 // User probably has scanned a QR code on a website that is not logged into Tonomy Communication
                 // They probably need to refresh the page
