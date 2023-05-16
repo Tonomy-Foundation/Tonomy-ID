@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.24.2",
+    "version": "0.25.0",
     "scripts": {
         "build:prepare": "ts-node prepare.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
