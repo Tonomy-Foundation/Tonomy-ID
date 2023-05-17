@@ -4,7 +4,7 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, LoginRequest, base64UrlToObj, SdkErrors, SdkError } from '@tonomy/tonomy-id-sdk';
+import { UserApps, App, LoginRequest, base64UrlToObj, SdkErrors, CommunicationError } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -114,7 +114,21 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             }
         } catch (e) {
             setNextLoading(false);
-            errorStore.setError({ error: e, expected: false });
+
+            if (e instanceof CommunicationError && e.exception.status === 404) {
+                // User cancelled in the browser, so can just navigate back to home
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    // @ts-expect-error item of type string is not assignable to type never
+                    // TODO fix type error
+                    onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
+                });
+            }
         }
     }
 
@@ -147,7 +161,21 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             }
         } catch (e) {
             setCancelLoading(false);
-            errorStore.setError({ error: e, expected: false });
+
+            if (e instanceof CommunicationError && e.exception.status === 404) {
+                // User cancelled in the browser, so can just navigate back to home
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    // @ts-expect-error item of type string is not assignable to type never
+                    // TODO fix type error
+                    onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
+                });
+            }
         }
     }
 
