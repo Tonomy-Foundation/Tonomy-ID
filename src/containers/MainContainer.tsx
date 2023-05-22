@@ -128,7 +128,9 @@ export default function MainContainer() {
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
-                <MainView />
+                <ScrollView>
+                    <MainView />
+                </ScrollView>
             )}
         </SafeAreaView>
     );
@@ -171,7 +173,7 @@ const styles = StyleSheet.create({
         width: '50%',
     },
     marginTop: {
-        marginTop: 28,
+        marginTop: 10,
     },
     cards: {
         flex: 1,
