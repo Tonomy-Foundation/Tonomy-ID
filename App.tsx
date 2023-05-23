@@ -10,6 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import setErrorHandlers from './src/utils/exceptions';
 import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
 import useErrorStore from './src/store/errorStore';
+import './src/utils/base64.polyfill';
 
 export default function App() {
     const errorStore = useErrorStore();
