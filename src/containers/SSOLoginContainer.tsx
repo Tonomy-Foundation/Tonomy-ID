@@ -14,6 +14,7 @@ import { openBrowserAsync } from 'expo-web-browser';
 import { useNavigation } from '@react-navigation/native';
 import { throwError } from '../utils/errors';
 import { ApplicationErrors } from '../utils/errors';
+import { CheckedRequest } from '@tonomy/tonomy-id-sdk';
 
 type AppData = {
     app: App;
@@ -21,13 +22,21 @@ type AppData = {
     showConsent: boolean;
 };
 
-export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
+export default function SSOLoginContainer({
+    payload,
+    platform,
+    checkedRequests,
+}: {
+    payload: string;
+    platform: 'mobile' | 'browser';
+    checkedRequests?: CheckedRequest[];
+}) {
     const { user, setStatus } = useUserStore();
     const [username, setUsername] = useState<string>();
     const [sso, setSso] = useState<AppData>();
     const [externalApp, setExternalApp] = useState<AppData>();
     const [receiverDid, setReceiverDid] = useState<string>();
-    const [nextLoading, setNextLoading] = useState<boolean>(false);
+    const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
 
     const navigation = useNavigation();
@@ -57,34 +66,24 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
 
-            await UserApps.verifyRequests(requests);
+            const res = checkedRequests ?? (await user.apps.checkRequests(requests));
 
-            for (const request of requests) {
-                const payload = request.getPayload();
-                const app = await App.getApp(payload.origin);
-
-                const showConsent = true;
-
-                // try {
-                //     await UserApps.verifyKeyExistsForApp(await user.getAccountName(), { publicKey: payload.publicKey });
-                //     showConsent = false;
-                // } catch (e) {
-                //     if (e instanceof SdkError && e.code === SdkErrors.UserNotLoggedInWithThisApp) {
-                //         // Never consented
-                //         showConsent = true;
-                //     } else {
-                //         throw e;
-                //     }
-                // }
-
-                if (payload.origin === settings.config.ssoWebsiteOrigin) {
-                    setReceiverDid(request.getIssuer());
-                    setSso({ app, loginRequest: request, showConsent });
+            for (const r of res) {
+                if (r.ssoApp) {
+                    setSso({ app: r.app, loginRequest: r.request, showConsent: r.requiresLogin });
+                    setReceiverDid(r.requestDid);
                 } else {
-                    setExternalApp({ app, loginRequest: request, showConsent });
+                    setExternalApp({ app: r.app, loginRequest: r.request, showConsent: r.requiresLogin });
                 }
             }
-            // TODO need to handle case where showConsent === false for both...
+
+            const isLoginRequired = res.reduce((accumulator, request) => accumulator && request.requiresLogin, true);
+
+            if (!isLoginRequired) {
+                onNext();
+            }
+
+            setNextLoading(false);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -96,8 +95,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (!externalApp || !sso) throw new Error('Missing params');
             const callbackUrl = await user.apps.acceptLoginRequest(
                 [
-                    { app: sso.app, request: sso.loginRequest },
-                    { app: externalApp.app, request: externalApp.loginRequest },
+                    { app: sso.app, request: sso.loginRequest, requiresLogin: sso.showConsent },
+                    { app: externalApp.app, request: externalApp.loginRequest, requiresLogin: externalApp.showConsent },
                 ],
                 platform,
                 receiverDid

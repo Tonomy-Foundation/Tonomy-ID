@@ -22,6 +22,7 @@ import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
+import { CheckedRequest } from '@tonomy/tonomy-id-sdk';
 
 const prefix = Linking.createURL('');
 
@@ -44,7 +45,7 @@ export type RouteStackParamList = {
     SetPassword: undefined;
     Settings: undefined;
     QrScanner: undefined;
-    SSO: { payload: string; platform?: 'mobile' | 'browser' };
+    SSO: { payload: string; platform?: 'mobile' | 'browser'; checkedRequests?: CheckedRequest[] };
     ConfirmPassword: undefined;
 };
 

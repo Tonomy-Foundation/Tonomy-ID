@@ -1,6 +1,12 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import { AuthenticationMessage, CommunicationError, LoginRequestsMessage, objToBase64Url } from '@tonomy/tonomy-id-sdk';
+import {
+    AuthenticationMessage,
+    CommunicationError,
+    LoginRequestsMessage,
+    UserApps,
+    objToBase64Url,
+} from '@tonomy/tonomy-id-sdk';
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
@@ -35,15 +41,43 @@ export default function CommunicationModule() {
 
     function listenToMessages(): number {
         try {
-            return user.communication.subscribeMessage((message) => {
+            return user.communication.subscribeMessage(async (message) => {
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();
-                const base64UrlPayload = objToBase64Url(payload);
 
-                navigation.navigate('SSO', {
-                    payload: base64UrlPayload,
-                    platform: 'browser',
-                });
+                const checkedRequests = await user.apps.checkRequests(payload.requests);
+                const isLoginRequired = checkedRequests.reduce(
+                    (accumulator, request) => accumulator && request.requiresLogin,
+                    true
+                );
+
+                console.log(
+                    'isLoginRequired',
+                    isLoginRequired,
+                    checkedRequests.map((r) => r.requiresLogin)
+                );
+
+                if (isLoginRequired) {
+                    const base64UrlPayload = objToBase64Url(payload);
+
+                    navigation.navigate('SSO', {
+                        payload: base64UrlPayload,
+                        platform: 'browser',
+                        checkedRequests,
+                    });
+                } else {
+                    await user.apps.acceptLoginRequest(
+                        checkedRequests.map((request) => {
+                            return {
+                                app: request.app,
+                                request: request.request,
+                                requiresLogin: request.requiresLogin,
+                            };
+                        }),
+                        'browser',
+                        message.getSender()
+                    );
+                }
             }, LoginRequestsMessage.getType());
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
@@ -58,7 +92,7 @@ export default function CommunicationModule() {
 
     useEffect(() => {
         return () => user.communication.unsubscribeMessage(identifier);
-    }, [identifier]);
+    }, [identifier, user.communication]);
 
     return null;
 }
