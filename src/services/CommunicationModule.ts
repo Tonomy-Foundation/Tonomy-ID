@@ -4,6 +4,8 @@ import { AuthenticationMessage, CommunicationError, LoginRequestsMessage, objToB
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
+import { scheduleNotificationAsync } from 'expo-notifications';
+import { AppState } from 'react-native';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -44,10 +46,23 @@ export default function CommunicationModule() {
                     payload: base64UrlPayload,
                     platform: 'browser',
                 });
+                sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
             }, LoginRequestsMessage.getType());
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
             return -1;
+        }
+    }
+
+    function sendLoginNotificationOnBackground(appName: string) {
+        if (AppState.currentState === 'background') {
+            scheduleNotificationAsync({
+                content: {
+                    title: `Login Request: ${appName}`,
+                    body: `${appName} requesting your permission to login`,
+                },
+                trigger: null,
+            });
         }
     }
 
