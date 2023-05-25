@@ -45,7 +45,7 @@ export type RouteStackParamList = {
     SetPassword: undefined;
     Settings: undefined;
     QrScanner: undefined;
-    SSO: { payload: string; platform?: 'mobile' | 'browser'; checkedRequests?: CheckedRequest[] };
+    SSO: { payload?: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
 };
 

@@ -11,6 +11,11 @@ import setErrorHandlers from './src/utils/exceptions';
 import ErrorHandlerContainer from './src/providers/ErrorHandlerProvider';
 import useErrorStore from './src/store/errorStore';
 import './src/utils/base64.polyfill';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+    /(Detected alien instance of )[\w]+(, this usually means more than one version of @greymass\/eosio has been included in your bundle)/g,
+]);
 
 export default function App() {
     const errorStore = useErrorStore();

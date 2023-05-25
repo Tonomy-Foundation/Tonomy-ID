@@ -1,21 +1,17 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import {
-    AuthenticationMessage,
-    CommunicationError,
-    LoginRequestsMessage,
-    UserApps,
-    objToBase64Url,
-} from '@tonomy/tonomy-id-sdk';
+import { AuthenticationMessage, CommunicationError, LoginRequestsMessage, objToBase64Url } from '@tonomy/tonomy-id-sdk';
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
+import useRequestsStore from '../store/requestsStore';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [identifier, setIdentifier] = useState(-1);
+    const requestsStore = useRequestsStore();
 
     /**
      *  Login to communication microservice
@@ -43,9 +39,13 @@ export default function CommunicationModule() {
         try {
             return user.communication.subscribeMessage(async (message) => {
                 const loginRequestsMessage = new LoginRequestsMessage(message);
+
                 const payload = loginRequestsMessage.getPayload();
 
+                console.log('listenToMessages()');
                 const checkedRequests = await user.apps.checkRequests(payload.requests);
+
+                console.log('listenToMessages()2');
                 const isLoginRequired = checkedRequests.reduce(
                     (accumulator, request) => accumulator && request.requiresLogin,
                     true
@@ -58,12 +58,9 @@ export default function CommunicationModule() {
                 );
 
                 if (isLoginRequired) {
-                    const base64UrlPayload = objToBase64Url(payload);
-
+                    requestsStore.setCheckedRequests(checkedRequests);
                     navigation.navigate('SSO', {
-                        payload: base64UrlPayload,
                         platform: 'browser',
-                        checkedRequests,
                     });
                 } else {
                     await user.apps.acceptLoginRequest(

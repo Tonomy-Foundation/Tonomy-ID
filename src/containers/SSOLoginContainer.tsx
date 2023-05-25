@@ -14,7 +14,7 @@ import { openBrowserAsync } from 'expo-web-browser';
 import { useNavigation } from '@react-navigation/native';
 import { throwError } from '../utils/errors';
 import { ApplicationErrors } from '../utils/errors';
-import { CheckedRequest } from '@tonomy/tonomy-id-sdk';
+import useRequestsStore from '../store/requestsStore';
 
 type AppData = {
     app: App;
@@ -22,15 +22,7 @@ type AppData = {
     showConsent: boolean;
 };
 
-export default function SSOLoginContainer({
-    payload,
-    platform,
-    checkedRequests,
-}: {
-    payload: string;
-    platform: 'mobile' | 'browser';
-    checkedRequests?: CheckedRequest[];
-}) {
+export default function SSOLoginContainer({ payload, platform }: { payload?: string; platform: 'mobile' | 'browser' }) {
     const { user, setStatus } = useUserStore();
     const [username, setUsername] = useState<string>();
     const [sso, setSso] = useState<AppData>();
@@ -38,6 +30,7 @@ export default function SSOLoginContainer({
     const [receiverDid, setReceiverDid] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const requestsStore = useRequestsStore();
 
     const navigation = useNavigation();
     const errorStore = useErrorStore();
@@ -47,6 +40,7 @@ export default function SSOLoginContainer({
             const username = await user.getUsername();
 
             if (!username) {
+                console.log('setUserName no username');
                 await user.logout();
                 setStatus(UserStatus.NOT_LOGGED_IN);
             }
@@ -58,15 +52,33 @@ export default function SSOLoginContainer({
     }
 
     async function getAndVerifyAppData() {
+        console.log('getAndVerifyAppData()');
+
         try {
-            const parsedPayload = base64UrlToObj(payload);
+            let res = requestsStore.checkedRequests;
 
-            if (!parsedPayload || !parsedPayload.requests)
-                throwError('No requests found in payload', ApplicationErrors.MissingParams);
+            console.log('getAndVerifyAppData()', payload, typeof res, !!res);
 
-            const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+            if (payload) {
+                console.log('getAndVerifyAppData()2');
 
-            const res = checkedRequests ?? (await user.apps.checkRequests(requests));
+                if (!payload) throwError('No payload found', ApplicationErrors.MissingParams);
+                const parsedPayload = base64UrlToObj(payload);
+
+                if (!parsedPayload || !parsedPayload.requests)
+                    throwError('No requests found in payload', ApplicationErrors.MissingParams);
+
+                const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+
+                res = await user.apps.checkRequests(requests);
+            }
+
+            console.log('getAndVerifyAppData()3');
+
+            if (!res) throwError('No checked requests found', ApplicationErrors.MissingParams);
+
+            // causes an error because res.requests[].app.username.toString() throws because username.username is not defined
+            console.log('getAndVerifyAppData()4', JSON.stringify(res, null, 2));
 
             for (const r of res) {
                 if (r.ssoApp) {
@@ -78,6 +90,9 @@ export default function SSOLoginContainer({
             }
 
             const isLoginRequired = res.reduce((accumulator, request) => accumulator && request.requiresLogin, true);
+
+            // requestsStore.clearCheckedRequests();
+            console.log('getAndVerifyAppData() isLoginRequred', isLoginRequired);
 
             if (!isLoginRequired) {
                 onNext();
@@ -92,6 +107,7 @@ export default function SSOLoginContainer({
     async function onNext() {
         try {
             setNextLoading(true);
+            console.log('onNext', sso, externalApp);
             if (!externalApp || !sso) throw new Error('Missing params');
             const callbackUrl = await user.apps.acceptLoginRequest(
                 [
