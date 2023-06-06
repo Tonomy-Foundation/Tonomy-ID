@@ -57,7 +57,7 @@ export default function LoginPasswordContainer({
                     case SdkErrors.PasswordInvalid:
                     case SdkErrors.PasswordFormatInvalid:
                     case SdkErrors.AccountDoesntExist:
-                        setErrorMessage('Username or password are incorrect. Please try again.');
+                        setErrorMessage('Username or password is incorrect. Please try again.');
                         break;
                     default:
                         setErrorMessage('');
