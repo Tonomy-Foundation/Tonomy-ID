@@ -4,6 +4,7 @@ import { getResolver } from '@tonomy/antelope-did-resolver';
 import crossFetch from 'cross-fetch';
 
 async function testAntelopeDid() {
+    // @ts-expect-error @tonomy/did-resolver and did-resolver types are incompatible
     const resolver = new Resolver({
         ...getResolver({ fetch: crossFetch as any }),
     });
