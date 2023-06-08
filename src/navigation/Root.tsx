@@ -22,7 +22,6 @@ import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
-import { CheckedRequest } from '@tonomy/tonomy-id-sdk';
 
 const prefix = Linking.createURL('');
 
