@@ -8,10 +8,8 @@ async function testAntelopeDid() {
         ...getResolver({ fetch: crossFetch as any }),
     });
 
-    console.log('Resolving DID document for did:antelope:eos:eoscanadacom');
     const res = await resolver.resolve('did:antelope:eos:eoscanadacom');
 
-    console.log(res);
     if (!res.didDocument) throw new Error('No DID document found');
     if (res.didDocument.id !== 'did:antelope:eos:eoscanadacom') throw new Error('DID document id incorrect');
 }

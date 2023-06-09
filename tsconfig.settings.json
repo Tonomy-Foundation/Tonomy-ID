@@ -1,0 +1,13 @@
+{
+  // this is used to create javascript settings.js that can be used in app.config.ts
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./build",
+    "target": "ES2022",
+    "module": "commonjs",
+  },
+  "include": [
+    "src/settings.ts"
+  ]
+}
