@@ -24,7 +24,7 @@ npm i
 This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app. You can't Run from the Official Expo App.
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
-2. (for first time build only) Remove the following lines from `app.default.json`
+2. (for first time build only) Remove the following lines from `app.config.ts`
 
 ```json
     "extra": {
