@@ -4,16 +4,24 @@ import { ExpoConfig } from 'expo/config';
 import settings from './build/settings';
 import myPackage from './package.json';
 
+const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
+const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
+
+// Check if inputs are correct
+if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
+if (!/^([.]{1})([0-9a-z.]+)$/g.test(settings.config.accountSuffix))
+    throw new Error('Invalid account suffix ' + settings.config.accountSuffix);
+
 const expo: ExpoConfig = {
-    scheme: 'tonomy-id',
-    name: 'tonomy-id',
-    slug: 'tonomy-id',
-    version: '1.0.0',
+    scheme: slug,
+    name: settings.config.appName,
+    slug: slug,
+    version: myPackage.version,
     orientation: 'portrait',
-    icon: './src/assets/tonomy/tonomy-logo1024.png',
+    icon: settings.config.images.logo1024,
     userInterfaceStyle: 'light',
     splash: {
-        image: './src/assets/tonomy/tonomy-splash.png',
+        image: settings.config.images.splash,
         resizeMode: 'contain',
         backgroundColor: '#ffffff',
     },
@@ -27,14 +35,14 @@ const expo: ExpoConfig = {
     },
     android: {
         adaptiveIcon: {
-            foregroundImage: './src/assets/tonomy/tonomy-logo1024.png',
+            foregroundImage: settings.config.images.logo1024,
             backgroundColor: '#FFFFFF',
         },
         versionCode: 1,
-        package: 'foundation.tonomy.tonomyid',
+        package: identifier,
     },
     web: {
-        favicon: './src/assets/tonomy/tonomy-logo48.ico',
+        favicon: settings.config.images.logo48,
     },
     plugins: [
         [
@@ -52,39 +60,13 @@ const expo: ExpoConfig = {
     },
 };
 
-const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
-const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
-
-// Check if inputs are correct
-if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
-if (!/^([.]{1})([0-9a-z.]+)$/g.test(settings.config.accountSuffix))
-    throw new Error('Invalid account suffix ' + settings.config.accountSuffix);
-
-// Update app.json
-// expo.android.package = identifier;
-// expo.android.adaptiveIcon.foregroundImage = settings.config.images.logo1024;
-expo.icon = settings.config.images.logo1024;
-// expo.ios.bundleIdentifier = identifier;
-expo.name = settings.config.appName;
-expo.scheme = slug;
-expo.slug = slug;
-// expo.splash.image = settings.config.images.splash;
-// expo.web.favicon = settings.config.images.logo48;
-expo.version = myPackage.version;
-
 if (!['development', 'designonly'].includes(settings.env)) {
     console.log('Replacing expoProjectId');
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (!expo.extra) app.expo.extra = {};
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (!expo.extra.eas) app.expo.extra.eas = {};
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    if (!expo.extra) expo.extra = {};
+    if (!expo.extra.eas) expo.extra.eas = {};
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
 console.log(JSON.stringify(expo, null, 2));
 
-module.exports = expo;
+export default expo;
