@@ -5,7 +5,7 @@ const currentBranch = execSync('git symbolic-ref --short HEAD', {
 }).trim();
 
 if (currentBranch === 'feature/232-sdk-deployment') {
-    execSync('npm install @tonomy/tonomy-id-test@development', {
+    execSync('npm install --no-lockfile @tonomy/tonomy-id-test@development', {
         stdio: 'inherit',
     });
 }
