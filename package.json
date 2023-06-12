@@ -2,7 +2,7 @@
     "name": "tonomy-id",
     "version": "0.28.0",
     "scripts": {
-        "build:prepare": "ts-node prepare.ts",
+        "build:prepare": "tsc --project tsconfig.settings.json && cp -r ./src/config ./build",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
         "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
         "build:android": "npm run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
@@ -15,13 +15,13 @@
         "typeCheck": "tsc"
     },
     "dependencies": {
-        "@greymass/eosio": "^0.6.4",
+        "@greymass/eosio": "^0.7.0",
         "@react-native-async-storage/async-storage": "~1.17.3",
         "@react-navigation/bottom-tabs": "^6.5.0",
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "^0.4.4",
+        "@tonomy/tonomy-id-sdk": "^0.5.0",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
         "deepmerge": "^4.2.2",
@@ -84,6 +84,6 @@
     },
     "private": true,
     "resolutions": {
-        "@greymass/eosio": "^0.6.4"
+        "@greymass/eosio": "0.7.0"
     }
 }

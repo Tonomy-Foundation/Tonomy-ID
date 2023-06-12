@@ -31,6 +31,7 @@ setSettings({
     blockchainUrl: settings.config.blockchainUrl,
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,
+    loggerLevel: process.env.LOG === 'true' ? 'debug' : 'error',
 });
 
 interface UserStorageState {
