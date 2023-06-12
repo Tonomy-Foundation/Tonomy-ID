@@ -12,7 +12,9 @@
         "lint:fix": "npm run lint -- --fix",
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
-        "typeCheck": "tsc"
+        "typeCheck": "tsc",
+        "development": "node sdk-package-install.js",
+        "prepare": "yarn run development"
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
