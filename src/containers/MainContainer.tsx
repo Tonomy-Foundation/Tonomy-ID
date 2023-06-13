@@ -11,6 +11,7 @@ import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
+import TModal from '../components/TModal';
 
 export default function MainContainer() {
     const userStore = useUserStore();
@@ -19,6 +20,7 @@ export default function MainContainer() {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         setUserName();
@@ -35,8 +37,6 @@ export default function MainContainer() {
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
-        // setIsLoadingView(true);
-
         try {
             // Connect to the browser using their did:jwk
             const issuer = await user.getIssuer();
@@ -45,11 +45,8 @@ export default function MainContainer() {
             await user.communication.sendMessage(identifyMessage);
         } catch (e) {
             if (e instanceof CommunicationError && e.exception?.status === 404) {
-                // happens if sso site not connected to communication service
-                console.error('User probably needs to refresh the page. See notes in MainContainer.tsx');
                 // User probably has scanned a QR code on a website that is not logged into Tonomy Communication
-                // They probably need to refresh the page
-                // TODO: tell the user to retry the login by refreshing
+                setModalVisible(true);
             } else {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -70,49 +67,59 @@ export default function MainContainer() {
         }
 
         return (
-            <View style={styles.content}>
-                {!qrOpened && (
-                    <View style={styles.content}>
-                        <View style={styles.header}>
-                            <TH2 style={styles.marginTop}>{username}</TH2>
-                            <Image
-                                source={require('../assets/animations/qr-code.gif')}
-                                style={[styles.image, styles.marginTop]}
-                            />
-                            <TButtonContained
-                                style={[styles.button, styles.marginTop]}
-                                icon="qrcode-scan"
-                                onPress={() => {
-                                    setQrOpened(true);
-                                }}
-                            >
-                                Scan QR Code
-                            </TButtonContained>
-                        </View>
+            <>
+                <TModal
+                    icon="alert-circle-outline"
+                    visible={modalVisible}
+                    onPress={() => setModalVisible(false)}
+                    title="There was a problem connecting to the website"
+                >
+                    Please try login again.
+                </TModal>
+                <View style={styles.content}>
+                    {!qrOpened && (
+                        <View style={styles.content}>
+                            <View style={styles.header}>
+                                <TH2 style={styles.marginTop}>{username}</TH2>
+                                <Image
+                                    source={require('../assets/animations/qr-code.gif')}
+                                    style={[styles.image, styles.marginTop]}
+                                />
+                                <TButtonContained
+                                    style={[styles.button, styles.marginTop]}
+                                    icon="qrcode-scan"
+                                    onPress={() => {
+                                        setQrOpened(true);
+                                    }}
+                                >
+                                    Scan QR Code
+                                </TButtonContained>
+                            </View>
 
-                        <View style={[styles.marginTop, styles.card]}>
-                            <TP size={2}>SUGGESTED APPS:</TP>
-                            <ScrollView horizontal={true} style={styles.scrollView}>
-                                <TCard style={styles.card}>
-                                    <TCard.Cover source={require('../assets/images/tonomy-dao.png')} />
-                                    <TCard.Badge>Coming Soon</TCard.Badge>
-                                    <TCard.Content>
-                                        <TP>Tonomy Participant</TP>
-                                    </TCard.Content>
-                                </TCard>
-                                <TCard style={styles.card}>
-                                    <TCard.Cover source={require('../assets/images/tonomy-p.png')} />
-                                    <TCard.Badge>Coming Soon</TCard.Badge>
-                                    <TCard.Content>
-                                        <TP>Tonomy DAO</TP>
-                                    </TCard.Content>
-                                </TCard>
-                            </ScrollView>
+                            <View style={[styles.marginTop, styles.card]}>
+                                <TP size={2}>SUGGESTED APPS:</TP>
+                                <ScrollView horizontal={true} style={styles.scrollView}>
+                                    <TCard style={styles.card}>
+                                        <TCard.Cover source={require('../assets/images/tonomy-dao.png')} />
+                                        <TCard.Badge>Coming Soon</TCard.Badge>
+                                        <TCard.Content>
+                                            <TP>Tonomy Participant</TP>
+                                        </TCard.Content>
+                                    </TCard>
+                                    <TCard style={styles.card}>
+                                        <TCard.Cover source={require('../assets/images/tonomy-p.png')} />
+                                        <TCard.Badge>Coming Soon</TCard.Badge>
+                                        <TCard.Content>
+                                            <TP>Tonomy DAO</TP>
+                                        </TCard.Content>
+                                    </TCard>
+                                </ScrollView>
+                            </View>
                         </View>
-                    </View>
-                )}
-                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
-            </View>
+                    )}
+                    {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
+                </View>
+            </>
         );
     };
 

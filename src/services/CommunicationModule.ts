@@ -4,6 +4,7 @@ import { AuthenticationMessage, CommunicationError, LoginRequestsMessage, objToB
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
+import useRequestsStore from '../store/requestsStore';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 
@@ -12,6 +13,7 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [identifier, setIdentifier] = useState(-1);
+    const requestsStore = useRequestsStore();
 
     /**
      *  Login to communication microservice
@@ -37,16 +39,45 @@ export default function CommunicationModule() {
 
     function listenToMessages(): number {
         try {
-            return user.communication.subscribeMessage((message) => {
+            return user.communication.subscribeMessage(async (message) => {
                 const loginRequestsMessage = new LoginRequestsMessage(message);
-                const payload = loginRequestsMessage.getPayload();
-                const base64UrlPayload = objToBase64Url(payload);
 
-                navigation.navigate('SSO', {
-                    payload: base64UrlPayload,
-                    platform: 'browser',
-                });
-                sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
+                const payload = loginRequestsMessage.getPayload();
+
+                console.log('listenToMessages()');
+                const checkedRequests = await user.apps.checkRequests(payload.requests);
+
+                console.log('listenToMessages()2');
+                const isLoginRequired = checkedRequests.reduce(
+                    (accumulator, request) => accumulator && request.requiresLogin,
+                    true
+                );
+
+                console.log(
+                    'isLoginRequired',
+                    isLoginRequired,
+                    checkedRequests.map((r) => r.requiresLogin)
+                );
+
+                if (isLoginRequired) {
+                    requestsStore.setCheckedRequests(checkedRequests);
+                    navigation.navigate('SSO', {
+                        platform: 'browser',
+                    });
+                    sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
+                } else {
+                    await user.apps.acceptLoginRequest(
+                        checkedRequests.map((request) => {
+                            return {
+                                app: request.app,
+                                request: request.request,
+                                requiresLogin: request.requiresLogin,
+                            };
+                        }),
+                        'browser',
+                        message.getSender()
+                    );
+                }
             }, LoginRequestsMessage.getType());
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
@@ -73,7 +104,7 @@ export default function CommunicationModule() {
 
     useEffect(() => {
         return () => user.communication.unsubscribeMessage(identifier);
-    }, [identifier]);
+    }, [identifier, user.communication]);
 
     return null;
 }

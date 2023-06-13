@@ -28,6 +28,7 @@ export interface UserState {
 }
 
 setSettings({
+    ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
     blockchainUrl: settings.config.blockchainUrl,
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,

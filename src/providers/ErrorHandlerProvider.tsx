@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
-import TErrorModal from './TErrorModal';
+import TErrorModal from '../components/TErrorModal';
 
 export default function ErrorHandlerProvider() {
     const [showModal, setShowModal] = useState(false);

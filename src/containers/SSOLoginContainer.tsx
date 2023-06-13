@@ -14,17 +14,23 @@ import { openBrowserAsync } from 'expo-web-browser';
 import { useNavigation } from '@react-navigation/native';
 import { throwError } from '../utils/errors';
 import { ApplicationErrors } from '../utils/errors';
+import useRequestsStore from '../store/requestsStore';
 
-export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
+type AppData = {
+    app: App;
+    loginRequest: LoginRequest;
+    showConsent: boolean;
+};
+
+export default function SSOLoginContainer({ payload, platform }: { payload?: string; platform: 'mobile' | 'browser' }) {
     const { user, setStatus } = useUserStore();
-    const [app, setApp] = useState<App>();
-    const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
     const [username, setUsername] = useState<string>();
-    const [ssoApp, setSsoApp] = useState<App>();
-    const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
+    const [sso, setSso] = useState<AppData>();
+    const [externalApp, setExternalApp] = useState<AppData>();
     const [receiverDid, setReceiverDid] = useState<string>();
-    const [nextLoading, setNextLoading] = useState<boolean>(false);
+    const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const requestsStore = useRequestsStore();
 
     const navigation = useNavigation();
     const errorStore = useErrorStore();
@@ -34,6 +40,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             const username = await user.getUsername();
 
             if (!username) {
+                console.log('setUserName no username');
                 await user.logout();
                 setStatus(UserStatus.NOT_LOGGED_IN);
             }
@@ -44,30 +51,54 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         }
     }
 
-    async function getLoginRequestFromParams() {
+    async function getAndVerifyAppData() {
+        console.log('getAndVerifyAppData()');
+
         try {
-            const parsedPayload = base64UrlToObj(payload);
+            let res = requestsStore.checkedRequests;
 
-            if (!parsedPayload || !parsedPayload.requests)
-                throwError('No requests found in payload', ApplicationErrors.MissingParams);
+            console.log('getAndVerifyAppData()', payload, typeof res, !!res);
 
-            const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+            if (payload) {
+                console.log('getAndVerifyAppData()2');
 
-            await UserApps.verifyRequests(requests);
+                if (!payload) throwError('No payload found', ApplicationErrors.MissingParams);
+                const parsedPayload = base64UrlToObj(payload);
 
-            for (const request of requests) {
-                const payload = request.getPayload();
-                const app = await App.getApp(payload.origin);
+                if (!parsedPayload || !parsedPayload.requests)
+                    throwError('No requests found in payload', ApplicationErrors.MissingParams);
 
-                if (payload.origin === settings.config.ssoWebsiteOrigin) {
-                    setAppLoginRequest(request);
-                    setReceiverDid(request.getIssuer());
-                    setApp(app);
+                const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+
+                res = await user.apps.checkRequests(requests);
+            }
+
+            console.log('getAndVerifyAppData()3');
+
+            if (!res) throwError('No checked requests found', ApplicationErrors.MissingParams);
+
+            // causes an error because res.requests[].app.username.toString() throws because username.username is not defined
+            console.log('getAndVerifyAppData()4', JSON.stringify(res, null, 2));
+
+            for (const r of res) {
+                if (r.ssoApp) {
+                    setSso({ app: r.app, loginRequest: r.request, showConsent: r.requiresLogin });
+                    setReceiverDid(r.requestDid);
                 } else {
-                    setSsoLoginRequest(request);
-                    setSsoApp(app);
+                    setExternalApp({ app: r.app, loginRequest: r.request, showConsent: r.requiresLogin });
                 }
             }
+
+            const isLoginRequired = res.reduce((accumulator, request) => accumulator && request.requiresLogin, true);
+
+            // requestsStore.clearCheckedRequests();
+            console.log('getAndVerifyAppData() isLoginRequred', isLoginRequired);
+
+            if (!isLoginRequired) {
+                onNext();
+            }
+
+            setNextLoading(false);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -76,11 +107,12 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onNext() {
         try {
             setNextLoading(true);
-            if (!app || !appLoginRequest || !ssoApp || !ssoLoginRequest) throw new Error('Missing params');
+            console.log('onNext', sso, externalApp);
+            if (!externalApp || !sso) throw new Error('Missing params');
             const callbackUrl = await user.apps.acceptLoginRequest(
                 [
-                    { app: ssoApp, request: ssoLoginRequest },
-                    { app, request: appLoginRequest },
+                    { app: sso.app, request: sso.loginRequest, requiresLogin: sso.showConsent },
+                    { app: externalApp.app, request: externalApp.loginRequest, requiresLogin: externalApp.showConsent },
                 ],
                 platform,
                 receiverDid
@@ -118,9 +150,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onCancel() {
         try {
             setCancelLoading(true);
-            if (!ssoLoginRequest || !appLoginRequest) throw new Error('Missing params');
+            if (!sso || !externalApp) throw new Error('Missing params');
             const res = await UserApps.terminateLoginRequest(
-                [ssoLoginRequest, appLoginRequest],
+                [sso.loginRequest, externalApp.loginRequest],
                 platform === 'browser' ? 'message' : 'url',
                 {
                     code: SdkErrors.UserCancelled,
@@ -164,7 +196,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     useEffect(() => {
         setUserName();
-        getLoginRequestFromParams();
+        getAndVerifyAppData();
     }, []);
 
     return (
@@ -178,12 +210,12 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 
-                    {ssoApp && (
+                    {externalApp && (
                         <View style={[styles.appDialog, styles.marginTop]}>
-                            <Image style={styles.appDialogImage} source={{ uri: ssoApp.logoUrl }} />
-                            <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
+                            <Image style={styles.appDialogImage} source={{ uri: externalApp.app.logoUrl }} />
+                            <TH1 style={commonStyles.textAlignCenter}>{externalApp.app.appName}</TH1>
                             <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                            <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
+                            <TLink to={externalApp.app.origin}>{externalApp.app.origin}</TLink>
                         </View>
                     )}
                 </View>
