@@ -11,47 +11,48 @@ export default function CommunicationModule() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
-    const [identifier, setIdentifier] = useState(-1);
+    const [subscribers, setSubscribers] = useState<number[]>([]);
 
     /**
      *  Login to communication microservice
      *  should be called on app start
      */
     async function loginToService() {
-        const issuer = await user.getIssuer();
-        const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-        const id = listenToMessages();
-
-        setIdentifier(id);
-
         try {
-            await user.communication.login(message);
-        } catch (e) {
-            if (e instanceof CommunicationError && e.exception.status === 401) {
-                await logout();
-            } else {
-                throw e;
+            const issuer = await user.getIssuer();
+            const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
+            const subscribers = listenToMessages();
+
+            setSubscribers(subscribers);
+
+            try {
+                await user.communication.login(message);
+            } catch (e) {
+                if (e instanceof CommunicationError && e.exception.status === 401) {
+                    await logout();
+                } else {
+                    throw e;
+                }
             }
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
         }
     }
 
-    function listenToMessages(): number {
-        try {
-            return user.communication.subscribeMessage((message) => {
-                const loginRequestsMessage = new LoginRequestsMessage(message);
-                const payload = loginRequestsMessage.getPayload();
-                const base64UrlPayload = objToBase64Url(payload);
+    function listenToMessages(): number[] {
+        const loginRequestSubscriber = user.communication.subscribeMessage((message) => {
+            const loginRequestsMessage = new LoginRequestsMessage(message);
+            const payload = loginRequestsMessage.getPayload();
+            const base64UrlPayload = objToBase64Url(payload);
 
-                navigation.navigate('SSO', {
-                    payload: base64UrlPayload,
-                    platform: 'browser',
-                });
-                sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
-            }, LoginRequestsMessage.getType());
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-            return -1;
-        }
+            navigation.navigate('SSO', {
+                payload: base64UrlPayload,
+                platform: 'browser',
+            });
+            sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
+        }, LoginRequestsMessage.getType());
+
+        return [loginRequestSubscriber];
     }
 
     function sendLoginNotificationOnBackground(appName: string) {
@@ -72,8 +73,12 @@ export default function CommunicationModule() {
     }, [navigation, user]);
 
     useEffect(() => {
-        return () => user.communication.unsubscribeMessage(identifier);
-    }, [identifier]);
+        return () => {
+            for (const s of subscribers) {
+                user.communication.unsubscribeMessage(s);
+            }
+        };
+    }, [subscribers, user.communication]);
 
     return null;
 }
