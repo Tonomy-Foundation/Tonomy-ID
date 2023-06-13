@@ -13,7 +13,7 @@
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
-        "development": "node sdk-package-install.mjs",
+        "development": "node sdk-package-install.js",
         "prepare": "npm run development"
     },
     "dependencies": {
