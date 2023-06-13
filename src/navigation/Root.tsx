@@ -22,6 +22,7 @@ import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
+import NotificationModule from '../services/NotificationModule';
 
 const prefix = Linking.createURL('');
 
@@ -132,6 +133,7 @@ export default function RootNavigation() {
                 </Stack.Navigator>
             ) : (
                 <>
+                    <NotificationModule />
                     <CommunicationModule />
                     <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen

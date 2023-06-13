@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import useRequestsStore from '../store/requestsStore';
+import { scheduleNotificationAsync } from 'expo-notifications';
+import { AppState } from 'react-native';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -62,6 +64,7 @@ export default function CommunicationModule() {
                     navigation.navigate('SSO', {
                         platform: 'browser',
                     });
+                    sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
                 } else {
                     await user.apps.acceptLoginRequest(
                         checkedRequests.map((request) => {
@@ -79,6 +82,18 @@ export default function CommunicationModule() {
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
             return -1;
+        }
+    }
+
+    function sendLoginNotificationOnBackground(appName: string) {
+        if (AppState.currentState === 'background') {
+            scheduleNotificationAsync({
+                content: {
+                    title: `Login Request: ${appName}`,
+                    body: `${appName} requesting your permission to login`,
+                },
+                trigger: null,
+            });
         }
     }
 

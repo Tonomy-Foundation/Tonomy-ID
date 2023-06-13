@@ -46,7 +46,6 @@ export default function LoginPinScreenContainer({
             try {
                 await user.savePIN(confirmPin);
             } catch (e) {
-                console.log('error saving pin', e);
                 errorStore.setError({ error: e, expected: false });
                 setLoading(false);
                 return;
