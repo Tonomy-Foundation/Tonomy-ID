@@ -13,8 +13,8 @@
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
-        "development": "node sdk-package-install.js",
-        "prepare": "npm run development"
+        "configure:sdk-package": "node install-tonomy-id-sdk.js",
+        "prepare": "yarn run configure:sdk-package"
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
@@ -24,7 +24,6 @@
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
         "@tonomy/tonomy-id-sdk": "^0.5.0",
-        "@tonomy/tonomy-id-test": "^1.0.11",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
         "deepmerge": "^4.2.2",
