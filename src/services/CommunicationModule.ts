@@ -4,24 +4,15 @@ import {
     AuthenticationMessage,
     CommunicationError,
     IDContract,
-    KeyManagerLevel,
     LoginRequestsMessage,
-    getAccountNameFromDid,
     objToBase64Url,
     EosioContract,
-    EosioUtil,
-    SdkError,
-    SdkErrors
 } from '@tonomy/tonomy-id-sdk';
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
-import { ApplicationError, ApplicationErrors, throwError } from '../utils/errors';
-
-const eosioContract = EosioContract.Instance;
-const idContract = IDContract.Instance;
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -75,53 +66,9 @@ export default function CommunicationModule() {
         const linkAuthRequestSubscriber = user.communication.subscribeMessage(async (message) => {
             // TODO move the following logic to SDK User controller
             try {
-                if (!getAccountNameFromDid(message.getSender()).equals(await user.getAccountName()))
-                    throwError('Message not sent from authorized account', SdkErrors.SenderNotAuthorized);
-
-                const linkAuthRequestMessage = new LinkAuthRequestMessage(message);
-                const payload = linkAuthRequestMessage.getPayload();
-
-                const contract = payload.contract;
-                const action = payload.action;
-
-                const permission = parseDid(message.getSender()).fragment;
-
-                if (permission !== contract.toString())
-                    throwError('Link Auth request must come from the app that is requested', ApplicationErrors.InvalidLinkAuthRequest);
-
-                if (['eosio', 'id.tonomy'].includes(contract)) throwError('Contract not allowed to be linked', ApplicationErrors.InvalidLinkAuthRequest);
-
-                await idContract.getApp(contract); // Throws SdkErrors.DataQueryNoRowDataFound error if app does not exist
-
-                const signer = EosioUtil.createKeyManagerSigner(user.keyManager, KeyManagerLevel.ACTIVE);
-
-                await eosioContract.linkAuth(
-                    (await user.getAccountName()).toString(),
-                    contract.toString(),
-                    action,
-                    permission,
-                    signer
-                );
+                await user.handleLinkAuthRequestMessage(message);
             } catch (e) {
-                if (e instanceof SdkError) {
-                    switch (e.code) {
-                        case SdkErrors.SenderNotAuthorized;
-                        case SdkErrors.DataQueryNoRowDataFound;
-                            errorStore.setError({ error: e, expected: true }); // testing purposes only
-                        // sucesss = false;
-                        default:
-                            errorStore.setError({ error: e, expected: false });
-                    }
-                } else if (e instanceof ApplicationError) {
-                    switch (e.code) {
-                        case ApplicationErrors.InvalidLinkAuthRequest:
-                            errorStore.setError({ error: e, expected: true }); // testing purposes only
-                        default:
-                            errorStore.setError({ error: e, expected: false });
-                    }
-                } else {
-                    errorStore.setError({ error: e, expected: false });
-                }
+                errorStore.setError({ error: e, expected: false });
             }
         }, LinkAuthRequestMessage.getType());
 
