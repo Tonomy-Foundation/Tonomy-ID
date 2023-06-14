@@ -6,6 +6,7 @@ try {
     try {
         currentBranch = execSync('git symbolic-ref --short HEAD', {
             encoding: 'utf8',
+            stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
         }).trim();
     } catch (error) {
         // Fallback command for non-symbolic reference
@@ -16,7 +17,7 @@ try {
 
     if (currentBranch !== 'master') {
         console.log('execution start');
-        execSync('yarn add @tonomy/tonomy-id-sdk@development', {
+        execSync('npm install @tonomy/tonomy-id-sdk@development --no-lockfile', {
             stdio: 'inherit',
         });
         console.log('execution end');
