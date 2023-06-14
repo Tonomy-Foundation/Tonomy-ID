@@ -14,7 +14,7 @@
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
         "configure:sdk-package": "node install-tonomy-id-sdk.js",
-        "prepare": "yarn run configure:sdk-package"
+        "prepare": "npm run configure:sdk-package"
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
