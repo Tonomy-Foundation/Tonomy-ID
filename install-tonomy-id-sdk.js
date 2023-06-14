@@ -1,15 +1,22 @@
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 try {
-    const currentBranch = execSync('git symbolic-ref --short HEAD', {
-        encoding: 'utf8',
-    }).trim();
+    let currentBranch;
 
-    console.log(currentBranch);
+    try {
+        currentBranch = execSync('git symbolic-ref --short HEAD', {
+            encoding: 'utf8',
+        }).trim();
+    } catch (error) {
+        // Fallback command for non-symbolic reference
+        currentBranch = execSync('git branch --show-current', {
+            encoding: 'utf8',
+        }).trim();
+    }
 
     if (currentBranch !== 'master') {
         console.log('execution start');
-        execSync('npm install @tonomy/tonomy-id-sdk@development', {
+        execSync('yarn add @tonomy/tonomy-id-sdk@development', {
             stdio: 'inherit',
         });
         console.log('execution end');
