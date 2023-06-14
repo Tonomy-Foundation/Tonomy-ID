@@ -8,14 +8,14 @@ try {
             encoding: 'utf8',
             stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
         }).trim();
+        console.log('current branch', currentBranch);
     } catch (error) {
         // Fallback command for non-symbolic reference
         currentBranch = execSync('git branch --show-current', {
             encoding: 'utf8',
         }).trim();
+        console.log('current branch', currentBranch);
     }
-
-    console.log('current branch', currentBranch);
 
     if (currentBranch !== 'master') {
         console.log('execution start');
