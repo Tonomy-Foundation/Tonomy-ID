@@ -6,7 +6,7 @@ try {
     }).trim();
 
     if (currentBranch !== 'master') {
-        execSync('npm install @tonomy/tonomy-id-sdk --no-lockfile', {
+        execSync('npm install @tonomy/tonomy-id-sdk@development --no-lockfile', {
             stdio: 'inherit',
         });
     }
