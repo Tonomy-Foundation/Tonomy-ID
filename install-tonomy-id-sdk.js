@@ -1,10 +1,19 @@
 const { execSync } = require('child_process');
 
 try {
-    const currentBranch = execSync('git symbolic-ref --short HEAD', {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
-    }).trim();
+    let currentBranch;
+
+    try {
+        currentBranch = execSync('git symbolic-ref --short HEAD', {
+            encoding: 'utf8',
+            stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
+        }).trim();
+    } catch (error) {
+        // Fallback command for non-symbolic reference
+        currentBranch = execSync('git branch --show-current', {
+            encoding: 'utf8',
+        }).trim();
+    }
 
     console.log('current branch', currentBranch);
 
