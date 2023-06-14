@@ -5,8 +5,8 @@ try {
         encoding: 'utf8',
     }).trim();
 
-    if (currentBranch === 'development') {
-        execSync('npm install @tonomy/tonomy-id-sdk@development --no-lockfile', {
+    if (currentBranch !== 'master') {
+        execSync('npm install @tonomy/tonomy-id-sdk --no-lockfile', {
             stdio: 'inherit',
         });
     }
