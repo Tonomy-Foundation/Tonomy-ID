@@ -11,5 +11,5 @@ try {
         });
     }
 } catch (error) {
-    console.error('An error occurred while retrieving the current branch:', error);
+    console.error('An error occurred while retrieving the current branch::', error);
 }
