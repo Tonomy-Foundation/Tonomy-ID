@@ -3,7 +3,7 @@ name: Tonomy ID Continuous Deployment
 on:
   push:
     branches:
-      - feature/232-sdk-development
+      - development
 
 jobs:
   deploy:
@@ -40,7 +40,7 @@ jobs:
           run: echo ${GITHUB_REF#refs/*/}
       - run: |
           if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
-            echo "Variable BRANCH_NAME is set to 'development'"
+            echo "BRANCH_NAME is not set to 'master'"
             npm install @tonomy/tonomy-id-sdk@development
           fi
       - run: npm run deploy

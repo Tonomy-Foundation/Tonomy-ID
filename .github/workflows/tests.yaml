@@ -1,9 +1,6 @@
 name: Tonomy ID Continuous Integration
 
-on:
-  push:
-    branches:
-      - feature/232-sdk-development
+on: pull_request
 
 jobs:
     build:
@@ -17,15 +14,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18.12.1
-            
             - run: npm ci
-            - name: Check branch name
-              run: echo ${GITHUB_REF#refs/*/}
-            - run: |
-                if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
-                  echo "Variable BRANCH_NAME is set to 'development'"
-                  npm install @tonomy/tonomy-id-sdk@development
-                fi
             - run: npm test
             - run: npm run lint
             - run: npm run typeCheck
