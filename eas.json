@@ -19,7 +19,7 @@
         },
         "production": {
             "env": {
-                "MY_EXPO_ENV": "production"
+                "NODE_ENV": "production"
             },
             "autoIncrement": true
         }
