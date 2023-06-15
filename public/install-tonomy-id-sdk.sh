@@ -1,6 +1,6 @@
 #!/bin/bash
 
-currentBranch=$(git branch -- show-current)
+currentBranch=$(github.head_ref)
 echo "current branch $currentBranch"
 if [[ "$currentBranch" != "master" ]]; then
   echo "execution start"
