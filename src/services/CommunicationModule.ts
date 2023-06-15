@@ -1,13 +1,6 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import {
-    AuthenticationMessage,
-    CommunicationError,
-    IDContract,
-    LoginRequestsMessage,
-    objToBase64Url,
-    EosioContract,
-} from '@tonomy/tonomy-id-sdk';
+import { AuthenticationMessage, CommunicationError, LoginRequestsMessage, objToBase64Url } from '@tonomy/tonomy-id-sdk';
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
