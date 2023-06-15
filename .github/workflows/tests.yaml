@@ -19,7 +19,7 @@ jobs:
               run: |
                 chmod +x ./public/scripts/install-tonomy-id-sdk.sh
                 ./public/scripts/install-tonomy-id-sdk.sh
-      shell: bash
+              shell: bash
             - run: npm test
             - run: npm run lint
             - run: npm run typeCheck
