@@ -1,6 +1,10 @@
 #!/bin/bash
 
-currentBranch=$(github.head_ref)
+# currentBranch=$(git symbolic-ref --short HEAD)
+if currentBranch=$(git symbolic-ref -q HEAD); then
+    currentBranch=${headRef#refs/heads/}
+else
+    currentBranch=$(git rev-parse HEAD)
 echo "current branch $currentBranch"
 if [[ "$currentBranch" != "master" ]]; then
   echo "execution start"
