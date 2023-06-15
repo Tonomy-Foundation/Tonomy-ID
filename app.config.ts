@@ -5,9 +5,8 @@ import myPackage from './package.json';
 
 const appInputs = {
     firstTime: process.env.EXPO_FIRST_TIME,
-    expoEnv: process.env.NODE_ENV,
-    buildProfile: process.env.EXPO_BUILD_PROFILE,
     nodeEnv: process.env.NODE_ENV,
+    buildProfile: process.env.EXPO_BUILD_PROFILE,
 };
 
 console.log('appInputs', appInputs);
@@ -39,7 +38,7 @@ const expo: ExpoConfig = {
     assetBundlePatterns: ['**/*'],
     ios: {
         supportsTablet: true,
-        bundleIdentifier: 'foundation.tonomy.tonomyid',
+        bundleIdentifier: identifier,
     },
     android: {
         adaptiveIcon: {

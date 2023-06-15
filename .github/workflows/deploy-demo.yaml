@@ -25,7 +25,5 @@ jobs:
           node-version: 18.12.1
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
-      - run: touch .env
-      - run: echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
       - run: npm ci
       - run: npm run deploy:demo

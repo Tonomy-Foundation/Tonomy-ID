@@ -3,11 +3,9 @@ import 'dotenv/config';
 const env = process.env.NODE_ENV || 'development';
 
 const settingsInputs = {
-    firstTime: process.env.EXPO_FIRST_TIME,
-    expoEnv: process.env.NODE_ENV,
+    nodeEnv: process.env.NODE_ENV,
     env,
     buildProfile: process.env.EXPO_BUILD_PROFILE,
-    nodeEnv: process.env.NODE_ENV,
 };
 
 console.log('settingsInputs', settingsInputs);
