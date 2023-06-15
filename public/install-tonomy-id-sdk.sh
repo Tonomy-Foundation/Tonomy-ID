@@ -5,6 +5,7 @@ if currentBranch=$(git symbolic-ref -q HEAD); then
     currentBranch=${headRef#refs/heads/}
 else
     currentBranch=$(git rev-parse HEAD)
+fi
 echo "current branch $currentBranch"
 if [[ "$currentBranch" != "master" ]]; then
   echo "execution start"
