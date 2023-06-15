@@ -13,7 +13,6 @@
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc"
-       
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
