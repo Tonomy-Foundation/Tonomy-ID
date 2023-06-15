@@ -1,0 +1,32 @@
+name: Tonomy ID Continuous Deployment - Demo
+
+on:
+  push:
+    branches:
+      # - master
+      - feature/754*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+        
+      - name: 🚀 Build and publish demo app
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+      - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
+      - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - run: npm ci
+      - run: npm run deploy:demo
