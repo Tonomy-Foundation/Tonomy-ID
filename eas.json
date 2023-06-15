@@ -8,15 +8,8 @@
             "developmentClient": true,
             "distribution": "internal"
         },
-        "staging": {
-            "autoIncrement": true
-        },
-        "demo": {
-            "env": {
-                "MY_EXPO_VAR": "demo",
-                "OTHER_VAR": "value"
-            },
-            "autoIncrement": true
+        "preview": {
+            "distribution": "internal"
         },
         "production": {
             "env": {

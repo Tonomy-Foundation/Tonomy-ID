@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { ExpoConfig } from 'expo/config';
 import settings from './build/settings';
 import myPackage from './package.json';
