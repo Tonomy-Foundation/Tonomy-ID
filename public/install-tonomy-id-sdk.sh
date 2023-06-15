@@ -14,6 +14,7 @@ echo "current branch 2 $(git symbolic-ref --short HEAD)"
 echo "current branch 3 $(git rev-parse --abbrev-ref HEAD)"
 
 echo "bbbb ${github.event.pull_request.base.ref}"
+echo "branch name ${GITHUB_REF}"
 
 if [[ "$currentBranch" != "master" ]]; then
   echo "execution start"
