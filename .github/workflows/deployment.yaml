@@ -23,12 +23,12 @@ jobs:
         with:
           token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
         
-      # - name: "Automated Version Bump"
-      #   uses: "phips28/gh-action-bump-version@master"
-      #   env:
-      #     GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
-      #   with:
-      #     commit-message: 'ci: bumps version to {{version}} [skip ci]'
+      - name: "Automated Version Bump"
+        uses: "phips28/gh-action-bump-version@master"
+        env:
+          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+        with:
+          commit-message: 'ci: bumps version to {{version}} [skip ci]'
 
       - name: 🚀 Build and publish app
         uses: actions/setup-node@v3
@@ -36,7 +36,7 @@ jobs:
           node-version: 18.12.1
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
-      # - run: npm ci
+      - run: npm ci
       - run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/*/}" > $GITHUB_ENV
       - run: echo branch ${{ env.GITHUB_BRANCH }}
       - run: |
