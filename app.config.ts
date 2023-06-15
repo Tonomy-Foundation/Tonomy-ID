@@ -1,6 +1,6 @@
 import { ExpoConfig } from 'expo/config';
 
-import settings from './build/settings.j';
+import settings from './build/settings';
 import myPackage from './package.json';
 
 const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');

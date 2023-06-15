@@ -25,7 +25,7 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (for first time build only) `export EXPO_FIRST_TIME=true`
-3. Change the value of "projectId" in `app.default.json` to the vale of the project in [https://expo.dev](https://expo.dev)
+3. Change the value of "projectId" in `app.config.ts` to the vale of the project in [https://expo.dev](https://expo.dev)
 4. (for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
 5. Run `npm run build:ios` (ios) or `npm run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
