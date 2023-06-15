@@ -23,8 +23,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
+        env:
+          NODE_ENV2: demo
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: echo $NODE_ENV test2 ${{ env.NODE_ENV }}
+      - run: touch .env
+      - run: echo NODE_ENV=${{ env.NODE_ENV }} >> .env
+      - run: echo NODE_ENV2=${{ env.NODE_ENV2 }} >> .env
+      - run: echo NODE_ENV3=testing >> .env
       - run: npm ci
       - run: npm run deploy:demo
