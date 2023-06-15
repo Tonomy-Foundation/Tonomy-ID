@@ -17,7 +17,7 @@ jobs:
             - run: npm ci
             - name: Run script file
               run: |
-                git update-index --chmod=+x ./public/scripts/install-tonomy-id-sdk.sh
+                git add --chmod=+x ./public/scripts/install-tonomy-id-sdk.sh
                 bash ./public/scripts/install-tonomy-id-sdk.sh
               shell: bash
             - run: npm test
