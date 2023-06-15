@@ -48,7 +48,7 @@ npm start
 Testing Staging Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
 1. modify `"appName": "Tonomy ID Development"` in `config.staging.json`
-2. run `MY_EXPO_ENV=staging npm start`
+2. run `NODE_ENV=staging npm start`
 3. connect via QR and bundle and load the app
 4. share phone
 5. scroll down, click to open the dev menu
@@ -66,15 +66,15 @@ This is now running in production mode connected to the staging environment.
 
 Set the configuration variables in the desired file in `./src/config`
 
-`config.json` is used by default. Staging config file is choosing based on the value of environment variable `MY_EXPO_ENV`
+`config.json` is used by default. Staging config file is choosing based on the value of environment variable `NODE_ENV`
 
-Values for MY_EXPO_ENV
+Values for NODE_ENV
 
-- MY_EXPO_ENV=development - uses the default `./src/config/config.json`
-- MY_EXPO_ENV=test - same as `development`. this is set when `npm test` is run
-- MY_EXPO_ENV=local - same as `development`. this resolves the `tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
-- MY_EXPO_ENV=staging - uses `./src/config/config.staging.json`
-- MY_EXPO_ENV=production - uses `./src/config/config.production.json`
+- NODE_ENV=development - uses the default `./src/config/config.json`
+- NODE_ENV=test - same as `development`. this is set when `npm test` is run
+- NODE_ENV=local - same as `development`. this resolves the `tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- NODE_ENV=staging - uses `./src/config/config.staging.json`
+- NODE_ENV=production - uses `./src/config/config.production.json`
 
 Other environment variables override the values in the config file:
 

@@ -3,6 +3,15 @@ import { ExpoConfig } from 'expo/config';
 import settings from './build/settings';
 import myPackage from './package.json';
 
+const appInputs = {
+    firstTime: process.env.EXPO_FIRST_TIME,
+    expoEnv: process.env.NODE_ENV,
+    buildProfile: process.env.EXPO_BUILD_PROFILE,
+    nodeEnv: process.env.NODE_ENV,
+};
+
+console.log('appInputs', appInputs);
+
 const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
 const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
 
@@ -65,15 +74,6 @@ if (!['development', 'designonly'].includes(settings.env)) {
     if (!expo.extra.eas) expo.extra.eas = {};
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
-
-const appInputs = {
-    firstTime: process.env.EXPO_FIRST_TIME,
-    expoEnv: process.env.MY_EXPO_ENV,
-    buildProfile: process.env.EXPO_BUILD_PROFILE,
-    nodeEnv: process.env.NODE_ENV,
-};
-
-console.log('appInputs', appInputs);
 
 if (process.env.EXPO_FIRST_TIME === 'true') {
     console.log('Setting up expo for the first time');

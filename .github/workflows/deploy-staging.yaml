@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: write
     env:
-      MY_EXPO_ENV: staging
+      NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
@@ -36,6 +36,6 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: touch .env
-      - run: echo "MY_EXPO_ENV=${{ env.MY_EXPO_ENV }}" >> .env
+      - run: echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
       - run: npm ci
       - run: npm run deploy:staging
