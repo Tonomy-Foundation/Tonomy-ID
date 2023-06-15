@@ -13,7 +13,7 @@ echo "current branch 2 $(git symbolic-ref --short HEAD)"
 
 echo "current branch 3 $(git rev-parse --abbrev-ref HEAD)"
 
-echo "current branch 4 $(git branch --show-current)"
+echo "bbbb ${SYSTEM_PULLREQUEST_SOURCEBRANCH}"
 
 if [[ "$currentBranch" != "master" ]]; then
   echo "execution start"
