@@ -3,7 +3,7 @@ name: Tonomy ID Continuous Deployment
 on:
   push:
     branches:
-      - development
+      - feature/232-sdk-development
 
 jobs:
   deploy:
@@ -36,4 +36,6 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: npm ci
+      - name: Run bash script
+        run: ./script.sh
       - run: npm run deploy
