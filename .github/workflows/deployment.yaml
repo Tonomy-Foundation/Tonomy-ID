@@ -31,13 +31,15 @@ jobs:
           commit-message: 'ci: bumps version to {{version}} [skip ci]'
 
       - name: Get environment for deploy
+        id: setup
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
-      - run: echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_ENV
-      - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/*/}" > $GITHUB_ENV
+      - run: echo "GITHUB_BRANCH=${{ env.GITHUB_BRANCH }}"
+      - run: echo "GITHUB_BRANCH=${{ env.GITHUB_BRANCH }}" > $GITHUB_OUTPUT
       - run: npm ci
 
       - name: 🚀 Build and publish staging app
@@ -46,7 +48,8 @@ jobs:
           NODE_ENV: staging
       - run: |
           ls -la
-          echo "$NODE_ENV" whatisNODE_ENV ${{ env.NODE_ENV }}
+          echo "GITHUB_BRANCH=${{steps.setup.outputs.GITHUB_BRANCH }}"
+          echo "$NODE_ENV whatisNODE_ENV ${{ env.NODE_ENV }}"
           if [[ ${{ env.GITHUB_BRANCH }} == "development" ]]; then
             echo "Deploying to staging environment"
             npm run deploy:staging
