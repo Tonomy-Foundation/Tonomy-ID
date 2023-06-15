@@ -24,6 +24,13 @@
             },
             "distribution": "internal"
         },
+        "staging": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "staging",
+                "MY_ENV_VAR": "staging"
+            },
+            "distribution": "internal"
+        },
         "production": {
             "env": {
                 "EXPO_BUILD_PROFILE": "production"
