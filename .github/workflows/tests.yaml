@@ -1,6 +1,6 @@
 name: Tonomy ID Continuous Integration
 
-on: pull_request
+on: commit
 
 jobs:
     build:
