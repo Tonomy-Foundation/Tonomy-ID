@@ -3,10 +3,12 @@ const { execSync } = require('child_process');
 try {
     let currentBranch;
     const githubRef = process.env.GITHUB_REF || 'refs/heads/default-branch';
-    const branchPrefix = 'refs/heads/';
 
-    if (githubRef.startsWith(branchPrefix)) {
-        currentBranch = githubRef.substring(branchPrefix.length);
+    if (githubRef.startsWith('refs/heads/')) {
+        currentBranch = githubRef.substring('refs/heads/'.length);
+    } else if (githubRef.startsWith('refs/pull/')) {
+        console.log('Current event is a pull request.');
+        // Handle pull request logic here if needed
     } else {
         console.error('Invalid GITHUB_REF format:', githubRef);
     }
