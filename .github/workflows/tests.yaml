@@ -14,8 +14,6 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18.12.1
-            - name: Debug
-              run: ls public
             
             - run: npm ci
             - name: Run the tonomy-id-sdk dependency
