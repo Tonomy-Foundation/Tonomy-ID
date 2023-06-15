@@ -59,6 +59,9 @@ switch (env) {
     case 'staging':
         config = require('./config/config.staging.json');
         break;
+    case 'demo':
+        config = require('./config/config.demo.json');
+        break;
     case 'production':
         config = require('./config/config.staging.json');
         // TODO add production config when ready
