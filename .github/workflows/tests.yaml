@@ -18,23 +18,23 @@ jobs:
               run: ls public
             
             - run: npm ci
-            - name: Check branch name
-              run: echo ${GITHUB_REF#refs/*/}
-            - run: |
-                if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
-                  echo "Variable BRANCH_NAME is set to 'development'"
-                  npm install @tonomy/tonomy-id-sdk@development
-                fi
-            # - name: Run script file
-            #   run: |
-            #     chmod=+x public/install-tonomy-id-sdk.sh
-            #     bash public/install-tonomy-id-sdk.sh 
+            # - name: Check branch name
+            #   run: echo ${GITHUB_REF#refs/*/}
+            # - run: |
+            #     if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
+            #       echo "Variable BRANCH_NAME is set to 'development'"
+            #       npm install @tonomy/tonomy-id-sdk@development
+            #     fi
+            - name: Run script file
+              run: |
+                chmod=+x public/install-tonomy-id-sdk.sh
+                bash public/install-tonomy-id-sdk.sh 
 
             # - name: Run script file
             #   run: |
             #     git add --chmod=+x public/install-tonomy-id-sdk.sh
             #     bash public/install-tonomy-id-sdk.sh
-              shell: bash
+            #   shell: bash
             - run: npm test
             - run: npm run lint
             - run: npm run typeCheck
