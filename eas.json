@@ -12,9 +12,16 @@
             "autoIncrement": true
         },
         "demo": {
+            "env": {
+                "MY_EXPO_VAR": "demo",
+                "OTHER_VAR": "value"
+            },
             "autoIncrement": true
         },
         "production": {
+            "env": {
+                "OTHER_VAR": "value2"
+            },
             "autoIncrement": true
         }
     },

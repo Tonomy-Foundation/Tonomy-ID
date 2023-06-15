@@ -1,6 +1,7 @@
 const env = process.env.MY_EXPO_ENV || 'development';
 
 console.log(`MY_EXPO_ENV=${env}`);
+console.log('process.env', process.env.EXPO_FIRST_TIME, process.env.MY_EXPO_ENV, process.env.OTHER_VAR);
 
 type ConfigType = {
     blockchainUrl: string;

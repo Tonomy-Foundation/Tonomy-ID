@@ -65,6 +65,8 @@ if (!['development', 'designonly'].includes(settings.env)) {
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
+console.log('process.env', process.env.EXPO_FIRST_TIME, process.env.MY_EXPO_ENV, process.env.OTHER_VAR);
+
 if (process.env.EXPO_FIRST_TIME === 'true') {
     console.log('Setting up expo for the first time');
     // @ts-expect-error expo.extra is possibly not defined
