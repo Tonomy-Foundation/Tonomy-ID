@@ -12,9 +12,8 @@
         "lint:fix": "npm run lint -- --fix",
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
-        "typeCheck": "tsc",
-        "configure:sdk-package": "node install-tonomy-id-sdk.js",
-        "prepare": "npm run configure:sdk-package"
+        "typeCheck": "tsc"
+       
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
