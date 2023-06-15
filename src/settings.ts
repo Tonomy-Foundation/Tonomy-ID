@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 const env = process.env.MY_EXPO_ENV || 'development';
 
 const settingsInputs = {
