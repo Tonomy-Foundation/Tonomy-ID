@@ -29,4 +29,4 @@ jobs:
       - run: echo MY_EXPO_ENV=${{ env.MY_EXPO_ENV }} >> .env
       - run: cat .env
       - run: npm ci
-      - run: npm run deploy
+      - run: npm run deploy:demo
