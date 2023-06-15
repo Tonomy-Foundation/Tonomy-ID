@@ -25,8 +25,8 @@ jobs:
           node-version: 18.12.1
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
-      - run: touch .env
-      - run: echo MY_EXPO_ENV=${{ env.MY_EXPO_ENV }} >> .env
-      - run: cat .env
+      # - run: touch .env
+      # - run: echo MY_EXPO_ENV=${{ env.MY_EXPO_ENV }} >> .env
+      # - run: cat .env
       - run: npm ci
       - run: npm run deploy:demo
