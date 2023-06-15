@@ -39,4 +39,19 @@ jobs:
       # - run: npm ci
       - run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/*/}" > $GITHUB_ENV
       - run: echo branch ${{ env.GITHUB_BRANCH }}
-      # - run: npm run deploy $BRANCH
+      - run: |
+          if [[ ${{ env.GITHUB_BRANCH }} == "development" ]]; then
+            echo "Deploying to staging environment"
+            NODE_ENV=staging npm run deploy:android
+            NODE_ENV=staging npm run deploy:ios
+          elif [[ ${{ env.GITHUB_BRANCH }} == "master" ]]; then
+            echo "Deploying to demo environment"
+            NODE_ENV=demo npm run deploy:android
+            NODE_ENV=demo npm run deploy:ios
+          elif [[ ${{ env.GITHUB_BRANCH }} == "feature/754" ]]; then
+            echo "Deploying to special branch environment"
+            NODE_ENV=demo echo "${NODE_ENV}"
+            # NODE_ENV=demo npm run deploy:android
+          else
+            echo "No deploy script for branch ${{ env.GITHUB_BRANCH }}"
+          fi
