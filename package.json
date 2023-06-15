@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.30.1",
+    "version": "0.30.2",
     "scripts": {
         "build:prepare": "tsc --project tsconfig.settings.json && cp -r ./src/config ./build",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
