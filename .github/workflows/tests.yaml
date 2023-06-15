@@ -15,7 +15,7 @@ jobs:
               with:
                   node-version: 18.12.1
             - name: Debug
-              run: ls
+              run: ls public
             - run: npm ci
             
 
