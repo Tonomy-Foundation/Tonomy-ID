@@ -1,6 +1,6 @@
 #!/bin/bash
 
-currentBranch=$(git symbolic-ref --short HEAD)
+currentBranch=$(git branch -- show-current)
 echo "current branch $currentBranch"
 if [[ "$currentBranch" != "master" ]]; then
   echo "execution start"
