@@ -6,7 +6,7 @@ if currentBranch=$(git symbolic-ref -q HEAD); then
 else
     currentBranch=$(git rev-parse HEAD)
 fi
-echo "current branch $(git symbolic-ref -q HEAD) $(git rev-parse HEAD) ${headRef#refs/heads/}  $(git branch)}"
+echo "current branch $(git symbolic-ref -q HEAD) $(git rev-parse --abbrev-ref HEAD) ${headRef#refs/heads/}  $(git branch)}"
 if [[ "$currentBranch" != "master" ]]; then
   echo "execution start"
   npm install @tonomy/tonomy-id-sdk@development
