@@ -2,8 +2,9 @@ const { execSync } = require('child_process');
 
 try {
     let currentBranch;
+    const githubRef = process.env.GITHUB_REF || 'refs/heads/default-branch';
 
-    currentBranch = process.env.GITHUB_REF.match(/refs\/heads\/(.*)/)[1];
+    currentBranch = githubRef.match(/refs\/heads\/(.*)/)[1];
     // execSync('git symbolic-ref --short HEAD', {
     //     encoding: 'utf8',
     //     stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
