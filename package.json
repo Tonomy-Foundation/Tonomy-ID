@@ -12,7 +12,8 @@
         "lint:fix": "npm run lint -- --fix",
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
-        "typeCheck": "tsc"
+        "typeCheck": "tsc",
+        "prepare": "build:prepare"
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
