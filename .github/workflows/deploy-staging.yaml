@@ -30,7 +30,6 @@ jobs:
           commit-message: 'ci: bumps version to {{version}} [skip ci]'
 
       - name: 🚀 Build and publish staging app
-        id: setup
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1

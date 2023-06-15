@@ -63,9 +63,7 @@ switch (env) {
         config = require('./config/config.demo.json');
         break;
     case 'production':
-        config = require('./config/config.staging.json');
-        // TODO add production config when ready
-        break;
+        throw new Error('Production config not implemented yet');
     default:
         throw new Error('Unknown environment: ' + env);
 }

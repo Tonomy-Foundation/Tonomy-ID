@@ -9,8 +9,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
     env:
       NODE_ENV: demo
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
