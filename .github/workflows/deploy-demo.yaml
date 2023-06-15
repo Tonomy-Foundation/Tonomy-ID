@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       NODE_ENV: demo
+      MY_EXPO_ENV: demo22
+      MY_EXPO_ENV2: demo44
+      EXPO_ENV: demo33
+      EXPO_ENV2: demo55
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
@@ -32,6 +36,8 @@ jobs:
       - run: echo NODE_ENV=${{ env.NODE_ENV }} >> .env
       - run: echo NODE_ENV2=${{ env.NODE_ENV2 }} >> .env
       - run: echo NODE_ENV3=testing >> .env
+      - run: echo MY_EXPO_ENV=${{ env.MY_EXPO_ENV }} >> .env
+      - run: echo EXPO_ENV2=${{ env.EXPO_ENV2 }} >> .env
       - run: cat .env
       - run: npm ci
       - run: npm run deploy:demo
