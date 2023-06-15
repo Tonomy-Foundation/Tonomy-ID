@@ -17,6 +17,13 @@
             },
             "distribution": "internal"
         },
+        "demo": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "demo",
+                "NODE_ENV": "demo"
+            },
+            "autoIncrement": true
+        },
         "production": {
             "env": {
                 "EXPO_BUILD_PROFILE": "production"
