@@ -3,15 +3,16 @@ const { execSync } = require('child_process');
 try {
     let currentBranch;
 
-    currentBranch = execSync('git symbolic-ref --short HEAD', {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
-    }).trim();
+    currentBranch = process.env.GITHUB_REF.match(/refs\/heads\/(.*)/)[1];
+    // execSync('git symbolic-ref --short HEAD', {
+    //     encoding: 'utf8',
+    //     stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
+    // }).trim();
     console.log('current branch', currentBranch);
 
-    if (currentBranch === '' || !currentBranch) {
-        currentBranch = process.env.GITHUB_REF.match(/refs\/heads\/(.*)/)[1];
-    }
+    // if (currentBranch === '' || !currentBranch) {
+    //     currentBranch = process.env.GITHUB_REF.match(/refs\/heads\/(.*)/)[1];
+    // }
 
     console.log('current branch', currentBranch);
 
