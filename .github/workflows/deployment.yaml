@@ -30,25 +30,37 @@ jobs:
         with:
           commit-message: 'ci: bumps version to {{version}} [skip ci]'
 
-      - name: 🚀 Build and publish app
+      - name: Get environment for deploy
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - run: echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_ENV
+      - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: npm ci
-      - run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/*/}" > $GITHUB_ENV
-      - run: echo branch ${{ env.GITHUB_BRANCH }}
+
+      - name: 🚀 Build and publish staging app
+        uses: actions/setup-node@v3
+        env:
+          NODE_ENV: staging
       - run: |
+          ls -la
+          echo "$NODE_ENV" whatisNODE_ENV ${{ env.NODE_ENV }}
           if [[ ${{ env.GITHUB_BRANCH }} == "development" ]]; then
             echo "Deploying to staging environment"
             npm run deploy:staging
-          elif [[ ${{ env.GITHUB_BRANCH }} == "master" ]]; then
-            echo "Deploying to demo environment"
-            npm run deploy:demo
-          elif [[ ${{ env.GITHUB_BRANCH }} == "feature/754-expo-deploy-production" ]]; then
-            echo "Deploying to special branch environment"
-            npm run deploy:demo
-          else
-            echo "No deploy script for branch ${{ env.GITHUB_BRANCH }}"
           fi
+
+      - name: 🚀 Build and publish demo app
+        uses: actions/setup-node@v3
+        env:
+          NODE_ENV: demo
+      - run: |
+            [[ ${{ env.GITHUB_BRANCH }} == "master" ]]; then
+              echo "Deploying to demo environment"
+              npm run deploy:demo
+            elif [[ ${{ env.GITHUB_BRANCH }} == "feature/754-expo-deploy-production" ]]; then
+              echo "Deploying to special branch environment"
+              npm run deploy:demo
+            fi
