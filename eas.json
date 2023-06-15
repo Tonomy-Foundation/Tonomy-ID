@@ -19,6 +19,12 @@
                 "NODE_ENV": "demo"
             },
             "autoIncrement": true
+        },
+        "production": {
+            "env": {
+                "NODE_ENV": "production"
+            },
+            "autoIncrement": true
         }
     },
     "submit": {
