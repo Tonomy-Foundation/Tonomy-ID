@@ -15,10 +15,6 @@
             "autoIncrement": true
         },
         "demo": {
-            "env": {
-                "MY_EXPO_ENV": "demo",
-                "MY_EXPO_ENV2": "demo2"
-            },
             "autoIncrement": true
         },
         "production": {
