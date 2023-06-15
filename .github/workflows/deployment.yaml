@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - development
-      - master
+      # - master
       - feature/754*
 
 jobs:
@@ -13,7 +13,6 @@ jobs:
     permissions:
       contents: write
     env:
-      NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
@@ -24,12 +23,12 @@ jobs:
         with:
           token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
         
-      - name: "Automated Version Bump"
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
-        with:
-          commit-message: 'ci: bumps version to {{version}} [skip ci]'
+      # - name: "Automated Version Bump"
+      #   uses: "phips28/gh-action-bump-version@master"
+      #   env:
+      #     GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+      #   with:
+      #     commit-message: 'ci: bumps version to {{version}} [skip ci]'
 
       - name: 🚀 Build and publish app
         uses: actions/setup-node@v3
@@ -37,5 +36,7 @@ jobs:
           node-version: 18.12.1
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
-      - run: npm ci
-      - run: npm run deploy
+      # - run: npm ci
+      - run: BRANCH=${GITHUB_REF#refs/*/}
+      - run: echo $BRANCH hello ${BRANCH}
+      # - run: npm run deploy $BRANCH
