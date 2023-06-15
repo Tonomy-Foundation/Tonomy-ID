@@ -36,4 +36,11 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: npm ci
+      - name: Check branch name
+          run: echo ${GITHUB_REF#refs/*/}
+      - run: |
+          if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
+            echo "Variable BRANCH_NAME is set to 'development'"
+            npm install @tonomy/tonomy-id-sdk@development
+          fi
       - run: npm run deploy

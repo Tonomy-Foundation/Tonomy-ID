@@ -16,13 +16,6 @@ jobs:
                   node-version: 18.12.1
             
             - run: npm ci
-            - name: Run the tonomy-id-sdk dependency
-              run: echo ${GITHUB_REF#refs/*/}
-            - run: |
-                if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
-                  echo "Variable BRANCH_NAME is set to 'development'"
-                  npm install @tonomy/tonomy-id-sdk@development
-                fi
             - run: npm test
             - run: npm run lint
             - run: npm run typeCheck
