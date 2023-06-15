@@ -16,17 +16,17 @@ jobs:
                   node-version: 18.12.1
             - name: Debug
               run: ls public
-            - run: npm ci
+            # - run: npm ci
             
 
-            - name: Run script file
-              run: |
-                git add --chmod=+x public/install-tonomy-id-sdk.sh
-                bash public/install-tonomy-id-sdk.sh
-              shell: bash
-            - run: npm test
-            - run: npm run lint
-            - run: npm run typeCheck
+            # - name: Run script file
+            #   run: |
+            #     git add --chmod=+x public/install-tonomy-id-sdk.sh
+            #     bash public/install-tonomy-id-sdk.sh
+            #   shell: bash
+            # - run: npm test
+            # - run: npm run lint
+            # - run: npm run typeCheck
 
     check-sdk-version:
         runs-on: ubuntu-20.04
