@@ -66,7 +66,14 @@ if (!['development', 'designonly'].includes(settings.env)) {
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
-console.log('process.env', process.env.EXPO_FIRST_TIME, process.env.MY_EXPO_ENV, process.env.OTHER_VAR);
+const appInputs = {
+    firstTime: process.env.EXPO_FIRST_TIME,
+    expoEnv: process.env.MY_EXPO_ENV,
+    buildProfile: process.env.EXPO_BUILD_PROFILE,
+    nodeEnv: process.env.NODE_ENV,
+};
+
+console.log('appInputs', appInputs);
 
 if (process.env.EXPO_FIRST_TIME === 'true') {
     console.log('Setting up expo for the first time');

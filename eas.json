@@ -5,15 +5,28 @@
     },
     "build": {
         "development": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "development"
+            },
             "developmentClient": true,
             "distribution": "internal"
         },
         "preview": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "preview"
+            },
+            "distribution": "internal"
+        },
+        "demo": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "demo",
+                "MY_ENV_VAR": "demo"
+            },
             "distribution": "internal"
         },
         "production": {
             "env": {
-                "OTHER_VAR": "value2"
+                "EXPO_BUILD_PROFILE": "production"
             },
             "autoIncrement": true
         }
