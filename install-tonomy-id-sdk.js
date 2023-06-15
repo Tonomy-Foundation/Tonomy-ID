@@ -3,8 +3,14 @@ const { execSync } = require('child_process');
 try {
     let currentBranch;
     const githubRef = process.env.GITHUB_REF || 'refs/heads/default-branch';
+    const branchPrefix = 'refs/heads/';
 
-    currentBranch = githubRef.match(/refs\/heads\/(.*)/)[1];
+    if (githubRef.startsWith(branchPrefix)) {
+        currentBranch = githubRef.substring(branchPrefix.length);
+    } else {
+        console.error('Invalid GITHUB_REF format:', githubRef);
+    }
+
     // execSync('git symbolic-ref --short HEAD', {
     //     encoding: 'utf8',
     //     stdio: ['pipe', 'pipe', 'ignore'], // Redirect stdout and stderr to pipes
