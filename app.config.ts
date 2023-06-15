@@ -66,7 +66,7 @@ if (!['development', 'designonly'].includes(settings.env)) {
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
-console.log('app.process.env', process.env);
+console.log('app.process.env', process.env);;
 
 if (process.env.EXPO_FIRST_TIME === 'true') {
     console.log('Setting up expo for the first time');

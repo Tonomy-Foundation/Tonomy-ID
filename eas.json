@@ -10,19 +10,20 @@
         },
         "staging": {
             "env": {
-                "NODE_ENV": "staging"
+                "MY_EXPO_ENV": "staging"
             },
             "autoIncrement": true
         },
         "demo": {
             "env": {
-                "NODE_ENV": "demo"
+                "MY_EXPO_ENV": "demo",
+                "MY_EXPO_ENV2": "demo2"
             },
             "autoIncrement": true
         },
         "production": {
             "env": {
-                "NODE_ENV": "production"
+                "MY_EXPO_ENV": "production"
             },
             "autoIncrement": true
         }

@@ -1,5 +1,5 @@
 module.exports = function (api) {
-    api.cache.using(() => process.env.NODE_ENV);
+    api.cache.using(() => process.env.MY_EXPO_ENV);
     return {
         presets: ['babel-preset-expo'],
         plugins: [
