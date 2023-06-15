@@ -14,11 +14,10 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18.12.1
-            - run: npm ci
             - name: Debug
-              run: |
-                pwd
-                ls -l public/scripts
+              run: ls
+            - run: npm ci
+            
 
             - name: Run script file
               run: |
