@@ -15,6 +15,11 @@ jobs:
               with:
                   node-version: 18.12.1
             - run: npm ci
+            - name: Debug
+              run: |
+                pwd
+                ls -l public/scripts
+
             - name: Run script file
               run: |
                 git add --chmod=+x public/scripts/install-tonomy-id-sdk.sh
