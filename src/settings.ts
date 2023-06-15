@@ -1,7 +1,4 @@
-import 'dotenv/config';
 const env = process.env.MY_EXPO_ENV || 'development';
-
-console.log('settings.process.env', process.env);
 
 console.log(`MY_EXPO_ENV=${env}`);
 

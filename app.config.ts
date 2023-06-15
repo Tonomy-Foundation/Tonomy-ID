@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { ExpoConfig } from 'expo/config';
 import settings from './build/settings';
 import myPackage from './package.json';
@@ -65,8 +64,6 @@ if (!['development', 'designonly'].includes(settings.env)) {
     if (!expo.extra.eas) expo.extra.eas = {};
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
-
-console.log('app.process.env', process.env);
 
 if (process.env.EXPO_FIRST_TIME === 'true') {
     console.log('Setting up expo for the first time');

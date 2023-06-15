@@ -9,18 +9,12 @@
             "distribution": "internal"
         },
         "staging": {
-            "env": {
-                "MY_EXPO_ENV": "staging"
-            },
             "autoIncrement": true
         },
         "demo": {
             "autoIncrement": true
         },
         "production": {
-            "env": {
-                "NODE_ENV": "production"
-            },
             "autoIncrement": true
         }
     },
