@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: write
     env:
+      NODE_ENV: demo
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
@@ -19,8 +20,6 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
-        with:
-          token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
         
       - name: 🚀 Build and publish demo app
         uses: actions/setup-node@v3
@@ -29,4 +28,4 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: npm ci
-      - run: npm run deploy:demo
+      - run: npm run deploy
