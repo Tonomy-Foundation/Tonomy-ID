@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 const env = process.env.MY_EXPO_ENV || 'development';
 
-const appInputs = {
+const settingsInputs = {
     firstTime: process.env.EXPO_FIRST_TIME,
     expoEnv: process.env.MY_EXPO_ENV,
     env,
@@ -10,7 +10,7 @@ const appInputs = {
     nodeEnv: process.env.NODE_ENV,
 };
 
-console.log('appInputs', appInputs);
+console.log('settingsInputs', settingsInputs);
 
 type ConfigType = {
     blockchainUrl: string;
