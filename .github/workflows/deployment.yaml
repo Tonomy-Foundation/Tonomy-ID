@@ -37,6 +37,6 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       # - run: npm ci
-      - run: BRANCH=${GITHUB_REF#refs/*/}
-      - run: echo $BRANCH hello ${BRANCH}
+      - run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/*/}" > $GITHUB_ENV
+      - run: echo hello ${GITHUB_ENV} hello2 ${GITHUB_ENV.GITHUB_BRANCH} hello3 "${{ env.GITHUB_BRANCH }}"
       # - run: npm run deploy $BRANCH
