@@ -1,4 +1,7 @@
+import 'dotenv/config';
 const env = process.env.NODE_ENV || 'development';
+
+console.log('settings.process.env', process.env);
 
 console.log(`NODE_ENV=${env}`);
 
