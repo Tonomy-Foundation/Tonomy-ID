@@ -1,13 +1,6 @@
 name: Tonomy ID Continuous Integration
 
-
-permissions:
-  contents: write
-
-on:
-  push:
-    branches:
-      - feature/232-sdk-deployment
+on: push
 
 jobs:
     build:
