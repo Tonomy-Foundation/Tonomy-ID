@@ -16,7 +16,7 @@ jobs:
                   node-version: 18.12.1
             - run: npm ci
             - name: Run bash script
-              run: ./script.sh
+              run: ./install-tonomy-id-sdk.sh
             - run: npm test
             - run: npm run lint
             - run: npm run typeCheck
