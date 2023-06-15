@@ -48,7 +48,7 @@ jobs:
             echo "Deploying to demo environment"
             NODE_ENV=demo npm run deploy:android
             NODE_ENV=demo npm run deploy:ios
-          elif [[ ${{ env.GITHUB_BRANCH }} == "feature/754" ]]; then
+          elif [[ ${{ env.GITHUB_BRANCH }} == "feature/754-expo-deploy-production" ]]; then
             echo "Deploying to special branch environment"
             NODE_ENV=demo echo "${NODE_ENV}"
             # NODE_ENV=demo npm run deploy:android
