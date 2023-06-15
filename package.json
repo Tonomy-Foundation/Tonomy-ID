@@ -14,7 +14,7 @@
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
-        "prepare": "build:prepare"
+        "prepare": "npm run build:prepare"
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
