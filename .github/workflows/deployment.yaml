@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - development
+      - feature/55*
 
 jobs:
   deploy:
@@ -22,12 +23,12 @@ jobs:
         with:
           token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
         
-      - name: "Automated Version Bump"
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
-        with:
-          commit-message: 'ci: bumps version to {{version}} [skip ci]'
+      # - name: "Automated Version Bump"
+      #   uses: "phips28/gh-action-bump-version@master"
+      #   env:
+      #     GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+      #   with:
+      #     commit-message: 'ci: bumps version to {{version}} [skip ci]'
 
       - name: 🚀 Build and publish app
         uses: actions/setup-node@v3
