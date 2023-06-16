@@ -1,5 +1,6 @@
+import fs from 'fs';
+import settings from './src/settings';
 import { ExpoConfig } from 'expo/config';
-import settings from './build/settings';
 import myPackage from './package.json';
 
 const appInputs = {
@@ -81,4 +82,5 @@ if (process.env.EXPO_FIRST_TIME === 'true') {
 
 console.log(JSON.stringify(expo, null, 2));
 
-export default expo;
+// Write app.json
+fs.writeFileSync('./app.json', JSON.stringify({ expo }, null, 2));

@@ -2,7 +2,7 @@
     "name": "tonomy-id",
     "version": "0.30.3",
     "scripts": {
-        "build:prepare": "npx tsc --project tsconfig.settings.json && cp -r ./src/config ./build",
+        "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
         "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
         "build:android": "npm run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
@@ -13,8 +13,7 @@
         "lint:fix": "npm run lint -- --fix",
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
-        "typeCheck": "tsc",
-        "prepare": "npm run build:prepare"
+        "typeCheck": "tsc"
     },
     "dependencies": {
         "@greymass/eosio": "^0.7.0",
