@@ -1,9 +1,9 @@
 name: Tonomy ID Continuous Deployment
 
-on:
-  push:
-    branches:
-      - development
+on: push
+  # push:
+  #   branches:
+  #     - development
 
 jobs:
   deploy:
