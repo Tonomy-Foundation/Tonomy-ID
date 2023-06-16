@@ -20,11 +20,11 @@ jobs:
             - run: |
                 if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
                   echo "BRANCH_NAME is not set to 'master'"
-                  npm install @tonomy/tonomy-id-sdk@development
+                  npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
                 fi
-                  - run: npm test
-                  - run: npm run lint
-                  - run: npm run typeCheck
+            - run: npm test
+            - run: npm run lint
+            - run: npm run typeCheck
 
     check-sdk-version:
         runs-on: ubuntu-20.04
