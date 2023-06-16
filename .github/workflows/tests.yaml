@@ -1,6 +1,6 @@
 name: Tonomy ID Continuous Integration
 
-on: push
+on: pull_request
 
 jobs:
     build:
@@ -16,9 +16,9 @@ jobs:
                   node-version: 18.12.1
             - run: npm ci
             - name: Check branch name
-              run: echo ${GITHUB_REF#refs/*/}
+              run: echo ${GITHUB_HEAD_REF}
             - run: |
-                if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
+                if [[ ${GITHUB_HEAD_REF#refs/*/} != "master" ]]; then
                   echo "BRANCH_NAME is not set to 'master'"
                   npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
                 fi
