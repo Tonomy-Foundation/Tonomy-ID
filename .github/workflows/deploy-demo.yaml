@@ -12,8 +12,11 @@ jobs:
     env:
       NODE_ENV: demo
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # https://expo.dev/accounts/[account]/settings/access-tokens
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-google-service-account.md
       APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
 
     steps:
       - name: 🏗 Setup repo

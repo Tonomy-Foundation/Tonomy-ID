@@ -13,15 +13,20 @@ jobs:
     env:
       NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # https://expo.dev/accounts/[account]/settings/access-tokens
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-google-service-account.md
       APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
 
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
         with:
           token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+          # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
         
+      # TODO replace this with using semantic-release to do git bump
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
         env:
