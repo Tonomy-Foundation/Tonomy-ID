@@ -16,7 +16,7 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
-npm i
+npm i && npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
 ```
 
 ## Pre-run build (first time and each time new RN only packages are installed)
