@@ -38,10 +38,10 @@ jobs:
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: npm ci
       - name: Check branch name
-        run: echo ${GITHUB_REF#refs/*/}
+        run: echo ${GITHUB_HEAD_REF}
       - run: |
-        if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
-          echo "BRANCH_NAME is not set to 'master'"
-          npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
-        fi
+          if [[ ${GITHUB_HEAD_REF} != "master" ]]; then
+            echo "BRANCH_NAME is not set to 'master'"
+            npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
+          fi
       - run: npm run deploy
