@@ -24,27 +24,8 @@ npm i && npm install --no-lockfile @tonomy/tonomy-id-sdk@development
 This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app. You can't Run from the Official Expo App.
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
-2. (for first time build only) Remove the following lines from `app.config.ts`
-
-```json
-    "extra": {
-      "eas": {
-        "projectId": "afffe2ee-9f93-4d18-9361-df30429cbd98"
-      }
-    }
-```
-
-to
-
-```json
-    "extra": {
-      "eas": {
-      }
-    }
-```
-
-3. If you have followed Step 2 then Skip 3. (to connect to an existing build in [https://expo.dev](https://expo.dev)) change the value of "projectId" in `app.default.json` to the vale of the project in [https://expo.dev](https://expo.dev)
-
+2. (for first time build only) `export EXPO_FIRST_TIME=true`
+3. Change the value of `"projectId"` in `prepare.app.config.ts` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
 4. (for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
 5. Run `npm run build:ios` (ios) or `npm run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
