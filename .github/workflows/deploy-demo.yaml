@@ -3,8 +3,7 @@ name: Tonomy ID Continuous Deployment - Demo
 on:
   push:
     branches:
-      # - master
-      - feature/754*
+      - master
 
 jobs:
   deploy:
