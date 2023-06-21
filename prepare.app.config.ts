@@ -4,10 +4,10 @@ import { ExpoConfig } from 'expo/config';
 import myPackage from './package.json';
 
 const appInputs = {
-    platform: process.env.EXPO_PLATFORM,
-    firstTime: process.env.EXPO_FIRST_TIME,
-    nodeEnv: process.env.NODE_ENV,
-    buildProfile: process.env.EXPO_BUILD_PROFILE,
+    platform: process.env.EXPO_PLATFORM ?? 'all',
+    firstTime: process.env.EXPO_FIRST_TIME ?? 'false',
+    nodeEnv: process.env.NODE_ENV ?? 'development',
+    buildProfile: process.env.EXPO_BUILD_PROFILE ?? 'development',
 };
 
 console.log('appInputs', appInputs);
