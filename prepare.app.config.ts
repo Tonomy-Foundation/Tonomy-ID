@@ -7,25 +7,24 @@ const appInputs = {
     platform: process.env.EXPO_PLATFORM,
     firstTime: process.env.EXPO_FIRST_TIME,
     nodeEnv: process.env.NODE_ENV,
-    buildProfile: process.env.EXPO_BUILD_PROFILE,
 };
 
 console.log('appInputs', appInputs);
 
 let slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
 
-if (appInputs.platform === 'ios' && ['demo'].includes(appInputs.buildProfile ?? '')) {
+if (appInputs.platform === 'ios' && appInputs.nodeEnv === 'demo') {
     console.log('Replacing config for demo with some staging config');
     // Deploy staging and demo ios app to the same app store listing and uses the
     // version number with environment tag (e.g. 0.27.1-staging) to differentiate instead within TestFlight
-    const config = require('./src/config/staging.json');
+    const config = require('./src/config/config.staging.json');
 
     slug = config.appName.toLowerCase().replaceAll(' ', '-');
     settings.config.expoProjectId = config.expoProjectId;
 }
 
 const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
-const version = myPackage.version + '-' + appInputs.buildProfile;
+const version = myPackage.version + '-' + appInputs.nodeEnv;
 
 // Check if inputs are correct
 if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
