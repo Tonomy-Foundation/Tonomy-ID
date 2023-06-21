@@ -18,7 +18,7 @@ let identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
 if (appInputs.platform === 'ios' && ['staging', 'demo'].includes(appInputs.buildProfile ?? '')) {
     // Apple deploys staging and demo to the same app and uses the
     // version number with environment tag to differentiate instead within TestFlight
-    identifier = 'foundation.tonomy.projects.production';
+    identifier = 'foundation.tonomy.projects.tonomyidstaging';
 }
 
 const version = myPackage.version + appInputs.buildProfile;

@@ -8,7 +8,7 @@
         "build:android": "npm run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
         "deploy:demo:android": "EXPO_PLATFORM=android npm run build:prepare && npx eas build --platform android --profile demo --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive",
         "deploy:demo:ios": "EXPO_PLATFORM=ios npm run build:prepare && npx eas build --platform ios --profile demo --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive",
-        "deploy:demo": "npm run build:demo:android && npm run build:demo:ios",
+        "deploy:demo": "npm run deploy:demo:android && npm run deploy:demo:ios",
         "deploy:staging:android": "EXPO_PLATFORM=android npm run build:prepare && npx eas build --platform android --profile staging --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive",
         "deploy:staging:ios": "EXPO_PLATFORM=ios npm run build:prepare && npx eas build --platform ios --profile staging --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive",
         "deploy:staging": "npm run deploy:staging:android && npm run deploy:staging:ios",
