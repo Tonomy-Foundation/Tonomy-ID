@@ -4,6 +4,7 @@ import { ExpoConfig } from 'expo/config';
 import myPackage from './package.json';
 
 const appInputs = {
+    platform: process.env.EXPO_PLATFORM,
     firstTime: process.env.EXPO_FIRST_TIME,
     nodeEnv: process.env.NODE_ENV,
     buildProfile: process.env.EXPO_BUILD_PROFILE,
@@ -12,7 +13,15 @@ const appInputs = {
 console.log('appInputs', appInputs);
 
 const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
-const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
+let identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
+
+if (appInputs.platform === 'ios' && ['staging', 'demo'].includes(appInputs.buildProfile ?? '')) {
+    // Apple deploys staging and demo to the same app and uses the
+    // version number with environment tag to differentiate instead within TestFlight
+    identifier = 'foundation.tonomy.projects.production';
+}
+
+const version = myPackage.version + appInputs.buildProfile;
 
 // Check if inputs are correct
 if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
@@ -23,7 +32,7 @@ const expo: ExpoConfig = {
     scheme: slug,
     name: settings.config.appName,
     slug: slug,
-    version: myPackage.version,
+    version: version,
     orientation: 'portrait',
     icon: settings.config.images.logo1024,
     userInterfaceStyle: 'light',
@@ -55,8 +64,8 @@ const expo: ExpoConfig = {
         [
             'expo-notifications',
             {
-                icon: './src/assets/tonomy/tonomy-logo1024.png',
-                color: '#67D7ED',
+                icon: settings.config.images.logo1024,
+                color: settings.config.theme.primaryColor,
             },
         ],
     ],
