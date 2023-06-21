@@ -4,24 +4,28 @@ import { ExpoConfig } from 'expo/config';
 import myPackage from './package.json';
 
 const appInputs = {
-    platform: process.env.EXPO_PLATFORM ?? 'all',
-    firstTime: process.env.EXPO_FIRST_TIME ?? 'false',
-    nodeEnv: process.env.NODE_ENV ?? 'development',
-    buildProfile: process.env.EXPO_BUILD_PROFILE ?? 'development',
+    platform: process.env.EXPO_PLATFORM,
+    firstTime: process.env.EXPO_FIRST_TIME,
+    nodeEnv: process.env.NODE_ENV,
+    buildProfile: process.env.EXPO_BUILD_PROFILE,
 };
 
 console.log('appInputs', appInputs);
 
-const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
-let identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
+let slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
 
-if (appInputs.platform === 'ios' && ['staging', 'demo'].includes(appInputs.buildProfile ?? '')) {
-    // Apple deploys staging and demo to the same app and uses the
-    // version number with environment tag to differentiate instead within TestFlight
-    identifier = 'foundation.tonomy.projects.tonomyidstaging';
+if (appInputs.platform === 'ios' && ['demo'].includes(appInputs.buildProfile ?? '')) {
+    console.log('Replacing config for demo with some staging config');
+    // Deploy staging and demo ios app to the same app store listing and uses the
+    // version number with environment tag (e.g. 0.27.1-staging) to differentiate instead within TestFlight
+    const config = require('./src/config/staging.json');
+
+    slug = config.appName.toLowerCase().replaceAll(' ', '-');
+    settings.config.expoProjectId = config.expoProjectId;
 }
 
-const version = myPackage.version + appInputs.buildProfile;
+const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
+const version = myPackage.version + '-' + appInputs.buildProfile;
 
 // Check if inputs are correct
 if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
