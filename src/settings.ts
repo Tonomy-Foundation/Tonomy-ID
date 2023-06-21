@@ -1,6 +1,12 @@
 const env = process.env.NODE_ENV || 'development';
 
-console.log(`NODE_ENV=${env}`);
+const settingsInputs = {
+    nodeEnv: process.env.NODE_ENV,
+    env,
+    buildProfile: process.env.EXPO_BUILD_PROFILE,
+};
+
+console.log('settingsInputs', settingsInputs);
 
 type ConfigType = {
     blockchainUrl: string;
@@ -59,10 +65,11 @@ switch (env) {
     case 'staging':
         config = require('./config/config.staging.json');
         break;
-    case 'production':
-        config = require('./config/config.staging.json');
-        // TODO add production config when ready
+    case 'demo':
+        config = require('./config/config.demo.json');
         break;
+    case 'production':
+        throw new Error('Production config not implemented yet');
     default:
         throw new Error('Unknown environment: ' + env);
 }

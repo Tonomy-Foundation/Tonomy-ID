@@ -5,18 +5,38 @@
     },
     "build": {
         "development": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "development",
+                "NODE_ENV": "development"
+            },
             "developmentClient": true,
             "distribution": "internal"
         },
+        "preview": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "preview",
+                "NODE_ENV": "development"
+            },
+            "distribution": "internal"
+        },
+        "demo": {
+            "env": {
+                "EXPO_BUILD_PROFILE": "demo",
+                "NODE_ENV": "demo"
+            },
+            "autoIncrement": true
+        },
         "staging": {
             "env": {
+                "EXPO_BUILD_PROFILE": "staging",
                 "NODE_ENV": "staging"
             },
             "autoIncrement": true
         },
         "production": {
             "env": {
-                "NODE_ENV": "staging"
+                "EXPO_BUILD_PROFILE": "production",
+                "NODE_ENV": "production"
             },
             "autoIncrement": true
         }
@@ -35,6 +55,11 @@
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         },
-        "production": {}
+        "demo": {
+            "android": {
+                "serviceAccountKeyPath": "./google-service-key.json",
+                "track": "production"
+            }
+        }
     }
 }

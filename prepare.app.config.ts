@@ -1,8 +1,15 @@
+import fs from 'fs';
+import settings from './src/settings';
 import { ExpoConfig } from 'expo/config';
-
-// const settings = require('./src/settings');
-import settings from './build/settings';
 import myPackage from './package.json';
+
+const appInputs = {
+    firstTime: process.env.EXPO_FIRST_TIME,
+    nodeEnv: process.env.NODE_ENV,
+    buildProfile: process.env.EXPO_BUILD_PROFILE,
+};
+
+console.log('appInputs', appInputs);
 
 const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
 const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
@@ -31,7 +38,7 @@ const expo: ExpoConfig = {
     assetBundlePatterns: ['**/*'],
     ios: {
         supportsTablet: true,
-        bundleIdentifier: 'foundation.tonomy.tonomyid',
+        bundleIdentifier: identifier,
     },
     android: {
         adaptiveIcon: {
@@ -67,6 +74,13 @@ if (!['development', 'designonly'].includes(settings.env)) {
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
+if (process.env.EXPO_FIRST_TIME === 'true') {
+    console.log('Setting up expo for the first time');
+    // @ts-expect-error expo.extra is possibly not defined
+    expo.extra.eas = {};
+}
+
 console.log(JSON.stringify(expo, null, 2));
 
-export default expo;
+// Write app.json
+fs.writeFileSync('./app.json', JSON.stringify({ expo }, null, 2));
