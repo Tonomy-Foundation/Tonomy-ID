@@ -46,6 +46,7 @@ const expo: ExpoConfig = {
     updates: {
         fallbackToCacheTimeout: 0,
     },
+    githubUrl: 'https://github.com/Tonomy-Foundation/Tonomy-ID',
     assetBundlePatterns: ['**/*'],
     ios: {
         supportsTablet: true,
