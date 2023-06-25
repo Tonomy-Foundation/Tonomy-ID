@@ -6,7 +6,6 @@
     "build": {
         "development": {
             "env": {
-                "EXPO_BUILD_PROFILE": "development",
                 "NODE_ENV": "development"
             },
             "developmentClient": true,
@@ -14,29 +13,19 @@
         },
         "preview": {
             "env": {
-                "EXPO_BUILD_PROFILE": "preview",
                 "NODE_ENV": "development"
             },
             "distribution": "internal"
         },
         "demo": {
             "env": {
-                "EXPO_BUILD_PROFILE": "demo",
                 "NODE_ENV": "demo"
             },
             "autoIncrement": true
         },
         "staging": {
             "env": {
-                "EXPO_BUILD_PROFILE": "staging",
                 "NODE_ENV": "staging"
-            },
-            "autoIncrement": true
-        },
-        "production": {
-            "env": {
-                "EXPO_BUILD_PROFILE": "production",
-                "NODE_ENV": "production"
             },
             "autoIncrement": true
         }
