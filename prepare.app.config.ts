@@ -24,7 +24,6 @@ if (appInputs.platform === 'ios' && appInputs.nodeEnv === 'demo') {
 }
 
 const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
-const version = myPackage.version + '-' + appInputs.nodeEnv;
 
 // Check if inputs are correct
 if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
@@ -35,7 +34,7 @@ const expo: ExpoConfig = {
     scheme: slug,
     name: settings.config.appName,
     slug: slug,
-    version: version,
+    version: myPackage.version,
     orientation: 'portrait',
     icon: settings.config.images.logo1024,
     userInterfaceStyle: 'light',
