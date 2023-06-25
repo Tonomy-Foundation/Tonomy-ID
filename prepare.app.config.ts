@@ -15,8 +15,8 @@ let slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
 
 if (appInputs.platform === 'ios' && appInputs.nodeEnv === 'demo') {
     console.log('Replacing config for demo with some staging config');
-    // Deploy staging and demo ios app to the same app store listing and uses the
-    // version number with environment tag (e.g. 0.27.1-staging) to differentiate instead within TestFlight
+    // Deploy staging and demo ios app to the same app store listing
+    // Use the version number to differentiate between the two within TestFlight
     const config = require('./src/config/config.staging.json');
 
     slug = config.appName.toLowerCase().replaceAll(' ', '-');
