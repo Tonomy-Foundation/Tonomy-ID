@@ -49,4 +49,4 @@ jobs:
             echo "BRANCH_NAME is not set to 'master'"
             npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
           fi
-      - run: npm run deploy:staging
+      - run: npm run deploy:staging:ios
