@@ -72,14 +72,20 @@ Values for NODE_ENV
 
 - NODE_ENV=development - uses the default `./src/config/config.json`
 - NODE_ENV=test - same as `development`. this is set when `npm test` is run
-- NODE_ENV=local - same as `development`. this resolves the `tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
 - NODE_ENV=staging - uses `./src/config/config.staging.json`
-- NODE_ENV=production - uses `./src/config/config.production.json`
+- NODE_ENV=production - throws an error. Will be used for the production deploy.
+
+Values for EXPO_PLATFORM
+
+- EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
+- EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
 
 Other environment variables override the values in the config file:
 
 - BLOCKCHAIN_URL
 - SSO_WEBSITE_ORIGIN
+- VITE_COMMUNICATION_URL
 
 ### Linting
 
