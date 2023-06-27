@@ -73,6 +73,7 @@ Values for NODE_ENV
 - NODE_ENV=development - uses the default `./src/config/config.json`
 - NODE_ENV=test - same as `development`. this is set when `npm test` is run
 - NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- NODE_ENV=demo - uses `./src/config/config.demo.json`
 - NODE_ENV=staging - uses `./src/config/config.staging.json`
 - NODE_ENV=production - throws an error. Will be used for the production deploy.
 
