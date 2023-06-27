@@ -9,7 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     env:
-      NODE_ENV: demo
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       # https://expo.dev/accounts/[account]/settings/access-tokens
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}

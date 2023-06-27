@@ -4,14 +4,25 @@ import { ExpoConfig } from 'expo/config';
 import myPackage from './package.json';
 
 const appInputs = {
+    platform: process.env.EXPO_PLATFORM,
     firstTime: process.env.EXPO_FIRST_TIME,
     nodeEnv: process.env.NODE_ENV,
-    buildProfile: process.env.EXPO_BUILD_PROFILE,
 };
 
 console.log('appInputs', appInputs);
 
-const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
+let slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
+
+if (appInputs.platform === 'ios' && appInputs.nodeEnv === 'demo') {
+    console.log('Replacing config for demo with some staging config');
+    // Deploy staging and demo ios app to the same app store listing
+    // Use the version number to differentiate between the two within TestFlight
+    const config = require('./src/config/config.staging.json');
+
+    slug = config.appName.toLowerCase().replaceAll(' ', '-');
+    settings.config.expoProjectId = config.expoProjectId;
+}
+
 const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
 
 // Check if inputs are correct
@@ -35,6 +46,7 @@ const expo: ExpoConfig = {
     updates: {
         fallbackToCacheTimeout: 0,
     },
+    githubUrl: 'https://github.com/Tonomy-Foundation/Tonomy-ID',
     assetBundlePatterns: ['**/*'],
     ios: {
         supportsTablet: true,
@@ -55,8 +67,8 @@ const expo: ExpoConfig = {
         [
             'expo-notifications',
             {
-                icon: './src/assets/tonomy/tonomy-logo1024.png',
-                color: '#67D7ED',
+                icon: settings.config.images.logo1024,
+                color: settings.config.theme.primaryColor,
             },
         ],
     ],
