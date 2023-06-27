@@ -1,4 +1,4 @@
-name: Tonomy ID Continuous Deployment - Demo
+name: Deployment - Demo
 
 on:
   push:

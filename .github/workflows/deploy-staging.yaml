@@ -1,4 +1,4 @@
-name: Tonomy ID Continuous Deployment - Staging
+name: Deployment - Staging
 
 on:
   push:
