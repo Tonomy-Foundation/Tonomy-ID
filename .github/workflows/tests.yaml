@@ -1,7 +1,6 @@
 name: Tonomy ID Continuous Integration
 
-on:
-    pull_request
+on: pull_request
 
 jobs:
     build:
@@ -16,8 +15,16 @@ jobs:
               with:
                   node-version: 18.12.1
             - run: npm ci
+            - name: Check branch name
+              run: echo ${GITHUB_HEAD_REF}
+            - run: |
+                if [[ ${GITHUB_HEAD_REF} != "master" ]]; then
+                  echo "BRANCH_NAME is not set to 'master'"
+                  npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
+                fi
             - run: npm test
             - run: npm run lint
+            - run: npm run typeCheck
 
     check-sdk-version:
         runs-on: ubuntu-20.04
@@ -34,23 +41,5 @@ jobs:
             - run: npm update --silent @tonomy/tonomy-id-sdk
             - run: echo "PACKAGE_LOCK_SHA256_NEW=$(sha256sum package-lock.json)" >> $GITHUB_ENV
             - run: if [ "$PACKAGE_LOCK_SHA256_NEW" != "$PACKAGE_LOCK_SHA256_OLD" ]; then exit 1; fi
-
-    build-apk:
-        runs-on: ubuntu-20.04
-        env:
-          NODE_ENV: staging
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        container: cimg/android:2022.12.1-ndk
-
-        steps:
-            - uses: actions/checkout@v3
-
-            - name: Build Tonomy ID .apk file for Android
-              run: |
-                  curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-                  sudo apt-get install -y nodejs
-                  node -v
-                  npm ci
-                  npm run build:prepare
-                  npx eas build --clear-cache --profile "${NODE_ENV}" --platform android --local
-                  find . -name "*.apk"
+            # if this step fails, try run `npm update @tonomy/tonomy-id-sdk` and
+            # then test locally, if it works, then commit changes to package.json and package-lock.json

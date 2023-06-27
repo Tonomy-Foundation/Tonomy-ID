@@ -16,7 +16,7 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
-npm i
+npm i && npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
 ```
 
 ## Pre-run build (first time and each time new RN only packages are installed)
@@ -24,27 +24,8 @@ npm i
 This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app. You can't Run from the Official Expo App.
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
-2. (for first time build only) Remove the following lines from `app.default.json`
-
-```json
-    "extra": {
-      "eas": {
-        "projectId": "afffe2ee-9f93-4d18-9361-df30429cbd98"
-      }
-    }
-```
-
-to
-
-```json
-    "extra": {
-      "eas": {
-      }
-    }
-```
-
-3. If you have followed Step 2 then Skip 3. (to connect to an existing build in [https://expo.dev](https://expo.dev)) change the value of "projectId" in `app.default.json` to the vale of the project in [https://expo.dev](https://expo.dev)
-
+2. (for first time build only) `export EXPO_FIRST_TIME=true`
+3. Change the value of `"projectId"` in `prepare.app.config.ts` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
 4. (for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
 5. Run `npm run build:ios` (ios) or `npm run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
@@ -62,18 +43,18 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 npm start
 ```
 
-### Run with the staging environment and build
+### Run with the staging / demo environment and build
 
-Testing Staging Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
+Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
-1. modify `"appName": "Tonomy ID Development"` in `config.staging.json`
-2. run `NODE_ENV=staging npm start`
-3. connect via QR and bundle and load the app
-4. share phone
-5. scroll down, click to open the dev menu
-6. click settings
-7. turn on minifying
-8. turn off dev mode
+1. Modify `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
+2. Run `NODE_ENV=staging npm start` or `NODE_ENV=demo npm start`
+3. Connect via QR and bundle and load the app
+4. Scroll down >> "Open React Native dev men"
+5. Click "Settings"
+6. Turn ON "JS Minify"
+7. Turn OFF "JS Dev Mode"
+8. Reload
 
 This is now running in production mode connected to the staging environment.
 
@@ -91,14 +72,21 @@ Values for NODE_ENV
 
 - NODE_ENV=development - uses the default `./src/config/config.json`
 - NODE_ENV=test - same as `development`. this is set when `npm test` is run
-- NODE_ENV=local - same as `development`. this resolves the `tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- NODE_ENV=demo - uses `./src/config/config.demo.json`
 - NODE_ENV=staging - uses `./src/config/config.staging.json`
-- NODE_ENV=production - uses `./src/config/config.production.json`
+- NODE_ENV=production - throws an error. Will be used for the production deploy.
+
+Values for EXPO_PLATFORM
+
+- EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
+- EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
 
 Other environment variables override the values in the config file:
 
 - BLOCKCHAIN_URL
 - SSO_WEBSITE_ORIGIN
+- VITE_COMMUNICATION_URL
 
 ### Linting
 

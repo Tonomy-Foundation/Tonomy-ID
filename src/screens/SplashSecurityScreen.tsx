@@ -1,11 +1,11 @@
 import React from 'react';
 import SplashScreenContainer from '../containers/SplashContainer';
-import { NavigationProp } from '@react-navigation/native';
 import settings from '../settings';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
 
 export type Props = NativeStackScreenProps<RouteStackParamList, 'SplashSecurity'>;
+
 export default function SplashSecurityScreen(props: Props) {
     return (
         <SplashScreenContainer

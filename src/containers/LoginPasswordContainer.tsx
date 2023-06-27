@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { AccountType, SdkError, SdkErrors, TonomyUsername } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
 import TPasswordInput from '../components/molecules/TPasswordInput';
-import TErrorModal from '../components/TErrorModal';
 import TInfoBox from '../components/TInfoBox';
-import { Props } from '../screens/homeScreen';
+import { Props } from '../screens/LoginPasswordScreen';
 import settings from '../settings';
 // import errorStore from '../store/errorStore';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserStatus } from '../store/userStore';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
@@ -28,7 +26,14 @@ export default function LoginPasswordContainer({
     const [password, setPassword] = useState(!settings.isProduction() ? 'k^3dTEqXfolCPo5^QhmD' : '');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const user = useUserStore().user;
+    const userStore = useUserStore();
+    const user = userStore.user;
+
+    async function updateKeys() {
+        await user.updateKeys(password);
+        userStore.setStatus(UserStatus.LOGGED_IN);
+    }
+
     const onNext = async () => {
         setLoading(true);
 
@@ -41,19 +46,18 @@ export default function LoginPasswordContainer({
 
             if (result?.account_name !== undefined) {
                 setPassword('');
-                navigation.navigate('CreateAccountPin', {
-                    password: password,
-                    action: 'LOGIN_ACCOUNT',
-                });
+                setErrorMessage('');
+                await user.saveLocal();
+                await updateKeys();
             }
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:
                     case SdkErrors.PasswordInvalid:
                     case SdkErrors.PasswordFormatInvalid:
                     case SdkErrors.AccountDoesntExist:
-                        setErrorMessage('Username or password are incorrect. Please try again.');
+                        setErrorMessage('Username or password is incorrect. Please try again.');
                         break;
                     default:
                         setErrorMessage('');
@@ -94,7 +98,7 @@ export default function LoginPasswordContainer({
                     </View>
                 }
                 footerHint={
-                    <View style={commonStyles.marginBottom}>
+                    <View>
                         <TInfoBox
                             align="left"
                             icon="security"
@@ -107,7 +111,7 @@ export default function LoginPasswordContainer({
                 footer={
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={password.length === 0} loading={loading}>
+                            <TButtonContained onPress={onNext} disabled={password.length === 0 || loading}>
                                 NEXT
                             </TButtonContained>
                         </View>
@@ -128,13 +132,10 @@ export default function LoginPasswordContainer({
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        height: '90%',
         justifyContent: 'center',
     },
     innerContainer: {
-        width: '100%',
-        height: '100%',
+        marginTop: 10,
         justifyContent: 'center',
     },
     link: {

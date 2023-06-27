@@ -8,7 +8,7 @@ import useUserStore from '../store/userStore';
 import { HelperText } from 'react-native-paper';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/FingerprintUpdateScreen';
+import { Props } from '../screens/PinScreen';
 import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import settings from '../settings';
@@ -58,6 +58,7 @@ export default function PinScreenContainer({
                 try {
                     if (action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') {
                         await user.savePIN(confirmPin);
+                        if (!password) throw new Error("Password can't be empty");
                         navigation.navigate('CreateAccountFingerprint', { password });
                     } else if (action === 'ADD_PIN') {
                         await user.savePIN(confirmPin);
@@ -66,8 +67,7 @@ export default function PinScreenContainer({
                         await user.savePIN(confirmPin);
                         navigation.goBack();
                     }
-                } catch (e: any) {
-                    console.log('error saving pin', e);
+                } catch (e) {
                     errorStore.setError({ error: e, expected: false });
                     setLoading(false);
                     return;
@@ -134,8 +134,7 @@ export default function PinScreenContainer({
             footer={
                 <View>
                     <TButtonContained
-                        disabled={disabled}
-                        loading={loading}
+                        disabled={disabled || loading}
                         onPress={action === 'CHANGE_PIN' ? (matched === false ? checkPin : onNext) : onNext}
                         style={styles.marginBottom}
                     >
@@ -144,9 +143,11 @@ export default function PinScreenContainer({
                     {!confirming && (
                         <TButtonOutlined
                             onPress={() => {
-                                action === 'CHANGE_PIN'
-                                    ? navigation.goBack()
-                                    : navigation.navigate('CreateAccountFingerprint', { password });
+                                if (action === 'CHANGE_PIN') { navigation.goBack() }
+                                else {
+                                    if (!password) throw new Error("Password can't be empty");
+                                    navigation.navigate('CreateAccountFingerprint', { password });
+                                }
                             }}
                             style={styles.marginBottom}
                         >

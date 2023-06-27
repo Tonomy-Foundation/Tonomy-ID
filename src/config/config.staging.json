@@ -1,5 +1,4 @@
 {
-    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "theme": {
         "primaryColor": "#67D7ED",
         "primaryColor2": "#D2F3FA",
@@ -19,7 +18,7 @@
     },
     "links": {
         "privacyPolicyLearnMore": "#",
-        "tearmsAndConditionsLearnMore": "#",
+        "termsAndConditionsLearnMore": "#",
         "usernameLearnMore": "#",
         "passwordLearnMore": "#",
         "privacyLearnMore": "#",
@@ -28,6 +27,7 @@
     },
     "expoProjectId": "b7d1c77f-3535-492c-8f55-0ba569ccdc93",
     "accountSuffix": ".stag.tonomy.id",
-    "ssoWebsiteOrigin": "https://sso.staging.tonomy.foundation",
-    "communicationUrl": "wss://communication-api-staging.tonomy.foundation"
+    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
+    "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
+    "communicationUrl": "wss://communication.staging.tonomy.foundation"
 }

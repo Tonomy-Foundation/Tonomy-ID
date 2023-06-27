@@ -4,16 +4,10 @@ import { TButtonContained } from '../components/atoms/Tbutton';
 import { TP } from '../components/atoms/THeadings';
 import LayoutComponent from '../components/layout';
 import TPasswordInput from '../components/molecules/TPasswordInput';
-import { Props } from '../screens/homeScreen';
+import { Props } from '../screens/ConfirmPasswordScreen';
 import { commonStyles } from '../utils/theme';
 
-export default function ConfirmPasswordContainer({
-    navigation,
-    username,
-}: {
-    navigation: Props['navigation'];
-    username: string;
-}) {
+export default function ConfirmPasswordContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [password, setPassword] = useState('');
 
     return (
@@ -30,9 +24,10 @@ export default function ConfirmPasswordContainer({
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
+                            {/* TODO: navigate to change password screen */}
                             <TButtonContained
-                                onPress={() => navigation.navigate('SetPassword')}
-                                // disabled={password.length === 0}feature/422-Change-Password-UI
+                                onPress={() => navigation.navigate('Home')}
+                                disabled={password.length === 0}
                             >
                                 NEXT
                             </TButtonContained>

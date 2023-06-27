@@ -1,12 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
-
 import LayoutComponent from '../components/layout';
-
 import TNavigationButton from '../components/TNavigationButton';
-import { Props } from '../screens/SettingsScreen';
+import { Props } from '../screens/FaceIdSettingsScreen';
 
-export default function FaceIdSettingsContainer({ navigation }: Props) {
+export default function FaceIdSettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
         <LayoutComponent
             body={

@@ -22,7 +22,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         // TODO report to TF
 
         if (isFatal) {
-            errorStore.setError({ error, title: 'Unexpected fatal error', expected: false });
+            errorStore.setError({ error: e, title: 'Unexpected fatal error', expected: false });
 
             // Alert.alert(
             //     'Unexpected error occurred',

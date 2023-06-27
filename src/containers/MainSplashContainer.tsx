@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
-import { NavigationProp, StackActions } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { Props } from '../screens/MainSplashScreen';
 
-export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
+export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
 
@@ -30,7 +31,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 case UserStatus.LOGGED_IN:
                     try {
                         await user.getUsername();
-                    } catch (e: any) {
+                    } catch (e) {
                         if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                             logout();
                         } else {
@@ -42,7 +43,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 default:
                     throw new Error('Unknown status: ' + status);
             }
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }

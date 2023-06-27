@@ -56,7 +56,7 @@ export default function CreateAccountContainer({ password }: { password: string 
                 setAuthFail(true);
             }
 
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     };
@@ -65,7 +65,7 @@ export default function CreateAccountContainer({ password }: { password: string 
         try {
             await user.saveLocal();
             await updateKeys();
-        } catch (e: any) {
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
             return;
         }

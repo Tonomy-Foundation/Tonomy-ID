@@ -5,7 +5,7 @@ import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
 
-export type RouteDrawerParamList = {
+export type DrawerStackParamList = {
     UserHome: undefined;
     Settings: undefined;
     Help: undefined;
@@ -14,7 +14,7 @@ export type RouteDrawerParamList = {
     SSO: { payload: string; platform: 'mobile' | 'browser' };
 };
 
-const Drawer = createDrawerNavigator<RouteDrawerParamList>();
+const Drawer = createDrawerNavigator<DrawerStackParamList>();
 
 export default function DrawerNavigation() {
     const theme = useAppTheme();

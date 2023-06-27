@@ -14,15 +14,13 @@ function TCard({ children, ...props }: TCardPropType) {
         borderRadius: radius,
     };
 
-    // console.log(Object.entries(TCard));
-
     const subComponents = React.Children.map(children, (child) => {
         return React.isValidElement(child) ? React.cloneElement(child) : child;
     });
 
     return (
         <Card {...props} elevation={4} mode="elevated" style={[style, props.style]}>
-            {subComponents.map((component) => component)}
+            {subComponents?.map((component) => component)}
         </Card>
     );
 }

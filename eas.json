@@ -5,16 +5,25 @@
     },
     "build": {
         "development": {
+            "env": {
+                "NODE_ENV": "development"
+            },
             "developmentClient": true,
             "distribution": "internal"
         },
-        "staging": {
+        "preview": {
             "env": {
-                "NODE_ENV": "staging"
+                "NODE_ENV": "development"
+            },
+            "distribution": "internal"
+        },
+        "demo": {
+            "env": {
+                "NODE_ENV": "demo"
             },
             "autoIncrement": true
         },
-        "production": {
+        "staging": {
             "env": {
                 "NODE_ENV": "staging"
             },
@@ -22,7 +31,7 @@
         }
     },
     "submit": {
-        "staging": {
+        "production": {
             "android": {
                 "serviceAccountKeyPath": "./google-service-key.json",
                 "track": "production"
@@ -30,11 +39,10 @@
             "ios": {
                 "ascAppId": "1663471436",
                 "appleTeamId": "6BLD42QR78",
-                "ascApiKeyId": "G23U49XAYF",
+                "ascApiKeyId": "83XQ25UWSK",
                 "ascApiKeyPath": "./apple-asc-api-key.p8",
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
-        },
-        "production": {}
+        }
     }
 }

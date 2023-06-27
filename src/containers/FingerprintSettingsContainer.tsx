@@ -1,13 +1,11 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-
+import { View } from 'react-native';
 import LayoutComponent from '../components/layout';
-
 import TNavigationButton from '../components/TNavigationButton';
-import { Props } from '../screens/SettingsScreen';
-import theme, { commonStyles } from '../utils/theme';
+import { Props } from '../screens/FingerprintSettingsScreen';
+import theme from '../utils/theme';
 
-export default function FingerprintSettingsContainer({ navigation }: Props) {
+export default function FingerprintSettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
         <LayoutComponent
             body={
