@@ -1,6 +1,9 @@
-name: Tonomy ID Continuous Integration
+name: Test - Pull Requests (not to master)
 
-on: pull_request
+on:
+  pull_request:
+    branches-ignore:
+      - master
 
 jobs:
     build:
