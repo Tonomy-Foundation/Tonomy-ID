@@ -1,9 +1,8 @@
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV ?? 'development';
 
 const settingsInputs = {
     nodeEnv: process.env.NODE_ENV,
     env,
-    buildProfile: process.env.EXPO_BUILD_PROFILE,
 };
 
 console.log('settingsInputs', settingsInputs);
