@@ -2,46 +2,24 @@ import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-e
 import { ErrorState } from '../store/errorStore';
 
 export default function setErrorHandlers(errorStore: ErrorState) {
-    global.onunhandledrejection = function (error) {
-        console.error('onunhandledrejection()', error.reason);
-
+    global.onunhandlPedrejection = function (error) {
         // Warning: when running in "remote debug" mode (JS environment is Chrome browser),
         // this handler is called a second time by Bluebird with a custom "dom-event".
         // We need to filter this case out:
         if (error instanceof Error) {
-            console.error('onunhandledrejection() Error', error.message);
-            // TODO report to TF
-
-            errorStore.setError({ error, title: 'Unhandled error', expected: false });
+            errorStore.setError({ error, title: 'Unhandled Promise Rejection Error', expected: false });
         }
     };
 
     setJSExceptionHandler((e: Error, isFatal) => {
-        console.log('setJSExceptionHandler()', e.message, isFatal);
-        console.error(JSON.stringify(e, null, 2));
-        // TODO report to TF
-
         if (isFatal) {
-            errorStore.setError({ error: e, title: 'Unexpected fatal error', expected: false });
-
-            // Alert.alert(
-            //     'Unexpected error occurred',
-            //     `
-            //   Error: ${isFatal ? 'Fatal:' : ''} ${e.name} ${e.message}
-            //   We have reported this to our team ! Please close the app and start again!
-            //   `,
-            //     [
-            //         {
-            //             text: 'Close',
-            //         },
-            //     ]
-            // );
+            errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
-            errorStore.setError({ error: e, title: 'Unexpected error', expected: false });
+            errorStore.setError({ error: e, title: 'Unexpected JS Error', expected: false });
         }
     }, false);
+
     setNativeExceptionHandler((errorString) => {
-        console.error(`setNativeExceptionHandler(): ${errorString}`);
-        // TODO report to TF
+        errorStore.setError({ error: new Error(errorString), title: 'Unexpected Native Error', expected: false });
     });
 }

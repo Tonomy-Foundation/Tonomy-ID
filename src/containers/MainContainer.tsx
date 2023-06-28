@@ -45,9 +45,15 @@ export default function MainContainer() {
             await user.communication.sendMessage(identifyMessage);
         } catch (e) {
             if (e instanceof CommunicationError && e.exception?.status === 404) {
-                // happens if sso site not connected to communication service
-                console.error('User probably needs to refresh the page. See notes in MainContainer.tsx');
-                // User probably has scanned a QR code on a website that is not logged into Tonomy Communication
+                // Happens if Tonomy Accounts not connected to communication service
+                errorStore.setError({
+                    error: new Error(
+                        'User probably needs to refresh the page. See notes in MainContainer.tsx onScan()'
+                    ),
+                    expected: false,
+                });
+                // User probably has scanned a QR code on a website that is not logged into Tonomy Communication service
+                // Problem is probably in /Tonomy-App-Websites/src/sso/pages/Login.tsx
                 // They probably need to refresh the page
                 // TODO: tell the user to retry the login by refreshing
             } else {

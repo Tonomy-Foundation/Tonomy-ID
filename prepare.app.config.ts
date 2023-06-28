@@ -7,6 +7,7 @@ const appInputs = {
     platform: process.env.EXPO_PLATFORM,
     firstTime: process.env.EXPO_FIRST_TIME,
     nodeEnv: process.env.NODE_ENV,
+    expoNodeEnv: process.env.EXPO_NODE_ENV,
 };
 
 console.log('appInputs', appInputs);
@@ -76,6 +77,7 @@ const expo: ExpoConfig = {
         eas: {
             projectId: '48982c5e-41ff-4858-80ea-8e1b64092f21',
         },
+        EXPO_NODE_ENV: process.env.EXPO_NODE_ENV,
     },
 };
 
