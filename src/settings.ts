@@ -52,7 +52,7 @@ type SettingsType = {
 let config: ConfigType;
 const settings: SettingsType = {
     env,
-    isProduction: () => settings.env === 'production',
+    isProduction: () => settings.env === 'production' || settings.env === 'demo',
 } as SettingsType;
 
 switch (env) {
