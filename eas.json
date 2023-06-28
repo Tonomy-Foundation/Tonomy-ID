@@ -6,26 +6,26 @@
     "build": {
         "development": {
             "env": {
-                "NODE_ENV": "development"
+                "EXPO_NODE_ENV": "development"
             },
             "developmentClient": true,
             "distribution": "internal"
         },
         "preview": {
             "env": {
-                "NODE_ENV": "development"
+                "EXPO_NODE_ENV": "development"
             },
             "distribution": "internal"
         },
         "demo": {
             "env": {
-                "NODE_ENV": "demo"
+                "EXPO_NODE_ENV": "demo"
             },
             "autoIncrement": true
         },
         "staging": {
             "env": {
-                "NODE_ENV": "staging"
+                "EXPO_NODE_ENV": "staging"
             },
             "autoIncrement": true
         }

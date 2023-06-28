@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
         with:
-          commit-message: 'ci: bumps version to {{version}} [skip ci]'
+          commit-message: 'ci: bumps version to {{version}}'
 
       - name: 🚀 Build and publish staging app
         uses: actions/setup-node@v3
