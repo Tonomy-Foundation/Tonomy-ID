@@ -48,7 +48,7 @@ npm start
 Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
 1. Modify `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
-2. Run `NODE_ENV=staging npm start` or `NODE_ENV=demo npm start`
+2. Run `EXPO_NODE_ENV=staging npm start` or `EXPO_NODE_ENV=demo npm start`
 3. Connect via QR and bundle and load the app
 4. Scroll down >> "Open React Native dev men"
 5. Click "Settings"
@@ -76,16 +76,16 @@ This is now running in production mode connected to the staging environment.
 
 Set the configuration variables in the desired file in `./src/config`
 
-`config.json` is used by default. Staging config file is choosing based on the value of environment variable `NODE_ENV`
+`config.json` is used by default. Staging config file is choosing based on the value of environment variable `EXPO_NODE_ENV`
 
-Values for NODE_ENV
+Values for EXPO_NODE_ENV
 
-- NODE_ENV=development - uses the default `./src/config/config.json`
-- NODE_ENV=test - same as `development`. this is set when `npm test` is run
-- NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
-- NODE_ENV=demo - uses `./src/config/config.demo.json`
-- NODE_ENV=staging - uses `./src/config/config.staging.json`
-- NODE_ENV=production - throws an error. Will be used for the production deploy.
+- EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
+- EXPO_NODE_ENV=test - same as `development`. this is set when `npm test` is run
+- EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- EXPO_NODE_ENV=demo - uses `./src/config/config.demo.json`
+- EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
+- EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
 
 Values for EXPO_PLATFORM
 

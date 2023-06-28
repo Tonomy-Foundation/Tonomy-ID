@@ -6,7 +6,7 @@ const config = getDefaultConfig(__dirname);
 // needed to resolve the did-jwt index.cjs file that is withing Tonomy-ID-SDK
 config.resolver.sourceExts.push('cjs');
 
-if (process.env.NODE_ENV === 'local') {
+if (process.env.EXPO_NODE_ENV === 'local') {
     console.log('Setting up local development environment. Using local Tonomy-ID-SDK.');
     // see https://medium.com/@alielmajdaoui/linking-local-packages-in-react-native-the-right-way-2ac6587dcfa2
 
