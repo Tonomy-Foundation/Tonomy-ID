@@ -14,7 +14,7 @@ console.log('appInputs', appInputs);
 
 let slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
 
-if (appInputs.platform === 'ios' && appInputs.nodeEnv === 'demo') {
+if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'demo') {
     console.log('Replacing config for demo with some staging config');
     // Deploy staging and demo ios app to the same app store listing
     // Use the version number to differentiate between the two within TestFlight
