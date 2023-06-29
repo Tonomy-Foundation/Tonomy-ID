@@ -54,7 +54,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
         try {
             await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
-            const res = await user.createPerson();
+            await user.createPerson();
 
             await user.saveLocal();
             await user.updateKeys(password);
