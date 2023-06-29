@@ -23,7 +23,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     const [errorMessage, setErrorMessage] = useState('');
     const [confirmErrorMessage, setConfirmErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const [trxUrl, setTrxUrl] = useState('');
+    const [accountUrl, setAccountUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const userStore = useUserStore();
@@ -61,10 +61,14 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
             setUserName();
 
-            // this only works when blockchainUrl === http://localhost || https:// but not with http://ip-address
-            setTrxUrl(
-                `https://local.bloks.io/transaction/${res.processed.id}?nodeUrl=${settings.config.blockchainUrl}&coreSymbol=SYS&systemDomain=eosio`
-            );
+            // This will not work in development mode as http://ip-address not supported
+            const url =
+                'https://local.bloks.io/account/' +
+                (await user.getAccountName()).toString() +
+                '?nodeUrl=' +
+                settings.config.blockchainUrl;
+
+            setAccountUrl(url);
         } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
@@ -228,7 +232,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                 </View>
                 <View style={errorModalStyles.marginTop}>
                     <Text>
-                        See it on the blockchain <TLink href={trxUrl}>here</TLink>
+                        See it on the blockchain <TLink href={accountUrl}>here</TLink>
                     </Text>
                 </View>
             </TModal>
