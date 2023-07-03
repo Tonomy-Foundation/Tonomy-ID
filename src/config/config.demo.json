@@ -8,8 +8,8 @@
         "tertiaryColor2": "#CFC8F7"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
-    "appName": "Tonomy ID Development",
-    "ecosystemName": "Tonomy Development",
+    "appName": "Tonomy ID Demo",
+    "ecosystemName": "Tonomy Demo",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
@@ -25,9 +25,9 @@
         "transparencyLearnMore": "#",
         "securityLearnMore": "#"
     },
-    "expoProjectId": "18ee7c2e-dba4-4c3d-8bd1-712e0c19b901",
-    "accountSuffix": ".stag.tonomy.id",
-    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
-    "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
-    "communicationUrl": "wss://communication.staging.tonomy.foundation"
+    "expoProjectId": "d2b659fc-655d-4beb-886a-236429973b9c",
+    "accountSuffix": ".demo.tonomy.id",
+    "blockchainUrl": "https://blockchain-api-demo.tonomy.foundation",
+    "ssoWebsiteOrigin": "https://accounts.demo.tonomy.foundation",
+    "communicationUrl": "wss://communication.demo.tonomy.foundation"
 }

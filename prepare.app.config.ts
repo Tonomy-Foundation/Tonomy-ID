@@ -1,10 +1,29 @@
+import fs from 'fs';
+import settings from './src/settings';
 import { ExpoConfig } from 'expo/config';
-
-// const settings = require('./src/settings');
-import settings from './build/settings';
 import myPackage from './package.json';
 
-const slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
+const appInputs = {
+    platform: process.env.EXPO_PLATFORM,
+    firstTime: process.env.EXPO_FIRST_TIME,
+    nodeEnv: process.env.NODE_ENV,
+    expoNodeEnv: process.env.EXPO_NODE_ENV,
+};
+
+console.log('appInputs', appInputs);
+
+let slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
+
+if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'demo') {
+    console.log('Replacing config for demo with some staging config');
+    // Deploy staging and demo ios app to the same app store listing
+    // Use the version number to differentiate between the two within TestFlight
+    const config = require('./src/config/config.staging.json');
+
+    slug = config.appName.toLowerCase().replaceAll(' ', '-');
+    settings.config.expoProjectId = config.expoProjectId;
+}
+
 const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
 
 // Check if inputs are correct
@@ -28,10 +47,11 @@ const expo: ExpoConfig = {
     updates: {
         fallbackToCacheTimeout: 0,
     },
+    githubUrl: 'https://github.com/Tonomy-Foundation/Tonomy-ID',
     assetBundlePatterns: ['**/*'],
     ios: {
         supportsTablet: true,
-        bundleIdentifier: 'foundation.tonomy.tonomyid',
+        bundleIdentifier: identifier,
     },
     android: {
         adaptiveIcon: {
@@ -48,8 +68,8 @@ const expo: ExpoConfig = {
         [
             'expo-notifications',
             {
-                icon: './src/assets/tonomy/tonomy-logo1024.png',
-                color: '#67D7ED',
+                icon: settings.config.images.logo1024,
+                color: settings.config.theme.primaryColor,
             },
         ],
     ],
@@ -57,6 +77,7 @@ const expo: ExpoConfig = {
         eas: {
             projectId: '48982c5e-41ff-4858-80ea-8e1b64092f21',
         },
+        EXPO_NODE_ENV: process.env.EXPO_NODE_ENV,
     },
 };
 
@@ -67,6 +88,13 @@ if (!['development', 'designonly'].includes(settings.env)) {
     expo.extra.eas.projectId = settings.config.expoProjectId;
 }
 
+if (process.env.EXPO_FIRST_TIME === 'true') {
+    console.log('Setting up expo for the first time');
+    // @ts-expect-error expo.extra is possibly not defined
+    expo.extra.eas = {};
+}
+
 console.log(JSON.stringify(expo, null, 2));
 
-export default expo;
+// Write app.json
+fs.writeFileSync('./app.json', JSON.stringify({ expo }, null, 2));

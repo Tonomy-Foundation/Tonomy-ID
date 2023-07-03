@@ -1,6 +1,12 @@
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.EXPO_NODE_ENV ?? 'development';
 
-console.log(`NODE_ENV=${env}`);
+const settingsInputs = {
+    nodeEnv: process.env.NODE_ENV, // This is set by expo with webpack https://github.com/expo/expo/issues/20360
+    expoNodeEnv: process.env.EXPO_NODE_ENV,
+    env,
+};
+
+console.log('settingsInputs', settingsInputs);
 
 type ConfigType = {
     blockchainUrl: string;
@@ -46,7 +52,7 @@ type SettingsType = {
 let config: ConfigType;
 const settings: SettingsType = {
     env,
-    isProduction: () => settings.env === 'production',
+    isProduction: () => ['production', 'demo', 'staging'].includes(settings.env),
 } as SettingsType;
 
 switch (env) {
@@ -59,10 +65,11 @@ switch (env) {
     case 'staging':
         config = require('./config/config.staging.json');
         break;
-    case 'production':
-        config = require('./config/config.staging.json');
-        // TODO add production config when ready
+    case 'demo':
+        config = require('./config/config.demo.json');
         break;
+    case 'production':
+        throw new Error('Production config not implemented yet');
     default:
         throw new Error('Unknown environment: ' + env);
 }

@@ -1,0 +1,51 @@
+name: Deployment - Staging
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # https://expo.dev/accounts/[account]/settings/access-tokens
+      GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-google-service-account.md
+      APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+          # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
+        
+      # TODO replace this with using semantic-release to do git bump
+      - name: "Automated Version Bump"
+        uses: "phips28/gh-action-bump-version@master"
+        env:
+          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+        with:
+          commit-message: 'ci: bumps version to {{version}} [skip ci]'
+
+      - name: 🚀 Build and publish staging app
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+      - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
+      - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - run: npm ci
+
+      - name: Check branch name
+        run: echo branch=${GITHUB_REF#refs/*/}
+      - run: |
+          if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
+            echo "BRANCH_NAME is not set to 'master'"
+            npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
+          fi
+      - run: npm run deploy:staging
