@@ -1,4 +1,4 @@
-import { Bytes, Checksum256, PrivateKey, PublicKey, Signature } from '@greymass/eosio';
+import { Bytes, Checksum256, PrivateKey, PublicKey, Signature } from '@wharfkit/antelope';
 import * as SecureStore from 'expo-secure-store';
 import {
     KeyManager,

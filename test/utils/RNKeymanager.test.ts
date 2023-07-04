@@ -1,4 +1,4 @@
-import { PublicKey } from '@greymass/eosio';
+import { PublicKey } from '@wharfkit/antelope';
 import { KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 import RNKeyManager from '../../src/utils/RNKeyManager';
 import arg from 'argon2';
