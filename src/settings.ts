@@ -3,6 +3,7 @@ const env = process.env.EXPO_NODE_ENV ?? 'development';
 const settingsInputs = {
     nodeEnv: process.env.NODE_ENV, // This is set by expo with webpack https://github.com/expo/expo/issues/20360
     expoNodeEnv: process.env.EXPO_NODE_ENV,
+    logEnv: process.env.LOG,
     env,
 };
 
@@ -41,6 +42,7 @@ type ConfigType = {
     accountSuffix: string;
     ssoWebsiteOrigin: string;
     communicationUrl: string;
+    loggerLevel: 'debug' | 'error';
 };
 
 type SettingsType = {
@@ -87,6 +89,11 @@ if (process.env.SSO_WEBSITE_ORIGIN) {
 if (process.env.VITE_COMMUNICATION_URL) {
     console.log(`Using communication microService from env: ${process.env.VITE_COMMUNICATION_URL}`);
     config.communicationUrl = process.env.VITE_COMMUNICATION_URL;
+}
+
+if (process.env.LOG === 'true') {
+    console.log(`Using logger level from env: ${process.env.LOG}`);
+    config.loggerLevel = 'debug';
 }
 
 settings.config = config;
