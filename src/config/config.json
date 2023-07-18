@@ -29,5 +29,6 @@
     "accountSuffix": ".stag.tonomy.id",
     "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
-    "communicationUrl": "wss://communication.staging.tonomy.foundation"
+    "communicationUrl": "wss://communication.staging.tonomy.foundation",
+    "loggerLevel": "debug"
 }

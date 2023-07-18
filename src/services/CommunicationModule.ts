@@ -1,6 +1,12 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
-import { AuthenticationMessage, CommunicationError, LoginRequestsMessage, objToBase64Url } from '@tonomy/tonomy-id-sdk';
+import {
+    AuthenticationMessage,
+    CommunicationError,
+    LinkAuthRequestMessage,
+    LoginRequestsMessage,
+    objToBase64Url,
+} from '@tonomy/tonomy-id-sdk';
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
@@ -11,33 +17,37 @@ export default function CommunicationModule() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
-    const [identifier, setIdentifier] = useState(-1);
+    const [subscribers, setSubscribers] = useState<number[]>([]);
 
     /**
      *  Login to communication microservice
      *  should be called on app start
      */
     async function loginToService() {
-        const issuer = await user.getIssuer();
-        const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-        const id = listenToMessages();
-
-        setIdentifier(id);
-
         try {
-            await user.communication.login(message);
-        } catch (e) {
-            if (e instanceof CommunicationError && e.exception.status === 401) {
-                await logout();
-            } else {
-                throw e;
+            const issuer = await user.getIssuer();
+            const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
+            const subscribers = listenToMessages();
+
+            setSubscribers(subscribers);
+
+            try {
+                await user.communication.login(message);
+            } catch (e) {
+                if (e instanceof CommunicationError && e.exception.status === 401) {
+                    await logout();
+                } else {
+                    throw e;
+                }
             }
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
         }
     }
 
-    function listenToMessages(): number {
-        try {
-            return user.communication.subscribeMessage((message) => {
+    function listenToMessages(): number[] {
+        const loginRequestSubscriber = user.communication.subscribeMessage((message) => {
+            try {
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();
                 const base64UrlPayload = objToBase64Url(payload);
@@ -47,11 +57,20 @@ export default function CommunicationModule() {
                     platform: 'browser',
                 });
                 sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
-            }, LoginRequestsMessage.getType());
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-            return -1;
-        }
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            }
+        }, LoginRequestsMessage.getType());
+
+        const linkAuthRequestSubscriber = user.communication.subscribeMessage(async (message) => {
+            try {
+                await user.handleLinkAuthRequestMessage(message);
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            }
+        }, LinkAuthRequestMessage.getType());
+
+        return [loginRequestSubscriber, linkAuthRequestSubscriber];
     }
 
     function sendLoginNotificationOnBackground(appName: string) {
@@ -72,8 +91,12 @@ export default function CommunicationModule() {
     }, [navigation, user]);
 
     useEffect(() => {
-        return () => user.communication.unsubscribeMessage(identifier);
-    }, [identifier]);
+        return () => {
+            for (const s of subscribers) {
+                user.communication.unsubscribeMessage(s);
+            }
+        };
+    }, [subscribers, user.communication]);
 
     return null;
 }

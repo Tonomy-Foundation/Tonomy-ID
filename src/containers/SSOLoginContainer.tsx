@@ -4,7 +4,15 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, LoginRequest, base64UrlToObj, SdkErrors, CommunicationError } from '@tonomy/tonomy-id-sdk';
+import {
+    UserApps,
+    App,
+    LoginRequest,
+    base64UrlToObj,
+    SdkErrors,
+    CommunicationError,
+    LoginRequestsMessage,
+} from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -23,7 +31,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     const [ssoApp, setSsoApp] = useState<App>();
     const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
     const [receiverDid, setReceiverDid] = useState<string>();
-    const [nextLoading, setNextLoading] = useState<boolean>(false);
+    const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
 
     const navigation = useNavigation();
@@ -68,6 +76,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     setSsoApp(app);
                 }
             }
+
+            setNextLoading(false);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -89,7 +99,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             setNextLoading(false);
 
             if (platform === 'mobile') {
-                await openBrowserAsync(callbackUrl);
+                await openBrowserAsync(callbackUrl as string);
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
@@ -134,10 +144,10 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             if (platform === 'mobile') {
                 setNextLoading(false);
-                await openBrowserAsync(res);
+                await openBrowserAsync(res as string);
             } else {
                 setNextLoading(false);
-                await user.communication.sendMessage(res);
+                await user.communication.sendMessage(res as LoginRequestsMessage);
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
                 navigation.navigate('Drawer', { screen: 'UserHome' });

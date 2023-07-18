@@ -1,4 +1,4 @@
-import { Bytes, Checksum256, KeyType, PrivateKey } from '@greymass/eosio';
+import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 
