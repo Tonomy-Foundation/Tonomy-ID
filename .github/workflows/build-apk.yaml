@@ -6,7 +6,7 @@ on:
       - feature/802-generate-apk
 
 jobs:
-  build-android:
+  build-android-and-ios:
     runs-on: ubuntu-20.04
     env:
       NODE_ENV: staging
@@ -23,14 +23,20 @@ jobs:
           node -v
           npm ci
 
-      - name: Build Tonomy ID .apk file for Android
+      - name: Build Tonomy ID Android APK and iOS IPA
         run: |
           npm run build:prepare
-          npx eas build --clear-cache --profile demo --platform android --local
-          mv android/app/build/outputs/apk/debug/app-debug.apk TonomyID.apk
+          npx expo build:android -t apk
+          npx expo build:ios -t archive
 
-      - name: Archive APK
+      - name: Archive Android APK
         uses: actions/upload-artifact@v2
         with:
-          name: TonomyID
-          path: TonomyID.apk
+          name: TonomyID-Android
+          path: ./TonomyID.apk
+
+      - name: Archive iOS IPA
+        uses: actions/upload-artifact@v2
+        with:
+          name: TonomyID-iOS
+          path: ./TonomyID.ipa
