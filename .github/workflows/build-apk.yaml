@@ -6,13 +6,13 @@ on:
       - feature/802-generate-apk
 
 jobs:
-  build-android-and-ios:
+  build-android:
     runs-on: ubuntu-20.04
     env:
       NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      EXPO_EAS_BUILD_PROFILE: demo
       container: cimg/android:2022.12.1-ndk
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,15 +28,10 @@ jobs:
         run: |
           npm run build:prepare
           npx eas build --clear-cache --profile demo --platform android --local
-          npx eas build --clear-cache --platform ios --local
+
       - name: Archive Android APK
         uses: actions/upload-artifact@v2
         with:
           name: TonomyID-Android
           path: ${{ github.workspace }}/TonomyID.apk
 
-      - name: Archive iOS IPA
-        uses: actions/upload-artifact@v2
-        with:
-          name: TonomyID-iOS
-          path: ${{ github.workspace }}/TonomyID.ipa
