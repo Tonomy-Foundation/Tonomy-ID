@@ -1,0 +1,36 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - feature/802-generate-apk
+
+jobs:
+  build-android:
+    runs-on: ubuntu-20.04
+    env:
+      NODE_ENV: staging
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js and build dependencies
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node -v
+          npm ci
+
+      - name: Build Tonomy ID .apk file for Android
+        run: |
+          npm run build:prepare
+          npx eas build --clear-cache --profile demo --platform android --local
+          mv android/app/build/outputs/apk/debug/app-debug.apk TonomyID.apk
+
+      - name: Archive APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: TonomyID
+          path: TonomyID.apk
