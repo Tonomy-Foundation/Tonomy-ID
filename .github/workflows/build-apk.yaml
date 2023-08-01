@@ -27,7 +27,7 @@ jobs:
       - name: Build Tonomy ID Android APK and iOS IPA
         run: |
           npm run build:prepare
-          npx eas build --clear-cache --platform android --local
+          npx eas build --clear-cache --profile demo --platform android --local
 
       - name: Archive Android APK
         uses: actions/upload-artifact@v2
