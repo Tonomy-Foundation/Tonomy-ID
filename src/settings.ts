@@ -42,6 +42,7 @@ type ConfigType = {
     accountSuffix: string;
     ssoWebsiteOrigin: string;
     communicationUrl: string;
+    tonomyIdSchema: string;
     loggerLevel: 'debug' | 'error';
 };
 
@@ -62,7 +63,6 @@ switch (env) {
     case 'local':
     case 'development':
         config = require('./config/config.json');
-        // TODO find a better way switch images
         break;
     case 'staging':
         config = require('./config/config.staging.json');
@@ -75,6 +75,8 @@ switch (env) {
     default:
         throw new Error('Unknown environment: ' + env);
 }
+
+config.tonomyIdSchema = config.appName.toLowerCase().replaceAll(' ', '-') + '://';
 
 if (process.env.BLOCKCHAIN_URL) {
     console.log(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);
