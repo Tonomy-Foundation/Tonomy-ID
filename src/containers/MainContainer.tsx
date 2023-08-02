@@ -1,7 +1,7 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, ScrollView } from 'react-native';
-import { CommunicationError, IdentifyMessage } from '@tonomy/tonomy-id-sdk';
+import { CommunicationError, IdentifyMessage, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
@@ -12,7 +12,7 @@ import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
 
-export default function MainContainer() {
+export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
     const user = userStore.user;
     const [username, setUsername] = useState('');
@@ -22,6 +22,10 @@ export default function MainContainer() {
 
     useEffect(() => {
         setUserName();
+
+        if (did) {
+            onUrlOpen(did);
+        }
     }, []);
 
     async function setUserName() {
@@ -34,33 +38,47 @@ export default function MainContainer() {
         }
     }
 
-    async function onScan({ data }: BarCodeScannerResult) {
-        // setIsLoadingView(true);
+    async function onUrlOpen(did: string) {
+        try {
+            await connectToDid(did);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        } finally {
+            onClose();
+        }
+    }
 
+    async function onScan({ data }: BarCodeScannerResult) {
+        try {
+            const did = validateQrCode(data);
+
+            await connectToDid(did);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        } finally {
+            onClose();
+        }
+    }
+
+    async function connectToDid(did: string) {
         try {
             // Connect to the browser using their did:jwk
             const issuer = await user.getIssuer();
-            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, data);
+            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
 
             await user.communication.sendMessage(identifyMessage);
         } catch (e) {
             if (e instanceof CommunicationError && e.exception?.status === 404) {
                 // Happens if Tonomy Accounts not connected to communication service
-                errorStore.setError({
-                    error: new Error(
-                        'User probably needs to refresh the page. See notes in MainContainer.tsx onScan()'
-                    ),
-                    expected: false,
-                });
+                throw new Error('User probably needs to refresh the page. See notes in MainContainer.tsx onScan()');
+
                 // User probably has scanned a QR code on a website that is not logged into Tonomy Communication service
                 // Problem is probably in /Tonomy-App-Websites/src/sso/pages/Login.tsx
                 // They probably need to refresh the page
                 // TODO: tell the user to retry the login by refreshing
             } else {
-                errorStore.setError({ error: e, expected: false });
+                throw e;
             }
-        } finally {
-            onClose();
         }
     }
 
@@ -139,54 +157,3 @@ export default function MainContainer() {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    requestView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    requestText: {
-        paddingHorizontal: 30,
-        marginHorizontal: 10,
-        paddingVertical: 30,
-        marginTop: 10,
-        textAlign: 'center',
-    },
-    image: {
-        width: 200,
-        height: 190,
-        resizeMode: 'contain',
-        marginTop: 20,
-        marginBottom: 20,
-    },
-    container: {
-        padding: 16,
-        flex: 1,
-    },
-    content: {
-        flex: 1,
-    },
-    header: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginBottom: 30,
-    },
-    button: {
-        width: '50%',
-    },
-    marginTop: {
-        marginTop: 28,
-    },
-    cards: {
-        flex: 1,
-    },
-    card: {
-        marginRight: 16,
-        marginVertical: 16,
-    },
-    scrollView: {
-        marginRight: -20,
-    },
-});
