@@ -103,7 +103,7 @@ export default function MainContainer() {
                                     <TCard.Cover source={require('../assets/images/tonomy-dao.png')} />
                                     <TCard.Badge>Coming Soon</TCard.Badge>
                                     <TCard.Content>
-                                        <TP>Tonomy Participant</TP>
+                                        <TP>Tonomy Participate</TP>
                                     </TCard.Content>
                                 </TCard>
                                 <TCard style={styles.card}>
