@@ -14,17 +14,33 @@ jobs:
       container: cimg/android:2022.12.1-ndk
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install Node.js and build dependencies
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 18.12.1
-      - run: |
-          npm ci
-          npm run build:prepare
-          npx eas build --clear-cache --profile development --platform android --local
+          node-version: 18.x
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build on EAS
+        run: eas build --platform development --non-interactive
+
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+
+    #   - name: Install Node.js and build dependencies
+    #     uses: actions/setup-node@v3
+    #     with:
+    #       node-version: 18.12.1
+    #   - run: |
+    #       npm ci
+    #       npm run build:prepare
+    #       npx eas build --clear-cache --profile development --platform android --local
       # - name: Archive Android APK
       #   uses: actions/upload-artifact@v2
       #   with:
