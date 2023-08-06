@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
-        run: |
+      - run: |
           npm ci
           npm run build:prepare
           npx eas build --clear-cache --profile development --platform android --local
