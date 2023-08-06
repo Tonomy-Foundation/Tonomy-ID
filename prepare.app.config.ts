@@ -75,7 +75,7 @@ const expo: ExpoConfig = {
     ],
     extra: {
         eas: {
-            projectId: '48982c5e-41ff-4858-80ea-8e1b64092f21',
+            projectId: '6a12ab1e-fe16-4417-90eb-eb0f4a13bbf2',
         },
         EXPO_NODE_ENV: process.env.EXPO_NODE_ENV,
     },
