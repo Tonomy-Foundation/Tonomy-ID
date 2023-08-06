@@ -21,17 +21,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
-          cache: npm
-
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
       - run: |
           npm ci
           npm run build:prepare
-          npm run build:android
+          npx eas build --clear-cache --profile development --platform android --local
       # - name: Archive Android APK
       #   uses: actions/upload-artifact@v2
       #   with:
