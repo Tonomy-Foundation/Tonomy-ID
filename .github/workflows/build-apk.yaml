@@ -24,7 +24,7 @@ jobs:
       - run: |
           npm ci
           npm run build:prepare
-
+          npx eas build --clear-cache --profile development --platform android --local
 
       # - name: Archive Android APK
       #   uses: actions/upload-artifact@v2
