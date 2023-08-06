@@ -26,6 +26,7 @@ jobs:
 
       - name: Build Tonomy ID Android APK and iOS IPA
         run: |
+          export EXPO_FIRST_TIME=true
           npm run build:prepare
           npx eas build --clear-cache --profile demo --platform android --local
 
