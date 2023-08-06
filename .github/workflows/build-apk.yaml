@@ -9,7 +9,7 @@ jobs:
   build-android:
     runs-on: ubuntu-20.04
     env:
-      NODE_ENV: development
+      NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       container: cimg/android:2022.12.1-ndk
 
@@ -24,8 +24,7 @@ jobs:
       - run: |
           npm ci
           npm run build:prepare
-          npx eas build --clear-cache --profile development --platform android --local
-
+          npm run build:android
       # - name: Archive Android APK
       #   uses: actions/upload-artifact@v2
       #   with:
