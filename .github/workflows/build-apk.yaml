@@ -9,7 +9,7 @@ jobs:
   build-android:
     runs-on: ubuntu-20.04
     env:
-      NODE_ENV: staging
+      NODE_ENV: development
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       container: cimg/android:2022.12.1-ndk
 
