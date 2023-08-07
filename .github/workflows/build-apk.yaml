@@ -38,11 +38,14 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --non-interactive --profile development --platform android --local
-      - run: find . -name "*.apk"
-    
+      - run: npx eas build --clear-cache --profile development --platform android --local
+	    - run: find . -name "*.apk"
+
+      - name: Check github workspace
+        run: echo ${{ github.workspace }}
+
       - name: Archive Android APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: TonomyID-Android
           path: ${{ github.workspace }}
