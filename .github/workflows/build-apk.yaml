@@ -39,7 +39,7 @@ jobs:
       - run: npm ci
       - run: npm run build:prepare
       - run: npx eas build --clear-cache --profile development --platform android --local
-	    - run: find . -name "*.apk"
+      - run: find . -name "*.apk"
 
       - name: Check github workspace
         run: echo ${{ github.workspace }}
