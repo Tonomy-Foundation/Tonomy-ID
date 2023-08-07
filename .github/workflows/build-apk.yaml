@@ -17,17 +17,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Node.js and build dependencies
-        run: |
-          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-          sudo apt-get install -y nodejs
-          node -v
-          npm ci
+      - name: 🚀 Build and publish demo app
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+      - run: npm ci
+      - run:  npm run build:prepare
+      - run: npx eas build --platform android --local
 
-      - name: Build Tonomy ID Android APK and iOS IPA
-        run: |
-          npm run build:prepare
-          npx eas build --clear-cache --profile development --platform android --local
+
+      # - name: Build Tonomy ID Android APK and iOS IPA
+      #   run: |
+      #     npm run build:prepare
+      # npx eas build --clear-cache --profile development --platform android --local
 
       # - name: Archive Android APK
       #   uses: actions/upload-artifact@v2
