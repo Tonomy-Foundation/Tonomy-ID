@@ -23,6 +23,6 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform android --profile demo
+      - run: npx eas build --clear-cache --profile demo --platform android --local
       - run: find . -name "*.apk"
       
