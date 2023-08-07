@@ -24,6 +24,17 @@ jobs:
       - run: npm ci
       - run: npm run build:prepare
       - run: npx eas build --clear-cache --profile development --platform android --local
+      - run: find . -name "*.apk"
+
+      - name: Find APK files
+        run: find . -name "*.apk" > apk_files.txt
+
+      - name: Rename APK files
+        run: |
+          while read -r apk_file; do
+            new_name="${apk_file%.apk}TonomyID.apk"
+            mv "$apk_file" "$new_name"
+          done < apk_files.txt
 
 
       # - name: Build Tonomy ID Android APK and iOS IPA
@@ -35,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: TonomyID-Android
-          path: ${{ github.workspace }}/TonomyID.apk
+          path: ./*TonomyID.apk
