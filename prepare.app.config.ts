@@ -12,7 +12,7 @@ const appInputs = {
 
 console.log('appInputs', appInputs);
 
-let slug = settings.config.appName.toLowerCase().replaceAll(' ', '-');
+let slug = settings.config.appName.toLowerCase().replace(' ', '-');
 
 if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'demo') {
     console.log('Replacing config for demo with some staging config');
@@ -20,11 +20,11 @@ if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'demo') {
     // Use the version number to differentiate between the two within TestFlight
     const config = require('./src/config/config.staging.json');
 
-    slug = config.appName.toLowerCase().replaceAll(' ', '-');
+    slug = config.appName.toLowerCase().replace(' ', '-');
     settings.config.expoProjectId = config.expoProjectId;
 }
 
-const identifier = 'foundation.tonomy.projects.' + slug.replaceAll('-', '');
+const identifier = 'foundation.tonomy.projects.' + slug.replace('-', '');
 
 // Check if inputs are correct
 if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
