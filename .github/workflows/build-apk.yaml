@@ -9,9 +9,9 @@ jobs:
   build-android:
     runs-on: ubuntu-20.04
     env:
-      NODE_ENV: demo
+      NODE_ENV: development
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    container: cimg/android:2022.12.1-ndk
+      container: cimg/android:2022.12.1-ndk
 
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --profile demo --platform android --local
+      - run: npx eas build --clear-cache --profile development --platform android --local
 
 
       # - name: Build Tonomy ID Android APK and iOS IPA
