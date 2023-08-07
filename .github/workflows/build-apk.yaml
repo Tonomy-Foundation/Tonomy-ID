@@ -26,16 +26,12 @@ jobs:
       - run: npx eas build --clear-cache --profile development --platform android --local
       - run: find . -name "*.apk"
 
-      - name: Find APK files
-        run: find . -name "*.apk" > apk_files.txt
-
-      - name: Rename APK files
+      - name: Rename APK file
         run: |
-          while read -r apk_file; do
-            new_name="TonomyID.apk"
-            mv "$apk_file" "$new_name"
-            echo "Renamed: $new_name"
-          done < apk_files.txt
+          apk_file= find . -name "*.apk"
+          new_name="TonomyID.apk"
+          mv "$apk_file" "$new_name"
+          echo "Renamed: $new_name"
 
       - name: Archive Android APK
         uses: actions/upload-artifact@v3
