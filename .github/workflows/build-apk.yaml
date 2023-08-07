@@ -11,7 +11,7 @@ jobs:
     env:
       NODE_ENV: demo
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      container: cimg/android:2022.12.1-ndk
+    container: cimg/android:2022.12.1-ndk
 
     steps:
       - name: Checkout code
@@ -23,6 +23,6 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --profile demo --platform android --local
+      - run: npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform android --profile demo
       - run: find . -name "*.apk"
       
