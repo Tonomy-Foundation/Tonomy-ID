@@ -24,11 +24,12 @@ jobs:
       - run: npm ci
       - run: npm run build:prepare
       - run: npx eas build --clear-cache --profile development --platform android --local
-      - run: find . -name "*.apk"
+      
+      - name: Find APK file
+        run: apk_file=$(find . -name "*.apk")
 
-      - name: Rename APK file
+      - name: Rename APK
         run: |
-          apk_file= find . -name "*.apk"
           new_name="TonomyID.apk"
           mv "$apk_file" "$new_name"
           echo "Renamed: $new_name"
@@ -37,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: TonomyID-Android
-          path: ./*TonomyID.apk
+          path: TonomyID.apk
