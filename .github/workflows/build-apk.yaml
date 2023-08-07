@@ -32,18 +32,13 @@ jobs:
       - name: Rename APK files
         run: |
           while read -r apk_file; do
-            new_name="${apk_file%.apk}TonomyID.apk"
+            new_name="TonomyID.apk"
             mv "$apk_file" "$new_name"
+            echo "Renamed: $new_name"
           done < apk_files.txt
 
-
-      # - name: Build Tonomy ID Android APK and iOS IPA
-      #   run: |
-      #     npm run build:prepare
-      # npx eas build --clear-cache --profile development --platform android --local
-
       - name: Archive Android APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: TonomyID-Android
-          path: ./*TonomyID.apk
+          path: ./apk/TonomyID.apk
