@@ -157,3 +157,54 @@ export default function MainContainer({ did }: { did?: string }) {
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    requestView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    requestText: {
+        paddingHorizontal: 30,
+        marginHorizontal: 10,
+        paddingVertical: 30,
+        marginTop: 10,
+        textAlign: 'center',
+    },
+    image: {
+        width: 200,
+        height: 190,
+        resizeMode: 'contain',
+        marginTop: 20,
+        marginBottom: 20,
+    },
+    container: {
+        padding: 16,
+        flex: 1,
+    },
+    content: {
+        flex: 1,
+    },
+    header: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: 30,
+    },
+    button: {
+        width: '50%',
+    },
+    marginTop: {
+        marginTop: 28,
+    },
+    cards: {
+        flex: 1,
+    },
+    card: {
+        marginRight: 16,
+        marginVertical: 16,
+    },
+    scrollView: {
+        marginRight: -20,
+    },
+});
