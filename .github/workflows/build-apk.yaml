@@ -10,20 +10,32 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       NODE_ENV: development
+      EXPO_NODE_ENV: development
+      EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      container: cimg/android:2022.12.1-ndk
+    container: cimg/android:2022.12.1-ndk
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: 🚀 Build and publish demo app
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.12.1
-      - run: npm ci
-      - run: npm run build:prepare
-      - run: npx eas build --clear-cache --profile development --platform android --local
+      - name: Build Tonomy ID .apk file for Android
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node -v
+          npm ci
+          npm run build:prepare
+          npx eas build --clear-cache --profile demo --platform android --local
+
+      # - name: 🚀 Build and publish demo app
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18.12.1
+      # - run: npm ci
+      # - run: npm run build:prepare
+      # - run: npx eas build --clear-cache --profile development --platform android --local
+      # - run: echo "github workspace is ${{github.workspace}}"
 
 
       # - name: Build Tonomy ID Android APK and iOS IPA
@@ -32,8 +44,8 @@ jobs:
       # npx eas build --clear-cache --profile development --platform android --local
 
       - name: Archive Android APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: TonomyID-Android
-          path: ${{ github.workspace }}/TonomyID.apk
+          path: ${{ github.workspace }}
 
