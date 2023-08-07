@@ -22,8 +22,8 @@ jobs:
         with:
           node-version: 18.12.1
       - run: npm ci
-      - run:  npm run build:prepare
-      - run: npx eas build --platform android --local
+      - run: npm run build:prepare
+      - run: npx eas build --clear-cache --profile development --platform android --local
 
 
       # - name: Build Tonomy ID Android APK and iOS IPA
