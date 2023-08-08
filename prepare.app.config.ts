@@ -11,12 +11,14 @@ const appInputs = {
 };
 
 console.log('appInputs', appInputs);
+let slug = settings.config.tonomyIdSchema.replace('://', '');
 
 if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'demo') {
     console.log('Replacing config for demo with some staging config (iOS only');
     // Deploy staging and demo ios app to the same app store listing
     const config = require('./src/config/config.staging.json');
 
+    slug = config.appName.toLowerCase().replace(/ /g, '-');
     settings.config.expoProjectId = config.expoProjectId;
 }
 
@@ -30,7 +32,7 @@ if (!/^([.]{1})([0-9a-z.]+)$/g.test(settings.config.accountSuffix))
 const expo: ExpoConfig = {
     scheme: settings.config.tonomyIdSchema,
     name: settings.config.appName,
-    slug: settings.config.tonomyIdSchema,
+    slug,
     version: myPackage.version,
     orientation: 'portrait',
     icon: settings.config.images.logo1024,
