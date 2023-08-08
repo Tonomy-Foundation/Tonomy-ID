@@ -12,11 +12,6 @@ jobs:
       NODE_ENV: development
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     container: cimg/android:2022.12.1-ndk
-    env:
-      EXPO_NODE_ENV: development
-      EXPO_PLATFORM: android
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    container: cimg/android:2022.12.1-ndk
 
     steps:
       - name: Checkout code
