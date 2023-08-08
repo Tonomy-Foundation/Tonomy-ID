@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - feature/802-generate-apk
+      - master
 
 jobs:
   build-android:
@@ -35,3 +35,17 @@ jobs:
           name: TonomyID-Android
           path: ./*TonomyID.apk
       
+      # - name: Use `act` to build apk file (uncomment when running locally with `act`)
+      # # `act` (https://github.com/nektos/act) does not support the `uses: actions/setup-node@v3` inside an alien container
+      # # therefore we must install it manually
+      # # also, we need to run Tonomy ID as a standalone git repo (not as a submodule of Tonomy ID Integration)
+      #   run: |
+      #     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+      #     sudo apt-get install -y nodejs
+      #     node -v
+      #     npm ci
+      #     npm run build:prepare
+      # npx eas build --clear-cache --profile development --platform android --local
+
+      #     npx eas build --clear-cache --non-interactive --profile development --platform android --local
+      #     find . -name "*.apk"
