@@ -27,7 +27,7 @@ jobs:
       - run: npx eas build --clear-cache --profile development --platform android --local
 
       - name: Find APK files
-        run: find . -name "*.apk" -exec mv {} TonomyID.apk
+        run: find . -name "*.apk" -exec mv {} TonomyID.apk \;
 
       - name: Archive Android APK
         uses: actions/upload-artifact@v3
