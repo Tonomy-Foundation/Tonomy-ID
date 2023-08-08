@@ -7,9 +7,9 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      NODE_ENV: demo
+      NODE_ENV: staging
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     container: cimg/android:2022.12.1-ndk
 
@@ -23,6 +23,6 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --profile demo --platform android --local
+      - run: npx eas build --clear-cache --profile staging --platform android --local
       - run: find . -name "*.apk"
       
