@@ -11,18 +11,21 @@ const appInputs = {
 };
 
 console.log('appInputs', appInputs);
-let slug = settings.config.tonomyIdSchema.replace('://', '');
+let slug = settings.config.tonomyIdSlug.replace('://', '');
+const scheme = slug;
 
 if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'demo') {
     console.log('Replacing config for demo with some staging config (iOS only');
     // Deploy staging and demo ios app to the same app store listing
     const config = require('./src/config/config.staging.json');
 
+    // Expo slug, and bundleIdentifier must be the same for the same app store listing
     slug = config.appName.toLowerCase().replace(/ /g, '-');
+    // Match the projectId of staging to make the same build
     settings.config.expoProjectId = config.expoProjectId;
 }
 
-const identifier = 'foundation.tonomy.projects.' + settings.config.tonomyIdSchema.replace('-', '');
+const identifier = 'foundation.tonomy.projects.' + slug.replace(/-/g, '');
 
 // Check if inputs are correct
 if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid app name ' + settings.config.appName);
@@ -30,7 +33,7 @@ if (!/^([.]{1})([0-9a-z.]+)$/g.test(settings.config.accountSuffix))
     throw new Error('Invalid account suffix ' + settings.config.accountSuffix);
 
 const expo: ExpoConfig = {
-    scheme: settings.config.tonomyIdSchema,
+    scheme,
     name: settings.config.appName,
     slug,
     version: myPackage.version,
