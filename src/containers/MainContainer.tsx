@@ -1,7 +1,7 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, ScrollView } from 'react-native';
-import { CommunicationError, IdentifyMessage } from '@tonomy/tonomy-id-sdk';
+import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
@@ -11,8 +11,9 @@ import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
+import settings from '../settings';
 
-export default function MainContainer() {
+export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
     const user = userStore.user;
     const [username, setUsername] = useState('');
@@ -22,6 +23,10 @@ export default function MainContainer() {
 
     useEffect(() => {
         setUserName();
+
+        if (did) {
+            onUrlOpen(did);
+        }
     }, []);
 
     async function setUserName() {
@@ -34,33 +39,55 @@ export default function MainContainer() {
         }
     }
 
-    async function onScan({ data }: BarCodeScannerResult) {
-        // setIsLoadingView(true);
-
+    async function onUrlOpen(did: string) {
         try {
-            // Connect to the browser using their did:jwk
-            const issuer = await user.getIssuer();
-            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, data);
-
-            await user.communication.sendMessage(identifyMessage);
+            await connectToDid(did);
         } catch (e) {
-            if (e instanceof CommunicationError && e.exception?.status === 404) {
-                // Happens if Tonomy Accounts not connected to communication service
+            errorStore.setError({ error: e, expected: false });
+        } finally {
+            onClose();
+        }
+    }
+
+    async function onScan({ data }: BarCodeScannerResult) {
+        try {
+            const did = validateQrCode(data);
+
+            await connectToDid(did);
+        } catch (e) {
+            if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 errorStore.setError({
-                    error: new Error(
-                        'User probably needs to refresh the page. See notes in MainContainer.tsx onScan()'
-                    ),
-                    expected: false,
+                    title: 'Invalid QR Code',
+                    error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
+                    expected: true,
                 });
-                // User probably has scanned a QR code on a website that is not logged into Tonomy Communication service
-                // Problem is probably in /Tonomy-App-Websites/src/sso/pages/Login.tsx
-                // They probably need to refresh the page
-                // TODO: tell the user to retry the login by refreshing
             } else {
                 errorStore.setError({ error: e, expected: false });
             }
         } finally {
             onClose();
+        }
+    }
+
+    async function connectToDid(did: string) {
+        try {
+            // Connect to the browser using their did:jwk
+            const issuer = await user.getIssuer();
+            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+
+            await user.communication.sendMessage(identifyMessage);
+        } catch (e) {
+            if (e instanceof CommunicationError && e.exception?.status === 404) {
+                // Happens if Tonomy Accounts not connected to communication service
+                throw new Error('User probably needs to refresh the page. See notes in MainContainer.tsx onScan()');
+
+                // User probably has scanned a QR code on a website that is not logged into Tonomy Communication service
+                // Problem is probably in /Tonomy-App-Websites/src/sso/pages/Login.tsx
+                // They probably need to refresh the page
+                // TODO: tell the user to retry the login by refreshing
+            } else {
+                throw e;
+            }
         }
     }
 
@@ -103,7 +130,7 @@ export default function MainContainer() {
                                     <TCard.Cover source={require('../assets/images/tonomy-dao.png')} />
                                     <TCard.Badge>Coming Soon</TCard.Badge>
                                     <TCard.Content>
-                                        <TP>Tonomy Participant</TP>
+                                        <TP>Tonomy Participate</TP>
                                     </TCard.Content>
                                 </TCard>
                                 <TCard style={styles.card}>

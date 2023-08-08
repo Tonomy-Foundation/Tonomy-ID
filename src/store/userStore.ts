@@ -32,6 +32,7 @@ setSettings({
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,
     loggerLevel: settings.config.loggerLevel,
+    tonomyIdSchema: settings.config.tonomyIdSlug + '://',
 });
 
 interface UserStorageState {

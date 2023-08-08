@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.41.0",
+    "version": "0.42.3",
     "scripts": {
         "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
@@ -25,7 +25,7 @@
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "^0.13.0",
+        "@tonomy/tonomy-id-sdk": "^0.13.0-development.8",
         "@wharfkit/antelope": "^0.7.1",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
