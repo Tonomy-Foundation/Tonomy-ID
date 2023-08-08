@@ -7,9 +7,10 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
-      NODE_ENV: development
+      EXPO_NODE_ENV: development
+      EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     container: cimg/android:2022.12.1-ndk
 
@@ -26,15 +27,8 @@ jobs:
       - run: npx eas build --clear-cache --profile development --platform android --local
 
       - name: Find APK files
-        run: find . -name "*.apk" > apk_files.txt
+        run: find . -name "*.apk" -exec mv {} TonomyID.apk
 
-      - name: Rename APK files
-        run: |
-          while read -r apk_file; do
-            new_name="TonomyID.apk"
-            mv "$apk_file" "$new_name"
-            echo "Renamed: $new_name"
-          done < apk_files.txt
       - name: Archive Android APK
         uses: actions/upload-artifact@v3
         with:
