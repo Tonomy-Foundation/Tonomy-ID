@@ -18,7 +18,7 @@ const theme = {
         accent2: settings.config.theme.tertiaryColor2,
         background: 'white',
         text: '#474D4C',
-        textGray: '#868686',
+        textGray: '#5B6261',
         white: '#FDFEFF',
         headerFooter: '#F9F9F9',
         grey: '#313938',

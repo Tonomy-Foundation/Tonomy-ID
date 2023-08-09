@@ -5,8 +5,8 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "experimentalDecorators": true, // needed for @greymass/eosio
-    "useUnknownInCatchVariables": false, // needed for @greymass/eosio
+    "experimentalDecorators": true, // needed for @wharfkit/antelope
+    "useUnknownInCatchVariables": false, // needed for @wharfkit/antelope
   },
   "include": [
     "App.tsx",

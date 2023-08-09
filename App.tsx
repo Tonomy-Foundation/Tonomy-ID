@@ -1,6 +1,4 @@
-// Polyfills for React Native
-import 'fast-text-encoding';
-
+import './src/utils/polyfill';
 import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import RootNavigation from './src/navigation/Root';
@@ -10,7 +8,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import setErrorHandlers from './src/utils/exceptions';
 import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
 import useErrorStore from './src/store/errorStore';
-import './src/utils/base64.polyfill';
+import settings from './src/settings';
+import { runTests } from './src/utils/runtime-tests';
+
+if (!settings.isProduction()) {
+    runTests();
+}
 
 export default function App() {
     const errorStore = useErrorStore();

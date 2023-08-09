@@ -1,4 +1,4 @@
-import { Bytes, Checksum256, KeyType, PrivateKey } from '@greymass/eosio';
+import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 
@@ -8,7 +8,7 @@ import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
  *
  * This needs to be executed at runtime as the react-native-argon2 library cannot run in nodejs
  */
-async function testKeyGenerator() {
+export async function testKeyGenerator() {
     // See equivalent test in crypto.test.ts in Tonomy-ID-SDK
     try {
         const saltInput = Checksum256.from(sha256('testsalt'));
@@ -23,8 +23,6 @@ async function testKeyGenerator() {
         console.error(e);
     }
 }
-
-testKeyGenerator();
 
 export async function generatePrivateKeyFromPassword(
     password: string,

@@ -1,6 +1,13 @@
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.EXPO_NODE_ENV ?? 'development';
 
-console.log(`NODE_ENV=${env}`);
+const settingsInputs = {
+    nodeEnv: process.env.NODE_ENV, // This is set by expo with webpack https://github.com/expo/expo/issues/20360
+    expoNodeEnv: process.env.EXPO_NODE_ENV,
+    logEnv: process.env.LOG,
+    env,
+};
+
+console.log('settingsInputs', settingsInputs);
 
 type ConfigType = {
     blockchainUrl: string;
@@ -35,6 +42,8 @@ type ConfigType = {
     accountSuffix: string;
     ssoWebsiteOrigin: string;
     communicationUrl: string;
+    tonomyIdSlug: string;
+    loggerLevel: 'debug' | 'error';
 };
 
 type SettingsType = {
@@ -46,7 +55,7 @@ type SettingsType = {
 let config: ConfigType;
 const settings: SettingsType = {
     env,
-    isProduction: () => settings.env === 'production',
+    isProduction: () => ['production', 'demo', 'staging'].includes(settings.env),
 } as SettingsType;
 
 switch (env) {
@@ -54,18 +63,20 @@ switch (env) {
     case 'local':
     case 'development':
         config = require('./config/config.json');
-        // TODO find a better way switch images
         break;
     case 'staging':
         config = require('./config/config.staging.json');
         break;
-    case 'production':
-        config = require('./config/config.staging.json');
-        // TODO add production config when ready
+    case 'demo':
+        config = require('./config/config.demo.json');
         break;
+    case 'production':
+        throw new Error('Production config not implemented yet');
     default:
         throw new Error('Unknown environment: ' + env);
 }
+
+config.tonomyIdSlug = config.appName.toLowerCase().replace(/ /g, '-');
 
 if (process.env.BLOCKCHAIN_URL) {
     console.log(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);
@@ -80,6 +91,11 @@ if (process.env.SSO_WEBSITE_ORIGIN) {
 if (process.env.VITE_COMMUNICATION_URL) {
     console.log(`Using communication microService from env: ${process.env.VITE_COMMUNICATION_URL}`);
     config.communicationUrl = process.env.VITE_COMMUNICATION_URL;
+}
+
+if (process.env.LOG === 'true') {
+    console.log(`Using logger level from env: ${process.env.LOG}`);
+    config.loggerLevel = 'debug';
 }
 
 settings.config = config;

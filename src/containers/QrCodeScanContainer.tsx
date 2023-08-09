@@ -89,7 +89,7 @@ export default function QrCodeScanContainer(props: Props) {
             {hasPermission !== true && (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator animating={true}></ActivityIndicator>
-                    {hasPermission === null && <TP size={2}>Requesting for camera permission</TP>}
+                    {hasPermission === null && <TP size={2}>Requesting camera permission</TP>}
                     {hasPermission === false && <TP size={3}>No access to camera</TP>}
                 </View>
             )}

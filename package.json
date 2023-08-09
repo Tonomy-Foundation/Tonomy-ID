@@ -1,12 +1,17 @@
 {
     "name": "tonomy-id",
-    "version": "0.26.0",
+    "version": "0.42.4",
     "scripts": {
-        "build:prepare": "ts-node prepare.ts",
+        "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "npm run build:prepare && npx eas device:create",
         "build:ios": "npm run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
         "build:android": "npm run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
-        "deploy": "npm run build:prepare && npx eas build --platform all --clear-cache --auto-submit-with-profile=${NODE_ENV} --no-wait --non-interactive",
+        "deploy:demo:android": "EXPO_NODE_ENV=demo EXPO_PLATFORM=android npm run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform android --profile demo",
+        "deploy:demo:ios": "EXPO_NODE_ENV=demo EXPO_PLATFORM=ios npm run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform ios --profile demo",
+        "deploy:demo": "npm run deploy:demo:android && npm run deploy:demo:ios",
+        "deploy:staging:android": "EXPO_NODE_ENV=staging EXPO_PLATFORM=android npm run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform android --profile staging",
+        "deploy:staging:ios": "EXPO_NODE_ENV=staging EXPO_PLATFORM=ios npm run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform ios --profile staging",
+        "deploy:staging": "npm run deploy:staging:android && npm run deploy:staging:ios",
         "start": "npm run build:prepare && npx expo start --dev-client --clear",
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
         "lint:fix": "npm run lint -- --fix",
@@ -15,15 +20,15 @@
         "typeCheck": "tsc"
     },
     "dependencies": {
-        "@greymass/eosio": "^0.6.4",
         "@react-native-async-storage/async-storage": "~1.17.3",
         "@react-navigation/bottom-tabs": "^6.5.0",
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "^0.3.46",
-        "babel-plugin-transform-builtin-extend": "^1.1.2",
+        "@tonomy/tonomy-id-sdk": "^0.13.0-development.8",
+        "@wharfkit/antelope": "^0.7.1",
         "base-64": "^1.0.0",
+        "big-integer": "^1.6.51",
         "deepmerge": "^4.2.2",
         "expo": "^47.0.0",
         "expo-barcode-scanner": "~11.3.0",
@@ -31,12 +36,11 @@
         "expo-dev-client": "~2.0.1",
         "expo-linking": "~3.2.3",
         "expo-local-authentication": "~13.0.2",
+        "expo-notifications": "~0.17.0",
         "expo-secure-store": "~12.0.0",
         "expo-status-bar": "~1.4.2",
         "expo-web-browser": "^12.0.0",
         "fast-text-encoding": "^1.0.6",
-        "jest": "^26.6.3",
-        "jest-expo": "^47.0.0",
         "react": "18.1.0",
         "react-dom": "18.1.0",
         "react-native": "0.70.5",
@@ -61,6 +65,7 @@
         "@typescript-eslint/eslint-plugin": "^5.40.0",
         "@typescript-eslint/parser": "^5.40.0",
         "argon2": "^0.29.1",
+        "babel-plugin-transform-builtin-extend": "^1.1.2",
         "babel-plugin-transform-inline-environment-variables": "^0.4.4",
         "eas-cli": "^3.1.1",
         "eslint": "^8.25.0",
@@ -70,6 +75,8 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-native": "^4.0.0",
         "expo-cli": "^5.5.1",
+        "jest": "^29.5.0",
+        "jest-expo": "^48.0.2",
         "prettier": "^2.7.1",
         "ts-node": "^10.9.1",
         "typescript": "^4.6.3"
@@ -82,6 +89,6 @@
     },
     "private": true,
     "resolutions": {
-        "@greymass/eosio": "^0.6.4"
+        "@wharfkit/antelope": "0.7.1"
     }
 }

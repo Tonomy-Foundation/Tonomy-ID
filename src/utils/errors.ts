@@ -29,6 +29,7 @@ enum ApplicationErrors {
     NoRequestData = 'NoRequestData',
     InvalidJwt = 'InvalidJwt',
     MissingParams = 'MissingParams',
+    InvalidLinkAuthRequest = 'InvalidLinkAuthRequest',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
