@@ -9,7 +9,7 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     env:
-      EXPO_NODE_ENV: demo
+      EXPO_NODE_ENV: development
       EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     container: cimg/android:2022.12.1-ndk
@@ -24,7 +24,8 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --profile development --platform android --local
+      - run: npx eas build --clear-cache --profile preview --platform android --local
+      # TODO maybe should make a new build profile with "demo" EXPO_NODE_ENV but internal distribution (.apk file)
 
       # - name: Use `act` to build apk file (uncomment when running locally with `act`)
       # # `act` (https://github.com/nektos/act) does not support the `uses: actions/setup-node@v3` inside an alien container
