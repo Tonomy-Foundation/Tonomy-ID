@@ -19,7 +19,7 @@ const icons: Record<keyof DrawerStackParamList, string> = {
 
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { user, setStatus } = useUserStore();
+    const { logout } = useUserStore();
     const theme = useAppTheme();
     const styles = StyleSheet.create({
         container: {
@@ -72,8 +72,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     <TButton
                         style={styles.button}
                         onPress={async () => {
-                            await user.logout();
-                            setStatus(UserStatus.NOT_LOGGED_IN);
+                            await logout();
                         }}
                         icon={icons['Logout']}
                         color={theme.colors.grey2}
