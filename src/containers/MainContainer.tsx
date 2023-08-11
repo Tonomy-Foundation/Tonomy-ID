@@ -77,7 +77,11 @@ export default function MainContainer({ did }: { did?: string }) {
 
             await user.communication.sendMessage(identifyMessage);
         } catch (e) {
-            if (e instanceof CommunicationError && e.exception?.status === 400) {
+            if (
+                e instanceof CommunicationError &&
+                e.exception?.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
                 errorStore.setError({
                     title: 'Problem connecting',
                     error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
