@@ -5,7 +5,9 @@ import {
     CommunicationError,
     LinkAuthRequestMessage,
     LoginRequestsMessage,
+    getSettings,
     objToBase64Url,
+    parseDid,
 } from '@tonomy/tonomy-id-sdk';
 import { useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
@@ -46,8 +48,24 @@ export default function CommunicationModule() {
     }
 
     function listenToMessages(): number[] {
-        const loginRequestSubscriber = user.communication.subscribeMessage((message) => {
+        const loginRequestSubscriber = user.communication.subscribeMessage(async (message) => {
             try {
+                const senderDid = message.getSender();
+                const { method, id } = parseDid(senderDid);
+
+                // did:jwk is used for the initial login request so is allowed
+                if (method !== 'jwk' && id !== parseDid(await user.getDid()).id) {
+                    if (getSettings().loggerLevel === 'debug')
+                        console.log(
+                            'LoginRequestsMessage sender did not match user did',
+                            senderDid,
+                            await user.getDid()
+                        );
+                    // Drop message. It came from a different account and we are not interested in it here.
+                    // TODO: low priority: handle this case in a better way as it does present a DOS vector.
+                    return;
+                }
+
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();
                 const base64UrlPayload = objToBase64Url(payload);
@@ -64,6 +82,20 @@ export default function CommunicationModule() {
 
         const linkAuthRequestSubscriber = user.communication.subscribeMessage(async (message) => {
             try {
+                const senderDid = message.getSender().split('#')[0];
+
+                if (senderDid !== (await user.getDid())) {
+                    if (getSettings().loggerLevel === 'debug')
+                        console.log(
+                            'LinkAuthRequestMessage sender did not match user did',
+                            senderDid,
+                            await user.getDid()
+                        );
+                    // Drop message. It came from a different account and we are not interested in it here.
+                    // TODO: low priority: handle this case in a better way as it does present a DOS vector.
+                    return;
+                }
+
                 await user.handleLinkAuthRequestMessage(message);
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });

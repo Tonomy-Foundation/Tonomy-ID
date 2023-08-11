@@ -1,8 +1,8 @@
-name: Build and Deploy
+name: Build Android APK for analysis
 
 on:
-  push:
-    branches:
+  pull_request:
+    branches-ignore:
       - master
 
 jobs:
@@ -24,17 +24,9 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --profile development --platform android --local
+      - run: npx eas build --clear-cache --profile preview --platform android --local
+      # TODO maybe should make a new build profile with "demo" EXPO_NODE_ENV but internal distribution (.apk file)
 
-      - name: Find APK files
-        run: find . -name "*.apk" -exec mv {} TonomyID.apk \;
-
-      - name: Archive Android APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: TonomyID-Android
-          path: ./*TonomyID.apk
-      
       # - name: Use `act` to build apk file (uncomment when running locally with `act`)
       # # `act` (https://github.com/nektos/act) does not support the `uses: actions/setup-node@v3` inside an alien container
       # # therefore we must install it manually
@@ -45,7 +37,13 @@ jobs:
       #     node -v
       #     npm ci
       #     npm run build:prepare
-      # npx eas build --clear-cache --profile development --platform android --local
+      #     npx eas build --clear-cache --profile development --platform android --local
 
-      #     npx eas build --clear-cache --non-interactive --profile development --platform android --local
-      #     find . -name "*.apk"
+      - name: Find APK file and rename it
+        run: find . -name "*.apk" -exec mv {} TonomyID.apk \;
+
+      - name: Archive Android APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: TonomyID-Android
+          path: ./TonomyID.apk
