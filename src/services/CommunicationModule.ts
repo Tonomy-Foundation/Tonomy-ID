@@ -36,7 +36,7 @@ export default function CommunicationModule() {
             try {
                 await user.communication.login(message);
             } catch (e) {
-                if (e instanceof CommunicationError && e.exception.status === 401) {
+                if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
                     await logout();
                 } else {
                     throw e;
