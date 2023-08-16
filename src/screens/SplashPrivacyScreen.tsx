@@ -14,7 +14,7 @@ export default function SplashPrivacyScreen(props: Props) {
             subtitle="Only you control and see your personal information"
             imageSource={require('../assets/animations/privacy-policy.gif')}
             icon="privacy"
-            description="Your personal info is stored only in your phone. It can only be viewed by people you share it with. Not even Tonomy or Telos can see it."
+            description={`Your personal info is stored only in your phone. It can only be viewed by people you share it with. Not even the ${settings.config.appName} operators can see it.`}
             linkUrl={settings.config.links.privacyLearnMore}
             linkUrlText="Learn More"
             buttonText="NEXT"

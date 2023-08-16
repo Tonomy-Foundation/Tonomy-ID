@@ -24,7 +24,7 @@ import { throwError } from '../utils/errors';
 import { ApplicationErrors } from '../utils/errors';
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
-    const { user, setStatus } = useUserStore();
+    const { user, logout } = useUserStore();
     const [app, setApp] = useState<App>();
     const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
     const [username, setUsername] = useState<string>();
@@ -42,8 +42,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             const username = await user.getUsername();
 
             if (!username) {
-                await user.logout();
-                setStatus(UserStatus.NOT_LOGGED_IN);
+                await logout();
             }
 
             setUsername(username.getBaseUsername());

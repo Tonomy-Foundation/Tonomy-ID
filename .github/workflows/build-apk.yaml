@@ -1,0 +1,49 @@
+name: Build Android APK for analysis
+
+on:
+  pull_request:
+    branches-ignore:
+      - master
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    env:
+      EXPO_NODE_ENV: development
+      EXPO_PLATFORM: android
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    container: cimg/android:2022.12.1-ndk
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🚀 Build and publish tonomy app
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+      - run: npm ci
+      - run: npm run build:prepare
+      - run: npx eas build --clear-cache --profile preview --platform android --local
+      # TODO maybe should make a new build profile with "demo" EXPO_NODE_ENV but internal distribution (.apk file)
+
+      # - name: Use `act` to build apk file (uncomment when running locally with `act`)
+      # # `act` (https://github.com/nektos/act) does not support the `uses: actions/setup-node@v3` inside an alien container
+      # # therefore we must install it manually
+      # # also, we need to run Tonomy ID as a standalone git repo (not as a submodule of Tonomy ID Integration)
+      #   run: |
+      #     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+      #     sudo apt-get install -y nodejs
+      #     node -v
+      #     npm ci
+      #     npm run build:prepare
+      #     npx eas build --clear-cache --profile development --platform android --local
+
+      - name: Find APK file and rename it
+        run: find . -name "*.apk" -exec mv {} TonomyID.apk \;
+
+      - name: Archive Android APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: TonomyID-Android
+          path: ./TonomyID.apk

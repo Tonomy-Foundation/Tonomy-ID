@@ -6,7 +6,7 @@ import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
 
 export type DrawerStackParamList = {
-    UserHome: undefined;
+    UserHome: { did?: string };
     Settings: undefined;
     Help: undefined;
     Logout: undefined;

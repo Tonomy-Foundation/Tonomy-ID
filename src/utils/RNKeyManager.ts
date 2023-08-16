@@ -24,7 +24,7 @@ type KeyStorage = {
     salt?: string;
 };
 
-const KEY_STORAGE_NAMESPACE = STORAGE_NAMESPACE + 'key.';
+export const KEY_STORAGE_NAMESPACE = STORAGE_NAMESPACE + 'key.';
 
 export default class RNKeyManager implements KeyManager {
     async storeKey(options: StoreKeyOptions): Promise<PublicKey> {

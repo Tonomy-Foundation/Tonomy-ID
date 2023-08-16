@@ -1,5 +1,5 @@
 import create from 'zustand';
-import RNKeyManager from '../utils/RNKeyManager';
+import RNKeyManager, { KEY_STORAGE_NAMESPACE } from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
 import {
@@ -9,8 +9,12 @@ import {
     createStorage,
     SdkErrors,
     STORAGE_NAMESPACE,
+    SdkError,
+    KeyManagerLevel,
 } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -32,6 +36,7 @@ setSettings({
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,
     loggerLevel: settings.config.loggerLevel,
+    tonomyIdSchema: settings.config.tonomyIdSlug + '://',
 });
 
 interface UserStorageState {
@@ -53,15 +58,19 @@ const useUserStore = create<UserState>((set, get) => ({
         userStorage.status = newStatus;
     },
     logout: async () => {
-        get().setStatus(UserStatus.NOT_LOGGED_IN);
         await get().user.logout();
+        get().setStatus(UserStatus.NOT_LOGGED_IN);
+
+        await printStorage('logout()');
     },
     initializeStatusFromStorage: async () => {
+        await printStorage('initializeStatusFromStorage()');
+
         try {
             await get().user.intializeFromStorage();
         } catch (e) {
-            if (e.code === SdkErrors.KeyNotFound) {
-                await get().user.logout();
+            if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
+                await get().logout();
                 useErrorStore.getState().setError({ error: e, expected: false });
             }
         }
@@ -73,5 +82,28 @@ const useUserStore = create<UserState>((set, get) => ({
         set({ status: status });
     },
 }));
+
+/**
+ * Print all AsyncStorage and SecureStore keys
+ * Used for debugging
+ */
+async function printStorage(message: string) {
+    if (settings.config.loggerLevel !== 'debug') return;
+
+    const keys = await AsyncStorage.getAllKeys();
+    const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+
+    console.log(message, 'AsyncStorage keys and status', keys, status);
+
+    const secureKeys: string[] = [];
+
+    for (const level of Object.keys(KeyManagerLevel)) {
+        const value = await SecureStore.getItemAsync(KEY_STORAGE_NAMESPACE + level);
+
+        if (value) secureKeys.push(KEY_STORAGE_NAMESPACE + level);
+    }
+
+    console.log(message, 'SecureStore keys', secureKeys);
+}
 
 export default useUserStore;
