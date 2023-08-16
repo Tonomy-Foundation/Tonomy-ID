@@ -77,14 +77,16 @@ export default function MainContainer({ did }: { did?: string }) {
 
             await user.communication.sendMessage(identifyMessage);
         } catch (e) {
-            if (e instanceof CommunicationError && e.exception?.status === 404) {
-                // Happens if Tonomy Accounts not connected to communication service
-                throw new Error('User probably needs to refresh the page. See notes in MainContainer.tsx onScan()');
-
-                // User probably has scanned a QR code on a website that is not logged into Tonomy Communication service
-                // Problem is probably in /Tonomy-App-Websites/src/sso/pages/Login.tsx
-                // They probably need to refresh the page
-                // TODO: tell the user to retry the login by refreshing
+            if (
+                e instanceof CommunicationError &&
+                e.exception?.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
+                errorStore.setError({
+                    title: 'Problem connecting',
+                    error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                    expected: true,
+                });
             } else {
                 throw e;
             }

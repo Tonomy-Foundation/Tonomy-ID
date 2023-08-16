@@ -24,7 +24,7 @@ jobs:
           node-version: 18.12.1
       - run: npm ci
       - run: npm run build:prepare
-      - run: npx eas build --clear-cache --profile preview --platform android --local
+      - run: npx eas build --clear-cache --profile demo-apk --platform android --local
       # TODO maybe should make a new build profile with "demo" EXPO_NODE_ENV but internal distribution (.apk file)
 
       # - name: Use `act` to build apk file (uncomment when running locally with `act`)

@@ -36,7 +36,9 @@ export default function CommunicationModule() {
             try {
                 await user.communication.login(message);
             } catch (e) {
-                if (e instanceof CommunicationError && e.exception.status === 401) {
+                // 401 signature invalid: the keys have been rotated and the old key is no longer valid
+                // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
+                if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
                     await logout();
                 } else {
                     throw e;

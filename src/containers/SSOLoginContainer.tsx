@@ -107,17 +107,19 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         } catch (e) {
             setNextLoading(false);
 
-            if (e instanceof CommunicationError && e.exception.status === 404) {
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
                 // User cancelled in the browser, so can just navigate back to home
                 // @ts-expect-error item of type string is not assignable to type never
-                // TODO fix type error
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             } else {
                 errorStore.setError({
                     error: e,
                     expected: false,
                     // @ts-expect-error item of type string is not assignable to type never
-                    // TODO fix type error
                     onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
                 });
             }
@@ -154,17 +156,19 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         } catch (e) {
             setCancelLoading(false);
 
-            if (e instanceof CommunicationError && e.exception.status === 404) {
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
                 // User cancelled in the browser, so can just navigate back to home
                 // @ts-expect-error item of type string is not assignable to type never
-                // TODO fix type error
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             } else {
                 errorStore.setError({
                     error: e,
                     expected: false,
                     // @ts-expect-error item of type string is not assignable to type never
-                    // TODO fix type error
                     onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
                 });
             }
