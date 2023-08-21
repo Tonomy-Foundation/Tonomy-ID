@@ -2933,13 +2933,6 @@
   resolved "https://registry.yarnpkg.com/@types/react-native-base64/-/react-native-base64-0.2.0.tgz#c934e7c3cd549d4613bbfa7929a6845ab07a20af"
   integrity sha512-5kUtS7Kf8Xl4zEwbqLITEuQReQTby4UOGfnsEeBFJEVmUfT+ygOv/Qmv0v6El0iV1eDhXS+/0i7CGR9d3/nRSA==
 
-"@types/react-native@~0.70.6":
-  version "0.70.14"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.70.14.tgz#8619b8c94296f6456c5362d74a3d1b4fad3f54ab"
-  integrity sha512-Kwc+BYBrnDqvacNxKp1UtcZJnJJnTih2NYmi/ieAKlHdxEPN6sYMwmIwgHdoLHggvml6bf3DYRaH2jt+gzaLjw==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-test-renderer@^18.0.0":
   version "18.0.0"
   resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-18.0.0.tgz#7b7f69ca98821ea5501b21ba24ea7b6139da2243"
