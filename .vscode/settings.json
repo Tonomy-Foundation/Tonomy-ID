@@ -12,7 +12,7 @@
         "onSave": false
     },
     "jest.debugMode": false,
-    "jest.jestCommandLine": "npm run test",
+    "jest.jestCommandLine": "yarn run test",
     "jest.testExplorer": {
         "enabled": true
     },
