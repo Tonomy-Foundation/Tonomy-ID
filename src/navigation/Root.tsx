@@ -23,7 +23,8 @@ import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
-import HCaptchaHuman from '../screens/HCaptchaHuman';
+import CaptchaScreen from '../screens/HcaptchaScreen';
+// import HCaptchaHuman from '../screens/HCaptchaHuman';
 
 const prefix = Linking.createURL('');
 
@@ -105,11 +106,11 @@ export default function RootNavigation() {
                         options={noHeaderScreenOptions}
                         component={SplashTransparencyScreen}
                     />
-                    <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HCaptchaHuman} />
+                    <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                     <Stack.Screen
                         name="CreateAccountUsername"
                         options={{ title: 'Create New Account' }}
-                        component={HCaptchaHuman}
+                        component={CaptchaScreen}
                     />
                     <Stack.Screen
                         name="CreateAccountPassword"
