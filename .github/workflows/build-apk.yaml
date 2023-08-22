@@ -38,7 +38,7 @@ jobs:
   
   security-test:
     runs-on: ubuntu-latest
-    # needs: build-android
+    needs: build-android
     container:
       image: cimg/python:3.9.6
       options: --user root
@@ -62,7 +62,8 @@ jobs:
         run: ls -l
 
       - name: Run MobSF Analysis json
-        run: mobsfscan --json --type android --output mobsf-report.json ./TonomyID.apk
+        run: mobsfscan -
+          -json --type android --output mobsf-report.json ./TonomyID.apk
 
       - name: Check for file
         run: ls -l
