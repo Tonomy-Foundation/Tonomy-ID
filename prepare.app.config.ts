@@ -77,7 +77,7 @@ const expo: ExpoConfig = {
             'expo-build-properties',
             {
                 android: {
-                    minSdkVersion: '26',
+                    minSdkVersion: 26,
                 },
             },
         ],
