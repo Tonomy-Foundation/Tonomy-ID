@@ -38,7 +38,7 @@ jobs:
   
   security-test:
     runs-on: ubuntu-latest
-    needs: build-android
+    # needs: build-android
     container:
       image: cimg/python:3.9.6
       options: --user root
@@ -53,7 +53,7 @@ jobs:
           path: ./TonomyID.apk
 
       - name: Install MobSF
-        run: pip install --upgrade mobsfscan && touch TonomyID.apk
+        run: pip install --upgrade mobsfscan
       
       - name: Run MobSF Analysis html
         run: mobsfscan --html --type android --output mobsf-report.html ./TonomyID.apk
@@ -66,10 +66,6 @@ jobs:
 
       - name: Check for file
         run: ls -l
-      # - run:
-      #       name: mobsfscan check
-      #       command: mobsfscan .
-
  
       # - name: mobsfscan
       #   uses: MobSF/mobsfscan@main
@@ -83,13 +79,49 @@ jobs:
       # - run: pip install mobsfscan
       # - run: mobsfscan --html --json --type=android --out=mobsf-report ./TonomyID.apk
 
-      # - name: Run MobSF Analysis
-      #   uses: fundacaocerti/mobsf-action@v1.7.2
-      #   env:
-      #     INPUT_FILE_NAME: ./TonomyID.apk
-      #     SCAN_TYPE: apk
-      #     OUTPUT_FILE_NAME: mobsf-report
+  security-test2:
+    runs-on: ubuntu-latest
+    needs: build-android
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download APK file
+        uses: actions/download-artifact@v2
+        with:
+          name: TonomyID-Android
+          path: ./TonomyID.apk
+
+      - name: Check for file
+        id: check_file
+        run: |
+          echo "$PWD/TonomyID.apk"
+          echo "APK_FILE=$PWD/TonomyID.apk" >> $GITHUB_ENV
+          test -f "$PWD/TonomyID.apk" && echo "File exists" || echo "File does not exist"
+      
+      - name: Check variable
+        run: |
+          echo "APK_FILE: $APK_FILE"
+          echo "env.APK_FILE: ${{ env.APK_FILE }}"
+          echo "steps.check_file.outputs.APK_FILE: ${{ steps.check_file.outputs.APK_FILE }}"
+
+      - name: Run MobSF Analysis
+        uses: fundacaocerti/mobsf-action@v1.7.1
+        # TODO: update to latest version fundacaocerti/mobsf-action after they fix https://github.com/fundacaocerti/mobsf-action/issues/20
+        env:
+          INPUT_FILE_NAME: ${{ env.APK_FILE }}
+          SCAN_TYPE: apk
+          OUTPUT_FILE_NAME: mobsf-report
   
+      - name: Check for file
+        run: ls -l
+
+      - name: Check mobsf-report file
+        run: |
+          test -f "./mobsf-report.html" && echo ".html File exists" || echo "File does not exist"
+          test -f "./mobsf-report" && echo ". File exists" || echo "File does not exist"
+          test -f "./mobsf-report.pdf" && echo ".pdf File exists" || echo "File does not exist"
+        
       # - name: Upload MobSF Analysis PDF Result
       #   uses: actions/upload-artifact@v2
       #   with:
