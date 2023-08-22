@@ -35,3 +35,33 @@ jobs:
         with:
           name: TonomyID-Android
           path: ./TonomyID.apk
+  
+  security-test:
+    runs-on: ubuntu-latest
+    needs: build-android
+    
+    steps:
+      - name: Download APK file
+        uses: actions/download-artifact@v2
+        with:
+          name: TonomyID-Android
+          path: ./TonomyID.apk
+      
+      - name: Run MobSF Analysis
+        uses: fundacaocerti/mobsf-action@v1.7.2
+        env:
+          INPUT_FILE_NAME: ./TonomyID.apk
+          SCAN_TYPE: apk
+          OUTPUT_FILE_NAME: mobsf-report
+  
+      - name: Upload MobSF Analysis PDF Result
+        uses: actions/upload-artifact@v2
+        with:
+          name: mobsf-report.pdf
+          path: mobsf-report.pdf
+
+      - name: Upload MobSF Analysis JSON Result
+        uses: actions/upload-artifact@v2
+        with:
+          name: mobsf-report.json
+          path: mobsf-report.json
