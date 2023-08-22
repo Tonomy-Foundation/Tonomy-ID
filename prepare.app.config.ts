@@ -72,6 +72,14 @@ const expo: ExpoConfig = {
                 color: settings.config.theme.primaryColor,
             },
         ],
+        [
+            'expo-build-properties',
+            {
+                android: {
+                    minSdkVersion: '26',
+                },
+            },
+        ],
     ],
     extra: {
         eas: {
