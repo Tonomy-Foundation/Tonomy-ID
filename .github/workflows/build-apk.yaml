@@ -1,4 +1,4 @@
-name: Build Android APK for analysis
+name: Build App locally and run security analysis
 
 on:
   pull_request:
@@ -39,29 +39,64 @@ jobs:
   security-test:
     runs-on: ubuntu-latest
     needs: build-android
+    container:
+      image: cimg/python:3.9.6
     
     steps:
+      # - uses: actions/checkout@v3
+
       - name: Download APK file
         uses: actions/download-artifact@v2
         with:
           name: TonomyID-Android
           path: ./TonomyID.apk
-      
-      - name: Run MobSF Analysis
-        uses: fundacaocerti/mobsf-action@v1.7.2
-        env:
-          INPUT_FILE_NAME: ./TonomyID.apk
-          SCAN_TYPE: apk
-          OUTPUT_FILE_NAME: mobsf-report
-  
-      - name: Upload MobSF Analysis PDF Result
-        uses: actions/upload-artifact@v2
-        with:
-          name: mobsf-report.pdf
-          path: mobsf-report.pdf
 
-      - name: Upload MobSF Analysis JSON Result
-        uses: actions/upload-artifact@v2
-        with:
-          name: mobsf-report.json
-          path: mobsf-report.json
+      - name: Install MobSF
+        run: pip install --upgrade mobsfscan && touch TonomyID.apk
+      
+      - name: Run MobSF Analysis html
+        run: mobsfscan --html --type android --output mobsf-report.html ./TonomyID.apk
+
+      - name: Check for file
+        run: ls -l
+
+      - name: Run MobSF Analysis json
+        run: mobsfscan --json --type android --output mobsf-report.json ./TonomyID.apk
+
+      - name: Check for file
+        run: ls -l
+      # - run:
+      #       name: mobsfscan check
+      #       command: mobsfscan .
+
+ 
+      # - name: mobsfscan
+      #   uses: MobSF/mobsfscan@main
+      #   with:
+      #     args: '--help'
+      #     # args: '--html --json --type=android --out=mobsf-report ./TonomyID.apk'
+      
+      # - uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.10' 
+      # - run: pip install mobsfscan
+      # - run: mobsfscan --html --json --type=android --out=mobsf-report ./TonomyID.apk
+
+      # - name: Run MobSF Analysis
+      #   uses: fundacaocerti/mobsf-action@v1.7.2
+      #   env:
+      #     INPUT_FILE_NAME: ./TonomyID.apk
+      #     SCAN_TYPE: apk
+      #     OUTPUT_FILE_NAME: mobsf-report
+  
+      # - name: Upload MobSF Analysis PDF Result
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: mobsf-report.pdf
+      #     path: mobsf-report.pdf
+
+      # - name: Upload MobSF Analysis JSON Result
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: mobsf-report.json
+      #     path: mobsf-report.json
