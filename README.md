@@ -16,7 +16,7 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
-npm i && npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
+yarn && yarn add @tonomy/tonomy-id-sdk@development
 ```
 
 ## Pre-run build (first time and each time new RN only packages are installed)
@@ -26,8 +26,8 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (for first time build only) `export EXPO_FIRST_TIME=true`
 3. Change the value of `"projectId"` in `prepare.app.config.ts` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
-4. (for IOS only) Run `npm run build:ios:create` to create a device profile for your phone
-5. Run `npm run build:ios` (ios) or `npm run build:android` (android) to build the app for your phone
+4. (for IOS only) Run `yarn run build:ios:create` to create a device profile for your phone
+5. Run `yarn run build:ios` (ios) or `yarn run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
 7. Install the created app on your phone.
 
@@ -40,7 +40,7 @@ Having issues here or running the app? Checkout:
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
-npm start
+yarn run start
 ```
 
 ### Run with the staging / demo environment and build
@@ -48,7 +48,7 @@ npm start
 Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
 1. Modify `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
-2. Run `EXPO_NODE_ENV=staging npm start` or `EXPO_NODE_ENV=demo npm start`
+2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=demo yarn run start`
 3. Connect via QR and bundle and load the app
 4. Scroll down >> "Open React Native dev men"
 5. Click "Settings"
@@ -81,7 +81,7 @@ Set the configuration variables in the desired file in `./src/config`
 Values for EXPO_NODE_ENV
 
 - EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
-- EXPO_NODE_ENV=test - same as `development`. this is set when `npm test` is run
+- EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
 - EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
 - EXPO_NODE_ENV=demo - uses `./src/config/config.demo.json`
 - EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
@@ -103,7 +103,7 @@ Other environment variables override the values in the config file:
 Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
 
 ```bash
-npm run lint
+yarn run lint
 ```
 
 ### Error handling

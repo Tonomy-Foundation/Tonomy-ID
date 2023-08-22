@@ -37,15 +37,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
+      - run: corepack enable
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
-      - run: npm ci
+      - run: yarn --immutable
 
       - name: Check branch name
         run: echo branch=${GITHUB_REF#refs/*/}
       - run: |
           if [[ ${GITHUB_REF#refs/*/} != "master" ]]; then
             echo "BRANCH_NAME is not set to 'master'"
-            npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
+            yarn add @tonomy/tonomy-id-sdk@development
           fi
-      - run: npm run deploy:staging
+      - run: yarn run deploy:staging
