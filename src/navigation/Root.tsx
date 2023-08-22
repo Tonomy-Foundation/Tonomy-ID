@@ -23,6 +23,7 @@ import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
+import HcaptchaScreen from '../screens/HcaptchaScreen';
 
 const prefix = Linking.createURL('');
 
@@ -108,7 +109,7 @@ export default function RootNavigation() {
                     <Stack.Screen
                         name="CreateAccountUsername"
                         options={{ title: 'Create New Account' }}
-                        component={CreateAccountUsernameScreen}
+                        component={HcaptchaScreen}
                     />
                     <Stack.Screen
                         name="CreateAccountPassword"
