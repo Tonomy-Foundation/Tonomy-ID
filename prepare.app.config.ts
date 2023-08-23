@@ -60,6 +60,7 @@ const expo: ExpoConfig = {
             backgroundColor: '#FFFFFF',
         },
         allowBackup: false,
+        permissions: ['com.google.android.c2dm.permission.SEND'],
         package: identifier,
     },
     web: {

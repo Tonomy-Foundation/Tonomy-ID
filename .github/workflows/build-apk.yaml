@@ -65,7 +65,9 @@ jobs:
         run: mobsfscan --json --type android --output mobsf-report.json ./TonomyID.apk
 
       - name: Check for file
-        run: ls -l
+        run: |
+          ls -l
+          cat mobsf-report.json
  
   security-test2:
     runs-on: ubuntu-latest
