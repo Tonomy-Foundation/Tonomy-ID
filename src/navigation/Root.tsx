@@ -23,7 +23,6 @@ import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
-import HcaptchaScreen from '../screens/HcaptchaScreen';
 
 const prefix = Linking.createURL('');
 
