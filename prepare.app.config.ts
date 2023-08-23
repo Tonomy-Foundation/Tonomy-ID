@@ -60,8 +60,8 @@ const expo: ExpoConfig = {
             backgroundColor: '#FFFFFF',
         },
         allowBackup: false,
-        permissions: ['com.google.android.c2dm.permission.SEND'],
-        blockedPermissions: ['com.google.android.gms.permission.AD_ID'],
+        permissions: ['com.google.android.c2dm.permission.SEND'], // TODO check this removes MobSF security warning
+        blockedPermissions: ['com.google.android.gms.permission.AD_ID'], // TODO check this is still needed after declaring no to the google play store Advertising ID form (App Content in Google Play Console)
         package: identifier,
     },
     web: {
