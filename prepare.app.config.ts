@@ -61,6 +61,7 @@ const expo: ExpoConfig = {
         },
         allowBackup: false,
         permissions: ['com.google.android.c2dm.permission.SEND'],
+        blockedPermissions: ['com.google.android.gms.permission.AD_ID'],
         package: identifier,
     },
     web: {
