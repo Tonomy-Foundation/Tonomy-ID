@@ -12,8 +12,13 @@ import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
+import Hcaptcha from '@hcaptcha/react-native-hcaptcha';
+
+const siteKey = '10000000-ffff-ffff-ffff-000000000001';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const [isCaptchaSolved, setIsCaptchaSolved] = useState(false);
+
     let startUsername = '';
 
     if (!settings.isProduction()) {
@@ -61,11 +66,25 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         if (errorMessage !== '') setErrorMessage('');
     };
 
+    const handleCaptchaComplete = (event: { nativeEvent: { event: string } }) => {
+      if (event.nativeEvent.event === 'captchaSolved') {
+        setIsCaptchaSolved(true);
+      } else {
+        setIsCaptchaSolved(false);
+      }
+    };
+
     return (
         <LayoutComponent
             body={
                 <View>
                     <TH1 style={commonStyles.textAlignCenter}>Create username</TH1>
+                    <Hcaptcha
+                        size="normal"
+                        siteKey={siteKey}
+                        languageCode="en"
+                        onMessage={handleCaptchaComplete}
+                    />
                     <View style={styles.innerContainer}>
                         <TP style={styles.inputHeader}>Username</TP>
 
