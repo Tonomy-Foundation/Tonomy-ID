@@ -110,6 +110,11 @@ export default function RootNavigation() {
                     <Stack.Screen
                         name="CreateAccountUsername"
                         options={{ title: 'Create New Account' }}
+                        component={CreateAccountUsernameScreen}
+                    />
+                    <Stack.Screen
+                        name="Hcaptcha"
+                        options={{ title: 'Create New Account' }}
                         component={HcaptchaScreen}
                     />
                     <Stack.Screen

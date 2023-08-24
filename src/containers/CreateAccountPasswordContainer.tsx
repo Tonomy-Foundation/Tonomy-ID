@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TPasswordInput from '../components/molecules/TPasswordInput';
-import TLink from '../components/atoms/TA';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
-import useUserStore, { UserStatus } from '../store/userStore';
+import useUserStore from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
-import TModal from '../components/TModal';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import useErrorStore from '../store/errorStore';
-import TErrorModal from '../components/TErrorModal';
 import { Props } from '../screens/CreateAccountPasswordScreen';
 import TA from '../components/atoms/TA';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
@@ -23,14 +20,10 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
     const [errorMessage, setErrorMessage] = useState('');
     const [confirmErrorMessage, setConfirmErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const [accountUrl, setAccountUrl] = useState('');
-    const [showModal, setShowModal] = useState(false);
-    const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const userStore = useUserStore();
     const user = userStore.user;
 
     const errorStore = useErrorStore();
-    const [username, setUsername] = useState('');
 
     useEffect(() => {
         if (password.length > 0) {
@@ -54,27 +47,12 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
 
         try {
             await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
-            await user.createPerson();
-
             await user.saveLocal();
             await user.updateKeys(password);
-
-            setUserName();
-
-            // This will not work in development mode as http://ip-address not supported
-            const url =
-                'https://local.bloks.io/account/' +
-                (await user.getAccountName()).toString() +
-                '?nodeUrl=' +
-                settings.config.blockchainUrl;
-
-            setAccountUrl(url);
+            navigation.navigate('Hcaptcha');
         } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
-                    case SdkErrors.UsernameTaken:
-                        setShowUsernameErrorModal(true);
-                        break;
                     case SdkErrors.PasswordFormatInvalid:
                         setErrorMessage(
                             'Password must be 12 characters with upper and lowercase letters and one number'
@@ -97,27 +75,6 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         }
 
         setLoading(false);
-        setShowModal(true);
-    }
-
-    async function setUserName() {
-        try {
-            const username = await user.getUsername();
-
-            setUsername(username.getBaseUsername());
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-        }
-    }
-
-    async function onModalPress() {
-        userStore.setStatus(UserStatus.LOGGED_IN);
-        setShowModal(false);
-    }
-
-    async function onUsernameErrorModalPress() {
-        setShowUsernameErrorModal(false);
-        navigation.navigate('CreateAccountUsername');
     }
 
     return (
@@ -206,45 +163,9 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                     </View>
                 }
             ></LayoutComponent>
-            <TErrorModal
-                visible={showUsernameErrorModal}
-                onPress={onUsernameErrorModalPress}
-                title="Please choose another username"
-                expected={true}
-            >
-                <View>
-                    <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{username}</Text> is already taken.
-                        Please choose another one.
-                    </Text>
-                </View>
-            </TErrorModal>
-            <TModal
-                visible={showModal}
-                onPress={onModalPress}
-                icon="check"
-                title={'Welcome to ' + settings.config.ecosystemName}
-            >
-                <View>
-                    <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>{username}</Text>
-                    </Text>
-                </View>
-                <View style={errorModalStyles.marginTop}>
-                    <Text>
-                        See it on the blockchain <TLink href={accountUrl}>here</TLink>
-                    </Text>
-                </View>
-            </TModal>
         </>
     );
 }
-
-const errorModalStyles = StyleSheet.create({
-    marginTop: {
-        marginTop: 6,
-    },
-});
 
 const styles = StyleSheet.create({
     footerText: {
