@@ -83,7 +83,7 @@ const expo: ExpoConfig = {
                 },
             },
         ],
-        ['android.manifest.plugin.js'],
+        ['./android.manifest.plugin.js'],
     ],
     extra: {
         eas: {
