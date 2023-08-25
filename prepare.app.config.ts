@@ -59,7 +59,7 @@ const expo: ExpoConfig = {
             foregroundImage: settings.config.images.logo1024,
             backgroundColor: '#FFFFFF',
         },
-        // blockedPermissions: ['com.google.android.gms.permission.AD_ID'],
+        blockedPermissions: ['com.google.android.gms.permission.AD_ID'],
         package: identifier,
     },
     web: {

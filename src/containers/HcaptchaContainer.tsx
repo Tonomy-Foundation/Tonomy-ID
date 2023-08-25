@@ -15,7 +15,6 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 
-const siteKey = '00000000-0000-0000-0000-000000000000';
 const baseUrl = 'https://hcaptcha.com';
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
@@ -29,6 +28,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
     const userStore = useUserStore();
     const user = userStore.user;
+    const siteKey = settings.config.captchaSiteKey;
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
@@ -59,7 +59,12 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 }
 
                 setSuccess(true);
-                setCode(eventData);
+
+                if (process.env.NODE_ENV === 'development') {
+                    setCode(settings.config.captchaToken);
+                } else {
+                    setCode(eventData);
+                }
             }
         }
     };
