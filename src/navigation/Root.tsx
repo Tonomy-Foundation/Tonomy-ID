@@ -35,7 +35,7 @@ export type RouteStackParamList = {
     Home: undefined;
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
-    Hcaptcha: undefined;
+    Hcaptcha: { password: string };
     CreateAccountPin: { password: string; action: string };
     LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
@@ -116,6 +116,7 @@ export default function RootNavigation() {
                         name="Hcaptcha"
                         options={{ title: 'Create New Account' }}
                         component={HcaptchaScreen}
+                        initialParams={{ password: '' }}
                     />
                     <Stack.Screen
                         name="CreateAccountPassword"

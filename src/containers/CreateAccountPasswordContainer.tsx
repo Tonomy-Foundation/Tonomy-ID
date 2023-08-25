@@ -48,8 +48,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
         try {
             await user.savePassword(password, { keyFromPasswordFn: generatePrivateKeyFromPassword });
             await user.saveLocal();
-            await user.updateKeys(password);
-            navigation.navigate('Hcaptcha');
+            navigation.navigate('Hcaptcha', { password: password });
         } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
@@ -141,7 +140,7 @@ export default function CreateAccountPasswordContainer({ navigation }: { navigat
                                     password.length === 0 || password2.length === 0 || password2 !== password || loading
                                 }
                             >
-                                CREATE ACCOUNT
+                                NEXT
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>

@@ -15,9 +15,13 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 
-const baseUrl = 'https://hcaptcha.com';
-
-export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function HcaptchaContainer({
+    navigation,
+    password,
+}: {
+    navigation: Props['navigation'];
+    password: string;
+}) {
     const [code, setCode] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
@@ -58,8 +62,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     captchaFormRef.current.hide();
                 }
 
-                setSuccess(true);
-
                 if (process.env.NODE_ENV === 'development') {
                     setCode(settings.config.captchaToken);
                 } else {
@@ -90,6 +92,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
+            await user.updateKeys(password);
+
             await setUserName();
             const url =
                 'https://local.bloks.io/account/' +
@@ -119,8 +123,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
         setLoading(false);
         setShowModal(true);
-
-        // navigation.navigate('Home');
     }
 
     async function onUsernameErrorModalPress() {
@@ -131,11 +133,12 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     async function onModalPress() {
         userStore.setStatus(UserStatus.LOGGED_IN);
         setShowModal(false);
+        setSuccess(true);
     }
 
+    console.log('siteKey', siteKey);
     return (
         <>
-            {' '}
             <LayoutComponent
                 body={
                     <View>
@@ -148,7 +151,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     size="invisible"
                                     ref={captchaFormRef}
                                     siteKey={siteKey}
-                                    baseUrl={baseUrl}
                                     languageCode="en"
                                     onMessage={onMessage}
                                     sentry={false}
@@ -164,7 +166,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Checkbox
-                                            status={code && success ? 'checked' : 'unchecked'}
+                                            status={code ? 'checked' : 'unchecked'}
                                             onPress={() => {
                                                 if (captchaFormRef.current) {
                                                     captchaFormRef.current.show();
@@ -188,7 +190,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={!code || loading || !success}>
-                                Next
+                                Create Account
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>

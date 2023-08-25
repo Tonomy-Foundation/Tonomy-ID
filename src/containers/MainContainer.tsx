@@ -109,7 +109,7 @@ export default function MainContainer({ did }: { did?: string }) {
                 {!qrOpened && (
                     <View style={styles.content}>
                         <View style={styles.header}>
-                            <TH2 style={styles.marginTop}>{username}</TH2>
+                            <TH2>{username}</TH2>
                             <Image
                                 source={require('../assets/animations/qr-code.gif')}
                                 style={[styles.image, styles.marginTop]}
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        marginBottom: 30,
+        marginBottom: 20,
     },
     button: {
         width: '50%',
