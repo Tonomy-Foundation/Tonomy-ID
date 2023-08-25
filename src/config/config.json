@@ -31,6 +31,6 @@
     "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
     "communicationUrl": "wss://communication.staging.tonomy.foundation",
     "loggerLevel": "debug",
-    "captchaSiteKey": "00000000-0000-0000-0000-000000000000",
+    "captchaSiteKey": "10000000-ffff-ffff-ffff-000000000001",
     "captchaToken": "10000000-aaaa-bbbb-cccc-000000000001"
 }

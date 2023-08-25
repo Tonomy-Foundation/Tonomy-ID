@@ -67,6 +67,8 @@ export default function HcaptchaContainer({
                 } else {
                     setCode(eventData);
                 }
+
+                setSuccess(true);
             }
         }
     };
@@ -82,15 +84,10 @@ export default function HcaptchaContainer({
     }
 
     async function onNext() {
-        if (captchaFormRef.current) {
-            captchaFormRef.current.hide();
-            setCode(null);
-        }
-
         setLoading(true);
 
         try {
-            await user.saveCaptchaToken(code);
+            // await user.saveCaptchaToken(code);
             await user.createPerson();
             await user.updateKeys(password);
 
@@ -123,6 +120,11 @@ export default function HcaptchaContainer({
 
         setLoading(false);
         setShowModal(true);
+
+        if (captchaFormRef.current) {
+            captchaFormRef.current.hide();
+            setCode(null);
+        }
     }
 
     async function onUsernameErrorModalPress() {
@@ -133,10 +135,8 @@ export default function HcaptchaContainer({
     async function onModalPress() {
         userStore.setStatus(UserStatus.LOGGED_IN);
         setShowModal(false);
-        setSuccess(true);
     }
 
-    console.log('siteKey', siteKey);
     return (
         <>
             <LayoutComponent
