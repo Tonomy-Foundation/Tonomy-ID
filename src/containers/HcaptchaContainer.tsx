@@ -42,14 +42,14 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     captchaFormRef.current.hide();
                 }
 
-                setErrorMsg('You cancelled the challenge. Please try again!');
+                setErrorMsg('You cancelled the challenge. Please try again.');
                 setCode(eventData);
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
-                setErrorMsg('Challenge expired or some error occured. Please try again!');
+                setErrorMsg('Challenge expired or some error occured. Please try again.');
                 setCode(eventData);
             } else {
                 console.log('Verified code from hCaptcha', event.nativeEvent.data);
@@ -83,8 +83,9 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setLoading(true);
 
         try {
+            await user.saveCaptchaToken(code);
             await user.createPerson();
-            setUserName();
+            await setUserName();
             const url =
                 'https://local.bloks.io/account/' +
                 (await user.getAccountName()).toString() +
