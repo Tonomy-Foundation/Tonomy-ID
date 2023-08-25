@@ -11,6 +11,8 @@ const updateAndroidManifest = function (config, customName) {
         let androidManifest = config.modResults.manifest;
 
         androidManifest['uses-permission'] = androidManifest['uses-permission'].map((perm) => {
+        // Make permissions less open, to fix security vulnerability
+        // https://github.com/Tonomy-Foundation/Tonomy-ID/pull/826#issuecomment-1690020984
             if (
                 (perm.$['android:name'] === 'com.google.android.c2dm.permission.SEND') |
                 (perm.$['android:name'] === 'android.permission.DUMP')

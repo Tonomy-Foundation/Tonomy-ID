@@ -1,0 +1,24 @@
+FROM opensecurity/mobile-security-framework-mobsf:v3.4.3
+
+LABEL version="1.7.2"
+LABEL repository="https://github.com/fundacaocerti/mobsf-action"
+LABEL homepage="https://github.com/fundacaocerti/mobsf-action"
+LABEL maintainer="Ian Koerich Maciel <inm@certi.org.br>"
+
+LABEL com.github.actions.name="GitHub Action for MobSF"
+LABEL com.github.actions.description="Wraps the MobSF docker to enable common commands."
+LABEL com.github.actions.icon="package"
+LABEL com.github.actions.color="gray-dark"
+
+# USER root
+RUN apt-get update -y && \
+    apt-get install -y curl jq
+
+# RUN useradd -ms /bin/bash mobsf
+# WORKDIR /home/mobsf
+# USER mobsf
+COPY LICENSE README.md /
+COPY "entrypoint.sh" "/root/Mobile-Security-Framework-MobSF/entrypoint_github.sh"
+
+ENTRYPOINT ["/root/Mobile-Security-Framework-MobSF/entrypoint_github.sh"]
+CMD ["--help"]
