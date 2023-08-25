@@ -212,7 +212,7 @@ jobs:
         run: docker build ./mobsf -t mobsf
       
       - name: Run MobSF
-        run: docker run -it -u root -v $PWD/mobsf:/github/workspace/:rw -e GITHUB_WORKSPACE=/github/workspace -e INPUT_FILE_NAME=TonomyID.apk -e OUTPUT_FILE_NAME=mobsf-report -e SCAN_TYPE=apk mobsf
+        run: docker run -u root -v $PWD/mobsf:/github/workspace/:rw -e GITHUB_WORKSPACE=/github/workspace -e INPUT_FILE_NAME=TonomyID.apk -e OUTPUT_FILE_NAME=mobsf-report -e SCAN_TYPE=apk mobsf
   
       - name: Check for file
         run: ls -l ./mobsf
