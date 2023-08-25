@@ -87,7 +87,7 @@ export default function HcaptchaContainer({
         setLoading(true);
 
         try {
-            // await user.saveCaptchaToken(code);
+            await user.saveCaptchaToken(code);
             await user.createPerson();
             await user.updateKeys(password);
 
