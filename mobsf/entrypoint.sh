@@ -1,36 +1,36 @@
 #!/bin/bash
-# set -e
+set -e
 
 cd $GITHUB_WORKSPACE
 ls -la
 if [ -f "$INPUT_FILE_NAME" ]; then
   echo "INPUT_FILE_NAME file not found. (INPUT_FILE_NAME = $INPUT_FILE_NAME)"
-  # exit 128
+  exit 128
 fi
 
 if [ -z "$INPUT_FILE_NAME" ]; then
   echo "INPUT_FILE_NAME directory not found. (INPUT_FILE_NAME = $INPUT_FILE_NAME)"
-  # exit 127
+  exit 127
 fi
 
 
 if [ -z "$INPUT_FILE_NAME" ] || [ ! -f "$INPUT_FILE_NAME" ]; then
   echo "INPUT_FILE_NAME is required to run MobSF action. (INPUT_FILE_NAME = $INPUT_FILE_NAME)"
-  # exit 126
+  exit 126
 fi
 
 if [ -z "$OUTPUT_FILE_NAME" ]; then
   echo "OUTPUT_FILE_NAME is required to run MobSF action. (OUTPUT_FILE_NAME = $OUTPUT_FILE_NAME)"
-  # exit 126
+  exit 126
 fi
 
 if [ -z "$SCAN_TYPE" ]; then
   echo "OUTPUT_FILE_NAME is required to run MobSF action"
-  # exit 126
+  exit 126
 else
   if [ "$SCAN_TYPE" != "apk" ] && [ "$SCAN_TYPE" != "ipa" ] && [ "$SCAN_TYPE" != "appx" ]; then
     echo "SCAN_TYPE must be apk, ipa or appx. (SCAN_TYPE = $SCAN_TYPE)"
-    # exit 126
+    exit 126
   fi
 fi
 
