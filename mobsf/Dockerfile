@@ -1,5 +1,4 @@
-FROM opensecurity/mobile-security-framework-mobsf:v3.4.3
-# TODO upgrade to latest version 3.6.9
+FROM opensecurity/mobile-security-framework-mobsf:v3.7.6
 
 LABEL version="1.7.2"
 LABEL repository="https://github.com/fundacaocerti/mobsf-action"
@@ -11,13 +10,9 @@ LABEL com.github.actions.description="Wraps the MobSF docker to enable common co
 LABEL com.github.actions.icon="package"
 LABEL com.github.actions.color="gray-dark"
 
-# USER root
 RUN apt-get update -y && \
     apt-get install -y curl jq
 
-# RUN useradd -ms /bin/bash mobsf
-# WORKDIR /home/mobsf
-# USER mobsf
 COPY LICENSE README.md /
 COPY "entrypoint.sh" "/root/Mobile-Security-Framework-MobSF/entrypoint_github.sh"
 
