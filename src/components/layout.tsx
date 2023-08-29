@@ -6,6 +6,7 @@ type layoutProps = {
     body: JSX.Element;
     footerHint?: JSX.Element;
     footer?: JSX.Element;
+    footerTop?: number;
 };
 
 export default function LayoutComponent(props: layoutProps) {
@@ -28,7 +29,9 @@ export default function LayoutComponent(props: layoutProps) {
         <SafeAreaView style={layoutStyles.container}>
             {props.body && <View style={[layoutStyles.body, { flex: keyboardStatusShown ? 2 : 3 }]}>{props.body}</View>}
             {props.footerHint && !keyboardStatusShown ? (
-                <View style={layoutStyles.footerHint}>{props.footerHint}</View>
+                <View style={[layoutStyles.footerHint, { marginTop: props.footerTop ? props?.footerTop : 0 }]}>
+                    {props.footerHint}
+                </View>
             ) : (
                 <View style={layoutStyles.footerHint}>
                     <Text>&nbsp;</Text>
