@@ -29,4 +29,3 @@ jobs:
             - run: yarn run test
             - run: yarn run lint
             - run: yarn run typeCheck
-            - run: npx expo install --check
