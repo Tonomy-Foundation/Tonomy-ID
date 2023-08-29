@@ -26,7 +26,7 @@ jobs:
                   echo "BRANCH_NAME is not set to 'master'"
                   yarn add @tonomy/tonomy-id-sdk@development 
                 fi
-            - run: yarn test
+            - run: yarn run test
             - run: yarn run lint
             - run: yarn run typeCheck
             - run: npx expo install --check
