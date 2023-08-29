@@ -19,10 +19,10 @@ jobs:
             with:
                 node-version: 18.12.1
           - run: corepack enable
-          - run: echo "PACKAGE_LOCK_SHA256_OLD=$(sha256sum package-lock.json)" >> $GITHUB_ENV
-          - run: npm update @tonomy/tonomy-id-sdk
-          - run: echo "PACKAGE_LOCK_SHA256_NEW=$(sha256sum package-lock.json)" >> $GITHUB_ENV
-          - run: if [ "$PACKAGE_LOCK_SHA256_NEW" != "$PACKAGE_LOCK_SHA256_OLD" ]; then exit 1; fi
-          # if this step fails, make sure the Tonomy SDK is set to the latest package
-          # try `npm update @tonomy/tonomy-id-sdk` and
-          # then test locally, if it works, then commit changes to package.json and package-lock.json
+          - run: echo "YARNLOCK_SHA256_OLD=$(sha256sum yarn.lock)" >> $GITHUB_ENV
+          - run: yarn up @tonomy/tonomy-id-sdk
+          - run: echo "YARNLOCK_SHA256_NEW=$(sha256sum yarn.lock)" >> $GITHUB_ENV
+          - run: if [ "$YARNLOCK_SHA256_NEW" != "$YARNLOCK_SHA256_OLD" ]; then exit 1; fi
+            # if this step fails, make sure the Tonomy SDK is set to the latest package
+            # try `yarn up @tonomy/tonomy-id-sdk` and
+            # then test locally, if it works, then commit changes to package.json and yarn.lock

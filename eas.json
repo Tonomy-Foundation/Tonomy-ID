@@ -1,6 +1,5 @@
 {
     "cli": {
-        "version": ">= 2.1.0",
         "appVersionSource": "remote"
     },
     "build": {
@@ -11,17 +10,17 @@
             "developmentClient": true,
             "distribution": "internal"
         },
-        "preview": {
-            "env": {
-                "EXPO_NODE_ENV": "development"
-            },
-            "distribution": "internal"
-        },
         "demo": {
             "env": {
                 "EXPO_NODE_ENV": "demo"
             },
             "autoIncrement": true
+        },
+        "demo-apk": {
+            "env": {
+                "EXPO_NODE_ENV": "demo"
+            },
+            "distribution": "internal"
         },
         "staging": {
             "env": {

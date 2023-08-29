@@ -17,14 +17,15 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18.12.1
-            - run: npm ci
+            - run: corepack enable
+            - run: yarn --immutable
             - name: Check branch name
               run: echo ${GITHUB_HEAD_REF}
             - run: |
                 if [[ ${GITHUB_HEAD_REF} != "master" ]]; then
                   echo "BRANCH_NAME is not set to 'master'"
-                  npm install --no-lockfile @tonomy/tonomy-id-sdk@development 
+                  yarn add @tonomy/tonomy-id-sdk@development 
                 fi
-            - run: npm test
-            - run: npm run lint
-            - run: npm run typeCheck
+            - run: yarn run test
+            - run: yarn run lint
+            - run: yarn run typeCheck
