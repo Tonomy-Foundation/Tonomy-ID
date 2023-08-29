@@ -58,23 +58,18 @@ export default function TInfoBox(props: TInfoBoxProps) {
             textAlign: props.align,
             textAlignVertical: 'center',
         },
-        marginTop: {
-            paddingTop: 20,
-        },
     });
 
     return (
-        <View style={styles.marginTop}>
-            <View style={styles.infoContainer}>
-                <IconComponent style={styles.icon} icon={props.icon} />
-                <View style={styles.description}>
-                    <TP style={styles.paragraph}>
-                        {props.description}{' '}
-                        <TA style={[styles.description]} href={props.linkUrl}>
-                            {props.linkUrlText}
-                        </TA>
-                    </TP>
-                </View>
+        <View style={styles.infoContainer}>
+            <IconComponent style={styles.icon} icon={props.icon} />
+            <View style={styles.description}>
+                <TP style={styles.paragraph}>
+                    {props.description}{' '}
+                    <TA style={[styles.description]} href={props.linkUrl}>
+                        {props.linkUrlText}
+                    </TA>
+                </TP>
             </View>
         </View>
     );

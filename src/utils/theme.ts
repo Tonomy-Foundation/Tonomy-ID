@@ -58,7 +58,7 @@ export const commonStyles = StyleSheet.create({
         textAlign: 'center',
     },
     borderRadius: {
-        borderRadius: 20,
+        borderRadius: 8,
     },
     marginTop: {
         marginTop: 12,

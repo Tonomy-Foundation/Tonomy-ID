@@ -17,15 +17,24 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                 body={
                     <View>
                         <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Create passphrase</TH1>
+                        <TP style={styles.paragraph}>
+                            Passphrase is like a password but more secure and easier to remember.{' '}
+                            <TP style={styles.link}>Learn more.</TP>
+                        </TP>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
-                                <View style={styles.square} />
-                                <View style={styles.square} />
-                                <View style={styles.square} />
-                                <View style={styles.square} />
-                                <View style={styles.square} />
-                                <View style={styles.square} />
+                                {[1, 2, 3, 4, 5, 6].map((number) => (
+                                    <View style={styles.squareContainer} key={number}>
+                                        <Text style={styles.numberText}>{number}.</Text>
+                                        <View style={styles.square}>
+                                            <Text style={styles.squareText}>Test</Text>
+                                        </View>
+                                    </View>
+                                ))}
                             </View>
+                        </View>
+                        <View style={styles.btnView}>
+                            <TButtonContained style={styles.regenerateBtn}>Regenerate</TButtonContained>
                         </View>
                     </View>
                 }
@@ -40,7 +49,6 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                         />
                     </View>
                 }
-                footerTop={20}
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
@@ -63,15 +71,20 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
 
 const styles = StyleSheet.create({
     headline: {
-        marginTop: 5,
-        fontSize: 24,
+        marginTop: -28,
+        fontSize: 20,
+        marginBottom: 5,
+    },
+    paragraph: {
+        textAlign: 'center',
+        fontSize: 14,
     },
     innerContainer: {
-        marginTop: 10,
+        marginTop: 20,
         justifyContent: 'center',
     },
     createAccountMargin: {
-        marginTop: 45,
+        marginTop: 18,
     },
     link: {
         color: theme.colors.primary,
@@ -85,13 +98,42 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'center',
     },
+    squareContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginRight: 15,
+        marginBottom: 10,
+    },
     square: {
         backgroundColor: '#F9F9F9',
         borderRadius: 8,
         borderColor: '#5B6261',
         borderWidth: 1,
-        width: '38%',
-        height: 60,
-        margin: 15,
+        width: 120,
+        height: 42,
+        marginTop: 22,
+        justifyContent: 'center',
+    },
+    numberText: {
+        color: '#5B6261',
+        fontSize: 14,
+        fontWeight: '400',
+        marginRight: -15,
+        marginLeft: 10,
+    },
+    squareText: {
+        textAlign: 'center',
+        fontSize: 14,
+    },
+    btnView: {
+        textAlign: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 16,
+    },
+    regenerateBtn: {
+        width: '50%',
+        justifyContent: 'center',
+        flexDirection: 'row',
     },
 });
