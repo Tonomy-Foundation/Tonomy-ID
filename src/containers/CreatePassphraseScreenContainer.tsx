@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -7,9 +7,16 @@ import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
+import PassphraseBox from '../components/PassphraseBox';
 
 export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const [phraseList, setPhraseList] = useState<string[]>(['barn', 'universe', 'plate', 'star', 'pretty', 'gold']);
+
     async function onNext() {}
+
+    async function regenerate() {
+        setPhraseList(['gold', 'barn', 'star', 'moon', 'sun', 'tree']);
+    }
 
     return (
         <>
@@ -23,18 +30,15 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                         </TP>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
-                                {[1, 2, 3, 4, 5, 6].map((number) => (
-                                    <View style={styles.squareContainer} key={number}>
-                                        <Text style={styles.numberText}>{number}.</Text>
-                                        <View style={styles.square}>
-                                            <Text style={styles.squareText}>Test</Text>
-                                        </View>
-                                    </View>
+                                {phraseList.map((text, index) => (
+                                    <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
                                 ))}
                             </View>
                         </View>
                         <View style={styles.btnView}>
-                            <TButtonContained style={styles.regenerateBtn}>Regenerate</TButtonContained>
+                            <TButtonContained style={styles.regenerateBtn} onPress={regenerate}>
+                                Regenerate
+                            </TButtonContained>
                         </View>
                     </View>
                 }
@@ -97,33 +101,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-    },
-    squareContainer: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        marginRight: 15,
-        marginBottom: 10,
-    },
-    square: {
-        backgroundColor: '#F9F9F9',
-        borderRadius: 8,
-        borderColor: '#5B6261',
-        borderWidth: 1,
-        width: 120,
-        height: 42,
-        marginTop: 22,
-        justifyContent: 'center',
-    },
-    numberText: {
-        color: '#5B6261',
-        fontSize: 14,
-        fontWeight: '400',
-        marginRight: -15,
-        marginLeft: 10,
-    },
-    squareText: {
-        textAlign: 'center',
-        fontSize: 14,
     },
     btnView: {
         textAlign: 'center',
