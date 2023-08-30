@@ -45,7 +45,6 @@ type ConfigType = {
     tonomyIdSlug: string;
     loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
-    captchaToken: string;
 };
 
 type SettingsType = {
