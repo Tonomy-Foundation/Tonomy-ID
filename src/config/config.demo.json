@@ -30,6 +30,7 @@
     "blockchainUrl": "https://blockchain-api-demo.tonomy.foundation",
     "ssoWebsiteOrigin": "https://accounts.demo.tonomy.foundation",
     "communicationUrl": "wss://communication.demo.tonomy.foundation",
+    "accountsServiceUrl": "https://communication.demo.tonomy.foundation",
     "loggerLevel": "error",
     "captchaSiteKey": "bf994ca7-3b1f-43c4-b35f-0cf27b0da3c8"
 }

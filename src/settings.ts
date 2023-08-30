@@ -42,6 +42,7 @@ type ConfigType = {
     accountSuffix: string;
     ssoWebsiteOrigin: string;
     communicationUrl: string;
+    accountsServiceUrl: string;
     tonomyIdSlug: string;
     loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
