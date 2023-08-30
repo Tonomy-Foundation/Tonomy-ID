@@ -10,7 +10,9 @@ import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
 
 export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const [phraseList, setPhraseList] = useState<string[]>(['barn', 'universe', 'plate', 'star', 'pretty', 'gold']);
+    const [phraseList, setPhraseList] = useState<string[]>(
+        settings.isProduction() ? ['barn', 'universe', 'plate', 'star', 'pretty', 'gold'] : ['', '', '', '', '', '']
+    );
 
     async function onNext() {}
 
@@ -36,7 +38,11 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                             </View>
                         </View>
                         <View style={styles.btnView}>
-                            <TButtonContained style={styles.regenerateBtn} onPress={regenerate}>
+                            <TButtonContained
+                                style={styles.regenerateBtn}
+                                onPress={regenerate}
+                                icon={require('../assets/images/refresh-ccw.png')}
+                            >
                                 Regenerate
                             </TButtonContained>
                         </View>
