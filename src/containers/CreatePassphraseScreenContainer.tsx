@@ -11,7 +11,7 @@ import PassphraseBox from '../components/PassphraseBox';
 
 export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [phraseList, setPhraseList] = useState<string[]>(
-        settings.isProduction() ? ['barn', 'universe', 'plate', 'star', 'pretty', 'gold'] : ['', '', '', '', '', '']
+        !settings.isProduction() ? ['barn', 'universe', 'plate', 'star', 'pretty', 'gold'] : ['', '', '', '', '', '']
     );
 
     async function onNext() {}
