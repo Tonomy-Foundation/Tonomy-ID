@@ -47,14 +47,12 @@ export default function HcaptchaContainer({
                 }
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
-                setCode(eventData);
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
-                setCode(eventData);
             } else {
                 console.log('Verified code from hCaptcha', event.nativeEvent.data);
 
@@ -62,8 +60,8 @@ export default function HcaptchaContainer({
                     captchaFormRef.current.hide();
                 }
 
-                if (process.env.NODE_ENV === 'development') {
-                    setCode(settings.config.captchaToken);
+                if (settings.env === 'development') {
+                    setCode('10000000-aaaa-bbbb-cccc-000000000001');
                 } else {
                     setCode(eventData);
                 }
