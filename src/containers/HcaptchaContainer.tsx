@@ -84,16 +84,16 @@ export default function HcaptchaContainer({
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
-            // await user.updateKeys(password);
+            await user.updateKeys(password);
 
-            // await setUserName();
-            // const url =
-            //     'https://local.bloks.io/account/' +
-            //     (await user.getAccountName()).toString() +
-            //     '?nodeUrl=' +
-            //     settings.config.blockchainUrl;
+            await setUserName();
+            const url =
+                'https://local.bloks.io/account/' +
+                (await user.getAccountName()).toString() +
+                '?nodeUrl=' +
+                settings.config.blockchainUrl;
 
-            // setAccountUrl(url);
+            setAccountUrl(url);
         } catch (e) {
             if (e instanceof SdkError) {
                 switch (e.code) {
@@ -114,7 +114,7 @@ export default function HcaptchaContainer({
         }
 
         setLoading(false);
-        // setShowModal(true);
+        setShowModal(true);
 
         if (captchaFormRef.current) {
             captchaFormRef.current.hide();

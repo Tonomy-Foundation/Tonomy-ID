@@ -95,6 +95,11 @@ if (process.env.VITE_COMMUNICATION_URL) {
     config.communicationUrl = process.env.VITE_COMMUNICATION_URL;
 }
 
+if (process.env.ACCOUNTS_SERVICE_URL) {
+    console.log(`Using accounts microService from env: ${process.env.ACCOUNTS_SERVICE_URL}`);
+    config.accountsServiceUrl = process.env.ACCOUNTS_SERVICE_URL;
+}
+
 if (process.env.LOG === 'true') {
     console.log(`Using logger level from env: ${process.env.LOG}`);
     config.loggerLevel = 'debug';
