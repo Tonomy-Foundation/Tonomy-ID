@@ -3728,8 +3728,8 @@ __metadata:
   linkType: hard
 
 "@tonomy/tonomy-id-sdk@npm:development":
-  version: 0.15.0-development.1
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.15.0-development.1"
+  version: 0.15.0-development.2
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.15.0-development.2"
   dependencies:
     "@consento/sync-randombytes": ^1.0.5
     "@tonomy/antelope-did": ^0.1.5
@@ -3744,7 +3744,7 @@ __metadata:
     elliptic: ^6.5.4
     socket.io-client: ^4.5.4
     universal-base64url: ^1.1.0
-  checksum: 37f9660f64ea8f345be66a69097cc751a8ec783aef6becddd1415313d003c5c2497ad8564e3c23ea19fdd84cb71797ad5350320692cb0265f41751f0c3fb151c
+  checksum: 33d6031035c480da14ad603a7bb4e94ffcc6138677ae9fcf301f962a96328a449ee636c7fdec7825bda79853b93fc9781586da62eae341763c6686c3b58afcdc
   languageName: node
   linkType: hard
 
