@@ -85,6 +85,11 @@ export default function HcaptchaContainer({
     async function onNext() {
         setLoading(true);
 
+        if (!code) {
+            setLoading(false);
+            throw new Error('Code is not set');
+        }
+
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
