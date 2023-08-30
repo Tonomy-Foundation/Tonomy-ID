@@ -1,4 +1,4 @@
-name: Build Android APK for analysis
+name: Build App locally and run security analysis
 
 on:
   pull_request:

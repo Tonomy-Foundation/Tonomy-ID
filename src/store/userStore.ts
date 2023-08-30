@@ -39,11 +39,6 @@ setSettings({
     tonomyIdSchema: settings.config.tonomyIdSlug + '://',
 });
 
-interface UserStorageState {
-    status: UserStatus;
-}
-const userStorage = createStorage<UserStorageState>(STORAGE_NAMESPACE + 'store.', storageFactory);
-
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
@@ -54,8 +49,6 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     setStatus: (newStatus: UserStatus) => {
         set({ status: newStatus });
-        // Async call to update the status in the storage
-        userStorage.status = newStatus;
     },
     logout: async () => {
         await get().user.logout();
@@ -74,12 +67,6 @@ const useUserStore = create<UserState>((set, get) => ({
                 useErrorStore.getState().setError({ error: e, expected: false });
             }
         }
-
-        let status = await userStorage.status;
-
-        if (!status) status = UserStatus.NONE;
-
-        set({ status: status });
     },
 }));
 
