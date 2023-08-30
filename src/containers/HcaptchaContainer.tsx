@@ -55,13 +55,17 @@ export default function HcaptchaContainer({
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else {
                 if (settings.config.loggerLevel === 'debug')
-                    console.log('Verified code from hCaptcha', event.nativeEvent.data);
+                    console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
 
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
-                setCode(eventData);
+                if (settings.env === 'development') {
+                    setCode('10000000-aaaa-bbbb-cccc-000000000001');
+                } else {
+                    setCode(eventData);
+                }
 
                 setSuccess(true);
             }
