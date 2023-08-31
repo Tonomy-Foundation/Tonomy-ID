@@ -23,6 +23,7 @@ import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
+import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 
 const prefix = Linking.createURL('');
 
@@ -47,6 +48,7 @@ export type RouteStackParamList = {
     QrScanner: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
+    ConfirmPassphrase: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -114,6 +116,11 @@ export default function RootNavigation() {
                         name="CreateAccountPassword"
                         options={{ title: 'Create New Account' }}
                         component={CreateAccountPasswordScreen}
+                    />
+                    <Stack.Screen
+                        name="ConfirmPassphrase"
+                        options={{ title: 'Create New Account' }}
+                        component={ConfirmPassphraseScreen}
                     />
                     <Stack.Screen
                         name="ConfirmPassword"
