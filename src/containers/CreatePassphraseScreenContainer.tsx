@@ -14,7 +14,9 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
         !settings.isProduction() ? ['barn', 'universe', 'plate', 'star', 'pretty', 'gold'] : ['', '', '', '', '', '']
     );
 
-    async function onNext() {}
+    async function onNext() {
+        navigation.navigate('ConfirmPassphrase');
+    }
 
     async function regenerate() {
         setPhraseList(['gold', 'barn', 'star', 'moon', 'sun', 'tree']);
@@ -81,7 +83,7 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
 
 const styles = StyleSheet.create({
     headline: {
-        marginTop: -28,
+        marginTop: -20,
         fontSize: 20,
         marginBottom: 5,
     },

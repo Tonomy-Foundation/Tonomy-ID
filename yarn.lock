@@ -3232,7 +3232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/normalize-color@npm:^2.0.0, @react-native/normalize-color@npm:^2.1.0":
+"@react-native/normalize-color@npm:*, @react-native/normalize-color@npm:^2.0.0, @react-native/normalize-color@npm:^2.1.0":
   version: 2.1.0
   resolution: "@react-native/normalize-color@npm:2.1.0"
   checksum: 8ccbd40b3c7629f1dc97b3e9aadd95fd3507fcf2e37535a6299a70436ab891c34cbdc4240b07380553d6e85dd909e23d5773b5be1da2906b026312e0b0768838
@@ -6248,6 +6248,17 @@ __metadata:
     invariant: "*"
     prop-types: "*"
   checksum: bba96622e196f650e782963598a2868a9c89b32e88fba1555fe1308d324eb387ab2a1f16235162b7bccc1900e8f43b7f8eae4f149a37f10cdf52e071990a7c9a
+  languageName: node
+  linkType: hard
+
+"deprecated-react-native-prop-types@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "deprecated-react-native-prop-types@npm:2.3.0"
+  dependencies:
+    "@react-native/normalize-color": "*"
+    invariant: "*"
+    prop-types: "*"
+  checksum: d14f4be1dfe780a7fa9197a31b4a9a2b409c8cf1bf677713fd92d06733dee1043578662d1a8858541cf06164ae91d295db6e595f29bf13e808d9fb37bc58c90b
   languageName: node
   linkType: hard
 
@@ -12542,6 +12553,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-autocomplete-input@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "react-native-autocomplete-input@npm:5.3.2"
+  dependencies:
+    deprecated-react-native-prop-types: ^2.3.0
+  checksum: 65d72a8de2f945cfab1fc868ee26d54a93da84e34be50eac78e255de2395904dc76043760fc57ac05ae7d5c9efd1728926875811aa78257b9fe8ff9d4e3160d0
+  languageName: node
+  linkType: hard
+
 "react-native-exception-handler@npm:^2.10.10":
   version: 2.10.10
   resolution: "react-native-exception-handler@npm:2.10.10"
@@ -14283,6 +14303,7 @@ __metadata:
     react-dom: 18.2.0
     react-native: 0.72.4
     react-native-argon2: ^2.0.1
+    react-native-autocomplete-input: ^5.3.2
     react-native-exception-handler: ^2.10.10
     react-native-gesture-handler: ~2.12.0
     react-native-paper: ^4.12.5
