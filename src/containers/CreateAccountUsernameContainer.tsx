@@ -53,7 +53,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         }
 
         setLoading(false);
-        navigation.navigate('CreateAccountPassword');
+        navigation.navigate('CreatePassphrase');
     }
 
     const onTextChange = (value) => {
