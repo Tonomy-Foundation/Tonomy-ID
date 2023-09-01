@@ -3727,7 +3727,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:development":
+"@tonomy/tonomy-id-sdk@npm:0.15.0-development.2":
   version: 0.15.0-development.2
   resolution: "@tonomy/tonomy-id-sdk@npm:0.15.0-development.2"
   dependencies:
@@ -14974,7 +14974,7 @@ __metadata:
     "@react-navigation/drawer": ^6.5.0
     "@react-navigation/native": ^6.0.12
     "@react-navigation/native-stack": ^6.8.0
-    "@tonomy/tonomy-id-sdk": development
+    "@tonomy/tonomy-id-sdk": 0.15.0-development.2
     "@types/jest": ^29.5.0
     "@types/react": ~18.2.14
     "@types/react-native-base64": ^0.2.0
