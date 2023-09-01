@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
-import Autocomplete from 'react-native-autocomplete-input';
+import Autocomplete from '../components/AutoComplete';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPasswordScreen';
 import { commonStyles } from '../utils/theme';
@@ -26,27 +26,12 @@ export default function ConfirmPasswordContainer({ navigation }: { navigation: P
                         <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Confirm passphrase</TH1>
 
                         <View style={styles.innerContainer}>
-                            <View style={styles.autocompleteContainer}>
-                                <Autocomplete
-                                    editable={!isLoading}
-                                    autoCorrect={false}
-                                    data={suggestions}
-                                    value={query}
-                                    onChangeText={setQuery}
-                                    placeholder={placeholder}
-                                    flatListProps={{
-                                        keyboardShouldPersistTaps: 'always',
-                                        renderItem: ({ item }) => (
-                                            <View>
-                                                <TouchableOpacity onPress={() => setQuery(item)}>
-                                                    <Text style={styles.itemText}>{item}</Text>
-                                                </TouchableOpacity>
-                                                <View style={styles.horizontalLine} />
-                                            </View>
-                                        ),
-                                    }}
-                                />
-                            </View>
+                            <Autocomplete
+                                label=""
+                                data={['Honda', 'Yamaha', 'Suzuki', 'TVS', 'suzuki2', 'suzuki6']}
+                                menuStyle={{ backgroundColor: 'white' }}
+                                onChange={() => {}}
+                            />
                         </View>
                     </View>
                 }
@@ -74,21 +59,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     innerContainer: {
-        width: '100%',
-        height: '60%',
-    },
-    itemText: {
-        fontSize: 15,
-        padding: 4,
-        margin: 0,
+        marginTop: 40,
+        justifyContent: 'center',
     },
     horizontalLine: {
         borderBottomColor: '#E4E4E4',
         borderBottomWidth: 1,
-    },
-    autocompleteContainer: {
-        flex: 1,
-        padding: 15,
-        // position: 'relative',
     },
 });
