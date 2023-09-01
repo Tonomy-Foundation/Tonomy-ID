@@ -1,37 +1,30 @@
-import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import Autocomplete from '../components/AutoComplete';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPasswordScreen';
 import { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/Tbutton';
-import { TH1 } from '../components/atoms/THeadings';
+import { TH1, TP } from '../components/atoms/THeadings';
 
-export default function ConfirmPasswordContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const [allMovies] = useState<string[]>(['abc', 'def', 'oia']);
-    const [query, setQuery] = useState('');
-    const isLoading = !allMovies.length;
-
-    const queriedMovies = useMemo(() => ['abc', 'ee'], []);
-
-    const suggestions: string[] = useMemo(() => queriedMovies || [], [queriedMovies, query]);
-
-    const placeholder = isLoading ? 'Loading data...' : 'Enter Star Wars film title';
-
+export default function ConfirmPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
         <>
             <LayoutComponent
                 body={
                     <View>
                         <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Confirm passphrase</TH1>
-
-                        <View style={styles.innerContainer}>
-                            <Autocomplete
-                                label=""
-                                data={['Honda', 'Yamaha', 'Suzuki', 'TVS', 'suzuki2', 'suzuki6']}
-                                menuStyle={{ backgroundColor: 'white' }}
-                                onChange={() => {}}
-                            />
+                        <View style={{ marginTop: 60 }}>
+                            <View style={styles.innerContainer}>
+                                <TP style={styles.textStyle}>
+                                    Please enter the <TP style={styles.boldText}>3rd word</TP> in your passphrase.
+                                </TP>
+                                <Autocomplete
+                                    label=""
+                                    data={['Honda', 'Yamaha', 'Suzuki', 'TVS', 'suzuki2', 'suzuki6', 'suzuki8']}
+                                    onChange={() => {}}
+                                />
+                            </View>
                         </View>
                     </View>
                 }
@@ -59,11 +52,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     innerContainer: {
-        marginTop: 40,
+        marginTop: 50,
         justifyContent: 'center',
     },
-    horizontalLine: {
-        borderBottomColor: '#E4E4E4',
-        borderBottomWidth: 1,
+    textStyle: {
+        fontSize: 14,
+        fontWeight: 500,
+        marginBottom: 8,
+        color: '#5B6261',
+    },
+    boldText: {
+        fontWeight: 'bold',
     },
 });
