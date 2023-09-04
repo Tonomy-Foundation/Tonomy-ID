@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -8,18 +8,31 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
+import useUserStore from '../store/userStore';
 
 export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const [phraseList, setPhraseList] = useState<string[]>(
-        !settings.isProduction() ? ['barn', 'universe', 'plate', 'star', 'pretty', 'gold'] : ['', '', '', '', '', '']
-    );
+    const { user } = useUserStore();
+
+    const [phraseList, setPhraseList] = useState<string[]>(['', '', '', '', '', '']);
+    const hasEffectRun = useRef(false);
+
+    useEffect(() => {
+        if (!hasEffectRun.current && !settings.isProduction()) {
+            const passphraseWords = user.generateRandomPassphrase();
+
+            setPhraseList(passphraseWords);
+            hasEffectRun.current = true;
+        }
+    }, [user]);
 
     async function onNext() {
         navigation.navigate('ConfirmPassphrase');
     }
 
     async function regenerate() {
-        setPhraseList(['gold', 'barn', 'star', 'moon', 'sun', 'tree']);
+        const passphraseWords = user.generateRandomPassphrase();
+
+        setPhraseList(passphraseWords);
     }
 
     return (
