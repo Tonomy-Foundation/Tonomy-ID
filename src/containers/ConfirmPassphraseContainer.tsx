@@ -19,11 +19,7 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
                                 <TP style={styles.textStyle}>
                                     Please enter the <TP style={styles.boldText}>3rd word</TP> in your passphrase.
                                 </TP>
-                                <Autocomplete
-                                    label=""
-                                    data={['Honda', 'Yamaha', 'Suzuki', 'TVS', 'suzuki2', 'suzuki6', 'suzuki8']}
-                                    onChange={() => {}}
-                                />
+                                <Autocomplete label="" onChange={() => {}} />
                             </View>
                         </View>
                     </View>
@@ -57,7 +53,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         fontSize: 14,
-        fontWeight: 500,
+        fontWeight: '500',
         marginBottom: 8,
         color: '#5B6261',
     },

@@ -2,22 +2,33 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
+import useUserStore from '../store/userStore';
 
 interface AutocompleteProps {
     value?: string;
     label?: string;
-    data: string[];
-
     onChange: (text: string) => void;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, data, onChange: origOnChange }) => {
+const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, onChange: origOnChange }) => {
     const [value, setValue] = useState<string>(origValue || '');
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [filteredData, setFilteredData] = useState<string[]>([]);
+    const { user } = useUserStore();
 
-    const filterData = (text: string): string[] => {
-        return data.filter((val) => val?.toLowerCase()?.indexOf(text?.toLowerCase()) > -1);
+    const onChangeText = (text) => {
+        origOnChange(text);
+
+        if (text && text.length > 0) {
+            const suggestWords = user.suggestPassphraseWord(text);
+
+            setFilteredData(suggestWords);
+        } else if (!text || text === '' || text.length === 0) {
+            setFilteredData([]);
+        }
+
+        setMenuVisible(true);
+        setValue(text);
     };
 
     return (
@@ -35,18 +46,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, da
                                 setMenuVisible(true);
                             }
                         }}
-                        onChangeText={(text) => {
-                            origOnChange(text);
-
-                            if (text && text.length > 0) {
-                                setFilteredData(filterData(text));
-                            } else if (text && text.length === 0) {
-                                setFilteredData(data);
-                            }
-
-                            setMenuVisible(true);
-                            setValue(text);
-                        }}
+                        onChangeText={(text) => onChangeText(text)}
                     />
                     {menuVisible && filteredData && filteredData?.length > 0 && (
                         <View style={styles.menuView}>
