@@ -9,10 +9,10 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
 
 export default function ConfirmPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { setThirdWord, thirdWord, checkWordAtIndex } = usePassphraseStore();
+    const { setFirstWord, firstWord, checkWordAtIndex } = usePassphraseStore();
 
     const handleChangeText = (text) => {
-        setThirdWord(text);
+        setFirstWord(text);
     };
 
     return (
@@ -24,13 +24,13 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
                         <View style={{ marginTop: 60 }}>
                             <View style={styles.innerContainer}>
                                 <TP style={styles.textStyle}>
-                                    Please enter the <TP style={styles.boldText}>3rd word</TP> in your passphrase.
+                                    Please enter the <TP style={styles.boldText}>1st word</TP> in your passphrase.
                                 </TP>
                                 <Autocomplete
                                     label=""
-                                    value={thirdWord}
+                                    value={firstWord}
                                     setPassphraseValue={handleChangeText}
-                                    index={3}
+                                    index={1}
                                 />
                             </View>
                         </View>
@@ -39,7 +39,7 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained disabled={!checkWordAtIndex(3, thirdWord)}>NEXT</TButtonContained>
+                            <TButtonContained disabled={!checkWordAtIndex(1, thirdWord)}>NEXT</TButtonContained>
                         </View>
                     </View>
                 }
@@ -50,7 +50,7 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
 
 const styles = StyleSheet.create({
     headline: {
-        marginTop: -20,
+        marginTop: -10,
         fontSize: 20,
         marginBottom: 5,
     },
