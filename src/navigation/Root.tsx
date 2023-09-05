@@ -23,6 +23,7 @@ import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
+import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 
 const prefix = Linking.createURL('');
@@ -35,6 +36,7 @@ export type RouteStackParamList = {
     Home: undefined;
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
+    CreatePassphrase: undefined;
     Hcaptcha: { password: string };
     CreateAccountPin: { password: string; action: string };
     LoginWithPin: { password: string };
@@ -111,6 +113,11 @@ export default function RootNavigation() {
                         name="CreateAccountUsername"
                         options={{ title: 'Create New Account' }}
                         component={CreateAccountUsernameScreen}
+                    />
+                    <Stack.Screen
+                        name="CreatePassphrase"
+                        options={{ title: 'Create New Account' }}
+                        component={CreatePassphraseScreen}
                     />
                     <Stack.Screen
                         name="Hcaptcha"
