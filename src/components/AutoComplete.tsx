@@ -15,6 +15,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [filteredData, setFilteredData] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
+    const [textLength, setTextLength] = useState<number>(0);
     const { user } = useUserStore();
 
     const onChangeText = (text) => {
@@ -25,6 +26,10 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
             const suggestWords = user.suggestPassphraseWord(text);
 
             if (suggestWords?.length === 0) {
+                if (!textLength || textLength === 0) {
+                    setTextLength(text.length);
+                }
+
                 setErrorMsg('The combination of letters you provided is not a part of the selectable word list.');
             }
 
@@ -41,6 +46,16 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
         <View>
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
+                    <View style={styles.coloredTextContainer}>
+                        {value.split('').map((char, index) => (
+                            <Text
+                                key={index}
+                                style={{ color: index < textLength - 1 || textLength === 0 ? '#474D4C' : '#F44336' }}
+                            >
+                                {char}
+                            </Text>
+                        ))}
+                    </View>
                     <TextInput
                         value={value}
                         label={label}
@@ -54,6 +69,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
                         }}
                         onChangeText={(text) => onChangeText(text)}
                     />
+
                     {menuVisible && filteredData && filteredData?.length > 0 && (
                         <View style={styles.menuView}>
                             {filteredData.map((datum, i) => (
@@ -81,6 +97,9 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
 export default Autocomplete;
 
 const styles = StyleSheet.create({
+    coloredTextContainer: {
+        flexDirection: 'row',
+    },
     menuView: {
         borderRadius: 8,
         padding: 0,
@@ -93,14 +112,19 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     input: {
-        backgroundColor: 'transparent',
-        width: '60%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
         height: 45,
-        flex: 1,
+        opacity: 0,
     },
     innerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        height: 44,
+        paddingHorizontal: 7,
+        fontSize: 16,
     },
     inputContainer: {
         position: 'relative',
@@ -114,6 +138,10 @@ const styles = StyleSheet.create({
     },
     errorMsg: {
         color: '#F44336',
+        textAlign: 'center',
+        fontSize: 14,
+        marginTop: 5,
+        lineHeight: 16,
     },
 
     errorInput: {
