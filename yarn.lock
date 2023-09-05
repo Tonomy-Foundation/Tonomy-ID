@@ -3727,15 +3727,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@tonomy/tonomy-id-sdk@file:../Tonomy-ID-SDK::locator=tonomy-id%40workspace%3A.":
-  version: 0.15.0-development.2
-  resolution: "@tonomy/tonomy-id-sdk@file:../Tonomy-ID-SDK#../Tonomy-ID-SDK::hash=4787de&locator=tonomy-id%40workspace%3A."
-=======
-"@tonomy/tonomy-id-sdk@npm:0.15.0-development.2":
-  version: 0.15.0-development.2
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.15.0-development.2"
->>>>>>> development
+"@tonomy/tonomy-id-sdk@npm:0.15.0-development.3":
+  version: 0.15.0-development.3
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.15.0-development.3"
   dependencies:
     "@consento/sync-randombytes": ^1.0.5
     "@tonomy/antelope-did": ^0.1.5
@@ -3750,11 +3744,7 @@ __metadata:
     elliptic: ^6.5.4
     socket.io-client: ^4.5.4
     universal-base64url: ^1.1.0
-<<<<<<< HEAD
-  checksum: 9e7ee0b155f7420d35defce480f91d8234f2ffd30914b0100a6fe370ff7121f81005762816f1980a89e988cb40f94b457277d7246cc6035fe0a6c9944ed767f8
-=======
-  checksum: 33d6031035c480da14ad603a7bb4e94ffcc6138677ae9fcf301f962a96328a449ee636c7fdec7825bda79853b93fc9781586da62eae341763c6686c3b58afcdc
->>>>>>> development
+  checksum: 6ddbf3175f95f994fdba13d9d99d2ae9454b54a8bc264bb754c59fd3aa40460a6856fe4270710bfa4a6e735505753cb4a205c25fe0ff8dbd2b863387165158b4
   languageName: node
   linkType: hard
 
@@ -15004,11 +14994,7 @@ __metadata:
     "@react-navigation/drawer": ^6.5.0
     "@react-navigation/native": ^6.0.12
     "@react-navigation/native-stack": ^6.8.0
-<<<<<<< HEAD
-    "@tonomy/tonomy-id-sdk": ../Tonomy-ID-SDK
-=======
-    "@tonomy/tonomy-id-sdk": 0.15.0-development.2
->>>>>>> development
+    "@tonomy/tonomy-id-sdk": 0.15.0-development.3
     "@types/jest": ^29.5.0
     "@types/react": ~18.2.14
     "@types/react-native-base64": ^0.2.0

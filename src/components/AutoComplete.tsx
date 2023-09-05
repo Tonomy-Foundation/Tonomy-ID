@@ -1,41 +1,40 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
-import theme from '../utils/theme';
+import theme, { customColors } from '../utils/theme';
 import useUserStore from '../store/userStore';
 
 interface AutocompleteProps {
     value?: string;
     label?: string;
-    onChange: (text: string) => void;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, onChange: origOnChange }) => {
-    const [value, setValue] = useState<string>(origValue || '');
+const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label }) => {
+    const [value, setValue] = useState<string>(defaultValue || '');
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
-    const [filteredData, setFilteredData] = useState<string[]>([]);
+    const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
-    const [textLength, setTextLength] = useState<number>(0);
+    const [valueLength, setValueLength] = useState<number>(0);
     const { user } = useUserStore();
 
     const onChangeText = (text) => {
-        origOnChange(text);
         setErrorMsg('');
+        setValueLength(0);
 
         if (text && text.length > 0) {
             const suggestWords = user.suggestPassphraseWord(text);
 
             if (suggestWords?.length === 0) {
-                if (!textLength || textLength === 0) {
-                    setTextLength(text.length);
+                if (!valueLength || valueLength === 0) {
+                    setValueLength(text.length);
                 }
 
                 setErrorMsg('The combination of letters you provided is not a part of the selectable word list.');
             }
 
-            setFilteredData(suggestWords);
+            setSuggestedWords(suggestWords);
         } else if (!text || text === '' || text.length === 0) {
-            setFilteredData([]);
+            setSuggestedWords([]);
         }
 
         setMenuVisible(true);
@@ -50,7 +49,12 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
                         {value.split('').map((char, index) => (
                             <Text
                                 key={index}
-                                style={{ color: index < textLength - 1 || textLength === 0 ? '#474D4C' : '#F44336' }}
+                                style={{
+                                    color:
+                                        index < valueLength - 1 || valueLength === 0
+                                            ? theme.colors.text
+                                            : customColors.error,
+                                }}
                             >
                                 {char}
                             </Text>
@@ -70,19 +74,19 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
                         onChangeText={(text) => onChangeText(text)}
                     />
 
-                    {menuVisible && filteredData && filteredData?.length > 0 && (
+                    {menuVisible && suggestedWords && suggestedWords?.length > 0 && (
                         <View style={styles.menuView}>
-                            {filteredData.map((datum, i) => (
+                            {suggestedWords.map((word, i) => (
                                 <View key={i} style={{ marginTop: -6 }}>
                                     <Menu.Item
                                         style={[{ width: '100%' }]}
                                         onPress={() => {
-                                            setValue(datum);
+                                            setValue(word);
                                             setMenuVisible(false);
                                         }}
-                                        title={datum}
+                                        title={word}
                                     />
-                                    {i < filteredData.length - 1 && <View style={styles.horizontalLine} />}
+                                    {i < suggestedWords.length - 1 && <View style={styles.horizontalLine} />}
                                 </View>
                             ))}
                         </View>
@@ -133,11 +137,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     horizontalLine: {
-        borderBottomColor: '#E4E4E4',
+        borderBottomColor: theme.colors.grey5,
         borderBottomWidth: 1,
     },
     errorMsg: {
-        color: '#F44336',
+        color: customColors.error,
         textAlign: 'center',
         fontSize: 14,
         marginTop: 5,
@@ -147,7 +151,7 @@ const styles = StyleSheet.create({
     errorInput: {
         position: 'relative',
         borderWidth: 1,
-        borderColor: '#F44336',
+        borderColor: customColors.error,
         borderRadius: 8,
     },
 });

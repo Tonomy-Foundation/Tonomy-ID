@@ -19,7 +19,7 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
                                 <TP style={styles.textStyle}>
                                     Please enter the <TP style={styles.boldText}>3rd word</TP> in your passphrase.
                                 </TP>
-                                <Autocomplete label="" onChange={() => {}} />
+                                <Autocomplete label="" />
                             </View>
                         </View>
                     </View>
