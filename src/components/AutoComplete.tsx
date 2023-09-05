@@ -89,9 +89,9 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, in
                                         onPress={() => {
                                             setValue(word);
                                             setMenuVisible(false);
-                                            setPassphraseValue(datum);
+                                            setPassphraseValue(word);
 
-                                            if (index && !checkWordAtIndex(index, datum)) {
+                                            if (index && !checkWordAtIndex(index, word)) {
                                                 setErrorMsg(
                                                     'The word you have entered is incorrect.Please  try again.'
                                                 );

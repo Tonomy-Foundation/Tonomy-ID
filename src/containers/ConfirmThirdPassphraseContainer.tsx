@@ -2,17 +2,21 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Autocomplete from '../components/AutoComplete';
 import LayoutComponent from '../components/layout';
-import { Props } from '../screens/ConfirmPasswordScreen';
+import { Props } from '../screens/ConfirmThirdPassphraseScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
 
-export default function ConfirmPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function ConfirmThirdPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { setThirdWord, thirdWord, checkWordAtIndex } = usePassphraseStore();
 
     const handleChangeText = (text) => {
         setThirdWord(text);
+    };
+
+    const onNext = () => {
+        navigation.navigate('ConfirmFirstPassphraseWord');
     };
 
     return (
@@ -39,7 +43,10 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained disabled={!checkWordAtIndex(3, thirdWord)}>NEXT</TButtonContained>
+                            <TButtonContained disabled={!checkWordAtIndex(3, thirdWord)} onPress={onNext}>
+                                {' '}
+                                NEXT
+                            </TButtonContained>
                         </View>
                     </View>
                 }
