@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
@@ -8,16 +8,27 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
+import useUserStore from '../store/userStore';
 
 export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const [phraseList, setPhraseList] = useState<string[]>(
-        !settings.isProduction() ? ['barn', 'universe', 'plate', 'star', 'pretty', 'gold'] : ['', '', '', '', '', '']
-    );
+    const { user } = useUserStore();
 
-    async function onNext() {}
+    const [phraseList, setPhraseList] = useState<string[]>(['', '', '', '', '', '']);
+    const hasEffectRun = useRef(false);
+
+    useEffect(() => {
+        if (!hasEffectRun.current) {
+            const passphraseWords = user.generateRandomPassphrase();
+
+            setPhraseList(passphraseWords);
+            hasEffectRun.current = true;
+        }
+    }, [user]);
 
     async function regenerate() {
-        setPhraseList(['gold', 'barn', 'star', 'moon', 'sun', 'tree']);
+        const passphraseWords = user.generateRandomPassphrase();
+
+        setPhraseList(passphraseWords);
     }
 
     return (
@@ -62,7 +73,7 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext}>NEXT</TButtonContained>
+                            <TButtonContained>NEXT</TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
