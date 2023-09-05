@@ -37,6 +37,7 @@ setSettings({
     communicationUrl: settings.config.communicationUrl,
     loggerLevel: settings.config.loggerLevel,
     tonomyIdSchema: settings.config.tonomyIdSlug + '://',
+    accountsServiceUrl: settings.config.accountsServiceUrl,
 });
 
 const useUserStore = create<UserState>((set, get) => ({

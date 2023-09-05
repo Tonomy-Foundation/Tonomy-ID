@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
@@ -17,17 +17,13 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
-        if (!hasEffectRun.current && !settings.isProduction()) {
+        if (!hasEffectRun.current) {
             const passphraseWords = user.generateRandomPassphrase();
 
             setPhraseList(passphraseWords);
             hasEffectRun.current = true;
         }
     }, [user]);
-
-    async function onNext() {
-        navigation.navigate('ConfirmPassphrase');
-    }
 
     async function regenerate() {
         const passphraseWords = user.generateRandomPassphrase();
@@ -77,7 +73,7 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext}>NEXT</TButtonContained>
+                            <TButtonContained>NEXT</TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
@@ -96,7 +92,7 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
 
 const styles = StyleSheet.create({
     headline: {
-        marginTop: -20,
+        marginTop: -10,
         fontSize: 20,
         marginBottom: 5,
     },
