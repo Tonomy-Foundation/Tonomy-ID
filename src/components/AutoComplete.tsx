@@ -24,7 +24,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
             const suggestWords = user.suggestPassphraseWord(text);
 
             if (suggestWords?.length === 0) {
-                setErrorMsg('The word you have entered is incorrect.Please  try again.');
+                setErrorMsg('The combination of letters you provided is not a part of the selectable word list.');
             }
 
             setFilteredData(suggestWords);
@@ -38,7 +38,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
 
     return (
         <View>
-            <View style={styles.inputContainer}>
+            <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <TextInput
                         value={value}
@@ -113,5 +113,12 @@ const styles = StyleSheet.create({
     },
     errorMsg: {
         color: '#F44336',
+    },
+
+    errorInput: {
+        position: 'relative',
+        borderWidth: 1,
+        borderColor: '#F44336',
+        borderRadius: 8,
     },
 });

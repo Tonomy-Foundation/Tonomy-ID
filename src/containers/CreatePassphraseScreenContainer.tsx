@@ -73,7 +73,9 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained>NEXT</TButtonContained>
+                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphrase')}>
+                                NEXT
+                            </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
