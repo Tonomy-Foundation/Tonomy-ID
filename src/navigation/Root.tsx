@@ -52,7 +52,7 @@ export type RouteStackParamList = {
     QrScanner: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
-    ConfirmPassphrase: undefined;
+    ConfirmPassphraseWord: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -133,7 +133,7 @@ export default function RootNavigation() {
                         component={CreateAccountPasswordScreen}
                     />
                     <Stack.Screen
-                        name="ConfirmPassphrase"
+                        name="ConfirmPassphraseWord"
                         options={{ title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
                     />

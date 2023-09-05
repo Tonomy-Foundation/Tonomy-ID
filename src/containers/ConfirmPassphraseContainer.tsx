@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Autocomplete from '../components/AutoComplete';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPasswordScreen';
-import { commonStyles } from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
         marginBottom: 8,
-        color: '#5B6261',
+        color: theme.colors.grey1,
     },
     boldText: {
         fontWeight: 'bold',

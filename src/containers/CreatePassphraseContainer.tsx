@@ -11,7 +11,7 @@ import PassphraseBox from '../components/PassphraseBox';
 import useUserStore from '../store/userStore';
 import usePassphraseStore from '../store/passphraseStore';
 
-export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { user } = useUserStore();
     const { passphraseList, setPassphraseList } = usePassphraseStore();
 
@@ -74,7 +74,7 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphrase')}>
+                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphraseWord')}>
                                 NEXT
                             </TButtonContained>
                         </View>
