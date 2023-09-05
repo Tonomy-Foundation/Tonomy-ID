@@ -19,6 +19,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
 
     const onChangeText = (text) => {
         origOnChange(text);
+        setErrorMsg('');
 
         if (text && text.length > 0) {
             const suggestWords = user.suggestPassphraseWord(text);
