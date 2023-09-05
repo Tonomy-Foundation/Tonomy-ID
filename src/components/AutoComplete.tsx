@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
 import useUserStore from '../store/userStore';
@@ -14,6 +14,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
     const [value, setValue] = useState<string>(origValue || '');
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [filteredData, setFilteredData] = useState<string[]>([]);
+    const [errorMsg, setErrorMsg] = useState<string>('');
     const { user } = useUserStore();
 
     const onChangeText = (text) => {
@@ -21,6 +22,10 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
 
         if (text && text.length > 0) {
             const suggestWords = user.suggestPassphraseWord(text);
+
+            if (suggestWords?.length === 0) {
+                setErrorMsg('The word you have entered is incorrect.Please  try again.');
+            }
 
             setFilteredData(suggestWords);
         } else if (!text || text === '' || text.length === 0) {
@@ -67,6 +72,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
                     )}
                 </View>
             </View>
+            <Text style={styles.errorMsg}>{errorMsg}</Text>
         </View>
     );
 };
@@ -104,5 +110,8 @@ const styles = StyleSheet.create({
     horizontalLine: {
         borderBottomColor: '#E4E4E4',
         borderBottomWidth: 1,
+    },
+    errorMsg: {
+        color: '#F44336',
     },
 });
