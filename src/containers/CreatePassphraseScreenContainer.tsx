@@ -9,26 +9,27 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
 import useUserStore from '../store/userStore';
+import usePassphraseStore from '../store/passphraseStore';
 
 export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { user } = useUserStore();
+    const { passphraseList, setPassphraseList } = usePassphraseStore();
 
-    const [phraseList, setPhraseList] = useState<string[]>(['', '', '', '', '', '']);
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
             const passphraseWords = user.generateRandomPassphrase();
 
-            setPhraseList(passphraseWords);
+            setPassphraseList(passphraseWords);
             hasEffectRun.current = true;
         }
-    }, [user]);
+    }, [user, setPassphraseList]);
 
     async function regenerate() {
         const passphraseWords = user.generateRandomPassphrase();
 
-        setPhraseList(passphraseWords);
+        setPassphraseList(passphraseWords);
     }
 
     return (
@@ -43,7 +44,7 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
                         </TP>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
-                                {phraseList.map((text, index) => (
+                                {passphraseList.map((text, index) => (
                                     <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
                                 ))}
                             </View>

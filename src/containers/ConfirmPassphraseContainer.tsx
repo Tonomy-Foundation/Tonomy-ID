@@ -6,8 +6,15 @@ import { Props } from '../screens/ConfirmPasswordScreen';
 import { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
+import usePassphraseStore from '../store/passphraseStore';
 
 export default function ConfirmPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const { setThirdWord, thirdWord, checkWordAtIndex } = usePassphraseStore();
+
+    const handleChangeText = (text) => {
+        setThirdWord(text);
+    };
+
     return (
         <>
             <LayoutComponent
@@ -19,7 +26,13 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
                                 <TP style={styles.textStyle}>
                                     Please enter the <TP style={styles.boldText}>3rd word</TP> in your passphrase.
                                 </TP>
-                                <Autocomplete label="" onChange={() => {}} />
+                                <Autocomplete
+                                    label=""
+                                    value={thirdWord}
+                                    onChange={handleChangeText}
+                                    setPassphraseValue={handleChangeText}
+                                    index={3}
+                                />
                             </View>
                         </View>
                     </View>
@@ -27,7 +40,7 @@ export default function ConfirmPassphraseContainer({ navigation }: { navigation:
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained>NEXT</TButtonContained>
+                            <TButtonContained disabled={!checkWordAtIndex(3, thirdWord)}>NEXT</TButtonContained>
                         </View>
                     </View>
                 }

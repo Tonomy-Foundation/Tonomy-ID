@@ -3,20 +3,30 @@ import { View, StyleSheet, Text } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
 import useUserStore from '../store/userStore';
+import usePassphraseStore from '../store/passphraseStore';
 
 interface AutocompleteProps {
     value?: string;
     label?: string;
     onChange: (text: string) => void;
+    setPassphraseValue: (text: string) => void;
+    index?: number;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, onChange: origOnChange }) => {
+const Autocomplete: React.FC<AutocompleteProps> = ({
+    value: origValue,
+    label,
+    onChange: origOnChange,
+    index,
+    setPassphraseValue,
+}) => {
     const [value, setValue] = useState<string>(origValue || '');
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [filteredData, setFilteredData] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [textLength, setTextLength] = useState<number>(0);
     const { user } = useUserStore();
+    const { checkWordAtIndex } = usePassphraseStore();
 
     const onChangeText = (text) => {
         origOnChange(text);
@@ -38,6 +48,8 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
             setFilteredData([]);
         }
 
+        console.log('index', index, value);
+
         setMenuVisible(true);
         setValue(text);
     };
@@ -50,7 +62,10 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
                         {value.split('').map((char, index) => (
                             <Text
                                 key={index}
-                                style={{ color: index < textLength - 1 || textLength === 0 ? '#474D4C' : '#F44336' }}
+                                style={{
+                                    color:
+                                        textLength > 0 ? (index < textLength - 1 ? '#474D4C' : '#F44336') : '#474D4c',
+                                }}
                             >
                                 {char}
                             </Text>
@@ -79,6 +94,13 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, on
                                         onPress={() => {
                                             setValue(datum);
                                             setMenuVisible(false);
+                                            setPassphraseValue(datum);
+
+                                            if (index && !checkWordAtIndex(index, datum)) {
+                                                setErrorMsg(
+                                                    'The word you have entered is incorrect.Please  try again.'
+                                                );
+                                            }
                                         }}
                                         title={datum}
                                     />
@@ -118,6 +140,8 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 45,
         opacity: 0,
+        color: 'white',
+        visibility: 'hidden',
     },
     innerContainer: {
         flexDirection: 'row',
