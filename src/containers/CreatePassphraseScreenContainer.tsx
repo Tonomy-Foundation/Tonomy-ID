@@ -92,7 +92,7 @@ export default function CreatePassphraseScreenContainer({ navigation }: { naviga
 
 const styles = StyleSheet.create({
     headline: {
-        marginTop: -28,
+        marginTop: -10,
         fontSize: 20,
         marginBottom: 5,
     },
