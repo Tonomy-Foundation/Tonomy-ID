@@ -7,7 +7,7 @@ import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 
-export default function ConfirmPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function ConfirmPassphraseContainer() {
     return (
         <>
             <LayoutComponent

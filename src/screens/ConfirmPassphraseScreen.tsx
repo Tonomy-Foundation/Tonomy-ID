@@ -6,5 +6,5 @@ import { RouteStackParamList } from '../navigation/Root';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'ConfirmPassphraseWord'>;
 
 export default function ConfirmPassphraseScreen(props: Props) {
-    return <ConfirmPassphraseContainer navigation={props.navigation}></ConfirmPassphraseContainer>;
+    return <ConfirmPassphraseContainer></ConfirmPassphraseContainer>;
 }

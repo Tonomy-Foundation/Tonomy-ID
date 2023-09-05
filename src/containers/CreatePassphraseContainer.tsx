@@ -10,7 +10,7 @@ import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
 import useUserStore from '../store/userStore';
 
-export default function CreatePassphraseScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { user } = useUserStore();
 
     const [phraseList, setPhraseList] = useState<string[]>(['', '', '', '', '', '']);
