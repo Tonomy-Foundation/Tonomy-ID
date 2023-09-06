@@ -12,10 +12,6 @@ export default function ConfirmFirstPassphraseWordContainer({ navigation }: { na
     const { setFirstWord, firstWord, checkWordAtIndex, randomNumbers } = usePassphraseStore();
     const firstIndex = randomNumbers[0];
 
-    const handleChangeText = (text) => {
-        setFirstWord(text);
-    };
-
     const onNext = () => {
         navigation.navigate('ConfirmSecondPassphraseWord');
     };
@@ -35,7 +31,7 @@ export default function ConfirmFirstPassphraseWordContainer({ navigation }: { na
                                 <Autocomplete
                                     label=""
                                     value={firstWord}
-                                    setPassphraseValue={handleChangeText}
+                                    setPassphraseValue={setFirstWord}
                                     index={firstIndex}
                                 />
                             </View>

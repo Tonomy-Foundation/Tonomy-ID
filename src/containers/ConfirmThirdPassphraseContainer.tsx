@@ -12,10 +12,6 @@ export default function ConfirmThirdPassphraseContainer({ navigation }: { naviga
     const { setThirdWord, thirdWord, checkWordAtIndex, randomNumbers } = usePassphraseStore();
     const thirdIndex = randomNumbers[2];
 
-    const handleChangeText = (text) => {
-        setThirdWord(text);
-    };
-
     const onNext = () => {
         navigation.navigate('Hcaptcha');
     };
@@ -35,7 +31,7 @@ export default function ConfirmThirdPassphraseContainer({ navigation }: { naviga
                                 <Autocomplete
                                     label=""
                                     value={thirdWord}
-                                    setPassphraseValue={handleChangeText}
+                                    setPassphraseValue={setThirdWord}
                                     index={thirdIndex}
                                 />
                             </View>
