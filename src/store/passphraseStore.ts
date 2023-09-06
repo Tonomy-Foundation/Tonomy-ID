@@ -48,7 +48,6 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
             }
         }
 
-        console.log('randomvalue', randomWordIndexesList);
         set({ randomWordIndexes: randomWordIndexesList });
 
         return randomWordIndexesList;
