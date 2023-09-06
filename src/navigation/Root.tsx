@@ -3,7 +3,6 @@ import React from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
-import CreateAccountPasswordScreen from '../screens/CreateAccountPasswordScreen';
 import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import MainSplashScreen from '../screens/MainSplashScreen';
 import SplashSecurityScreen from '../screens/SplashSecurityScreen';
@@ -125,11 +124,6 @@ export default function RootNavigation() {
                         options={{ title: 'Create New Account' }}
                         component={HcaptchaScreen}
                         initialParams={{ password: '' }}
-                    />
-                    <Stack.Screen
-                        name="CreateAccountPassword"
-                        options={{ title: 'Create New Account' }}
-                        component={CreateAccountPasswordScreen}
                     />
                     <Stack.Screen
                         name="ConfirmPassphraseWord"

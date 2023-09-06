@@ -1,34 +1,95 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
-import { Props } from '../screens/CreatePassphraseScreen';
+import { Props } from '../screens/LoginPassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
-import useUserStore from '../store/userStore';
+import useUserStore, { UserStatus } from '../store/userStore';
+import { AccountType, SdkError, SdkErrors, TonomyUsername } from '@tonomy/tonomy-id-sdk';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
+import useErrorStore from '../store/errorStore';
 
-export default function LoginPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { user } = useUserStore();
+export default function LoginPassphraseContainer({
+    navigation,
+    username,
+}: {
+    navigation: Props['navigation'];
+    username: string;
+}) {
+    const errorsStore = useErrorStore();
+    const { user, setStatus } = useUserStore();
 
-    const [phraseList, setPhraseList] = useState<string[]>(['', '', '', '', '', '']);
+    const [passphrase, setPassphrase] = useState<string[]>(['', '', '', '', '', '']);
+    const [nextDisabled, setNextDisabled] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
-            const passphraseWords = user.generateRandomPassphrase();
-
-            setPhraseList(passphraseWords);
+            setPassphrase(user.generateRandomPassphrase());
             hasEffectRun.current = true;
         }
     }, [user]);
 
-    async function regenerate() {
-        const passphraseWords = user.generateRandomPassphrase();
+    async function updateKeys() {
+        await user.updateKeys(passphrase.join(' '));
+        setStatus(UserStatus.LOGGED_IN);
+    }
 
-        setPhraseList(passphraseWords);
+    async function onNext() {
+        setLoading(true);
+
+        try {
+            const result = await user.login(
+                TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
+                passphrase.join(' '),
+                { keyFromPasswordFn: generatePrivateKeyFromPassword }
+            );
+
+            if (result?.account_name !== undefined) {
+                setPassphrase(['', '', '', '', '', '']);
+                setErrorMessage('');
+                await user.saveLocal();
+                await updateKeys();
+            }
+        } catch (e) {
+            if (e instanceof SdkError) {
+                switch (e.code) {
+                    case SdkErrors.UsernameNotFound:
+                    case SdkErrors.PasswordInvalid:
+                    case SdkErrors.PasswordFormatInvalid:
+                    case SdkErrors.AccountDoesntExist:
+                        setErrorMessage('The passphrase you have entered is incorrect.<br /> Please try again.');
+                        break;
+                    default:
+                        setErrorMessage('');
+                        errorsStore.setError({ error: e, expected: false });
+                }
+
+                setLoading(false);
+                return;
+            } else {
+                errorsStore.setError({ error: e, expected: false });
+                setLoading(false);
+                return;
+            }
+        }
+    }
+
+    async function onChangeWord(index: number, word: string) {
+        setErrorMessage('');
+
+        // cif words are valid
+        setNextDisabled(false);
+        // if words are not valid
+        setNextDisabled(true);
+        setErrorMessage('Word is not part of the combination list');
     }
 
     return (
@@ -36,27 +97,16 @@ export default function LoginPassphraseContainer({ navigation }: { navigation: P
             <LayoutComponent
                 body={
                     <View>
-                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Create passphrase</TH1>
-                        <TP style={styles.paragraph}>
-                            Passphrase is like a password but more secure and easier to remember.{' '}
-                            <TP style={styles.link}>Learn more.</TP>
-                        </TP>
+                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Passphrase</TH1>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
-                                {phraseList.map((text, index) => (
+                                {passphrase.map((text, index) => (
+                                    // TODO change to autosuggest
                                     <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
                                 ))}
                             </View>
                         </View>
-                        <View style={styles.btnView}>
-                            <TButtonContained
-                                style={styles.regenerateBtn}
-                                onPress={regenerate}
-                                icon={require('../assets/images/refresh-ccw.png')}
-                            >
-                                Regenerate
-                            </TButtonContained>
-                        </View>
+                        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
                     </View>
                 }
                 footerHint={
@@ -73,15 +123,15 @@ export default function LoginPassphraseContainer({ navigation }: { navigation: P
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphraseWord')}>
+                            <TButtonContained onPress={onNext} disabled={nextDisabled || loading}>
                                 NEXT
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
-                            <TP size={1}>Already have an account? </TP>
-                            <TouchableOpacity onPress={() => navigation.navigate('LoginUsername')}>
+                            <TP size={1}>Don't have an account?</TP>
+                            <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
                                 <TP size={1} style={styles.link}>
-                                    Login
+                                    Sign Up
                                 </TP>
                             </TouchableOpacity>
                         </View>
@@ -93,6 +143,9 @@ export default function LoginPassphraseContainer({ navigation }: { navigation: P
 }
 
 const styles = StyleSheet.create({
+    errorText: {
+        color: theme.colors.error,
+    },
     headline: {
         marginTop: -10,
         fontSize: 20,
