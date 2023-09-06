@@ -12,8 +12,8 @@ interface AutocompleteProps {
     index?: number;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, index, setPassphraseValue }) => {
-    const [value, setValue] = useState<string>(origValue || '');
+const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label, index, setPassphraseValue }) => {
+    const [value, setValue] = useState<string>(defaultValue || '');
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
