@@ -18,7 +18,6 @@ import merge from 'deepmerge';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
-import LoginPasswordScreen from '../screens/LoginPasswordScreen';
 import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
@@ -26,6 +25,7 @@ import NotificationModule from '../services/NotificationModule';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
+import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 
 const prefix = Linking.createURL('');
 
@@ -38,14 +38,13 @@ export type RouteStackParamList = {
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
     CreatePassphrase: undefined;
-    Hcaptcha: { password: string };
     CreateAccountPin: { password: string; action: string };
-    LoginWithPin: { password: string };
     CreateAccountFingerprint: { password: string };
+    Hcaptcha: { password: string };
+    LoginWithPin: { password: string };
     LoginUsername: undefined;
-    LoginPassword: { username: string };
+    LoginPassphrase: { username: string };
     UserHome: { did?: string };
-    Test: undefined;
     Drawer: undefined;
     SetPassword: undefined;
     Settings: undefined;
@@ -150,7 +149,11 @@ export default function RootNavigation() {
                         initialParams={{ password: '' }}
                     />
                     <Stack.Screen name="LoginUsername" options={{ title: 'Login' }} component={LoginUsernameScreen} />
-                    <Stack.Screen name="LoginPassword" options={{ title: 'Login' }} component={LoginPasswordScreen} />
+                    <Stack.Screen
+                        name="LoginPassphrase"
+                        options={{ title: 'Login' }}
+                        component={LoginPassphraseScreen}
+                    />
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
