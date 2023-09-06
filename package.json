@@ -17,7 +17,8 @@
         "lint:fix": "yarn run lint -- --fix",
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
-        "typeCheck": "tsc"
+        "typeCheck": "tsc",
+        "updateSdkVersion": "./update_sdk_version.sh"
     },
     "dependencies": {
         "@hcaptcha/react-native-hcaptcha": "^1.5.1",

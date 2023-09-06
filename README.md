@@ -70,6 +70,14 @@ This is now running in production mode connected to the staging environment.
 6. Connect your phone to the pc with a usb cable.
 7. Open the the react native app you want to debug.
 
+## Update the Tonomy-ID-SDK version to the latest
+
+```bash
+yarn run updateSdkVersion development
+# or
+yarn run updateSdkVersion master
+```
+
 ## File structure of components
 
 [https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
