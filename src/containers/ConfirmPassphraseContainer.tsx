@@ -3,7 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import Autocomplete from '../components/AutoComplete';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPassphraseScreen';
-import { commonStyles } from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
+import { displayScreenNumber } from '../utils/passphrase';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
@@ -16,8 +17,7 @@ export default function ConfirmPassphraseWordContainer({
     navigation: Props['navigation'];
 }) {
     const { index } = route.params;
-    const { setDefaultPassphraseWord, defaultPassphraseWord, checkWordAtIndex, randomWordIndexes } =
-        usePassphraseStore();
+    const { passphraseList, checkWordAtIndex, randomWordIndexes } = usePassphraseStore();
 
     const onNext = () => {
         if (index < 2) {
@@ -37,13 +37,15 @@ export default function ConfirmPassphraseWordContainer({
                             <View style={styles.innerContainer}>
                                 <TP style={styles.textStyle}>
                                     Please enter the{' '}
-                                    <TP style={styles.boldText}>{randomWordIndexes[index] + 1} word</TP> in your
-                                    passphrase.
+                                    <TP style={styles.boldText}>
+                                        {displayScreenNumber(randomWordIndexes[index] + 1)} word
+                                    </TP>{' '}
+                                    in your passphrase.
                                 </TP>
                                 <Autocomplete
-                                    value={defaultPassphraseWord[index]}
-                                    setPassphraseValue={(value) => setDefaultPassphraseWord(index, value)}
-                                    index={index}
+                                    value={passphraseList[index]}
+                                    onChange={(value) => {}}
+                                    screenNumber={index}
                                 />
                             </View>
                         </View>
@@ -53,7 +55,7 @@ export default function ConfirmPassphraseWordContainer({
                     <View>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
-                                disabled={!checkWordAtIndex(randomWordIndexes[index], defaultPassphraseWord[index])}
+                                disabled={!checkWordAtIndex(randomWordIndexes[index], passphraseList[index])}
                                 onPress={onNext}
                             >
                                 Next
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
         marginBottom: 8,
-        color: '#5B6261',
+        color: theme.colors.grey1,
     },
     boldText: {
         fontWeight: 'bold',

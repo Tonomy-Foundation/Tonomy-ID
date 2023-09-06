@@ -12,16 +12,16 @@ import usePassphraseStore from '../store/passphraseStore';
  *
  * @component
  * @param {string | undefined} props.value - The default value of the Autocomplete input.
- * @param {number | undefined} props.index - An index to uniquely identify in which confirm word component.
+ * @param {number | undefined} props.screenNumber - this screenNumber used to enable/disabled the next button so we can check on which screen number user exists then we match word with that index value in passphraseList
  * @param {(text: string) => void} props.setPassphraseValue - A function to set the value of the current number of screen
  */
 interface AutocompleteProps {
     value?: string;
-    setPassphraseValue: (text: string) => void;
-    index?: number;
+    onChange: (text: string) => void;
+    screenNumber?: number;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, index, setPassphraseValue }) => {
+const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, screenNumber, onChange }) => {
     const [value, setValue] = useState<string>(defaultValue || '');
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
@@ -32,7 +32,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, index,
 
     const onChangeText = (text) => {
         setErrorMsg('');
-        setPassphraseValue(text);
+        onChange(text);
 
         if (text && text.length > 0) {
             const suggestWords = user.suggestPassphraseWord(text);
@@ -95,10 +95,13 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, index,
                                         onPress={() => {
                                             setValue(word);
                                             setMenuVisible(false);
-                                            setPassphraseValue(word);
+                                            onChange(word);
                                             setErrorMsg('');
 
-                                            if (index && !checkWordAtIndex(randomWordIndexes[index], word)) {
+                                            if (
+                                                screenNumber &&
+                                                !checkWordAtIndex(randomWordIndexes[screenNumber], word)
+                                            ) {
                                                 setErrorMsg(
                                                     'The word you have entered is incorrect.Please  try again.'
                                                 );

@@ -1,20 +1,15 @@
 import create from 'zustand';
 import settings from '../settings';
-import { storageFactory } from '../utils/storage';
-import RNKeyManager from '../utils/RNKeyManager';
-import { User, createUserObject } from '@tonomy/tonomy-id-sdk';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generateRandomKeywords } from '@tonomy/tonomy-id-sdk/src/sdk/util/passphrase';
+import { randomNumber } from '@tonomy/tonomy-id-sdk/src/sdk/util/crypto';
 
 interface PassphraseStoreState {
-    user: User;
     passphraseList: string[];
-    defaultPassphraseWord: string[]; // Store entered words in an array
     randomWordIndexes: number[];
 }
 
 interface PassphraseStoreActions {
     setPassphraseList: () => void;
-    setDefaultPassphraseWord: (index: number, word: string) => void;
     checkWordAtIndex: (index: number, word: string) => boolean;
     generate3PassphraseIndexes: () => number[];
     generatePassphraseWordList: () => string[];
@@ -23,14 +18,12 @@ interface PassphraseStoreActions {
 type PassphraseStore = PassphraseStoreState & PassphraseStoreActions;
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
-    user: createUserObject(new RNKeyManager(), storageFactory),
-    passphraseList: ['', '', '', '', '', ''],
-    defaultPassphraseWord: [],
-    randomWordIndexes: [],
+    passphraseList: !settings.isProduction()
+        ? ['above', 'day', 'fever', 'lemon', 'piano', 'sport']
+        : get().generatePassphraseWordList(),
+    randomWordIndexes: get().generate3PassphraseIndexes(),
     generatePassphraseWordList: (): string[] => {
-        const { user } = get();
-
-        return user.generateRandomPassphrase();
+        return generateRandomKeywords();
     },
     setPassphraseList: () => {
         const { generate3PassphraseIndexes, generatePassphraseWordList } = get();
@@ -39,12 +32,6 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         generate3PassphraseIndexes();
     },
 
-    setDefaultPassphraseWord: (index, word) => {
-        const { defaultPassphraseWord } = get();
-
-        defaultPassphraseWord[index] = word;
-        set({ defaultPassphraseWord });
-    },
     checkWordAtIndex: (index, word) => {
         const { passphraseList } = get();
 
@@ -55,13 +42,14 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         const randomWordIndexesList = [] as number[];
 
         while (randomWordIndexesList.length < 3) {
-            const randomNumber = Math.floor(Math.random() * 6);
+            const randomValue = randomNumber(0, 5);
 
-            if (!randomWordIndexesList.includes(randomNumber)) {
-                randomWordIndexesList.push(randomNumber);
+            if (!randomWordIndexesList.includes(randomValue)) {
+                randomWordIndexesList.push(randomValue);
             }
         }
 
+        console.log('randomvalue', randomWordIndexesList);
         set({ randomWordIndexes: randomWordIndexesList });
 
         if (!settings.isProduction()) {
