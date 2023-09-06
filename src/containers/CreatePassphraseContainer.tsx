@@ -13,15 +13,7 @@ import usePassphraseStore from '../store/passphraseStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { user } = useUserStore();
-    const {
-        passphraseList,
-        randomNumbers,
-        setPassphraseList,
-        setFirstWord,
-        setThirdWord,
-        setSecondWord,
-        generateRandomNumbers,
-    } = usePassphraseStore();
+    const { passphraseList, setPassphraseList, generateRandomNumbers } = usePassphraseStore();
 
     const hasEffectRun = useRef(false);
 

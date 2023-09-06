@@ -7,13 +7,29 @@ import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
+import useErrorStore from '../store/errorStore';
+import useUserStore from '../store/userStore';
 
 export default function ConfirmThirdPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { setThirdWord, thirdWord, checkWordAtIndex, randomNumbers } = usePassphraseStore();
+    const userStore = useUserStore();
+    const user = userStore.user;
+    const errorStore = useErrorStore();
+
+    const { setThirdWord, thirdWord, checkWordAtIndex, randomNumbers, passphraseList } = usePassphraseStore();
     const thirdIndex = randomNumbers[2];
 
-    const onNext = () => {
-        navigation.navigate('Hcaptcha');
+    const onNext = async () => {
+        try {
+            // const passphrase = passphraseList.join(' ');
+
+            // await user.savePassword(passphrase, { keyFromPasswordFn: generatePrivateKeyFromPassword });
+
+            navigation.navigate('Hcaptcha');
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+            return;
+        }
     };
 
     return (
