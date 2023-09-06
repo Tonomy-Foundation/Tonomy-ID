@@ -16,4 +16,5 @@ jobs:
             with:
                 node-version: 18.12.1
           - run: corepack enable
+          - run: yarn install --immutable
           - run: yarn run updateSdkVersion $GITHUB_BASE_REF check
