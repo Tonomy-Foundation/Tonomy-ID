@@ -8,30 +8,22 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
-import useUserStore from '../store/userStore';
 import usePassphraseStore from '../store/passphraseStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { user } = useUserStore();
-    const { passphraseList, setPassphraseList, generateRandomNumbers } = usePassphraseStore();
+    const { passphraseList, setPassphraseList } = usePassphraseStore();
 
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
-            const passphraseWords = user.generateRandomPassphrase();
-
-            setPassphraseList(passphraseWords);
-            generateRandomNumbers();
+            setPassphraseList();
             hasEffectRun.current = true;
         }
-    }, [user, setPassphraseList, generateRandomNumbers]);
+    }, [setPassphraseList]);
 
     async function regenerate() {
-        const passphraseWords = user.generateRandomPassphrase();
-
-        setPassphraseList(passphraseWords);
-        generateRandomNumbers();
+        setPassphraseList();
     }
 
     return (

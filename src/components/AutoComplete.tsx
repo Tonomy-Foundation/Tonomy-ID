@@ -5,21 +5,30 @@ import theme, { customColors } from '../utils/theme';
 import useUserStore from '../store/userStore';
 import usePassphraseStore from '../store/passphraseStore';
 
+/**
+ * Represents an Autocomplete component.
+ * This component provides an input field with autocompletion functionality.
+ * It allows users to input text and provides suggestions based on the input.
+ *
+ * @component
+ * @param {string | undefined} props.value - The default value of the Autocomplete input.
+ * @param {number | undefined} props.index - An index to uniquely identify in which confirm word component.
+ * @param {(text: string) => void} props.setPassphraseValue - A function to set the value of the current number of screen
+ */
 interface AutocompleteProps {
     value?: string;
-    label?: string;
     setPassphraseValue: (text: string) => void;
     index?: number;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label, index, setPassphraseValue }) => {
+const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, index, setPassphraseValue }) => {
     const [value, setValue] = useState<string>(defaultValue || '');
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [valueLength, setValueLength] = useState<number>(0);
     const { user } = useUserStore();
-    const { checkWordAtIndex, randomNumbers } = usePassphraseStore();
+    const { checkWordAtIndex, randomWordIndexes } = usePassphraseStore();
 
     const onChangeText = (text) => {
         setErrorMsg('');
@@ -66,7 +75,6 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label,
                     </View>
                     <TextInput
                         value={value}
-                        label={label}
                         underlineColor="transparent"
                         activeUnderlineColor="transparent"
                         style={styles.input}
@@ -90,7 +98,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label,
                                             setPassphraseValue(word);
                                             setErrorMsg('');
 
-                                            if (index && !checkWordAtIndex(randomNumbers[index], word)) {
+                                            if (index && !checkWordAtIndex(randomWordIndexes[index], word)) {
                                                 setErrorMsg(
                                                     'The word you have entered is incorrect.Please  try again.'
                                                 );
@@ -141,7 +149,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         height: 44,
-        paddingHorizontal: 7,
+        paddingHorizontal: 10,
         fontSize: 16,
     },
     inputContainer: {

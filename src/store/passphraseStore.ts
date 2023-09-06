@@ -1,58 +1,76 @@
 import create from 'zustand';
 import settings from '../settings';
+import { storageFactory } from '../utils/storage';
+import RNKeyManager from '../utils/RNKeyManager';
+import { User, createUserObject } from '@tonomy/tonomy-id-sdk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface PassphraseStoreState {
+    user: User;
     passphraseList: string[];
-    enteredWords: string[]; // Store entered words in an array
-    randomNumbers: number[];
+    defaultPassphraseWord: string[]; // Store entered words in an array
+    randomWordIndexes: number[];
 }
 
 interface PassphraseStoreActions {
-    setPassphraseList: (newList: string[]) => void;
-    setEnteredWord: (index: number, word: string) => void;
+    setPassphraseList: () => void;
+    setDefaultPassphraseWord: (index: number, word: string) => void;
     checkWordAtIndex: (index: number, word: string) => boolean;
-    generateRandomNumbers: () => void;
+    generate3PassphraseIndexes: () => number[];
+    generatePassphraseWordList: () => string[];
 }
 
 type PassphraseStore = PassphraseStoreState & PassphraseStoreActions;
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
+    user: createUserObject(new RNKeyManager(), storageFactory),
     passphraseList: ['', '', '', '', '', ''],
-    enteredWords: [], // Initialize as an empty array
-    randomNumbers: [],
-    setPassphraseList: (newList) => set({ passphraseList: newList }),
-    setEnteredWord: (index, word) => {
-        const { enteredWords } = get();
+    defaultPassphraseWord: [],
+    randomWordIndexes: [],
+    generatePassphraseWordList: (): string[] => {
+        const { user } = get();
 
-        enteredWords[index] = word;
-        set({ enteredWords });
+        return user.generateRandomPassphrase();
+    },
+    setPassphraseList: () => {
+        const { generate3PassphraseIndexes, generatePassphraseWordList } = get();
+
+        set({ passphraseList: generatePassphraseWordList() });
+        generate3PassphraseIndexes();
+    },
+
+    setDefaultPassphraseWord: (index, word) => {
+        const { defaultPassphraseWord } = get();
+
+        defaultPassphraseWord[index] = word;
+        set({ defaultPassphraseWord });
     },
     checkWordAtIndex: (index, word) => {
         const { passphraseList } = get();
 
-        console.log('index', passphraseList[index], word);
         return passphraseList[index] === word;
     },
-    generateRandomNumbers: () => {
+    generate3PassphraseIndexes: (): number[] => {
         const { passphraseList } = get();
-        const randomNumbersList = [] as number[];
+        const randomWordIndexesList = [] as number[];
 
-        while (randomNumbersList.length < 3) {
+        while (randomWordIndexesList.length < 3) {
             const randomNumber = Math.floor(Math.random() * 6);
 
-            if (!randomNumbersList.includes(randomNumber)) {
-                randomNumbersList.push(randomNumber);
+            if (!randomWordIndexesList.includes(randomNumber)) {
+                randomWordIndexesList.push(randomNumber);
             }
         }
 
-        console.log('random', randomNumbersList);
-        set({ randomNumbers: randomNumbersList });
+        set({ randomWordIndexes: randomWordIndexesList });
 
         if (!settings.isProduction()) {
-            const enteredWords = randomNumbersList.map((randomIndex) => passphraseList[randomIndex]);
+            const defaultPassphraseWord = randomWordIndexesList.map((randomIndex) => passphraseList[randomIndex]);
 
-            set({ enteredWords });
+            set({ defaultPassphraseWord });
         }
+
+        return randomWordIndexesList;
     },
 }));
 
