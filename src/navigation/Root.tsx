@@ -153,6 +153,11 @@ export default function RootNavigation() {
                         component={ConfirmThirdPassphraseWordScreen}
                     />
                     <Stack.Screen
+                        name="ConfirmPassphraseWord"
+                        options={{ title: 'Create New Account' }}
+                        component={ConfirmPassphraseScreen}
+                    />
+                    <Stack.Screen
                         name="ConfirmPassword"
                         options={{ title: 'Confirm Password' }}
                         component={ConfirmPasswordScreen}
