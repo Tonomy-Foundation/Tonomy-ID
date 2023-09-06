@@ -11,9 +11,10 @@ import usePassphraseStore from '../store/passphraseStore';
  * It allows users to input text and provides suggestions based on the input.
  *
  * @component
- * @param {string | undefined} props.value - The default value of the Autocomplete input.
- * @param {number | undefined} props.screenNumber - this screenNumber used to enable/disabled the next button so we can check on which screen number user exists then we match word with that index value in passphraseList
- * @param {(text: string) => void} props.setPassphraseValue - A function to set the value of the current number of screen
+ * @param {string} [value] - The default value of the Autocomplete input.
+ * @param {string} [onChange] - A function to set the value of the field onChange
+ * @param {number} [screenNumber] - this screenNumber used to enable/disabled the next button so we can check on which screen number user exists then we match word with that index value in passphraseList
+
  */
 interface AutocompleteProps {
     value?: string;
