@@ -19,11 +19,10 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label,
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [valueLength, setValueLength] = useState<number>(0);
     const { user } = useUserStore();
-    const { checkWordAtIndex } = usePassphraseStore();
+    const { checkWordAtIndex, randomNumbers } = usePassphraseStore();
 
     const onChangeText = (text) => {
         setErrorMsg('');
-        setValueLength(0);
         setPassphraseValue(text);
 
         if (text && text.length > 0) {
@@ -35,7 +34,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label,
                 }
 
                 setErrorMsg('The combination of letters you provided is not a part of the selectable word list.');
-            }
+            } else setValueLength(0);
 
             setSuggestedWords(suggestWords);
         } else if (!text || text === '' || text.length === 0) {
@@ -91,7 +90,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label,
                                             setPassphraseValue(word);
                                             setErrorMsg('');
 
-                                            if (index && !checkWordAtIndex(index, word)) {
+                                            if (index && !checkWordAtIndex(randomNumbers[index], word)) {
                                                 setErrorMsg(
                                                     'The word you have entered is incorrect.Please  try again.'
                                                 );

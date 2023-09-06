@@ -3,17 +3,13 @@ import settings from '../settings';
 
 interface PassphraseStoreState {
     passphraseList: string[];
-    firstWord: string;
-    secondWord: string;
-    thirdWord: string;
+    enteredWords: string[]; // Store entered words in an array
     randomNumbers: number[];
 }
 
 interface PassphraseStoreActions {
     setPassphraseList: (newList: string[]) => void;
-    setFirstWord: (firstWord: string) => void;
-    setSecondWord: (secondWord: string) => void;
-    setThirdWord: (thirdWord: string) => void;
+    setEnteredWord: (index: number, word: string) => void;
     checkWordAtIndex: (index: number, word: string) => boolean;
     generateRandomNumbers: () => void;
 }
@@ -22,18 +18,19 @@ type PassphraseStore = PassphraseStoreState & PassphraseStoreActions;
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
     passphraseList: ['', '', '', '', '', ''],
-    firstWord: '',
-    secondWord: '',
-    thirdWord: '',
+    enteredWords: [], // Initialize as an empty array
     randomNumbers: [],
     setPassphraseList: (newList) => set({ passphraseList: newList }),
-    setFirstWord: (word) => set({ firstWord: word }),
-    setSecondWord: (word) => set({ secondWord: word }),
-    setThirdWord: (word) => set({ thirdWord: word }),
+    setEnteredWord: (index, word) => {
+        const { enteredWords } = get();
 
+        enteredWords[index] = word;
+        set({ enteredWords });
+    },
     checkWordAtIndex: (index, word) => {
         const { passphraseList } = get();
 
+        console.log('index', passphraseList[index], word);
         return passphraseList[index] === word;
     },
     generateRandomNumbers: () => {
@@ -48,16 +45,13 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
             }
         }
 
+        console.log('random', randomNumbersList);
         set({ randomNumbers: randomNumbersList });
 
         if (!settings.isProduction()) {
-            set({ firstWord: passphraseList[randomNumbersList[0]] });
-            set({ secondWord: passphraseList[randomNumbersList[1]] });
-            set({ thirdWord: passphraseList[randomNumbersList[2]] });
-        } else {
-            set({ firstWord: '' });
-            set({ secondWord: '' });
-            set({ thirdWord: '' });
+            const enteredWords = randomNumbersList.map((randomIndex) => passphraseList[randomIndex]);
+
+            set({ enteredWords });
         }
     },
 }));

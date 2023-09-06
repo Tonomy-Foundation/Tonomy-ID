@@ -76,7 +76,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmFirstPassphraseWord')}>
+                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphrase', { index: 0 })}>
                                 NEXT
                             </TButtonContained>
                         </View>

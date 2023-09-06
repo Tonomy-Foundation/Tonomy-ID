@@ -23,11 +23,9 @@ import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
-import ConfirmThirdPassphraseWordScreen from '../screens/ConfirmThirdPassphraseScreen';
 import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
-import ConfirmFirstPassphraseWordScreen from '../screens/ConfirmFirstPassphraseWordScreen';
-import ConfirmSecondPassphraseWordScreen from '../screens/ConfirmSecondPassphraseWordScreen';
+import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 
 const prefix = Linking.createURL('');
 
@@ -54,9 +52,7 @@ export type RouteStackParamList = {
     QrScanner: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
-    ConfirmFirstPassphraseWord: undefined;
-    ConfirmSecondPassphraseWord: undefined;
-    ConfirmThirdPassphraseWord: undefined;
+    ConfirmPassphrase: { index: number };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -136,24 +132,8 @@ export default function RootNavigation() {
                         options={{ title: 'Create New Account' }}
                         component={CreateAccountPasswordScreen}
                     />
-
                     <Stack.Screen
-                        name="ConfirmFirstPassphraseWord"
-                        options={{ title: 'Create New Account' }}
-                        component={ConfirmFirstPassphraseWordScreen}
-                    />
-                    <Stack.Screen
-                        name="ConfirmSecondPassphraseWord"
-                        options={{ title: 'Create New Account' }}
-                        component={ConfirmSecondPassphraseWordScreen}
-                    />
-                    <Stack.Screen
-                        name="ConfirmThirdPassphraseWord"
-                        options={{ title: 'Create New Account' }}
-                        component={ConfirmThirdPassphraseWordScreen}
-                    />
-                    <Stack.Screen
-                        name="ConfirmPassphraseWord"
+                        name="ConfirmPassphrase"
                         options={{ title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
                     />
