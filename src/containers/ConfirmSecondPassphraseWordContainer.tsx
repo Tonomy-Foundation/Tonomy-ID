@@ -2,22 +2,22 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Autocomplete from '../components/AutoComplete';
 import LayoutComponent from '../components/layout';
-import { Props } from '../screens/ConfirmThirdPassphraseScreen';
-import theme, { commonStyles } from '../utils/theme';
+import { Props } from '../screens/ConfirmSecondPassphraseWordScreen';
+import { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
 
-export default function ConfirmThirdPassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { setThirdWord, thirdWord, checkWordAtIndex, randomNumbers } = usePassphraseStore();
-    const thirdIndex = randomNumbers[2];
+export default function ConfirmSecondPassphraseWordContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const { setSecondWord, secondWord, checkWordAtIndex, randomNumbers } = usePassphraseStore();
+    const secondIndex = randomNumbers[1];
 
     const handleChangeText = (text) => {
-        setThirdWord(text);
+        setSecondWord(text);
     };
 
     const onNext = () => {
-        navigation.navigate('Hcaptcha');
+        navigation.navigate('ConfirmThirdPassphraseWord');
     };
 
     return (
@@ -29,14 +29,14 @@ export default function ConfirmThirdPassphraseContainer({ navigation }: { naviga
                         <View style={{ marginTop: 60 }}>
                             <View style={styles.innerContainer}>
                                 <TP style={styles.textStyle}>
-                                    Please enter the <TP style={styles.boldText}>{thirdIndex + 1} word</TP> in your
+                                    Please enter the <TP style={styles.boldText}>{secondIndex + 1} word</TP> in your
                                     passphrase.
                                 </TP>
                                 <Autocomplete
                                     label=""
-                                    value={thirdWord}
+                                    value={secondWord}
                                     setPassphraseValue={handleChangeText}
-                                    index={thirdIndex}
+                                    index={secondIndex}
                                 />
                             </View>
                         </View>
@@ -45,8 +45,7 @@ export default function ConfirmThirdPassphraseContainer({ navigation }: { naviga
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained disabled={!checkWordAtIndex(thirdIndex, thirdWord)} onPress={onNext}>
-                                {' '}
+                            <TButtonContained disabled={!checkWordAtIndex(secondIndex, secondWord)} onPress={onNext}>
                                 NEXT
                             </TButtonContained>
                         </View>
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
         marginBottom: 8,
-        color: theme.colors.grey1,
+        color: '#5B6261',
     },
     boldText: {
         fontWeight: 'bold',

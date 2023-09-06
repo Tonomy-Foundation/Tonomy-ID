@@ -41,8 +41,6 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, in
             setSuggestedWords([]);
         }
 
-        console.log('index', index, value);
-
         setMenuVisible(true);
         setValue(text);
     };
@@ -90,6 +88,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: origValue, label, in
                                             setValue(word);
                                             setMenuVisible(false);
                                             setPassphraseValue(word);
+                                            setErrorMsg('');
 
                                             if (index && !checkWordAtIndex(index, word)) {
                                                 setErrorMsg(

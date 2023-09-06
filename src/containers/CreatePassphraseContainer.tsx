@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -13,7 +13,15 @@ import usePassphraseStore from '../store/passphraseStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { user } = useUserStore();
-    const { passphraseList, setPassphraseList, setFirstWord, setThirdWord } = usePassphraseStore();
+    const {
+        passphraseList,
+        randomNumbers,
+        setPassphraseList,
+        setFirstWord,
+        setThirdWord,
+        setSecondWord,
+        generateRandomNumbers,
+    } = usePassphraseStore();
 
     const hasEffectRun = useRef(false);
 
@@ -22,16 +30,16 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
             const passphraseWords = user.generateRandomPassphrase();
 
             setPassphraseList(passphraseWords);
+            generateRandomNumbers();
             hasEffectRun.current = true;
         }
-    }, [user, setPassphraseList]);
+    }, [user, setPassphraseList, generateRandomNumbers]);
 
     async function regenerate() {
         const passphraseWords = user.generateRandomPassphrase();
 
         setPassphraseList(passphraseWords);
-        setFirstWord('');
-        setThirdWord('');
+        generateRandomNumbers();
     }
 
     return (
@@ -76,7 +84,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphraseWord')}>
+                            <TButtonContained onPress={() => navigation.navigate('ConfirmFirstPassphraseWord')}>
                                 NEXT
                             </TButtonContained>
                         </View>

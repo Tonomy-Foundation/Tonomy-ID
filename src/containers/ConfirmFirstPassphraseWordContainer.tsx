@@ -9,14 +9,15 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
 
 export default function ConfirmFirstPassphraseWordContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { setFirstWord, firstWord, checkWordAtIndex } = usePassphraseStore();
+    const { setFirstWord, firstWord, checkWordAtIndex, randomNumbers } = usePassphraseStore();
+    const firstIndex = randomNumbers[0];
 
     const handleChangeText = (text) => {
         setFirstWord(text);
     };
 
     const onNext = () => {
-        navigation.navigate('ConfirmSixPassphraseWord');
+        navigation.navigate('ConfirmSecondPassphraseWord');
     };
 
     return (
@@ -28,13 +29,14 @@ export default function ConfirmFirstPassphraseWordContainer({ navigation }: { na
                         <View style={{ marginTop: 60 }}>
                             <View style={styles.innerContainer}>
                                 <TP style={styles.textStyle}>
-                                    Please enter the <TP style={styles.boldText}>1st word</TP> in your passphrase.
+                                    Please enter the <TP style={styles.boldText}>{firstIndex + 1} word</TP> in your
+                                    passphrase.
                                 </TP>
                                 <Autocomplete
                                     label=""
                                     value={firstWord}
                                     setPassphraseValue={handleChangeText}
-                                    index={1}
+                                    index={firstIndex}
                                 />
                             </View>
                         </View>
@@ -43,7 +45,7 @@ export default function ConfirmFirstPassphraseWordContainer({ navigation }: { na
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained disabled={!checkWordAtIndex(1, firstWord)} onPress={onNext}>
+                            <TButtonContained disabled={!checkWordAtIndex(firstIndex, firstWord)} onPress={onNext}>
                                 NEXT
                             </TButtonContained>
                         </View>
