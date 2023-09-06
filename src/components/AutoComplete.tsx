@@ -21,8 +21,7 @@ interface AutocompleteProps {
     screenNumber?: number;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, screenNumber, onChange }) => {
-    const [value, setValue] = useState<string>(defaultValue || '');
+const Autocomplete: React.FC<AutocompleteProps> = ({ value, screenNumber, onChange }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
@@ -51,7 +50,6 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, screen
         }
 
         setMenuVisible(true);
-        setValue(text);
     };
 
     return (
@@ -59,19 +57,20 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, screen
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>
-                        {value.split('').map((char, index) => (
-                            <Text
-                                key={index}
-                                style={{
-                                    color:
-                                        index < valueLength - 1 || valueLength === 0
-                                            ? theme.colors.text
-                                            : customColors.error,
-                                }}
-                            >
-                                {char}
-                            </Text>
-                        ))}
+                        {value &&
+                            value.split('').map((char, index) => (
+                                <Text
+                                    key={index}
+                                    style={{
+                                        color:
+                                            index < valueLength - 1 || valueLength === 0
+                                                ? theme.colors.text
+                                                : customColors.error,
+                                    }}
+                                >
+                                    {char}
+                                </Text>
+                            ))}
                     </View>
                     <TextInput
                         value={value}
@@ -93,7 +92,6 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, screen
                                     <Menu.Item
                                         style={[{ width: '100%' }]}
                                         onPress={() => {
-                                            setValue(word);
                                             setMenuVisible(false);
                                             onChange(word);
                                             setErrorMsg('');

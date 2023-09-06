@@ -11,16 +11,16 @@ import PassphraseBox from '../components/PassphraseBox';
 import usePassphraseStore from '../store/passphraseStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { passphraseList, setPassphraseList } = usePassphraseStore();
+    const { passphraseList, setPassphraseList, generate3PassphraseIndexes } = usePassphraseStore();
 
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
-            setPassphraseList();
+            generate3PassphraseIndexes();
             hasEffectRun.current = true;
         }
-    }, [setPassphraseList]);
+    }, [generate3PassphraseIndexes]);
 
     async function regenerate() {
         setPassphraseList();

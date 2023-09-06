@@ -21,7 +21,7 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
     passphraseList: !settings.isProduction()
         ? ['above', 'day', 'fever', 'lemon', 'piano', 'sport']
         : get().generatePassphraseWordList(),
-    randomWordIndexes: get().generate3PassphraseIndexes(),
+    randomWordIndexes: [],
     generatePassphraseWordList: (): string[] => {
         return generateRandomKeywords();
     },
@@ -38,11 +38,10 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         return passphraseList[index] === word;
     },
     generate3PassphraseIndexes: (): number[] => {
-        const { passphraseList } = get();
         const randomWordIndexesList = [] as number[];
 
         while (randomWordIndexesList.length < 3) {
-            const randomValue = randomNumber(0, 5);
+            const randomValue = randomNumber(0, 6);
 
             if (!randomWordIndexesList.includes(randomValue)) {
                 randomWordIndexesList.push(randomValue);
@@ -51,12 +50,6 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
 
         console.log('randomvalue', randomWordIndexesList);
         set({ randomWordIndexes: randomWordIndexesList });
-
-        if (!settings.isProduction()) {
-            const defaultPassphraseWord = randomWordIndexesList.map((randomIndex) => passphraseList[randomIndex]);
-
-            set({ defaultPassphraseWord });
-        }
 
         return randomWordIndexesList;
     },

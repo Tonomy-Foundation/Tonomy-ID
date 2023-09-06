@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Autocomplete from '../components/AutoComplete';
 import LayoutComponent from '../components/layout';
@@ -18,7 +18,7 @@ export default function ConfirmPassphraseWordContainer({
 }) {
     const { index } = route.params;
     const { passphraseList, checkWordAtIndex, randomWordIndexes } = usePassphraseStore();
-
+    const [value, setValue] = useState<string>(passphraseList[randomWordIndexes[index]]);
     const onNext = () => {
         if (index < 2) {
             navigation.push('ConfirmPassphrase', { index: index + 1 });
@@ -42,11 +42,7 @@ export default function ConfirmPassphraseWordContainer({
                                     </TP>{' '}
                                     in your passphrase.
                                 </TP>
-                                <Autocomplete
-                                    value={passphraseList[index]}
-                                    onChange={(value) => {}}
-                                    screenNumber={index}
-                                />
+                                <Autocomplete value={value} onChange={setValue} screenNumber={index} />
                             </View>
                         </View>
                     </View>
@@ -55,7 +51,7 @@ export default function ConfirmPassphraseWordContainer({
                     <View>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
-                                disabled={!checkWordAtIndex(randomWordIndexes[index], passphraseList[index])}
+                                disabled={!checkWordAtIndex(randomWordIndexes[index], value)}
                                 onPress={onNext}
                             >
                                 Next
