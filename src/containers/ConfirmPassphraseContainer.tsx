@@ -31,10 +31,11 @@ export default function ConfirmPassphraseWordContainer({
 
     const onChange = (text) => {
         setValue(text);
+        setErrorMsg('');
 
-        if (!checkWordAtIndex(randomWordIndexes[index], text)) {
+        if (text && !checkWordAtIndex(randomWordIndexes[index], text)) {
             setErrorMsg('The word you have entered is incorrect.Please  try again.');
-        } else setErrorMsg('');
+        }
     };
 
     return (
