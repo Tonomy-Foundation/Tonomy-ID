@@ -1,4 +1,4 @@
-export function displayScreenNumber(value: number) {
+export function numberToOrdinal(value: number) {
     let screenNumber;
 
     if (value === 1) screenNumber = '1st';

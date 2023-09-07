@@ -3,7 +3,6 @@ import { View, StyleSheet, Text } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme, { customColors } from '../utils/theme';
 import useUserStore from '../store/userStore';
-import usePassphraseStore from '../store/passphraseStore';
 
 /**
  * Represents an Autocomplete component.
@@ -13,22 +12,19 @@ import usePassphraseStore from '../store/passphraseStore';
  * @component
  * @param {string} [value] - The default value of the Autocomplete input.
  * @param {string} [onChange] - A function to set the value of the field onChange
- * @param {number} [screenNumber] - this screenNumber used to enable/disabled the next button so we can check on which screen number user exists then we match word with that index value in passphraseList
 
  */
 interface AutocompleteProps {
     value?: string;
     onChange: (text: string) => void;
-    screenNumber?: number;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value, screenNumber, onChange }) => {
+const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [valueLength, setValueLength] = useState<number>(0);
     const { user } = useUserStore();
-    const { checkWordAtIndex, randomWordIndexes } = usePassphraseStore();
 
     const onChangeText = (text) => {
         setErrorMsg('');
@@ -96,15 +92,6 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value, screenNumber, onChan
                                             setMenuVisible(false);
                                             onChange(word);
                                             setErrorMsg('');
-
-                                            if (
-                                                screenNumber &&
-                                                !checkWordAtIndex(randomWordIndexes[screenNumber], word)
-                                            ) {
-                                                setErrorMsg(
-                                                    'The word you have entered is incorrect.Please  try again.'
-                                                );
-                                            }
                                         }}
                                         title={word}
                                     />
