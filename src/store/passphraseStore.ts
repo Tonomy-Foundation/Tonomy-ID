@@ -41,7 +41,7 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         const randomWordIndexesList = [] as number[];
 
         while (randomWordIndexesList.length < 3) {
-            const randomValue = randomNumber(0, 6);
+            const randomValue = randomNumber(0, 5);
 
             if (!randomWordIndexesList.includes(randomValue)) {
                 randomWordIndexesList.push(randomValue);
