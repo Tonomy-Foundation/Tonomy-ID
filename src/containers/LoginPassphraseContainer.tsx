@@ -128,7 +128,7 @@ export default function LoginPassphraseContainer({
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
-                            <TP size={1}>Don't have an account?</TP>
+                            <TP size={1}>Don&apost have an account?</TP>
                             <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
                                 <TP size={1} style={styles.link}>
                                     Sign Up
