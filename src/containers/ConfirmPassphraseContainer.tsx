@@ -34,7 +34,7 @@ export default function ConfirmPassphraseWordContainer({
 
         if (!checkWordAtIndex(randomWordIndexes[index], text)) {
             setErrorMsg('The word you have entered is incorrect.Please  try again.');
-        }
+        } else setErrorMsg('');
     };
 
     return (
@@ -104,5 +104,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 14,
         lineHeight: 16,
+        marginTop: 5,
     },
 });
