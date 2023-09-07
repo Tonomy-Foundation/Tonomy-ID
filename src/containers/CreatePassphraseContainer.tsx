@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -8,27 +8,22 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
-import useUserStore from '../store/userStore';
+import usePassphraseStore from '../store/passphraseStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { user } = useUserStore();
+    const { passphraseList, setPassphraseList, generate3PassphraseIndexes } = usePassphraseStore();
 
-    const [phraseList, setPhraseList] = useState<string[]>(['', '', '', '', '', '']);
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
-            const passphraseWords = user.generateRandomPassphrase();
-
-            setPhraseList(passphraseWords);
+            generate3PassphraseIndexes();
             hasEffectRun.current = true;
         }
-    }, [user]);
+    }, [generate3PassphraseIndexes]);
 
     async function regenerate() {
-        const passphraseWords = user.generateRandomPassphrase();
-
-        setPhraseList(passphraseWords);
+        setPassphraseList();
     }
 
     return (
@@ -43,7 +38,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                         </TP>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
-                                {phraseList.map((text, index) => (
+                                {passphraseList.map((text, index) => (
                                     <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
                                 ))}
                             </View>
@@ -73,7 +68,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphraseWord')}>
+                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphrase', { index: 0 })}>
                                 NEXT
                             </TButtonContained>
                         </View>
