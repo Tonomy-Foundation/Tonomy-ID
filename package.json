@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.47.3",
+    "version": "0.48.0",
     "scripts": {
         "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "yarn run build:prepare && npx eas device:create",
@@ -17,7 +17,8 @@
         "lint:fix": "yarn run lint -- --fix",
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
-        "typeCheck": "tsc"
+        "typeCheck": "tsc",
+        "updateSdkVersion": "./update_sdk_version.sh"
     },
     "dependencies": {
         "@hcaptcha/react-native-hcaptcha": "^1.5.1",
