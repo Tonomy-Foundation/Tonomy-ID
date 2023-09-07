@@ -1,7 +1,8 @@
 import create from 'zustand';
 import settings from '../settings';
-// @ts-expect-error ...
-import { generateRandomKeywords, randomNumber } from '@tonomy/tonomy-id-sdk/util';
+import { lib } from '@tonomy/tonomy-id-sdk';
+
+const { generateRandomKeywords, randomNumber } = lib;
 
 interface PassphraseStoreState {
     passphraseList: string[];
@@ -41,7 +42,7 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         const randomWordIndexesList = [] as number[];
 
         while (randomWordIndexesList.length < 3) {
-            const randomValue = randomNumber(0, 6);
+            const randomValue = randomNumber(0, 5);
 
             if (!randomWordIndexesList.includes(randomValue)) {
                 randomWordIndexesList.push(randomValue);
