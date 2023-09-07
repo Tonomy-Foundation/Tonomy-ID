@@ -12,7 +12,6 @@ import useUserStore from '../store/userStore';
  * @component
  * @param {string} [value] - The default value of the Autocomplete input.
  * @param {string} [onChange] - A function to set the value of the field onChange
- * @param {function} [setErrorMsg]- A function that sets the error message so we disabled/enabled the next button if value doesn't exists
 
  */
 interface AutocompleteProps {
