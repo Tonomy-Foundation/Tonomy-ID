@@ -4,13 +4,22 @@ import { Menu, TextInput } from 'react-native-paper';
 import theme, { customColors } from '../utils/theme';
 import useUserStore from '../store/userStore';
 
+/**
+ * Represents an Autocomplete component.
+ * This component provides an input field with autocompletion functionality.
+ * It allows users to input text and provides suggestions based on the input.
+ *
+ * @component
+ * @param {string} [value] - The default value of the Autocomplete input.
+ * @param {string} [onChange] - A function to set the value of the field onChange
+
+ */
 interface AutocompleteProps {
     value?: string;
-    label?: string;
+    onChange: (text: string) => void;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label }) => {
-    const [value, setValue] = useState<string>(defaultValue || '');
+const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
@@ -19,7 +28,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label 
 
     const onChangeText = (text) => {
         setErrorMsg('');
-        setValueLength(0);
+        onChange(text);
 
         if (text && text.length > 0) {
             const suggestWords = user.suggestPassphraseWord(text);
@@ -30,7 +39,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label 
                 }
 
                 setErrorMsg('The combination of letters you provided is not a part of the selectable word list.');
-            }
+            } else setValueLength(0);
 
             setSuggestedWords(suggestWords);
         } else if (!text || text === '' || text.length === 0) {
@@ -38,7 +47,6 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label 
         }
 
         setMenuVisible(true);
-        setValue(text);
     };
 
     return (
@@ -46,23 +54,23 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label 
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>
-                        {value.split('').map((char, index) => (
-                            <Text
-                                key={index}
-                                style={{
-                                    color:
-                                        index < valueLength - 1 || valueLength === 0
-                                            ? theme.colors.text
-                                            : customColors.error,
-                                }}
-                            >
-                                {char}
-                            </Text>
-                        ))}
+                        {value &&
+                            value.split('').map((char, index) => (
+                                <Text
+                                    key={index}
+                                    style={{
+                                        color:
+                                            index < valueLength - 1 || valueLength === 0
+                                                ? theme.colors.text
+                                                : customColors.error,
+                                    }}
+                                >
+                                    {char}
+                                </Text>
+                            ))}
                     </View>
                     <TextInput
                         value={value}
-                        label={label}
                         underlineColor="transparent"
                         activeUnderlineColor="transparent"
                         style={styles.input}
@@ -81,8 +89,9 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label 
                                     <Menu.Item
                                         style={[{ width: '100%' }]}
                                         onPress={() => {
-                                            setValue(word);
                                             setMenuVisible(false);
+                                            onChange(word);
+                                            setErrorMsg('');
                                         }}
                                         title={word}
                                     />
@@ -93,7 +102,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value: defaultValue, label 
                     )}
                 </View>
             </View>
-            <Text style={styles.errorMsg}>{errorMsg}</Text>
+            {errorMsg && <Text style={styles.errorMsg}>{errorMsg}</Text>}
         </View>
     );
 };
@@ -122,12 +131,14 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 45,
         opacity: 0,
+        color: 'white',
+        visibility: 'hidden',
     },
     innerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         height: 44,
-        paddingHorizontal: 7,
+        paddingHorizontal: 10,
         fontSize: 16,
     },
     inputContainer: {

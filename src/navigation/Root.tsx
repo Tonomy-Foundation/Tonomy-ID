@@ -21,10 +21,10 @@ import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
-import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
+import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 
 const prefix = Linking.createURL('');
 
@@ -50,7 +50,7 @@ export type RouteStackParamList = {
     QrScanner: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
-    ConfirmPassphraseWord: undefined;
+    ConfirmPassphrase: { index: number };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -126,7 +126,7 @@ export default function RootNavigation() {
                         initialParams={{ password: '' }}
                     />
                     <Stack.Screen
-                        name="ConfirmPassphraseWord"
+                        name="ConfirmPassphrase"
                         options={{ title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
                     />
