@@ -3,7 +3,6 @@ import React from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
-import ConfirmPasswordScreen from '../screens/ConfirmPasswordScreen';
 import MainSplashScreen from '../screens/MainSplashScreen';
 import SplashSecurityScreen from '../screens/SplashSecurityScreen';
 import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
@@ -129,11 +128,6 @@ export default function RootNavigation() {
                         name="ConfirmPassphrase"
                         options={{ title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
-                    />
-                    <Stack.Screen
-                        name="ConfirmPassword"
-                        options={{ title: 'Confirm Password' }}
-                        component={ConfirmPasswordScreen}
                     />
                     <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
                     <Stack.Screen

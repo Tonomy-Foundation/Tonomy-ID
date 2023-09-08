@@ -12,6 +12,7 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import { AccountType, SdkError, SdkErrors, TonomyUsername } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
+import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -23,7 +24,9 @@ export default function LoginPassphraseContainer({
     const errorsStore = useErrorStore();
     const { user, setStatus } = useUserStore();
 
-    const [passphrase, setPassphrase] = useState<string[]>(['', '', '', '', '', '']);
+    const [passphrase, setPassphrase] = useState<string[]>(
+        settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
+    );
     const [nextDisabled, setNextDisabled] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);

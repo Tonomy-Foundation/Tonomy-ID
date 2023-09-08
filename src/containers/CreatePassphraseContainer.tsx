@@ -90,7 +90,6 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 const styles = StyleSheet.create({
     headline: {
         marginTop: -10,
-        fontSize: 20,
         marginBottom: 5,
     },
     paragraph: {
