@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import Autocomplete from '../components/AutoComplete';
+import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPassphraseScreen';
 import theme, { commonStyles, customColors } from '../utils/theme';
@@ -22,6 +22,11 @@ export default function ConfirmPassphraseWordContainer({
     const [errorMsg, setErrorMsg] = useState<string>('');
 
     const onNext = () => {
+        if (value && !checkWordAtIndex(randomWordIndexes[index], value)) {
+            setErrorMsg('The word you have entered is incorrect.Please  try again.');
+            return;
+        }
+
         if (index < 2) {
             navigation.push('ConfirmPassphrase', { index: index + 1 });
         } else {
@@ -32,10 +37,6 @@ export default function ConfirmPassphraseWordContainer({
     const onChange = (text) => {
         setValue(text);
         setErrorMsg('');
-
-        if (text && !checkWordAtIndex(randomWordIndexes[index], text)) {
-            setErrorMsg('The word you have entered is incorrect.Please  try again.');
-        }
     };
 
     return (
@@ -53,7 +54,7 @@ export default function ConfirmPassphraseWordContainer({
                                     </TP>{' '}
                                     in your passphrase.
                                 </TP>
-                                <Autocomplete value={value} onChange={(text) => onChange(text)} />
+                                <AutoCompletePassphraseWord value={value} onChange={(text) => onChange(text)} />
                                 <Text style={styles.errorMsg}>{errorMsg}</Text>
                             </View>
                         </View>
@@ -62,12 +63,7 @@ export default function ConfirmPassphraseWordContainer({
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained
-                                disabled={!checkWordAtIndex(randomWordIndexes[index], value)}
-                                onPress={onNext}
-                            >
-                                Next
-                            </TButtonContained>
+                            <TButtonContained onPress={onNext}>Next</TButtonContained>
                         </View>
                     </View>
                 }

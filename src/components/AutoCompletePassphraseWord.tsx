@@ -19,7 +19,7 @@ interface AutocompleteProps {
     onChange: (text: string) => void;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
+const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChange }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
@@ -107,7 +107,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
     );
 };
 
-export default Autocomplete;
+export default AutoCompletePassphraseWord;
 
 const styles = StyleSheet.create({
     coloredTextContainer: {
