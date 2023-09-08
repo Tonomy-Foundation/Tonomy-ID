@@ -89,6 +89,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
+            await user.saveLocal();
             await user.updateKeys(getPassphrase());
             unsetPassphraseList();
 
