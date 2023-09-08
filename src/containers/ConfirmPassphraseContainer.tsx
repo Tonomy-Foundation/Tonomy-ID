@@ -30,7 +30,7 @@ export default function ConfirmPassphraseWordContainer({
         if (index < 2) {
             navigation.push('ConfirmPassphrase', { index: index + 1 });
         } else {
-            navigation.navigate('Hcaptcha', { password: passphraseList.join(' ') });
+            navigation.navigate('Hcaptcha');
         }
     };
 

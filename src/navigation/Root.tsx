@@ -38,7 +38,7 @@ export type RouteStackParamList = {
     CreatePassphrase: undefined;
     CreateAccountPin: { password: string; action: string };
     CreateAccountFingerprint: { password: string };
-    Hcaptcha: { password: string };
+    Hcaptcha: undefined;
     LoginWithPin: { password: string };
     LoginUsername: undefined;
     LoginPassphrase: { username: string };

@@ -9,9 +9,12 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
 import usePassphraseStore from '../store/passphraseStore';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
+import useUserStore from '../store/userStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { passphraseList, setPassphraseList, set3PassphraseIndexes } = usePassphraseStore();
+    const { passphraseList, generatePassphraseList, getPassphrase, set3PassphraseIndexes } = usePassphraseStore();
+    const { user } = useUserStore();
 
     const hasEffectRun = useRef(false);
 
@@ -23,7 +26,12 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
     }, [set3PassphraseIndexes]);
 
     async function regenerate() {
-        setPassphraseList();
+        generatePassphraseList();
+    }
+
+    async function onNext() {
+        await user.savePassword(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyFromPassword });
+        navigation.navigate('ConfirmPassphrase', { index: 0 });
     }
 
     return (
@@ -68,9 +76,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphrase', { index: 0 })}>
-                                NEXT
-                            </TButtonContained>
+                            <TButtonContained onPress={onNext}>NEXT</TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>

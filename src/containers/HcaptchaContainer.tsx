@@ -14,14 +14,9 @@ import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
+import usePassphraseStore from '../store/passphraseStore';
 
-export default function HcaptchaContainer({
-    navigation,
-    password,
-}: {
-    navigation: Props['navigation'];
-    password: string;
-}) {
+export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
@@ -33,6 +28,7 @@ export default function HcaptchaContainer({
     const userStore = useUserStore();
     const user = userStore.user;
     const siteKey = settings.config.captchaSiteKey;
+    const { getPassphrase, unsetPassphraseList } = usePassphraseStore();
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
@@ -93,7 +89,8 @@ export default function HcaptchaContainer({
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
-            await user.updateKeys(password);
+            await user.updateKeys(getPassphrase());
+            unsetPassphraseList();
 
             await setUserName();
             const url =

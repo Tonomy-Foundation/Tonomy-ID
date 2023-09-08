@@ -8,7 +8,9 @@ interface PassphraseStoreState {
 }
 
 interface PassphraseStoreActions {
-    setPassphraseList: () => void;
+    getPassphrase: () => string;
+    generatePassphraseList: () => void;
+    unsetPassphraseList: () => void;
     checkWordAtIndex: (index: number, word: string) => boolean;
     set3PassphraseIndexes: () => void;
 }
@@ -34,9 +36,21 @@ export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'p
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
     passphraseList: !settings.isProduction() ? DEFAULT_DEV_PASSPHRASE_LIST : lib.generateRandomKeywords(),
     randomWordIndexes: generate3PassphraseIndexes(),
-    setPassphraseList: () => {
+    getPassphrase: () => {
+        const list = get().passphraseList;
+
+        if (list.length === 0) {
+            throw new Error('Passphrase list is empty');
+        }
+
+        return list.join(' ');
+    },
+    generatePassphraseList: () => {
         set({ passphraseList: lib.generateRandomKeywords() });
         get().set3PassphraseIndexes();
+    },
+    unsetPassphraseList: () => {
+        set({ passphraseList: [] });
     },
     checkWordAtIndex: (index, word) => {
         const { passphraseList } = get();
