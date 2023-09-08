@@ -23,7 +23,7 @@ export default function ConfirmPassphraseWordContainer({
 
     const onNext = () => {
         if (value && !checkWordAtIndex(randomWordIndexes[index], value)) {
-            setErrorMsg('The word you have entered is incorrect.Please  try again.');
+            setErrorMsg('Incorrect word.Please try again.');
             return;
         }
 

@@ -27,22 +27,24 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChan
     const { user } = useUserStore();
 
     const onChangeText = (text) => {
-        setErrorMsg('');
-        onChange(text);
+        const newText = text.toLowerCase().replace(/[^a-z]/g, '');
 
-        if (text && text.length > 0) {
-            const suggestWords = user.suggestPassphraseWord(text);
+        setErrorMsg('');
+        onChange(newText);
+
+        if (newText && newText.length > 0) {
+            const suggestWords = user.suggestPassphraseWord(newText);
 
             if (suggestWords?.length === 0) {
                 if (!valueLength || valueLength === 0) {
-                    setValueLength(text.length);
+                    setValueLength(newText.length);
                 }
 
-                setErrorMsg('The combination of letters you provided is not a part of the selectable word list.');
+                setErrorMsg('Not in the world list.');
             } else setValueLength(0);
 
             setSuggestedWords(suggestWords);
-        } else if (!text || text === '' || text.length === 0) {
+        } else if (!newText || newText === '' || newText.length === 0) {
             setSuggestedWords([]);
         }
 
