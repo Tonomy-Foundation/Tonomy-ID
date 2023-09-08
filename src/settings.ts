@@ -1,8 +1,8 @@
-const env = process.env.EXPO_NODE_ENV ?? 'staging';
+const env = process.env.EXPO_NODE_ENV ?? 'development';
 
 const settingsInputs = {
-    nodeEnv: 'staging', // This is set by expo with webpack https://github.com/expo/expo/issues/20360
-    expoNodeEnv: 'staging',
+    nodeEnv: process.env.NODE_ENV, // This is set by expo with webpack https://github.com/expo/expo/issues/20360
+    expoNodeEnv: process.env.EXPO_NODE_ENV,
     logEnv: process.env.LOG,
     env,
 };
