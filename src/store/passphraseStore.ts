@@ -12,7 +12,6 @@ interface PassphraseStoreActions {
     generatePassphraseList: () => void;
     unsetPassphraseList: () => void;
     checkWordAtIndex: (index: number, word: string) => boolean;
-    set3PassphraseIndexes: () => void;
 }
 
 type PassphraseStore = PassphraseStoreState & PassphraseStoreActions;
@@ -47,7 +46,9 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
     },
     generatePassphraseList: () => {
         set({ passphraseList: lib.generateRandomKeywords() });
-        get().set3PassphraseIndexes();
+        const randomWordIndexesList = generate3PassphraseIndexes();
+
+        set({ randomWordIndexes: randomWordIndexesList });
     },
     unsetPassphraseList: () => {
         set({ passphraseList: [] });
@@ -56,11 +57,6 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         const { passphraseList } = get();
 
         return passphraseList[index] === word;
-    },
-    set3PassphraseIndexes: () => {
-        const randomWordIndexesList = generate3PassphraseIndexes();
-
-        set({ randomWordIndexes: randomWordIndexesList });
     },
 }));
 

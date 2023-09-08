@@ -13,7 +13,7 @@ import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useUserStore from '../store/userStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { passphraseList, generatePassphraseList, getPassphrase, set3PassphraseIndexes } = usePassphraseStore();
+    const { passphraseList, generatePassphraseList, getPassphrase } = usePassphraseStore();
     const { user } = useUserStore();
 
     const hasEffectRun = useRef(false);
@@ -21,10 +21,9 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
     useEffect(() => {
         if (!hasEffectRun.current) {
             generatePassphraseList();
-            set3PassphraseIndexes();
             hasEffectRun.current = true;
         }
-    }, [set3PassphraseIndexes]);
+    }, []);
 
     async function regenerate() {
         generatePassphraseList();
