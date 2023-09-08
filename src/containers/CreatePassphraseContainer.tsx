@@ -20,6 +20,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 
     useEffect(() => {
         if (!hasEffectRun.current) {
+            generatePassphraseList();
             set3PassphraseIndexes();
             hasEffectRun.current = true;
         }
