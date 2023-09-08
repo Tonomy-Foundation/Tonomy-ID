@@ -61,7 +61,7 @@ export default function HcaptchaContainer({
                     captchaFormRef.current.hide();
                 }
 
-                if (settings.env === 'development') {
+                if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
                 } else {
                     setCode(eventData);

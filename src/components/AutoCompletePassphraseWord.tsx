@@ -12,7 +12,6 @@ import useUserStore from '../store/userStore';
  * @component
  * @param {string} [value] - The default value of the Autocomplete input.
  * @param {string} [onChange] - A function to set the value of the field onChange
-
  */
 interface AutocompleteProps {
     value?: string;

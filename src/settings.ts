@@ -100,6 +100,11 @@ if (process.env.ACCOUNTS_SERVICE_URL) {
     config.accountsServiceUrl = process.env.ACCOUNTS_SERVICE_URL;
 }
 
+if (process.env.HCAPTCHA_SITE_KEY) {
+    console.log(`Using hCaptcha site key from env: ${process.env.HCAPTCHA_SITE_KEY}`);
+    config.captchaSiteKey = process.env.HCAPTCHA_SITE_KEY;
+}
+
 if (process.env.LOG === 'true') {
     console.log(`Using logger level from env: ${process.env.LOG}`);
     config.loggerLevel = 'debug';
