@@ -93,6 +93,7 @@ export default function HcaptchaContainer({
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
+            await user.saveLocal();
             await user.updateKeys(password);
 
             await setUserName();
