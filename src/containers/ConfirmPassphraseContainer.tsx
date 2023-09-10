@@ -44,7 +44,7 @@ export default function ConfirmPassphraseWordContainer({
                 body={
                     <View>
                         <TH1 style={commonStyles.textAlignCenter}>Confirm passphrase</TH1>
-                        <View style={{ marginTop: 60 }}>
+                        <View style={{ marginTop: 15 }}>
                             <View style={styles.innerContainer}>
                                 <TP style={styles.textStyle}>
                                     Please enter the{' '}
