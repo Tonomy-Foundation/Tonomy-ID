@@ -43,7 +43,7 @@ export default function ConfirmPassphraseWordContainer({
             <LayoutComponent
                 body={
                     <View>
-                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Confirm passphrase</TH1>
+                        <TH1 style={commonStyles.textAlignCenter}>Confirm passphrase</TH1>
                         <View style={{ marginTop: 60 }}>
                             <View style={styles.innerContainer}>
                                 <TP style={styles.textStyle}>

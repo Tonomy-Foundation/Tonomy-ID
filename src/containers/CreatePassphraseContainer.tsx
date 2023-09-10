@@ -9,10 +9,12 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
 import usePassphraseStore from '../store/passphraseStore';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
+import useUserStore from '../store/userStore';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { passphraseList, setPassphraseList } = usePassphraseStore();
-
+    const { user } = useUserStore();
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
@@ -26,12 +28,17 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
         setPassphraseList();
     }
 
+    async function onNext() {
+        await user.savePassword(passphraseList.join(' '), { keyFromPasswordFn: generatePrivateKeyFromPassword });
+        navigation.navigate('ConfirmPassphrase', { index: 0 });
+    }
+
     return (
         <>
             <LayoutComponent
                 body={
                     <View>
-                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Create passphrase</TH1>
+                        <TH1 style={commonStyles.textAlignCenter}>Create passphrase</TH1>
                         <TP style={styles.paragraph}>
                             Passphrase is like a password but more secure and easier to remember.{' '}
                             <TP style={styles.link}>Learn more.</TP>
@@ -68,9 +75,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphrase', { index: 0 })}>
-                                NEXT
-                            </TButtonContained>
+                            <TButtonContained onPress={onNext}>NEXT</TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
