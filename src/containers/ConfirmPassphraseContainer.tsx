@@ -44,7 +44,7 @@ export default function ConfirmPassphraseWordContainer({
                 body={
                     <View>
                         <TH1 style={commonStyles.textAlignCenter}>Confirm passphrase</TH1>
-                        <View style={{ marginTop: 15 }}>
+                        <View style={{ marginTop: 5 }}>
                             <View style={styles.innerContainer}>
                                 <TP style={styles.textStyle}>
                                     Please enter the{' '}
@@ -77,11 +77,6 @@ export default function ConfirmPassphraseWordContainer({
 }
 
 const styles = StyleSheet.create({
-    headline: {
-        marginTop: -10,
-        fontSize: 20,
-        marginBottom: 5,
-    },
     container: {
         flex: 1,
         justifyContent: 'center',
