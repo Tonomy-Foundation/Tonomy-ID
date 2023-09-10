@@ -28,7 +28,7 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         const { generate3PassphraseIndexes, generatePassphraseWordList } = get();
         let passphrase6Words;
 
-        if (!settings.isProduction()) {
+        if (settings.isProduction()) {
             passphrase6Words = ['above', 'day', 'fever', 'lemon', 'piano', 'sport'];
         } else passphrase6Words = generatePassphraseWordList();
         set({ passphraseList: passphrase6Words });
