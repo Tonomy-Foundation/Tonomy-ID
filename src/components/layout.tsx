@@ -30,7 +30,7 @@ export default function LayoutComponent(props: layoutProps) {
             {props.footerHint && !keyboardStatusShown ? (
                 <View style={layoutStyles.footerHint}>{props.footerHint}</View>
             ) : (
-                <View style={layoutStyles.footerHint}>
+                <View style={layoutStyles.nofooterHint}>
                     <Text>&nbsp;</Text>
                 </View>
             )}
@@ -50,5 +50,6 @@ const layoutStyles = StyleSheet.create({
     },
     body: { flex: 3 },
     footerHint: { flex: 1, justifyContent: 'flex-end' },
-    footer: { flex: 1.2, flexDirection: 'column', justifyContent: 'flex-start' },
+    nofooterHint: { flex: 2.2, justifyContent: 'flex-end' },
+    footer: { flex: 1.1, flexDirection: 'column', justifyContent: 'flex-start' },
 });
