@@ -122,7 +122,6 @@ export default function RootNavigation() {
                         name="Hcaptcha"
                         options={{ title: 'Create New Account' }}
                         component={HcaptchaScreen}
-                        initialParams={{ password: '' }}
                     />
                     <Stack.Screen
                         name="ConfirmPassphrase"
