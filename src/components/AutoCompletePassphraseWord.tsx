@@ -16,9 +16,10 @@ import useUserStore from '../store/userStore';
 interface AutocompleteProps {
     value?: string;
     onChange: (text: string) => void;
+    textInputStyle?: object;
 }
 
-const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChange }) => {
+const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChange, textInputStyle }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
@@ -50,6 +51,8 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChan
         setMenuVisible(true);
     };
 
+    console.log('AutoCompletePassphraseWord', textInputStyle);
+
     return (
         <View>
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
@@ -74,7 +77,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChan
                         value={value}
                         underlineColor="transparent"
                         activeUnderlineColor="transparent"
-                        style={styles.input}
+                        style={{ ...styles.input, ...textInputStyle }}
                         onFocus={() => {
                             if (!value || value?.length === 0) {
                                 setMenuVisible(true);

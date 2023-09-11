@@ -7,12 +7,12 @@ import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
-import PassphraseBox from '../components/PassphraseBox';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { AccountType, SdkError, SdkErrors, TonomyUsername } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
+import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -35,7 +35,6 @@ export default function LoginPassphraseContainer({
 
     useEffect(() => {
         if (!hasEffectRun.current) {
-            setPassphrase(user.generateRandomPassphrase());
             hasEffectRun.current = true;
         }
     }, [user]);
@@ -104,8 +103,14 @@ export default function LoginPassphraseContainer({
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
                                 {passphrase.map((text, index) => (
-                                    // TODO change to autosuggest
-                                    <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
+                                    <View key={index} style={styles.autoCompleteContainer}>
+                                        <Text style={styles.autoCompleteNumber}>{index + 1}</Text>
+                                        <AutoCompletePassphraseWord
+                                            textInputStyle={styles.autoCompleteWord}
+                                            value={text}
+                                            onChange={(text) => onChangeWord(index, text)}
+                                        />
+                                    </View>
                                 ))}
                             </View>
                         </View>
@@ -149,6 +154,11 @@ const styles = StyleSheet.create({
     errorText: {
         color: theme.colors.error,
     },
+    autoCompleteContainer: {
+        marginTop: -10,
+    },
+    autoCompleteNumber: {},
+    autoCompleteWord: {},
     headline: {
         marginTop: -10,
         fontSize: 20,
