@@ -47,7 +47,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
             <LayoutComponent
                 body={
                     <View>
-                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Create passphrase</TH1>
+                        <TH1 style={commonStyles.textAlignCenter}>Create passphrase</TH1>
                         <TP style={styles.paragraph}>
                             Passphrase is like a password but more secure and easier to remember.{' '}
                             <TP style={styles.link}>Learn more.</TP>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     innerContainer: {
-        marginTop: 20,
+        marginTop: 10,
         justifyContent: 'center',
     },
     createAccountMargin: {
