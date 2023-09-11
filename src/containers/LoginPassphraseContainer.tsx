@@ -27,9 +27,9 @@ export default function LoginPassphraseContainer({
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
-    const [nextDisabled, setNextDisabled] = useState(true);
+    const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(settings.isProduction() ? true : false);
 
     const hasEffectRun = useRef(false);
 
@@ -94,13 +94,10 @@ export default function LoginPassphraseContainer({
             const newPassphrase = [...prev];
 
             newPassphrase[index] = word;
-            console.log(newPassphrase);
-
             setNextDisabled(false);
 
             for (let i = 0; i < newPassphrase.length; i++) {
                 if (!lib.isKeyword(newPassphrase[i])) {
-                    console.log(newPassphrase[i], 'is not a keyword');
                     setNextDisabled(true);
                 }
             }
@@ -178,6 +175,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     autoCompleteContainer: {
+        // stop the container from moving up when an error is shown underneath it
         width: 120,
         height: 42,
         marginTop: 22,
