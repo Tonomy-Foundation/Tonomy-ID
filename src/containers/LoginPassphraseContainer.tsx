@@ -175,11 +175,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     autoCompleteContainer: {
-        // stop the container from moving up when an error is shown underneath it
         width: 120,
-        height: 42,
         marginTop: 22,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
     autoCompleteNumber: {
         marginRight: -15,
