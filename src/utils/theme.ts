@@ -31,6 +31,7 @@ const theme = {
         shadow: '#4D4D4D',
         shadowDark: '#000',
         error: '#F44336',
+        success: '#4CAF50',
     },
 };
 
@@ -40,8 +41,6 @@ export const useAppTheme = () => useTheme() as AppTheme;
 
 export const customColors = {
     success: '#4CAF50',
-    textBold: '#272727',
-    error: '#F44336',
 };
 
 export const commonStyles = StyleSheet.create({

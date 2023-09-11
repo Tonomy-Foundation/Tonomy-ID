@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     errorMsg: {
-        color: customColors.error,
+        color: theme.colors.error,
         textAlign: 'center',
         fontSize: 14,
         lineHeight: 16,

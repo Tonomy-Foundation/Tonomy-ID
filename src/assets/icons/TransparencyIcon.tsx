@@ -1,9 +1,9 @@
 import React from 'react';
 import { SvgProps, SvgXml } from 'react-native-svg';
-import { customColors } from '../../utils/theme';
+import theme from '../../utils/theme';
 
 export default function TransparencyIcon(props: SvgProps) {
-    let color = customColors.success;
+    let color = theme.colors.success;
 
     if (props.color && typeof props.color === 'string') {
         color = props.color;

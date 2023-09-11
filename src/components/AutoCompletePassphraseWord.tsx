@@ -69,7 +69,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                                         color:
                                             index < valueLength - 1 || valueLength === 0
                                                 ? theme.colors.text
-                                                : customColors.error,
+                                                : theme.colors.error,
                                     }}
                                 >
                                     {char}
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     errorMsg: {
-        color: customColors.error,
+        color: theme.colors.error,
         textAlign: 'center',
         fontSize: 14,
         marginTop: 5,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     errorInput: {
         position: 'relative',
         borderWidth: 1,
-        borderColor: customColors.error,
+        borderColor: theme.colors.error,
         borderRadius: 8,
     },
 });
