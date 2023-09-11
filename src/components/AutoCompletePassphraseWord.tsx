@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
-import theme, { customColors } from '../utils/theme';
-import { lib } from '@tonomy/tonomy-id-sdk';
+import theme from '../utils/theme';
+import { util } from '@tonomy/tonomy-id-sdk';
 
 /**
  * Represents an Autocomplete component.
@@ -38,7 +38,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
         onChange(newText);
 
         if (newText && newText.length > 0) {
-            const suggestWords = lib.generateAutoSuggestions(newText);
+            const suggestWords = util.generateAutoSuggestions(newText);
 
             if (suggestWords?.length === 0) {
                 if (!valueLength || valueLength === 0) {

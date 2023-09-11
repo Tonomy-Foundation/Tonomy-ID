@@ -1,6 +1,6 @@
 import create from 'zustand';
 import settings from '../settings';
-import { lib } from '@tonomy/tonomy-id-sdk';
+import { util } from '@tonomy/tonomy-id-sdk';
 import { ApplicationErrors, throwError } from '../utils/errors';
 
 interface PassphraseStoreState {
@@ -21,7 +21,7 @@ function generate3PassphraseIndexes(): number[] {
     const randomWordIndexesList = [] as number[];
 
     while (randomWordIndexesList.length < 3) {
-        const randomValue = lib.randomNumber(0, 5);
+        const randomValue = util.randomNumber(0, 5);
 
         if (!randomWordIndexesList.includes(randomValue)) {
             randomWordIndexesList.push(randomValue);
@@ -34,7 +34,7 @@ function generate3PassphraseIndexes(): number[] {
 export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'piano', 'sport'];
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
-    passphraseList: settings.isProduction() ? lib.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
+    passphraseList: settings.isProduction() ? util.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
     randomWordIndexes: generate3PassphraseIndexes(),
     getPassphrase: () => {
         const list = get().passphraseList;
@@ -46,7 +46,7 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         return list.join(' ');
     },
     generatePassphraseList: () => {
-        set({ passphraseList: lib.generateRandomKeywords() });
+        set({ passphraseList: util.generateRandomKeywords() });
         const randomWordIndexesList = generate3PassphraseIndexes();
 
         set({ randomWordIndexes: randomWordIndexesList });
