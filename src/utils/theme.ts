@@ -30,6 +30,7 @@ const theme = {
         grey6: '#F4F4F4',
         shadow: '#4D4D4D',
         shadowDark: '#000',
+        error: '#F44336',
     },
 };
 
@@ -38,7 +39,6 @@ export type AppTheme = typeof theme;
 export const useAppTheme = () => useTheme() as AppTheme;
 
 export const customColors = {
-    disabledButtonTextColor: 'darkgrey',
     success: '#4CAF50',
     textBold: '#272727',
     error: '#F44336',

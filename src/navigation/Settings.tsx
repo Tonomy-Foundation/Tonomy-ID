@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import { IconButton, useTheme } from 'react-native-paper';
 import SettingsScreen from '../screens/SettingsScreen';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import SetPasswordScreen from '../screens/SetPasswordScreen';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
 import FaceIdSettingsScreen from '../screens/FaceIdSettingsScreen';
 import FingerprintSettingsScreen from '../screens/FingerprintSettingsScreen';
@@ -68,7 +67,6 @@ export default function SettingsNavigation() {
                 options={{ title: 'Settings', headerLeft: backButton, headerBackButtonMenuEnabled: true }}
                 component={SettingsScreen}
             />
-            <Stack.Screen name="SetPassword" options={{ title: 'Set Password' }} component={SetPasswordScreen} />
             <Stack.Screen name="PinSettings" options={{ title: 'Pin Settings' }} component={PinSettingsScreen} />
             <Stack.Screen name="FaceIdSettings" options={{ title: 'Face ID' }} component={FaceIdSettingsScreen} />
             <Stack.Screen
