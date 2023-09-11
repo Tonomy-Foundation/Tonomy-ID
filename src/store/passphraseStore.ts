@@ -1,6 +1,7 @@
 import create from 'zustand';
 import settings from '../settings';
 import { lib } from '@tonomy/tonomy-id-sdk';
+import { ApplicationErrors, throwError } from '../utils/errors';
 
 interface PassphraseStoreState {
     passphraseList: string[];
@@ -33,13 +34,13 @@ function generate3PassphraseIndexes(): number[] {
 export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'piano', 'sport'];
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
-    passphraseList: !settings.isProduction() ? DEFAULT_DEV_PASSPHRASE_LIST : lib.generateRandomKeywords(),
+    passphraseList: settings.isProduction() ? lib.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
     randomWordIndexes: generate3PassphraseIndexes(),
     getPassphrase: () => {
         const list = get().passphraseList;
 
         if (list.length === 0) {
-            throw new Error('Passphrase list is empty');
+            throwError('Passphrase list is empty', ApplicationErrors.NoDataFound);
         }
 
         return list.join(' ');
@@ -51,7 +52,7 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         set({ randomWordIndexes: randomWordIndexesList });
     },
     unsetPassphraseList: () => {
-        set({ passphraseList: [] });
+        set({ passphraseList: settings.isProduction() ? [] : DEFAULT_DEV_PASSPHRASE_LIST });
     },
     checkWordAtIndex: (index, word) => {
         const { passphraseList } = get();
