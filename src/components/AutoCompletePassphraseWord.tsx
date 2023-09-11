@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme, { customColors } from '../utils/theme';
-import useUserStore from '../store/userStore';
+import { lib } from '@tonomy/tonomy-id-sdk';
 
 /**
  * Represents an Autocomplete component.
@@ -17,14 +17,19 @@ interface AutocompleteProps {
     value?: string;
     onChange: (text: string) => void;
     textInputStyle?: object;
+    containerStyle?: object;
 }
 
-const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChange, textInputStyle }) => {
+const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
+    value,
+    onChange,
+    textInputStyle,
+    containerStyle,
+}) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [valueLength, setValueLength] = useState<number>(0);
-    const { user } = useUserStore();
 
     const onChangeText = (text) => {
         const newText = text.toLowerCase().replace(/[^a-z]/g, '');
@@ -33,7 +38,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChan
         onChange(newText);
 
         if (newText && newText.length > 0) {
-            const suggestWords = user.suggestPassphraseWord(newText);
+            const suggestWords = lib.generateAutoSuggestions(newText);
 
             if (suggestWords?.length === 0) {
                 if (!valueLength || valueLength === 0) {
@@ -51,10 +56,8 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({ value, onChan
         setMenuVisible(true);
     };
 
-    console.log('AutoCompletePassphraseWord', textInputStyle);
-
     return (
-        <View>
+        <View style={containerStyle}>
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>

@@ -8,7 +8,7 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername } from '@tonomy/tonomy-id-sdk';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, lib } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
@@ -56,6 +56,7 @@ export default function LoginPassphraseContainer({
 
             if (result?.account_name !== undefined) {
                 setPassphrase(['', '', '', '', '', '']);
+                setNextDisabled(false);
                 setErrorMessage('');
                 await user.saveLocal();
                 await updateKeys();
@@ -67,17 +68,19 @@ export default function LoginPassphraseContainer({
                     case SdkErrors.PasswordInvalid:
                     case SdkErrors.PasswordFormatInvalid:
                     case SdkErrors.AccountDoesntExist:
-                        setErrorMessage('The passphrase you have entered is incorrect.<br /> Please try again.');
+                        setErrorMessage('Incorrect passphrase. Please try again.');
                         break;
                     default:
                         setErrorMessage('');
                         errorsStore.setError({ error: e, expected: false });
                 }
 
+                setNextDisabled(true);
                 setLoading(false);
                 return;
             } else {
                 errorsStore.setError({ error: e, expected: false });
+                setNextDisabled(true);
                 setLoading(false);
                 return;
             }
@@ -87,11 +90,23 @@ export default function LoginPassphraseContainer({
     async function onChangeWord(index: number, word: string) {
         setErrorMessage('');
 
-        // cif words are valid
-        setNextDisabled(false);
-        // if words are not valid
-        setNextDisabled(true);
-        setErrorMessage('Word is not part of the combination list');
+        setPassphrase((prev) => {
+            const newPassphrase = [...prev];
+
+            newPassphrase[index] = word;
+            console.log(newPassphrase);
+
+            setNextDisabled(false);
+
+            for (let i = 0; i < newPassphrase.length; i++) {
+                if (!lib.isKeyword(newPassphrase[i])) {
+                    console.log(newPassphrase[i], 'is not a keyword');
+                    setNextDisabled(true);
+                }
+            }
+
+            return newPassphrase;
+        });
     }
 
     return (
@@ -103,10 +118,11 @@ export default function LoginPassphraseContainer({
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
                                 {passphrase.map((text, index) => (
-                                    <View key={index} style={styles.autoCompleteContainer}>
-                                        <Text style={styles.autoCompleteNumber}>{index + 1}</Text>
+                                    <View key={index} style={styles.autoCompleteViewContainer}>
+                                        <Text style={styles.autoCompleteNumber}>{index + 1}.</Text>
                                         <AutoCompletePassphraseWord
-                                            textInputStyle={styles.autoCompleteWord}
+                                            textInputStyle={styles.autoCompleteTextInput}
+                                            containerStyle={styles.autoCompleteContainer}
                                             value={text}
                                             onChange={(text) => onChangeWord(index, text)}
                                         />
@@ -152,13 +168,31 @@ export default function LoginPassphraseContainer({
 
 const styles = StyleSheet.create({
     errorText: {
+        ...commonStyles.textAlignCenter,
         color: theme.colors.error,
     },
-    autoCompleteContainer: {
-        marginTop: -10,
+    autoCompleteViewContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginRight: 15,
+        marginBottom: 10,
     },
-    autoCompleteNumber: {},
-    autoCompleteWord: {},
+    autoCompleteContainer: {
+        width: 120,
+        height: 42,
+        marginTop: 22,
+        justifyContent: 'center',
+    },
+    autoCompleteNumber: {
+        marginRight: -15,
+        marginLeft: 10,
+    },
+    autoCompleteTextInput: {
+        width: 120,
+        height: 42,
+        marginTop: 22,
+        justifyContent: 'center',
+    },
     headline: {
         marginTop: -10,
         fontSize: 20,
