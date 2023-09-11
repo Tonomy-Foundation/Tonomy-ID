@@ -8,6 +8,7 @@ import { numberToOrdinal } from '../utils/numbers';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
+import settings from '../settings';
 
 export default function ConfirmPassphraseWordContainer({
     route,
@@ -18,7 +19,7 @@ export default function ConfirmPassphraseWordContainer({
 }) {
     const { index } = route.params;
     const { passphraseList, checkWordAtIndex, randomWordIndexes } = usePassphraseStore();
-    const [value, setValue] = useState<string>(passphraseList[randomWordIndexes[index]]);
+    const [value, setValue] = useState<string>(settings.isProduction() ? '' : passphraseList[randomWordIndexes[index]]);
     const [errorMsg, setErrorMsg] = useState<string>('');
 
     const onNext = () => {
