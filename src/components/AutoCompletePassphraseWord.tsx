@@ -11,11 +11,13 @@ import { util } from '@tonomy/tonomy-id-sdk';
  *
  * @component
  * @param {string} [value] - The default value of the Autocomplete input.
- * @param {string} [onChange] - A function to set the value of the field onChange
+ * @param {string} [onChange] - A function to set the value of the field onChange.
+ * @param {object} [textInputStyle] - The CSS style object of the text input.
+ * @param {object} [containerStyle] - The CSS style object of the container.
  */
 interface AutocompleteProps {
-    value?: string;
-    onChange: (text: string) => void;
+    value: string;
+    onChange?: (text: string) => void;
     textInputStyle?: object;
     containerStyle?: object;
 }
@@ -35,13 +37,14 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
         const newText = text.toLowerCase().replace(/[^a-z]/g, '');
 
         setErrorMsg('');
-        onChange(newText);
 
-        if (newText && newText.length > 0) {
+        if (onChange) onChange(newText);
+
+        if (newText.length > 0) {
             const suggestWords = util.generateAutoSuggestions(newText);
 
-            if (suggestWords?.length === 0) {
-                if (!valueLength || valueLength === 0) {
+            if (suggestWords.length === 0) {
+                if (valueLength === 0) {
                     setValueLength(newText.length);
                 }
 
@@ -49,7 +52,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
             } else setValueLength(0);
 
             setSuggestedWords(suggestWords);
-        } else if (!newText || newText === '' || newText.length === 0) {
+        } else {
             setSuggestedWords([]);
         }
 
@@ -61,20 +64,19 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>
-                        {value &&
-                            value.split('').map((char, index) => (
-                                <Text
-                                    key={index}
-                                    style={{
-                                        color:
-                                            index < valueLength - 1 || valueLength === 0
-                                                ? theme.colors.text
-                                                : theme.colors.error,
-                                    }}
-                                >
-                                    {char}
-                                </Text>
-                            ))}
+                        {value.split('').map((char, index) => (
+                            <Text
+                                key={index}
+                                style={{
+                                    color:
+                                        index < valueLength - 1 || valueLength === 0
+                                            ? theme.colors.text
+                                            : theme.colors.error,
+                                }}
+                            >
+                                {char}
+                            </Text>
+                        ))}
                     </View>
                     <TextInput
                         value={value}
@@ -82,7 +84,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                         activeUnderlineColor="transparent"
                         style={{ ...styles.input, ...textInputStyle }}
                         onFocus={() => {
-                            if (!value || value?.length === 0) {
+                            if (value?.length === 0) {
                                 setMenuVisible(true);
                             }
                         }}

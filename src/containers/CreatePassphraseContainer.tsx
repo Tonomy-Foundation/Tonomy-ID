@@ -102,10 +102,6 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 }
 
 const styles = StyleSheet.create({
-    headline: {
-        marginTop: -10,
-        marginBottom: 5,
-    },
     paragraph: {
         textAlign: 'center',
         fontSize: 14,

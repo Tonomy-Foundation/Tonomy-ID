@@ -8,7 +8,7 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername, lib } from '@tonomy/tonomy-id-sdk';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, util } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
@@ -30,14 +30,6 @@ export default function LoginPassphraseContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(settings.isProduction() ? true : false);
-
-    const hasEffectRun = useRef(false);
-
-    useEffect(() => {
-        if (!hasEffectRun.current) {
-            hasEffectRun.current = true;
-        }
-    }, [user]);
 
     async function updateKeys() {
         await user.updateKeys(passphrase.join(' '));
@@ -97,7 +89,7 @@ export default function LoginPassphraseContainer({
             setNextDisabled(false);
 
             for (let i = 0; i < newPassphrase.length; i++) {
-                if (!lib.isKeyword(newPassphrase[i])) {
+                if (!util.isKeyword(newPassphrase[i])) {
                     setNextDisabled(true);
                 }
             }
