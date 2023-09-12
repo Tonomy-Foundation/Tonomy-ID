@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -8,27 +8,38 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
+import usePassphraseStore from '../store/passphraseStore';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useUserStore from '../store/userStore';
+import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const { passphraseList, generatePassphraseList, getPassphrase } = usePassphraseStore();
     const { user } = useUserStore();
 
-    const [phraseList, setPhraseList] = useState<string[]>(['', '', '', '', '', '']);
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
-            const passphraseWords = user.generateRandomPassphrase();
+            try {
+                getPassphrase();
+            } catch (e) {
+                if (e instanceof ApplicationError && e.code === ApplicationErrors.NoDataFound) {
+                    generatePassphraseList();
+                }
+            }
 
-            setPhraseList(passphraseWords);
             hasEffectRun.current = true;
         }
-    }, [user]);
+    }, []);
 
     async function regenerate() {
-        const passphraseWords = user.generateRandomPassphrase();
+        generatePassphraseList();
+    }
 
-        setPhraseList(passphraseWords);
+    async function onNext() {
+        await user.savePassword(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyFromPassword });
+        navigation.navigate('ConfirmPassphrase', { index: 0 });
     }
 
     return (
@@ -36,14 +47,14 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
             <LayoutComponent
                 body={
                     <View>
-                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Create passphrase</TH1>
+                        <TH1 style={commonStyles.textAlignCenter}>Create passphrase</TH1>
                         <TP style={styles.paragraph}>
                             Passphrase is like a password but more secure and easier to remember.{' '}
                             <TP style={styles.link}>Learn more.</TP>
                         </TP>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
-                                {phraseList.map((text, index) => (
+                                {passphraseList.map((text, index) => (
                                     <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
                                 ))}
                             </View>
@@ -73,9 +84,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => navigation.navigate('ConfirmPassphraseWord')}>
-                                NEXT
-                            </TButtonContained>
+                            <TButtonContained onPress={onNext}>NEXT</TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
@@ -93,17 +102,12 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 }
 
 const styles = StyleSheet.create({
-    headline: {
-        marginTop: -10,
-        fontSize: 20,
-        marginBottom: 5,
-    },
     paragraph: {
         textAlign: 'center',
         fontSize: 14,
     },
     innerContainer: {
-        marginTop: 20,
+        marginTop: 10,
         justifyContent: 'center',
     },
     createAccountMargin: {

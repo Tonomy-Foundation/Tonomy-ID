@@ -1,10 +1,15 @@
 import React from 'react';
-import ConfirmPassphraseContainer from '../containers/ConfirmPassphraseContainer';
+import ConfirmPassphraseWordContainer from '../containers/ConfirmPassphraseContainer';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
 
-export type Props = NativeStackScreenProps<RouteStackParamList, 'ConfirmPassphraseWord'>;
+export type Props = NativeStackScreenProps<RouteStackParamList, 'ConfirmPassphrase'>;
 
 export default function ConfirmPassphraseScreen(props: Props) {
-    return <ConfirmPassphraseContainer></ConfirmPassphraseContainer>;
+    return (
+        <ConfirmPassphraseWordContainer
+            navigation={props.navigation}
+            route={props.route}
+        ></ConfirmPassphraseWordContainer>
+    );
 }

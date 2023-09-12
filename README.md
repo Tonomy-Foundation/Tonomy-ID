@@ -19,12 +19,6 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 yarn
 ```
 
-To ensure you are using the `development` SDK also run
-
-```bash
-yarn add @tonomy/tonomy-id-sdk@development
-```
-
 ## Pre-run build (first time and each time new RN only packages are installed)
 
 This is to create an expo build so you can down an `.apk` or `.ipa` file from [https://expo.dev](https://expo.dev) which you can use to run the app. You can't Run from the Official Expo App.
@@ -75,6 +69,14 @@ This is now running in production mode connected to the staging environment.
 5. Enable USB debug on your phone.
 6. Connect your phone to the pc with a usb cable.
 7. Open the the react native app you want to debug.
+
+## Update the Tonomy-ID-SDK version to the latest
+
+```bash
+yarn run updateSdkVersion development
+# or
+yarn run updateSdkVersion master
+```
 
 ## File structure of components
 
