@@ -64,6 +64,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>
+                        {/* display the value text with red underling for invalid characters */}
                         {value.split('').map((char, index) => (
                             <Text
                                 key={index}

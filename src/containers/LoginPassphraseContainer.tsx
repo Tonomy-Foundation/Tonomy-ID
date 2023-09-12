@@ -29,7 +29,7 @@ export default function LoginPassphraseContainer({
     );
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loading, setLoading] = useState(settings.isProduction() ? true : false);
+    const [loading, setLoading] = useState(false);
 
     async function updateKeys() {
         await user.updateKeys(passphrase.join(' '));
@@ -90,6 +90,7 @@ export default function LoginPassphraseContainer({
 
             for (let i = 0; i < newPassphrase.length; i++) {
                 if (!util.isKeyword(newPassphrase[i])) {
+                    console.log('passphrase', newPassphrase[i], ' is not valid');
                     setNextDisabled(true);
                 }
             }
@@ -97,6 +98,8 @@ export default function LoginPassphraseContainer({
             return newPassphrase;
         });
     }
+
+    console.log('AutoCompletePassphraseWord', nextDisabled, loading);
 
     return (
         <>
