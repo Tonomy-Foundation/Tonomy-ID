@@ -91,7 +91,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                         onChangeText={(text) => onChangeText(text)}
                     />
 
-                    {menuVisible && suggestedWords && suggestedWords?.length > 0 && (
+                    {menuVisible && suggestedWords?.length > 0 && (
                         <View style={styles.menuView}>
                             {suggestedWords.map((word, i) => (
                                 <View key={i} style={{ marginTop: -6 }}>
@@ -99,7 +99,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                                         style={[{ width: '100%' }]}
                                         onPress={() => {
                                             setMenuVisible(false);
-                                            onChange(word);
+                                            if (onChange) onChange(word);
                                             setErrorMsg('');
                                         }}
                                         title={word}
