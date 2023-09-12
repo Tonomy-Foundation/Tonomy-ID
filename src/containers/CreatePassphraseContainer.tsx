@@ -11,25 +11,34 @@ import PassphraseBox from '../components/PassphraseBox';
 import usePassphraseStore from '../store/passphraseStore';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useUserStore from '../store/userStore';
+import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const { passphraseList, setPassphraseList } = usePassphraseStore();
+    const { passphraseList, generatePassphraseList, getPassphrase } = usePassphraseStore();
     const { user } = useUserStore();
+
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
-            setPassphraseList();
+            try {
+                getPassphrase();
+            } catch (e) {
+                if (e instanceof ApplicationError && e.code === ApplicationErrors.NoDataFound) {
+                    generatePassphraseList();
+                }
+            }
+
             hasEffectRun.current = true;
         }
-    }, [setPassphraseList]);
+    }, []);
 
     async function regenerate() {
-        setPassphraseList();
+        generatePassphraseList();
     }
 
     async function onNext() {
-        await user.savePassword(passphraseList.join(' '), { keyFromPasswordFn: generatePrivateKeyFromPassword });
+        await user.savePassword(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyFromPassword });
         navigation.navigate('ConfirmPassphrase', { index: 0 });
     }
 

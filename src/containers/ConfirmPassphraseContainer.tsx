@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import Autocomplete from '../components/AutoComplete';
+import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPassphraseScreen';
 import theme, { commonStyles, customColors } from '../utils/theme';
@@ -8,6 +8,7 @@ import { numberToOrdinal } from '../utils/numbers';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
+import settings from '../settings';
 
 export default function ConfirmPassphraseWordContainer({
     route,
@@ -18,24 +19,25 @@ export default function ConfirmPassphraseWordContainer({
 }) {
     const { index } = route.params;
     const { passphraseList, checkWordAtIndex, randomWordIndexes } = usePassphraseStore();
-    const [value, setValue] = useState<string>(passphraseList[randomWordIndexes[index]]);
+    const [value, setValue] = useState<string>(settings.isProduction() ? '' : passphraseList[randomWordIndexes[index]]);
     const [errorMsg, setErrorMsg] = useState<string>('');
 
     const onNext = () => {
+        if (value && !checkWordAtIndex(randomWordIndexes[index], value)) {
+            setErrorMsg('Incorrect word.Please try again.');
+            return;
+        }
+
         if (index < 2) {
             navigation.push('ConfirmPassphrase', { index: index + 1 });
         } else {
-            navigation.navigate('Hcaptcha', { password: passphraseList.join(' ') });
+            navigation.navigate('Hcaptcha');
         }
     };
 
     const onChange = (text) => {
         setValue(text);
         setErrorMsg('');
-
-        if (text && !checkWordAtIndex(randomWordIndexes[index], text)) {
-            setErrorMsg('The word you have entered is incorrect.Please  try again.');
-        }
     };
 
     return (
@@ -53,7 +55,7 @@ export default function ConfirmPassphraseWordContainer({
                                     </TP>{' '}
                                     in your passphrase.
                                 </TP>
-                                <Autocomplete value={value} onChange={(text) => onChange(text)} />
+                                <AutoCompletePassphraseWord value={value} onChange={(text) => onChange(text)} />
                                 <Text style={styles.errorMsg}>{errorMsg}</Text>
                             </View>
                         </View>
@@ -62,12 +64,7 @@ export default function ConfirmPassphraseWordContainer({
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained
-                                disabled={!checkWordAtIndex(randomWordIndexes[index], value)}
-                                onPress={onNext}
-                            >
-                                Next
-                            </TButtonContained>
+                            <TButtonContained onPress={onNext}>Next</TButtonContained>
                         </View>
                     </View>
                 }
@@ -96,7 +93,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     errorMsg: {
-        color: customColors.error,
+        color: theme.colors.error,
         textAlign: 'center',
         fontSize: 14,
         lineHeight: 16,

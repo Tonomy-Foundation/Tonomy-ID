@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
-import theme, { customColors } from '../utils/theme';
-import useUserStore from '../store/userStore';
+import theme from '../utils/theme';
+import { util } from '@tonomy/tonomy-id-sdk';
 
 /**
  * Represents an Autocomplete component.
@@ -11,38 +11,48 @@ import useUserStore from '../store/userStore';
  *
  * @component
  * @param {string} [value] - The default value of the Autocomplete input.
- * @param {string} [onChange] - A function to set the value of the field onChange
-
+ * @param {string} [onChange] - A function to set the value of the field onChange.
+ * @param {object} [textInputStyle] - The CSS style object of the text input.
+ * @param {object} [containerStyle] - The CSS style object of the container.
  */
 interface AutocompleteProps {
-    value?: string;
-    onChange: (text: string) => void;
+    value: string;
+    onChange?: (text: string) => void;
+    textInputStyle?: object;
+    containerStyle?: object;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
+const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
+    value,
+    onChange,
+    textInputStyle,
+    containerStyle,
+}) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [valueLength, setValueLength] = useState<number>(0);
-    const { user } = useUserStore();
 
     const onChangeText = (text) => {
+        const newText = text.toLowerCase().replace(/[^a-z]/g, '');
+
         setErrorMsg('');
-        onChange(text);
 
-        if (text && text.length > 0) {
-            const suggestWords = user.suggestPassphraseWord(text);
+        if (onChange) onChange(newText);
 
-            if (suggestWords?.length === 0) {
-                if (!valueLength || valueLength === 0) {
-                    setValueLength(text.length);
+        if (newText.length > 0) {
+            const suggestWords = util.generateAutoSuggestions(newText);
+
+            if (suggestWords.length === 0) {
+                if (valueLength === 0) {
+                    setValueLength(newText.length);
                 }
 
-                setErrorMsg('The combination of letters you provided is not a part of the selectable word list.');
+                setErrorMsg('Not in the world list.');
             } else setValueLength(0);
 
             setSuggestedWords(suggestWords);
-        } else if (!text || text === '' || text.length === 0) {
+        } else {
             setSuggestedWords([]);
         }
 
@@ -50,39 +60,38 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
     };
 
     return (
-        <View>
+        <View style={containerStyle}>
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>
-                        {value &&
-                            value.split('').map((char, index) => (
-                                <Text
-                                    key={index}
-                                    style={{
-                                        color:
-                                            index < valueLength - 1 || valueLength === 0
-                                                ? theme.colors.text
-                                                : customColors.error,
-                                    }}
-                                >
-                                    {char}
-                                </Text>
-                            ))}
+                        {value.split('').map((char, index) => (
+                            <Text
+                                key={index}
+                                style={{
+                                    color:
+                                        index < valueLength - 1 || valueLength === 0
+                                            ? theme.colors.text
+                                            : theme.colors.error,
+                                }}
+                            >
+                                {char}
+                            </Text>
+                        ))}
                     </View>
                     <TextInput
                         value={value}
                         underlineColor="transparent"
                         activeUnderlineColor="transparent"
-                        style={styles.input}
+                        style={{ ...styles.input, ...textInputStyle }}
                         onFocus={() => {
-                            if (!value || value?.length === 0) {
+                            if (value?.length === 0) {
                                 setMenuVisible(true);
                             }
                         }}
                         onChangeText={(text) => onChangeText(text)}
                     />
 
-                    {menuVisible && suggestedWords && suggestedWords?.length > 0 && (
+                    {menuVisible && suggestedWords?.length > 0 && (
                         <View style={styles.menuView}>
                             {suggestedWords.map((word, i) => (
                                 <View key={i} style={{ marginTop: -6 }}>
@@ -90,7 +99,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
                                         style={[{ width: '100%' }]}
                                         onPress={() => {
                                             setMenuVisible(false);
-                                            onChange(word);
+                                            if (onChange) onChange(word);
                                             setErrorMsg('');
                                         }}
                                         title={word}
@@ -107,7 +116,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ value, onChange }) => {
     );
 };
 
-export default Autocomplete;
+export default AutoCompletePassphraseWord;
 
 const styles = StyleSheet.create({
     coloredTextContainer: {
@@ -152,7 +161,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     errorMsg: {
-        color: customColors.error,
+        color: theme.colors.error,
         textAlign: 'center',
         fontSize: 14,
         marginTop: 5,
@@ -162,7 +171,7 @@ const styles = StyleSheet.create({
     errorInput: {
         position: 'relative',
         borderWidth: 1,
-        borderColor: customColors.error,
+        borderColor: theme.colors.error,
         borderRadius: 8,
     },
 });
