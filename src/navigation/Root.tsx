@@ -24,10 +24,12 @@ import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
+import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 
 const prefix = Linking.createURL('');
 
 export type RouteStackParamList = {
+    TermsAndCondition: undefined;
     Splash: undefined;
     SplashSecurity: undefined;
     SplashPrivacy: undefined;
@@ -90,8 +92,13 @@ export default function RootNavigation() {
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
-                <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
-                    <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
+                <Stack.Navigator initialRouteName={'TermsAndCondition'} screenOptions={defaultScreenOptions}>
+                    <Stack.Screen
+                        name="TermsAndCondition"
+                        options={noHeaderScreenOptions}
+                        component={TermsAndConditionScreen}
+                    />
+                    {/* <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} /> */}
                     <Stack.Screen
                         name="SplashSecurity"
                         options={noHeaderScreenOptions}
