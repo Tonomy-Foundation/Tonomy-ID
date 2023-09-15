@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, Animated } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
 import { util } from '@tonomy/tonomy-id-sdk';
@@ -32,6 +32,44 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [valueLength, setValueLength] = useState<number>(0);
+    const [isFocused, setIsFocused] = useState(false);
+    const [cursorVisible] = useState(new Animated.Value(0));
+
+    const handleFocus = () => {
+        setIsFocused(true);
+
+        if (value?.length === 0) {
+            setMenuVisible(true);
+        }
+    };
+
+    const handleBlur = () => {
+        setIsFocused(false);
+        setMenuVisible(false);
+    };
+
+    useEffect(() => {
+        // Toggle cursor visibility when focused
+        if (isFocused) {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(cursorVisible, {
+                        toValue: 1,
+                        duration: 500,
+                        useNativeDriver: false,
+                    }),
+                    Animated.timing(cursorVisible, {
+                        toValue: 0,
+                        duration: 500,
+                        useNativeDriver: false,
+                    }),
+                ])
+            ).start();
+        } else {
+            cursorVisible.stopAnimation();
+            cursorVisible.setValue(0); // Reset cursor visibility
+        }
+    }, [cursorVisible, isFocused]);
 
     const onChangeText = (text) => {
         const newText = text.toLowerCase().replace(/[^a-z]/g, '');
@@ -66,29 +104,29 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                     <View style={styles.coloredTextContainer}>
                         {/* display the value text with red underling for invalid characters */}
                         {value.split('').map((char, index) => (
-                            <Text
-                                key={index}
-                                style={{
-                                    color:
-                                        index < valueLength - 1 || valueLength === 0
-                                            ? theme.colors.text
-                                            : theme.colors.error,
-                                }}
-                            >
-                                {char}
-                            </Text>
+                            <>
+                                <Text
+                                    key={index}
+                                    style={{
+                                        color:
+                                            index < valueLength - 1 || valueLength === 0
+                                                ? theme.colors.text
+                                                : theme.colors.error,
+                                    }}
+                                >
+                                    {char}
+                                </Text>
+                            </>
                         ))}
+                        {isFocused && <Animated.View style={[styles.cursor, { opacity: cursorVisible }]} />}
                     </View>
                     <TextInput
                         value={value}
                         underlineColor="transparent"
                         activeUnderlineColor="transparent"
                         style={{ ...styles.input, ...textInputStyle }}
-                        onFocus={() => {
-                            if (value?.length === 0) {
-                                setMenuVisible(true);
-                            }
-                        }}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
                         onChangeText={(text) => onChangeText(text)}
                     />
 
@@ -133,6 +171,12 @@ const styles = StyleSheet.create({
         bottom: '110%',
         left: 0,
         backgroundColor: 'white',
+    },
+    cursor: {
+        width: 1,
+        height: 18,
+        backgroundColor: theme.colors.shadowDark,
+        marginLeft: 2,
     },
     input: {
         position: 'absolute',
