@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Animated } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
@@ -20,6 +20,8 @@ interface AutocompleteProps {
     onChange?: (text: string) => void;
     textInputStyle?: object;
     containerStyle?: object;
+    displaySuggestions?: string[]; //['top','bottom']
+    phraseIndex?: number;
 }
 
 const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
@@ -27,6 +29,8 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
     onChange,
     textInputStyle,
     containerStyle,
+    displaySuggestions,
+    phraseIndex,
 }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
@@ -129,27 +133,38 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                         onBlur={handleBlur}
                         onChangeText={(text) => onChangeText(text)}
                     />
-
-                    {menuVisible && suggestedWords?.length > 0 && (
-                        <View style={styles.menuView}>
-                            {suggestedWords.map((word, i) => (
-                                <View key={i} style={{ marginTop: -6 }}>
-                                    <Menu.Item
-                                        style={[{ width: '100%' }]}
-                                        onPress={() => {
-                                            setMenuVisible(false);
-                                            if (onChange) onChange(word);
-                                            setErrorMsg('');
-                                        }}
-                                        title={word}
-                                    />
-                                    {i < suggestedWords.length - 1 && <View style={styles.horizontalLine} />}
-                                </View>
-                            ))}
-                        </View>
-                    )}
                 </View>
             </View>
+
+            {menuVisible && suggestedWords?.length > 0 && (
+                <View
+                    style={[
+                        displaySuggestions && displaySuggestions[phraseIndex || 0] === 'top'
+                            ? styles.menuView
+                            : styles.menuBottomView,
+                        {
+                            zIndex:
+                                displaySuggestions && displaySuggestions[phraseIndex || 0] ? phraseIndex || 0 + 1 : 0,
+                        },
+                    ]}
+                >
+                    {suggestedWords.map((word, i) => (
+                        <View key={i} style={{ marginTop: -6 }}>
+                            <Menu.Item
+                                style={[{ width: '100%', zIndex: 1 }]}
+                                onPress={() => {
+                                    setMenuVisible(false);
+                                    if (onChange) onChange(word);
+                                    setErrorMsg('');
+                                }}
+                                title={word}
+                            />
+                            {i < suggestedWords.length - 1 && <View style={styles.horizontalLine} />}
+                        </View>
+                    ))}
+                </View>
+            )}
+
             {errorMsg && <Text style={styles.errorMsg}>{errorMsg}</Text>}
         </View>
     );
@@ -161,14 +176,33 @@ const styles = StyleSheet.create({
     coloredTextContainer: {
         flexDirection: 'row',
     },
+    menuContainer: {
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: theme.colors.grey5,
+        backgroundColor: 'white',
+        marginTop: 18,
+        height: 200,
+    },
     menuView: {
         borderRadius: 8,
         padding: 0,
         marginHorizontal: 2,
-        width: '99%',
+        width: '100%',
         elevation: 4,
         position: 'absolute',
-        bottom: '110%',
+        bottom: 47,
+        left: 0,
+        backgroundColor: 'white',
+    },
+    menuBottomView: {
+        borderRadius: 8,
+        padding: 0,
+        marginHorizontal: 2,
+        width: '100%',
+        elevation: 4,
+        position: 'absolute',
+        top: 47,
         left: 0,
         backgroundColor: 'white',
     },
@@ -179,14 +213,10 @@ const styles = StyleSheet.create({
         marginLeft: 2,
     },
     input: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: 45,
-        opacity: 0,
         color: 'white',
         visibility: 'hidden',
+        zIndex: 0,
+        opacity: 0,
     },
     innerContainer: {
         flexDirection: 'row',
@@ -196,10 +226,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     inputContainer: {
-        position: 'relative',
         borderWidth: 1,
         borderColor: theme.colors.disabled,
         borderRadius: 8,
+        zIndex: 0,
     },
     horizontalLine: {
         borderBottomColor: theme.colors.grey5,
@@ -214,9 +244,9 @@ const styles = StyleSheet.create({
     },
 
     errorInput: {
-        position: 'relative',
         borderWidth: 1,
         borderColor: theme.colors.error,
         borderRadius: 8,
+        zIndex: 0,
     },
 });

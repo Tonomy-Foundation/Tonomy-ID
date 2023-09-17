@@ -30,6 +30,7 @@ export default function LoginPassphraseContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [displaySuggestionsArray, setDisplaySuggestionsArray] = useState<string[]>([]);
 
     async function updateKeys() {
         await user.updateKeys(passphrase.join(' '));
@@ -99,7 +100,29 @@ export default function LoginPassphraseContainer({
         });
     }
 
-    console.log('AutoCompletePassphraseWord', nextDisabled, loading);
+    const handleLayout = (event: any, index: number) => {
+        const { y } = event.nativeEvent.layout;
+
+        if (y < 50) {
+            // Set the corresponding displaySuggestions value based on the index
+            setDisplaySuggestionsArray((prevArray) => {
+                const newArray = [...prevArray];
+
+                newArray[index] = 'bottom'; // Set to 'bottom' if condition is met
+                return newArray;
+            });
+        } else {
+            // Set the corresponding displaySuggestions value based on the index
+            setDisplaySuggestionsArray((prevArray) => {
+                const newArray = [...prevArray];
+
+                newArray[index] = 'top'; // Set to 'top' if condition is not met
+                return newArray;
+            });
+        }
+    };
+
+    // console.log('AutoCompletePassphraseWord', nextDisabled, loading);
 
     return (
         <>
@@ -110,15 +133,25 @@ export default function LoginPassphraseContainer({
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
                                 {passphrase.map((text, index) => (
-                                    <View key={index} style={styles.autoCompleteViewContainer}>
-                                        <Text style={styles.autoCompleteNumber}>{index + 1}.</Text>
+                                    <React.Fragment
+                                        // onLayout={(event) => handleLayout(event, index)}
+                                        key={index}
+                                        // style={styles.autoCompleteViewContainer}
+                                    >
+                                        <Text
+                                            style={styles.autoCompleteNumber} // Set a higher z-index
+                                        >
+                                            {index + 1}.
+                                        </Text>
                                         <AutoCompletePassphraseWord
                                             textInputStyle={styles.autoCompleteTextInput}
-                                            containerStyle={styles.autoCompleteContainer}
+                                            containerStyle={styles.autoCompleteContainer} // Set a higher z-index
                                             value={text}
                                             onChange={(text) => onChangeWord(index, text)}
+                                            displaySuggestions={displaySuggestionsArray} // Use the corresponding value
+                                            phraseIndex={index}
                                         />
-                                    </View>
+                                    </React.Fragment>
                                 ))}
                             </View>
                         </View>
@@ -164,19 +197,22 @@ const styles = StyleSheet.create({
         color: theme.colors.error,
     },
     autoCompleteViewContainer: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
+        // flexDirection: 'row',
+        // alignItems: 'flex-start',
         marginRight: 15,
         marginBottom: 10,
+        position: 'relative',
     },
     autoCompleteContainer: {
         width: 120,
         marginTop: 22,
-        justifyContent: 'flex-start',
+        // justifyContent: 'flex-start',
+        position: 'relative',
     },
     autoCompleteNumber: {
         marginRight: -15,
         marginLeft: 10,
+        zIndex: -1,
     },
     autoCompleteTextInput: {
         width: 120,
