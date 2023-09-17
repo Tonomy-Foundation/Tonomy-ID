@@ -1,16 +1,17 @@
+/* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
-import { TCaption, TH1, TP } from '../components/atoms/THeadings';
+import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import useUserStore from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
-import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
-import theme, { commonStyles } from '../utils/theme';
+import { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
+import { Button } from 'react-native-paper';
 
 export default function TermsAndConditionContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
@@ -68,22 +69,37 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                     <View style={styles.innerContainer}>
                         <TP style={styles.headerLabel}>Terms & Conditions</TP>
                     </View>
+
                     <View>
                         <TP>Summary:</TP>
-                        <TP></TP>
-                        <TP>
-                            ● You can use Tonomy ID to log into and share data with applications that support Tonomy ID.
-                        </TP>
-                        <TP>● Please remember or keep a secure copy of your master passphrase and username.</TP>
-                        <TP>
-                            ● You (and not the Tonomy Foundation) are responsible for using and behaving according to
-                            regulatory requirements in applications you log into with Tonomy ID.
-                        </TP>
-                        <TP>
-                            ● Tonomy ID uses advanced digital signatures to enhance data security, integrity, and
-                            regulatory compliance for interactions with supported applications. Tonomy ID is regulated
-                            under Dutch law.
-                        </TP>
+                        <TP children={undefined}></TP>
+                        <View style={styles.headerLabel}>
+                            <TP>
+                                • You can use Tonomy ID to log into and share data with applications that support Tonomy
+                                ID.
+                            </TP>
+                            <TP>• Please remember or keep a secure copy of your master passphrase and username.</TP>
+                            <TP>
+                                • You (and not the Tonomy Foundation) are responsible for using and behaving according
+                                to regulatory requirements in applications you log into with Tonomy ID.
+                            </TP>
+                            <TP>
+                                • Tonomy ID uses advanced digital signatures to enhance data security, integrity, and
+                                regulatory compliance for interactions with supported applications. Tonomy ID is
+                                regulated under Dutch law.
+                            </TP>
+                            <TP>
+                                • Tonomy ID uses advanced digital signatures to enhance data security, integrity, and
+                                regulatory compliance for interactions with supported applications.
+                            </TP>
+                            <TP>• Tonomy ID is regulated under Dutch law.</TP>
+                        </View>
+                    </View>
+                    <View>
+                        <TouchableOpacity onPress={() => alert(1)}>
+                            <Button icon="file-document-outline">Full Terms of Service</Button>
+                            <Button icon="chevron-down"></Button>
+                        </TouchableOpacity>
                     </View>
                 </View>
             }
@@ -122,8 +138,7 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
     innerContainer: { marginTop: 10, justifyContent: 'center' },
-    textContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
+    divTermsConidtion: {
+        width: 10,
     },
 });
