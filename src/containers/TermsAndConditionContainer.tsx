@@ -12,6 +12,7 @@ import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
 import { Button } from 'react-native-paper';
+import Icon from 'react-native-paper/lib/typescript/components/Icon';
 
 export default function TermsAndConditionContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
