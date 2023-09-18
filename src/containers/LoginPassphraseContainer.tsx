@@ -29,7 +29,7 @@ export default function LoginPassphraseContainer({
     );
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [loading, setLoading] = useState(settings.isProduction() ? true : false);
+    const [loading, setLoading] = useState(false);
 
     async function updateKeys() {
         await user.updateKeys(passphrase.join(' '));
@@ -114,6 +114,7 @@ export default function LoginPassphraseContainer({
                                             containerStyle={styles.autoCompleteContainer}
                                             value={text}
                                             onChange={(text) => onChangeWord(index, text)}
+                                            menuStyle={index < 2 ? styles.menuViewBottom : styles.menuViewTop}
                                         />
                                     </View>
                                 ))}
@@ -160,20 +161,29 @@ const styles = StyleSheet.create({
         ...commonStyles.textAlignCenter,
         color: theme.colors.error,
     },
+    menuViewTop: {
+        bottom: 47,
+    },
+    menuViewBottom: {
+        top: 47,
+    },
     autoCompleteViewContainer: {
         flexDirection: 'row',
         alignItems: 'flex-start',
         marginRight: 15,
         marginBottom: 10,
+        // position: 'relative',
     },
     autoCompleteContainer: {
         width: 120,
         marginTop: 22,
         justifyContent: 'flex-start',
+        position: 'relative',
     },
     autoCompleteNumber: {
         marginRight: -15,
         marginLeft: 10,
+        zIndex: -1,
     },
     autoCompleteTextInput: {
         width: 120,
