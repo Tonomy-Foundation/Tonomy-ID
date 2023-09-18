@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Animated } from 'react-native';
+import { View, StyleSheet, Text, Animated, TouchableOpacity } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
 import { util } from '@tonomy/tonomy-id-sdk';
@@ -14,14 +14,15 @@ import { util } from '@tonomy/tonomy-id-sdk';
  * @param {string} [onChange] - A function to set the value of the field onChange.
  * @param {object} [textInputStyle] - The CSS style object of the text input.
  * @param {object} [containerStyle] - The CSS style object of the container.
+ * @param {object} [containerStyle] - The CSS style object of the menu dropdown container.
+
  */
 interface AutocompleteProps {
     value: string;
     onChange?: (text: string) => void;
     textInputStyle?: object;
     containerStyle?: object;
-    displaySuggestions?: string[]; //['top','bottom']
-    phraseIndex?: number;
+    menuStyle?: object;
 }
 
 const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
@@ -29,8 +30,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
     onChange,
     textInputStyle,
     containerStyle,
-    displaySuggestions,
-    phraseIndex,
+    menuStyle,
 }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
@@ -137,30 +137,20 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
             </View>
 
             {menuVisible && suggestedWords?.length > 0 && (
-                <View
-                    style={[
-                        displaySuggestions && displaySuggestions[phraseIndex || 0] === 'top'
-                            ? styles.menuView
-                            : styles.menuBottomView,
-                        {
-                            zIndex:
-                                displaySuggestions && displaySuggestions[phraseIndex || 0] ? phraseIndex || 0 + 1 : 0,
-                        },
-                    ]}
-                >
+                <View style={[styles.menuView, !menuStyle ? { bottom: 47 } : { ...menuStyle }]}>
                     {suggestedWords.map((word, i) => (
-                        <View key={i} style={{ marginTop: -6 }}>
-                            <Menu.Item
-                                style={[{ width: '100%', zIndex: 1 }]}
-                                onPress={() => {
-                                    setMenuVisible(false);
-                                    if (onChange) onChange(word);
-                                    setErrorMsg('');
-                                }}
-                                title={word}
-                            />
+                        <TouchableOpacity
+                            key={i}
+                            style={{ marginTop: -6 }}
+                            onPress={() => {
+                                setMenuVisible(false);
+                                if (onChange) onChange(word);
+                                setErrorMsg('');
+                            }}
+                        >
+                            <Menu.Item style={[{ width: '100%', zIndex: 1 }]} title={word} />
                             {i < suggestedWords.length - 1 && <View style={styles.horizontalLine} />}
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </View>
             )}
@@ -191,21 +181,10 @@ const styles = StyleSheet.create({
         width: '100%',
         elevation: 4,
         position: 'absolute',
-        bottom: 47,
         left: 0,
         backgroundColor: 'white',
     },
-    menuBottomView: {
-        borderRadius: 8,
-        padding: 0,
-        marginHorizontal: 2,
-        width: '100%',
-        elevation: 4,
-        position: 'absolute',
-        top: 47,
-        left: 0,
-        backgroundColor: 'white',
-    },
+
     cursor: {
         width: 1,
         height: 18,
@@ -229,7 +208,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.disabled,
         borderRadius: 8,
-        zIndex: 0,
+        zIndex: -1,
     },
     horizontalLine: {
         borderBottomColor: theme.colors.grey5,
@@ -247,6 +226,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.error,
         borderRadius: 8,
-        zIndex: 0,
+        zIndex: -1,
     },
 });
