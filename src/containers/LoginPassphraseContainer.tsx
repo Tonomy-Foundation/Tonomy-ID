@@ -90,7 +90,6 @@ export default function LoginPassphraseContainer({
 
             for (let i = 0; i < newPassphrase.length; i++) {
                 if (!util.isKeyword(newPassphrase[i])) {
-                    console.log('passphrase', newPassphrase[i], ' is not valid');
                     setNextDisabled(true);
                 }
             }
@@ -98,8 +97,6 @@ export default function LoginPassphraseContainer({
             return newPassphrase;
         });
     }
-
-    console.log('AutoCompletePassphraseWord', nextDisabled, loading);
 
     return (
         <>
