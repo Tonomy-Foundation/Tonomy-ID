@@ -15,6 +15,7 @@ interface PassphraseStoreActions {
     unsetPassphraseList: () => void;
     checkWordAtIndex: (index: number, word: string) => boolean;
     setConfirmPassphraseWord: (index: number, word: string) => void;
+    unsetConfirmPassphraseWord: () => void;
 }
 
 type PassphraseStore = PassphraseStoreState & PassphraseStoreActions;
@@ -56,6 +57,9 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
     },
     unsetPassphraseList: () => {
         set({ passphraseList: settings.isProduction() ? [] : DEFAULT_DEV_PASSPHRASE_LIST });
+    },
+    unsetConfirmPassphraseWord: () => {
+        set({ confirmPassphraseWords: [] });
     },
     checkWordAtIndex: (index, word) => {
         const { passphraseList } = get();
