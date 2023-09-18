@@ -6,6 +6,7 @@ import { ApplicationErrors, throwError } from '../utils/errors';
 interface PassphraseStoreState {
     passphraseList: string[];
     randomWordIndexes: number[];
+    confirmPassphraseWords: string[];
 }
 
 interface PassphraseStoreActions {
@@ -13,6 +14,7 @@ interface PassphraseStoreActions {
     generatePassphraseList: () => void;
     unsetPassphraseList: () => void;
     checkWordAtIndex: (index: number, word: string) => boolean;
+    setConfirmPassphraseWord: (index: number, word: string) => void;
 }
 
 type PassphraseStore = PassphraseStoreState & PassphraseStoreActions;
@@ -36,6 +38,7 @@ export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'p
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
     passphraseList: settings.isProduction() ? util.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
     randomWordIndexes: generate3PassphraseIndexes(),
+    confirmPassphraseWords: ['', '', ''],
     getPassphrase: () => {
         const list = get().passphraseList;
 
@@ -58,6 +61,13 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         const { passphraseList } = get();
 
         return passphraseList[index] === word;
+    },
+    setConfirmPassphraseWord: (index, word) => {
+        const { confirmPassphraseWords } = get();
+        const updatedPassphraseWord = [...confirmPassphraseWords];
+
+        updatedPassphraseWord[index] = word;
+        set({ confirmPassphraseWords: updatedPassphraseWord });
     },
 }));
 
