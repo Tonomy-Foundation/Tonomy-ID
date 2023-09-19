@@ -49,7 +49,7 @@ export default function TButton(props: ButtonProps) {
                     icon={props.icon}
                     color={textStyle.color}
                     size={textStyle.fontSize}
-                    style={{ margin: 0, marginRight: 6 }}
+                    style={{ margin: 0, marginRight: 3 }}
                 ></IconButton>
             )}
             <Text style={textStyle}> {props.children}</Text>

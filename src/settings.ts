@@ -42,8 +42,10 @@ type ConfigType = {
     accountSuffix: string;
     ssoWebsiteOrigin: string;
     communicationUrl: string;
+    accountsServiceUrl: string;
     tonomyIdSlug: string;
     loggerLevel: 'debug' | 'error';
+    captchaSiteKey: string;
 };
 
 type SettingsType = {
@@ -91,6 +93,16 @@ if (process.env.SSO_WEBSITE_ORIGIN) {
 if (process.env.VITE_COMMUNICATION_URL) {
     console.log(`Using communication microService from env: ${process.env.VITE_COMMUNICATION_URL}`);
     config.communicationUrl = process.env.VITE_COMMUNICATION_URL;
+}
+
+if (process.env.ACCOUNTS_SERVICE_URL) {
+    console.log(`Using accounts microService from env: ${process.env.ACCOUNTS_SERVICE_URL}`);
+    config.accountsServiceUrl = process.env.ACCOUNTS_SERVICE_URL;
+}
+
+if (process.env.HCAPTCHA_SITE_KEY) {
+    console.log(`Using hCaptcha site key from env: ${process.env.HCAPTCHA_SITE_KEY}`);
+    config.captchaSiteKey = process.env.HCAPTCHA_SITE_KEY;
 }
 
 if (process.env.LOG === 'true') {

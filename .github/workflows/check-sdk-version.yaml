@@ -1,0 +1,20 @@
+name: Test - Check SDK version
+
+on:
+  pull_request
+      
+jobs:
+  check-sdk-version:
+      runs-on: ubuntu-20.04
+
+      steps:
+          - name: 🏗 Setup repo
+            uses: actions/checkout@v3
+
+          - name: 📦 Check it is using the latest version of the SDK
+            uses: actions/setup-node@v3
+            with:
+                node-version: 18.12.1
+          - run: corepack enable
+          - run: yarn install --immutable
+          - run: yarn run updateSdkVersion $GITHUB_BASE_REF check

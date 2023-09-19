@@ -6,7 +6,7 @@ import SecurityIcon from '../assets/icons/SecurityIcon';
 import TransparencyIcon from '../assets/icons/TransparencyIcon';
 import TA from './atoms/TA';
 import { TP } from './atoms/THeadings';
-import { commonStyles, customColors } from '../utils/theme';
+import theme from '../utils/theme';
 
 export type TInfoBoxProps = {
     icon: string;
@@ -52,7 +52,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             flex: props.align === 'center' ? 0 : 1,
         },
         link: {
-            color: customColors.success,
+            color: theme.colors.success,
         },
         paragraph: {
             textAlign: props.align,
