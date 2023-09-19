@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPassphraseScreen';
-import theme, { commonStyles, customColors } from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import { numberToOrdinal } from '../utils/numbers';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -18,8 +18,11 @@ export default function ConfirmPassphraseWordContainer({
     navigation: Props['navigation'];
 }) {
     const { index } = route.params;
-    const { passphraseList, checkWordAtIndex, randomWordIndexes } = usePassphraseStore();
-    const [value, setValue] = useState<string>(settings.isProduction() ? '' : passphraseList[randomWordIndexes[index]]);
+    const { passphraseList, checkWordAtIndex, randomWordIndexes, setConfirmPassphraseWord, confirmPassphraseWords } =
+        usePassphraseStore();
+    const [value, setValue] = useState<string>(
+        settings.isProduction() ? confirmPassphraseWords[index] : passphraseList[randomWordIndexes[index]]
+    );
     const [errorMsg, setErrorMsg] = useState<string>('');
 
     const onNext = () => {
@@ -29,6 +32,7 @@ export default function ConfirmPassphraseWordContainer({
         }
 
         if (index < 2) {
+            setConfirmPassphraseWord(index, value);
             navigation.push('ConfirmPassphrase', { index: index + 1 });
         } else {
             navigation.navigate('Hcaptcha');
@@ -64,7 +68,9 @@ export default function ConfirmPassphraseWordContainer({
                 footer={
                     <View>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext}>Next</TButtonContained>
+                            <TButtonContained onPress={onNext} disabled={!value || value === ''}>
+                                Next
+                            </TButtonContained>
                         </View>
                     </View>
                 }
@@ -80,7 +86,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     innerContainer: {
-        marginTop: 50,
+        marginTop: 70,
         justifyContent: 'center',
     },
     textStyle: {
