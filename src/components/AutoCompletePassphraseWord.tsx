@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
         visibility: 'hidden',
         zIndex: 0,
         opacity: 0,
+        width: '100%',
     },
     innerContainer: {
         flexDirection: 'row',
