@@ -28,9 +28,9 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
 
         try {
             if (await user.usernameExists(formattedUsername))
-                navigation.navigate('LoginPassword', { username: formattedUsername });
+                navigation.navigate('LoginPassphrase', { username: formattedUsername });
             else setErrorMessage('Username does not exist');
-        } catch (error: any) {
+        } catch (error) {
             errorStore.setError({ error, expected: false });
         }
     };

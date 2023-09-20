@@ -28,6 +28,7 @@ export const KEY_STORAGE_NAMESPACE = STORAGE_NAMESPACE + 'key.';
 
 export default class RNKeyManager implements KeyManager {
     async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
+        StoreKeyOptions.validate(options);
         const keyStore: KeyStorage = {
             privateKey: options.privateKey,
             publicKey: options.privateKey.toPublic(),
@@ -54,6 +55,8 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async signData(options: SignDataOptions): Promise<string | Signature> {
+        SignDataOptions.validate(options);
+
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
             if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
             const validChallenge = await this.checkKey({ level: options.level, challenge: options.challenge });
@@ -93,6 +96,7 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async checkKey(options: CheckKeyOptions): Promise<boolean> {
+        CheckKeyOptions.validate(options);
         const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 
         if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
@@ -108,12 +112,14 @@ export default class RNKeyManager implements KeyManager {
     }
 
     async removeKey(options: GetKeyOptions): Promise<void> {
+        GetKeyOptions.validate(options);
         await SecureStore.deleteItemAsync(KEY_STORAGE_NAMESPACE + options.level, {
             requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
     }
 
     async getKey(options: GetKeyOptions): Promise<PublicKey> {
+        GetKeyOptions.validate(options);
         const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 
         if (!asyncStorageData) throwError(`No key for level ${options.level}`, SdkErrors.KeyNotFound);

@@ -16,7 +16,7 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
-yarn && yarn add @tonomy/tonomy-id-sdk@development
+yarn
 ```
 
 ## Pre-run build (first time and each time new RN only packages are installed)
@@ -25,7 +25,7 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (for first time build only) `export EXPO_FIRST_TIME=true`
-3. Change the value of `"projectId"` in `prepare.app.config.ts` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
+3. (for every time after first time only) Change the value of `"projectId"` in `prepare.app.config.ts` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
 4. (for IOS only) Run `yarn run build:ios:create` to create a device profile for your phone
 5. Run `yarn run build:ios` (ios) or `yarn run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
@@ -39,11 +39,13 @@ Having issues here or running the app? Checkout:
 
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
+You NEED to follow the above `Pre-run build` steps above before you can start the app!
+
 ```bash
 yarn run start
 ```
 
-### Run with the staging / demo environment and build
+### Run with the Staging / Demo environment and build
 
 Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
@@ -67,6 +69,14 @@ This is now running in production mode connected to the staging environment.
 5. Enable USB debug on your phone.
 6. Connect your phone to the pc with a usb cable.
 7. Open the the react native app you want to debug.
+
+## Update the Tonomy-ID-SDK version to the latest
+
+```bash
+yarn run updateSdkVersion development
+# or
+yarn run updateSdkVersion master
+```
 
 ## File structure of components
 

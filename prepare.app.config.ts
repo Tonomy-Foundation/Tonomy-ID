@@ -59,7 +59,7 @@ const expo: ExpoConfig = {
             foregroundImage: settings.config.images.logo1024,
             backgroundColor: '#FFFFFF',
         },
-        blockedPermissions: ['com.google.android.gms.permission.AD_ID'],
+        allowBackup: false,
         package: identifier,
     },
     web: {
@@ -73,6 +73,15 @@ const expo: ExpoConfig = {
                 color: settings.config.theme.primaryColor,
             },
         ],
+        [
+            'expo-build-properties',
+            {
+                android: {
+                    minSdkVersion: 26,
+                },
+            },
+        ],
+        ['./android.manifest.plugin.js'],
     ],
     extra: {
         eas: {
