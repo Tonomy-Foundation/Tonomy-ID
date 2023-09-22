@@ -11,10 +11,12 @@ import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { IconButton } from 'react-native-paper';
 import TModal from '../components/TModal';
+import TList from '../components/TList';
 
 export default function TermsAndConditionContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [fullTermsShow, setFullTermsShow] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    const [showAcceptModal, setShowAcceptModal] = useState(false);
+    const [showDeclineModal, setShowDeclineModal] = useState(false);
 
     return (
         <View style={styles.container}>
@@ -31,24 +33,26 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                     <TP>Summary:</TP>
                     <TP children={undefined}></TP>
                     <View>
-                        <TP>
-                            • You can use Tonomy ID to log into and share data with applications that support Tonomy ID.
-                        </TP>
-                        <TP>• Please remember or keep a secure copy of your master passphrase and username.</TP>
-                        <TP>
-                            • You (and not the Tonomy Foundation) are responsible for using and behaving according to
-                            regulatory requirements in applications you log into with Tonomy ID.
-                        </TP>
-                        <TP>
-                            • Tonomy ID uses advanced digital signatures to enhance data security, integrity, and
+                        <TList
+                            bulletIcon="•"
+                            text="You can use Tonomy ID to log into and share data with applications that support Tonomy ID."
+                        />
+                        <TList
+                            bulletIcon="•"
+                            text="Please remember or keep a secure copy of your master passphrase and username."
+                        />
+                        <TList
+                            bulletIcon="•"
+                            text="You (and not the Tonomy Foundation) are responsible for using and behaving according to
+                            regulatory requirements in applications you log into with Tonomy ID."
+                        />
+                        <TList
+                            bulletIcon="•"
+                            text="Tonomy ID uses advanced digital signatures to enhance data security, integrity, and
                             regulatory compliance for interactions with supported applications. Tonomy ID is regulated
-                            under Dutch law.
-                        </TP>
-                        <TP>
-                            • Tonomy ID uses advanced digital signatures to enhance data security, integrity, and
-                            regulatory compliance for interactions with supported applications.
-                        </TP>
-                        <TP>• Tonomy ID is regulated under Dutch law.</TP>
+                            under Dutch law."
+                        />
+                        <TList bulletIcon="•" text="Tonomy ID is regulated under Dutch law." />
                     </View>
                 </View>
                 <TouchableOpacity
@@ -124,19 +128,19 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                 )}
             </ScrollView>
             <View style={styles.buttonsRow}>
-                <TButtonOutlined style={styles.buttonsStyle} disabled={false}>
+                <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                     DECLINE
                 </TButtonOutlined>
-                <TButtonContained onPress={() => setShowModal(true)} style={styles.buttonsStyle} disabled={false}>
+                <TButtonContained onPress={() => setShowAcceptModal(true)} style={styles.buttonsStyle} disabled={false}>
                     ACCEPT
                 </TButtonContained>
             </View>
 
             <TModal
-                visible={showModal}
+                visible={showAcceptModal}
                 iconColor={theme.colors.primary}
-                onPress={() => setShowModal(false)}
-                icon="info"
+                onPress={() => setShowAcceptModal(false)}
+                icon="exclamation"
                 title="Data security"
             >
                 <View>
@@ -147,6 +151,22 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                     <TButtonText>
                         <Text> Learn More </Text>
                     </TButtonText>
+                </View>
+            </TModal>
+
+            <TModal
+                visible={showDeclineModal}
+                iconColor={theme.colors.primary}
+                onPress={() => setShowDeclineModal(false)}
+                icon="exclamation"
+                buttonLabel={'Continue'}
+                title="Consent declined"
+            >
+                <View>
+                    <Text>
+                        Without agreeing to the Terms of Service, you {"can't"} proceed with the use of Tonomy {"ID's"}
+                        services.
+                    </Text>
                 </View>
             </TModal>
         </View>
@@ -179,7 +199,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     scrollViewConditions: {
-        paddingHorizontal: 16,
+        paddingHorizontal: 18,
+        paddingRight: 18,
         paddingVertical: 0,
     },
     fulltermButton: {
@@ -205,7 +226,7 @@ const styles = StyleSheet.create({
     buttonsRow: {
         textAlign: 'center',
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'flex-start',
         marginBottom: 10,
         marginTop: 10,
@@ -217,5 +238,9 @@ const styles = StyleSheet.create({
         width: '35%',
         marginLeft: 20,
         marginRight: 20,
+    },
+    declineRowButton: {
+        textAlign: 'center',
+        flexDirection: 'row',
     },
 });
