@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, Animated, TouchableOpacity } from 'react-native';
 import { Menu, TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
 import { util } from '@tonomy/tonomy-id-sdk';
@@ -14,12 +14,15 @@ import { util } from '@tonomy/tonomy-id-sdk';
  * @param {string} [onChange] - A function to set the value of the field onChange.
  * @param {object} [textInputStyle] - The CSS style object of the text input.
  * @param {object} [containerStyle] - The CSS style object of the container.
+ * @param {object} [containerStyle] - The CSS style object of the menu dropdown container.
+
  */
 interface AutocompleteProps {
     value: string;
     onChange?: (text: string) => void;
     textInputStyle?: object;
     containerStyle?: object;
+    menuStyle?: object;
 }
 
 const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
@@ -27,11 +30,50 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
     onChange,
     textInputStyle,
     containerStyle,
+    menuStyle,
 }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState<string>('');
     const [valueLength, setValueLength] = useState<number>(0);
+    const [isFocused, setIsFocused] = useState(false);
+    const [cursorVisible] = useState(new Animated.Value(0));
+
+    const handleFocus = () => {
+        setIsFocused(true);
+
+        if (value?.length === 0) {
+            setMenuVisible(true);
+        }
+    };
+
+    const handleBlur = () => {
+        setIsFocused(false);
+        setMenuVisible(false);
+    };
+
+    useEffect(() => {
+        // Toggle cursor visibility when focused
+        if (isFocused) {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(cursorVisible, {
+                        toValue: 1,
+                        duration: 500,
+                        useNativeDriver: false,
+                    }),
+                    Animated.timing(cursorVisible, {
+                        toValue: 0,
+                        duration: 500,
+                        useNativeDriver: false,
+                    }),
+                ])
+            ).start();
+        } else {
+            cursorVisible.stopAnimation();
+            cursorVisible.setValue(0); // Reset cursor visibility
+        }
+    }, [cursorVisible, isFocused]);
 
     const onChangeText = (text) => {
         const newText = text.toLowerCase().replace(/[^a-z]/g, '');
@@ -64,53 +106,55 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
             <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>
+                        {/* display the value text with red underling for invalid characters */}
                         {value.split('').map((char, index) => (
-                            <Text
-                                key={index}
-                                style={{
-                                    color:
-                                        index < valueLength - 1 || valueLength === 0
-                                            ? theme.colors.text
-                                            : theme.colors.error,
-                                }}
-                            >
-                                {char}
-                            </Text>
+                            <>
+                                <Text
+                                    key={index}
+                                    style={{
+                                        color:
+                                            index < valueLength - 1 || valueLength === 0
+                                                ? theme.colors.text
+                                                : theme.colors.error,
+                                    }}
+                                >
+                                    {char}
+                                </Text>
+                            </>
                         ))}
+                        {isFocused && <Animated.View style={[styles.cursor, { opacity: cursorVisible }]} />}
                     </View>
                     <TextInput
                         value={value}
                         underlineColor="transparent"
                         activeUnderlineColor="transparent"
                         style={{ ...styles.input, ...textInputStyle }}
-                        onFocus={() => {
-                            if (value?.length === 0) {
-                                setMenuVisible(true);
-                            }
-                        }}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
                         onChangeText={(text) => onChangeText(text)}
                     />
-
-                    {menuVisible && suggestedWords?.length > 0 && (
-                        <View style={styles.menuView}>
-                            {suggestedWords.map((word, i) => (
-                                <View key={i} style={{ marginTop: -6 }}>
-                                    <Menu.Item
-                                        style={[{ width: '100%' }]}
-                                        onPress={() => {
-                                            setMenuVisible(false);
-                                            if (onChange) onChange(word);
-                                            setErrorMsg('');
-                                        }}
-                                        title={word}
-                                    />
-                                    {i < suggestedWords.length - 1 && <View style={styles.horizontalLine} />}
-                                </View>
-                            ))}
-                        </View>
-                    )}
                 </View>
             </View>
+
+            {menuVisible && suggestedWords?.length > 0 && (
+                <View style={[styles.menuView, !menuStyle ? { bottom: 47 } : { ...menuStyle }]}>
+                    {suggestedWords.map((word, i) => (
+                        <TouchableOpacity
+                            key={i}
+                            style={{ marginTop: -6 }}
+                            onPress={() => {
+                                setMenuVisible(false);
+                                if (onChange) onChange(word);
+                                setErrorMsg('');
+                            }}
+                        >
+                            <Menu.Item style={[{ width: '100%', zIndex: 1 }]} title={word} />
+                            {i < suggestedWords.length - 1 && <View style={styles.horizontalLine} />}
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
+
             {errorMsg && <Text style={styles.errorMsg}>{errorMsg}</Text>}
         </View>
     );
@@ -122,26 +166,37 @@ const styles = StyleSheet.create({
     coloredTextContainer: {
         flexDirection: 'row',
     },
+    menuContainer: {
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: theme.colors.grey5,
+        backgroundColor: 'white',
+        marginTop: 18,
+        height: 200,
+    },
     menuView: {
         borderRadius: 8,
         padding: 0,
         marginHorizontal: 2,
-        width: '99%',
+        width: '100%',
         elevation: 4,
         position: 'absolute',
-        bottom: '110%',
         left: 0,
         backgroundColor: 'white',
     },
+
+    cursor: {
+        width: 1,
+        height: 18,
+        backgroundColor: theme.colors.shadowDark,
+        marginLeft: 2,
+    },
     input: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: 45,
-        opacity: 0,
         color: 'white',
         visibility: 'hidden',
+        zIndex: 0,
+        opacity: 0,
+        width: '100%',
     },
     innerContainer: {
         flexDirection: 'row',
@@ -151,10 +206,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     inputContainer: {
-        position: 'relative',
         borderWidth: 1,
         borderColor: theme.colors.disabled,
         borderRadius: 8,
+        zIndex: -1,
     },
     horizontalLine: {
         borderBottomColor: theme.colors.grey5,
@@ -169,9 +224,9 @@ const styles = StyleSheet.create({
     },
 
     errorInput: {
-        position: 'relative',
         borderWidth: 1,
         borderColor: theme.colors.error,
         borderRadius: 8,
+        zIndex: -1,
     },
 });

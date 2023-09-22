@@ -28,7 +28,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const userStore = useUserStore();
     const user = userStore.user;
     const siteKey = settings.config.captchaSiteKey;
-    const { getPassphrase, unsetPassphraseList } = usePassphraseStore();
+    const { getPassphrase, unsetPassphraseList, unsetConfirmPassphraseWord } = usePassphraseStore();
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
@@ -92,6 +92,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             await user.saveLocal();
             await user.updateKeys(getPassphrase());
             unsetPassphraseList();
+            unsetConfirmPassphraseWord();
 
             await setUserName();
             const url =
