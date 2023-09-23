@@ -7,15 +7,14 @@ import TIconButton from './TIconButton';
 import { Modal } from 'react-native';
 
 export type ModalProps = React.ComponentProps<typeof Modal> & {
-    onPress: () => void;
     icon: string;
     iconColor?: string;
     title: string;
-    buttonLabel?: string;
     visible?: boolean;
     enableLinkButton?: boolean;
     linkButtonText?: string;
     linkOnPress?: () => void;
+    footer?: JSX.Element;
 };
 
 const styles = StyleSheet.create({
@@ -42,6 +41,11 @@ const styles = StyleSheet.create({
         marginTop: 16,
         textAlign: 'center',
     },
+    footerButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
 });
 
 export default function TModal(props: ModalProps) {
@@ -62,11 +66,7 @@ export default function TModal(props: ModalProps) {
                                 <Text style={{ color: theme.colors.accent }}>{props.linkButtonText}</Text>
                             </TButtonText>
                         )}
-                        <TButtonText onPress={props.onPress}>
-                            <Text style={{ color: theme.colors.primary }}>
-                                {props.buttonLabel ? props.buttonLabel : 'OK'}
-                            </Text>
-                        </TButtonText>
+                        {props.footer && <>{props.footer}</>}
                     </View>
                 </View>
             </View>

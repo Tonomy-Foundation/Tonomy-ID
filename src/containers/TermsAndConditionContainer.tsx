@@ -139,9 +139,13 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
             <TModal
                 visible={showAcceptModal}
                 iconColor={theme.colors.primary}
-                onPress={() => setShowAcceptModal(false)}
                 icon="exclamation"
                 title="Data security"
+                footer={
+                    <TButtonText onPress={() => setShowAcceptModal(false)}>
+                        <Text style={{ color: theme.colors.primary }}>OK</Text>
+                    </TButtonText>
+                }
             >
                 <View>
                     <Text>
@@ -157,10 +161,13 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
             <TModal
                 visible={showDeclineModal}
                 iconColor={theme.colors.primary}
-                onPress={() => setShowDeclineModal(false)}
                 icon="exclamation"
-                buttonLabel={'Continue'}
                 title="Consent declined"
+                footer={
+                    <TButtonText onPress={() => setShowDeclineModal(false)}>
+                        <Text style={{ color: theme.colors.primary }}>Continue</Text>
+                    </TButtonText>
+                }
             >
                 <View>
                     <Text>

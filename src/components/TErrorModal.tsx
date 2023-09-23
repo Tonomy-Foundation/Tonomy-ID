@@ -88,11 +88,14 @@ export default function TErrorModal(props: TErrorModalProps) {
     return (
         <TModal
             visible={props.visible}
-            onPress={props.onPress}
             icon="alert-circle-outline"
             title={props.title ?? 'Something went wrong'}
-            buttonLabel="Close"
             iconColor={theme.colors.error}
+            footer={
+                <TButtonText onPress={props.onPress}>
+                    <Text style={{ color: theme.colors.primary }}>Close</Text>
+                </TButtonText>
+            }
         >
             {props.children}
             {props.error && (

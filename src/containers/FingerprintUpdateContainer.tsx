@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
-import { Linking, Platform, StyleSheet, View } from 'react-native';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { Linking, Platform, StyleSheet, View, Text } from 'react-native';
+import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { commonStyles } from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import * as LocalAuthentication from 'expo-local-authentication';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
@@ -91,13 +91,16 @@ export default function CreateAccountContainer({ password }: { password: string 
                     enableLinkButton={true}
                     linkButtonText={'Settings'}
                     linkOnPress={openAppSettings}
-                    onPress={() => {
-                        setShowModal(false);
-                        setAuthFail(false);
-                    }}
-                    buttonLabel={authFailed === true ? 'ok' : 'cancel'}
                     title={authFailed === true ? 'Authentication Failed' : 'Fingerprint not registered!'}
                     icon={authFailed === true ? 'danger' : 'cancel'}
+                    footer={
+                        <TButtonText onPress={() => {
+                            setShowModal(false);
+                            setAuthFail(false);
+                        }}>
+                            <Text style={{ color: theme.colors.primary }}>{authFailed === true ? 'ok' : 'cancel'}</Text>
+                        </TButtonText>
+                    }
                 >
                     <View>
                         <TP>
