@@ -41,11 +41,6 @@ const styles = StyleSheet.create({
         marginTop: 16,
         textAlign: 'center',
     },
-    footerButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-    },
 });
 
 export default function TModal(props: ModalProps) {

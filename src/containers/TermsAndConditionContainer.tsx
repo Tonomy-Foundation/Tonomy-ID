@@ -164,9 +164,18 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                 icon="exclamation"
                 title="Consent declined"
                 footer={
-                    <TButtonText onPress={() => setShowDeclineModal(false)}>
-                        <Text style={{ color: theme.colors.primary }}>Continue</Text>
-                    </TButtonText>
+                    <View style={styles.footerButtonRow}>
+                        <View>
+                            <TButtonText onPress={() => setShowDeclineModal(false)}>
+                                <Text style={{ color: theme.colors.grey1 }}>Cancel</Text>
+                            </TButtonText>
+                        </View>
+                        <View>
+                            <TButtonText onPress={() => setShowDeclineModal(false)}>
+                                <Text style={{ color: theme.colors.primary }}>Continue</Text>
+                            </TButtonText>
+                        </View>
+                    </View>
                 }
             >
                 <View>
@@ -249,5 +258,10 @@ const styles = StyleSheet.create({
     declineRowButton: {
         textAlign: 'center',
         flexDirection: 'row',
+    },
+    footerButtonRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
     },
 });
