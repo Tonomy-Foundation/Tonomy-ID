@@ -1,19 +1,14 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image } from 'react-native';
-import TButton, { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
-import settings from '../settings';
-import { randomString } from '@tonomy/tonomy-id-sdk';
-import LayoutComponent from '../components/layout';
 import theme, { commonStyles } from '../utils/theme';
-import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/CreateAccountUsernameScreen';
 import { IconButton } from 'react-native-paper';
 import TModal from '../components/TModal';
 import TList from '../components/TList';
 
-export default function TermsAndConditionContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function TermsAndConditionContainer() {
     const [fullTermsShow, setFullTermsShow] = useState(false);
     const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showDeclineModal, setShowDeclineModal] = useState(false);

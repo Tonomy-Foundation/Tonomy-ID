@@ -15,6 +15,8 @@ export type ModalProps = React.ComponentProps<typeof Modal> & {
     linkButtonText?: string;
     linkOnPress?: () => void;
     footer?: JSX.Element;
+    buttonLabel?: string;
+    onPress?: () => void;
 };
 
 const styles = StyleSheet.create({
@@ -61,7 +63,15 @@ export default function TModal(props: ModalProps) {
                                 <Text style={{ color: theme.colors.accent }}>{props.linkButtonText}</Text>
                             </TButtonText>
                         )}
-                        {props.footer && <>{props.footer}</>}
+                        {props.footer ? (
+                            <>{props.footer}</>
+                        ) : (
+                            <TButtonText onPress={props.onPress}>
+                                <Text style={{ color: theme.colors.primary }}>
+                                    {props.buttonLabel ? props.buttonLabel : 'OK'}
+                                </Text>
+                            </TButtonText>
+                        )}
                     </View>
                 </View>
             </View>

@@ -223,12 +223,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             <TModal
                 visible={showModal}
                 icon="check"
+                onPress={onModalPress}
                 title={'Welcome to ' + settings.config.ecosystemName}
-                footer={
-                    <TButtonText onPress={onModalPress}>
-                        <Text style={{ color: theme.colors.primary }}>OK</Text>
-                    </TButtonText>
-                }
             >
                 <View>
                     <Text>
