@@ -2800,10 +2800,10 @@
   resolved "https://registry.yarnpkg.com/@tonomy/did-resolver/-/did-resolver-4.0.4.tgz#4a0c5bc68e4498e992bca62914ec5d763eaacf82"
   integrity sha512-7sgPKUENMsGfq2TaAo4/hwthy45pvVnZep79o6BpmPK5xSwzPctglITkgfM7OY6hyS4le4wQC0LYI7mrGShD2A==
 
-"@tonomy/tonomy-id-sdk@0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.15.0.tgz#f7ed14ab541f26c1bdece19d0429dee1ba9838f9"
-  integrity sha512-SubKy5SVd2gRYQnaRAbQUHnL1pO5j2gtSnvNKKiftTzTYLxgQXi8ATSDrrY8Zf6G5Zgh6hX2Go8DN9yumphYNQ==
+"@tonomy/tonomy-id-sdk@0.15.0-development.8":
+  version "0.15.0-development.8"
+  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.15.0-development.8.tgz#17ee230e4311c5db691717ab2de9da4ac238c4bb"
+  integrity sha512-4tCAo07c5pEOCk1hJfMss10URwMvxd/kEZ4UAW0zh2dnR/M8rjlzJDfs9u63Ev2hG+fAhdIx6wv5HxkVM7n0eA==
   dependencies:
     "@consento/sync-randombytes" "^1.0.5"
     "@tonomy/antelope-did" "^0.1.5"
