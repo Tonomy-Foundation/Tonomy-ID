@@ -40,8 +40,9 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                         Login
                     </TButtonOutlined>
                     <TCaption style={commonStyles.textAlignCenter}>
-                        By creating an account, you agree to our <TLink>Terms & Conditions</TLink> and agree to &nbsp;
-                        <TLink>Privacy Policy</TLink>
+                        By creating an account, you agree to our <TLink to="#">Terms & Conditions</TLink> and agree to
+                        &nbsp;
+                        <TLink to="#">Privacy Policy</TLink>
                     </TCaption>
                 </View>
             }
