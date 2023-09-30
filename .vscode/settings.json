@@ -16,4 +16,7 @@
     "jest.testExplorer": {
         "enabled": true
     },
+    "cSpell.words": [
+        "Tonomy"
+    ],
 }
