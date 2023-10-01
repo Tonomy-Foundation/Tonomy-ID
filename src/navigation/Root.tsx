@@ -24,12 +24,10 @@ import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
-import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 
 const prefix = Linking.createURL('');
 
 export type RouteStackParamList = {
-    PrivacyAndPolicy: undefined;
     Splash: undefined;
     SplashSecurity: undefined;
     SplashPrivacy: undefined;
@@ -92,13 +90,8 @@ export default function RootNavigation() {
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
-                <Stack.Navigator initialRouteName={'PrivacyAndPolicy'} screenOptions={defaultScreenOptions}>
-                    <Stack.Screen
-                        name="PrivacyAndPolicy"
-                        options={noHeaderScreenOptions}
-                        component={PrivacyAndPolicyScreen}
-                    />
-                    {/* <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} /> */}
+                <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
+                    <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                     <Stack.Screen
                         name="SplashSecurity"
                         options={noHeaderScreenOptions}
