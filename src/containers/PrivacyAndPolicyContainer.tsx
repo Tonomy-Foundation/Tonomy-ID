@@ -4,7 +4,7 @@ import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image } from 'rea
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
-import { IconButton } from 'react-native-paper';
+import { IconButton, Checkbox } from 'react-native-paper';
 import TModal from '../components/TModal';
 import TList from '../components/TList';
 
@@ -12,6 +12,8 @@ export default function PrivacyAndPolicyContainer() {
     const [fullTermsShow, setFullTermsShow] = useState(false);
     const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showDeclineModal, setShowDeclineModal] = useState(false);
+    const [checkedStayInLoop, setCheckedStayInLoop] = React.useState(false);
+    const [checkedOptIn, setCheckedOptIn] = React.useState(false);
 
     return (
         <View style={styles.container}>
@@ -30,7 +32,7 @@ export default function PrivacyAndPolicyContainer() {
                     <View>
                         <TList
                             bulletIcon="•"
-                            text="YTonomy ID never stores or processes your passphrase or private keys on our servers."
+                            text="Tonomy ID never stores or processes your passphrase or private keys on our servers."
                         />
                         <TList
                             bulletIcon="•"
@@ -116,6 +118,27 @@ export default function PrivacyAndPolicyContainer() {
                     </View>
                 )}
             </ScrollView>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Checkbox
+                    color={theme.colors.primary}
+                    status={checkedStayInLoop ? 'checked' : 'unchecked'}
+                    onPress={() => setCheckedStayInLoop(!checkedStayInLoop)}
+                />
+                <Text>
+                    Stay in the loop! Would you like to receive updates and exciting promotional emails from us?
+                </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Checkbox
+                    color={theme.colors.primary}
+                    status={checkedOptIn ? 'checked' : 'unchecked'}
+                    onPress={() => setCheckedOptIn(!checkedOptIn)}
+                />
+                <Text>
+                    Opt-in to share anonymized data analytics. This helps us understand usage patterns and improve the
+                    app while respecting your privacy.
+                </Text>
+            </View>
             <View style={styles.buttonsRow}>
                 <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                     DECLINE
