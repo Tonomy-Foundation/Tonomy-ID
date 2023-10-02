@@ -23,7 +23,7 @@ export default function PrivacyAndPolicyContainer() {
 
             <View style={styles.innerContainer}>
                 <TP style={styles.headerLabel}>Privacy Policy</TP>
-                <Image width={8} height={8} source={require('../assets/tonomy/Agreement-amico.png')}></Image>
+                <Image width={8} height={8} source={require('../assets/tonomy/Privacypolicy-amico.png')}></Image>
             </View>
             <ScrollView style={styles.scrollViewConditions}>
                 <View>
