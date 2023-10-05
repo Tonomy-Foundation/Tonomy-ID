@@ -213,10 +213,9 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         backgroundColor: '#FDFEFF',
-        paddingBottom: 40,
     },
     headerPanel: {
-        paddingTop: 30,
+        paddingTop: 10,
         paddingBottom: 20,
     },
     checkbox: {

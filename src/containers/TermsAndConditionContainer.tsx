@@ -188,13 +188,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         backgroundColor: '#FDFEFF',
-        paddingBottom: 50,
     },
     marginTop: {
         marginTop: 20,
     },
     headerPanel: {
-        paddingTop: 30,
+        paddingTop: 10,
         paddingBottom: 20,
     },
     headerLabel: {
