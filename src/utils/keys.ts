@@ -13,11 +13,14 @@ export async function testKeyGenerator() {
     try {
         const saltInput = Checksum256.from(sha256('testsalt'));
 
-        const { privateKey, salt } = await generatePrivateKeyFromPassword('testpassword', saltInput);
+        const { privateKey, salt } = await generatePrivateKeyFromPassword(
+            'above day fever lemon piano sport',
+            saltInput
+        );
 
         if (salt.toString() !== '4edf07edc95b2fdcbcaf2378fd12d8ac212c2aa6e326c59c3e629be3039d6432')
             throw new Error('generatePrivateKeyFromPassword() test: Salt is not correct');
-        if (privateKey.toString() !== 'PVT_K1_NXkZkJyhrPzSCpfe2uXbaw8xcKH95e9Gw5LdhkrzMSJwoZL6x')
+        if (privateKey.toString() !== 'PVT_K1_4oczB1ZY3D3APBnBssisodTKm7gpa6y2pu2aLHReLcDptwUn3')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
     } catch (e) {
         console.error(e);
@@ -31,7 +34,7 @@ export async function generatePrivateKeyFromPassword(
     if (!salt) salt = Checksum256.from(randomBytes(32));
     const result = await argon2(password, salt.hexString, {
         mode: 'argon2id',
-        iterations: 16,
+        iterations: 32,
         memory: 16384,
         parallelism: 1,
         hashLength: 32,
