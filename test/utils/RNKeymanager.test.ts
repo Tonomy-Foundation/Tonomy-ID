@@ -18,7 +18,7 @@ jest.mock('react-native-argon2', () => {
                     hashLength: 32,
                     memoryCost: 16 * 1024,
                     parallelism: 1,
-                    timeCost: 3,
+                    timeCost: 16,
                 })
                 .then((hash) => {
                     return {
