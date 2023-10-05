@@ -31,7 +31,7 @@ export async function generatePrivateKeyFromPassword(
     if (!salt) salt = Checksum256.from(randomBytes(32));
     const result = await argon2(password, salt.hexString, {
         mode: 'argon2id',
-        iterations: 3,
+        iterations: 16,
         memory: 16384,
         parallelism: 1,
         hashLength: 32,
