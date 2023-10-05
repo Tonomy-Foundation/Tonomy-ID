@@ -6,33 +6,29 @@ import { generatePrivateKeyFromPassword } from '../../src/utils/keys';
 
 const mockarg = arg;
 
-jest.mock(
-    'react-native-argon2',
-    () => {
-        return {
-            __esModule: true,
-            default: jest.fn(async (passowrd: string, salt: string, options?) => {
-                return mockarg
-                    .hash(passowrd, {
-                        raw: true,
-                        salt: Buffer.from(salt),
-                        type: mockarg.argon2id,
-                        hashLength: 32,
-                        memoryCost: 16 * 1024,
-                        parallelism: 1,
-                        timeCost: 16,
-                    })
-                    .then((hash) => {
-                        return {
-                            rawHash: hash.toString('hex'),
-                            encoded: 'test value',
-                        };
-                    });
-            }),
-        };
-    },
-    10000
-); // Set a timeout of 10 seconds
+jest.mock('react-native-argon2', () => {
+    return {
+        __esModule: true,
+        default: jest.fn(async (passowrd: string, salt: string, options?) => {
+            return mockarg
+                .hash(passowrd, {
+                    raw: true,
+                    salt: Buffer.from(salt),
+                    type: mockarg.argon2id,
+                    hashLength: 32,
+                    memoryCost: 16 * 1024,
+                    parallelism: 1,
+                    timeCost: 16,
+                })
+                .then((hash) => {
+                    return {
+                        rawHash: hash.toString('hex'),
+                        encoded: 'test value',
+                    };
+                });
+        }),
+    };
+});
 
 // mock expo secure store
 jest.mock('expo-secure-store', () => {
