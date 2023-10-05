@@ -30,5 +30,8 @@ const styles = StyleSheet.create({
     },
     textColor: {
         color: theme.colors.textGray,
+        fontWeight: '400',
+        fontSize: 16,
+        lineHeight: 23,
     },
 });
