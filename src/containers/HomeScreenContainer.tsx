@@ -38,16 +38,6 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                     >
                         Login
                     </TButtonOutlined>
-                    <Text style={commonStyles.textAlignCenter}>
-                        By creating an account, you agree to our{' '}
-                        <Text style={styles.link} onPress={() => navigation.navigate('TermsAndCondition')}>
-                            Terms & Conditions{' '}
-                        </Text>
-                        and agree to{' '}
-                        <Text style={styles.link} onPress={() => navigation.navigate('PrivacyAndPolicy')}>
-                            Privacy Policy
-                        </Text>
-                    </Text>
                 </View>
             }
         ></LayoutComponent>

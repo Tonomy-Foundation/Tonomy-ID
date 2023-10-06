@@ -6,5 +6,5 @@ import TermsAndConditionContainer from '../containers/TermsAndConditionContainer
 export type Props = NativeStackScreenProps<RouteStackParamList, 'TermsAndCondition'>;
 
 export default function TermsAndConditionScreen(props: Props) {
-    return <TermsAndConditionContainer></TermsAndConditionContainer>;
+    return <TermsAndConditionContainer navigation={props.navigation}></TermsAndConditionContainer>;
 }

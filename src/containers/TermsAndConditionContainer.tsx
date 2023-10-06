@@ -7,8 +7,9 @@ import theme, { commonStyles } from '../utils/theme';
 import { IconButton } from 'react-native-paper';
 import TModal from '../components/TModal';
 import TList from '../components/TList';
+import { Props } from '../screens/TermsAndConditionScreen';
 
-export default function TermsAndConditionContainer() {
+export default function TermsAndConditionContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [fullTermsShow, setFullTermsShow] = useState(false);
     const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showDeclineModal, setShowDeclineModal] = useState(false);
@@ -138,16 +139,19 @@ export default function TermsAndConditionContainer() {
                 iconColor={theme.colors.primary}
                 icon="exclamation"
                 title="Data security"
-                onPress={() => setShowAcceptModal(false)}
+                onPress={() => {
+                    setShowAcceptModal(false);
+                    navigation.navigate('PrivacyAndPolicy');
+                }}
             >
                 <View>
                     <Text>
                         Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
                         others.
                     </Text>
-                    <TButtonText>
+                    {/* <TButtonText>
                         <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
-                    </TButtonText>
+                    </TButtonText> */}
                 </View>
             </TModal>
 
@@ -164,7 +168,7 @@ export default function TermsAndConditionContainer() {
                             </TButtonText>
                         </View>
                         <View>
-                            <TButtonText onPress={() => setShowDeclineModal(false)}>
+                            <TButtonText onPress={() => navigation.navigate('Home')}>
                                 <Text style={{ color: theme.colors.primary }}>Continue</Text>
                             </TButtonText>
                         </View>

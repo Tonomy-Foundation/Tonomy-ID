@@ -6,5 +6,5 @@ import PrivacyAndPolicyContainer from '../containers/PrivacyAndPolicyContainer';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'PrivacyAndPolicy'>;
 
 export default function PrivacyAndPolicyScreen(props: Props) {
-    return <PrivacyAndPolicyContainer></PrivacyAndPolicyContainer>;
+    return <PrivacyAndPolicyContainer navigation={props.navigation}></PrivacyAndPolicyContainer>;
 }

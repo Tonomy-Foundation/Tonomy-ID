@@ -7,8 +7,9 @@ import theme, { commonStyles } from '../utils/theme';
 import { IconButton, Checkbox } from 'react-native-paper';
 import TModal from '../components/TModal';
 import TList from '../components/TList';
+import { Props } from '../screens/PrivacyAndPolicyScreen';
 
-export default function PrivacyAndPolicyContainer() {
+export default function PrivacyAndPolicyContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [fullTermsShow, setFullTermsShow] = useState(false);
     const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showDeclineModal, setShowDeclineModal] = useState(false);
@@ -160,7 +161,12 @@ export default function PrivacyAndPolicyContainer() {
                 icon="exclamation"
                 title="Data security"
                 footer={
-                    <TButtonText onPress={() => setShowAcceptModal(false)}>
+                    <TButtonText
+                        onPress={() => {
+                            setShowAcceptModal(false);
+                            navigation.navigate('Hcaptcha');
+                        }}
+                    >
                         <Text style={{ color: theme.colors.primary }}>OK</Text>
                     </TButtonText>
                 }
@@ -170,9 +176,9 @@ export default function PrivacyAndPolicyContainer() {
                         Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
                         others.
                     </Text>
-                    <TButtonText>
+                    {/* <TButtonText>
                         <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
-                    </TButtonText>
+                    </TButtonText> */}
                 </View>
             </TModal>
 
@@ -189,7 +195,7 @@ export default function PrivacyAndPolicyContainer() {
                             </TButtonText>
                         </View>
                         <View>
-                            <TButtonText onPress={() => setShowDeclineModal(false)}>
+                            <TButtonText onPress={() => navigation.navigate('Home')}>
                                 <Text style={{ color: theme.colors.primary }}>Continue</Text>
                             </TButtonText>
                         </View>
