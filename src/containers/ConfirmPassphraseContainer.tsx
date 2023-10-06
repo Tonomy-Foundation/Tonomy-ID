@@ -35,7 +35,7 @@ export default function ConfirmPassphraseWordContainer({
             setConfirmPassphraseWord(index, value);
             navigation.push('ConfirmPassphrase', { index: index + 1 });
         } else {
-            navigation.navigate('Hcaptcha');
+            navigation.navigate('TermsAndCondition');
         }
     };
 

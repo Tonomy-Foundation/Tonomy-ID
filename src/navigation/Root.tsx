@@ -24,6 +24,8 @@ import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
+import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
+import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 
 const prefix = Linking.createURL('');
 
@@ -50,6 +52,8 @@ export type RouteStackParamList = {
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
+    TermsAndCondition: undefined;
+    PrivacyAndPolicy: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -106,6 +110,16 @@ export default function RootNavigation() {
                         name="SplashTransparency"
                         options={noHeaderScreenOptions}
                         component={SplashTransparencyScreen}
+                    />
+                    <Stack.Screen
+                        name="TermsAndCondition"
+                        options={{ title: 'Terms and Conditions' }}
+                        component={TermsAndConditionScreen}
+                    />
+                    <Stack.Screen
+                        name="PrivacyAndPolicy"
+                        options={{ title: 'Terms and Conditions' }}
+                        component={PrivacyAndPolicyScreen}
                     />
                     <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                     <Stack.Screen
