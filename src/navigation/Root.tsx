@@ -24,13 +24,12 @@ import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
-import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
-import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
-import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
+import DataSharingConsentScreen from '../screens/DataSharingConsentScreen';
 
 const prefix = Linking.createURL('');
 
 export type RouteStackParamList = {
+    DataSharingConsent: undefined;
     Splash: undefined;
     SplashSecurity: undefined;
     SplashPrivacy: undefined;
@@ -53,9 +52,6 @@ export type RouteStackParamList = {
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
-    TermsAndCondition: undefined;
-    PrivacyAndPolicy: undefined;
-    ProfilePreview: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -96,8 +92,13 @@ export default function RootNavigation() {
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
-                <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
-                    <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
+                <Stack.Navigator initialRouteName={'DataSharingConsent'} screenOptions={defaultScreenOptions}>
+                    <Stack.Screen
+                        name="DataSharingConsent"
+                        options={noHeaderScreenOptions}
+                        component={DataSharingConsentScreen}
+                    />
+                    {/* <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} /> */}
                     <Stack.Screen
                         name="SplashSecurity"
                         options={noHeaderScreenOptions}
@@ -112,16 +113,6 @@ export default function RootNavigation() {
                         name="SplashTransparency"
                         options={noHeaderScreenOptions}
                         component={SplashTransparencyScreen}
-                    />
-                    <Stack.Screen
-                        name="TermsAndCondition"
-                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
-                        component={TermsAndConditionScreen}
-                    />
-                    <Stack.Screen
-                        name="PrivacyAndPolicy"
-                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
-                        component={PrivacyAndPolicyScreen}
                     />
                     <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                     <Stack.Screen
