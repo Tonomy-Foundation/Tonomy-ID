@@ -3,6 +3,9 @@
         "appVersionSource": "remote"
     },
     "build": {
+        "production": {
+            "node": "16.18.0"
+        },
         "development": {
             "env": {
                 "EXPO_NODE_ENV": "development"
@@ -31,7 +34,6 @@
     },
     "submit": {
         "production": {
-            "node": "18.17.1", 
             "android": {
                 "serviceAccountKeyPath": "./google-service-key.json",
                 "track": "production"
