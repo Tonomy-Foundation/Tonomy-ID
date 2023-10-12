@@ -3,9 +3,6 @@
         "appVersionSource": "remote"
     },
     "build": {
-        "production": {
-            "node": "18.17.1"
-        },
         "development": {
             "env": {
                 "EXPO_NODE_ENV": "development"
@@ -14,6 +11,7 @@
             "distribution": "internal"
         },
         "demo": {
+            "node": "18.17.1",
             "env": {
                 "EXPO_NODE_ENV": "demo"
             },
