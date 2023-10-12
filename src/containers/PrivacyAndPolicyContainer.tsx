@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
-import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image, Platform } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { TH1, TH2, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
@@ -146,7 +146,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 </View>
             </View>
 
-            <View style={styles.buttonsRow}>
+            <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 20 : 0 }]}>
                 <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                     DECLINE
                 </TButtonOutlined>
