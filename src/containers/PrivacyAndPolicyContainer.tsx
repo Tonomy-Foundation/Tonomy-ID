@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     checkboxContainer: {
         paddingHorizontal: 20,
         backgroundColor: `${theme.colors.grey6}`,
-        paddingVertical: 10,
+        paddingVertical: 8,
     },
     headerLabel: {
         textAlign: 'center',
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     checkboxText: {
-        fontSize: 14,
+        fontSize: 13,
         lineHeight: 20,
     },
     marginTop: {
