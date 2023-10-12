@@ -1,9 +1,11 @@
 {
     "cli": {
-        "appVersionSource": "remote",
-        "version": "~49.0.7"
+        "appVersionSource": "remote"
     },
     "build": {
+        "production": {
+            "node": "18.17.1"
+        },
         "development": {
             "env": {
                 "EXPO_NODE_ENV": "development"
