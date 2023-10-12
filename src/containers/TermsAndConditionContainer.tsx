@@ -74,53 +74,67 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                             the use of our self-sovereign identity wallet services. Please read these Terms carefully
                             before using our platform.
                         </TP>
+                        <TP style={styles.fontWeight}>1. Acceptance of Terms</TP>
                         <TP style={styles.scrollView}>
-                            1. Acceptance of Terms By accessing or using the Tonomy ID Self-Sovereign Identity Wallet,
-                            you acknowledge that you have read, understood, and agreed to these Terms. If you do not
-                            agree with these Terms, please refrain from using our services.
+                            By accessing or using the Tonomy ID Self-Sovereign Identity Wallet, you acknowledge that you
+                            have read, understood, and agreed to these Terms. If you do not agree with these Terms,
+                            please refrain from using our services.
+                        </TP>
+                        <TP style={styles.fontWeight}>2. User Responsibilities</TP>
+                        <TP style={styles.scrollView}>
+                            a. You are responsible for maintaining the confidentiality of your passphrase and private
+                            keys associated with your Tonomy ID Self-Sovereign Identity Wallet. This information is
+                            crucial for ensuring the security of your identity and data.
                         </TP>
                         <TP style={styles.scrollView}>
-                            2. User Responsibilities a. You are responsible for maintaining the confidentiality of your
-                            passphrase and private keys associated with your Tonomy ID Self-Sovereign Identity Wallet.
-                            This information is crucial for ensuring the security of your identity and data. b. You
-                            agree to use the wallet in compliance with applicable laws and regulations. You are solely
-                            responsible for any activities conducted through your account.
+                            b. You agree to use the wallet in compliance with applicable laws and regulations. You are
+                            solely responsible for any activities conducted through your account.
+                        </TP>
+                        <TP style={styles.fontWeight}>3. Self-Sovereign Identity</TP>
+                        <TP style={styles.scrollView}>
+                            a. Tonomy ID operates on the principle of self-sovereign identity, meaning you have complete
+                            control over sharing your personal information. You decide when and with whom you share your
+                            data.
                         </TP>
                         <TP style={styles.scrollView}>
-                            3. Self-Sovereign Identity a. Tonomy ID operates on the principle of self-sovereign
-                            identity, meaning you have complete control over sharing your personal information. You
-                            decide when and with whom you share your data. b. Tonomy ID does not store your passphrase
-                            or private keys. This enhances security, making it challenging for unauthorized access.
+                            b. Tonomy ID does not store your passphrase or private keys. This enhances security, making
+                            it challenging for unauthorized access.
+                        </TP>
+                        <TP style={styles.fontWeight}>4. Prohibited Activities</TP>
+                        <TP style={styles.scrollView}>You agree not to:</TP>
+                        <TP style={styles.scrollView}>a. Engage in fraudulent, illegal, or unauthorized activities.</TP>
+                        <TP style={styles.scrollView}>
+                            b. Attempt to gain unauthorized access to others accounts or data.
+                        </TP>
+                        <TP style={styles.scrollView}>c. Use our services for any malicious or harmful purposes.</TP>
+                        <TP style={styles.fontWeight}>5. Changes to Services</TP>
+                        <TP style={styles.scrollView}>
+                            Tonomy ID reserves the right to modify, suspend, or discontinue services at any time without
+                            notice. We are not liable for any losses resulting from such actions.
+                        </TP>
+                        <TP style={styles.fontWeight}>6. Data Privacy and Security</TP>
+                        <TP style={styles.scrollView}>
+                            a. We value your privacy and handle your personal information in accordance with our Privacy
+                            Policy. By using our services, you consent to the collection, use, and storage of your data
+                            as outlined in the policy.
                         </TP>
                         <TP style={styles.scrollView}>
-                            4. Prohibited Activities You agree not to: a. Engage in fraudulent, illegal, or unauthorized
-                            activities. b. Attempt to gain unauthorized access to others accounts or data. c. Use our
-                            services for any malicious or harmful purposes.
+                            b. While we strive to maintain the security of your information, you acknowledge that no
+                            online service is completely immune to risks. You are responsible for taking appropriate
+                            precautions to secure your account.
                         </TP>
+                        <TP style={styles.fontWeight}>7. Limitation of Liability</TP>
                         <TP style={styles.scrollView}>
-                            5. Changes to Services Tonomy ID reserves the right to modify, suspend, or discontinue
-                            services at any time without notice. We are not liable for any losses resulting from such
-                            actions.
+                            Tonomy ID is not liable for any direct, indirect, incidental, or consequential damages
+                            arising from your use or inability to use the Self-Sovereign Identity Wallet. Our liability
+                            is limited to the extent permitted by law.
                         </TP>
+                        <TP style={styles.fontWeight}>8. Governing Law and Dispute Resolution</TP>
+                        <TP style={styles.scrollView}>These Terms are governed by the laws of Netherlands.</TP>
+                        <TP style={styles.fontWeight}>9. Changes to Terms</TP>
                         <TP style={styles.scrollView}>
-                            6. Data Privacy and Security a. We value your privacy and handle your personal information
-                            in accordance with our Privacy Policy. By using our services, you consent to the collection,
-                            use, and storage of your data as outlined in the policy. ab. While we strive to maintain the
-                            security of your information, you acknowledge that no online service is completely immune to
-                            risks. You are responsible for taking appropriate precautions to secure your account.
-                        </TP>
-                        <TP style={styles.scrollView}>
-                            7. Limitation of Liability Tonomy ID is not liable for any direct, indirect, incidental, or
-                            consequential damages arising from your use or inability to use the Self-Sovereign Identity
-                            Wallet. Our liability is limited to the extent permitted by law.
-                        </TP>
-                        <TP style={styles.scrollView}>
-                            8. Governing Law and Dispute Resolution These Terms are governed by the laws of Netherlands.
-                        </TP>
-                        <TP style={styles.scrollView}>
-                            9. Changes to Terms Tonomy ID may update these Terms from time to time. You will be notified
-                            of any significant changes, and your continued use of the services constitutes acceptance of
-                            the updated Terms.
+                            Tonomy ID may update these Terms from time to time. You will be notified of any significant
+                            changes, and your continued use of the services constitutes acceptance of the updated Terms.
                         </TP>
                     </View>
                 )}
@@ -129,31 +143,14 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                 <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                     DECLINE
                 </TButtonOutlined>
-                <TButtonContained onPress={() => setShowAcceptModal(true)} style={styles.buttonsStyle} disabled={false}>
+                <TButtonContained
+                    onPress={() => navigation.navigate('PrivacyAndPolicy')}
+                    style={styles.buttonsStyle}
+                    disabled={false}
+                >
                     ACCEPT
                 </TButtonContained>
             </View>
-
-            <TModal
-                visible={showAcceptModal}
-                iconColor={theme.colors.primary}
-                icon="exclamation"
-                title="Data security"
-                onPress={() => {
-                    setShowAcceptModal(false);
-                    navigation.navigate('PrivacyAndPolicy');
-                }}
-            >
-                <View>
-                    <Text>
-                        Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
-                        others.
-                    </Text>
-                    {/* <TButtonText>
-                        <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
-                    </TButtonText> */}
-                </View>
-            </TModal>
 
             <TModal
                 visible={showDeclineModal}
@@ -167,7 +164,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                                 <Text style={{ color: theme.colors.grey1 }}>Cancel</Text>
                             </TButtonText>
                         </View>
-                        <View>
+                        <View style={{ alignItems: 'flex-end' }}>
                             <TButtonText onPress={() => navigation.navigate('Home')}>
                                 <Text style={{ color: theme.colors.primary }}>Continue</Text>
                             </TButtonText>
@@ -176,7 +173,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                 }
             >
                 <View>
-                    <Text>
+                    <Text style={styles.popupText}>
                         Without agreeing to the Terms of Service, you {"can't"} proceed with the use of Tonomy {"ID's"}
                         services.
                     </Text>
@@ -224,6 +221,9 @@ const styles = StyleSheet.create({
         color: theme.colors.grey2,
         fontSize: 15,
     },
+    fontWeight: {
+        fontWeight: 'bold',
+    },
     leftContent: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -270,9 +270,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
+        gap: 70,
     },
     summaryHead: {
         fontWeight: '400',
         fontSize: 16,
+    },
+    popupText: {
+        fontSize: 16,
+        lineHeight: 20,
+        color: theme.colors.textGray,
+        textAlign: 'center',
     },
 });
