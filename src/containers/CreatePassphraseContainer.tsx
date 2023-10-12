@@ -16,7 +16,6 @@ import { ApplicationError, ApplicationErrors } from '../utils/errors';
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { passphraseList, generatePassphraseList, getPassphrase } = usePassphraseStore();
     const { user } = useUserStore();
-
     const hasEffectRun = useRef(false);
 
     useEffect(() => {

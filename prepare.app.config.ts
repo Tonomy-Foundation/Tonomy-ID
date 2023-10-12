@@ -10,7 +10,7 @@ const appInputs = {
     expoNodeEnv: process.env.EXPO_NODE_ENV,
 };
 
-console.log('appInputs', appInputs);
+console.log('appInputs:', appInputs);
 let slug = settings.config.tonomyIdSlug.replace('://', '');
 const scheme = slug;
 
