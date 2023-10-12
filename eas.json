@@ -4,7 +4,7 @@
     },
     "build": {
         "production": {
-            "node": "16.18.0"
+            "node": "18.17.1"
         },
         "development": {
             "env": {
