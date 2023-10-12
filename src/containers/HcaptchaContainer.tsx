@@ -168,7 +168,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     }}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Checkbox
+                                        <Checkbox.Android
                                             status={code ? 'checked' : 'unchecked'}
                                             onPress={() => {
                                                 if (captchaFormRef.current) {
