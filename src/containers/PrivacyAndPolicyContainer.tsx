@@ -313,8 +313,9 @@ const styles = StyleSheet.create({
         gap: 70,
     },
     checkboxText: {
-        fontSize: 13,
+        fontSize: 13.5,
         lineHeight: 20,
+        color: theme.colors.textGray,
     },
     marginTop: {
         marginTop: 20,
