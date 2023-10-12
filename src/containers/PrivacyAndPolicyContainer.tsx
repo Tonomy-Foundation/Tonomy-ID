@@ -124,7 +124,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
 
             <View style={styles.checkboxContainer}>
                 <View style={styles.checkbox}>
-                    <Checkbox
+                    <Checkbox.Android
                         color={theme.colors.primary}
                         status={checkedStayInLoop ? 'checked' : 'unchecked'}
                         onPress={() => setCheckedStayInLoop(!checkedStayInLoop)}
@@ -134,7 +134,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                     </Text>
                 </View>
                 <View style={styles.checkbox}>
-                    <Checkbox
+                    <Checkbox.Android
                         color={theme.colors.primary}
                         status={checkedOptIn ? 'checked' : 'unchecked'}
                         onPress={() => setCheckedOptIn(!checkedOptIn)}
