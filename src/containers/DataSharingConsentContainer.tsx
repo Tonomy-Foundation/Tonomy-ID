@@ -95,7 +95,7 @@ export default function DataSharingConsentContainer({ navigation }: { navigation
                         <IconButton
                             color={theme.colors.grey2}
                             style={{ marginLeft: 10 }}
-                            icon="account-circle-outline"
+                            icon="archive-plus"
                         ></IconButton>
                         <TH4 style={{ marginLeft: 20, marginTop: 12 }}>Application Data</TH4>
                         <IconButton
