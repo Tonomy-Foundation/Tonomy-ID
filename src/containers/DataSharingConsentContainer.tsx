@@ -7,7 +7,8 @@ import theme, { commonStyles } from '../utils/theme';
 import { TH4 } from '../components/atoms/THeadings';
 import { TButtonText } from '../components/atoms/Tbutton';
 import TList from '../components/TList';
-import { Button } from 'react-native-paper';
+import { Button, IconButton } from 'react-native-paper';
+import PersonalInformationIcon from '../assets/icons/PersonalInformationIcon';
 
 export default function DataSharingConsentContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
@@ -28,13 +29,33 @@ export default function DataSharingConsentContainer({ navigation }: { navigation
                     <Text>Is requesting access to following data:</Text>
                 </View>
                 <View style={styles.boarderPanel}>
-                    <Button icon="card-account-details">
-                        <TH4>Personal Information</TH4>
-                    </Button>
+                    <View style={{ flexDirection: 'row' }}>
+                        <IconButton
+                            color={theme.colors.grey2}
+                            style={{ marginLeft: 10 }}
+                            icon="card-account-details"
+                        ></IconButton>
+                        <TH4 style={{ marginLeft: 20, marginTop: 12 }}>Personal Information</TH4>
+                        <IconButton
+                            color={theme.colors.grey2}
+                            onPress={() => alert()}
+                            style={{ position: 'absolute', right: 0, marginLeft: 'auto' }}
+                            icon="clipboard-text-search-outline"
+                        ></IconButton>
+                    </View>
 
                     <View style={styles.infoListDetail}>
                         <TList bulletIcon="•" text="Name at Birth" />
                         <TList bulletIcon="•" text="Current Name" />
+                        <TList bulletIcon="•" text="Last Name" />
+                        <TList bulletIcon="•" text="*Date of Birth" />
+                        <TList bulletIcon="•" text="Gender at Birth" />
+                        <TList bulletIcon="•" text="Current gender" />
+                        <TList bulletIcon="•" text="Address" />
+                        <TList bulletIcon="•" text="Apartment and floor" />
+                        <TList bulletIcon="•" text="Post Code" />
+                        <TList bulletIcon="•" text="City" />
+                        <TList bulletIcon="•" text="Country of Residence" />
                     </View>
                 </View>
             </ScrollView>
