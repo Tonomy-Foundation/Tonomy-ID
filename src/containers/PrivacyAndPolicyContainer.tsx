@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
-import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image, Platform } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import { TH1, TH2, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
@@ -124,7 +124,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
 
             <View style={styles.checkboxContainer}>
                 <View style={styles.checkbox}>
-                    <Checkbox
+                    <Checkbox.Android
                         color={theme.colors.primary}
                         status={checkedStayInLoop ? 'checked' : 'unchecked'}
                         onPress={() => setCheckedStayInLoop(!checkedStayInLoop)}
@@ -134,7 +134,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                     </Text>
                 </View>
                 <View style={styles.checkbox}>
-                    <Checkbox
+                    <Checkbox.Android
                         color={theme.colors.primary}
                         status={checkedOptIn ? 'checked' : 'unchecked'}
                         onPress={() => setCheckedOptIn(!checkedOptIn)}
@@ -146,7 +146,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 </View>
             </View>
 
-            <View style={styles.buttonsRow}>
+            <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 20 : 0 }]}>
                 <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                     DECLINE
                 </TButtonOutlined>
@@ -172,13 +172,18 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 }
             >
                 <View>
-                    <Text>
+                    <Text style={styles.popupText}>
                         Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
                         others.
                     </Text>
-                    {/* <TButtonText>
+                    <TButtonText
+                        onPress={() => {
+                            setShowAcceptModal(false);
+                            setFullTermsShow(true);
+                        }}
+                    >
                         <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
-                    </TButtonText> */}
+                    </TButtonText>
                 </View>
             </TModal>
 
@@ -203,7 +208,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 }
             >
                 <View>
-                    <Text>
+                    <Text style={styles.popupText}>
                         Without agreeing to the Terms of Service, you {"can't"} proceed with the use of Tonomy {"ID's"}
                         services.
                     </Text>
@@ -232,7 +237,7 @@ const styles = StyleSheet.create({
     checkboxContainer: {
         paddingHorizontal: 20,
         backgroundColor: `${theme.colors.grey6}`,
-        paddingVertical: 10,
+        paddingVertical: 8,
     },
     headerLabel: {
         textAlign: 'center',
@@ -305,10 +310,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        gap: 70,
     },
     checkboxText: {
-        fontSize: 14,
+        fontSize: 13.5,
         lineHeight: 20,
+        color: theme.colors.textGray,
     },
     marginTop: {
         marginTop: 20,
@@ -316,5 +323,11 @@ const styles = StyleSheet.create({
     summaryHead: {
         fontWeight: '400',
         fontSize: 16,
+    },
+    popupText: {
+        fontSize: 16,
+        lineHeight: 20,
+        color: theme.colors.textGray,
+        textAlign: 'center',
     },
 });

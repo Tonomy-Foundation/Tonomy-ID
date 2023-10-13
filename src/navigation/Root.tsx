@@ -117,22 +117,22 @@ export default function RootNavigation() {
                     <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                     <Stack.Screen
                         name="CreateAccountUsername"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={CreateAccountUsernameScreen}
                     />
                     <Stack.Screen
                         name="CreatePassphrase"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={CreatePassphraseScreen}
                     />
                     <Stack.Screen
                         name="Hcaptcha"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={HcaptchaScreen}
                     />
                     <Stack.Screen
                         name="ConfirmPassphrase"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
                     />
                     <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
@@ -145,7 +145,7 @@ export default function RootNavigation() {
                     <Stack.Screen name="LoginUsername" options={{ title: 'Login' }} component={LoginUsernameScreen} />
                     <Stack.Screen
                         name="LoginPassphrase"
-                        options={{ title: 'Login' }}
+                        options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
