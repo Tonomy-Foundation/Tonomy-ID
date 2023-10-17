@@ -16,7 +16,7 @@ jest.mock('react-native-argon2', () => {
                     salt: Buffer.from(salt),
                     type: mockarg.argon2id,
                     hashLength: 32,
-                    memoryCost: 16 * 1024,
+                    memoryCost: 64 * 1024,
                     parallelism: 1,
                     timeCost: 16,
                 })

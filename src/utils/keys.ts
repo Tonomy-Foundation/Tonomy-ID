@@ -20,7 +20,7 @@ export async function testKeyGenerator() {
 
         if (salt.toString() !== '4edf07edc95b2fdcbcaf2378fd12d8ac212c2aa6e326c59c3e629be3039d6432')
             throw new Error('generatePrivateKeyFromPassword() test: Salt is not correct');
-        if (privateKey.toString() !== 'PVT_K1_4oczB1ZY3D3APBnBssisodTKm7gpa6y2pu2aLHReLcDptwUn3')
+        if (privateKey.toString() !== 'PVT_K1_B5mNBH9QM3V3ff9tJfXQYVKRkaCPa7diuuEf25ofUhUXSQtKe')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
     } catch (e) {
         console.error(e);
@@ -35,7 +35,7 @@ export async function generatePrivateKeyFromPassword(
     const result = await argon2(password, salt.hexString, {
         mode: 'argon2id',
         iterations: 16,
-        memory: 16384,
+        memory: 64 * 1024,
         parallelism: 1,
         hashLength: 32,
     });
