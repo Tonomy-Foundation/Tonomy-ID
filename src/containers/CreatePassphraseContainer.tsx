@@ -21,6 +21,10 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
     useEffect(() => {
         if (!hasEffectRun.current) {
             try {
+                if (passphraseList?.length <= 0) {
+                    generatePassphraseList();
+                }
+
                 getPassphrase();
             } catch (e) {
                 if (e instanceof ApplicationError && e.code === ApplicationErrors.NoDataFound) {
