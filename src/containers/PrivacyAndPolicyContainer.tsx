@@ -172,13 +172,18 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 }
             >
                 <View>
-                    <Text>
+                    <Text style={styles.popupText}>
                         Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
                         others.
                     </Text>
-                    {/* <TButtonText>
+                    <TButtonText
+                        onPress={() => {
+                            setShowAcceptModal(false);
+                            setFullTermsShow(true);
+                        }}
+                    >
                         <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
-                    </TButtonText> */}
+                    </TButtonText>
                 </View>
             </TModal>
 
@@ -203,7 +208,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 }
             >
                 <View>
-                    <Text>
+                    <Text style={styles.popupText}>
                         Without agreeing to the Terms of Service, you {"can't"} proceed with the use of Tonomy {"ID's"}
                         services.
                     </Text>
@@ -305,10 +310,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        gap: 70,
     },
     checkboxText: {
-        fontSize: 13,
+        fontSize: 13.5,
         lineHeight: 20,
+        color: theme.colors.textGray,
     },
     marginTop: {
         marginTop: 20,
@@ -316,5 +323,11 @@ const styles = StyleSheet.create({
     summaryHead: {
         fontWeight: '400',
         fontSize: 16,
+    },
+    popupText: {
+        fontSize: 16,
+        lineHeight: 20,
+        color: theme.colors.textGray,
+        textAlign: 'center',
     },
 });
