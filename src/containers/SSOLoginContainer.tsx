@@ -12,6 +12,7 @@ import {
     SdkErrors,
     CommunicationError,
     LoginRequestsMessage,
+    verifyRequests,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -60,7 +61,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
 
-            await UserApps.verifyRequests(requests);
+            await verifyRequests(requests);
 
             for (const request of requests) {
                 const payload = request.getPayload();
