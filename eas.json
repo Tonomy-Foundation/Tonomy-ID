@@ -11,25 +11,29 @@
                 "EXPO_NODE_ENV": "development"
             },
             "developmentClient": true,
-            "distribution": "internal"
+            "distribution": "internal",
+            "node": "18.17.1"
         },
         "demo": {
             "env": {
                 "EXPO_NODE_ENV": "demo"
             },
-            "autoIncrement": true
+            "autoIncrement": true,
+            "node": "18.17.1"
         },
         "demo-apk": {
             "env": {
                 "EXPO_NODE_ENV": "demo"
             },
-            "distribution": "internal"
+            "distribution": "internal",
+            "node": "18.17.1"
         },
         "staging": {
             "env": {
                 "EXPO_NODE_ENV": "staging"
             },
-            "autoIncrement": true
+            "autoIncrement": true,
+            "node": "18.17.1"
         }
     },
     "submit": {
