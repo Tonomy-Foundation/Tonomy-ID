@@ -53,6 +53,7 @@ export default function CommunicationModule() {
         const loginRequestSubscriber = user.communication.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender();
+
                 const { method, id } = parseDid(senderDid);
 
                 // did:jwk is used for the initial login request so is allowed
@@ -67,6 +68,8 @@ export default function CommunicationModule() {
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
                 }
+
+                await message.verify();
 
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();

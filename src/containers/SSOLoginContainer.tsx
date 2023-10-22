@@ -3,7 +3,7 @@ import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
-import useUserStore, { UserStatus } from '../store/userStore';
+import useUserStore from '../store/userStore';
 import {
     UserApps,
     App,
@@ -12,7 +12,8 @@ import {
     SdkErrors,
     CommunicationError,
     LoginRequestsMessage,
-    verifyRequests,
+    ResponsesManager,
+    RequestsManager,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -21,8 +22,6 @@ import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { openBrowserAsync } from 'expo-web-browser';
 import { useNavigation } from '@react-navigation/native';
-import { throwError } from '../utils/errors';
-import { ApplicationErrors } from '../utils/errors';
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();
@@ -52,16 +51,19 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         }
     }
 
-    async function getLoginRequestFromParams() {
+    async function getRequestsFromParams() {
         try {
             const parsedPayload = base64UrlToObj(payload);
 
-            if (!parsedPayload || !parsedPayload.requests)
-                throwError('No requests found in payload', ApplicationErrors.MissingParams);
+            const managedRequests = new RequestsManager(parsedPayload?.requests);
 
-            const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+            await managedRequests.verify();
 
-            await verifyRequests(requests);
+            const managedResponses = new ResponsesManager(managedRequests);
+
+            await managedResponses.fetchMeta();
+
+            const requests: LoginRequest[] = managedRequests.getRequests();
 
             for (const request of requests) {
                 const payload = request.getPayload();
@@ -89,6 +91,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (!app || !appLoginRequest || !ssoApp || !ssoLoginRequest) throw new Error('Missing params');
             const callbackUrl = await user.apps.acceptLoginRequest(
                 [
+                    // TODO add dataSharing Request here
                     { app: ssoApp, request: ssoLoginRequest },
                     { app, request: appLoginRequest },
                 ],
@@ -133,7 +136,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (!ssoLoginRequest || !appLoginRequest) throw new Error('Missing params');
             const res = await UserApps.terminateLoginRequest(
                 [ssoLoginRequest, appLoginRequest],
-                platform === 'browser' ? 'message' : 'url',
+                platform,
                 {
                     code: SdkErrors.UserCancelled,
                     reason: 'User cancelled login request',
@@ -141,6 +144,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 {
                     issuer: await user.getIssuer(),
                     messageRecipient: receiverDid,
+                    user,
                 }
             );
 
@@ -178,7 +182,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     useEffect(() => {
         setUserName();
-        getLoginRequestFromParams();
+        getRequestsFromParams();
     }, []);
 
     return (
