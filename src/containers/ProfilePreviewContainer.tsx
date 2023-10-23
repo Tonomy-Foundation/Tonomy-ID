@@ -1,16 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Props } from '../screens/ProfilePreviewScreen';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import TUsername from '../components/TUsername';
+import TInputTextBox from '../components/TInputTextBox';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import TModal from '../components/TModal';
+import useUserStore from '../store/userStore';
+import useErrorStore from '../store/errorStore';
 
 export default function ProfilePreviewContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [informationPopup, setInformationPopup] = useState(false);
+    const [accountName, setAccountName] = useState('');
+    const [username, setUsername] = useState('');
+    const userStore = useUserStore();
+    const user = userStore.user;
+    const errorStore = useErrorStore();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const accountInfo = (await user.getAccountName()).toString();
+
+                setAccountName(accountInfo);
+                const username = await user.getUsername();
+
+                setUsername(username.getBaseUsername());
+            } catch (error) {
+                errorStore.setError({ error: e, expected: false });
+            }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <>
@@ -22,7 +46,7 @@ export default function ProfilePreviewContainer({ navigation }: { navigation: Pr
                                 Username
                             </TP>
                             <View>
-                                <TUsername value={'jack.tanner'} disabled={true} />
+                                <TInputTextBox value={username} disabled={true} />
                             </View>
                         </View>
                         <View style={[styles.container, styles.marginTop]}>
@@ -33,7 +57,7 @@ export default function ProfilePreviewContainer({ navigation }: { navigation: Pr
                                 </TouchableOpacity>
                             </TP>
                             <View>
-                                <TUsername value={'6845 6863 54C6 D346 '} disabled={true} />
+                                <TInputTextBox value={accountName} disabled={true} />
                             </View>
                         </View>
                     </View>
@@ -88,5 +112,6 @@ export const styles = StyleSheet.create({
     informationIcon: {
         color: theme.colors.primary,
         fontSize: 14,
+        marginLeft: 3,
     },
 });
