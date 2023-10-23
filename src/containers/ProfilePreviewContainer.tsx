@@ -41,7 +41,7 @@ export default function ProfilePreviewContainer({ navigation }: { navigation: Pr
                 footerHint={
                     <TInfoBox
                         align="center"
-                        icon="security"
+                        icon="privacy"
                         description="Your personal info is self-sovereign meaning only you control who you share it with!"
                         linkUrl={'#'}
                         linkUrlText=""
