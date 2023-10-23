@@ -5,7 +5,7 @@ import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Checkbox } from 'react-native-paper';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonText } from '../components/atoms/Tbutton';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/HcaptchaScreen';
 import settings from '../settings';
@@ -168,7 +168,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     }}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Checkbox
+                                        <Checkbox.Android
                                             status={code ? 'checked' : 'unchecked'}
                                             onPress={() => {
                                                 if (captchaFormRef.current) {
@@ -222,8 +222,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             </TErrorModal>
             <TModal
                 visible={showModal}
-                onPress={onModalPress}
                 icon="check"
+                onPress={onModalPress}
                 title={'Welcome to ' + settings.config.ecosystemName}
             >
                 <View>
