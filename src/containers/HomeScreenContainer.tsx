@@ -33,7 +33,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                         Create Account
                     </TButtonContained>
                     <TButtonOutlined
-                        onPress={() => navigation.navigate('ProfilePreview')}
+                        onPress={() => navigation.navigate('LoginUsername')}
                         style={commonStyles.marginBottom}
                     >
                         Login

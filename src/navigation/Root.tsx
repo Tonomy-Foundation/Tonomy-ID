@@ -158,11 +158,6 @@ export default function RootNavigation() {
                         component={LoginPassphraseScreen}
                     />
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
-                    <Stack.Screen
-                        name="ProfilePreview"
-                        options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
-                        component={ProfilePreviewScreen}
-                    />
                 </Stack.Navigator>
             ) : (
                 <>
