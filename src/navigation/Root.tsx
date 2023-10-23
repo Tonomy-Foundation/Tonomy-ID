@@ -26,6 +26,7 @@ import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
+import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 
 const prefix = Linking.createURL('');
 
@@ -54,6 +55,7 @@ export type RouteStackParamList = {
     ConfirmPassphrase: { index: number };
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
+    ProfilePreview: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -156,6 +158,11 @@ export default function RootNavigation() {
                         component={LoginPassphraseScreen}
                     />
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
+                    <Stack.Screen
+                        name="ProfilePreview"
+                        options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
+                        component={ProfilePreviewScreen}
+                    />
                 </Stack.Navigator>
             ) : (
                 <>
@@ -171,6 +178,11 @@ export default function RootNavigation() {
                             name="SSO"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={SSOLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="ProfilePreview"
+                            options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
+                            component={ProfilePreviewScreen}
                         />
                     </Stack.Navigator>
                 </>
