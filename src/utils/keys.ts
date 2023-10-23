@@ -20,7 +20,7 @@ export async function testKeyGenerator() {
 
         if (salt.toString() !== '4edf07edc95b2fdcbcaf2378fd12d8ac212c2aa6e326c59c3e629be3039d6432')
             throw new Error('generatePrivateKeyFromPassword() test: Salt is not correct');
-        if (privateKey.toString() !== 'PVT_K1_B5mNBH9QM3V3ff9tJfXQYVKRkaCPa7diuuEf25ofUhUXSQtKe')
+        if (privateKey.toString() !== 'PVT_K1_q4BZoScNYFCF5tDthn4m5KUgv9LLH4fTNtMFj3FUkG3p7UA4D')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
     } catch (e) {
         console.error(e);

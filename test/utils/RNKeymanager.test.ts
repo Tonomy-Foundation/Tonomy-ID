@@ -2,7 +2,7 @@ import { PublicKey } from '@wharfkit/antelope';
 import { KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 import RNKeyManager from '../../src/utils/RNKeyManager';
 import arg from 'argon2';
-import { generatePrivateKeyFromPassword } from '../../src/utils/keys';
+import { generatePrivateKeyFromPassword, testKeyGenerator } from '../../src/utils/keys';
 
 const mockarg = arg;
 
@@ -18,7 +18,7 @@ jest.mock('react-native-argon2', () => {
                     hashLength: 32,
                     memoryCost: 64 * 1024,
                     parallelism: 1,
-                    timeCost: 16,
+                    timeCost: 40,
                 })
                 .then((hash) => {
                     return {
@@ -94,5 +94,5 @@ describe('RN Key Manager', () => {
 
         expect(key).toBeInstanceOf(PublicKey);
         expect(key.toString()).toEqual(publicKey.toString());
-    });
+    }, 10000);
 });
