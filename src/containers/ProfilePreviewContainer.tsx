@@ -29,7 +29,7 @@ export default function ProfilePreviewContainer({ navigation }: { navigation: Pr
 
                 setUsername(username.getBaseUsername());
             } catch (error) {
-                errorStore.setError({ error: e, expected: false });
+                errorStore.setError({ error: error, expected: false });
             }
         };
 
