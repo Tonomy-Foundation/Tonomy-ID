@@ -219,7 +219,7 @@ export default function DataSharingConsentContainer({
                             <TH4 style={styles.panelHeading}>Profile Information</TH4>
                             <IconButton
                                 color={theme.colors.grey2}
-                                onPress={() => alert()}
+                                onPress={() => navigation.navigate('ProfilePreview')}
                                 style={styles.rightIcon}
                                 icon="clipboard-text-search-outline"
                             ></IconButton>

@@ -25,6 +25,7 @@ import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 import DataSharingConsentScreen from '../screens/DataSharingConsentScreen';
+import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 
 const prefix = Linking.createURL('');
 
@@ -52,6 +53,9 @@ export type RouteStackParamList = {
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
     DataSharingConsent: { payload: string; platform?: 'mobile' | 'browser' };
+    TermsAndCondition: undefined;
+    PrivacyAndPolicy: undefined;
+    ProfilePreview: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -164,6 +168,11 @@ export default function RootNavigation() {
                             name="DataSharingConsent"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={DataSharingConsentScreen}
+                        />
+                        <Stack.Screen
+                            name="ProfilePreview"
+                            options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
+                            component={ProfilePreviewScreen}
                         />
                     </Stack.Navigator>
                 </>
