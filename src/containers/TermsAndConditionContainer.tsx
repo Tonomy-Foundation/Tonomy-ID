@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image, Platform } from 'react-native';
@@ -16,37 +17,31 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerPanel}>
-                <TH2 style={commonStyles.textAlignCenter}>Terms & Conditions</TH2>
-            </View>
-
-            <View style={styles.innerContainer}>
-                <Image width={8} height={8} source={require('../assets/tonomy/Agreement-amico.png')}></Image>
-            </View>
             <ScrollView style={styles.scrollViewConditions}>
+                
+                <View style={styles.headerPanel}>
+                    <TH2 style={commonStyles.textAlignCenter}>Terms & Conditions</TH2>
+                </View>
+
+                <View style={styles.innerContainer}>
+                    <Image width={8} height={8} source={require('../assets/tonomy/Agreement-amico.png')}></Image>
+                </View>
                 <View>
                     <TP style={styles.summaryHead}>Summary:</TP>
                     <View style={styles.marginTop}>
                         <TList
                             bulletIcon="•"
-                            text="You can use Tonomy ID to log into and share data with applications that support Tonomy ID."
+                            item={<Text style={styles.listItemText}>You can <Text style={{fontWeight: 'bold'}}>use with Tonomy ID to log into and share data with applications</Text> that support Tonomy ID.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            text="Please remember or keep a secure copy of your master passphrase and username."
+                            item={<Text style={styles.listItemText}>Please remember or <Text style={{fontWeight: 'bold'}}>keep a secure copy of your master passphrase</Text> and username.</Text>} 
                         />
                         <TList
                             bulletIcon="•"
-                            text="You (and not the Tonomy Foundation) are responsible for using and behaving according to
-                            regulatory requirements in applications you log into with Tonomy ID."
+                            item={<Text style={styles.listItemText}><Text style={{fontWeight: 'bold'}}>You are responsible for using and behaving according to regulatory requirements in applications you log into</Text> with Tonomy ID, not the Tonomy Foundation.</Text>} 
                         />
-                        <TList
-                            bulletIcon="•"
-                            text="Tonomy ID uses advanced digital signatures to enhance data security, integrity, and
-                            regulatory compliance for interactions with supported applications. Tonomy ID is regulated
-                            under Dutch law."
-                        />
-                        <TList bulletIcon="•" text="Tonomy ID is regulated under Dutch law." />
+                        <TList bulletIcon="•"item={<Text style={styles.listItemText}>Tonomy ID is <Text style={{fontWeight: 'bold'}}>regulated under Dutch law.</Text></Text>} />
                     </View>
                 </View>
                 <TouchableOpacity
@@ -138,19 +133,19 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         </TP>
                     </View>
                 )}
+                <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 30 : 0 }]}>
+                    <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
+                        DECLINE
+                    </TButtonOutlined>
+                    <TButtonContained
+                        onPress={() => navigation.navigate('PrivacyAndPolicy')}
+                        style={styles.buttonsStyle}
+                        disabled={false}
+                    >
+                        ACCEPT
+                    </TButtonContained>
+                </View>
             </ScrollView>
-            <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 30 : 0 }]}>
-                <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
-                    DECLINE
-                </TButtonOutlined>
-                <TButtonContained
-                    onPress={() => navigation.navigate('PrivacyAndPolicy')}
-                    style={styles.buttonsStyle}
-                    disabled={false}
-                >
-                    ACCEPT
-                </TButtonContained>
-            </View>
 
             <TModal
                 visible={showDeclineModal}
@@ -281,5 +276,11 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         color: theme.colors.textGray,
         textAlign: 'center',
+    },
+    listItemText: {
+        color: theme.colors.textGray,
+        fontWeight: '400',
+        fontSize: 14,
+        lineHeight: 23,
     },
 });

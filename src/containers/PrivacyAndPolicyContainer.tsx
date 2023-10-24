@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image, Platform } from 'react-native';
@@ -18,34 +19,34 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerPanel}>
-                <TH2 style={commonStyles.textAlignCenter}>Privacy Policy</TH2>
-            </View>
-
-            <View style={styles.innerContainer}>
-                <Image width={8} height={8} source={require('../assets/tonomy/Privacypolicy-amico.png')}></Image>
-            </View>
             <ScrollView style={styles.scrollViewConditions}>
+                <View style={styles.headerPanel}>
+                    <TH2 style={commonStyles.textAlignCenter}>Privacy Policy</TH2>
+                </View>
+
+                <View style={styles.innerContainer}>
+                    <Image width={8} height={8} source={require('../assets/tonomy/Privacypolicy-amico.png')}></Image>
+                </View>
                 <View style={styles.marginTop}>
                     <TP style={styles.summaryHead}>Summary:</TP>
                     <View>
                         <TList
                             bulletIcon="•"
-                            text="Tonomy ID never stores or processes your passphrase or private keys on our servers."
+                            item={<Text style={styles.listItemText}>Tonomy ID <Text style={{fontWeight: 'bold'}}>never stores or processes your passphrase or private keys on</Text> our servers.</Text>} 
                         />
                         <TList
                             bulletIcon="•"
-                            text="Tonomy ID never stores stores or processes any personal information with the following two exceptions:"
+                            item={<Text style={styles.listItemText}>Tonomy ID <Text style={{fontWeight: 'bold'}}>never stores stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>} 
                         />
                         <TList
                             bulletIcon="•"
-                            text="If you agree below, Tonomy ID will collect your email for marketing purposes and share this information with XXXX."
+                            item={<Text style={styles.listItemText}>If you agree below, Tonomy ID will collect your email for marketing purposes and share this information with XXXX.</Text>} 
                         />
                         <TList
                             bulletIcon="•"
-                            text="If you agree below, Tonomy ID will collect usage and analytics information as you use it, which we use to improve the user experience of the application and share this information with Matamo."
+                            item={<Text style={styles.listItemText}>If you agree below, Tonomy ID will collect usage and analytics information as you use it, which we use to improve the user experience of the application and share this information with Matamo.</Text>} 
                         />
-                        <TList bulletIcon="•" text="Tonomy ID is regulated under Dutch law." />
+                        <TList bulletIcon="•"item={<Text style={styles.listItemText}>Tonomy ID is regulated under Dutch law.</Text>} />
                     </View>
                 </View>
                 <TouchableOpacity
@@ -120,40 +121,40 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         </TP>
                     </View>
                 )}
+                <View style={styles.checkboxContainer}>
+                    <View style={styles.checkbox}>
+                        <Checkbox.Android
+                            color={theme.colors.primary}
+                            status={checkedStayInLoop ? 'checked' : 'unchecked'}
+                            onPress={() => setCheckedStayInLoop(!checkedStayInLoop)}
+                        />
+                        <Text style={styles.checkboxText}>
+                            Stay in the loop! Would you like to receive updates and exciting promotional emails from us?
+                        </Text>
+                    </View>
+                    <View style={styles.checkbox}>
+                        <Checkbox.Android
+                            color={theme.colors.primary}
+                            status={checkedOptIn ? 'checked' : 'unchecked'}
+                            onPress={() => setCheckedOptIn(!checkedOptIn)}
+                        />
+                        <Text style={styles.checkboxText}>
+                            Opt-in to share anonymized data analytics. This helps us understand usage patterns and improve
+                            the app while respecting your privacy.
+                        </Text>
+                    </View>
+                </View>
+    
+                <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 20 : 0 }]}>
+                    <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
+                        DECLINE
+                    </TButtonOutlined>
+                    <TButtonContained onPress={() => setShowAcceptModal(true)} style={styles.buttonsStyle} disabled={false}>
+                        ACCEPT
+                    </TButtonContained>
+                </View>
+    
             </ScrollView>
-
-            <View style={styles.checkboxContainer}>
-                <View style={styles.checkbox}>
-                    <Checkbox.Android
-                        color={theme.colors.primary}
-                        status={checkedStayInLoop ? 'checked' : 'unchecked'}
-                        onPress={() => setCheckedStayInLoop(!checkedStayInLoop)}
-                    />
-                    <Text style={styles.checkboxText}>
-                        Stay in the loop! Would you like to receive updates and exciting promotional emails from us?
-                    </Text>
-                </View>
-                <View style={styles.checkbox}>
-                    <Checkbox.Android
-                        color={theme.colors.primary}
-                        status={checkedOptIn ? 'checked' : 'unchecked'}
-                        onPress={() => setCheckedOptIn(!checkedOptIn)}
-                    />
-                    <Text style={styles.checkboxText}>
-                        Opt-in to share anonymized data analytics. This helps us understand usage patterns and improve
-                        the app while respecting your privacy.
-                    </Text>
-                </View>
-            </View>
-
-            <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 20 : 0 }]}>
-                <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
-                    DECLINE
-                </TButtonOutlined>
-                <TButtonContained onPress={() => setShowAcceptModal(true)} style={styles.buttonsStyle} disabled={false}>
-                    ACCEPT
-                </TButtonContained>
-            </View>
 
             <TModal
                 visible={showAcceptModal}
@@ -329,5 +330,11 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         color: theme.colors.textGray,
         textAlign: 'center',
+    },
+    listItemText: {
+        color: theme.colors.textGray,
+        fontWeight: '400',
+        fontSize: 14,
+        lineHeight: 23,
     },
 });
