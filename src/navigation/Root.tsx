@@ -93,12 +93,7 @@ export default function RootNavigation() {
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'DataSharingConsent'} screenOptions={defaultScreenOptions}>
-                    <Stack.Screen
-                        name="DataSharingConsent"
-                        options={noHeaderScreenOptions}
-                        component={DataSharingConsentScreen}
-                    />
-                    {/* <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} /> */}
+                    <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                     <Stack.Screen
                         name="SplashSecurity"
                         options={noHeaderScreenOptions}
@@ -170,9 +165,9 @@ export default function RootNavigation() {
                             component={SSOLoginScreen}
                         />
                         <Stack.Screen
-                            name="ProfilePreview"
-                            options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
-                            component={ProfilePreviewScreen}
+                            name="DataSharingConsent"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={DataSharingConsentScreen}
                         />
                     </Stack.Navigator>
                 </>

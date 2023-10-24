@@ -1,144 +1,243 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
-import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, Image } from 'react-native';
 
 import { Props } from '../screens/DataSharingConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
-import { TH4, TH2 } from '../components/atoms/THeadings';
-import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
+import settings from '../settings';
+import useErrorStore from '../store/errorStore';
+import { openBrowserAsync } from 'expo-web-browser';
+import { useNavigation } from '@react-navigation/native';
+import { throwError } from '../utils/errors';
+import { ApplicationErrors } from '../utils/errors';
 import TList from '../components/TList';
 import { IconButton } from 'react-native-paper';
-import TInfoBox from '../components/TInfoBox';
-import PersonalInformationIcon from '../assets/icons/PersonalInformationIcon';
 
-export default function DataSharingConsentContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function DataSharingConsentContainer({
+    payload,
+    platform,
+}: {
+    payload: string;
+    platform: 'mobile' | 'browser';
+}) {
+    const { user, logout } = useUserStore();
+    const [app, setApp] = useState<App>();
+    const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
+    const [username, setUsername] = useState<string>();
+    const [ssoApp, setSsoApp] = useState<App>();
+    const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
+    const [receiverDid, setReceiverDid] = useState<string>();
+    const [nextLoading, setNextLoading] = useState<boolean>(true);
+    const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+
+    const navigation = useNavigation();
+    const errorStore = useErrorStore();
+
+    async function setUserName() {
+        try {
+            const username = await user.getUsername();
+
+            if (!username) {
+                await logout();
+            }
+
+            setUsername(username.getBaseUsername());
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
+    async function getLoginRequestFromParams() {
+        try {
+            const parsedPayload = base64UrlToObj(payload);
+
+            if (!parsedPayload || !parsedPayload.requests)
+                throwError('No requests found in payload', ApplicationErrors.MissingParams);
+
+            const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+
+            await UserApps.verifyRequests(requests);
+
+            for (const request of requests) {
+                const payload = request.getPayload();
+                const app = await App.getApp(payload.origin);
+
+                if (payload.origin === settings.config.ssoWebsiteOrigin) {
+                    setAppLoginRequest(request);
+                    setReceiverDid(request.getIssuer());
+                    setApp(app);
+                } else {
+                    setSsoLoginRequest(request);
+                    setSsoApp(app);
+                }
+            }
+
+            setNextLoading(false);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
+    async function onNext() {
+        try {
+            setNextLoading(true);
+            if (!app || !appLoginRequest || !ssoApp || !ssoLoginRequest) throw new Error('Missing params');
+            const callbackUrl = await user.apps.acceptLoginRequest(
+                [
+                    { app: ssoApp, request: ssoLoginRequest },
+                    { app, request: appLoginRequest },
+                ],
+                platform,
+                receiverDid
+            );
+
+            setNextLoading(false);
+
+            if (platform === 'mobile') {
+                await openBrowserAsync(callbackUrl as string);
+            } else {
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
+            }
+        } catch (e) {
+            setNextLoading(false);
+
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
+                // User cancelled in the browser, so can just navigate back to home
+                // @ts-expect-error item of type string is not assignable to type never
+                navigation.navigate('Drawer', { screen: 'UserHome' });
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    // @ts-expect-error item of type string is not assignable to type never
+                    onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
+                });
+            }
+        }
+    }
+
+    async function onCancel() {
+        try {
+            setCancelLoading(true);
+            if (!ssoLoginRequest || !appLoginRequest) throw new Error('Missing params');
+            const res = await UserApps.terminateLoginRequest(
+                [ssoLoginRequest, appLoginRequest],
+                platform === 'browser' ? 'message' : 'url',
+                {
+                    code: SdkErrors.UserCancelled,
+                    reason: 'User cancelled login request',
+                },
+                {
+                    issuer: await user.getIssuer(),
+                    messageRecipient: receiverDid,
+                }
+            );
+
+            if (platform === 'mobile') {
+                setNextLoading(false);
+                await openBrowserAsync(res as string);
+            } else {
+                setNextLoading(false);
+                await user.communication.sendMessage(res as LoginRequestsMessage);
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
+            }
+        } catch (e) {
+            setCancelLoading(false);
+
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
+                // User cancelled in the browser, so can just navigate back to home
+                // @ts-expect-error item of type string is not assignable to type never
+                navigation.navigate('Drawer', { screen: 'UserHome' });
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    // @ts-expect-error item of type string is not assignable to type never
+                    onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
+                });
+            }
+        }
+    }
+
+    useEffect(() => {
+        setUserName();
+        getLoginRequestFromParams();
+    }, []);
+
     return (
-        <View style={styles.container}>
-            <ScrollView>
-                <View style={styles.userPictureAndName}>
+        <LayoutComponent
+            body={
+                <View style={styles.container}>
                     <Image width={8} height={8} source={require('../assets/tonomy/Tonomy-Foundation.png')}></Image>
-                    <TH4 style={commonStyles.textAlignCenter}>Jack Tanner</TH4>
-                </View>
-                <View style={styles.innerContainer}>
-                    <Image width={8} height={8} source={require('../assets/asnbank.png')}></Image>
-                </View>
-                <View style={styles.innerContainer}>
-                    <TH4>ASN Bank</TH4>
-                    <TButtonText onPress={() => alert()}>
-                        <Text style={{ color: theme.colors.primary }}>https://www.asnbank.nl/</Text>
-                    </TButtonText>
-                    <Text>Is requesting access to following data:</Text>
-                </View>
+                    {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
+                    {ssoApp && (
+                        <View style={styles.ssoContainer}>
+                            <Image width={8} height={8} source={{ uri: ssoApp.logoUrl }}></Image>
+                            <TH2 style={[commonStyles.textAlignCenter, styles.marginTop]}>{ssoApp.appName}</TH2>
+                            <TLink style={commonStyles.textAlignCenter} to={ssoApp.origin}>
+                                {ssoApp.origin}
+                            </TLink>
+                            <Text style={[commonStyles.textAlignCenter, styles.marginTop]}>
+                                Is requesting access to following data:
+                            </Text>
+                        </View>
+                    )}
+                    <View style={styles.boarderPanel}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <IconButton
+                                color={theme.colors.grey2}
+                                style={styles.iconButton}
+                                icon="account-circle-outline"
+                            ></IconButton>
+                            <TH4 style={styles.panelHeading}>Profile Information</TH4>
+                            <IconButton
+                                color={theme.colors.grey2}
+                                onPress={() => alert()}
+                                style={styles.rightIcon}
+                                icon="clipboard-text-search-outline"
+                            ></IconButton>
+                        </View>
 
-                <View style={styles.boarderPanel}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <IconButton
-                            color={theme.colors.grey2}
-                            style={{ marginLeft: 10 }}
-                            icon="card-account-details"
-                        ></IconButton>
-                        <TH4 style={{ marginLeft: 20, marginTop: 12 }}>Personal Information</TH4>
-                        <IconButton
-                            color={theme.colors.grey2}
-                            onPress={() => alert()}
-                            style={{ position: 'absolute', right: 0, marginLeft: 'auto' }}
-                            icon="clipboard-text-search-outline"
-                        ></IconButton>
-                    </View>
-
-                    <View style={{ marginLeft: 90 }}>
-                        <TList bulletIcon="•" text="Name at Birth" />
-                        <TList bulletIcon="•" text="Current Name" />
-                        <TList bulletIcon="•" text="Last Name" />
-                        <TList bulletIcon="•" text="*Date of Birth" />
-                        <TList bulletIcon="•" text="Gender at Birth" />
-                        <TList bulletIcon="•" text="Current gender" />
-                        <TList bulletIcon="•" text="Address" />
-                        <TList bulletIcon="•" text="Apartment and floor" />
-                        <TList bulletIcon="•" text="Post Code" />
-                        <TList bulletIcon="•" text="City" />
-                        <TList bulletIcon="•" text="Country of Residence" />
-                        <TList bulletIcon="•" text="*Nationality" />
-                    </View>
-                </View>
-
-                <View style={styles.innerContainer}>
-                    <Text>*additional info required</Text>
-                </View>
-
-                <View style={styles.boarderPanel}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <IconButton
-                            color={theme.colors.grey2}
-                            style={{ marginLeft: 10 }}
-                            icon="account-circle-outline"
-                        ></IconButton>
-                        <TH4 style={{ marginLeft: 20, marginTop: 12 }}>Profile Information</TH4>
-                        <IconButton
-                            color={theme.colors.grey2}
-                            onPress={() => alert()}
-                            style={{ position: 'absolute', right: 0, marginLeft: 'auto' }}
-                            icon="clipboard-text-search-outline"
-                        ></IconButton>
-                    </View>
-
-                    <View style={{ marginLeft: 90 }}>
-                        <View>
+                        <View style={styles.list}>
                             <TList bulletIcon="•" text="Username" />
                             <TList bulletIcon="•" text="Anonymous User ID" />
                         </View>
                     </View>
                 </View>
-
-                <View style={styles.boarderPanel}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <IconButton
-                            color={theme.colors.grey2}
-                            style={{ marginLeft: 10 }}
-                            icon="archive-plus"
-                        ></IconButton>
-                        <TH4 style={{ marginLeft: 20, marginTop: 12 }}>Application Data</TH4>
-                        <IconButton
-                            color={theme.colors.grey2}
-                            onPress={() => alert()}
-                            style={{ position: 'absolute', right: 0, marginLeft: 'auto' }}
-                            icon="clipboard-text-search-outline"
-                        ></IconButton>
-                    </View>
-
-                    <View style={{ alignItems: 'center' }}>
-                        <Text>From the App</Text>
-                        <Image width={8} height={8} source={require('../assets/medilab.png')}></Image>
-                        <TH2>Medi Lab</TH2>
-                        <TButtonText onPress={() => alert()}>
-                            <Text style={{ color: theme.colors.primary }}>https://www.medilab.nl/</Text>
-                        </TButtonText>
-                    </View>
-                    <View style={{ marginLeft: 90 }}>
-                        <TList bulletIcon="•" text="Conditions" />
-                        <TList bulletIcon="•" text="Lab Results" />
-                        <TList bulletIcon="•" text="Medications" />
-                    </View>
-                </View>
+            }
+            footerHint={
                 <View style={styles.infoBox}>
                     <TInfoBox
                         align="left"
                         icon="security"
-                        description="Your personal info is self-sovereign meaning only you control who you share it with! Learn more"
-                        linkUrl="test"
-                        linkUrlText="Learn more"
+                        description="Your personal info is self-sovereign meaning only you control who you share it with!"
+                        linkUrl="#"
+                        linkUrlText=""
                     />
                 </View>
+            }
+            footer={
                 <View>
-                    <TButtonContained style={{ margin: 10 }} onPress={() => alert()}>
+                    <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onNext}>
                         Next
                     </TButtonContained>
-                    <TButtonOutlined style={{ margin: 10 }} onPress={() => alert()}>
+                    <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
                         Cancel
                     </TButtonOutlined>
                 </View>
             </ScrollView>
-            <Text>test ssss</Text>
         </View>
     );
 }
@@ -146,48 +245,49 @@ export default function DataSharingConsentContainer({ navigation }: { navigation
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        textAlign: 'center',
-    },
-    logo: {
-        width: 65,
-        height: 65,
-    },
-    appDialog: {
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderStyle: 'solid',
-        borderRadius: 8,
-        padding: 16,
-        flex: 1,
-        alignItems: 'center',
         flexDirection: 'column',
-        justifyContent: 'space-between',
-        backgroundColor: '#FDFEFF',
+        justifyContent: 'space-around',
+        minHeight: 200,
     },
-    userPictureAndName: {
-        marginTop: 50,
-        justifyContent: 'center',
+    appDialogImage: {
+        aspectRatio: 1,
+        height: 50,
+        resizeMode: 'contain',
+    },
+    marginTop: {
+        marginTop: 10,
+    },
+    infoBox: {
+        marginBottom: 32,
+    },
+    checkbox: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 30,
     },
-    innerContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    headerPanel: {
-        paddingTop: 10,
-        paddingBottom: 20,
+    ssoContainer: {
+        marginTop: 10,
+        textAlign: 'center',
     },
     boarderPanel: {
         borderRadius: 8,
         borderColor: '#000000',
         borderWidth: 1,
-        marginRight: 30,
-        marginLeft: 30,
+        marginHorizontal: 30,
         marginTop: 20,
+        width: '90%',
     },
-    infoBox: {
-        margin: 20,
+    iconButton: {
+        marginLeft: 10,
     },
+    panelHeading: {
+        marginLeft: 5,
+        marginTop: 14,
+        fontWeight: '500',
+    },
+    rightIcon: {
+        position: 'absolute',
+        right: 0,
+        marginLeft: 'auto',
+    },
+    list: { marginLeft: 67, marginBottom: 15, lineHeight: 15 },
 });
