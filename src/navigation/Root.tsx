@@ -29,7 +29,6 @@ import DataSharingConsentScreen from '../screens/DataSharingConsentScreen';
 const prefix = Linking.createURL('');
 
 export type RouteStackParamList = {
-    DataSharingConsent: undefined;
     Splash: undefined;
     SplashSecurity: undefined;
     SplashPrivacy: undefined;
@@ -52,6 +51,7 @@ export type RouteStackParamList = {
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
+    DataSharingConsent: { payload: string; platform?: 'mobile' | 'browser' };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();

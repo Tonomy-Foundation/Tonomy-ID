@@ -77,10 +77,18 @@ export default function CommunicationModule() {
                 const payload = loginRequestsMessage.getPayload();
                 const base64UrlPayload = objToBase64Url(payload);
 
-                navigation.navigate('SSO', {
-                    payload: base64UrlPayload,
-                    platform: 'browser',
-                });
+                if (payload?.requests[0]?.getType() === 'DataSharingRequest') {
+                    navigation.navigate('DataSharingConsent', {
+                        payload: base64UrlPayload,
+                        platform: 'browser',
+                    });
+                } else {
+                    navigation.navigate('SSO', {
+                        payload: base64UrlPayload,
+                        platform: 'browser',
+                    });
+                }
+
                 sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
