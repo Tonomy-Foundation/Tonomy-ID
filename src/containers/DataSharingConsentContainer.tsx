@@ -192,7 +192,10 @@ export default function DataSharingConsentContainer({
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <Image width={8} height={8} source={require('../assets/tonomy/Tonomy-Foundation.png')}></Image>
+                    <Image
+                        style={[styles.logo, commonStyles.marginBottom]}
+                        source={require('../assets/tonomy/tonomy-logo1024.png')}
+                    ></Image>
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
                     {ssoApp && (
                         <View style={styles.ssoContainer}>
@@ -261,8 +264,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     logo: {
-        width: 100,
-        height: 100,
+        width: 65,
+        height: 65,
     },
     appDialog: {
         borderWidth: 1,

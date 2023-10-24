@@ -92,7 +92,7 @@ export default function RootNavigation() {
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
-                <Stack.Navigator initialRouteName={'DataSharingConsent'} screenOptions={defaultScreenOptions}>
+                <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                     <Stack.Screen
                         name="SplashSecurity"
