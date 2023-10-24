@@ -2,7 +2,7 @@ import { PublicKey } from '@wharfkit/antelope';
 import { KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 import RNKeyManager from '../../src/utils/RNKeyManager';
 import arg from 'argon2';
-import { generatePrivateKeyFromPassword, testKeyGenerator } from '../../src/utils/keys';
+import { generatePrivateKeyFromPassword } from '../../src/utils/keys';
 
 const mockarg = arg;
 
