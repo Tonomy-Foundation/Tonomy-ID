@@ -141,7 +141,11 @@ export default function RootNavigation() {
                         component={FingerprintUpdateScreen}
                         initialParams={{ password: '' }}
                     />
-                    <Stack.Screen name="LoginUsername" options={{ title: 'Login' }} component={LoginUsernameScreen} />
+                    <Stack.Screen
+                        name="LoginUsername"
+                        options={{ headerBackTitleVisible: false, title: 'Login' }}
+                        component={LoginUsernameScreen}
+                    />
                     <Stack.Screen
                         name="LoginPassphrase"
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
