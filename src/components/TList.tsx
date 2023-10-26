@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import theme from '../utils/theme';
 
-export type TListProps = React.ComponentProps<typeof Text> & { bulletIcon?: string; text?: string };
+export type TListProps = React.ComponentProps<typeof Text> & { bulletIcon?: string; item?: JSX.Element };
 
 export default function TList(props: TListProps) {
     return (
@@ -11,7 +12,7 @@ export default function TList(props: TListProps) {
                 <Text style={styles.textColor}>{props.bulletIcon}</Text>
             </View>
             <View>
-                <Text style={styles.textColor}>{props.text}</Text>
+                {props.item} 
             </View>
         </View>
     );
