@@ -138,7 +138,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         DECLINE
                     </TButtonOutlined>
                     <TButtonContained
-                        onPress={() => navigation.navigate('PrivacyAndPolicy')}
+                        onPress={() => setShowAcceptModal(true)}
                         style={styles.buttonsStyle}
                         disabled={false}
                     >
@@ -146,6 +146,38 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                     </TButtonContained>
                 </View>
             </ScrollView>
+
+            <TModal
+                visible={showAcceptModal}
+                iconColor={theme.colors.primary}
+                icon="exclamation"
+                title="Data security"
+                footer={
+                    <TButtonText
+                        onPress={() => {
+                            setShowAcceptModal(false);
+                            navigation.navigate('PrivacyAndPolicy');
+                        }}
+                    >
+                        <Text style={{ color: theme.colors.primary }}>OK</Text>
+                    </TButtonText>
+                }
+            >
+                <View>
+                    <Text style={styles.popupText}>
+                        Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
+                        others.
+                    </Text>
+                    <TButtonText
+                        onPress={() => {
+                            setShowAcceptModal(false);
+                            setFullTermsShow(true);
+                        }}
+                    >
+                        <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
+                    </TButtonText>
+                </View>
+            </TModal>
 
             <TModal
                 visible={showDeclineModal}
