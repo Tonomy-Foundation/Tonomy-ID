@@ -5,7 +5,7 @@ import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import useUserStore from '../store/userStore';
 import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
-import TUsername from '../components/TUsername';
+import TInputTextBox from '../components/TInputTextBox';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import theme, { commonStyles } from '../utils/theme';
@@ -69,7 +69,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                     <View style={styles.innerContainer}>
                         <TP style={styles.inputHeader}>Username</TP>
 
-                        <TUsername errorText={errorMessage} value={username} onChangeText={onTextChange} />
+                        <TInputTextBox errorText={errorMessage} value={username} onChangeText={onTextChange} />
 
                         {errorMessage.length <= 0 && (
                             <TCaption style={styles.caption}>You can always change your username later</TCaption>
