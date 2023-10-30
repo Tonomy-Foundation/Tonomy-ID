@@ -67,8 +67,12 @@ const useUserStore = create<UserState>((set, get) => ({
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout();
                 useErrorStore.getState().setError({ error: e, expected: false });
+            } else {
+                console.error(e);
             }
         }
+
+        get().setStatus(UserStatus.LOGGED_IN);
     },
 }));
 
