@@ -4,7 +4,7 @@ import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/LoginUsernameScreen';
-import TUsername from '../components/TUsername';
+import TInputTextBox from '../components/TInputTextBox';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/Tbutton';
@@ -48,7 +48,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                     <View style={styles.container}>
                         <TP size={1}>Username</TP>
                         <View>
-                            <TUsername value={username} onChangeText={(v) => onUsernameChange(v)} />
+                            <TInputTextBox value={username} onChangeText={(v) => onUsernameChange(v)} />
                         </View>
                         <TError>{errorMessage}</TError>
                     </View>
