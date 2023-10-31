@@ -43,7 +43,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             const username = await user.getUsername();
 
             if (!username) {
-                await logout();
+                await logout('No username in SSO login screen');
             }
 
             setUsername(username.getBaseUsername());

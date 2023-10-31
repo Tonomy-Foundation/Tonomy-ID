@@ -39,7 +39,9 @@ export default function CommunicationModule() {
                 // 401 signature invalid: the keys have been rotated and the old key is no longer valid
                 // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
                 if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
-                    await logout();
+                    await logout(
+                        e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
+                    );
                 } else {
                     throw e;
                 }
