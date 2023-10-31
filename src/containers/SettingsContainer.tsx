@@ -85,7 +85,7 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                 <TP>ACCOUNT</TP>
                 <TNavigationButton
                     onPress={async () => {
-                        await logout();
+                        await logout('Logout in settings menu');
                     }}
                     title={'Logout'}
                     icon={'logout-variant'}
