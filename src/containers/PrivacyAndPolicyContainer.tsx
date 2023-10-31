@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image, Platform } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
-import { TH1, TH2, TP } from '../components/atoms/THeadings';
+import { TH2, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { IconButton, Checkbox } from 'react-native-paper';
 import TModal from '../components/TModal';
@@ -12,7 +12,6 @@ import { Props } from '../screens/PrivacyAndPolicyScreen';
 
 export default function PrivacyAndPolicyContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [fullTermsShow, setFullTermsShow] = useState(false);
-    const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showDeclineModal, setShowDeclineModal] = useState(false);
     const [checkedStayInLoop, setCheckedStayInLoop] = React.useState(false);
     const [checkedOptIn, setCheckedOptIn] = React.useState(false);
@@ -32,21 +31,21 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                     <View>
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>Tonomy ID <Text style={{fontWeight: 'bold'}}>never stores or processes your passphrase or private keys on</Text> our servers.</Text>} 
+                            item={<Text style={styles.listItemText}>Tonomy ID <Text style={{ fontWeight: 'bold' }}>never stores or processes your passphrase or private keys on</Text> our servers.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>Tonomy ID <Text style={{fontWeight: 'bold'}}>never stores stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>} 
+                            item={<Text style={styles.listItemText}>Tonomy ID <Text style={{ fontWeight: 'bold' }}>never stores stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>If you agree below, Tonomy ID will collect your email for marketing purposes and share this information with XXXX.</Text>} 
+                            item={<Text style={styles.listItemText}>If you agree below, Tonomy ID will collect your email for marketing purposes and share this information with XXXX.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>If you agree below, Tonomy ID will collect usage and analytics information as you use it, which we use to improve the user experience of the application and share this information with Matamo.</Text>} 
+                            item={<Text style={styles.listItemText}>If you agree below, Tonomy ID will collect usage and analytics information as you use it, which we use to improve the user experience of the application and share this information with Matamo.</Text>}
                         />
-                        <TList bulletIcon="•"item={<Text style={styles.listItemText}>Tonomy ID is regulated under Dutch law.</Text>} />
+                        <TList bulletIcon="•" item={<Text style={styles.listItemText}>Tonomy ID is regulated under Dutch law.</Text>} />
                     </View>
                 </View>
                 <TouchableOpacity
@@ -144,57 +143,26 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         </Text>
                     </View>
                 </View>
-    
+
                 <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 20 : 0 }]}>
                     <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                         DECLINE
                     </TButtonOutlined>
-                    <TButtonContained onPress={() => setShowAcceptModal(true)} style={styles.buttonsStyle} disabled={false}>
+                    <TButtonContained onPress={() => navigation.navigate('Hcaptcha')} style={styles.buttonsStyle} disabled={false}>
                         ACCEPT
                     </TButtonContained>
                 </View>
-    
-            </ScrollView>
 
-            <TModal
-                visible={showAcceptModal}
-                iconColor={theme.colors.primary}
-                icon="exclamation"
-                title="Data security"
-                footer={
-                    <TButtonText
-                        onPress={() => {
-                            setShowAcceptModal(false);
-                            navigation.navigate('Hcaptcha');
-                        }}
-                    >
-                        <Text style={{ color: theme.colors.primary }}>OK</Text>
-                    </TButtonText>
-                }
-            >
-                <View>
-                    <Text style={styles.popupText}>
-                        Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
-                        others.
-                    </Text>
-                    <TButtonText
-                        onPress={() => {
-                            setShowAcceptModal(false);
-                            setFullTermsShow(true);
-                        }}
-                    >
-                        <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
-                    </TButtonText>
-                </View>
-            </TModal>
+            </ScrollView >
 
-            <TModal
+
+            < TModal
                 visible={showDeclineModal}
                 iconColor={theme.colors.primary}
                 icon="exclamation"
                 title="Consent declined"
                 footer={
-                    <View style={styles.footerButtonRow}>
+                    < View style={styles.footerButtonRow} >
                         <View>
                             <TButtonText onPress={() => setShowDeclineModal(false)}>
                                 <Text style={{ color: theme.colors.grey1 }}>Cancel</Text>
@@ -205,7 +173,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                                 <Text style={{ color: theme.colors.primary }}>Continue</Text>
                             </TButtonText>
                         </View>
-                    </View>
+                    </View >
                 }
             >
                 <View>
@@ -214,8 +182,8 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         services.
                     </Text>
                 </View>
-            </TModal>
-        </View>
+            </TModal >
+        </View >
     );
 }
 

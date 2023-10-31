@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image, Platform } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
-import { TH1, TP, TH2 } from '../components/atoms/THeadings';
+import { TP, TH2 } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { IconButton } from 'react-native-paper';
 import TModal from '../components/TModal';
@@ -12,13 +12,12 @@ import { Props } from '../screens/TermsAndConditionScreen';
 
 export default function TermsAndConditionContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [fullTermsShow, setFullTermsShow] = useState(false);
-    const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showDeclineModal, setShowDeclineModal] = useState(false);
 
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollViewConditions}>
-                
+
                 <View style={styles.headerPanel}>
                     <TH2 style={commonStyles.textAlignCenter}>Terms & Conditions</TH2>
                 </View>
@@ -31,17 +30,17 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                     <View style={styles.marginTop}>
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>You can <Text style={{fontWeight: 'bold'}}>use with Tonomy ID to log into and share data with applications</Text> that support Tonomy ID.</Text>}
+                            item={<Text style={styles.listItemText}>You can <Text style={{ fontWeight: 'bold' }}>use with Tonomy ID to log into and share data with applications</Text> that support Tonomy ID.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>Please remember or <Text style={{fontWeight: 'bold'}}>keep a secure copy of your master passphrase</Text> and username.</Text>} 
+                            item={<Text style={styles.listItemText}>Please remember or <Text style={{ fontWeight: 'bold' }}>keep a secure copy of your master passphrase</Text> and username.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}><Text style={{fontWeight: 'bold'}}>You are responsible for using and behaving according to regulatory requirements in applications you log into</Text> with Tonomy ID, not the Tonomy Foundation.</Text>} 
+                            item={<Text style={styles.listItemText}><Text style={{ fontWeight: 'bold' }}>You are responsible for using and behaving according to regulatory requirements in applications you log into</Text> with Tonomy ID, not the Tonomy Foundation.</Text>}
                         />
-                        <TList bulletIcon="•"item={<Text style={styles.listItemText}>Tonomy ID is <Text style={{fontWeight: 'bold'}}>regulated under Dutch law.</Text></Text>} />
+                        <TList bulletIcon="•" item={<Text style={styles.listItemText}>Tonomy ID is <Text style={{ fontWeight: 'bold' }}>regulated under Dutch law.</Text></Text>} />
                     </View>
                 </View>
                 <TouchableOpacity
@@ -138,7 +137,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         DECLINE
                     </TButtonOutlined>
                     <TButtonContained
-                        onPress={() => setShowAcceptModal(true)}
+                        onPress={() => navigation.navigate('PrivacyAndPolicy')}
                         style={styles.buttonsStyle}
                         disabled={false}
                     >
@@ -147,37 +146,6 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                 </View>
             </ScrollView>
 
-            <TModal
-                visible={showAcceptModal}
-                iconColor={theme.colors.primary}
-                icon="exclamation"
-                title="Data security"
-                footer={
-                    <TButtonText
-                        onPress={() => {
-                            setShowAcceptModal(false);
-                            navigation.navigate('PrivacyAndPolicy');
-                        }}
-                    >
-                        <Text style={{ color: theme.colors.primary }}>OK</Text>
-                    </TButtonText>
-                }
-            >
-                <View>
-                    <Text style={styles.popupText}>
-                        Secret information like passwords is only on your phone and cannot be accessed by Tonomy ID or
-                        others.
-                    </Text>
-                    <TButtonText
-                        onPress={() => {
-                            setShowAcceptModal(false);
-                            setFullTermsShow(true);
-                        }}
-                    >
-                        <Text style={{ textDecorationLine: 'underline' }}> Learn More </Text>
-                    </TButtonText>
-                </View>
-            </TModal>
 
             <TModal
                 visible={showDeclineModal}

@@ -108,19 +108,17 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                     <View style={styles.coloredTextContainer}>
                         {/* display the value text with red underling for invalid characters */}
                         {value?.split('').map((char, index) => (
-                            <>
-                                <Text
-                                    key={index}
-                                    style={{
-                                        color:
-                                            index < valueLength - 1 || valueLength === 0
-                                                ? theme.colors.text
-                                                : theme.colors.error,
-                                    }}
-                                >
-                                    {char}
-                                </Text>
-                            </>
+                            <Text
+                                key={index}
+                                style={{
+                                    color:
+                                        index < valueLength - 1 || valueLength === 0
+                                            ? theme.colors.text
+                                            : theme.colors.error,
+                                }}
+                            >
+                                {char}
+                            </Text>
                         ))}
                         {isFocused && <Animated.View style={[styles.cursor, { opacity: cursorVisible }]} />}
                     </View>

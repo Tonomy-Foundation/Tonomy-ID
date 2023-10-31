@@ -73,7 +73,6 @@ export default function CreateAccountContainer({ password }: { password: string 
 
     async function updateKeys() {
         await user.updateKeys(password);
-        userStore.setStatus(UserStatus.LOGGED_IN);
     }
 
     const openAppSettings = () => {

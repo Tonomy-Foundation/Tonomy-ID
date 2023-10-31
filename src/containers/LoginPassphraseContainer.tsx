@@ -33,7 +33,6 @@ export default function LoginPassphraseContainer({
 
     async function updateKeys() {
         await user.updateKeys(passphrase.join(' '));
-        setStatus(UserStatus.LOGGED_IN);
     }
 
     async function onNext() {
