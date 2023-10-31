@@ -63,6 +63,8 @@ const useUserStore = create<UserState>((set, get) => ({
 
         try {
             await get().user.intializeFromStorage();
+
+            get().setStatus(UserStatus.LOGGED_IN);
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
@@ -71,8 +73,6 @@ const useUserStore = create<UserState>((set, get) => ({
                 console.error(e);
             }
         }
-
-        get().setStatus(UserStatus.LOGGED_IN);
     },
 }));
 
