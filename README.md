@@ -47,9 +47,11 @@ yarn run start
 
 ### Run with the Staging / Demo environment and build
 
-Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
+Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs.
 
-1. Modify `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
+WARNING: As the SSO flow works using the slug of the installed app, this will not work with the SSO flow.
+
+1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
 2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=demo yarn run start`
 3. Connect via QR and bundle and load the app
 4. Scroll down >> "Open React Native dev men"
