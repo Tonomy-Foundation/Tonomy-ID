@@ -64,8 +64,9 @@ This is now running in production mode connected to the staging environment.
 
 1. Install adb on your pc (<https://dl.google.com/android/repository/platform-tools-latest-windows.zip>)
 2. Put the location of the folder inside Path env system variable or you can navigate to the folder and call adb.exe directly
-3. Run `adb logcat *:S ReactNative:V ReactNativeJS:V` or `./adb.exe logcat*:S ReactNative:V ReactNativeJS:V` in the command line to catch debug messages of reactNative only.
-4. Enable developer mode on your phone.
+3. Run `adb logcat *:S ReactNative:V ReactNativeJS:V` or `./adb.exe logcat*:S ReactNative:V ReactNativeJS:V` in the command line to catch debug messages of reactNative only. Try `adb logcat -s ReactNative:V ReactNativeJS:V` if you get an error
+
+4. [Enable developer mode](https://www.lifewire.com/how-to-enable-developer-mode-on-android-4684044) on your phone.
 5. Enable USB debug on your phone.
 6. Connect your phone to the pc with a usb cable.
 7. Open the the react native app you want to debug.
