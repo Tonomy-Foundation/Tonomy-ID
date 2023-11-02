@@ -72,7 +72,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     <TButton
                         style={styles.button}
                         onPress={async () => {
-                            await logout();
+                            await logout('Logout in main menu');
                         }}
                         icon={icons['Logout']}
                         color={theme.colors.grey2}

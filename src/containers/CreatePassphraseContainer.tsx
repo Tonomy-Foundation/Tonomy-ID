@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TButtonContained } from '../components/atoms/Tbutton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -16,11 +16,16 @@ import { ApplicationError, ApplicationErrors } from '../utils/errors';
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { passphraseList, generatePassphraseList, getPassphrase } = usePassphraseStore();
     const { user } = useUserStore();
+    const [loading, setLoading] = useState(false);
     const hasEffectRun = useRef(false);
 
     useEffect(() => {
         if (!hasEffectRun.current) {
             try {
+                if (passphraseList?.length <= 0) {
+                    generatePassphraseList();
+                }
+
                 getPassphrase();
             } catch (e) {
                 if (e instanceof ApplicationError && e.code === ApplicationErrors.NoDataFound) {
@@ -37,7 +42,9 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
     }
 
     async function onNext() {
+        setLoading(true);
         await user.savePassword(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyFromPassword });
+        setLoading(false);
         navigation.navigate('ConfirmPassphrase', { index: 0 });
     }
 
@@ -63,6 +70,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                                 style={styles.regenerateBtn}
                                 onPress={regenerate}
                                 icon={require('../assets/images/refresh-ccw.png')}
+                                disabled={loading}
                             >
                                 Regenerate
                             </TButtonContained>

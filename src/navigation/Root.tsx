@@ -24,6 +24,9 @@ import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
+import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
+import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
+import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 
 const prefix = Linking.createURL('');
 
@@ -50,6 +53,9 @@ export type RouteStackParamList = {
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
+    TermsAndCondition: undefined;
+    PrivacyAndPolicy: undefined;
+    ProfilePreview: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -107,25 +113,35 @@ export default function RootNavigation() {
                         options={noHeaderScreenOptions}
                         component={SplashTransparencyScreen}
                     />
+                    <Stack.Screen
+                        name="TermsAndCondition"
+                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
+                        component={TermsAndConditionScreen}
+                    />
+                    <Stack.Screen
+                        name="PrivacyAndPolicy"
+                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
+                        component={PrivacyAndPolicyScreen}
+                    />
                     <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                     <Stack.Screen
                         name="CreateAccountUsername"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={CreateAccountUsernameScreen}
                     />
                     <Stack.Screen
                         name="CreatePassphrase"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={CreatePassphraseScreen}
                     />
                     <Stack.Screen
                         name="Hcaptcha"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={HcaptchaScreen}
                     />
                     <Stack.Screen
                         name="ConfirmPassphrase"
-                        options={{ title: 'Create New Account' }}
+                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
                     />
                     <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
@@ -135,10 +151,14 @@ export default function RootNavigation() {
                         component={FingerprintUpdateScreen}
                         initialParams={{ password: '' }}
                     />
-                    <Stack.Screen name="LoginUsername" options={{ title: 'Login' }} component={LoginUsernameScreen} />
+                    <Stack.Screen
+                        name="LoginUsername"
+                        options={{ headerBackTitleVisible: false, title: 'Login' }}
+                        component={LoginUsernameScreen}
+                    />
                     <Stack.Screen
                         name="LoginPassphrase"
-                        options={{ title: 'Login' }}
+                        options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
@@ -157,6 +177,11 @@ export default function RootNavigation() {
                             name="SSO"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={SSOLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="ProfilePreview"
+                            options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
+                            component={ProfilePreviewScreen}
                         />
                     </Stack.Navigator>
                 </>

@@ -6,7 +6,7 @@ import { TCaption } from './atoms/THeadings';
 
 export type TTextInputProps = React.ComponentProps<typeof TextInput> & { errorText?: string };
 
-export default function TUsername(props: TTextInputProps) {
+export default function TInputTextBox(props: TTextInputProps) {
     const showError: boolean = !!props.errorText && props.errorText.length > 0;
 
     return (

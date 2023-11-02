@@ -5,12 +5,15 @@ import { Props } from '../screens/SettingsScreen';
 import FaceIdIcon from '../assets/icons/FaceIdIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TP } from '../components/atoms/THeadings';
+import useUserStore from '../store/userStore';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const { logout } = useUserStore();
+
     return (
         <SafeAreaView>
-            <ScrollView style={{ padding: 16 }}>
-                <TP size={1}>SECURITY</TP>
+            <ScrollView style={{ paddingHorizontal: 16 }}>
+                {/* <TP size={1}>SECURITY</TP>
                 <TNavigationButton
                     onPress={() => {
                         navigation.navigate('ConfirmPassword');
@@ -78,11 +81,11 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                     }}
                     title={'Choose Language'}
                     icon={'translate'}
-                />
+                /> */}
                 <TP>ACCOUNT</TP>
                 <TNavigationButton
-                    onPress={function (): void {
-                        throw new Error('Function not implemented.');
+                    onPress={async () => {
+                        await logout('Logout in settings menu');
                     }}
                     title={'Logout'}
                     icon={'logout-variant'}

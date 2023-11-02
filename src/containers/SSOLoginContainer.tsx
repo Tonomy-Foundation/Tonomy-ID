@@ -3,7 +3,7 @@ import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
 import TInfoBox from '../components/TInfoBox';
-import useUserStore, { UserStatus } from '../store/userStore';
+import useUserStore from '../store/userStore';
 import {
     UserApps,
     App,
@@ -12,6 +12,8 @@ import {
     SdkErrors,
     CommunicationError,
     LoginRequestsMessage,
+    ResponsesManager,
+    RequestsManager,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -20,17 +22,16 @@ import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { openBrowserAsync } from 'expo-web-browser';
 import { useNavigation } from '@react-navigation/native';
-import { throwError } from '../utils/errors';
-import { ApplicationErrors } from '../utils/errors';
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();
-    const [app, setApp] = useState<App>();
-    const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
+    // const [app, setApp] = useState<App>();
+    const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
+    // const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
     const [username, setUsername] = useState<string>();
     const [ssoApp, setSsoApp] = useState<App>();
-    const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
-    const [receiverDid, setReceiverDid] = useState<string>();
+    // const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
+    // const [receiverDid, setReceiverDid] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
 
@@ -42,7 +43,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             const username = await user.getUsername();
 
             if (!username) {
-                await logout();
+                await logout('No username in SSO login screen');
             }
 
             setUsername(username.getBaseUsername());
@@ -51,30 +52,20 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         }
     }
 
-    async function getLoginRequestFromParams() {
+    async function getRequestsFromParams() {
         try {
             const parsedPayload = base64UrlToObj(payload);
+            const managedRequests = new RequestsManager(parsedPayload?.requests);
 
-            if (!parsedPayload || !parsedPayload.requests)
-                throwError('No requests found in payload', ApplicationErrors.MissingParams);
+            await managedRequests.verify();
+            // TODO check if the internal login request comes from same DID as the sender of the message.
 
-            const requests: LoginRequest[] = parsedPayload.requests.map((r: string) => new LoginRequest(r));
+            const managedResponses = new ResponsesManager(managedRequests);
 
-            await UserApps.verifyRequests(requests);
+            await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
 
-            for (const request of requests) {
-                const payload = request.getPayload();
-                const app = await App.getApp(payload.origin);
-
-                if (payload.origin === settings.config.ssoWebsiteOrigin) {
-                    setAppLoginRequest(request);
-                    setReceiverDid(request.getIssuer());
-                    setApp(app);
-                } else {
-                    setSsoLoginRequest(request);
-                    setSsoApp(app);
-                }
-            }
+            setSsoApp(managedResponses.getExternalLoginResponseOrThrow().getAppOrThrow());
+            setResponsesManager(managedResponses);
 
             setNextLoading(false);
         } catch (e) {
@@ -85,20 +76,21 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onNext() {
         try {
             setNextLoading(true);
-            if (!app || !appLoginRequest || !ssoApp || !ssoLoginRequest) throw new Error('Missing params');
-            const callbackUrl = await user.apps.acceptLoginRequest(
-                [
-                    { app: ssoApp, request: ssoLoginRequest },
-                    { app, request: appLoginRequest },
-                ],
-                platform,
-                receiverDid
-            );
+            if (!responsesManager) throw new Error('Responses manager is not set');
+
+            await responsesManager.createResponses(user);
+
+            const callbackUrl = await user.apps.acceptLoginRequest(responsesManager, platform, {
+                callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
+                callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
+                messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+            });
 
             setNextLoading(false);
 
             if (platform === 'mobile') {
-                await openBrowserAsync(callbackUrl as string);
+                if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
+                await openBrowserAsync(callbackUrl);
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
@@ -129,26 +121,29 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     async function onCancel() {
         try {
             setCancelLoading(true);
-            if (!ssoLoginRequest || !appLoginRequest) throw new Error('Missing params');
+            if (!responsesManager) throw new Error('Responses manager is not set');
+
             const res = await UserApps.terminateLoginRequest(
-                [ssoLoginRequest, appLoginRequest],
-                platform === 'browser' ? 'message' : 'url',
+                responsesManager,
+                platform,
                 {
                     code: SdkErrors.UserCancelled,
                     reason: 'User cancelled login request',
                 },
                 {
-                    issuer: await user.getIssuer(),
-                    messageRecipient: receiverDid,
+                    callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
+                    callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
+                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                    user,
                 }
             );
 
             if (platform === 'mobile') {
                 setNextLoading(false);
-                await openBrowserAsync(res as string);
+                if (typeof res !== 'string') throw new Error('Res is not string');
+                await openBrowserAsync(res);
             } else {
                 setNextLoading(false);
-                await user.communication.sendMessage(res as LoginRequestsMessage);
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
                 navigation.navigate('Drawer', { screen: 'UserHome' });
@@ -177,7 +172,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     useEffect(() => {
         setUserName();
-        getLoginRequestFromParams();
+        getRequestsFromParams();
     }, []);
 
     return (

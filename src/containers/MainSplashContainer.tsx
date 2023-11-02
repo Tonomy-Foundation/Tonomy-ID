@@ -13,43 +13,43 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
 
-    async function main() {
-        await sleep(800);
-
-        try {
-            await initializeStatusFromStorage();
-            const status = getStatus();
-
-            switch (status) {
-                case UserStatus.NONE:
-                    navigation.dispatch(StackActions.replace('SplashSecurity'));
-                    break;
-                case UserStatus.NOT_LOGGED_IN:
-                    navigation.dispatch(StackActions.replace('Home'));
-                    break;
-                case UserStatus.LOGGED_IN:
-                    try {
-                        await user.getUsername();
-                    } catch (e) {
-                        if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
-                            logout();
-                        } else {
-                            throw e;
-                        }
-                    }
-
-                    break;
-                default:
-                    throw new Error('Unknown status: ' + status);
-            }
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-        }
-    }
-
     useEffect(() => {
+        async function main() {
+            await sleep(800);
+
+            try {
+                await initializeStatusFromStorage();
+                const status = getStatus();
+
+                switch (status) {
+                    case UserStatus.NONE:
+                        navigation.dispatch(StackActions.replace('SplashSecurity'));
+                        break;
+                    case UserStatus.NOT_LOGGED_IN:
+                        navigation.dispatch(StackActions.replace('Home'));
+                        break;
+                    case UserStatus.LOGGED_IN:
+                        try {
+                            await user.getUsername();
+                        } catch (e) {
+                            if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+                                logout("Invalid data in user's storage");
+                            } else {
+                                throw e;
+                            }
+                        }
+
+                        break;
+                    default:
+                        throw new Error('Unknown status: ' + status);
+                }
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            }
+        }
+
         main();
-    }, []);
+    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user]);
 
     return (
         <LayoutComponent

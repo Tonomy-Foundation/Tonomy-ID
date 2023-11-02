@@ -1,9 +1,8 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
 import LayoutComponent from '../components/layout';
-import { TCaption, TH1, TH4 } from '../components/atoms/THeadings';
-import TLink from '../components/atoms/TA';
+import { TH1, TH4 } from '../components/atoms/THeadings';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { Props } from '../screens/HomeScreen';
@@ -39,10 +38,6 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                     >
                         Login
                     </TButtonOutlined>
-                    <TCaption style={commonStyles.textAlignCenter}>
-                        By creating an account, you agree to our <TLink>Terms & Conditions</TLink> and agree to &nbsp;
-                        <TLink>Privacy Policy</TLink>
-                    </TCaption>
                 </View>
             }
         ></LayoutComponent>
@@ -52,6 +47,12 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
 const styles = StyleSheet.create({
     header: {
         flex: 1,
+    },
+    link: {
+        color: settings.config.theme.primaryColor,
+        textDecorationLine: 'underline',
+        fontSize: 14,
+        fontWeight: '400',
     },
     headerButton: {
         alignSelf: 'flex-end',

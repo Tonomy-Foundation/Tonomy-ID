@@ -28,7 +28,7 @@ export interface UserState {
     getStatus(): UserStatus;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
-    logout(): Promise<void>;
+    logout(reason: string): Promise<void>;
 }
 
 setSettings({
@@ -38,6 +38,7 @@ setSettings({
     loggerLevel: settings.config.loggerLevel,
     tonomyIdSchema: settings.config.tonomyIdSlug + '://',
     accountsServiceUrl: settings.config.accountsServiceUrl,
+    ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
 });
 
 const useUserStore = create<UserState>((set, get) => ({
@@ -51,21 +52,27 @@ const useUserStore = create<UserState>((set, get) => ({
     setStatus: (newStatus: UserStatus) => {
         set({ status: newStatus });
     },
-    logout: async () => {
+    logout: async (reason: string) => {
         await get().user.logout();
         get().setStatus(UserStatus.NOT_LOGGED_IN);
 
-        await printStorage('logout()');
+        await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
         await printStorage('initializeStatusFromStorage()');
 
         try {
             await get().user.intializeFromStorage();
+
+            get().setStatus(UserStatus.LOGGED_IN);
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
-                await get().logout();
+                await get().logout('Key not found on account');
                 useErrorStore.getState().setError({ error: e, expected: false });
+            } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
+                await get().logout('Account not found');
+            } else {
+                console.error(e);
             }
         }
     },
