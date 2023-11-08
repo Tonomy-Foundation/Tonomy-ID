@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as Linking from 'expo-linking';
 import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
@@ -90,7 +91,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             if (platform === 'mobile') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
-                await openBrowserAsync(callbackUrl);
+                // await openBrowserAsync(callbackUrl);
+
+                await Linking.openURL(callbackUrl);
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
