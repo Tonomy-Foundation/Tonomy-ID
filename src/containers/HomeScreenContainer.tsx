@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
-import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/TButton';
 import LayoutComponent from '../components/layout';
 import { TH1, TH4 } from '../components/atoms/THeadings';
 import { commonStyles } from '../utils/theme';
@@ -12,7 +12,8 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
         <LayoutComponent
             body={
                 <View style={styles.header}>
-                    <TButtonText style={styles.headerButton}>Need Help?</TButtonText>
+                    {/* TODO uncomment link */}
+                    {/* <TButtonText style={styles.headerButton}>Need Help?</TButtonText> */}
                     <View style={styles.imgContainer}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}

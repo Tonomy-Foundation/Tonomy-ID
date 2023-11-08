@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
@@ -56,7 +56,8 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                         <TH1 style={commonStyles.textAlignCenter}>Create passphrase</TH1>
                         <TP style={styles.paragraph}>
                             Passphrase is like a password but more secure and easier to remember.{' '}
-                            <TP style={styles.link}>Learn more.</TP>
+                            {/* TODO uncomment link */}
+                            {/* <TP style={styles.link}>Learn more.</TP> */}
                         </TP>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
@@ -66,14 +67,14 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                             </View>
                         </View>
                         <View style={styles.btnView}>
-                            <TButtonContained
+                            <TButtonOutlined
                                 style={styles.regenerateBtn}
                                 onPress={regenerate}
                                 icon={require('../assets/images/refresh-ccw.png')}
                                 disabled={loading}
                             >
                                 Regenerate
-                            </TButtonContained>
+                            </TButtonOutlined>
                         </View>
                     </View>
                 }

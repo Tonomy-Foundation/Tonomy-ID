@@ -6,7 +6,7 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import TInfoBox from '../components/TInfoBox';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/TButton';
 import TModal from '../components/TModal';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';

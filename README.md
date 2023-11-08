@@ -49,7 +49,7 @@ yarn run start
 
 Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
-1. Modify `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
+1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
 2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=demo yarn run start`
 3. Connect via QR and bundle and load the app
 4. Scroll down >> "Open React Native dev men"
@@ -64,7 +64,7 @@ This is now running in production mode connected to the staging environment.
 
 1. Install adb on your pc (<https://dl.google.com/android/repository/platform-tools-latest-windows.zip>)
 2. Put the location of the folder inside Path env system variable or you can navigate to the folder and call adb.exe directly
-3. Run `adb logcat *:S ReactNative:V ReactNativeJS:V` or `./adb.exe logcat*:S ReactNative:V ReactNativeJS:V` in the command line to catch debug messages of reactNative only.
+3. Run `adb logcat *:S ReactNative:V ReactNativeJS:V` or `./adb.exe logcat*:S ReactNative:V ReactNativeJS:V` in the command line to catch debug messages of reactNative only. Try `adb logcat -s ReactNative:V ReactNativeJS:V` if that doesn't work.
 4. Enable developer mode on your phone.
 5. Enable USB debug on your phone.
 6. Connect your phone to the pc with a usb cable.
@@ -119,6 +119,14 @@ yarn run lint
 ### Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
+
+### Common errors and how to fix
+
+`Origin not found`
+
+You might be running in stand-alone mode and trying to complete the SSO loin flow. This is not possible stand-alone mode.
+
+**FIX:** Run Tonomy ID using `./app.sh` with the Tonomy ID Integration repository.
 
 ## Releases
 
