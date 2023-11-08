@@ -71,6 +71,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                                 onPress={regenerate}
                                 icon={require('../assets/images/refresh-ccw.png')}
                                 disabled={loading}
+                                theme="secondary"
                             >
                                 Regenerate
                             </TButtonContained>
