@@ -12,7 +12,8 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
         <LayoutComponent
             body={
                 <View style={styles.header}>
-                    <TButtonText style={styles.headerButton}>Need Help?</TButtonText>
+                    {/* TODO uncomment link */}
+                    {/* <TButtonText style={styles.headerButton}>Need Help?</TButtonText> */}
                     <View style={styles.imgContainer}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
