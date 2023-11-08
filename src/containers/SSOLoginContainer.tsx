@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as Linking from 'expo-linking';
 import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
@@ -20,7 +21,6 @@ import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
-import { openBrowserAsync } from 'expo-web-browser';
 import { useNavigation } from '@react-navigation/native';
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
@@ -90,7 +90,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             if (platform === 'mobile') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
-                await openBrowserAsync(callbackUrl);
+
+                await Linking.openURL(callbackUrl);
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
@@ -141,7 +142,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (platform === 'mobile') {
                 setNextLoading(false);
                 if (typeof res !== 'string') throw new Error('Res is not string');
-                await openBrowserAsync(res);
+                await Linking.openURL(res);
             } else {
                 setNextLoading(false);
                 // @ts-expect-error item of type string is not assignable to type never
