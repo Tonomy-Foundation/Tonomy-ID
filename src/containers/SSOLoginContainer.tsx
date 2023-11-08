@@ -25,13 +25,9 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();
-    // const [app, setApp] = useState<App>();
     const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
-    // const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
     const [username, setUsername] = useState<string>();
     const [ssoApp, setSsoApp] = useState<App>();
-    // const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
-    // const [receiverDid, setReceiverDid] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
 
