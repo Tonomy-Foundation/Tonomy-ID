@@ -120,6 +120,14 @@ yarn run lint
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
 
+### Common errors and how to fix
+
+`Origin not found`
+
+You might be running in stand-alone mode and trying to complete the SSO loin flow. This is not possible stand-alone mode.
+
+**FIX:** Run Tonomy ID using `./app.sh` with the Tonomy ID Integration repository.
+
 ## Releases
 
 Release versioning is done automatically with [https://github.com/marketplace/actions/automated-version-bump](automated-version-bump). This will do a major, minor or patch release based on words in the commits. See [Workflow](https://github.com/marketplace/actions/automated-version-bump#workflow) for details.
