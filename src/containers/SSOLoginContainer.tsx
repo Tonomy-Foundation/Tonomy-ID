@@ -91,6 +91,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (platform === 'mobile') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
                 await openBrowserAsync(callbackUrl);
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
@@ -142,6 +145,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 setNextLoading(false);
                 if (typeof res !== 'string') throw new Error('Res is not string');
                 await openBrowserAsync(res);
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
             } else {
                 setNextLoading(false);
                 // @ts-expect-error item of type string is not assignable to type never
