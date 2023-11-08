@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as Linking from 'expo-linking';
 import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import TInfoBox from '../components/TInfoBox';
 import useUserStore from '../store/userStore';
 import {
@@ -25,13 +25,9 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();
-    // const [app, setApp] = useState<App>();
     const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
-    // const [appLoginRequest, setAppLoginRequest] = useState<LoginRequest>();
     const [username, setUsername] = useState<string>();
     const [ssoApp, setSsoApp] = useState<App>();
-    // const [ssoLoginRequest, setSsoLoginRequest] = useState<LoginRequest>();
-    // const [receiverDid, setReceiverDid] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
 
@@ -90,8 +86,10 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             if (platform === 'mobile') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
-
                 await Linking.openURL(callbackUrl);
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
@@ -143,6 +141,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 setNextLoading(false);
                 if (typeof res !== 'string') throw new Error('Res is not string');
                 await Linking.openURL(res);
+                // @ts-expect-error item of type string is not assignable to type never
+                // TODO fix type error
+                navigation.navigate('Drawer', { screen: 'UserHome' });
             } else {
                 setNextLoading(false);
                 // @ts-expect-error item of type string is not assignable to type never

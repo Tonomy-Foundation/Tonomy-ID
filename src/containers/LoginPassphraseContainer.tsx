@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
@@ -51,6 +51,9 @@ export default function LoginPassphraseContainer({
                 setErrorMessage('');
                 await user.saveLocal();
                 await updateKeys();
+                setStatus(UserStatus.LOGGED_IN);
+            } else {
+                throw new Error('Account name not found');
             }
         } catch (e) {
             if (e instanceof SdkError) {
@@ -141,7 +144,7 @@ export default function LoginPassphraseContainer({
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
-                            <TP size={1}>Don&apost have an account?</TP>
+                            <TP size={1}>Don&apos;t have an account?</TP>
                             <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
                                 <TP size={1} style={styles.link}>
                                     Sign Up

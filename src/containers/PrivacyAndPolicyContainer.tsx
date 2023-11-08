@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, ScrollView, Image, Platform } from 'react-native';
-import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { IconButton, Checkbox } from 'react-native-paper';
