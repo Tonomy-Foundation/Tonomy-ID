@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import TInfoBox from '../components/TInfoBox';
 import useUserStore from '../store/userStore';
 import {

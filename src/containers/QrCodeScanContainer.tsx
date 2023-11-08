@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';

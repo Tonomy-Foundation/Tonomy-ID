@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';

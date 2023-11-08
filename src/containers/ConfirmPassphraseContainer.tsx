@@ -5,7 +5,7 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/ConfirmPassphraseScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { numberToOrdinal } from '../utils/numbers';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
 import settings from '../settings';

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { DrawerContentScrollView, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { StyleSheet, View } from 'react-native';
-import TButton from './atoms/Tbutton';
+import TButton from './atoms/TButton';
 import { DrawerStackParamList } from '../navigation/Drawer';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { useAppTheme } from '../utils/theme';
