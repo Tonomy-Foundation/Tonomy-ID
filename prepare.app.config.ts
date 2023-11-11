@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import fs from 'fs';
 import settings from './src/settings';
 import { ExpoConfig } from 'expo/config';

@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -33,6 +34,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
 
+
     const onMessage = (event: { nativeEvent: { data: string } }) => {
         if (event && event.nativeEvent.data) {
             const eventData = event.nativeEvent.data;
@@ -43,12 +45,14 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 }
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
+                setLoading(false); 
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
+                setLoading(false); 
             } else {
                 if (settings.config.loggerLevel === 'debug')
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
@@ -63,6 +67,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     setCode(eventData);
                 }
 
+                setLoading(false); 
                 setSuccess(true);
             }
         }
@@ -126,6 +131,14 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
         if (captchaFormRef.current) {
             captchaFormRef.current.hide();
+
+
+
+
+
+
+
+            
             setCode(null);
         }
     }
@@ -157,7 +170,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     languageCode="en"
                                     onMessage={onMessage}
                                     sentry={false}
-                                    showLoading={false}
+                                    showLoading={true}
                                 />
 
                                 <TouchableOpacity
@@ -170,15 +183,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Checkbox.Android
                                             status={code ? 'checked' : 'unchecked'}
-                                            onPress={() => {
+                                            onPress={() => { 
+                                                setSuccess(!success);
+
                                                 if (captchaFormRef.current) {
                                                     captchaFormRef.current.show();
                                                     setErrorMsg(null);
                                                 }
+ 
                                             }}
                                             color={theme.colors.primary}
                                         />
                                         <Text style={styles.humanLabel}>I am human</Text>
+                                      
                                     </View>
                                     <Image
                                         source={require('../assets/images/hcaptcha.png')}
@@ -191,10 +208,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 }
                 footer={
                     <View style={commonStyles.marginTop}>
-                        <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={!code || loading || !success}>
-                                Create Account
-                            </TButtonContained>
+                        <View style={commonStyles.marginBottom}> 
+                            <TButtonContained onPress={onNext} disabled={!code || !success}>
+                                    Create Account
+                            </TButtonContained> 
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
