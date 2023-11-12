@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useRef } from 'react';
-import { ActivityIndicator, View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -22,7 +22,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
     const captchaFormRef = useRef<ConfirmHcaptcha | null>(null);
-    const [loading, setLoading] = useState(false);
     const [accountUrl, setAccountUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
@@ -45,14 +44,12 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 }
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
-                setLoading(false); 
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
-                setLoading(false); 
             } else {
                 if (settings.config.loggerLevel === 'debug')
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
@@ -67,7 +64,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     setCode(eventData);
                 }
 
-                setLoading(false); 
                 setSuccess(true);
             }
         }
@@ -84,10 +80,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     }
 
     async function onNext() {
-        setLoading(true);
 
         if (!code) {
-            setLoading(false);
             throw new Error('Code is not set');
         }
 
@@ -117,16 +111,13 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         errorStore.setError({ error: e, expected: false });
                 }
 
-                setLoading(false);
                 return;
             } else {
                 errorStore.setError({ error: e, expected: false });
-                setLoading(false);
                 return;
             }
         }
 
-        setLoading(false);
         setShowModal(true);
 
         if (captchaFormRef.current) {
@@ -171,6 +162,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     onMessage={onMessage}
                                     sentry={false}
                                     showLoading={true}
+                                    
                                 />
 
                                 <TouchableOpacity
