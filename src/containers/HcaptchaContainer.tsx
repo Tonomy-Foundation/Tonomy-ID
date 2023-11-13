@@ -1,12 +1,11 @@
-/* eslint-disable prettier/prettier */
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image  } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Checkbox, ActivityIndicator } from 'react-native-paper';
-import { TButtonContained } from '../components/atoms/TButton';
+import { TButtonContained, TButtonText } from '../components/atoms/TButton';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/HcaptchaScreen';
 import settings from '../settings';
@@ -22,10 +21,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
     const captchaFormRef = useRef<ConfirmHcaptcha | null>(null);
+    const [loading, setLoading] = useState(false);
     const [accountUrl, setAccountUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-    const [loading, setLoading] = useState<boolean>(false); 
     const userStore = useUserStore();
     const user = userStore.user;
     const siteKey = settings.config.captchaSiteKey;
@@ -33,7 +32,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
-
 
     const onMessage = (event: { nativeEvent: { data: string } }) => {
         if (event && event.nativeEvent.data) {
@@ -70,19 +68,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }
     };
 
-    const onPressCheckbox = () => {
-        setSuccess(!success);
-        setLoading(true);
-            
-        setTimeout(() => {
-            if (captchaFormRef.current) {
-                captchaFormRef.current.show();
-            }
-
-            setLoading(false); 
-        }, 2000);
-    };
-
     async function setUserName() {
         try {
             const username = await user.getUsername();
@@ -94,8 +79,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     }
 
     async function onNext() {
+        setLoading(true);
 
         if (!code) {
+            setLoading(false);
             throw new Error('Code is not set');
         }
 
@@ -125,25 +112,20 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         errorStore.setError({ error: e, expected: false });
                 }
 
+                setLoading(false);
                 return;
             } else {
                 errorStore.setError({ error: e, expected: false });
+                setLoading(false);
                 return;
             }
         }
 
+        setLoading(false);
         setShowModal(true);
 
         if (captchaFormRef.current) {
             captchaFormRef.current.hide();
-
-
-
-
-
-
-
-            
             setCode(null);
         }
     }
@@ -158,6 +140,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
+    const onPressCheckbox = () => {
+        setSuccess(!success);
+        setLoading(true);
+
+        if (captchaFormRef.current) {
+            captchaFormRef.current.show();
+        }
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    };
+
     return (
         <>
             <LayoutComponent
@@ -166,7 +161,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         <TH1 style={[commonStyles.textAlignCenter]}>Human Verification</TH1>
                         <View style={styles.container}>
                             {errorMsg && <TP style={styles.errorMsg}>{errorMsg}</TP>}
-                            
+
                             <View>
                                 <ConfirmHcaptcha
                                     size="invisible"
@@ -175,10 +170,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     languageCode="en"
                                     onMessage={onMessage}
                                     sentry={false}
-                                    showLoading={loading}
-                                    backgroundColor="transparent"  
-                                    theme="light"                                  
+                                    showLoading={false}
+                                    backgroundColor="transparent"
+                                    theme="light"
                                 />
+
                                 <TouchableOpacity
                                     style={{
                                         flexDirection: 'row',
@@ -187,19 +183,18 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     }}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        {loading ? 
-                                            <ActivityIndicator size="small" />: 
+                                        {loading ? (
+                                            <ActivityIndicator size="small" />
+                                        ) : (
                                             <>
                                                 <Checkbox.Android
                                                     status={code ? 'checked' : 'unchecked'}
                                                     onPress={onPressCheckbox}
-
                                                     color={theme.colors.primary}
                                                 />
-                                                
                                             </>
-                                        }       
-                                        <Text style={styles.humanLabel}>I am human</Text>                              
+                                        )}
+                                        <Text style={styles.humanLabel}>I am human</Text>
                                     </View>
                                     <Image
                                         source={require('../assets/images/hcaptcha.png')}
@@ -212,10 +207,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 }
                 footer={
                     <View style={commonStyles.marginTop}>
-                        <View style={commonStyles.marginBottom}> 
-                            <TButtonContained onPress={onNext} disabled={!code || !success}>
-                                    Create Account
-                            </TButtonContained> 
+                        <View style={commonStyles.marginBottom}>
+                            <TButtonContained onPress={onNext} disabled={!code || loading || !success}>
+                                Create Account
+                            </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
@@ -280,7 +275,7 @@ const styles = StyleSheet.create({
     humanLabel: {
         color: '#555555',
         fontSize: 16,
-        marginLeft: 5,
+        marginLeft: 4,
     },
     headline: {
         marginTop: 5,
