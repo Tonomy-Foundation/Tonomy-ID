@@ -2,7 +2,7 @@ import React, { ReactNode, useState } from 'react';
 import TModal from './TModal';
 import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
-import { TButtonText } from './atoms/Tbutton';
+import { TButtonText } from './atoms/TButton';
 import { TP } from './atoms/THeadings';
 import { HttpError, EosioUtil, CommunicationError, AntelopePushTransactionError } from '@tonomy/tonomy-id-sdk';
 import { Modal } from 'react-native';

@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.62.0",
+    "version": "0.64.0",
     "scripts": {
         "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "yarn run build:prepare && npx eas device:create",
@@ -27,7 +27,7 @@
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "0.16.0",
+        "@tonomy/tonomy-id-sdk": "0.17.0",
         "@wharfkit/antelope": "^0.7.1",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
@@ -42,7 +42,6 @@
         "expo-notifications": "~0.20.1",
         "expo-secure-store": "~12.3.1",
         "expo-status-bar": "~1.6.0",
-        "expo-web-browser": "^12.0.0",
         "fast-text-encoding": "^1.0.6",
         "react": "18.2.0",
         "react-dom": "18.2.0",

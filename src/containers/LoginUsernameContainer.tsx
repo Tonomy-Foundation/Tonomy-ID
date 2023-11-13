@@ -7,7 +7,7 @@ import { Props } from '../screens/LoginUsernameScreen';
 import TInputTextBox from '../components/TInputTextBox';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
-import { TButtonContained } from '../components/atoms/Tbutton';
+import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import { TError } from '../components/TError';
 import useErrorStore from '../store/errorStore';
