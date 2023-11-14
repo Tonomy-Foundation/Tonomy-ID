@@ -1,12 +1,11 @@
-/* eslint-disable prettier/prettier */
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
-import { Checkbox } from 'react-native-paper';
-import { TButtonContained, TButtonText } from '../components/atoms/Tbutton';
+import { Checkbox, ActivityIndicator } from 'react-native-paper';
+import { TButtonContained, TButtonText } from '../components/atoms/TButton';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/HcaptchaScreen';
 import settings from '../settings';
@@ -22,6 +21,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
     const captchaFormRef = useRef<ConfirmHcaptcha | null>(null);
+    const [loading, setLoading] = useState(false);
     const [accountUrl, setAccountUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
@@ -32,7 +32,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
-
 
     const onMessage = (event: { nativeEvent: { data: string } }) => {
         if (event && event.nativeEvent.data) {
@@ -80,8 +79,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     }
 
     async function onNext() {
+        setLoading(true);
 
         if (!code) {
+            setLoading(false);
             throw new Error('Code is not set');
         }
 
@@ -111,25 +112,20 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         errorStore.setError({ error: e, expected: false });
                 }
 
+                setLoading(false);
                 return;
             } else {
                 errorStore.setError({ error: e, expected: false });
+                setLoading(false);
                 return;
             }
         }
 
+        setLoading(false);
         setShowModal(true);
 
         if (captchaFormRef.current) {
             captchaFormRef.current.hide();
-
-
-
-
-
-
-
-
             setCode(null);
         }
     }
@@ -143,6 +139,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         userStore.setStatus(UserStatus.LOGGED_IN);
         setShowModal(false);
     }
+
+    const onPressCheckbox = () => {
+        setSuccess(!success);
+        setLoading(true);
+
+        if (captchaFormRef.current) {
+            captchaFormRef.current.show();
+        }
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    };
 
     return (
         <>
@@ -161,8 +170,9 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     languageCode="en"
                                     onMessage={onMessage}
                                     sentry={false}
-                                    showLoading={true}
-
+                                    showLoading={false}
+                                    backgroundColor="transparent"
+                                    theme="light"
                                 />
 
                                 <TouchableOpacity
@@ -173,21 +183,18 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     }}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Checkbox.Android
-                                            status={code ? 'checked' : 'unchecked'}
-                                            onPress={() => {
-                                                setSuccess(success => !success);
-
-                                                if (captchaFormRef.current) {
-                                                    captchaFormRef.current.show();
-                                                    setErrorMsg(null);
-                                                }
-
-                                            }}
-                                            color={theme.colors.primary}
-                                        />
+                                        {loading ? (
+                                            <ActivityIndicator size="small" />
+                                        ) : (
+                                            <>
+                                                <Checkbox.Android
+                                                    status={code ? 'checked' : 'unchecked'}
+                                                    onPress={onPressCheckbox}
+                                                    color={theme.colors.primary}
+                                                />
+                                            </>
+                                        )}
                                         <Text style={styles.humanLabel}>I am human</Text>
-
                                     </View>
                                     <Image
                                         source={require('../assets/images/hcaptcha.png')}
@@ -201,7 +208,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 footer={
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={!code || !success}>
+                            <TButtonContained onPress={onNext} disabled={!code || loading || !success}>
                                 Create Account
                             </TButtonContained>
                         </View>

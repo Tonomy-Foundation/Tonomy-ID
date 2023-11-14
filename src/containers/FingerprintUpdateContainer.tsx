@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import FingerprintIcon from '../assets/icons/FingerprintIcon';
 import LayoutComponent from '../components/layout';

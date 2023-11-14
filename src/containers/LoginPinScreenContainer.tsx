@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH1 } from '../components/atoms/THeadings';
 import TPin from '../components/TPin';
 import useUserStore from '../store/userStore';

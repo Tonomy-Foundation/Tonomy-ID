@@ -3727,9 +3727,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.16.0"
+"@tonomy/tonomy-id-sdk@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.17.0"
   dependencies:
     "@consento/sync-randombytes": ^1.0.5
     "@tonomy/antelope-did": ^0.1.5
@@ -3744,7 +3744,7 @@ __metadata:
     elliptic: ^6.5.4
     socket.io-client: ^4.5.4
     universal-base64url: ^1.1.0
-  checksum: 150c98b12efd947e25d5bf5c170bbe8b86cfc346236ef807e46f21d4673e36d1a9650d922bdf82226c5cd35f37b3b1f3542b8b86a2bc8502d8aa009234cd2c34
+  checksum: a165167ad0b951141c6c961c11d961d0a2adbfa52873b269dfbdea08fb5987fbfca3bd6714728a4624369e4d1f4855279e870cb5092d4e3b4c8126c473a9f0e9
   languageName: node
   linkType: hard
 
@@ -6336,15 +6336,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compare-urls@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "compare-urls@npm:2.0.0"
-  dependencies:
-    normalize-url: ^2.0.1
-  checksum: 706a305fcbafac63e3e3dafe71283b2fbef05ed18f64636e13bf201cdca164ff16463a7004023535497828f69b822ce44c3b43fcaa0e99d8976b26b1f326595c
-  languageName: node
-  linkType: hard
-
 "compare-versions@npm:^3.4.0":
   version: 3.6.0
   resolution: "compare-versions@npm:3.6.0"
@@ -6671,7 +6662,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decode-uri-component@npm:^0.2.0, decode-uri-component@npm:^0.2.2":
+"decode-uri-component@npm:^0.2.2":
   version: 0.2.2
   resolution: "decode-uri-component@npm:0.2.2"
   checksum: 95476a7d28f267292ce745eac3524a9079058bbb35767b76e3ee87d42e34cd0275d2eb19d9d08c3e167f97556e8a2872747f5e65cbebcac8b0c98d83e285f139
@@ -8036,18 +8027,6 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 7fe5ac9d651f59b37e51d52fff16b5046636e5c3a3ea72110103d1745615276d8c97839e89f7c66fafc6de7749d3772195d0830815e1056f7a989badada6ded2
-  languageName: node
-  linkType: hard
-
-"expo-web-browser@npm:^12.0.0":
-  version: 12.4.1
-  resolution: "expo-web-browser@npm:12.4.1"
-  dependencies:
-    compare-urls: ^2.0.0
-    url: ^0.11.0
-  peerDependencies:
-    expo: "*"
-  checksum: 8f83409e158488f2cf5facec1ddb18e04e6fe461884dd7520586752241b2324ac3558b25a4a2ffdc119da443cebe93c7228f05a1f4c891c4a5df158544cd4d81
   languageName: node
   linkType: hard
 
@@ -9570,13 +9549,6 @@ __metadata:
   version: 3.0.3
   resolution: "is-path-inside@npm:3.0.3"
   checksum: abd50f06186a052b349c15e55b182326f1936c89a78bf6c8f2b707412517c097ce04bc49a0ca221787bc44e1049f51f09a2ffb63d22899051988d3a618ba13e9
-  languageName: node
-  linkType: hard
-
-"is-plain-obj@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "is-plain-obj@npm:1.1.0"
-  checksum: 0ee04807797aad50859652a7467481816cbb57e5cc97d813a7dcd8915da8195dc68c436010bf39d195226cde6a2d352f4b815f16f26b7bf486a5754290629931
   languageName: node
   linkType: hard
 
@@ -12177,17 +12149,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"normalize-url@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "normalize-url@npm:2.0.1"
-  dependencies:
-    prepend-http: ^2.0.0
-    query-string: ^5.0.1
-    sort-keys: ^2.0.0
-  checksum: 30e337ee03fc7f360c7d2b966438657fabd2628925cc58bffc893982fe4d2c59b397ae664fa2c319cd83565af73eee88906e80bc5eec91bc32b601920e770d75
-  languageName: node
-  linkType: hard
-
 "npm-package-arg@npm:^7.0.0":
   version: 7.0.0
   resolution: "npm-package-arg@npm:7.0.0"
@@ -12841,13 +12802,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prepend-http@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "prepend-http@npm:2.0.0"
-  checksum: 7694a9525405447662c1ffd352fcb41b6410c705b739b6f4e3a3e21cf5fdede8377890088e8934436b8b17ba55365a615f153960f30877bf0d0392f9e93503ea
-  languageName: node
-  linkType: hard
-
 "prettier-linter-helpers@npm:^1.0.0":
   version: 1.0.0
   resolution: "prettier-linter-helpers@npm:1.0.0"
@@ -13004,13 +12958,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "punycode@npm:1.4.1"
-  checksum: fa6e698cb53db45e4628559e557ddaf554103d2a96a1d62892c8f4032cd3bc8871796cae9eabc1bc700e2b6677611521ce5bb1d9a27700086039965d0cf34518
-  languageName: node
-  linkType: hard
-
 "punycode@npm:^2.1.0, punycode@npm:^2.1.1":
   version: 2.3.0
   resolution: "punycode@npm:2.3.0"
@@ -13058,17 +13005,6 @@ __metadata:
   dependencies:
     side-channel: ^1.0.4
   checksum: e812f3c590b2262548647d62f1637b6989cc56656dc960b893fe2098d96e1bd633f36576f4cd7564dfbff9db42e17775884db96d846bebe4f37420d073ecdc0b
-  languageName: node
-  linkType: hard
-
-"query-string@npm:^5.0.1":
-  version: 5.1.1
-  resolution: "query-string@npm:5.1.1"
-  dependencies:
-    decode-uri-component: ^0.2.0
-    object-assign: ^4.1.0
-    strict-uri-encode: ^1.0.0
-  checksum: 4ac760d9778d413ef5f94f030ed14b1a07a1708dd13fd3bc54f8b9ef7b425942c7577f30de0bf5a7d227ee65a9a0350dfa3a43d1d266880882fb7ce4c434a4dd
   languageName: node
   linkType: hard
 
@@ -14297,15 +14233,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sort-keys@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "sort-keys@npm:2.0.0"
-  dependencies:
-    is-plain-obj: ^1.0.0
-  checksum: f0fd827fa9f8f866e98588d2a38c35209afbf1e9a05bb0e4ceeeb8bbf31d923c8902b0a7e0f561590ddb65e58eba6a74f74b991c85360bcc52e83a3f0d1cffd7
-  languageName: node
-  linkType: hard
-
 "source-map-js@npm:^1.0.2":
   version: 1.0.2
   resolution: "source-map-js@npm:1.0.2"
@@ -14445,13 +14372,6 @@ __metadata:
   version: 1.1.0
   resolution: "streamsearch@npm:1.1.0"
   checksum: 1cce16cea8405d7a233d32ca5e00a00169cc0e19fbc02aa839959985f267335d435c07f96e5e0edd0eadc6d39c98d5435fb5bbbdefc62c41834eadc5622ad942
-  languageName: node
-  linkType: hard
-
-"strict-uri-encode@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "strict-uri-encode@npm:1.1.0"
-  checksum: 9466d371f7b36768d43f7803f26137657559e4c8b0161fb9e320efb8edba3ae22f8e99d4b0d91da023b05a13f62ec5412c3f4f764b5788fac11d1fea93720bb3
   languageName: node
   linkType: hard
 
@@ -14983,7 +14903,7 @@ __metadata:
     "@react-navigation/drawer": ^6.5.0
     "@react-navigation/native": ^6.0.12
     "@react-navigation/native-stack": ^6.8.0
-    "@tonomy/tonomy-id-sdk": 0.16.0
+    "@tonomy/tonomy-id-sdk": 0.17.0
     "@types/jest": ^29.5.0
     "@types/react": ~18.2.14
     "@types/react-native-base64": ^0.2.0
@@ -15014,7 +14934,6 @@ __metadata:
     expo-notifications: ~0.20.1
     expo-secure-store: ~12.3.1
     expo-status-bar: ~1.6.0
-    expo-web-browser: ^12.0.0
     fast-text-encoding: ^1.0.6
     jest: ^29.5.0
     jest-expo: ^49.0.0
@@ -15541,16 +15460,6 @@ __metadata:
     querystringify: ^2.1.1
     requires-port: ^1.0.0
   checksum: fbdba6b1d83336aca2216bbdc38ba658d9cfb8fc7f665eb8b17852de638ff7d1a162c198a8e4ed66001ddbf6c9888d41e4798912c62b4fd777a31657989f7bdf
-  languageName: node
-  linkType: hard
-
-"url@npm:^0.11.0":
-  version: 0.11.1
-  resolution: "url@npm:0.11.1"
-  dependencies:
-    punycode: ^1.4.1
-    qs: ^6.11.0
-  checksum: a7de4b37bbcbe60ef199acda4ce437ef843c0ef3a4b34ec3e3d97e0446a5f50dc7bfeafbe33ad118cf4e5aa04805e1328f0d0126e254f2b77bb8498fa395c596
   languageName: node
   linkType: hard
 
