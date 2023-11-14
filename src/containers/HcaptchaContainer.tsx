@@ -129,7 +129,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
 
 
-            
+
             setCode(null);
         }
     }
@@ -162,7 +162,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     onMessage={onMessage}
                                     sentry={false}
                                     showLoading={true}
-                                    
+
                                 />
 
                                 <TouchableOpacity
@@ -175,19 +175,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Checkbox.Android
                                             status={code ? 'checked' : 'unchecked'}
-                                            onPress={() => { 
-                                                setSuccess(!success);
+                                            onPress={() => {
+                                                setSuccess(success => !success);
 
                                                 if (captchaFormRef.current) {
                                                     captchaFormRef.current.show();
                                                     setErrorMsg(null);
                                                 }
- 
+
                                             }}
                                             color={theme.colors.primary}
                                         />
                                         <Text style={styles.humanLabel}>I am human</Text>
-                                      
+
                                     </View>
                                     <Image
                                         source={require('../assets/images/hcaptcha.png')}
@@ -200,10 +200,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 }
                 footer={
                     <View style={commonStyles.marginTop}>
-                        <View style={commonStyles.marginBottom}> 
+                        <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={!code || !success}>
-                                    Create Account
-                            </TButtonContained> 
+                                Create Account
+                            </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
