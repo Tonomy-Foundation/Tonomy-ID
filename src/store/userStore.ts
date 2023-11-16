@@ -6,7 +6,6 @@ import {
     User,
     createUserObject,
     setSettings,
-    createStorage,
     SdkErrors,
     STORAGE_NAMESPACE,
     SdkError,
