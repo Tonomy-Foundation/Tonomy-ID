@@ -6,26 +6,27 @@ on:
       - master
 
 jobs:
-    build:
-        runs-on: ubuntu-20.04
+  build:
+    runs-on: ubuntu-20.04
 
-        steps:
-            - name: 🏗 Setup repo
-              uses: actions/checkout@v3
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v4
 
-            - name: 📦 Build, test and lint
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 18.12.1
-            - run: corepack enable
-            - run: yarn --immutable
-            - name: Check branch name
-              run: echo ${GITHUB_HEAD_REF}
-            - run: |
-                if [[ ${GITHUB_HEAD_REF} != "master" ]]; then
-                  echo "BRANCH_NAME is not set to 'master'"
-                  yarn add @tonomy/tonomy-id-sdk@development 
-                fi
-            - run: yarn run test
-            - run: yarn run lint
-            - run: yarn run typeCheck
+      - name: 📦 Build, test and lint
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.12.1
+          cache: yarn
+      - run: corepack enable
+      - run: yarn --immutable
+      - name: Check branch name
+        run: echo ${GITHUB_HEAD_REF}
+      - run: |
+          if [[ ${GITHUB_HEAD_REF} != "master" ]]; then
+            echo "BRANCH_NAME is not set to 'master'"
+            yarn add @tonomy/tonomy-id-sdk@development 
+          fi
+      - run: yarn run test
+      - run: yarn run lint
+      - run: yarn run typeCheck
