@@ -61,7 +61,7 @@ const useUserStore = create<UserState>((set, get) => ({
         await printStorage('initializeStatusFromStorage()');
 
         try {
-            await get().user.intializeFromStorage();
+            await get().user.initializeFromStorage();
 
             get().setStatus(UserStatus.LOGGED_IN);
         } catch (e) {
