@@ -20,21 +20,20 @@ jobs:
 
     steps:
       - name: 🏗 Setup repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
           # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
-        
       # TODO replace this with using semantic-release to do git bump
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
         env:
           GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
         with:
-          commit-message: 'ci: bumps version to {{version}} [skip ci]'
+          commit-message: "ci: bumps version to {{version}} [skip ci]"
 
       - name: 🚀 Build and publish staging app
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.12.1
       - run: corepack enable
