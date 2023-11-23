@@ -2808,10 +2808,10 @@
   resolved "https://registry.yarnpkg.com/@tonomy/did-resolver/-/did-resolver-4.0.4.tgz#4a0c5bc68e4498e992bca62914ec5d763eaacf82"
   integrity sha512-7sgPKUENMsGfq2TaAo4/hwthy45pvVnZep79o6BpmPK5xSwzPctglITkgfM7OY6hyS4le4wQC0LYI7mrGShD2A==
 
-"@tonomy/tonomy-id-sdk@0.18.0-development.1":
-  version "0.18.0-development.1"
-  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.18.0-development.1.tgz#390558d28a600d1c28cf24ef0d46df07fdf44d47"
-  integrity sha512-dD1cniesNLaMPcQYOAIN5sZedHiJNdvD6Nd1tJIrKEaGeqaFTB0ufXs6PielONmXqOFv5OH9nvQjUgul643V5g==
+"@tonomy/tonomy-id-sdk@0.18.0-development.2":
+  version "0.18.0-development.2"
+  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.18.0-development.2.tgz#b9a8eadd4351c3bf72ca90a4a91ddd12848801e3"
+  integrity sha512-aINVO6/9+b5hTBwT4UrdAZAi32ayrZOxWw5Xqe7B47nt3db1zFslXjcSVyQkUBaClEw2zSqN+HvTTWaNNiQoyQ==
   dependencies:
     "@consento/sync-randombytes" "^1.0.5"
     "@tonomy/antelope-did" "^0.1.5"
@@ -3158,21 +3158,10 @@
     "@urql/core" ">=4.0.0"
     wonka "^6.3.2"
 
-"@wharfkit/antelope@0.7.1":
+"@wharfkit/antelope@0.7.1", "@wharfkit/antelope@^0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@wharfkit/antelope/-/antelope-0.7.1.tgz#ef95de7e5e3b559b857698a2e5ab4748bf93ec3f"
   integrity sha512-Ekb3i+XDegPH7fFJ+ys/kOu6h/3MMSyflRvIJ8kWyxVvrOS8ydLUwuR7+tQQUrx0s50Cxaix44RSDL3n4HmWbQ==
-  dependencies:
-    bn.js "^4.11.9"
-    brorand "^1.1.0"
-    elliptic "^6.5.4"
-    hash.js "^1.0.0"
-    tslib "^2.0.3"
-
-"@wharfkit/antelope@^0.7.1":
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/@wharfkit/antelope/-/antelope-0.7.3.tgz#408f6c587f4f5990d4b55596c10be2e976798641"
-  integrity sha512-pyUmuXUpLQh1RVpJVIcbVUHTwV/DQ+MI0nlfWDBHIICdYf6XidZtQmaHB7JEXiFzlS8T7S9Xc5VOTOQU8dnl3Q==
   dependencies:
     bn.js "^4.11.9"
     brorand "^1.1.0"
