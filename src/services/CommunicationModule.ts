@@ -34,7 +34,7 @@ export default function CommunicationModule() {
             setSubscribers(subscribers);
 
             try {
-                await user.communication.login(message);
+                await user.loginCommunication(message);
             } catch (e) {
                 // 401 signature invalid: the keys have been rotated and the old key is no longer valid
                 // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
@@ -52,7 +52,7 @@ export default function CommunicationModule() {
     }
 
     function listenToMessages(): number[] {
-        const loginRequestSubscriber = user.communication.subscribeMessage(async (message) => {
+        const loginRequestSubscriber = user.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender();
 
@@ -87,7 +87,7 @@ export default function CommunicationModule() {
             }
         }, LoginRequestsMessage.getType());
 
-        const linkAuthRequestSubscriber = user.communication.subscribeMessage(async (message) => {
+        const linkAuthRequestSubscriber = user.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender().split('#')[0];
 
@@ -132,10 +132,10 @@ export default function CommunicationModule() {
     useEffect(() => {
         return () => {
             for (const s of subscribers) {
-                user.communication.unsubscribeMessage(s);
+                user.unsubscribeMessage(s);
             }
         };
-    }, [subscribers, user.communication]);
+    }, [subscribers, user]);
 
     return null;
 }
