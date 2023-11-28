@@ -6,5 +6,10 @@ import DataSharingConsentContainer from '../containers/DataSharingConsentContain
 export type Props = NativeStackScreenProps<RouteStackParamList, 'DataSharingConsent'>;
 
 export default function DataSharingConsentScreen(props: Props) {
-    return <DataSharingConsentContainer navigation={props.navigation}></DataSharingConsentContainer>;
+    return (
+        <DataSharingConsentContainer
+            payload={props.route.params.payload}
+            platform={props.route.params.platform ?? 'mobile'}
+        />
+    );
 }

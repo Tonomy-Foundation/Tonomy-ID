@@ -1,8 +1,20 @@
-/* eslint-disable react/jsx-no-undef */
-import React, { useState } from 'react';
-import { Text, StyleSheet, View, ScrollView, Image } from 'react-native';
-
-import { Props } from '../screens/DataSharingConsentScreen';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, View, Text } from 'react-native';
+import LayoutComponent from '../components/layout';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import TInfoBox from '../components/TInfoBox';
+import useUserStore from '../store/userStore';
+import {
+    UserApps,
+    App,
+    LoginRequest,
+    base64UrlToObj,
+    SdkErrors,
+    CommunicationError,
+    LoginRequestsMessage,
+} from '@tonomy/tonomy-id-sdk';
+import { TH1, TH2, TH4 } from '../components/atoms/THeadings';
+import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
@@ -207,7 +219,7 @@ export default function DataSharingConsentContainer({
                             <TH4 style={styles.panelHeading}>Profile Information</TH4>
                             <IconButton
                                 color={theme.colors.grey2}
-                                onPress={() => alert()}
+                                onPress={() => navigation.navigate('ProfilePreview')}
                                 style={styles.rightIcon}
                                 icon="clipboard-text-search-outline"
                             ></IconButton>
@@ -240,8 +252,8 @@ export default function DataSharingConsentContainer({
                         Cancel
                     </TButtonOutlined>
                 </View>
-            </ScrollView>
-        </View>
+            }
+        ></LayoutComponent>
     );
 }
 
@@ -252,8 +264,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     logo: {
-        width: 100,
-        height: 100,
+        width: 65,
+        height: 65,
     },
     appDialog: {
         borderWidth: 1,
