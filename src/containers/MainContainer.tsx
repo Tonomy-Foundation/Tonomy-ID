@@ -75,7 +75,7 @@ export default function MainContainer({ did }: { did?: string }) {
             const issuer = await user.getIssuer();
             const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
 
-            await user.communication.sendMessage(identifyMessage);
+            await user.sendMessage(identifyMessage);
         } catch (e) {
             if (
                 e instanceof CommunicationError &&

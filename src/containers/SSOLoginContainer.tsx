@@ -6,13 +6,11 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import TInfoBox from '../components/TInfoBox';
 import useUserStore from '../store/userStore';
 import {
-    UserApps,
+    terminateLoginRequest,
     App,
-    LoginRequest,
     base64UrlToObj,
     SdkErrors,
     CommunicationError,
-    LoginRequestsMessage,
     ResponsesManager,
     RequestsManager,
 } from '@tonomy/tonomy-id-sdk';
@@ -76,7 +74,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             await responsesManager.createResponses(user);
 
-            const callbackUrl = await user.apps.acceptLoginRequest(responsesManager, platform, {
+            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
                 callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
                 callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
                 messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
@@ -122,7 +120,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             setCancelLoading(true);
             if (!responsesManager) throw new Error('Responses manager is not set');
 
-            const res = await UserApps.terminateLoginRequest(
+            const res = await terminateLoginRequest(
                 responsesManager,
                 platform,
                 {

@@ -4,7 +4,7 @@ import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
-import { Checkbox } from 'react-native-paper';
+import { Checkbox, ActivityIndicator } from 'react-native-paper';
 import { TButtonContained, TButtonText } from '../components/atoms/TButton';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/HcaptchaScreen';
@@ -140,6 +140,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
+    const onPressCheckbox = () => {
+        setSuccess(!success);
+        setLoading(true);
+
+        if (captchaFormRef.current) {
+            captchaFormRef.current.show();
+        }
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    };
+
     return (
         <>
             <LayoutComponent
@@ -158,6 +171,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     onMessage={onMessage}
                                     sentry={false}
                                     showLoading={false}
+                                    backgroundColor="transparent"
+                                    theme="light"
                                 />
 
                                 <TouchableOpacity
@@ -168,16 +183,17 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                                     }}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Checkbox.Android
-                                            status={code ? 'checked' : 'unchecked'}
-                                            onPress={() => {
-                                                if (captchaFormRef.current) {
-                                                    captchaFormRef.current.show();
-                                                    setErrorMsg(null);
-                                                }
-                                            }}
-                                            color={theme.colors.primary}
-                                        />
+                                        {loading ? (
+                                            <ActivityIndicator size="small" />
+                                        ) : (
+                                            <>
+                                                <Checkbox.Android
+                                                    status={code ? 'checked' : 'unchecked'}
+                                                    onPress={onPressCheckbox}
+                                                    color={theme.colors.primary}
+                                                />
+                                            </>
+                                        )}
                                         <Text style={styles.humanLabel}>I am human</Text>
                                     </View>
                                     <Image

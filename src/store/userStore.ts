@@ -3,14 +3,13 @@ import RNKeyManager, { KEY_STORAGE_NAMESPACE } from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
 import {
-    User,
     createUserObject,
     setSettings,
-    createStorage,
     SdkErrors,
     STORAGE_NAMESPACE,
     SdkError,
     KeyManagerLevel,
+    IUser,
 } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,7 +22,7 @@ export enum UserStatus {
 }
 
 export interface UserState {
-    user: User;
+    user: IUser;
     status: UserStatus;
     getStatus(): UserStatus;
     setStatus(newStatus: UserStatus): void;
@@ -62,7 +61,7 @@ const useUserStore = create<UserState>((set, get) => ({
         await printStorage('initializeStatusFromStorage()');
 
         try {
-            await get().user.intializeFromStorage();
+            await get().user.initializeFromStorage();
 
             get().setStatus(UserStatus.LOGGED_IN);
         } catch (e) {
