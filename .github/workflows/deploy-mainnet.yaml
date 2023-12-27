@@ -1,4 +1,4 @@
-name: Deployment - Demo
+name: Deployment - Mainnet
 
 on:
   push:
