@@ -1,0 +1,31 @@
+name: Deployment - Demo
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # https://expo.dev/accounts/[account]/settings/access-tokens
+      GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-google-service-account.md
+      APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
+      # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v4
+
+      - name: 🚀 Build and publish demo app
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.12.1
+      - run: corepack enable
+      - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
+      - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - run: yarn --immutable
+      - run: yarn run deploy:mainnet
