@@ -32,5 +32,5 @@
     "communicationUrl": "wss://communication.tonomy.network",
     "accountsServiceUrl": "https://communication.tonomy.network",
     "loggerLevel": "debug",
-    "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a"
+    "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb"
 }
