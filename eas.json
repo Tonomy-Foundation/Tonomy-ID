@@ -4,7 +4,11 @@
     },
     "build": {
         "production": {
-            "node": "18.17.1"
+            "node": "18.17.1",
+            "env": {
+                "EXPO_NODE_ENV": "production"
+            },
+            "autoIncrement": true
         },
         "development": {
             "env": {
