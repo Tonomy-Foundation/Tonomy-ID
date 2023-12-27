@@ -57,7 +57,7 @@ type SettingsType = {
 let config: ConfigType;
 const settings: SettingsType = {
     env,
-    isProduction: () => ['production', 'demo', 'staging'].includes(settings.env),
+    isProduction: () => ['production', 'demo', 'staging', 'mainnet'].includes(settings.env),
 } as SettingsType;
 
 switch (env) {
@@ -71,6 +71,9 @@ switch (env) {
         break;
     case 'demo':
         config = require('./config/config.demo.json');
+        break;
+    case 'mainnet':
+        config = require('./config/config.mainnet.json');
         break;
     case 'production':
         throw new Error('Production config not implemented yet');
