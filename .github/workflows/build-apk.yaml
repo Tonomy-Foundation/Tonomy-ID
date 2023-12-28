@@ -9,7 +9,7 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     env:
-      EXPO_NODE_ENV: demo
+      EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     container: cimg/android:2022.12.1-ndk
@@ -25,7 +25,7 @@ jobs:
       - run: corepack enable
       - run: yarn --immutable
       - run: yarn run build:prepare
-      - run: npx eas build --clear-cache --profile demo-apk --platform android --local
+      - run: npx eas build --clear-cache --profile testnet-apk --platform android --local
 
       - name: Find APK file and rename it
         run: find . -name "*.apk" -exec mv {} TonomyID.apk \;

@@ -14,9 +14,9 @@ console.log('appInputs', appInputs);
 let slug = settings.config.tonomyIdSlug.replace('://', '');
 const scheme = slug;
 
-if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'demo') {
+if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'testnet') {
     console.log('Replacing config for demo with some staging config (iOS only');
-    // Deploy staging and demo ios app to the same app store listing
+    // Deploy staging and testnet ios app to the same app store listing
     const config = require('./src/config/config.staging.json');
 
     // Expo slug, and bundleIdentifier must be the same for the same app store listing
