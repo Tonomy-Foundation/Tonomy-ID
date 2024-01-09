@@ -25,7 +25,7 @@ jobs:
       - run: corepack enable
       - run: yarn --immutable
       - run: yarn run build:prepare
-      - run: npx eas build --clear-cache --profile testnet-apk --platform android --local
+      - run: npx eas build --clear-cache --profile demo-apk --platform android --local
 
       - name: Find APK file and rename it
         run: find . -name "*.apk" -exec mv {} TonomyID.apk \;
