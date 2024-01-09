@@ -3727,9 +3727,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "@tonomy/tonomy-id-sdk@npm:0.18.0-development.4":
   version: 0.18.0-development.4
   resolution: "@tonomy/tonomy-id-sdk@npm:0.18.0-development.4"
+=======
+"@tonomy/tonomy-id-sdk@npm:0.18.0-development.5":
+  version: 0.18.0-development.5
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.18.0-development.5"
+>>>>>>> development
   dependencies:
     "@consento/sync-randombytes": ^1.0.5
     "@tonomy/antelope-did": ^0.1.5
@@ -3744,7 +3750,11 @@ __metadata:
     elliptic: ^6.5.4
     socket.io-client: ^4.5.4
     universal-base64url: ^1.1.0
+<<<<<<< HEAD
   checksum: cd11d415257981252928d39486747ec43e1e5b47142bab1e06e501b509d8ecf5e89bd59df70b742416539867fb1ad4449bd0faec3a8d4e96e9cf8a5f78761eda
+=======
+  checksum: 557a1a603f0a2eb1301f7c01e454413a2ac11f0980dfd135bb041630e4d8cd0e5485d73af4f227e09ed0d3ed05ac0ffe6a805f41afb8fcdb1571259ff3f67b1b
+>>>>>>> development
   languageName: node
   linkType: hard
 
@@ -14903,7 +14913,7 @@ __metadata:
     "@react-navigation/drawer": ^6.5.0
     "@react-navigation/native": ^6.0.12
     "@react-navigation/native-stack": ^6.8.0
-    "@tonomy/tonomy-id-sdk": 0.18.0-development.4
+    "@tonomy/tonomy-id-sdk": 0.18.0-development.5
     "@types/jest": ^29.5.0
     "@types/react": ~18.2.14
     "@types/react-native-base64": ^0.2.0

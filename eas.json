@@ -18,16 +18,16 @@
             "distribution": "internal",
             "node": "18.17.1"
         },
-        "demo": {
+        "testnet": {
             "env": {
-                "EXPO_NODE_ENV": "demo"
+                "EXPO_NODE_ENV": "testnet"
             },
             "autoIncrement": true,
             "node": "18.17.1"
         },
         "demo-apk": {
             "env": {
-                "EXPO_NODE_ENV": "demo"
+                "EXPO_NODE_ENV": "testnet"
             },
             "distribution": "internal",
             "node": "18.17.1"
