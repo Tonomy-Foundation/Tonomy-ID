@@ -73,7 +73,8 @@ switch (env) {
         config = require('./config/config.testnet.json');
         break;
     case 'production':
-        throw new Error('Production config not implemented yet');
+        config = require('./config/config.production.json');
+        break;
     default:
         throw new Error('Unknown environment: ' + env);
 }

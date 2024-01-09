@@ -1,0 +1,36 @@
+{
+    "theme": {
+        "primaryColor": "#67D7ED",
+        "primaryColor2": "#D2F3FA",
+        "secondaryColor": "#FF505F",
+        "secondaryColor2": "#E76773",
+        "tertiaryColor": "#7660E7",
+        "tertiaryColor2": "#CFC8F7"
+    },
+    "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
+    "appName": "Tonomy ID production",
+    "ecosystemName": "Tonomy production",
+    "appSlogan": "Building Ecosystem Of Trust",
+    "images": {
+        "splash": "./src/assets/tonomy/tonomy-splash.png",
+        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
+        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+    },
+    "links": {
+        "privacyPolicyLearnMore": "#",
+        "termsAndConditionsLearnMore": "#",
+        "usernameLearnMore": "#",
+        "passwordLearnMore": "#",
+        "privacyLearnMore": "#",
+        "transparencyLearnMore": "#",
+        "securityLearnMore": "#"
+    },
+    "expoProjectId": "b7d1c77f-3535-492c-8f55-0ba569ccdc93",
+    "accountSuffix": ".stag.tonomy.id",
+    "blockchainUrl": "https://blockchain-api.pangea.web4.world",
+    "ssoWebsiteOrigin": "https://accounts.pangea.web4.world",
+    "communicationUrl": "wss://communication.pangea.web4.world",
+    "accountsServiceUrl": "https://communication.pangea.web4.world",
+    "loggerLevel": "debug",
+    "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb"
+}
