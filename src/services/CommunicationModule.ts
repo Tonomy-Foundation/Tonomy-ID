@@ -81,6 +81,7 @@ export default function CommunicationModule() {
                     payload: base64UrlPayload,
                     platform: 'browser',
                 });
+
                 sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });

@@ -24,8 +24,7 @@ import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
 import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
-import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
-import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
+import DataSharingConsentScreen from '../screens/DataSharingConsentScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 
 const prefix = Linking.createURL('');
@@ -53,6 +52,7 @@ export type RouteStackParamList = {
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
+    DataSharingConsent: { payload: string; platform?: 'mobile' | 'browser' };
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
@@ -113,16 +113,6 @@ export default function RootNavigation() {
                         options={noHeaderScreenOptions}
                         component={SplashTransparencyScreen}
                     />
-                    <Stack.Screen
-                        name="TermsAndCondition"
-                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
-                        component={TermsAndConditionScreen}
-                    />
-                    <Stack.Screen
-                        name="PrivacyAndPolicy"
-                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
-                        component={PrivacyAndPolicyScreen}
-                    />
                     <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
                     <Stack.Screen
                         name="CreateAccountUsername"
@@ -177,6 +167,11 @@ export default function RootNavigation() {
                             name="SSO"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={SSOLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="DataSharingConsent"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={DataSharingConsentScreen}
                         />
                         <Stack.Screen
                             name="ProfilePreview"
