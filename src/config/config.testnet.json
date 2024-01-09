@@ -27,10 +27,10 @@
     },
     "expoProjectId": "d2b659fc-655d-4beb-886a-236429973b9c",
     "accountSuffix": ".testnet.pangea",
-    "blockchainUrl": "https://blockchain-api-testnet.pangeavision.org",
-    "ssoWebsiteOrigin": "https://accounts.testnet.pangeavision.org",
-    "communicationUrl": "wss://communication.testnet.pangeavision.org",
-    "accountsServiceUrl": "https://communication.testnet.pangeavision.org",
+    "blockchainUrl": "https://blockchain-api-testnet.pangea.web4.world",
+    "ssoWebsiteOrigin": "https://accounts.testnet.pangea.web4.world",
+    "communicationUrl": "wss://communication.testnet.pangea.web4.world",
+    "accountsServiceUrl": "https://communication.testnet.pangea.web4.world",
     "loggerLevel": "error",
     "captchaSiteKey": "bf994ca7-3b1f-43c4-b35f-0cf27b0da3c8"
 }
