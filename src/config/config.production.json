@@ -8,8 +8,8 @@
         "tertiaryColor2": "#CFC8F7"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
-    "appName": "Tonomy ID Demo",
-    "ecosystemName": "Tonomy Demo",
+    "appName": "Pangea Passport",
+    "ecosystemName": "Pangea Passport",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
@@ -25,12 +25,12 @@
         "transparencyLearnMore": "#",
         "securityLearnMore": "#"
     },
-    "expoProjectId": "d2b659fc-655d-4beb-886a-236429973b9c",
-    "accountSuffix": ".demo.tonomy.id",
-    "blockchainUrl": "https://blockchain-api-demo.tonomy.foundation",
-    "ssoWebsiteOrigin": "https://accounts.demo.tonomy.foundation",
-    "communicationUrl": "wss://communication.demo.tonomy.foundation",
-    "accountsServiceUrl": "https://communication.demo.tonomy.foundation",
-    "loggerLevel": "error",
-    "captchaSiteKey": "bf994ca7-3b1f-43c4-b35f-0cf27b0da3c8"
+    "expoProjectId": "b7d1c77f-3535-492c-8f55-0ba569ccdc93",
+    "accountSuffix": ".stag.tonomy.id",
+    "blockchainUrl": "https://blockchain-api.pangea.web4.world",
+    "ssoWebsiteOrigin": "https://accounts.pangea.web4.world",
+    "communicationUrl": "wss://communication.pangea.web4.world",
+    "accountsServiceUrl": "https://communication.pangea.web4.world",
+    "loggerLevel": "debug",
+    "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb"
 }
