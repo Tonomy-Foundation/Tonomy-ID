@@ -11,7 +11,7 @@ set +e
 if [ "${BRANCH}" == "master" ]; then
     VERSION=$(npm view @tonomy/tonomy-id-sdk version)
 elif [ "${BRANCH}" == "testnet" ]; then
-    VERSION=$(npm view @tonomy/tonomy-id-sdk@rc version)
+    VERSION=$(npm view @tonomy/tonomy-id-sdk@testnet version)
 elif [ "${BRANCH}" == "development" ]; then
     VERSION=$(npm view @tonomy/tonomy-id-sdk@development version)
 else
