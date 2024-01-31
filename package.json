@@ -7,7 +7,7 @@
         "build:ios": "yarn run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
         "build:android": "yarn run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
         "deploy:testnet:android": "EXPO_NODE_ENV=testnet EXPO_PLATFORM=android yarn run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform android --profile testnet",
-        "deploy:testnet:ios": "EXPO_NODE_ENV=testnet EXPO_PLATFORM=ios yarn run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform ios --profile testnet",
+        "deploy:testnet:ios": "EXPO_NODE_ENV=testnet EXPO_PLATFORM=ios yarn run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=pangeaProduction --no-wait --non-interactive --platform ios --profile testnet",
         "deploy:testnet": "yarn run deploy:testnet:android && yarn run deploy:testnet:ios",
         "deploy:staging:android": "EXPO_NODE_ENV=staging EXPO_PLATFORM=android yarn run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --non-interactive --platform android --profile staging",
         "deploy:staging:ios": "EXPO_NODE_ENV=staging EXPO_PLATFORM=ios yarn run build:prepare && npx eas build --clear-cache --auto-submit-with-profile=production --no-wait --platform ios --profile staging",
