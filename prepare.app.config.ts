@@ -25,6 +25,17 @@ if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'testnet') {
     settings.config.expoProjectId = config.expoProjectId;
 }
 
+if (appInputs.platform === 'ios' && appInputs.expoNodeEnv === 'testnet') {
+    console.log('Replacing config for demo with some testnet config (iOS only');
+    // Deploy staging and testnet ios app to the same app store listing
+    const config = require('./src/config/config.testnet.json');
+
+    // Expo slug, and bundleIdentifier must be the same for the same app store listing
+    slug = config.appName.toLowerCase().replace(/ /g, '-');
+    // Match the projectId of staging to make the same build
+    settings.config.expoProjectId = config.expoProjectId;
+}
+
 const identifier = 'foundation.tonomy.projects.' + slug.replace(/-/g, '');
 
 // Check if inputs are correct
@@ -85,7 +96,7 @@ const expo: ExpoConfig = {
     ],
     extra: {
         eas: {
-            projectId: '3a65b31c-572d-4537-9ead-f7c4bddf7d29',
+            projectId: settings.config.expoProjectId,
         },
         EXPO_NODE_ENV: process.env.EXPO_NODE_ENV,
     },
