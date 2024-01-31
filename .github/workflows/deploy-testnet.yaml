@@ -3,7 +3,7 @@ name: Deployment - Testnet
 on:
   push:
     branches:
-      - bug/ios-build
+      - testnet
 
 jobs:
   deploy:
