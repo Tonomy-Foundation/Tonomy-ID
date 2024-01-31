@@ -47,10 +47,15 @@
                 "track": "production"
             },
             "ios": {
-                "ascAppId": "1663471436",
+                // "ascAppId": "1663471436",
+                // "appleTeamId": "6BLD42QR78",
+                // "ascApiKeyId": "83XQ25UWSK",
+                // "ascApiKeyPath": "./apple-asc-api-key.p8",
+                // "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
+                "ascAppId": "6476114575",
                 "appleTeamId": "6BLD42QR78",
-                "ascApiKeyId": "83XQ25UWSK",
-                "ascApiKeyPath": "./apple-asc-api-key.p8",
+                "ascApiKeyId": "LP7N947774",
+                "ascApiKeyPath": "./apple-asc-api-key-pangea.p8",
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         },
@@ -59,7 +64,7 @@
                 "ascAppId": "6476114575",
                 "appleTeamId": "6BLD42QR78",
                 "ascApiKeyId": "LP7N947774",
-                "ascApiKeyPath": "./apple-asc-api-key.p8",
+                "ascApiKeyPath": "./apple-asc-api-key-pangea.p8",
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         }
