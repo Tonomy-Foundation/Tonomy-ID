@@ -8,7 +8,7 @@
         "tertiaryColor2": "#CFC8F7"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
-    "appName": "Tonomy ID Development",
+    "appName": "Tonomy ID Development1",
     "ecosystemName": "Tonomy Development",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
@@ -31,6 +31,7 @@
     "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
     "communicationUrl": "wss://communication.staging.tonomy.foundation",
     "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
+    "blockExplorerURL": "https://explorer.testnet.pangea.web4.world",
     "loggerLevel": "debug",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a"
 }

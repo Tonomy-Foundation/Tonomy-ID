@@ -8,8 +8,8 @@
         "tertiaryColor2": "#CFC8F7"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
-    "appName": "Pangea Testnet",
-    "ecosystemName": "Pangea Testnet",
+    "appName": "Tonomy ID Development",
+    "ecosystemName": "Tonomy ID Development",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
@@ -31,6 +31,7 @@
     "ssoWebsiteOrigin": "https://accounts.testnet.pangea.web4.world",
     "communicationUrl": "wss://communication.testnet.pangea.web4.world",
     "accountsServiceUrl": "https://communication.testnet.pangea.web4.world",
+    "blockExplorerURL": "https://explorer.testnet.pangea.web4.world",
     "loggerLevel": "error",
     "captchaSiteKey": "bf994ca7-3b1f-43c4-b35f-0cf27b0da3c8"
 }
