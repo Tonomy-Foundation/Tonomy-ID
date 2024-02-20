@@ -31,7 +31,7 @@
     "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
     "communicationUrl": "wss://communication.staging.tonomy.foundation",
     "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
-    "blockExplorerURL": "https://explorer.testnet.pangea.web4.world",
+    "blockExplorerURL": "http://localhost:8888",
     "loggerLevel": "debug",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a"
 }
