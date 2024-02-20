@@ -55,8 +55,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         <LayoutComponent
             body={
                 <View>
-                    <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
-                    <Image style={styles.tonomylogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
+                    <Image style={styles.mainlogo} source={require('../assets/tonomy/pangea-large-logo.png')}></Image>
+                    <Image style={styles.tonomylogo} source={require('../assets/tonomy/pangea-large-logo.png')}></Image>
                     <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
                 </View>
             }

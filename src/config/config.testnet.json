@@ -7,14 +7,14 @@
         "tertiaryColor": "#7660E7",
         "tertiaryColor2": "#CFC8F7"
     },
-    "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
+    "appLogoUrl": "./src/assets/tonomy/favicon.png",
     "appName": "Pangea Testnet",
     "ecosystemName": "Pangea Testnet",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
-        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
-        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+        "logo48": "./src/assets/tonomy/favicon.png",
+        "logo1024": "./src/assets/tonomy/pangea-large-logo.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
