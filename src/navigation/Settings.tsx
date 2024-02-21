@@ -50,7 +50,7 @@ export default function SettingsNavigation() {
         headerBackTitleVisible: false,
         headerStyle: {
             // backgroundColor: theme.colors.,
-            backgroundColor: theme.colors.grey4,
+            backgroundColor: '#F9F9F9',
         },
         headerTitleStyle: {
             fontSize: 24,
