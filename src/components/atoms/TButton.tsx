@@ -61,7 +61,7 @@ export function TButtonContained(props: ButtonProps) {
     const theme = useAppTheme();
     const color = theme.colors.white;
     const style = {
-        backgroundColor: props.disabled ? theme.colors.primary2 : getColorBasedOnTheme(props.theme),
+        backgroundColor: props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme),
     };
     const shadowStyle = {
         shadowColor: theme.colors.shadowDark,

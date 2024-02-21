@@ -112,14 +112,14 @@ const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
         fontSize: 14,
-        color: '#939393',
+        color: theme.colors.secondary2,
     },
     inputHeader: {
-        color: '#939393',
+        color: theme.colors.text,
     },
     innerContainer: { marginTop: 10, justifyContent: 'center' },
     link: {
-        color: theme.colors.primary,
+        color: theme.colors.success,
     },
     textContainer: {
         flexDirection: 'row',

@@ -17,8 +17,8 @@ const theme = {
         accent: settings.config.theme.tertiaryColor,
         accent2: settings.config.theme.tertiaryColor2,
         background: 'white',
-        text: '#474D4C',
-        textGray: '#5B6261',
+        text: '#000000',
+        textGray: '#000000',
         white: '#FDFEFF',
         headerFooter: '#F9F9F9',
         grey: '#313938',
@@ -32,6 +32,7 @@ const theme = {
         shadowDark: '#000',
         error: '#F44336',
         success: '#4CAF50',
+        info: '#F6F9FB',
     },
 };
 
