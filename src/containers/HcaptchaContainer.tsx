@@ -244,7 +244,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             >
                 <View>
                     <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>{username}</Text>
+                        Your username is <Text style={{ color: theme.colors.success }}>{username}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>

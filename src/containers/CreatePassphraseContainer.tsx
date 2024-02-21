@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         marginTop: 18,
     },
     link: {
-        color: theme.colors.primary,
+        color: theme.colors.success,
     },
     textContainer: {
         flexDirection: 'row',
