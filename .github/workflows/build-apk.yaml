@@ -39,5 +39,8 @@ jobs:
           name: TonomyID-Android
           path: ./TonomyID.apk
 
+      - name: Cleanup
+        run: rm -rf ./tmp/home
+
       - name: Disk Usage After
         run: df -h
