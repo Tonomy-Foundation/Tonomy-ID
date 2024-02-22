@@ -59,7 +59,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                     <TInfoBox
                         align="left"
                         icon="privacy"
-                        description="Your username is private and can only be seen by you and those you share it with, not even the Tonomy Foundation can see it."
+                        description="Your username is private and can only be seen by you and those you share it with, not even thePangea can see it."
                         linkUrl={settings.config.links.privacyLearnMore}
                         linkUrlText="Learn more"
                     />
