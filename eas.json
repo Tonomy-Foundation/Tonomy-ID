@@ -27,7 +27,7 @@
         },
         "demo-apk": {
             "env": {
-                "EXPO_NODE_ENV": "testnet"
+                "EXPO_NODE_ENV": "development"
             },
             "distribution": "internal",
             "node": "18.17.1"
