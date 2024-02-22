@@ -21,6 +21,9 @@ jobs:
       - name: Disk Usage Before
         run: df -h
 
+      - name: Cleanup Workspace
+        run: rm -rf /home/runner/runners/2.313.0/_diag/*
+
       - name: 🚀 Build and publish tonomy app
         uses: actions/setup-node@v4
         with:
@@ -38,9 +41,6 @@ jobs:
         with:
           name: TonomyID-Android
           path: ./TonomyID.apk
-
-      - name: Cleanup
-        run: rm -rf ./tmp/home
 
       - name: Disk Usage After
         run: df -h
