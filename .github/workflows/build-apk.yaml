@@ -18,6 +18,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Disk Usage Before
+        run: df -h
+
       - name: 🚀 Build and publish tonomy app
         uses: actions/setup-node@v4
         with:
@@ -35,3 +38,6 @@ jobs:
         with:
           name: TonomyID-Android
           path: ./TonomyID.apk
+
+      - name: Disk Usage After
+        run: df -h
