@@ -20,6 +20,7 @@ const theme = {
         text: settings.config.theme.text,
         textGray: settings.config.theme.textGray,
         linkColor: settings.config.theme.linkColor,
+        info: settings.config.theme.infoBackground,
         white: '#FDFEFF',
         headerFooter: '#F9F9F9',
         grey: '#313938',
