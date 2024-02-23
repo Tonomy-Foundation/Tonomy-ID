@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
@@ -17,12 +17,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Disk Usage Before
-        run: df -h
-
-      - name: Cleanup Workspace
-        run: rm -rf /home/runner/runners/2.313.0/_diag/*
 
       - name: 🚀 Build and publish tonomy app
         uses: actions/setup-node@v4
@@ -41,6 +35,3 @@ jobs:
         with:
           name: TonomyID-Android
           path: ./TonomyID.apk
-
-      - name: Disk Usage After
-        run: df -h

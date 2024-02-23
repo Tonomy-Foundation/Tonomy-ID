@@ -7,14 +7,14 @@
         "tertiaryColor": "#7660E7",
         "tertiaryColor2": "#CFC8F7"
     },
-    "appLogoUrl": "./src/assets/tonomy/favicon.png",
+    "appLogoUrl": "./src/assets/pangea/favicon.png",
     "appName": "Pangea Passport",
     "ecosystemName": "Pangea Passport",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
-        "splash": "./src/assets/tonomy/tonomy-splash.png",
-        "logo48": "./src/assets/tonomy/favicon.png",
-        "logo1024": "./src/assets/tonomy/pangea-large-logo.png"
+        "splash": "./src/assets/pangea/pangea-splash.png",
+        "logo48": "./src/assets/pangea/favicon.png",
+        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
