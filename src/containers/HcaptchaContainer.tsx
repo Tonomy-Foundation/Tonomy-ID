@@ -231,7 +231,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{username}</Text> is already taken.
+                        Username <Text style={{ color: theme.colors.linkColor }}>{username}</Text> is already taken.
                         Please choose another one.
                     </Text>
                 </View>

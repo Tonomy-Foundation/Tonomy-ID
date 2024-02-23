@@ -19,6 +19,7 @@ const theme = {
         background: 'white',
         text: settings.config.theme.text,
         textGray: settings.config.theme.textGray,
+        linkColor: settings.config.theme.linkColor,
         white: '#FDFEFF',
         headerFooter: '#F9F9F9',
         grey: '#313938',
@@ -32,7 +33,6 @@ const theme = {
         shadowDark: '#000',
         error: '#F44336',
         success: '#4CAF50',
-        info: '#F6F9FB',
     },
 };
 

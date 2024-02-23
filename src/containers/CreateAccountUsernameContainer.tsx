@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     },
     innerContainer: { marginTop: 10, justifyContent: 'center' },
     link: {
-        color: theme.colors.success,
+        color: theme.colors.linkColor,
     },
     textContainer: {
         flexDirection: 'row',

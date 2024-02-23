@@ -20,6 +20,7 @@ type ConfigType = {
         tertiaryColor2: string;
         text: string;
         textGray: string;
+        linkColor: string;
     };
     appName: string;
     ecosystemName: string;
