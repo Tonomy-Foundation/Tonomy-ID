@@ -18,6 +18,8 @@ type ConfigType = {
         secondaryColor2: string;
         tertiaryColor: string;
         tertiaryColor2: string;
+        text: string;
+        textGray: string;
     };
     appName: string;
     ecosystemName: string;

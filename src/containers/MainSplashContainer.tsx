@@ -8,6 +8,7 @@ import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
+import settings from '../settings';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
@@ -55,9 +56,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         <LayoutComponent
             body={
                 <View>
-                    <Image style={styles.mainlogo} source={require('../assets/tonomy/pangea-large-logo.png')}></Image>
-                    <Image style={styles.tonomylogo} source={require('../assets/tonomy/pangea-large-logo.png')}></Image>
-                    <Text style={styles.text}>Brought to you by the Pangea</Text>
+                    <Image style={styles.mainlogo} source={require(settings.config.images.logo1024)}></Image>
+                    <Image style={styles.tonomylogo} source={require(settings.config.images.logo1024)}></Image>
+                    <Text style={styles.text}>Brought to you by the {settings.config.ecosystemName}</Text>
                 </View>
             }
         />

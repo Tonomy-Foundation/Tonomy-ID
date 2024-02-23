@@ -17,7 +17,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                     <View style={styles.imgContainer}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
-                            source={require('../assets/tonomy/pangea-large-logo.png')}
+                            source={require(settings.config.images.logo1024)}
                         ></Image>
                         <TH1 style={commonStyles.marginBottom}>{settings.config.appName}</TH1>
 

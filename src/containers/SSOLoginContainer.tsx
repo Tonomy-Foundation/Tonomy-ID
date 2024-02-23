@@ -181,7 +181,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 <View style={styles.container}>
                     <Image
                         style={[styles.logo, commonStyles.marginBottom]}
-                        source={require('../assets/tonomy/pangea-large-logo.png')}
+                        source={require(settings.config.images.logo1024)}
                     ></Image>
 
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}

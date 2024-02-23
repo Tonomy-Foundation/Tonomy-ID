@@ -5,11 +5,13 @@
         "secondaryColor": "#4CAF50",
         "secondaryColor2": "#6E84A3",
         "tertiaryColor": "#7660E7",
-        "tertiaryColor2": "#CFC8F7"
+        "tertiaryColor2": "#CFC8F7",
+        "text":"#000000",
+        "textGray": "#000000"
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
     "appName": "Pangea Passport",
-    "ecosystemName": "Pangea Passport",
+    "ecosystemName": "Pangea",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/pangea/pangea-splash.png",
