@@ -179,10 +179,10 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <Image
+                    {/* <Image
                         style={[styles.logo, commonStyles.marginBottom]}
                         source={require(settings.config.images.logo1024)}
-                    ></Image>
+                    ></Image> */}
 
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 

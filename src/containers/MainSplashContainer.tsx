@@ -56,8 +56,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         <LayoutComponent
             body={
                 <View>
-                    <Image style={styles.mainlogo} source={require(settings.config.images.logo1024)}></Image>
-                    <Image style={styles.tonomylogo} source={require(settings.config.images.logo1024)}></Image>
+                    <Image style={styles.mainlogo} source={settings.config.images.logo1024}></Image>
+                    <Image style={styles.tonomylogo} source={settings.config.images.logo1024}></Image>
                     <Text style={styles.text}>Brought to you by the {settings.config.ecosystemName}</Text>
                 </View>
             }

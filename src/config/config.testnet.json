@@ -1,7 +1,7 @@
 {
     "theme": {
         "primaryColor": "#000000",
-        "primaryColor2": "#5B6261",
+        "primaryColor2": "#939393",
         "secondaryColor": "#4CAF50",
         "secondaryColor2": "#6E84A3",
         "tertiaryColor": "#7660E7",
@@ -16,11 +16,7 @@
     "appName": "Pangea Testnet",
     "ecosystemName": "Pangea Testnet",
     "appSlogan": "Building Ecosystem Of Trust",
-    "images": {
-        "splash": "./src/assets/pangea/pangea-splash.png",
-        "logo48": "./src/assets/pangea/favicon.png",
-        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
-    },
+    "images": {},
     "links": {
         "privacyPolicyLearnMore": "#",
         "termsAndConditionsLearnMore": "#",

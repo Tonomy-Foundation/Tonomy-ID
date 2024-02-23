@@ -18,7 +18,7 @@ export default function TLink(props: AProps & any) {
 
 const styles = StyleSheet.create({
     a: {
-        color: theme.colors.success,
+        color: theme.colors.linkColor,
         textDecorationLine: 'underline',
         fontSize: 14,
         fontWeight: '400',

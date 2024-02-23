@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
         fontSize: 14,
-        color: theme.colors.secondary2,
+        color: theme.colors.grey2,
     },
     inputHeader: {
         color: theme.colors.text,

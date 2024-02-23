@@ -17,7 +17,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                     <View style={styles.imgContainer}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
-                            source={require(settings.config.images.logo1024)}
+                            source={settings.config.images.logo1024}
                         ></Image>
                         <TH1 style={commonStyles.marginBottom}>{settings.config.appName}</TH1>
 

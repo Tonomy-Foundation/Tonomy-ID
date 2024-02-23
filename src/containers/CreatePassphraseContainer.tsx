@@ -143,6 +143,5 @@ const styles = StyleSheet.create({
         width: '50%',
         justifyContent: 'center',
         flexDirection: 'row',
-        backgroundColor: theme.colors.primary2,
     },
 });
