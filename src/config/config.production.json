@@ -19,7 +19,7 @@
     "images":{
         "splash": "./src/assets/pangea/pangea-splash.png",
         "logo48": "./src/assets/pangea/favicon.png",
-        "logo1024": "./src/assets/panea/pangea-large-logo.png"
+        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
