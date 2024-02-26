@@ -15,6 +15,5 @@
   ],
   "exclude": [
     "node_modules",
-  ],
-  "typeRoots": ["./typings", "./node_modules/@types"],
+  ]
 }
