@@ -18,10 +18,6 @@ type ConfigType = {
         secondaryColor2: string;
         tertiaryColor: string;
         tertiaryColor2: string;
-        text: string;
-        textGray: string;
-        linkColor: string;
-        infoBackground: string;
     };
     appName: string;
     ecosystemName: string;
@@ -31,7 +27,6 @@ type ConfigType = {
         logo48: string;
         logo1024: string;
     };
-    imagesPath: string;
     links: {
         privacyPolicyLearnMore: string;
         termsAndConditionsLearnMore: string;
@@ -70,31 +65,16 @@ switch (env) {
     case 'local':
     case 'development':
         config = require('./config/config.json');
-        config.images.logo1024 = require('./assets/pangea/pangea-large-logo.png');
-        config.images.logo48 = require('./assets/pangea/favicon.png');
-        config.images.splash = require('./assets/pangea/pangea-splash.png');
 
         break;
     case 'staging':
         config = require('./config/config.staging.json');
-        config.images.logo1024 = require('./assets/tonomy/tonomy-logo1024.png');
-        config.images.logo48 = require('./assets/tonomy/tonomy-logo48.png');
-        config.images.splash = require('./assets/tonomy/tonomy-splash.png');
-
         break;
     case 'testnet':
         config = require('./config/config.testnet.json');
-        config.images.logo1024 = require('./assets/pangea/pangea-large-logo.png');
-        config.images.logo48 = require('./assets/pangea/favicon.png');
-        config.images.splash = require('./assets/pangea/pangea-splash.png');
-
         break;
     case 'production':
         config = require('./config/config.production.json');
-        config.images.logo1024 = require('./assets/pangea/pangea-large-logo.png');
-        config.images.logo48 = require('./assets/pangea/favicon.png');
-        config.images.splash = require('./assets/pangea/pangea-splash.png');
-
         break;
     default:
         throw new Error('Unknown environment: ' + env);

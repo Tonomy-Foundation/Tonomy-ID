@@ -9,6 +9,7 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import settings from '../settings';
+import { Images } from '../assets';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
@@ -56,8 +57,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         <LayoutComponent
             body={
                 <View>
-                    <Image style={styles.mainlogo} source={settings.config.images.logo1024}></Image>
-                    <Image style={styles.tonomylogo} source={settings.config.images.logo1024}></Image>
+                    <Image style={styles.mainlogo} source={Images.GetImage('logo1024')}></Image>
+                    <Image style={styles.tonomylogo} source={Images.GetImage('logo1024')}></Image>
                     <Text style={styles.text}>Brought to you by the {settings.config.ecosystemName}</Text>
                 </View>
             }

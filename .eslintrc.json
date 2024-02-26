@@ -7,6 +7,7 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "plugins": [
+        "import",
         "prettier",
         "react",
         "react-native",
@@ -24,6 +25,7 @@
         "react/react-in-jsx-scope": "off",
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn",
+        "import/no-unresolved": "error",
         "padding-line-between-statements": [
             "warn",
             { "blankLine": "always", "prev": "block-like", "next": "*" },

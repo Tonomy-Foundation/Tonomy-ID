@@ -8,14 +8,18 @@
         "tertiaryColor2": "#CFC8F7",
         "text":"#000000",
         "textGray": "#000000",
-        "linkColor": "4CAF50",
+        "linkColor": "#4CAF50",
         "infoBackground": "#F6F9FB"
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
     "appName": "Tonomy ID Development",
     "ecosystemName": "Tonomy Development",
     "appSlogan": "Building Ecosystem Of Trust",
-    "images":{},
+    "images":{
+        "splash": "./src/assets/tonomy/tonomy-splash.png",
+        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
+        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+    },
     "links": {
         "privacyPolicyLearnMore": "#",
         "termsAndConditionsLearnMore": "#",

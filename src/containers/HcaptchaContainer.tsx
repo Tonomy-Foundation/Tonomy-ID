@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     link: {
-        color: theme.colors.primary,
+        color: theme.colors.linkColor,
     },
     textContainer: {
         flexDirection: 'row',

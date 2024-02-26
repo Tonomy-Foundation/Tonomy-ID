@@ -83,7 +83,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                         <TInfoBox
                             align="left"
                             icon="security"
-                            description="Your passphrase and private keys are self-sovereign meaning hackers have a very  hard time! "
+                            description="Your passphrase and private keys are self-sovereign meaning hackers have a very hard time! "
                             linkUrl={settings.config.links.securityLearnMore}
                             linkUrlText="Learn more"
                         />
