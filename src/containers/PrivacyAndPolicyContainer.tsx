@@ -32,21 +32,21 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                     <View>
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>{settings.config.ecosystemName} <Text style={{ fontWeight: 'bold' }}>never stores or processes your passphrase or private keys on</Text> our servers.</Text>}
+                            item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores or processes your passphrase or private keys on</Text> our servers.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>{settings.config.ecosystemName} <Text style={{ fontWeight: 'bold' }}>never stores stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>}
+                            item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>If you agree below, {settings.config.ecosystemName} will collect your email for marketing purposes and share this information with XXXX.</Text>}
+                            item={<Text style={styles.listItemText}>If you agree below, {settings.config.appName} will collect your email for marketing purposes and share this information with XXXX.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>If you agree below, {settings.config.ecosystemName} will collect usage and analytics information as you use it, which we use to improve the user experience of the application and share this information with Matamo.</Text>}
+                            item={<Text style={styles.listItemText}>If you agree below, {settings.config.appName} will collect usage and analytics information as you use it, which we use to improve the user experience of the application and share this information with Matamo.</Text>}
                         />
-                        <TList bulletIcon="•" item={<Text style={styles.listItemText}>{settings.config.ecosystemName} is regulated under Dutch law.</Text>} />
+                        <TList bulletIcon="•" item={<Text style={styles.listItemText}>{settings.config.appName} is regulated under Dutch law.</Text>} />
                     </View>
                 </View>
                 <TouchableOpacity
@@ -76,7 +76,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         </TP>
                         <TP style={{ fontWeight: 'bold' }}>1. Data Collection and Usage</TP>
                         <TP style={styles.scrollView}>
-                            a. {settings.config.ecosystemName} operates on the principle of self-sovereign identity. We do not store or
+                            a. {settings.config.appName} operates on the principle of self-sovereign identity. We do not store or
                             process any personal information, including your passphrase, private keys, or
                             identity-related data.
                         </TP>
@@ -86,7 +86,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         </TP>
                         <TP style={{ fontWeight: 'bold' }}>2. Passphrase and Private Keys</TP>
                         <TP style={styles.scrollView}>
-                            a. {settings.config.ecosystemName} does not store your passphrase or private keys on our servers. This enhances
+                            a. {settings.config.appName} does not store your passphrase or private keys on our servers. This enhances
                             security by minimizing the risk of unauthorized access.
                         </TP>
                         <TP style={styles.scrollView}>
@@ -101,7 +101,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         </TP>
                         <TP style={{ fontWeight: 'bold' }}>4. Information Sharing</TP>
                         <TP style={styles.scrollView}>
-                            a. {settings.config.ecosystemName} does not share your information with third parties, as we do not collect or
+                            a. {settings.config.appName} does not share your information with third parties, as we do not collect or
                             store personal data.
                         </TP>
                         <TP style={styles.scrollView}>
@@ -110,7 +110,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         </TP>
                         <TP style={{ fontWeight: 'bold' }}>5. Changes to Privacy Notice</TP>
                         <TP style={styles.scrollView}>
-                            {settings.config.ecosystemName} reserves the right to update this Privacy Notice. Any significant changes will be
+                            {settings.config.appName} reserves the right to update this Privacy Notice. Any significant changes will be
                             communicated to you. Your continued use of our services after such changes implies your
                             consent to the revised Privacy Notice.
                         </TP>
@@ -179,7 +179,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
             >
                 <View>
                     <Text style={styles.popupText}>
-                        Without agreeing to the Terms of Service, you {"can't"} proceed with the use of  {settings.config.ecosystemName}
+                        Without agreeing to the Terms of Service, you {"can't"} proceed with the use of  {settings.config.appName}
                         services.
                     </Text>
                 </View>

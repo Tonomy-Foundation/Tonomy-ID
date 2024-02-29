@@ -240,7 +240,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 visible={showModal}
                 icon="check"
                 onPress={onModalPress}
-                title={'Welcome to ' + settings.config.ecosystemName}
+                title={'Welcome to ' + settings.config.appName}
             >
                 <View>
                     <Text>

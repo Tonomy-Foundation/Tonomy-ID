@@ -38,7 +38,7 @@ export class Images {
     static GetImage = (name: string) => {
         let found;
 
-        if (settings.config.ecosystemName === 'Tonomy Staging') {
+        if (settings.config.appName === 'Tonomy ID Staging') {
             found = Images.tonomyImages.find((e) => e.name === name);
         } else {
             found = Images.pangeaImages.find((e) => e.name === name);
