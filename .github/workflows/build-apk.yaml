@@ -12,12 +12,8 @@ jobs:
       EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    container:
-      image: cimg/android:2024.01-ndk
+    container: cimg/android:2024.01.1-ndk-23.1.7779620
     steps:
-      - name: Clean Up Docker
-        run: |
-          docker system prune -f
       - name: Checkout code
         uses: actions/checkout@v4
 
