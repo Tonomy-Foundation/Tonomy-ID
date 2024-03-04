@@ -12,7 +12,7 @@ jobs:
       EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    container: cimg/android:2023.09.1-ndk
+    container: cimg/android:2023.04.1-ndk
 
     steps:
       - name: Checkout code
@@ -24,8 +24,9 @@ jobs:
           node-version: 18.12.1
       - run: corepack enable
       - run: yarn --immutable
+      - run: df -h
       - run: yarn run build:prepare
-      - run: npx eas build -p android --clear-cache --profile demo-apk --platform android --local
+      - run: npx eas build --clear-cache --profile demo-apk --platform android --local
 
       - name: Find APK file and rename it
         run: find . -name "*.apk" -exec mv {} TonomyID.apk \;
