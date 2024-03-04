@@ -12,8 +12,10 @@ jobs:
       EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    docker:
-      - image: cimg/android:2024.01-ndk
+    container:
+      image: cimg/android:2024.01-ndk
+   
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
