@@ -17,13 +17,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Clean up
-        run: |
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/*
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android/sdk
-          sudo rm -rf /opt/ghc
 
       - name: 🚀 Build and publish tonomy app
         uses: actions/setup-node@v4
