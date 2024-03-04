@@ -59,7 +59,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 <View>
                     <Image style={styles.mainlogo} source={Images.GetImage('logo1024')}></Image>
                     <Image style={styles.tonomylogo} source={Images.GetImage('logo1024')}></Image>
-                    <Text style={styles.text}>Brought to you by the {settings.config.appName}</Text>
+                    <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
                 </View>
             }
         />

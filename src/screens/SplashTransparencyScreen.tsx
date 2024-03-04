@@ -22,7 +22,7 @@ export default function SplashTransparencyScreen({ navigation }: SplashTranspare
             subtitle="This app is built and run in a transparent way"
             imageSource={require('../assets/animations/transparency.gif')}
             icon="transparency"
-            description={`The software that runs ${settings.config.appName} is open-source and can be reviewed by anyone. It is maintained by the ${settings.config.appName}, a Dutch non-profit that practices radical transparency.`}
+            description={`The software that runs ${settings.config.appName} is open-source and can be reviewed by anyone. It is maintained by the Tonomy Foundation, a Dutch non-profit that practices radical transparency.`}
             linkUrl={settings.config.links.transparencyLearnMore}
             linkUrlText="Learn More"
             buttonText="GET STARTED"

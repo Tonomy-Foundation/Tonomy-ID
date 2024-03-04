@@ -39,7 +39,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}><Text style={{ fontWeight: 'bold' }}>You are responsible for using and behaving according to regulatory requirements in applications you log into</Text> with {settings.config.appName}, not the {settings.config.appName}.</Text>}
+                            item={<Text style={styles.listItemText}><Text style={{ fontWeight: 'bold' }}>You are responsible for using and behaving according to regulatory requirements in applications you log into</Text> with {settings.config.appName}, not the Tonomy Foundation.</Text>}
                         />
                         <TList bulletIcon="•" item={<Text style={styles.listItemText}>{settings.config.appName} is <Text style={{ fontWeight: 'bold' }}>regulated under Dutch law.</Text></Text>} />
                     </View>
