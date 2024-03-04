@@ -24,8 +24,7 @@ jobs:
           node-version: 18.12.1
       - run: corepack enable
       - run: yarn --immutable
-      - name: Clean workspace
-        run: sudo rm -rf *
+
       - run: yarn run build:prepare
       - run: npx eas build --clear-cache --profile demo-apk --platform android --local
 
