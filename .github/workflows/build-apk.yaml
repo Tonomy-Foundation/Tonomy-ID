@@ -12,7 +12,7 @@ jobs:
       EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    container: cimg/android:2024.01.1
+    container: cimg/android:2024.01.1-ndk
 
     steps:
       - name: Checkout code
@@ -24,7 +24,8 @@ jobs:
           node-version: 18.12.1
       - run: corepack enable
       - run: yarn --immutable
-      - run: df -h
+      - name: Clean workspace
+        run: sudo rm -rf *
       - run: yarn run build:prepare
       - run: npx eas build --clear-cache --profile demo-apk --platform android --local
 
