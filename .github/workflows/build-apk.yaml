@@ -14,9 +14,10 @@ jobs:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     container:
       image: cimg/android:2024.01-ndk
-   
-
     steps:
+      - name: Clean Up Docker
+        run: |
+          docker system prune -f
       - name: Checkout code
         uses: actions/checkout@v4
 
