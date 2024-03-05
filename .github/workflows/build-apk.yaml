@@ -1,9 +1,9 @@
 name: Build App locally and run security analysis
 
-on:
-  pull_request:
-    branches-ignore:
-      - master
+# on:
+#   pull_request:
+#     branches-ignore:
+#       - master
 
 jobs:
   build-android:
