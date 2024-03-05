@@ -231,7 +231,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{username}</Text> is already taken.
+                        Username <Text style={{ color: theme.colors.linkColor }}>{username}</Text> is already taken.
                         Please choose another one.
                     </Text>
                 </View>
@@ -240,11 +240,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 visible={showModal}
                 icon="check"
                 onPress={onModalPress}
-                title={'Welcome to ' + settings.config.ecosystemName}
+                title={'Welcome to ' + settings.config.appName}
             >
                 <View>
                     <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>{username}</Text>
+                        Your username is <Text style={{ color: theme.colors.linkColor }}>{username}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     link: {
-        color: theme.colors.primary,
+        color: theme.colors.linkColor,
     },
     textContainer: {
         flexDirection: 'row',

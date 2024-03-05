@@ -5,13 +5,17 @@
         "secondaryColor": "#FF505F",
         "secondaryColor2": "#E76773",
         "tertiaryColor": "#7660E7",
-        "tertiaryColor2": "#CFC8F7"
+        "tertiaryColor2": "#CFC8F7",
+        "text":"#474D4C",
+        "textGray": "#5B6261",
+        "linkColor": "#67D7ED",
+        "infoBackground": "#e1f2e2"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
     "appName": "Tonomy ID Staging",
     "ecosystemName": "Tonomy Staging",
     "appSlogan": "Building Ecosystem Of Trust",
-    "images": {
+    "images":{
         "splash": "./src/assets/tonomy/tonomy-splash.png",
         "logo48": "./src/assets/tonomy/tonomy-logo48.png",
         "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"

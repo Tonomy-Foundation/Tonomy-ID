@@ -20,6 +20,7 @@ import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
+import { Images } from '../assets';
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();
@@ -181,7 +182,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 <View style={styles.container}>
                     <Image
                         style={[styles.logo, commonStyles.marginBottom]}
-                        source={require('../assets/tonomy/tonomy-logo1024.png')}
+                        source={Images.GetImage('logo1024')}
                     ></Image>
 
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}

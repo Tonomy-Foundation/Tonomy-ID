@@ -1,20 +1,25 @@
 {
     "theme": {
-        "primaryColor": "#67D7ED",
-        "primaryColor2": "#D2F3FA",
-        "secondaryColor": "#FF505F",
-        "secondaryColor2": "#E76773",
+        "primaryColor": "#000000",
+        "primaryColor2": "#939393",
+        "secondaryColor": "#4CAF50",
+        "secondaryColor2": "#6E84A3",
         "tertiaryColor": "#7660E7",
-        "tertiaryColor2": "#CFC8F7"
+        "tertiaryColor2": "#CFC8F7",
+        "text":"#000000",
+        "textGray": "#000000",
+        "linkColor": "#4CAF50",
+        "infoBackground": "#F6F9FB"
+
     },
-    "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
-    "appName": "Pangea Passport",
-    "ecosystemName": "Pangea Passport",
+    "appLogoUrl": "./src/assets/pangea/favicon.png",
+    "appName": "UNITED Wallet",
+    "ecosystemName": "Pangea ",
     "appSlogan": "Building Ecosystem Of Trust",
-    "images": {
-        "splash": "./src/assets/tonomy/tonomy-splash.png",
-        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
-        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+    "images":{
+        "splash": "./src/assets/pangea/pangea-splash.png",
+        "logo48": "./src/assets/pangea/favicon.png",
+        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
