@@ -1,9 +1,9 @@
 name: Build App locally and run security analysis
 
-on:
-  pull_request:
-    branches-ignore:
-      - master
+# on:
+#   pull_request:
+#     branches-ignore:
+#       - master
 
 jobs:
   build-android:
@@ -12,7 +12,7 @@ jobs:
       EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    container: cimg/android:2022.12.1-ndk
+    container: cimg/android:2024.01-ndk
 
     steps:
       - name: Checkout code
@@ -24,6 +24,7 @@ jobs:
           node-version: 18.12.1
       - run: corepack enable
       - run: yarn --immutable
+
       - run: yarn run build:prepare
       - run: npx eas build --clear-cache --profile demo-apk --platform android --local
 
