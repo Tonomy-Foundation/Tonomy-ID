@@ -38,5 +38,5 @@
     "accountsServiceUrl": "https://communication.pangea.web4.world",
     "loggerLevel": "debug",
     "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb",
-    "blockExplorerURL": "https://explorer.pangea.web4.world"
+    "blockExplorerUrl": "https://explorer.pangea.web4.world"
 }

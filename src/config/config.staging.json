@@ -37,5 +37,5 @@
     "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
     "loggerLevel": "debug",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
-    "blockExplorerURL": "#"
+    "blockExplorerUrl": "https://local.bloks.io"
 }

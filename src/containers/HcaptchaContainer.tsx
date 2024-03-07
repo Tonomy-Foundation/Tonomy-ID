@@ -95,7 +95,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             unsetConfirmPassphraseWord();
 
             await setUserName();
-            const url = settings.config.blockExplorerURL + '/account/' + (await user.getAccountName()).toString();
+            let url;
+            const accountName = (await user.getAccountName()).toString();
+
+            if (settings.env === 'staging' || settings.env === 'development') {
+                url =
+                    settings.config.blockExplorerUrl +
+                    '/account/' +
+                    accountName +
+                    '?nodeUrl=' +
+                    settings.config.blockchainUrl;
+            } else {
+                url = settings.config.blockExplorerUrl + '/account/' + accountName;
+            }
 
             setAccountUrl(url);
         } catch (e) {
