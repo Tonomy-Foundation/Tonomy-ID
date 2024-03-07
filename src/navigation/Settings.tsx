@@ -54,7 +54,7 @@ export default function SettingsNavigation() {
         },
         headerTitleStyle: {
             fontSize: 24,
-            color: '#474D4C',
+            color: theme.colors.text,
         },
         headerTitleAlign: 'center',
         headerTintColor: theme.dark ? theme.colors.text : 'black',

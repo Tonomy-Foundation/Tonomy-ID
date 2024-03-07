@@ -18,6 +18,10 @@ type ConfigType = {
         secondaryColor2: string;
         tertiaryColor: string;
         tertiaryColor2: string;
+        text: string;
+        textGray: string;
+        linkColor: string;
+        infoBackground: string;
     };
     appName: string;
     ecosystemName: string;
@@ -66,6 +70,7 @@ switch (env) {
     case 'local':
     case 'development':
         config = require('./config/config.json');
+
         break;
     case 'staging':
         config = require('./config/config.staging.json');

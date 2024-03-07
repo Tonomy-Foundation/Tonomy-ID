@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
         marginBottom: 8,
-        color: theme.colors.grey1,
+        color: theme.colors.text,
     },
     boldText: {
         fontWeight: 'bold',

@@ -81,8 +81,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 <TInfoBox
                     align="left"
                     icon="security"
-                    description="Your username is private and can only be seen by you and those you share it with, not even Tonomy
-                         Foundation can see it."
+                    description={`Your username is private and can only be seen by you and those you share it with, not even ${settings.config.ecosystemName} can see it.`}
                     linkUrl={settings.config.links.securityLearnMore}
                     linkUrlText="Learn more"
                 />
@@ -112,14 +111,14 @@ const styles = StyleSheet.create({
     caption: {
         textAlign: 'right',
         fontSize: 14,
-        color: '#939393',
+        color: theme.colors.grey2,
     },
     inputHeader: {
-        color: '#939393',
+        color: theme.colors.text,
     },
     innerContainer: { marginTop: 10, justifyContent: 'center' },
     link: {
-        color: theme.colors.primary,
+        color: theme.colors.linkColor,
     },
     textContainer: {
         flexDirection: 'row',
