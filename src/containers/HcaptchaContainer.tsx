@@ -95,11 +95,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             unsetConfirmPassphraseWord();
 
             await setUserName();
-            const url =
-                'https://local.bloks.io/account/' +
-                (await user.getAccountName()).toString() +
-                '?nodeUrl=' +
-                settings.config.blockchainUrl;
+            let url;
+            const accountName = (await user.getAccountName()).toString();
+
+            if (settings.env === 'staging' || settings.env === 'development') {
+                url =
+                    settings.config.blockExplorerUrl +
+                    '/account/' +
+                    accountName +
+                    '?nodeUrl=' +
+                    settings.config.blockchainUrl;
+            } else {
+                url = settings.config.blockExplorerUrl + '/account/' + accountName;
+            }
 
             setAccountUrl(url);
         } catch (e) {
