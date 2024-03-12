@@ -36,7 +36,7 @@
     "ssoWebsiteOrigin": "https://accounts.pangea.web4.world",
     "communicationUrl": "wss://communication.pangea.web4.world",
     "accountsServiceUrl": "https://communication.pangea.web4.world",
-    "loggerLevel": "debug",
+    "loggerLevel": "error",
     "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb",
     "blockExplorerUrl": "https://explorer.pangea.web4.world"
 }
