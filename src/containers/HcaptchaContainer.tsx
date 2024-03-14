@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image, Alert } from 'react-native';
 import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -34,8 +34,12 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const [username, setUsername] = useState('');
 
     const onMessage = (event: { nativeEvent: { data: string } }) => {
+        Alert.alert('onMessage');
+
         if (event && event.nativeEvent.data) {
             const eventData = event.nativeEvent.data;
+
+            Alert.alert('event data', eventData);
 
             if (['cancel'].includes(event.nativeEvent.data)) {
                 if (captchaFormRef.current) {
@@ -50,19 +54,25 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else {
-                if (settings.config.loggerLevel === 'debug')
+                if (settings.config.loggerLevel === 'debug') {
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
+                    Alert.alert('debug mode');
+                }
 
                 if (captchaFormRef.current) {
+                    Alert.alert('captchaFormRef hide');
                     captchaFormRef.current.hide();
                 }
 
                 if (settings.env === 'local') {
+                    Alert.alert('local mode');
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
                 } else {
+                    Alert.alert('eventData', eventData);
                     setCode(eventData);
                 }
 
+                Alert.alert('else success');
                 setSuccess(true);
             }
         }
@@ -153,6 +163,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setLoading(true);
 
         if (captchaFormRef.current) {
+            Alert.alert('showing captcha');
             captchaFormRef.current.show();
         }
 
