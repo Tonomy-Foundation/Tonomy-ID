@@ -37,18 +37,21 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         Alert.alert('onMessage');
 
         if (event && event.nativeEvent.data) {
-            Alert.alert('eventNative', JSON.stringify(event.nativeEvent));
             const eventData = event.nativeEvent.data;
 
             Alert.alert('event data', eventData);
 
             if (['cancel'].includes(event.nativeEvent.data)) {
+                Alert.alert('cancel');
+
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
+                Alert.alert('error', 'expired');
+
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
@@ -144,6 +147,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(true);
 
         if (captchaFormRef.current) {
+            Alert.alert('hcapctha hide');
             captchaFormRef.current.hide();
             setCode(null);
         }
@@ -228,7 +232,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 footer={
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={() => onNext()} disabled={!code || loading || !success}>
+                            <TButtonContained onPress={onNext} disabled={!code || loading || !success}>
                                 Create Account
                             </TButtonContained>
                         </View>
