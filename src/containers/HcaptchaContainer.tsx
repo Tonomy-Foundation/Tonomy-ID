@@ -37,6 +37,9 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         Alert.alert('onMessage');
 
         if (event && event.nativeEvent.data) {
+            // Alert.alert('event data', JSON.stringify(event));
+            // Alert.alert('Native event', JSON.stringify(event.nativeEvent));
+
             const eventData = event.nativeEvent.data;
 
             Alert.alert('event data', eventData);
@@ -44,17 +47,17 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             if (['cancel'].includes(event.nativeEvent.data)) {
                 Alert.alert('cancel');
 
-                if (captchaFormRef.current) {
-                    captchaFormRef.current.hide();
-                }
+                // if (captchaFormRef.current) {
+                //     captchaFormRef.current.hide();
+                // }
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
                 Alert.alert('error', 'expired');
 
-                if (captchaFormRef.current) {
-                    captchaFormRef.current.hide();
-                }
+                // if (captchaFormRef.current) {
+                //     captchaFormRef.current.hide();
+                // }
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else {
@@ -65,7 +68,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
                 if (captchaFormRef.current) {
                     Alert.alert('captchaFormRef hide');
-                    captchaFormRef.current.hide();
+                    // captchaFormRef.current.hide();
                 }
 
                 if (settings.env === 'local') {
