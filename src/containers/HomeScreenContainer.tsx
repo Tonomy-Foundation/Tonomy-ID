@@ -28,10 +28,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
             }
             footer={
                 <View>
-                    <TButtonContained
-                        onPress={() => navigation.navigate('CreateAccountUsername')}
-                        style={commonStyles.marginBottom}
-                    >
+                    <TButtonContained onPress={() => navigation.navigate('Hcaptcha')} style={commonStyles.marginBottom}>
                         Create Account
                     </TButtonContained>
                     <TButtonOutlined

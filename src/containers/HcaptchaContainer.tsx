@@ -37,6 +37,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         Alert.alert('onMessage');
 
         if (event && event.nativeEvent.data) {
+            Alert.alert('eventNative', event.nativeEvent);
             const eventData = event.nativeEvent.data;
 
             Alert.alert('event data', eventData);
@@ -227,7 +228,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 footer={
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={!code || loading || !success}>
+                            <TButtonContained onPress={() => onNext()} disabled={!code || loading || !success}>
                                 Create Account
                             </TButtonContained>
                         </View>
