@@ -144,7 +144,7 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
                     />
-                    {/*  <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
+                    <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
                     <Stack.Screen
                         name="CreateAccountFingerprint"
                         options={{ title: 'Fingerprint Registration' }}
@@ -161,11 +161,11 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
-                    <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} /> */}
+                    <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
                 <>
-                    {/* <NotificationModule />
+                    <NotificationModule />
                     <CommunicationModule />
                     <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
@@ -183,7 +183,7 @@ export default function RootNavigation() {
                             options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
                             component={ProfilePreviewScreen}
                         />
-                    </Stack.Navigator> */}
+                    </Stack.Navigator>
                 </>
             )}
         </NavigationContainer>
