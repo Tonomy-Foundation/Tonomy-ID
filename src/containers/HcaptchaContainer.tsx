@@ -37,7 +37,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         Alert.alert('onMessage');
 
         if (event && event.nativeEvent.data) {
-            Alert.alert('eventNative', event.nativeEvent);
+            Alert.alert('eventNative', JSON.stringify(event.nativeEvent));
             const eventData = event.nativeEvent.data;
 
             Alert.alert('event data', eventData);
