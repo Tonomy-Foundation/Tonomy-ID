@@ -42,12 +42,16 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             Alert.alert('event data', eventData);
 
             if (['cancel'].includes(event.nativeEvent.data)) {
+                Alert.alert('cancel');
+
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
+                Alert.alert('error', 'expired');
+
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
@@ -143,6 +147,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(true);
 
         if (captchaFormRef.current) {
+            Alert.alert('hcapctha hide');
             captchaFormRef.current.hide();
             setCode(null);
         }
