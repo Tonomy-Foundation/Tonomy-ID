@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -34,53 +34,35 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const [username, setUsername] = useState('');
 
     const onMessage = (event: { nativeEvent: { data: string } }) => {
-        Alert.alert('onMessage');
-
         if (event && event.nativeEvent.data) {
-            // Alert.alert('event data', JSON.stringify(event));
-            // Alert.alert('Native event', JSON.stringify(event.nativeEvent));
-
             const eventData = event.nativeEvent.data;
 
-            Alert.alert('event data', eventData);
-
             if (['cancel'].includes(event.nativeEvent.data)) {
-                Alert.alert('cancel');
-
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
-                Alert.alert('error', 'expired');
-
                 if (captchaFormRef.current) {
                     captchaFormRef.current.hide();
                 }
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else {
-                Alert.alert('else', settings.env);
-
                 if (settings.config.loggerLevel === 'debug' || settings.env === 'development') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
-                    Alert.alert('debug mode');
 
                     if (captchaFormRef.current) {
                         captchaFormRef.current.hide();
                     }
                 } else {
-                    Alert.alert('eventData', eventData);
                     setCode(eventData);
 
                     if (eventData !== 'open' && captchaFormRef.current) {
-                        Alert.alert('captchaFormRef hide');
                         captchaFormRef.current.hide();
                     }
-
-                    Alert.alert('else success');
                 }
 
                 setSuccess(true);
@@ -153,7 +135,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(true);
 
         if (captchaFormRef.current) {
-            Alert.alert('hcapctha hide');
             captchaFormRef.current.hide();
             setCode(null);
         }
@@ -174,7 +155,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setLoading(true);
 
         if (captchaFormRef.current) {
-            Alert.alert('showing captcha');
             captchaFormRef.current.show();
         }
 
