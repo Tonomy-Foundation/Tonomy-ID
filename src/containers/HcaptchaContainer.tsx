@@ -54,7 +54,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             } else {
                 if (settings.config.loggerLevel === 'debug') {
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
-                } else if (settings.env === 'development') {
+                } else if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
                     hideHcaptcha();
                 } else {
