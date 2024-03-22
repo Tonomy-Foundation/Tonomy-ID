@@ -33,30 +33,32 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
 
+    const hideHcaptcha = () => {
+        if (captchaFormRef.current) {
+            captchaFormRef.current.hide();
+        }
+    };
+
     const onMessage = (event: { nativeEvent: { data: string } }) => {
         if (event && event.nativeEvent.data) {
             const eventData = event.nativeEvent.data;
 
             if (['cancel'].includes(event.nativeEvent.data)) {
-                if (captchaFormRef.current) {
-                    captchaFormRef.current.hide();
-                }
+                hideHcaptcha();
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
-                if (captchaFormRef.current) {
-                    captchaFormRef.current.hide();
-                }
+                hideHcaptcha();
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else {
-                if (settings.config.loggerLevel === 'debug' || settings.env === 'development') {
-                    setCode('10000000-aaaa-bbbb-cccc-000000000001');
+                if (settings.config.loggerLevel === 'debug') {
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
+                }
 
-                    if (captchaFormRef.current) {
-                        captchaFormRef.current.hide();
-                    }
+                if (settings.env === 'local') {
+                    setCode('10000000-aaaa-bbbb-cccc-000000000001');
+                    hideHcaptcha();
                 } else {
                     setCode(eventData);
 
