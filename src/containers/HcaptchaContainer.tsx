@@ -108,7 +108,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     '/account/' +
                     accountName +
                     '?nodeUrl=' +
-                    settings.config.blockchainUrl;
+                    settings.config.blockchainUrl +
+                    '&coreSymbol=LEOS&corePrecision=6';
             } else {
                 url = settings.config.blockExplorerUrl + '/account/' + accountName;
             }
