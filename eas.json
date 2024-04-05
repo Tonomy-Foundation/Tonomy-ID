@@ -62,6 +62,15 @@
                 "ascApiKeyPath": "./apple-asc-api-key.p8",
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
+        },
+        "unitedWallet": {
+            "ios": {
+                "ascAppId": "6482296993",
+                "appleTeamId": "6BLD42QR78",
+                "ascApiKeyId": "FQUM6G84SK",
+                "ascApiKeyPath": "./apple-asc-api-key.p8",
+                "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
+            }
         }
     }
 }

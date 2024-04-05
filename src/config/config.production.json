@@ -15,7 +15,7 @@
     "appLogoUrl": "./src/assets/pangea/favicon.png",
     "appName": "UNITED Wallet",
     "ecosystemName": "Pangea ",
-    "appSlogan": "Building Ecosystem Of Trust",
+    "appSlogan": "For a better Tomorrow",
     "images":{
         "splash": "./src/assets/pangea/pangea-splash.png",
         "logo48": "./src/assets/pangea/favicon.png",
@@ -30,8 +30,8 @@
         "transparencyLearnMore": "#",
         "securityLearnMore": "#"
     },
-    "expoProjectId": "b7d1c77f-3535-492c-8f55-0ba569ccdc93",
-    "accountSuffix": ".stag.tonomy.id",
+    "expoProjectId": "fdea0cd3-2296-4fd8-a79e-7ccc583196e7",
+    "accountSuffix": ".pangea.id",
     "blockchainUrl": "https://blockchain-api.pangea.web4.world",
     "ssoWebsiteOrigin": "https://accounts.pangea.web4.world",
     "communicationUrl": "wss://communication.pangea.web4.world",

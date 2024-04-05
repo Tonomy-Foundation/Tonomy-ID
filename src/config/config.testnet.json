@@ -31,12 +31,12 @@
         "securityLearnMore": "#"
     },
     "expoProjectId": "b227858a-74c6-4996-8645-33b7f28f8980",
-    "accountSuffix": ".testnet.pangea",
+    "accountSuffix": ".testnet.pangea.id",
     "blockchainUrl": "https://blockchain-api-testnet.pangea.web4.world",
     "ssoWebsiteOrigin": "https://accounts.testnet.pangea.web4.world",
     "communicationUrl": "wss://communication.testnet.pangea.web4.world",
     "accountsServiceUrl": "https://communication.testnet.pangea.web4.world",
     "blockExplorerUrl": "https://explorer.testnet.pangea.web4.world",
     "loggerLevel": "error",
-    "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb"
+    "captchaSiteKey": "bf994ca7-3b1f-43c4-b35f-0cf27b0da3c8"
 }

@@ -13,7 +13,7 @@ jobs:
       # https://expo.dev/accounts/[account]/settings/access-tokens
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       # https://github.com/expo/fyi/blob/main/creating-google-service-account.md
-      APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
+      APPLE_STORE_CONNECT_API_KEY_UNITED_WALLET: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_UNITED_WALLET }}
       # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
 
     steps:
@@ -26,6 +26,6 @@ jobs:
           node-version: 18.12.1
       - run: corepack enable
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
-      - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - run: echo "${APPLE_STORE_CONNECT_API_KEY_UNITED_WALLET}" > ./apple-asc-api-key.p8
       - run: yarn --immutable
-      # - run: yarn run deploy:production
+      - run: yarn run deploy:production
