@@ -3,7 +3,7 @@ name: Deployment - production
 on:
   push:
     branches:
-      - feature/165-mainnet-launch
+      - master
 
 jobs:
   deploy:
@@ -28,4 +28,4 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY_UNITED_WALLET}" > ./apple-asc-api-key.p8
       - run: yarn --immutable
-      - run: yarn run deploy:production:android
+      - run: yarn run deploy:production
