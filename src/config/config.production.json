@@ -13,7 +13,7 @@
 
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
-    "appName": "UNITED Wallet",
+    "appName": "United Citizens Wallet",
     "ecosystemName": "Pangea ",
     "appSlogan": "For a better Tomorrow",
     "images":{
@@ -38,5 +38,6 @@
     "accountsServiceUrl": "https://communication.pangea.web4.world",
     "loggerLevel": "error",
     "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb",
-    "blockExplorerUrl": "https://explorer.pangea.web4.world"
+    "blockExplorerUrl": "https://explorer.pangea.web4.world",
+    "appSlug": "united-wallet"
 }
