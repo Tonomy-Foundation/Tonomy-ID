@@ -13,7 +13,7 @@ jobs:
       # https://expo.dev/accounts/[account]/settings/access-tokens
       GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       # https://github.com/expo/fyi/blob/main/creating-google-service-account.md
-      APPLE_STORE_CONNECT_API_KEY_UNITED_WALLET: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_UNITED_WALLET }}
+      APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_UNITED_WALLET }}
       # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
 
     steps:
