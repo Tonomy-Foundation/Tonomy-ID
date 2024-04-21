@@ -3,7 +3,7 @@ name: Deployment - production
 on:
   push:
     branches:
-      - feature/165-mainnet-launch
+      - master
 
 jobs:
   deploy:
