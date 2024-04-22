@@ -51,7 +51,6 @@ type ConfigType = {
     loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
     blockExplorerUrl: string;
-    appSlug: string;
 };
 
 type SettingsType = {
@@ -84,12 +83,6 @@ switch (env) {
         break;
     default:
         throw new Error('Unknown environment: ' + env);
-}
-
-config.tonomyIdSlug = config.appName.toLowerCase().replace(/ /g, '-');
-
-if (env === 'production') {
-    config.tonomyIdSlug = config.appSlug;
 }
 
 if (process.env.BLOCKCHAIN_URL) {
