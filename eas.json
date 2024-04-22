@@ -54,7 +54,7 @@
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         },
-        "pangeaProduction": {            
+        "productionTestnet": {            
             "ios": {
                 "ascAppId": "6476114575",
                 "appleTeamId": "6BLD42QR78",
@@ -63,7 +63,7 @@
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         },
-        "unitedWallet": {
+        "productionMainnet": {
             "ios": {
                 "ascAppId": "6482296993",
                 "appleTeamId": "6BLD42QR78",
