@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, Image, ScrollView } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -53,18 +53,24 @@ export default function MainContainer({ did }: { did?: string }) {
         try {
             const did = validateQrCode(data);
 
-            Alert.alert('did', did);
             await connectToDid(did);
         } catch (e) {
-            console.log('error', e);
-            Alert.alert('error', e);
-
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
-                errorStore.setError({
-                    title: 'Invalid QR Code',
-                    error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
-                    expected: true,
-                });
+                console.log('Invalid QR Code', JSON.stringify(e, null, 2));
+
+                if (e.message === 'QR schema does not match app') {
+                    errorStore.setError({
+                        title: 'Invalid QR Code',
+                        error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
+                        expected: true,
+                    });
+                } else {
+                    errorStore.setError({
+                        title: 'Invalid QR Code',
+                        error: e,
+                        expected: false,
+                    });
+                }
             } else {
                 errorStore.setError({ error: e, expected: false });
             }
