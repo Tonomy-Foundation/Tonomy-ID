@@ -85,8 +85,6 @@ switch (env) {
         throw new Error('Unknown environment: ' + env);
 }
 
-config.tonomyIdSlug = config.appName.toLowerCase().replace(/ /g, '-');
-
 if (process.env.BLOCKCHAIN_URL) {
     console.log(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);
     config.blockchainUrl = process.env.BLOCKCHAIN_URL;
