@@ -33,34 +33,38 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
 
+    const hideHcaptcha = () => {
+        if (captchaFormRef.current) {
+            captchaFormRef.current.hide();
+        }
+    };
+
     const onMessage = (event: { nativeEvent: { data: string } }) => {
         if (event && event.nativeEvent.data) {
             const eventData = event.nativeEvent.data;
 
             if (['cancel'].includes(event.nativeEvent.data)) {
-                if (captchaFormRef.current) {
-                    captchaFormRef.current.hide();
-                }
+                hideHcaptcha();
 
                 setErrorMsg('You cancelled the challenge. Please try again.');
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
-                if (captchaFormRef.current) {
-                    captchaFormRef.current.hide();
-                }
+                hideHcaptcha();
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else {
-                if (settings.config.loggerLevel === 'debug')
+                if (settings.config.loggerLevel === 'debug') {
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
-
-                if (captchaFormRef.current) {
-                    captchaFormRef.current.hide();
                 }
 
                 if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
+                    hideHcaptcha();
                 } else {
                     setCode(eventData);
+
+                    if (eventData !== 'open' && captchaFormRef.current) {
+                        captchaFormRef.current.hide();
+                    }
                 }
 
                 setSuccess(true);
@@ -95,11 +99,20 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             unsetConfirmPassphraseWord();
 
             await setUserName();
-            const url =
-                'https://local.bloks.io/account/' +
-                (await user.getAccountName()).toString() +
-                '?nodeUrl=' +
-                settings.config.blockchainUrl;
+            let url;
+            const accountName = (await user.getAccountName()).toString();
+
+            if (settings.env === 'staging' || settings.env === 'development') {
+                url =
+                    settings.config.blockExplorerUrl +
+                    '/account/' +
+                    accountName +
+                    '?nodeUrl=' +
+                    settings.config.blockchainUrl +
+                    '&coreSymbol=LEOS&corePrecision=6';
+            } else {
+                url = settings.config.blockExplorerUrl + '/account/' + accountName;
+            }
 
             setAccountUrl(url);
         } catch (e) {
@@ -231,7 +244,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.primary }}>{username}</Text> is already taken.
+                        Username <Text style={{ color: theme.colors.linkColor }}>{username}</Text> is already taken.
                         Please choose another one.
                     </Text>
                 </View>
@@ -240,11 +253,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 visible={showModal}
                 icon="check"
                 onPress={onModalPress}
-                title={'Welcome to ' + settings.config.ecosystemName}
+                title={'Welcome to ' + settings.config.appName}
             >
                 <View>
                     <Text>
-                        Your username is <Text style={{ color: theme.colors.primary }}>{username}</Text>
+                        Your username is <Text style={{ color: theme.colors.linkColor }}>{username}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
@@ -286,7 +299,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     link: {
-        color: theme.colors.primary,
+        color: theme.colors.linkColor,
     },
     textContainer: {
         flexDirection: 'row',

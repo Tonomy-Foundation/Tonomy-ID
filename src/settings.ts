@@ -18,6 +18,10 @@ type ConfigType = {
         secondaryColor2: string;
         tertiaryColor: string;
         tertiaryColor2: string;
+        text: string;
+        textGray: string;
+        linkColor: string;
+        infoBackground: string;
     };
     appName: string;
     ecosystemName: string;
@@ -46,6 +50,7 @@ type ConfigType = {
     tonomyIdSlug: string;
     loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
+    blockExplorerUrl: string;
 };
 
 type SettingsType = {
@@ -57,7 +62,7 @@ type SettingsType = {
 let config: ConfigType;
 const settings: SettingsType = {
     env,
-    isProduction: () => ['production', 'demo', 'staging'].includes(settings.env),
+    isProduction: () => ['production', 'testnet', 'staging'].includes(settings.env),
 } as SettingsType;
 
 switch (env) {
@@ -65,20 +70,20 @@ switch (env) {
     case 'local':
     case 'development':
         config = require('./config/config.json');
+
         break;
     case 'staging':
         config = require('./config/config.staging.json');
         break;
-    case 'demo':
-        config = require('./config/config.demo.json');
+    case 'testnet':
+        config = require('./config/config.testnet.json');
         break;
     case 'production':
-        throw new Error('Production config not implemented yet');
+        config = require('./config/config.production.json');
+        break;
     default:
         throw new Error('Unknown environment: ' + env);
 }
-
-config.tonomyIdSlug = config.appName.toLowerCase().replace(/ /g, '-');
 
 if (process.env.BLOCKCHAIN_URL) {
     console.log(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);

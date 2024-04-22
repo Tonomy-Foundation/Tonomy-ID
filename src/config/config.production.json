@@ -10,11 +10,12 @@
         "textGray": "#000000",
         "linkColor": "#4CAF50",
         "infoBackground": "#F6F9FB"
+
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
-    "appName": "Tonomy ID Development",
-    "ecosystemName": "Tonomy Development",
-    "appSlogan": "Building Ecosystem Of Trust",
+    "appName": "United Citizens Wallet",
+    "ecosystemName": "Pangea ",
+    "appSlogan": "For a better Tomorrow",
     "images":{
         "splash": "./src/assets/pangea/pangea-splash.png",
         "logo48": "./src/assets/pangea/favicon.png",
@@ -29,14 +30,14 @@
         "transparencyLearnMore": "#",
         "securityLearnMore": "#"
     },
-    "expoProjectId": "6c32ba89-729d-4286-b909-e1f48918839e",
-    "accountSuffix": ".stag.tonomy.id",
-    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
-    "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
-    "communicationUrl": "wss://communication.staging.tonomy.foundation",
-    "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
-    "blockExplorerUrl": "https://local.bloks.io",
-    "loggerLevel": "debug",
-    "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
-    "tonomyIdSlug": "tonomy-id-development"
+    "expoProjectId": "fdea0cd3-2296-4fd8-a79e-7ccc583196e7",
+    "accountSuffix": ".pangea.id",
+    "blockchainUrl": "https://blockchain-api.pangea.web4.world",
+    "ssoWebsiteOrigin": "https://accounts.pangea.web4.world",
+    "communicationUrl": "wss://communication.pangea.web4.world",
+    "accountsServiceUrl": "https://communication.pangea.web4.world",
+    "loggerLevel": "error",
+    "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb",
+    "blockExplorerUrl": "https://explorer.pangea.web4.world",
+    "tonomyIdSlug": "united-wallet"
 }

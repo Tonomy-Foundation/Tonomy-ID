@@ -56,11 +56,21 @@ export default function MainContainer({ did }: { did?: string }) {
             await connectToDid(did);
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
-                errorStore.setError({
-                    title: 'Invalid QR Code',
-                    error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
-                    expected: true,
-                });
+                console.log('Invalid QR Code', JSON.stringify(e, null, 2));
+
+                if (e.message === 'QR schema does not match app') {
+                    errorStore.setError({
+                        title: 'Invalid QR Code',
+                        error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
+                        expected: true,
+                    });
+                } else {
+                    errorStore.setError({
+                        title: 'Invalid QR Code',
+                        error: e,
+                        expected: false,
+                    });
+                }
             } else {
                 errorStore.setError({ error: e, expected: false });
             }

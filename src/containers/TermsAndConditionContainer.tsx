@@ -9,6 +9,7 @@ import { IconButton } from 'react-native-paper';
 import TModal from '../components/TModal';
 import TList from '../components/TList';
 import { Props } from '../screens/TermsAndConditionScreen';
+import settings from '../settings';
 
 export default function TermsAndConditionContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [fullTermsShow, setFullTermsShow] = useState(false);
@@ -30,7 +31,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                     <View style={styles.marginTop}>
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>You can <Text style={{ fontWeight: 'bold' }}>use with Tonomy ID to log into and share data with applications</Text> that support Tonomy ID.</Text>}
+                            item={<Text style={styles.listItemText}>You can <Text style={{ fontWeight: 'bold' }}>use with {settings.config.appName} to log into and share data with applications</Text> that support {settings.config.appName}.</Text>}
                         />
                         <TList
                             bulletIcon="•"
@@ -38,9 +39,9 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}><Text style={{ fontWeight: 'bold' }}>You are responsible for using and behaving according to regulatory requirements in applications you log into</Text> with Tonomy ID, not the Tonomy Foundation.</Text>}
+                            item={<Text style={styles.listItemText}><Text style={{ fontWeight: 'bold' }}>You are responsible for using and behaving according to regulatory requirements in applications you log into</Text> with {settings.config.appName}, not the Tonomy Foundation.</Text>}
                         />
-                        <TList bulletIcon="•" item={<Text style={styles.listItemText}>Tonomy ID is <Text style={{ fontWeight: 'bold' }}>regulated under Dutch law.</Text></Text>} />
+                        <TList bulletIcon="•" item={<Text style={styles.listItemText}>{settings.config.appName} is <Text style={{ fontWeight: 'bold' }}>regulated under Dutch law.</Text></Text>} />
                     </View>
                 </View>
                 <TouchableOpacity
@@ -64,20 +65,20 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                 {fullTermsShow && (
                     <View>
                         <TP style={styles.scrollView}>
-                            These Terms of Service {'Terms'} outline the agreement between you and Tonomy ID regarding
+                            These Terms of Service {'Terms'} outline the agreement between you and {settings.config.appName} regarding
                             the use of our self-sovereign identity wallet services. Please read these Terms carefully
                             before using our platform.
                         </TP>
                         <TP style={styles.fontWeight}>1. Acceptance of Terms</TP>
                         <TP style={styles.scrollView}>
-                            By accessing or using the Tonomy ID Self-Sovereign Identity Wallet, you acknowledge that you
+                            By accessing or using the {settings.config.appName} Self-Sovereign Identity Wallet, you acknowledge that you
                             have read, understood, and agreed to these Terms. If you do not agree with these Terms,
                             please refrain from using our services.
                         </TP>
                         <TP style={styles.fontWeight}>2. User Responsibilities</TP>
                         <TP style={styles.scrollView}>
                             a. You are responsible for maintaining the confidentiality of your passphrase and private
-                            keys associated with your Tonomy ID Self-Sovereign Identity Wallet. This information is
+                            keys associated with your {settings.config.appName} Self-Sovereign Identity Wallet. This information is
                             crucial for ensuring the security of your identity and data.
                         </TP>
                         <TP style={styles.scrollView}>
@@ -86,12 +87,12 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         </TP>
                         <TP style={styles.fontWeight}>3. Self-Sovereign Identity</TP>
                         <TP style={styles.scrollView}>
-                            a. Tonomy ID operates on the principle of self-sovereign identity, meaning you have complete
+                            a. {settings.config.appName} operates on the principle of self-sovereign identity, meaning you have complete
                             control over sharing your personal information. You decide when and with whom you share your
                             data.
                         </TP>
                         <TP style={styles.scrollView}>
-                            b. Tonomy ID does not store your passphrase or private keys. This enhances security, making
+                            b. {settings.config.appName} does not store your passphrase or private keys. This enhances security, making
                             it challenging for unauthorized access.
                         </TP>
                         <TP style={styles.fontWeight}>4. Prohibited Activities</TP>
@@ -103,7 +104,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         <TP style={styles.scrollView}>c. Use our services for any malicious or harmful purposes.</TP>
                         <TP style={styles.fontWeight}>5. Changes to Services</TP>
                         <TP style={styles.scrollView}>
-                            Tonomy ID reserves the right to modify, suspend, or discontinue services at any time without
+                            {settings.config.appName} reserves the right to modify, suspend, or discontinue services at any time without
                             notice. We are not liable for any losses resulting from such actions.
                         </TP>
                         <TP style={styles.fontWeight}>6. Data Privacy and Security</TP>
@@ -119,7 +120,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         </TP>
                         <TP style={styles.fontWeight}>7. Limitation of Liability</TP>
                         <TP style={styles.scrollView}>
-                            Tonomy ID is not liable for any direct, indirect, incidental, or consequential damages
+                            {settings.config.appName} is not liable for any direct, indirect, incidental, or consequential damages
                             arising from your use or inability to use the Self-Sovereign Identity Wallet. Our liability
                             is limited to the extent permitted by law.
                         </TP>
@@ -127,7 +128,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                         <TP style={styles.scrollView}>These Terms are governed by the laws of Netherlands.</TP>
                         <TP style={styles.fontWeight}>9. Changes to Terms</TP>
                         <TP style={styles.scrollView}>
-                            Tonomy ID may update these Terms from time to time. You will be notified of any significant
+                            {settings.config.appName} may update these Terms from time to time. You will be notified of any significant
                             changes, and your continued use of the services constitutes acceptance of the updated Terms.
                         </TP>
                     </View>
@@ -169,7 +170,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
             >
                 <View>
                     <Text style={styles.popupText}>
-                        Without agreeing to the Terms of Service, you {"can't"} proceed with the use of Tonomy {"ID's"}
+                        Without agreeing to the Terms of Service, you {"can't"} proceed with the use of {settings.config.appName}
                         services.
                     </Text>
                 </View>
