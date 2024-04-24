@@ -149,6 +149,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         gap: 90,
     },
-    deleteHeading: { fontSize: 15, fontWeight: 'bold', marginBottom: 16, textAlign: 'center', marginHorizontal: 10 },
-    deleteText: { textAlign: 'center', marginHorizontal: 11, fontSize: 14 },
+    deleteHeading: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        textAlign: 'center',
+        marginHorizontal: 10,
+    },
+    deleteText: {
+        textAlign: 'center',
+        marginHorizontal: 11,
+        fontSize: 14,
+    },
 });

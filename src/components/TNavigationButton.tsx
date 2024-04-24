@@ -31,7 +31,7 @@ export default function TNavigationButton(props: NavigationButtonProps) {
                 <View style={{ alignSelf: getAlignmentBasenOnDescription() }}>{props.icon}</View>
             )}
 
-            <View style={styles.titleContainer}>
+            <View style={{ ...styles.titleContainer }}>
                 <TP
                     style={{
                         color: `${
