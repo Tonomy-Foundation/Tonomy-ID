@@ -64,6 +64,9 @@ const expo: ExpoConfig = {
     ios: {
         supportsTablet: true,
         bundleIdentifier: identifier,
+        infoPlist: {
+            NSCameraUsageDescription: 'We need access to your camera to scan the QR code.',
+        },
     },
     android: {
         adaptiveIcon: {
