@@ -11,6 +11,7 @@ export type NavigationButtonProps = {
     description?: string;
     disabled?: boolean;
     color?: string;
+    textColor?: string;
 };
 
 export default function TNavigationButton(props: NavigationButtonProps) {
@@ -23,17 +24,23 @@ export default function TNavigationButton(props: NavigationButtonProps) {
         <TouchableOpacity onPress={props.onPress} style={[styles.button]} disabled={props.disabled}>
             {props.icon && typeof props.icon === 'string' && (
                 <View style={{ alignSelf: getAlignmentBasenOnDescription() }}>
-                    <IconButton icon={props.icon} style={styles.icons} />
+                    <IconButton color={props?.textColor} icon={props.icon} style={styles.icons} />
                 </View>
             )}
             {props.icon && typeof props.icon === 'object' && (
                 <View style={{ alignSelf: getAlignmentBasenOnDescription() }}>{props.icon}</View>
             )}
 
-            <View style={{ ...styles.titleContainer }}>
+            <View style={styles.titleContainer}>
                 <TP
                     style={{
-                        color: `${props?.disabled ? theme.colors.textGray : theme.colors.text}`,
+                        color: `${
+                            props?.disabled
+                                ? theme.colors.textGray
+                                : props?.textColor
+                                    ? props.textColor
+                                : theme.colors.text
+                        }`,
                     }}
                 >
                     {props.title}
