@@ -55,10 +55,11 @@ export default function TModal(props: ModalProps) {
                             <TIconButton icon={props.icon} color={props.iconColor} />
                         </View>
                     )}
-
-                    <View>
-                        <Text style={styles.title}>{props.title}</Text>
-                    </View>
+                    {props.title && (
+                        <View>
+                            <Text style={styles.title}>{props.title}</Text>
+                        </View>
+                    )}
                     {props.children}
                     <View style={styles.buttonView}>
                         {props.enableLinkButton && (

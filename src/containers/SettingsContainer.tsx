@@ -128,12 +128,10 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                 }
             >
                 <View>
-                    <Text style={styles.deleteHeading}>Are you sure you want to delete your account?</Text>
+                    <Text style={styles.deleteHeading}>Are you sure you would like to delete this wallet?</Text>
                 </View>
                 <View>
-                    <Text style={styles.deleteText}>
-                        All data associated with the account will be deleted. This includes all personal information
-                    </Text>
+                    <Text style={styles.deleteText}>Make sure you remember your 6 word passphrase.</Text>
                 </View>
             </TModal>
         </SafeAreaView>
@@ -152,7 +150,7 @@ const styles = StyleSheet.create({
     deleteHeading: {
         fontSize: 15,
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginBottom: 10,
         textAlign: 'center',
         marginHorizontal: 10,
     },
