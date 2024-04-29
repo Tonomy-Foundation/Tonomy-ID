@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Props } from '../screens/SignTransactionConsentScreen';
-import { View, TouchableOpacity, StyleSheet, Image, Text } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Image, Text, Platform } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { Images } from '../assets';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import { IconButton } from 'react-native-paper';
 
 export default function SignTransactionConsentContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const [showDetails, setShowDetails] = useState(false);
+
     return (
         <LayoutComponent
             body={
@@ -29,21 +32,65 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                     </View>
                     <View style={styles.appDialog}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={{ marginRight: 8, color: theme.colors.secondary2 }}>Recipient:</Text>
+                            <Text style={styles.secondaryColor}>Recipient:</Text>
                             <Text>0x9523a2....5c4bafe5</Text>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                            <Text style={{ marginRight: 8, color: theme.colors.secondary2 }}>Amount:</Text>
+                            <Text style={styles.secondaryColor}>Amount:</Text>
                             <Text>
-                                0.035 Eth <Text style={{ color: theme.colors.secondary2 }}>($117.02) </Text>
+                                0.035 Eth <Text style={styles.secondaryColor}>($117.02) </Text>
                             </Text>
                         </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                            <Text style={styles.secondaryColor}>Function:</Text>
+                            <Text style={{ color: theme.colors.secondary }}>buynft()</Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Text style={styles.secondaryColor}>Transaction details:</Text>
+
+                            <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
+                                {!showDetails ? (
+                                    <IconButton
+                                        icon={Platform.OS === 'android' ? 'arrow-down' : 'chevron-down'}
+                                        size={23}
+                                    />
+                                ) : (
+                                    <IconButton
+                                        icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
+                                        size={23}
+                                    />
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                        {showDetails && (
+                            <View style={styles.detailSection}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.secondaryColor}>Price:</Text>
+                                    <Text>
+                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
+                                    </Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                                    <Text style={styles.secondaryColor}>NFT ID:</Text>
+                                    <Text>#89792 </Text>
+                                </View>
+                                <TouchableOpacity style={styles.rawTransaction}>
+                                    <Text style={{ color: theme.colors.secondary }}>Show raw transaction</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </View>
                     <View style={styles.appDialog}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={{ marginRight: 8, color: theme.colors.secondary2 }}>Gas fee:</Text>
+                            <Text style={styles.secondaryColor}>Gas fee:</Text>
                             <Text>
-                                0.001 Eth <Text style={{ color: theme.colors.secondary2 }}>($17.02) </Text>
+                                0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
                             </Text>
                         </View>
                     </View>
@@ -112,7 +159,21 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.info,
         borderRadius: 7,
     },
+    detailSection: {
+        backgroundColor: theme.colors.info,
+        padding: 16,
+        width: '100%',
+    },
     padding: {
         paddingHorizontal: 30,
+    },
+    secondaryColor: {
+        color: theme.colors.secondary2,
+    },
+    rawTransaction: {
+        marginTop: 20,
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
