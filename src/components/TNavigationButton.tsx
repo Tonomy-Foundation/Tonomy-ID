@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -38,7 +39,7 @@ export default function TNavigationButton(props: NavigationButtonProps) {
                             props?.disabled
                                 ? theme.colors.textGray
                                 : props?.textColor
-                                    ? props.textColor
+                                ? props.textColor
                                 : theme.colors.text
                         }`,
                     }}
