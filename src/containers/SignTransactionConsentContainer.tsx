@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { Props } from '../screens/SignTransactionConsentScreen';
+import React, { useState, useRef } from 'react';
+import RBSheet from 'react-native-raw-bottom-sheet';
 import { View, TouchableOpacity, StyleSheet, Image, Text, Platform } from 'react-native';
+import { IconButton } from 'react-native-paper';
+import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { Images } from '../assets';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IconButton } from 'react-native-paper';
 
 export default function SignTransactionConsentContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [showDetails, setShowDetails] = useState(false);
+
+    const refMessage = useRef();
 
     return (
         <LayoutComponent
@@ -80,8 +83,8 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                                     <Text style={styles.secondaryColor}>NFT ID:</Text>
                                     <Text>#89792 </Text>
                                 </View>
-                                <TouchableOpacity style={styles.rawTransaction}>
-                                    <Text style={{ color: theme.colors.secondary }}>Show raw transaction</Text>
+                                <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                    <Text style={styles.rawTransaction}>Show raw transaction</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -100,6 +103,14 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                             <Text style={{ fontWeight: '600' }}>0x9523a2....5c4bafe5</Text>
                         </View>
                     </View>
+                    <RBSheet ref={refMessage || null} openDuration={150} closeDuration={100} height={600}>
+                        <View style={styles.rawTransactionDrawer}>
+                            <Text style={styles.drawerHead}>Show raw transaction!</Text>
+                            <Text style={styles.drawerParagragh}>
+                                {`contract VendingMachine { // Declare state variables of the contract address public owner; mapping (address => uint) public cupcakeBalances; // When 'VendingMachine' contract is deployed: // 1. set the deploying address as the owner of the contract // 2. set the deployed smart contract's cupcake balance to 100 constructor() { owner = msg.sender; cupcakeBalances[address(this)] = 100; } // Allow the owner to increase the smart contract's cupcake balance function refill(uint amount) public { require(msg.sender == owner, "Only the owner can refill."); cupcakeBalances[address(this)] += amount; } // Allow anyone to purchase cupcakes function purchase(uint amount) public payable { require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake"); require(cupcakeBalances[address(this)] >= amount, "Not enough cupcakes in stock to complete this purchase"); cupcakeBalances[address(this)] -= amount; cupcakeBalances[msg.sender] += amount; } }`}
+                            </Text>
+                        </View>
+                    </RBSheet>
                 </View>
             }
             footer={
@@ -172,9 +183,21 @@ const styles = StyleSheet.create({
         color: theme.colors.secondary2,
     },
     rawTransaction: {
-        marginTop: 20,
+        color: theme.colors.secondary,
+        marginTop: 15,
+        width: '100%',
         textAlign: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
+    },
+    rawTransactionDrawer: {
+        paddingHorizontal: 15,
+        paddingVertical: 25,
+    },
+    drawerHead: {
+        fontSize: 20,
+        fontWeight: '600',
+        marginBottom: 20,
+    },
+    drawerParagragh: {
+        fontSize: 13,
     },
 });
