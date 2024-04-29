@@ -1,5 +1,5 @@
 import React from 'react';
-import { Props } from '../screens/ProfilePreviewScreen';
+import { Props } from '../screens/SignTransactionConsentScreen';
 import { View, TouchableOpacity, StyleSheet, Image, Text } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';

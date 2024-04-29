@@ -3,8 +3,8 @@ import React from 'react';
 import SignTransactionConsentContainer from '../containers/SignTransactionConsentContainer';
 import { RouteStackParamList } from '../navigation/Root';
 
-export type SignTransactionConsentScreenProps = NativeStackScreenProps<RouteStackParamList, 'SignTransaction'>;
+export type Props = NativeStackScreenProps<RouteStackParamList, 'SignTransaction'>;
 
-export default function SSOLoginScreen(props: SignTransactionConsentScreenProps) {
+export default function SSOLoginScreen(props: Props) {
     return <SignTransactionConsentContainer navigation={props.navigation} />;
 }
