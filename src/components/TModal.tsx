@@ -7,7 +7,7 @@ import TIconButton from './TIconButton';
 import { Modal } from 'react-native';
 
 export type ModalProps = React.ComponentProps<typeof Modal> & {
-    icon: string;
+    icon?: string;
     iconColor?: string;
     title: string;
     visible?: boolean;
@@ -50,12 +50,16 @@ export default function TModal(props: ModalProps) {
         <Modal animationType="fade" transparent={true} visible={props.visible} {...props}>
             <View style={styles.modal}>
                 <View style={styles.modalContent}>
-                    <View>
-                        <TIconButton icon={props.icon} color={props.iconColor} />
-                    </View>
-                    <View>
-                        <Text style={styles.title}>{props.title}</Text>
-                    </View>
+                    {props.icon && (
+                        <View>
+                            <TIconButton icon={props.icon} color={props.iconColor} />
+                        </View>
+                    )}
+                    {props.title && (
+                        <View>
+                            <Text style={styles.title}>{props.title}</Text>
+                        </View>
+                    )}
                     {props.children}
                     <View style={styles.buttonView}>
                         {props.enableLinkButton && (
