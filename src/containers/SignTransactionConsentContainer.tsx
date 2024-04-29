@@ -12,7 +12,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 export default function SignTransactionConsentContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [showDetails, setShowDetails] = useState(false);
 
-    const refMessage = useRef();
+    const refMessage = useRef(null);
 
     return (
         <LayoutComponent
@@ -103,7 +103,7 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                             <Text style={{ fontWeight: '600' }}>0x9523a2....5c4bafe5</Text>
                         </View>
                     </View>
-                    <RBSheet ref={refMessage || null} openDuration={150} closeDuration={100} height={600}>
+                    <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
                         <View style={styles.rawTransactionDrawer}>
                             <Text style={styles.drawerHead}>Show raw transaction!</Text>
                             <Text style={styles.drawerParagragh}>
