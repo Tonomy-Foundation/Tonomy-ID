@@ -161,8 +161,9 @@ const styles = StyleSheet.create({
     },
     detailSection: {
         backgroundColor: theme.colors.info,
-        padding: 16,
+        padding: 10,
         width: '100%',
+        borderRadius: 7,
     },
     padding: {
         paddingHorizontal: 30,
