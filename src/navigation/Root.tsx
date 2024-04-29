@@ -27,6 +27,7 @@ import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
+import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
 
 const prefix = Linking.createURL('');
 
@@ -56,6 +57,7 @@ export type RouteStackParamList = {
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
+    SignTransaction: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -161,6 +163,7 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
+
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
@@ -179,9 +182,19 @@ export default function RootNavigation() {
                             component={SSOLoginScreen}
                         />
                         <Stack.Screen
+                            name="SignTransaction"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={SignTransactionConsentScreen}
+                        />
+                        <Stack.Screen
                             name="ProfilePreview"
                             options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
                             component={ProfilePreviewScreen}
+                        />
+                        <Stack.Screen
+                            name="SignTransaction"
+                            options={{ ...noHeaderScreenOptions, title: 'Transaction Request' }}
+                            component={SignTransactionConsentScreen}
                         />
                     </Stack.Navigator>
                 </>

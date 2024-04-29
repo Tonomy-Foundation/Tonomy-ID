@@ -45,7 +45,6 @@ const layoutStyles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingVertical: 10,
         backgroundColor: '#FDFEFF',
     },
     body: { flex: 3 },
