@@ -39,13 +39,13 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                                 <Text style={styles.secondaryColor}>Recipient:</Text>
                                 <Text>0x9523a2....5c4bafe5</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
                                 <Text style={styles.secondaryColor}>Amount:</Text>
                                 <Text>
                                     0.035 Eth <Text style={styles.secondaryColor}>($117.02) </Text>
                                 </Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
                                 <Text style={styles.secondaryColor}>Function:</Text>
                                 <Text style={{ color: theme.colors.secondary }}>buynft()</Text>
                             </View>
@@ -54,7 +54,7 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                                     flexDirection: 'row',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    marginTop: 5,
+                                    marginTop: 4,
                                 }}
                             >
                                 <Text style={styles.secondaryColor}>Transaction details:</Text>
@@ -120,7 +120,7 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                 </ScrollView>
             }
             footer={
-                <View style={{ marginTop: 25 }}>
+                <View style={{ marginTop: 30 }}>
                     <TButtonContained style={commonStyles.marginBottom}>Proceed</TButtonContained>
                     <TButtonOutlined>Cancel</TButtonOutlined>
                 </View>

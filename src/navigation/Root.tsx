@@ -163,6 +163,11 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
+                    <Stack.Screen
+                        name="SignTransaction"
+                        options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
+                        component={SignTransactionConsentScreen}
+                    />
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
