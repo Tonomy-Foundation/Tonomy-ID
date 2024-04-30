@@ -163,7 +163,6 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
-
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
@@ -193,7 +192,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SignTransaction"
-                            options={{ ...noHeaderScreenOptions, title: 'Transaction Request' }}
+                            options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
                             component={SignTransactionConsentScreen}
                         />
                     </Stack.Navigator>
