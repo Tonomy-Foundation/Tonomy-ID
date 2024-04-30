@@ -6,6 +6,7 @@ type layoutProps = {
     body: JSX.Element;
     footerHint?: JSX.Element;
     footer?: JSX.Element;
+    noFooterHintLayout?: boolean;
 };
 
 export default function LayoutComponent(props: layoutProps) {
@@ -30,9 +31,13 @@ export default function LayoutComponent(props: layoutProps) {
             {props.footerHint && !keyboardStatusShown ? (
                 <View style={layoutStyles.footerHint}>{props.footerHint}</View>
             ) : (
-                <View style={layoutStyles.nofooterHint}>
-                    <Text>&nbsp;</Text>
-                </View>
+                <>
+                    {!props.noFooterHintLayout && (
+                        <View style={layoutStyles.nofooterHint}>
+                            <Text>&nbsp;</Text>
+                        </View>
+                    )}
+                </>
             )}
             {props.footer && <View style={layoutStyles.footer}>{props.footer}</View>}
         </SafeAreaView>

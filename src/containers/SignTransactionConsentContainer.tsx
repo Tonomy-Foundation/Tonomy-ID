@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { View, TouchableOpacity, StyleSheet, Image, Text, Platform } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Image, Text, Platform, ScrollView } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
@@ -17,108 +17,115 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
     return (
         <LayoutComponent
             body={
-                <View style={styles.container}>
-                    <Image
-                        style={[styles.logo, commonStyles.marginBottom]}
-                        source={Images.GetImage('logo1024')}
-                    ></Image>
-                    <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
-                        <Text style={styles.applink}>nftswap.com </Text>
-                        wants you to send coins
-                    </TH2>
-                    <View style={styles.networkHeading}>
-                        <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
-                        <Text style={styles.nameText}>Ethereum Network</Text>
-                    </View>
-                    <View style={styles.transactionHeading}>
-                        <Text>0x9523a2....5c4bafe5</Text>
-                    </View>
-                    <View style={styles.appDialog}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={styles.secondaryColor}>Recipient:</Text>
+                <ScrollView>
+                    <View style={styles.container}>
+                        <Image
+                            style={[styles.logo, commonStyles.marginBottom]}
+                            source={Images.GetImage('logo1024')}
+                        ></Image>
+                        <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
+                            <Text style={styles.applink}>nftswap.com </Text>
+                            wants you to send coins
+                        </TH2>
+                        <View style={styles.networkHeading}>
+                            <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
+                            <Text style={styles.nameText}>Ethereum Network</Text>
+                        </View>
+                        <View style={styles.transactionHeading}>
                             <Text>0x9523a2....5c4bafe5</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                            <Text style={styles.secondaryColor}>Amount:</Text>
-                            <Text>
-                                0.035 Eth <Text style={styles.secondaryColor}>($117.02) </Text>
-                            </Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                            <Text style={styles.secondaryColor}>Function:</Text>
-                            <Text style={{ color: theme.colors.secondary }}>buynft()</Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Text style={styles.secondaryColor}>Transaction details:</Text>
+                        <View style={styles.appDialog}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={styles.secondaryColor}>Recipient:</Text>
+                                <Text>0x9523a2....5c4bafe5</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                                <Text style={styles.secondaryColor}>Amount:</Text>
+                                <Text>
+                                    0.035 Eth <Text style={styles.secondaryColor}>($117.02) </Text>
+                                </Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                                <Text style={styles.secondaryColor}>Function:</Text>
+                                <Text style={{ color: theme.colors.secondary }}>buynft()</Text>
+                            </View>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginTop: 5,
+                                }}
+                            >
+                                <Text style={styles.secondaryColor}>Transaction details:</Text>
 
-                            <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
-                                {!showDetails ? (
-                                    <IconButton
-                                        icon={Platform.OS === 'android' ? 'arrow-down' : 'chevron-down'}
-                                        size={23}
-                                    />
-                                ) : (
-                                    <IconButton
-                                        icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
-                                        size={23}
-                                    />
-                                )}
-                            </TouchableOpacity>
-                        </View>
-                        {showDetails && (
-                            <View style={styles.detailSection}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.secondaryColor}>Price:</Text>
-                                    <Text>
-                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
-                                    </Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                                    <Text style={styles.secondaryColor}>NFT ID:</Text>
-                                    <Text>#89792 </Text>
-                                </View>
-                                <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
-                                    <Text style={styles.rawTransaction}>Show raw transaction</Text>
+                                <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
+                                    {!showDetails ? (
+                                        <IconButton
+                                            icon={Platform.OS === 'android' ? 'arrow-down' : 'chevron-down'}
+                                            size={Platform.OS === 'android' ? 15 : 22}
+                                        />
+                                    ) : (
+                                        <IconButton
+                                            icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
+                                            size={Platform.OS === 'android' ? 15 : 22}
+                                        />
+                                    )}
                                 </TouchableOpacity>
                             </View>
-                        )}
-                    </View>
-                    <View style={styles.appDialog}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={styles.secondaryColor}>Gas fee:</Text>
-                            <Text>
-                                0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
-                            </Text>
+                            {showDetails && (
+                                <View style={styles.detailSection}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={styles.secondaryColor}>Price:</Text>
+                                        <Text>
+                                            0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
+                                        </Text>
+                                    </View>
+                                    <View
+                                        style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}
+                                    >
+                                        <Text style={styles.secondaryColor}>NFT ID:</Text>
+                                        <Text>#89792 </Text>
+                                    </View>
+                                    <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                        <Text style={styles.rawTransaction}>Show raw transaction</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
-                    </View>
-                    <View style={styles.totalSection}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
-                            <Text style={{ fontWeight: '600' }}>0x9523a2....5c4bafe5</Text>
+                        <View style={styles.appDialog}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={styles.secondaryColor}>Gas fee:</Text>
+                                <Text>
+                                    0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
+                                </Text>
+                            </View>
                         </View>
-                    </View>
-                    <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
-                        <View style={styles.rawTransactionDrawer}>
-                            <Text style={styles.drawerHead}>Show raw transaction!</Text>
-                            <Text style={styles.drawerParagragh}>
-                                {`contract VendingMachine { // Declare state variables of the contract address public owner; mapping (address => uint) public cupcakeBalances; // When 'VendingMachine' contract is deployed: // 1. set the deploying address as the owner of the contract // 2. set the deployed smart contract's cupcake balance to 100 constructor() { owner = msg.sender; cupcakeBalances[address(this)] = 100; } // Allow the owner to increase the smart contract's cupcake balance function refill(uint amount) public { require(msg.sender == owner, "Only the owner can refill."); cupcakeBalances[address(this)] += amount; } // Allow anyone to purchase cupcakes function purchase(uint amount) public payable { require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake"); require(cupcakeBalances[address(this)] >= amount, "Not enough cupcakes in stock to complete this purchase"); cupcakeBalances[address(this)] -= amount; cupcakeBalances[msg.sender] += amount; } }`}
-                            </Text>
+                        <View style={styles.totalSection}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
+                                <Text style={{ fontWeight: '600' }}>0x9523a2....5c4bafe5</Text>
+                            </View>
                         </View>
-                    </RBSheet>
-                </View>
+
+                        <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
+                            <View style={styles.rawTransactionDrawer}>
+                                <Text style={styles.drawerHead}>Show raw transaction!</Text>
+                                <Text style={styles.drawerParagragh}>
+                                    {`contract VendingMachine { // Declare state variables of the contract address public owner; mapping (address => uint) public cupcakeBalances; // When 'VendingMachine' contract is deployed: // 1. set the deploying address as the owner of the contract // 2. set the deployed smart contract's cupcake balance to 100 constructor() { owner = msg.sender; cupcakeBalances[address(this)] = 100; } // Allow the owner to increase the smart contract's cupcake balance function refill(uint amount) public { require(msg.sender == owner, "Only the owner can refill."); cupcakeBalances[address(this)] += amount; } // Allow anyone to purchase cupcakes function purchase(uint amount) public payable { require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake"); require(cupcakeBalances[address(this)] >= amount, "Not enough cupcakes in stock to complete this purchase"); cupcakeBalances[address(this)] -= amount; cupcakeBalances[msg.sender] += amount; } }`}
+                                </Text>
+                            </View>
+                        </RBSheet>
+                    </View>
+                </ScrollView>
             }
             footer={
-                <View>
+                <View style={{ marginTop: 25 }}>
                     <TButtonContained style={commonStyles.marginBottom}>Proceed</TButtonContained>
                     <TButtonOutlined>Cancel</TButtonOutlined>
                 </View>
             }
+            noFooterHintLayout={true}
         ></LayoutComponent>
     );
 }
@@ -128,6 +135,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         textAlign: 'center',
+        marginTop: 10,
     },
     logo: {
         width: 70,
@@ -199,5 +207,11 @@ const styles = StyleSheet.create({
     },
     drawerParagragh: {
         fontSize: 13,
+    },
+    scrollViewConditions: {
+        paddingHorizontal: 18,
+        paddingRight: 18,
+        paddingVertical: 0,
+        margin: 0,
     },
 });
