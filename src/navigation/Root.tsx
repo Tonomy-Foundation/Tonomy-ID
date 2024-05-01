@@ -180,11 +180,7 @@ export default function RootNavigation() {
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={SSOLoginScreen}
                         />
-                        <Stack.Screen
-                            name="SignTransaction"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
-                            component={SignTransactionConsentScreen}
-                        />
+
                         <Stack.Screen
                             name="ProfilePreview"
                             options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
