@@ -51,7 +51,8 @@
                 "appleTeamId": "6BLD42QR78",
                 "ascApiKeyId": "83XQ25UWSK",
                 "ascApiKeyPath": "./apple-asc-api-key.p8",
-                "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
+                "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309",
+                "image": "macos-ventura-13.6-xcode-15.1"
             }
         },
         "productionTestnet": {            
