@@ -15,10 +15,7 @@ import settings from '../settings';
 import { Core } from '@walletconnect/core';
 import { Web3Wallet } from '@walletconnect/web3wallet';
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
-import { Web3 } from 'web3';
-import { ethers, InfuraProvider } from 'ethers';
-
-const web3 = new Web3('http://localhost:8545');
+import Web3 from 'web3';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -27,6 +24,7 @@ export default function MainContainer({ did }: { did?: string }) {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
+    const web3 = new Web3('http://localhost:8545');
 
     useEffect(() => {
         setUserName();
@@ -134,40 +132,43 @@ export default function MainContainer({ did }: { did?: string }) {
                 description: 'Demo Client as Wallet/Peer',
                 url: 'www.walletconnect.com',
                 icons: [],
+                redirect: {
+                    native: 'tonomy-id-development://',
+                },
             },
         });
 
-        await web3wallet.pair({ uri: did });
+        // await web3wallet.pair({ uri: did });
 
-        web3wallet.on('session_proposal', async (proposal) => {
-            console.log('proposal', proposal);
+        // web3wallet.on('session_proposal', async (proposal) => {
+        //     console.log('proposal', proposal);
 
-            try {
-                const approvedNamespaces = buildApprovedNamespaces({
-                    proposal: proposal.params,
-                    supportedNamespaces: {
-                        eip155: {
-                            chains: ['eip155:11155111'], //11155111
-                            methods: ['eth_sendTransaction', 'personal_sign'],
-                            events: ['accountsChanged', 'chainChanged'],
-                            accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
-                        },
-                    },
-                });
-                const session = await web3wallet.approveSession({
-                    id: proposal.id,
-                    namespaces: approvedNamespaces,
-                });
+        //     try {
+        //         const approvedNamespaces = buildApprovedNamespaces({
+        //             proposal: proposal.params,
+        //             supportedNamespaces: {
+        //                 eip155: {
+        //                     chains: ['eip155:11155111'], //11155111
+        //                     methods: ['eth_sendTransaction', 'personal_sign'],
+        //                     events: ['accountsChanged', 'chainChanged'],
+        //                     accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
+        //                 },
+        //             },
+        //         });
+        //         const session = await web3wallet.approveSession({
+        //             id: proposal.id,
+        //             namespaces: approvedNamespaces,
+        //         });
 
-                console.log('session', session);
-            } catch (error) {
-                console.log('error', error);
-                await web3wallet.rejectSession({
-                    id: proposal.id,
-                    reason: getSdkError('USER_REJECTED'),
-                });
-            }
-        });
+        //         console.log('session', session);
+        //     } catch (error) {
+        //         console.log('error', error);
+        //         await web3wallet.rejectSession({
+        //             id: proposal.id,
+        //             reason: getSdkError('USER_REJECTED'),
+        //         });
+        //     }
+        // });
     }
 
     function onClose() {

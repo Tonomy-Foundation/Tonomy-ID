@@ -6619,7 +6619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base64-js@npm:^1.1.2, base64-js@npm:^1.2.3, base64-js@npm:^1.3.1, base64-js@npm:^1.5.1":
+"base64-js@npm:^1.1.2, base64-js@npm:^1.2.3, base64-js@npm:^1.3.0, base64-js@npm:^1.3.1, base64-js@npm:^1.5.1":
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
   checksum: 669632eb3745404c2f822a18fc3a0122d2f9a7a13f7fb8b5823ee19d1d2ff9ee5b52c53367176ea4ad093c332fd5ab4bd0ebae5a8e27917a4105a4cfc86b1005
@@ -9290,6 +9290,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-random@npm:^13.6.0":
+  version: 13.6.0
+  resolution: "expo-random@npm:13.6.0"
+  dependencies:
+    base64-js: ^1.3.0
+  peerDependencies:
+    expo: "*"
+  checksum: 9fc89ebf38d28b426b03fb389e51c364a0d9a5cf26e6dbfc33015af345331e40eef4ea758bc50550118bb6ae77afa38ef5cddea51e30a7e34225ef4a6ffff970
+  languageName: node
+  linkType: hard
+
 "expo-secure-store@npm:~12.3.1":
   version: 12.3.1
   resolution: "expo-secure-store@npm:12.3.1"
@@ -9349,6 +9360,13 @@ __metadata:
   version: 3.1.1
   resolution: "exponential-backoff@npm:3.1.1"
   checksum: 3d21519a4f8207c99f7457287291316306255a328770d320b401114ec8481986e4e467e854cb9914dd965e0a1ca810a23ccb559c642c88f4c7f55c55778a9b48
+  languageName: node
+  linkType: hard
+
+"fast-base64-decode@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "fast-base64-decode@npm:1.0.0"
+  checksum: 4c59eb1775a7f132333f296c5082476fdcc8f58d023c42ed6d378d2e2da4c328c7a71562f271181a725dd17cdaa8f2805346cc330cdbad3b8e4b9751508bd0a3
   languageName: node
   linkType: hard
 
@@ -14871,6 +14889,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-get-random-values@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "react-native-get-random-values@npm:1.11.0"
+  dependencies:
+    fast-base64-decode: ^1.0.0
+  peerDependencies:
+    react-native: ">=0.56"
+  checksum: 07729f70a007f7a3b8f98ebf687c1298ba288b87dd71d8ba385be6b5a377718b27b97547bbe1db6b225b83ee109dfce0b01721e6ed535d53892f3ac81e6bf975
+  languageName: node
+  linkType: hard
+
 "react-native-iphone-x-helper@npm:^1.3.1":
   version: 1.3.1
   resolution: "react-native-iphone-x-helper@npm:1.3.1"
@@ -16802,6 +16831,7 @@ __metadata:
     expo-linking: ~5.0.2
     expo-local-authentication: ~13.4.1
     expo-notifications: ~0.20.1
+    expo-random: ^13.6.0
     expo-secure-store: ~12.3.1
     expo-status-bar: ~1.6.0
     fast-text-encoding: ^1.0.6
@@ -16815,6 +16845,7 @@ __metadata:
     react-native-autocomplete-input: ^5.3.2
     react-native-exception-handler: ^2.10.10
     react-native-gesture-handler: ~2.12.0
+    react-native-get-random-values: ^1.11.0
     react-native-modal: ^13.0.1
     react-native-paper: ^4.12.5
     react-native-raw-bottom-sheet: ^3.0.0
