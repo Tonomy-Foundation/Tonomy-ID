@@ -31,7 +31,7 @@
         "securityLearnMore": "#"
     },
     "expoProjectId": "b227858a-74c6-4996-8645-33b7f28f8980",
-    "accountSuffix": ".testnet.pangea.id",
+    "accountSuffix": ".testnet.pangea",
     "blockchainUrl": "https://blockchain-api-testnet.pangea.web4.world",
     "ssoWebsiteOrigin": "https://accounts.testnet.pangea.web4.world",
     "communicationUrl": "wss://communication.testnet.pangea.web4.world",
