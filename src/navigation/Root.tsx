@@ -27,6 +27,7 @@ import ConfirmPassphraseScreen from '../screens/ConfirmPassphraseScreen';
 import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
+import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
 
 const prefix = Linking.createURL('');
 
@@ -56,6 +57,7 @@ export type RouteStackParamList = {
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
+    SignTransaction: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -182,6 +184,11 @@ export default function RootNavigation() {
                             name="ProfilePreview"
                             options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
                             component={ProfilePreviewScreen}
+                        />
+                        <Stack.Screen
+                            name="SignTransaction"
+                            options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
+                            component={SignTransactionConsentScreen}
                         />
                     </Stack.Navigator>
                 </>

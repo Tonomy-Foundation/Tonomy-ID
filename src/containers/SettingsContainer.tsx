@@ -1,14 +1,21 @@
-import React from 'react';
-import { StyleSheet, Platform, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import TNavigationButton from '../components/TNavigationButton';
 import { Props } from '../screens/SettingsScreen';
-import FaceIdIcon from '../assets/icons/FaceIdIcon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
+import TModal from '../components/TModal';
+import theme from '../utils/theme';
+import { TButtonText } from '../components/atoms/TButton';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { logout } = useUserStore();
+    const [showModal, setShowModal] = useState(false);
+
+    async function onModalPress() {
+        setShowModal(false);
+    }
 
     return (
         <SafeAreaView>
@@ -90,11 +97,66 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                     title={'Logout'}
                     icon={'logout-variant'}
                 />
+                <TNavigationButton
+                    onPress={() => setShowModal(true)}
+                    title={'Delete Account'}
+                    icon={'delete'}
+                    textColor={theme.colors.error}
+                />
             </ScrollView>
+            <TModal
+                visible={showModal}
+                onPress={onModalPress}
+                title={''}
+                footer={
+                    <View style={styles.footerButtonRow}>
+                        <View>
+                            <TButtonText onPress={() => setShowModal(false)}>
+                                <Text style={{ color: theme.colors.grey1 }}>Cancel</Text>
+                            </TButtonText>
+                        </View>
+                        <View>
+                            <TButtonText
+                                onPress={async () => {
+                                    await logout('Logout in settings menu');
+                                }}
+                            >
+                                <Text style={{ color: theme.colors.error }}>Delete</Text>
+                            </TButtonText>
+                        </View>
+                    </View>
+                }
+            >
+                <View>
+                    <Text style={styles.deleteHeading}>Are you sure you would like to delete this wallet?</Text>
+                </View>
+                <View>
+                    <Text style={styles.deleteText}>Make sure you remember your 6 word passphrase.</Text>
+                </View>
+            </TModal>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     faceIdIcon: { maxWidth: 24, marginHorizontal: 14 },
+    footerButtonRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 90,
+    },
+    deleteHeading: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+        marginHorizontal: 10,
+    },
+    deleteText: {
+        textAlign: 'center',
+        marginHorizontal: 11,
+        fontSize: 14,
+    },
 });
