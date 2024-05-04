@@ -59,15 +59,15 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
                     hideHcaptcha();
+                    setSuccess(true);
                 } else {
                     setCode(eventData);
 
                     if (eventData !== 'open' && captchaFormRef.current) {
                         captchaFormRef.current.hide();
+                        setSuccess(true);
                     }
                 }
-
-                setSuccess(true);
             }
         }
     };

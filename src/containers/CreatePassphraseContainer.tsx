@@ -92,7 +92,9 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext}>NEXT</TButtonContained>
+                            <TButtonContained onPress={onNext} disabled={loading}>
+                                NEXT
+                            </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
