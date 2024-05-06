@@ -11,6 +11,7 @@ import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import 'react-native-get-random-values';
+import '@walletconnect/react-native-compat';
 
 if (!settings.isProduction()) {
     runTests();

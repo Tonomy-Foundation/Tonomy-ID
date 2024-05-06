@@ -12,10 +12,8 @@ import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
-import { Core } from '@walletconnect/core';
-import { Web3Wallet } from '@walletconnect/web3wallet';
-import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
 import Web3 from 'web3';
+import SignClient from '@walletconnect/sign-client';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -121,22 +119,36 @@ export default function MainContainer({ did }: { did?: string }) {
 
         console.log('account', account, JSON.stringify(account.addresss));
 
-        const core = new Core({
-            projectId: '2850896ad9cf6c1d958203b00b199c2d',
-        });
+        // const core = new Core({
+        //     projectId: '2850896ad9cf6c1d958203b00b199c2d',
+        // });
 
-        const web3wallet = await Web3Wallet.init({
-            core,
-            metadata: {
-                name: 'Demo app',
-                description: 'Demo Client as Wallet/Peer',
-                url: 'www.walletconnect.com',
-                icons: [],
-                redirect: {
-                    native: 'tonomy-id-development://',
-                },
-            },
-        });
+        try {
+            console.log('create client');
+            const client = await SignClient.init({
+                projectId: '2850896ad9cf6c1d958203b00b199c2d',
+                relayUrl: 'wss://relay.walletconnect.com',
+            });
+
+            console.log('client', client);
+            // setSignClient(client);
+            // await subscribeToEvents(client);
+        } catch (e) {
+            console.log(e);
+        }
+
+        // const web3wallet = await Web3Wallet.init({
+        //     core,
+        //     metadata: {
+        //         name: 'Demo app',
+        //         description: 'Demo Client as Wallet/Peer',
+        //         url: 'www.walletconnect.com',
+        //         icons: [],
+        //         redirect: {
+        //             native: 'tonomy-id-development://',
+        //         },
+        //     },
+        // });
 
         // await web3wallet.pair({ uri: did });
 
