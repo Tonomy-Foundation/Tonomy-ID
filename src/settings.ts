@@ -51,6 +51,7 @@ type ConfigType = {
     loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
     blockExplorerUrl: string;
+    walletProjectId: string;
 };
 
 type SettingsType = {

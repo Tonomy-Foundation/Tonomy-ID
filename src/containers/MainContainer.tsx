@@ -12,6 +12,10 @@ import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
+import { Core } from '@walletconnect/core';
+import { Web3Wallet } from '@walletconnect/web3wallet';
+import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
+import { useNavigation } from '@react-navigation/native';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -20,6 +24,7 @@ export default function MainContainer({ did }: { did?: string }) {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
+    const navigation = useNavigation();
 
     useEffect(() => {
         setUserName();
@@ -51,9 +56,16 @@ export default function MainContainer({ did }: { did?: string }) {
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
-            const did = validateQrCode(data);
+            if (data.startsWith('wc:')) {
+                console.log('if');
+                await connectToWalletConnect(data);
+            } else {
+                console.log('else');
 
-            await connectToDid(did);
+                const did = validateQrCode(data);
+
+                await connectToDid(did);
+            }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 console.log('Invalid QR Code', JSON.stringify(e, null, 2));
@@ -100,6 +112,74 @@ export default function MainContainer({ did }: { did?: string }) {
             } else {
                 throw e;
             }
+        }
+    }
+
+    async function connectToWalletConnect(did: string) {
+        try {
+            console.log('walletconnect');
+            const core = new Core({
+                projectId: settings.config.walletProjectId,
+            });
+
+            const web3wallet = await Web3Wallet.init({
+                core,
+                metadata: {
+                    name: 'Demo app',
+                    description: 'Demo Client as Wallet/Peer',
+                    url: 'www.walletconnect.com',
+                    icons: [],
+                },
+            });
+
+            await web3wallet.pair({ uri: did });
+            web3wallet.on('session_proposal', async (proposal) => {
+                console.log('proposal', proposal.params);
+                console.log(proposal.params.proposer.metadata);
+
+                try {
+                    const approvedNamespaces = buildApprovedNamespaces({
+                        proposal: proposal.params,
+                        supportedNamespaces: {
+                            eip155: {
+                                chains: ['eip155:11155111'], //11155111
+                                methods: ['eth_sendTransaction', 'personal_sign'],
+                                events: ['accountsChanged', 'chainChanged'],
+                                accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
+                            },
+                        },
+                    });
+                    const session = await web3wallet.approveSession({
+                        id: proposal.id,
+                        namespaces: approvedNamespaces,
+                    });
+
+                    console.log('session', session);
+                } catch (error) {
+                    console.log('error', error);
+                    await web3wallet.rejectSession({
+                        id: proposal.id,
+                        reason: getSdkError('USER_REJECTED'),
+                    });
+                }
+            });
+
+            try {
+                web3wallet.on('session_request', async (event) => {
+                    console.log('event', event?.params?.request?.method);
+                    if (event?.params?.request?.method === 'eth_sendTransaction')
+                        navigation.navigate('SignTransaction');
+                });
+            } catch (error) {
+                console.log('error2', error);
+                errorStore.setError({
+                    title: 'Timeout',
+                    error: new Error('Request expired. Please try again'),
+                    expected: false,
+                });
+            }
+        } catch (e) {
+            console.log(e);
         }
     }
 

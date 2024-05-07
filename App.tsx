@@ -1,6 +1,7 @@
 import './src/utils/polyfill';
 import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
+import '@walletconnect/react-native-compat';
 import RootNavigation from './src/navigation/Root';
 import 'expo-dev-client';
 import theme from './src/utils/theme';
