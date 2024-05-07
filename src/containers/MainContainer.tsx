@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { StyleSheet, View, Image, ScrollView, Platform } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -15,7 +15,10 @@ import settings from '../settings';
 import { Core } from '@walletconnect/core';
 import { Web3Wallet } from '@walletconnect/web3wallet';
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
-import { ethers, InfuraProvider } from 'ethers';
+import useInitialization from '../hooks/useInitialization';
+import { SignClientTypes } from '@walletconnect/types';
+
+import { currentETHAddress, web3wallet, _pair } from '../utils/Web3WalletClient';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -24,6 +27,13 @@ export default function MainContainer({ did }: { did?: string }) {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
+    const [approvalModal, setApprovalModal] = useState(false);
+    const initialized = useInitialization();
+    const [pairedProposal, setPairedProposal] = useState();
+
+    useEffect(() => {
+        console.log('Web3WalletSDK initialized:', initialized);
+    }, [initialized]);
 
     useEffect(() => {
         setUserName();
@@ -55,9 +65,9 @@ export default function MainContainer({ did }: { did?: string }) {
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
-            await connectToWalletConnect(data);
+            await pair(data);
+            // await connectToWalletConnect(data);
             // const did = validateQrCode(data);
-
             // await connectToDid(did);
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
@@ -82,6 +92,18 @@ export default function MainContainer({ did }: { did?: string }) {
         } finally {
             onClose();
         }
+    }
+
+    async function pair(WCURI: string) {
+        console.log('WCURI', WCURI);
+        const pairing = await _pair({ uri: WCURI });
+
+        if (Platform.OS === 'android') {
+            setApprovalModal(true);
+        }
+
+        console.log('pairing', pairing);
+        return pairing;
     }
 
     async function connectToDid(did: string) {
@@ -205,6 +227,16 @@ export default function MainContainer({ did }: { did?: string }) {
             console.log(e);
         }
     }
+
+    const onSessionProposal = useCallback((proposal: SignClientTypes.EventArguments['session_proposal']) => {
+        setPairedProposal(proposal);
+    }, []);
+
+    useEffect(() => {
+        if (approvalModal) {
+            web3wallet.on('session_proposal', onSessionProposal);
+        }
+    }, [approvalModal, onSessionProposal]);
 
     function onClose() {
         setQrOpened(false);
