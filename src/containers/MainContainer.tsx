@@ -15,7 +15,7 @@ import settings from '../settings';
 import { Core } from '@walletconnect/core';
 import { Web3Wallet } from '@walletconnect/web3wallet';
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
-import { useNavigation } from '@react-navigation/native';
+import { ethers, InfuraProvider } from 'ethers';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -24,7 +24,6 @@ export default function MainContainer({ did }: { did?: string }) {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
-    const navigation = useNavigation();
 
     useEffect(() => {
         setUserName();
@@ -56,16 +55,10 @@ export default function MainContainer({ did }: { did?: string }) {
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
-            if (data.startsWith('wc:')) {
-                console.log('if');
-                await connectToWalletConnect(data);
-            } else {
-                console.log('else');
+            await connectToWalletConnect(data);
+            // const did = validateQrCode(data);
 
-                const did = validateQrCode(data);
-
-                await connectToDid(did);
-            }
+            // await connectToDid(did);
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 console.log('Invalid QR Code', JSON.stringify(e, null, 2));
@@ -117,9 +110,8 @@ export default function MainContainer({ did }: { did?: string }) {
 
     async function connectToWalletConnect(did: string) {
         try {
-            console.log('walletconnect');
             const core = new Core({
-                projectId: settings.config.walletProjectId,
+                projectId: '2850896ad9cf6c1d958203b00b199c2d',
             });
 
             const web3wallet = await Web3Wallet.init({
@@ -130,12 +122,14 @@ export default function MainContainer({ did }: { did?: string }) {
                     url: 'www.walletconnect.com',
                     icons: [],
                 },
+                // Set a longer timeout value (in milliseconds) for the RPC request
+                // Adjust this value based on your network conditions and requirements
+                rpcTimeout: 30000, // 30 seconds
             });
 
             await web3wallet.pair({ uri: did });
             web3wallet.on('session_proposal', async (proposal) => {
-                console.log('proposal', proposal.params);
-                console.log(proposal.params.proposer.metadata);
+                console.log('proposal', proposal);
 
                 try {
                     const approvedNamespaces = buildApprovedNamespaces({
@@ -166,17 +160,46 @@ export default function MainContainer({ did }: { did?: string }) {
 
             try {
                 web3wallet.on('session_request', async (event) => {
-                    console.log('event', event?.params?.request?.method);
-                    if (event?.params?.request?.method === 'eth_sendTransaction')
-                        navigation.navigate('SignTransaction');
+                    const { topic, params, id } = event;
+                    const { request } = params;
+                    const requestParamsMessage = request.params[0];
+
+                    console.log('requestParamsMessage', requestParamsMessage, request);
+                    // Prepare the transaction object
+                    const { data, from, to, value } = requestParamsMessage;
+                    const transaction = {
+                        from,
+                        to,
+                        data,
+                        value,
+                    };
+
+                    console.log('transaction', transaction);
+                    const privateKey = '0xc7709ab54044f7a97d8b3d006c404644a15286c7cc13e7a597353a405610e690'.trim();
+
+                    try {
+                        const provider = new InfuraProvider('sepolia');
+
+                        // Create a wallet instance with the custom provider
+                        const wallet = new ethers.Wallet(privateKey, provider);
+                        const signedTransaction = await wallet.sendTransaction(transaction);
+
+                        console.log('signedTransaction', signedTransaction);
+                        // Wait for the transaction to be mined
+                        await signedTransaction.wait();
+                        const response = { id, result: signedTransaction, jsonrpc: '2.0' };
+
+                        console.log('response', response);
+                        await web3wallet.respondSessionRequest({ topic, response });
+                    } catch (error) {
+                        console.error('Error sending transaction:', error);
+                        console.error('Error message:', error?.message);
+                        console.error('Error code:', error?.code);
+                        console.error('Error stack:', error?.stack);
+                    }
                 });
             } catch (error) {
                 console.log('error2', error);
-                errorStore.setError({
-                    title: 'Timeout',
-                    error: new Error('Request expired. Please try again'),
-                    expected: false,
-                });
             }
         } catch (e) {
             console.log(e);

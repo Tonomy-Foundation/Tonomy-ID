@@ -24,6 +24,7 @@
         "updateSdkVersion": "./update_sdk_version.sh"
     },
     "dependencies": {
+        "@ethersproject/shims": "^5.7.0",
         "@hcaptcha/react-native-hcaptcha": "^1.5.1",
         "@react-native-async-storage/async-storage": "1.18.2",
         "@react-navigation/bottom-tabs": "^6.5.0",
@@ -39,7 +40,7 @@
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
         "deepmerge": "^4.2.2",
-        "ethers": "^6.12.1",
+        "ethers": "5.7.2",
         "expo": "~49.0.7",
         "expo-barcode-scanner": "~12.5.3",
         "expo-build-properties": "~0.8.3",
