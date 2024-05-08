@@ -150,9 +150,6 @@ export default function MainContainer({ did }: { did?: string }) {
                 setRequestSession(requestSessionData);
                 setRequestEventData(requestEvent);
                 setTransactionModal(true);
-
-                return;
-            case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
                 return;
         }
     }, []);

@@ -36,6 +36,8 @@ export default function SignTransactionConsentContainer({
     const transaction = request.params[0];
 
     async function onReject() {
+        console.log('reject', requestEvent);
+
         if (requestEvent) {
             const response = rejectEIP155Request(requestEvent);
 
@@ -43,6 +45,7 @@ export default function SignTransactionConsentContainer({
                 topic,
                 response,
             });
+            navigation.navigate('Drawer', { screen: 'UserHome' });
         }
     }
 
