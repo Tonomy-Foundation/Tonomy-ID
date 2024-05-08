@@ -8,7 +8,8 @@ import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { Images } from '../assets';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { Web3 } from 'web3';
+import { approveEIP155Request, rejectEIP155Request } from '../utils/EIP155Request';
+import { web3wallet } from '../utils/Web3WalletClient';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -20,12 +21,8 @@ export default function SignTransactionConsentContainer({
     requestEvent: any;
 }) {
     const [showDetails, setShowDetails] = useState(false);
-    const web3 = new Web3();
 
     const refMessage = useRef(null);
-
-    console.log('request', requestEvent);
-    console.log('session', requestSession);
 
     const chainID = requestEvent?.params?.chainId?.toUpperCase();
     const method = requestEvent?.params?.request?.method;
@@ -37,6 +34,17 @@ export default function SignTransactionConsentContainer({
     const { topic, params } = requestEvent;
     const { request, chainId } = params;
     const transaction = request.params[0];
+
+    async function onReject() {
+        if (requestEvent) {
+            const response = rejectEIP155Request(requestEvent);
+
+            await web3wallet.respondSessionRequest({
+                topic,
+                response,
+            });
+        }
+    }
 
     console.log('chainId', chainID, method, requestName, requestIcon, requestURL, topic, params, transaction);
     return (
@@ -151,7 +159,7 @@ export default function SignTransactionConsentContainer({
             footer={
                 <View style={{ marginTop: 30 }}>
                     <TButtonContained style={commonStyles.marginBottom}>Proceed</TButtonContained>
-                    <TButtonOutlined>Cancel</TButtonOutlined>
+                    <TButtonOutlined onPress={() => onReject()}>Cancel</TButtonOutlined>
                 </View>
             }
             noFooterHintLayout={true}

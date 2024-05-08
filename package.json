@@ -26,6 +26,7 @@
     "dependencies": {
         "@ethersproject/shims": "^5.7.0",
         "@hcaptcha/react-native-hcaptcha": "^1.5.1",
+        "@json-rpc-tools/utils": "^1.7.6",
         "@react-native-async-storage/async-storage": "1.18.2",
         "@react-navigation/bottom-tabs": "^6.5.0",
         "@react-navigation/drawer": "^6.5.0",
