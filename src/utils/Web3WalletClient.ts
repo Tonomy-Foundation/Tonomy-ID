@@ -21,7 +21,7 @@ export async function createWeb3Wallet() {
 
     const { eip155Addresses } = await createOrRestoreEIP155Wallet();
 
-    currentETHAddress = eip155Addresses[0];
+    currentETHAddress = '0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'; //eip155Addresses[0];
 
     web3wallet = await Web3Wallet.init({
         core,

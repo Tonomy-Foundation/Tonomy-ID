@@ -8,23 +8,45 @@ import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { Images } from '../assets';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import { Web3 } from 'web3';
 
-export default function SignTransactionConsentContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function SignTransactionConsentContainer({
+    navigation,
+    requestSession,
+    requestEvent,
+}: {
+    navigation: Props['navigation'];
+    requestSession: any;
+    requestEvent: any;
+}) {
     const [showDetails, setShowDetails] = useState(false);
+    const web3 = new Web3();
 
     const refMessage = useRef(null);
 
+    console.log('request', requestEvent);
+    console.log('session', requestSession);
+
+    const chainID = requestEvent?.params?.chainId?.toUpperCase();
+    const method = requestEvent?.params?.request?.method;
+
+    const requestName = requestSession?.peer?.metadata?.name;
+    const requestIcon = requestSession?.peer?.metadata?.icons[0];
+    const requestURL = requestSession?.peer?.metadata?.url;
+
+    const { topic, params } = requestEvent;
+    const { request, chainId } = params;
+    const transaction = request.params[0];
+
+    console.log('chainId', chainID, method, requestName, requestIcon, requestURL, topic, params, transaction);
     return (
         <LayoutComponent
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={Images.GetImage('logo1024')}
-                        ></Image>
+                        <Image style={[styles.logo, commonStyles.marginBottom]} source={requestIcon}></Image>
                         <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
-                            <Text style={styles.applink}>nftswap.com </Text>
+                            <Text style={styles.applink}>{requestURL}</Text>
                             wants you to send coins
                         </TH2>
                         <View style={styles.networkHeading}>
@@ -32,22 +54,29 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                             <Text style={styles.nameText}>Ethereum Network</Text>
                         </View>
                         <View style={styles.transactionHeading}>
-                            <Text>0x9523a2....5c4bafe5</Text>
+                            <Text>
+                                {transaction.from.substring(0, 7)}....
+                                {transaction.from.substring(transaction.from.length - 6)}
+                            </Text>
                         </View>
                         <View style={styles.appDialog}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.secondaryColor}>Recipient:</Text>
-                                <Text>0x9523a2....5c4bafe5</Text>
+                                <Text>
+                                    {' '}
+                                    {transaction.to.substring(0, 7)}....
+                                    {transaction.to.substring(transaction.from.length - 6)}
+                                </Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
                                 <Text style={styles.secondaryColor}>Amount:</Text>
                                 <Text>
-                                    0.035 Eth <Text style={styles.secondaryColor}>($117.02) </Text>
+                                    {transaction.value} Eth <Text style={styles.secondaryColor}>($117.02) </Text>
                                 </Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
                                 <Text style={styles.secondaryColor}>Function:</Text>
-                                <Text style={{ color: theme.colors.secondary }}>buynft()</Text>
+                                <Text style={{ color: theme.colors.secondary }}>{method}</Text>
                             </View>
                             <View
                                 style={{
@@ -97,7 +126,7 @@ export default function SignTransactionConsentContainer({ navigation }: { naviga
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.secondaryColor}>Gas fee:</Text>
                                 <Text>
-                                    0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
+                                    {transaction.gasPrice} Eth <Text style={styles.secondaryColor}>($17.02) </Text>
                                 </Text>
                             </View>
                         </View>

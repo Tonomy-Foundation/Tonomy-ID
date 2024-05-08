@@ -57,7 +57,7 @@ export type RouteStackParamList = {
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
-    SignTransaction: undefined;
+    SignTransaction: { requestEvent: any; requestSession: any };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();

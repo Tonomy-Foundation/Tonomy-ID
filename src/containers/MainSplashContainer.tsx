@@ -10,10 +10,12 @@ import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import settings from '../settings';
 import { Images } from '../assets';
+import useInitialization from '../hooks/useInitialization';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
+    const initialized = useInitialization();
 
     useEffect(() => {
         async function main() {
@@ -51,7 +53,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         }
 
         main();
-    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user]);
+    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, initialized]);
 
     return (
         <LayoutComponent

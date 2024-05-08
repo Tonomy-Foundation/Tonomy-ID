@@ -12,13 +12,11 @@ import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
-import { Core } from '@walletconnect/core';
-import { Web3Wallet } from '@walletconnect/web3wallet';
-import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
-import useInitialization from '../hooks/useInitialization';
-import { SignClientTypes } from '@walletconnect/types';
-
+import { SignClientTypes, SessionTypes } from '@walletconnect/types';
+import TModal from '../components/TModal';
 import { currentETHAddress, web3wallet, _pair } from '../utils/Web3WalletClient';
+import { useNavigation } from '@react-navigation/native';
+import { EIP155_SIGNING_METHODS } from '../data/EIP155';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -28,12 +26,12 @@ export default function MainContainer({ did }: { did?: string }) {
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
     const [approvalModal, setApprovalModal] = useState(false);
-    const initialized = useInitialization();
-    const [pairedProposal, setPairedProposal] = useState();
+    const [pairedProposal, setPairedProposal] = useState({});
+    const [requestSession, setRequestSession] = useState({});
+    const [requestEventData, setRequestEventData] = useState({});
+    const [transactionModal, setTransactionModal] = useState(false);
 
-    useEffect(() => {
-        console.log('Web3WalletSDK initialized:', initialized);
-    }, [initialized]);
+    const navigation = useNavigation();
 
     useEffect(() => {
         setUserName();
@@ -65,10 +63,16 @@ export default function MainContainer({ did }: { did?: string }) {
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
-            await pair(data);
-            // await connectToWalletConnect(data);
-            // const did = validateQrCode(data);
-            // await connectToDid(did);
+            if (data.startsWith('wc:')) {
+                console.log('if');
+                await pair(data);
+            } else {
+                console.log('else');
+
+                const did = validateQrCode(data);
+
+                await connectToDid(did);
+            }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 console.log('Invalid QR Code', JSON.stringify(e, null, 2));
@@ -98,9 +102,7 @@ export default function MainContainer({ did }: { did?: string }) {
         console.log('WCURI', WCURI);
         const pairing = await _pair({ uri: WCURI });
 
-        if (Platform.OS === 'android') {
-            setApprovalModal(true);
-        }
+        setApprovalModal(true);
 
         console.log('pairing', pairing);
         return pairing;
@@ -130,116 +132,80 @@ export default function MainContainer({ did }: { did?: string }) {
         }
     }
 
-    async function connectToWalletConnect(did: string) {
-        try {
-            const core = new Core({
-                projectId: '2850896ad9cf6c1d958203b00b199c2d',
-            });
-
-            const web3wallet = await Web3Wallet.init({
-                core,
-                metadata: {
-                    name: 'Demo app',
-                    description: 'Demo Client as Wallet/Peer',
-                    url: 'www.walletconnect.com',
-                    icons: [],
-                },
-                // Set a longer timeout value (in milliseconds) for the RPC request
-                // Adjust this value based on your network conditions and requirements
-                rpcTimeout: 30000, // 30 seconds
-            });
-
-            await web3wallet.pair({ uri: did });
-            web3wallet.on('session_proposal', async (proposal) => {
-                console.log('proposal', proposal);
-
-                try {
-                    const approvedNamespaces = buildApprovedNamespaces({
-                        proposal: proposal.params,
-                        supportedNamespaces: {
-                            eip155: {
-                                chains: ['eip155:11155111'], //11155111
-                                methods: ['eth_sendTransaction', 'personal_sign'],
-                                events: ['accountsChanged', 'chainChanged'],
-                                accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
-                            },
-                        },
-                    });
-                    const session = await web3wallet.approveSession({
-                        id: proposal.id,
-                        namespaces: approvedNamespaces,
-                    });
-
-                    console.log('session', session);
-                } catch (error) {
-                    console.log('error', error);
-                    await web3wallet.rejectSession({
-                        id: proposal.id,
-                        reason: getSdkError('USER_REJECTED'),
-                    });
-                }
-            });
-
-            try {
-                web3wallet.on('session_request', async (event) => {
-                    const { topic, params, id } = event;
-                    const { request } = params;
-                    const requestParamsMessage = request.params[0];
-
-                    console.log('requestParamsMessage', requestParamsMessage, request);
-                    // Prepare the transaction object
-                    const { data, from, to, value } = requestParamsMessage;
-                    const transaction = {
-                        from,
-                        to,
-                        data,
-                        value,
-                    };
-
-                    console.log('transaction', transaction);
-                    const privateKey = '0xc7709ab54044f7a97d8b3d006c404644a15286c7cc13e7a597353a405610e690'.trim();
-
-                    try {
-                        const provider = new InfuraProvider('sepolia');
-
-                        // Create a wallet instance with the custom provider
-                        const wallet = new ethers.Wallet(privateKey, provider);
-                        const signedTransaction = await wallet.sendTransaction(transaction);
-
-                        console.log('signedTransaction', signedTransaction);
-                        // Wait for the transaction to be mined
-                        await signedTransaction.wait();
-                        const response = { id, result: signedTransaction, jsonrpc: '2.0' };
-
-                        console.log('response', response);
-                        await web3wallet.respondSessionRequest({ topic, response });
-                    } catch (error) {
-                        console.error('Error sending transaction:', error);
-                        console.error('Error message:', error?.message);
-                        console.error('Error code:', error?.code);
-                        console.error('Error stack:', error?.stack);
-                    }
-                });
-            } catch (error) {
-                console.log('error2', error);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
     const onSessionProposal = useCallback((proposal: SignClientTypes.EventArguments['session_proposal']) => {
         setPairedProposal(proposal);
     }, []);
 
-    useEffect(() => {
-        if (approvalModal) {
-            web3wallet.on('session_proposal', onSessionProposal);
+    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
+        const { topic, params } = requestEvent;
+        const { request } = params;
+        const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+
+        console.log('request', request.method);
+
+        switch (request.method) {
+            case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+                return;
+            case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+                setRequestSession(requestSessionData);
+                setRequestEventData(requestEvent);
+                setTransactionModal(true);
+
+                return;
+            case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
+                return;
         }
-    }, [approvalModal, onSessionProposal]);
+    }, []);
+
+    useEffect(() => {
+        if (approvalModal || transactionModal) {
+            web3wallet.on('session_proposal', onSessionProposal);
+            web3wallet.on('session_request', onSessionRequest);
+        }
+    }, [approvalModal, onSessionProposal, onSessionRequest, requestSession, transactionModal]);
 
     function onClose() {
         setQrOpened(false);
+    }
+
+    const handleRedirect = async () => {
+        console.log('redirect', requestEventData, requestSession);
+        navigation.navigate('SignTransaction', {
+            requestSession: requestSession,
+            requestEvent: requestEventData,
+        });
+    };
+
+    async function handleAccept() {
+        const { id, params } = pairedProposal;
+        const { requiredNamespaces, relays } = params;
+
+        if (pairedProposal) {
+            const namespaces: SessionTypes.Namespaces = {};
+
+            console.log('namespaces', namespaces);
+            Object.keys(requiredNamespaces).forEach((key) => {
+                const accounts: string[] = [];
+
+                requiredNamespaces[key].chains.map((chain) => {
+                    [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
+                });
+                console.log('accounts', accounts);
+
+                namespaces[key] = {
+                    // accounts,
+                    accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
+                    methods: requiredNamespaces[key].methods,
+                    events: requiredNamespaces[key].events,
+                };
+            });
+            await web3wallet.approveSession({
+                id,
+                relayProtocol: relays[0].protocol,
+                namespaces,
+            });
+            setApprovalModal(false);
+        }
     }
 
     const MainView = () => {
@@ -310,6 +276,38 @@ export default function MainContainer({ did }: { did?: string }) {
             ) : (
                 <MainView />
             )}
+            <TModal
+                visible={approvalModal}
+                icon="check"
+                onPress={() => setApprovalModal(false)}
+                title={'Welcome to ' + settings.config.appName}
+            >
+                <View>
+                    <TButtonContained
+                        onPress={() => {
+                            handleAccept();
+                        }}
+                    >
+                        Accept
+                    </TButtonContained>
+                </View>
+            </TModal>
+            <TModal
+                visible={transactionModal}
+                icon="check"
+                onPress={() => setTransactionModal(false)}
+                title={'Welcome to ' + settings.config.appName}
+            >
+                <View>
+                    <TButtonContained
+                        onPress={() => {
+                            handleRedirect();
+                        }}
+                    >
+                        Accept
+                    </TButtonContained>
+                </View>
+            </TModal>
         </SafeAreaView>
     );
 }
