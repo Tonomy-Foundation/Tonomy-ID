@@ -156,10 +156,10 @@ export default function MainContainer({ did }: { did?: string }) {
 
     useEffect(() => {
         if (approvalModal || transactionModal) {
-            web3wallet.on('session_proposal', onSessionProposal);
+            // web3wallet.on('session_proposal', onSessionProposal); onSessionProposal,
             web3wallet.on('session_request', onSessionRequest);
         }
-    }, [approvalModal, onSessionProposal, onSessionRequest, requestSession, transactionModal]);
+    }, [approvalModal, onSessionRequest, requestSession, transactionModal]);
 
     function onClose() {
         setQrOpened(false);
@@ -173,37 +173,37 @@ export default function MainContainer({ did }: { did?: string }) {
         });
     };
 
-    async function handleAccept() {
-        const { id, params } = pairedProposal;
-        const { requiredNamespaces, relays } = params;
+    // async function handleAccept() {
+    //     const { id, params } = pairedProposal;
+    //     const { requiredNamespaces, relays } = params;
 
-        if (pairedProposal) {
-            const namespaces: SessionTypes.Namespaces = {};
+    //     if (pairedProposal) {
+    //         const namespaces: SessionTypes.Namespaces = {};
 
-            console.log('namespaces', namespaces);
-            Object.keys(requiredNamespaces).forEach((key) => {
-                const accounts: string[] = [];
+    //         console.log('namespaces', namespaces);
+    //         Object.keys(requiredNamespaces).forEach((key) => {
+    //             const accounts: string[] = [];
 
-                requiredNamespaces[key].chains.map((chain) => {
-                    [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-                });
-                console.log('accounts', accounts);
+    //             requiredNamespaces[key].chains.map((chain) => {
+    //                 [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
+    //             });
+    //             console.log('accounts', accounts);
 
-                namespaces[key] = {
-                    // accounts,
-                    accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
-                    methods: requiredNamespaces[key].methods,
-                    events: requiredNamespaces[key].events,
-                };
-            });
-            await web3wallet.approveSession({
-                id,
-                relayProtocol: relays[0].protocol,
-                namespaces,
-            });
-            setApprovalModal(false);
-        }
-    }
+    //             namespaces[key] = {
+    //                 // accounts,
+    //                 accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
+    //                 methods: requiredNamespaces[key].methods,
+    //                 events: requiredNamespaces[key].events,
+    //             };
+    //         });
+    //         await web3wallet.approveSession({
+    //             id,
+    //             relayProtocol: relays[0].protocol,
+    //             namespaces,
+    //         });
+    //         setApprovalModal(false);
+    //     }
+    // }
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -273,7 +273,7 @@ export default function MainContainer({ did }: { did?: string }) {
             ) : (
                 <MainView />
             )}
-            <TModal
+            {/* <TModal
                 visible={approvalModal}
                 icon="check"
                 onPress={() => setApprovalModal(false)}
@@ -289,7 +289,7 @@ export default function MainContainer({ did }: { did?: string }) {
                         Accept
                     </TButtonContained>
                 </View>
-            </TModal>
+            </TModal> */}
             <TModal
                 visible={transactionModal}
                 icon="check"

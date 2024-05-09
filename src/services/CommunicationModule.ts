@@ -9,11 +9,13 @@ import {
     objToBase64Url,
     parseDid,
 } from '@tonomy/tonomy-id-sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
+import { SignClientTypes, SessionTypes } from '@walletconnect/types';
+import { currentETHAddress, web3wallet, _pair } from '../utils/Web3WalletClient';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -124,25 +126,34 @@ export default function CommunicationModule() {
         }
     }
 
-    const onSessionProposal = useCallback((proposal: SignClientTypes.EventArguments['session_proposal']) => {
-        setPairedProposal(proposal);
-    }, []);
+    const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
+        const { id, params } = proposal;
+        const { requiredNamespaces, relays } = params;
 
-    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-        const { topic, params } = requestEvent;
-        const { request } = params;
-        const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+        if (proposal) {
+            const namespaces: SessionTypes.Namespaces = {};
 
-        console.log('request', request.method);
+            console.log('namespaces', namespaces);
+            Object.keys(requiredNamespaces).forEach((key) => {
+                const accounts: string[] = [];
 
-        switch (request.method) {
-            case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-                return;
-            case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-                setRequestSession(requestSessionData);
-                setRequestEventData(requestEvent);
-                setTransactionModal(true);
-                return;
+                requiredNamespaces[key]?.chains?.map((chain) => {
+                    [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
+                });
+                console.log('accounts', accounts);
+
+                namespaces[key] = {
+                    // accounts,
+                    accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
+                    methods: requiredNamespaces[key].methods,
+                    events: requiredNamespaces[key].events,
+                };
+            });
+            await web3wallet.approveSession({
+                id,
+                relayProtocol: relays[0].protocol,
+                namespaces,
+            });
         }
     }, []);
 
@@ -150,6 +161,12 @@ export default function CommunicationModule() {
         loginToService();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
+
+    useEffect(() => {
+        if (web3wallet) {
+            web3wallet.on('session_proposal', onSessionProposal);
+        }
+    }, [onSessionProposal]);
 
     useEffect(() => {
         return () => {
