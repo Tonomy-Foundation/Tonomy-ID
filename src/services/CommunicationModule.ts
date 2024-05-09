@@ -16,6 +16,7 @@ import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { currentETHAddress, web3wallet, _pair } from '../utils/Web3WalletClient';
+import { EIP155_SIGNING_METHODS } from '../data/EIP155';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -157,6 +158,25 @@ export default function CommunicationModule() {
         }
     }, []);
 
+    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
+        const { topic, params } = requestEvent;
+        const { request } = params;
+        const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+
+        console.log('request', request.method);
+
+        switch (request.method) {
+            case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+                return;
+            case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+                navigation.navigate('SignTransaction', {
+                    requestSession: requestSessionData,
+                    requestEvent: requestEvent,
+                });
+                return;
+        }
+    }, []);
+
     useEffect(() => {
         loginToService();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,8 +185,9 @@ export default function CommunicationModule() {
     useEffect(() => {
         if (web3wallet) {
             web3wallet.on('session_proposal', onSessionProposal);
+            web3wallet.on('session_request', onSessionRequest);
         }
-    }, [onSessionProposal]);
+    }, [onSessionProposal, onSessionRequest]);
 
     useEffect(() => {
         return () => {

@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, View, Image, ScrollView, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Image, ScrollView } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -12,11 +12,7 @@ import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
-import { SignClientTypes, SessionTypes } from '@walletconnect/types';
-import TModal from '../components/TModal';
-import { currentETHAddress, web3wallet, _pair } from '../utils/Web3WalletClient';
-import { useNavigation } from '@react-navigation/native';
-import { EIP155_SIGNING_METHODS } from '../data/EIP155';
+import { _pair } from '../utils/Web3WalletClient';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -25,13 +21,6 @@ export default function MainContainer({ did }: { did?: string }) {
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const errorStore = useErrorStore();
-    const [approvalModal, setApprovalModal] = useState(false);
-    const [pairedProposal, setPairedProposal] = useState({});
-    const [requestSession, setRequestSession] = useState({});
-    const [requestEventData, setRequestEventData] = useState({});
-    const [transactionModal, setTransactionModal] = useState(false);
-
-    const navigation = useNavigation();
 
     useEffect(() => {
         setUserName();
@@ -64,14 +53,17 @@ export default function MainContainer({ did }: { did?: string }) {
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                console.log('if');
                 await pair(data);
-            } else {
-                console.log('else');
-
+            } else if (data.startsWith('did:')) {
                 const did = validateQrCode(data);
 
                 await connectToDid(did);
+            } else {
+                errorStore.setError({
+                    title: 'Invalid QR Code',
+                    error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
+                    expected: false,
+                });
             }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
@@ -99,12 +91,8 @@ export default function MainContainer({ did }: { did?: string }) {
     }
 
     async function pair(WCURI: string) {
-        console.log('WCURI', WCURI);
         const pairing = await _pair({ uri: WCURI });
 
-        setApprovalModal(true);
-
-        console.log('pairing', pairing);
         return pairing;
     }
 
@@ -132,78 +120,9 @@ export default function MainContainer({ did }: { did?: string }) {
         }
     }
 
-    const onSessionProposal = useCallback((proposal: SignClientTypes.EventArguments['session_proposal']) => {
-        setPairedProposal(proposal);
-    }, []);
-
-    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-        const { topic, params } = requestEvent;
-        const { request } = params;
-        const requestSessionData = web3wallet.engine.signClient.session.get(topic);
-
-        console.log('request', request.method);
-
-        switch (request.method) {
-            case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-                return;
-            case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-                setRequestSession(requestSessionData);
-                setRequestEventData(requestEvent);
-                setTransactionModal(true);
-                return;
-        }
-    }, []);
-
-    useEffect(() => {
-        if (approvalModal || transactionModal) {
-            // web3wallet.on('session_proposal', onSessionProposal); onSessionProposal,
-            web3wallet.on('session_request', onSessionRequest);
-        }
-    }, [approvalModal, onSessionRequest, requestSession, transactionModal]);
-
     function onClose() {
         setQrOpened(false);
     }
-
-    const handleRedirect = async () => {
-        console.log('redirect', requestEventData, requestSession);
-        navigation.navigate('SignTransaction', {
-            requestSession: requestSession,
-            requestEvent: requestEventData,
-        });
-    };
-
-    // async function handleAccept() {
-    //     const { id, params } = pairedProposal;
-    //     const { requiredNamespaces, relays } = params;
-
-    //     if (pairedProposal) {
-    //         const namespaces: SessionTypes.Namespaces = {};
-
-    //         console.log('namespaces', namespaces);
-    //         Object.keys(requiredNamespaces).forEach((key) => {
-    //             const accounts: string[] = [];
-
-    //             requiredNamespaces[key].chains.map((chain) => {
-    //                 [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-    //             });
-    //             console.log('accounts', accounts);
-
-    //             namespaces[key] = {
-    //                 // accounts,
-    //                 accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
-    //                 methods: requiredNamespaces[key].methods,
-    //                 events: requiredNamespaces[key].events,
-    //             };
-    //         });
-    //         await web3wallet.approveSession({
-    //             id,
-    //             relayProtocol: relays[0].protocol,
-    //             namespaces,
-    //         });
-    //         setApprovalModal(false);
-    //     }
-    // }
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -273,40 +192,6 @@ export default function MainContainer({ did }: { did?: string }) {
             ) : (
                 <MainView />
             )}
-            {/* <TModal
-                visible={approvalModal}
-                icon="check"
-                onPress={() => setApprovalModal(false)}
-                title={'Welcome to ' + settings.config.appName}
-            >
-                <View>
-                    <Text>You are getting login request from wallet connect</Text>
-                    <TButtonContained
-                        onPress={() => {
-                            handleAccept();
-                        }}
-                    >
-                        Accept
-                    </TButtonContained>
-                </View>
-            </TModal> */}
-            <TModal
-                visible={transactionModal}
-                icon="check"
-                onPress={() => setTransactionModal(false)}
-                title={'Welcome to ' + settings.config.appName}
-            >
-                <View>
-                    <Text>Do you want to proceed with the eth transaction?</Text>
-                    <TButtonContained
-                        onPress={() => {
-                            handleRedirect();
-                        }}
-                    >
-                        Accept
-                    </TButtonContained>
-                </View>
-            </TModal>
         </SafeAreaView>
     );
 }
