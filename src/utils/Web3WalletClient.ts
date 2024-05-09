@@ -1,6 +1,7 @@
 import { Core } from '@walletconnect/core';
 import { ICore } from '@walletconnect/types';
 import { Web3Wallet, IWeb3Wallet } from '@walletconnect/web3wallet';
+import settings from '../settings';
 
 export let web3wallet: IWeb3Wallet;
 export let core: ICore;
@@ -15,7 +16,7 @@ export async function createWeb3Wallet() {
     core = new Core({
         // @notice: If you want the debugger / logs
         // logger: 'debug',
-        projectId: '2850896ad9cf6c1d958203b00b199c2d',
+        projectId: settings.config.walletConnectProjectId,
         relayUrl: 'wss://relay.walletconnect.com',
     });
 

@@ -127,6 +127,18 @@ export default function CommunicationModule() {
         }
     }
 
+    function sendWalletConnectNotificationOnBackground(title: string, body: string) {
+        if (AppState.currentState === 'background') {
+            scheduleNotificationAsync({
+                content: {
+                    title,
+                    body,
+                },
+                trigger: null,
+            });
+        }
+    }
+
     const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
         const { id, params } = proposal;
         const { requiredNamespaces, relays } = params;
@@ -134,7 +146,6 @@ export default function CommunicationModule() {
         if (proposal) {
             const namespaces: SessionTypes.Namespaces = {};
 
-            console.log('namespaces', namespaces);
             Object.keys(requiredNamespaces).forEach((key) => {
                 const accounts: string[] = [];
 
@@ -163,8 +174,6 @@ export default function CommunicationModule() {
         const { request } = params;
         const requestSessionData = web3wallet.engine.signClient.session.get(topic);
 
-        console.log('request', request.method);
-
         switch (request.method) {
             case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
                 return;
@@ -173,6 +182,11 @@ export default function CommunicationModule() {
                     requestSession: requestSessionData,
                     requestEvent: requestEvent,
                 });
+                sendWalletConnectNotificationOnBackground(
+                    'Transaction Request',
+                    'Transaction request from wallet connect'
+                );
+
                 return;
         }
     }, []);
