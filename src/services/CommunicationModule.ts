@@ -124,6 +124,28 @@ export default function CommunicationModule() {
         }
     }
 
+    const onSessionProposal = useCallback((proposal: SignClientTypes.EventArguments['session_proposal']) => {
+        setPairedProposal(proposal);
+    }, []);
+
+    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
+        const { topic, params } = requestEvent;
+        const { request } = params;
+        const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+
+        console.log('request', request.method);
+
+        switch (request.method) {
+            case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+                return;
+            case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+                setRequestSession(requestSessionData);
+                setRequestEventData(requestEvent);
+                setTransactionModal(true);
+                return;
+        }
+    }, []);
+
     useEffect(() => {
         loginToService();
         // eslint-disable-next-line react-hooks/exhaustive-deps

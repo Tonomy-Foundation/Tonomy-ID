@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, View, Image, ScrollView, Platform } from 'react-native';
+import { StyleSheet, View, Image, ScrollView, Text } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -280,6 +280,7 @@ export default function MainContainer({ did }: { did?: string }) {
                 title={'Welcome to ' + settings.config.appName}
             >
                 <View>
+                    <Text>You are getting login request from wallet connect</Text>
                     <TButtonContained
                         onPress={() => {
                             handleAccept();
@@ -296,6 +297,7 @@ export default function MainContainer({ did }: { did?: string }) {
                 title={'Welcome to ' + settings.config.appName}
             >
                 <View>
+                    <Text>Do you want to proceed with the eth transaction?</Text>
                     <TButtonContained
                         onPress={() => {
                             handleRedirect();
