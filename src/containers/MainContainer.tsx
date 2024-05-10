@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
         marginRight: -20,
     },
     appDialog: {
-        backgroundColor: theme.colors.info,
+        backgroundColor: theme.colors.lightBg,
         borderStyle: 'solid',
         borderRadius: 7,
         padding: 10,

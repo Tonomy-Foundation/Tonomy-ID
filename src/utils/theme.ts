@@ -21,6 +21,7 @@ const theme = {
         textGray: settings.config.theme.textGray,
         linkColor: settings.config.theme.linkColor,
         info: settings.config.theme.infoBackground,
+        lightBg: settings.config.theme.lightBackground,
         white: '#FDFEFF',
         headerFooter: '#F9F9F9',
         grey: '#313938',
