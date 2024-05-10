@@ -266,4 +266,7 @@ const styles = StyleSheet.create({
     balanceView: {
         marginTop: 7,
     },
+    marginTop: {
+        marginTop: 28,
+    },
 });
