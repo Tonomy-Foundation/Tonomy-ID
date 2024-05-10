@@ -23,7 +23,7 @@ export default function MainContainer({ did }: { did?: string }) {
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [balance, setBalance] = useState();
+    const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
 
