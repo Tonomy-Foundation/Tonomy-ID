@@ -162,7 +162,7 @@ export default function MainContainer({ did }: { did?: string }) {
                                     <Text style={styles.balanceView}>
                                         {balance} LEOS
                                         <Text style={styles.secondaryColor}>
-                                            (${balance ? Math.floor(balance / 0.002) : 0}){' '}
+                                            (${balance ? Math.floor(balance / 0.002) : 0})
                                         </Text>
                                     </Text>
                                 </View>
