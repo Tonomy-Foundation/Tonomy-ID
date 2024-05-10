@@ -35,6 +35,8 @@ export default function SignTransactionConsentContainer({
     const { request, chainId } = params;
     const transaction = request.params[0];
 
+    console.log('transaction', transaction, requestIcon);
+
     async function onReject() {
         if (requestEvent) {
             const response = rejectEIP155Request(requestEvent);
@@ -52,7 +54,7 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        <Image style={[styles.logo, commonStyles.marginBottom]} source={requestIcon}></Image>
+                        <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: requestIcon }}></Image>
                         <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
                             <Text style={styles.applink}>{requestURL}</Text>
                             wants you to send coins

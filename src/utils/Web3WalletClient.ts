@@ -11,8 +11,6 @@ export let currentETHAddress: string;
 import { createOrRestoreEIP155Wallet } from './EIP155Wallet';
 
 export async function createWeb3Wallet() {
-    // console.log('ENV_PROJECT_ID', ENV_PROJECT_ID);
-    // console.log('ENV_RELAY_URL', ENV_RELAY_URL);
     core = new Core({
         // @notice: If you want the debugger / logs
         // logger: 'debug',
@@ -27,10 +25,10 @@ export async function createWeb3Wallet() {
     web3wallet = await Web3Wallet.init({
         core,
         metadata: {
-            name: 'React Native Web3Wallet',
-            description: 'ReactNative Web3Wallet',
+            name: settings.config.appName,
+            description: settings.config.ecosystemName,
             url: 'https://walletconnect.com/',
-            icons: ['https://avatars.githubusercontent.com/u/37784886'],
+            icons: [settings.config.images.logo48],
         },
     });
 }

@@ -39,5 +39,5 @@
     "loggerLevel": "debug",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
     "tonomyIdSlug": "tonomy-id-development://",
-    "walletConnectProjectId ": "2850896ad9cf6c1d958203b00b199c2d"
+    "walletConnectProjectId": "2850896ad9cf6c1d958203b00b199c2d"
 }
