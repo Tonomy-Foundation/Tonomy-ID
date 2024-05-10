@@ -13,6 +13,9 @@ import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
 import theme from '../utils/theme';
 import { Images } from '../assets';
+import { VestingContract } from '@tonomy/tonomy-id-sdk';
+
+const vestingContract = VestingContract.Instance;
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -20,6 +23,8 @@ export default function MainContainer({ did }: { did?: string }) {
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
+    const [balance, setBalance] = useState();
+    const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
 
     useEffect(() => {
@@ -35,6 +40,12 @@ export default function MainContainer({ did }: { did?: string }) {
             const u = await user.getUsername();
 
             setUsername(u.getBaseUsername());
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
+            const accountBalance = await vestingContract.getBalance(accountName);
+
+            setBalance(accountBalance);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -145,11 +156,14 @@ export default function MainContainer({ did }: { did?: string }) {
                                             <Image source={Images.GetImage('logo48')} style={styles.favicon} />
                                             <Text style={styles.networkTitle}>Pangea Network:</Text>
                                         </View>
-                                        <Text>0x9523a.....5jfs13asb</Text>
+                                        <Text>{accountName}</Text>
                                     </View>
 
                                     <Text style={styles.balanceView}>
-                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
+                                        {balance} LEOS
+                                        <Text style={styles.secondaryColor}>
+                                            (${balance ? Math.floor(balance / 0.002) : 0}){' '}
+                                        </Text>
                                     </Text>
                                 </View>
                             </View>
