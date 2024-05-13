@@ -44,6 +44,8 @@ export default function MainContainer({ did }: { did?: string }) {
             }
         }
 
+        getUpdatedBalance();
+
         const interval = setInterval(() => {
             getUpdatedBalance();
         }, 20000);
