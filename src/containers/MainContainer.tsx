@@ -44,14 +44,12 @@ export default function MainContainer({ did }: { did?: string }) {
             }
         }
 
-        getUpdatedBalance();
-
         const interval = setInterval(() => {
             getUpdatedBalance();
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, balance, setBalance]);
+    }, [user, balance, setBalance, accountName]);
 
     async function setUserName() {
         try {
