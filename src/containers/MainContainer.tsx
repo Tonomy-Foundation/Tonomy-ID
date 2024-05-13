@@ -14,6 +14,7 @@ import settings from '../settings';
 import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import { formatCurrencyValue } from '../utils/numbers';
 
 const vestingContract = VestingContract.Instance;
 
@@ -175,9 +176,9 @@ export default function MainContainer({ did }: { did?: string }) {
                                     </View>
 
                                     <Text style={styles.balanceView}>
-                                        {balance || 0} LEOS
+                                        {formatCurrencyValue(balance) || 0} LEOS
                                         <Text style={styles.secondaryColor}>
-                                            (${balance ? Math.floor(balance / 0.002) : 0.0})
+                                            (${balance ? formatCurrencyValue(Math.floor(balance * 0.002)) : 0.0})
                                         </Text>
                                     </Text>
                                 </View>
