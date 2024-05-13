@@ -37,8 +37,6 @@ export default function MainContainer({ did }: { did?: string }) {
 
     useEffect(() => {
         async function getUpdatedBalance() {
-            const accountName = (await user.getAccountName()).toString();
-
             const accountBalance = await vestingContract.getBalance(accountName);
 
             if (balance !== accountBalance) {
@@ -60,6 +58,9 @@ export default function MainContainer({ did }: { did?: string }) {
             const u = await user.getUsername();
 
             setUsername(u.getBaseUsername());
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
