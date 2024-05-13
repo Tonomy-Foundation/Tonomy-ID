@@ -1,7 +1,7 @@
 import { Core } from '@walletconnect/core';
 import { ICore } from '@walletconnect/types';
 import { Web3Wallet, IWeb3Wallet } from '@walletconnect/web3wallet';
-import settings from '../settings';
+import settings from '../../settings';
 
 export let web3wallet: IWeb3Wallet;
 export let core: ICore;

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import EIP155Lib from '../lib/EIP555';
+import EIP155Lib from './EIP555';
 
 export let wallet1: EIP155Lib;
 export let wallet2: EIP155Lib;

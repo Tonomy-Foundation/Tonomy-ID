@@ -15,8 +15,8 @@ import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
-import { currentETHAddress, web3wallet, _pair } from '../utils/Web3WalletClient';
-import { EIP155_SIGNING_METHODS } from '../data/EIP155';
+import { currentETHAddress, web3wallet, _pair } from './WalletConnect/Web3WalletClient';
+import { EIP155_SIGNING_METHODS } from './WalletConnect/EIP155MethodsAndChain';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -144,28 +144,32 @@ export default function CommunicationModule() {
         const { requiredNamespaces, relays } = params;
 
         if (proposal) {
-            const namespaces: SessionTypes.Namespaces = {};
-
-            Object.keys(requiredNamespaces).forEach((key) => {
-                const accounts: string[] = [];
-
-                requiredNamespaces[key]?.chains?.map((chain) => {
-                    [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-                });
-                console.log('accounts', accounts);
-
-                namespaces[key] = {
-                    // accounts,
-                    accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
-                    methods: requiredNamespaces[key].methods,
-                    events: requiredNamespaces[key].events,
-                };
+            navigation.navigate('WalletConnectLogin', {
+                payload: proposal,
+                platform: 'browser',
             });
-            await web3wallet.approveSession({
-                id,
-                relayProtocol: relays[0].protocol,
-                namespaces,
-            });
+            // const namespaces: SessionTypes.Namespaces = {};
+
+            // Object.keys(requiredNamespaces).forEach((key) => {
+            //     const accounts: string[] = [];
+
+            //     requiredNamespaces[key]?.chains?.map((chain) => {
+            //         [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
+            //     });
+            //     console.log('accounts', accounts);
+
+            //     namespaces[key] = {
+            //         // accounts,
+            //         accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
+            //         methods: requiredNamespaces[key].methods,
+            //         events: requiredNamespaces[key].events,
+            //     };
+            // });
+            // await web3wallet.approveSession({
+            //     id,
+            //     relayProtocol: relays[0].protocol,
+            //     namespaces,
+            // });
         }
     }, []);
 

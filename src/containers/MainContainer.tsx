@@ -12,7 +12,7 @@ import { useIsFocused } from '@react-navigation/native';
 import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
-import { _pair } from '../utils/Web3WalletClient';
+import { _pair } from '../services/WalletConnect/Web3WalletClient';
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();

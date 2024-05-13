@@ -1,11 +1,11 @@
-import { EIP155_CHAINS, EIP155_SIGNING_METHODS, TEIP155Chain } from '../data/EIP155';
-import { eip155Wallets } from '../utils/EIP155Wallet';
-import { getWalletAddressFromParams } from './HelperUtils';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS, TEIP155Chain } from './EIP155MethodsAndChain';
+import { eip155Wallets } from './EIP155Wallet';
+import { getWalletAddressFromParams } from './WalletUtils';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import { providers } from 'ethers';
-import { currentETHAddress } from '../utils/Web3WalletClient';
+import { currentETHAddress } from './Web3WalletClient';
 
 export async function approveEIP155Request(requestEvent: SignClientTypes.EventArguments['session_request']) {
     const { params, id } = requestEvent;

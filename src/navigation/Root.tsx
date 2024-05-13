@@ -28,6 +28,7 @@ import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
+import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 
 const prefix = Linking.createURL('');
 
@@ -58,6 +59,7 @@ export type RouteStackParamList = {
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
     SignTransaction: { requestEvent: any; requestSession: any };
+    WalletConnectLogin: { payload: any; platform?: 'mobile' | 'browser' };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -189,6 +191,11 @@ export default function RootNavigation() {
                             name="SignTransaction"
                             options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
                             component={SignTransactionConsentScreen}
+                        />
+                        <Stack.Screen
+                            name="WalletConnectLogin"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={WalletConnectLoginScreen}
                         />
                     </Stack.Navigator>
                 </>

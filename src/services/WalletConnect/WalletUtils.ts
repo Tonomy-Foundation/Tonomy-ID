@@ -1,5 +1,5 @@
 // import {COSMOS_MAINNET_CHAINS, TCosmosChain} from '@/data/COSMOSData';
-import { EIP155_CHAINS, TEIP155Chain } from '../data/EIP155';
+import { EIP155_CHAINS, TEIP155Chain } from './EIP155MethodsAndChain';
 // import {SOLANA_CHAINS, TSolanaChain} from '@/data/SolanaData';
 import 'react-native-get-random-values';
 import '@ethersproject/shims';

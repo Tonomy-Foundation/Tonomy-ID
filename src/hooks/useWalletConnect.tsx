@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { createWeb3Wallet } from '../utils/Web3WalletClient';
+import { createWeb3Wallet } from '../services/WalletConnect/Web3WalletClient';
 
 export default function useInitialization() {
     const [initialized, setInitialized] = useState(false);

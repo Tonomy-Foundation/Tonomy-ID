@@ -8,8 +8,8 @@ import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { Images } from '../assets';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { approveEIP155Request, rejectEIP155Request } from '../utils/EIP155Request';
-import { web3wallet } from '../utils/Web3WalletClient';
+import { approveEIP155Request, rejectEIP155Request } from '../services/WalletConnect/EIP155Request';
+import { web3wallet } from '../services/WalletConnect/Web3WalletClient';
 
 export default function SignTransactionConsentContainer({
     navigation,
