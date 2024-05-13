@@ -61,7 +61,7 @@ export default function MainContainer({ did }: { did?: string }) {
             } else {
                 errorStore.setError({
                     title: 'Invalid QR Code',
-                    error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
+                    error: new Error(`This is not a supported QR code.`),
                     expected: false,
                 });
             }

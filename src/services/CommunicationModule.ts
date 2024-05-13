@@ -188,7 +188,7 @@ export default function CommunicationModule() {
                 });
                 sendWalletConnectNotificationOnBackground(
                     'Transaction Request',
-                    'Transaction request from wallet connect'
+                    'Ethereum transaction signing request'
                 );
 
                 return;
