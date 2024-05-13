@@ -35,17 +35,31 @@ export default function MainContainer({ did }: { did?: string }) {
         }
     }, []);
 
+    useEffect(() => {
+        async function getUpdatedBalance() {
+            const accountName = (await user.getAccountName()).toString();
+
+            const accountBalance = await vestingContract.getBalance(accountName);
+
+            if (balance !== accountBalance) {
+                setBalance(accountBalance);
+            }
+        }
+
+        getUpdatedBalance();
+
+        const interval = setInterval(() => {
+            getUpdatedBalance();
+        }, 20000);
+
+        return () => clearInterval(interval);
+    }, [user, balance, setBalance]);
+
     async function setUserName() {
         try {
             const u = await user.getUsername();
 
             setUsername(u.getBaseUsername());
-            const accountName = (await user.getAccountName()).toString();
-
-            setAccountName(accountName);
-            const accountBalance = await vestingContract.getBalance(accountName);
-
-            setBalance(accountBalance);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
