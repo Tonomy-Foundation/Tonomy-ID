@@ -9,7 +9,8 @@
         "text":"#474D4C",
         "textGray": "#5B6261",
         "linkColor": "#67D7ED",
-        "infoBackground": "#e1f2e2"
+        "infoBackground": "#e1f2e2",
+        "lightBackground": "#F6F9FB"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
     "appName": "Tonomy ID Staging",
