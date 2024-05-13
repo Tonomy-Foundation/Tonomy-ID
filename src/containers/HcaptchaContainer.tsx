@@ -116,6 +116,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             setAccountUrl(url);
         } catch (e) {
+            console.log('EROROROORORORORO');
+
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:

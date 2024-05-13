@@ -56,6 +56,8 @@ export default function LoginPassphraseContainer({
                 throw new Error('Account name not found');
             }
         } catch (e) {
+            console.log('LOGIN ERROR', e);
+
             if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:

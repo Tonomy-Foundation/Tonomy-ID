@@ -9,7 +9,7 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
 import usePassphraseStore from '../store/passphraseStore';
-import { generatePrivateKeyFromPassword } from '../utils/keys';
+import { generatePrivateKeyFromPassword, generatePrivateKeyForEthereum } from '../utils/keys';
 import useUserStore from '../store/userStore';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
@@ -44,6 +44,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
     async function onNext() {
         setLoading(true);
         await user.savePassword(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyFromPassword });
+        await user.saveEthereumKey(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyForEthereum });
         setLoading(false);
         navigation.navigate('ConfirmPassphrase', { index: 0 });
     }

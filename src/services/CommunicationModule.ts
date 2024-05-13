@@ -140,36 +140,11 @@ export default function CommunicationModule() {
     }
 
     const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-        const { id, params } = proposal;
-        const { requiredNamespaces, relays } = params;
-
         if (proposal) {
             navigation.navigate('WalletConnectLogin', {
                 payload: proposal,
                 platform: 'browser',
             });
-            // const namespaces: SessionTypes.Namespaces = {};
-
-            // Object.keys(requiredNamespaces).forEach((key) => {
-            //     const accounts: string[] = [];
-
-            //     requiredNamespaces[key]?.chains?.map((chain) => {
-            //         [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-            //     });
-            //     console.log('accounts', accounts);
-
-            //     namespaces[key] = {
-            //         // accounts,
-            //         accounts: ['eip155:11155111:0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'],
-            //         methods: requiredNamespaces[key].methods,
-            //         events: requiredNamespaces[key].events,
-            //     };
-            // });
-            // await web3wallet.approveSession({
-            //     id,
-            //     relayProtocol: relays[0].protocol,
-            //     namespaces,
-            // });
         }
     }, []);
 
@@ -190,7 +165,6 @@ export default function CommunicationModule() {
                     'Transaction Request',
                     'Ethereum transaction signing request'
                 );
-
                 return;
         }
     }, []);

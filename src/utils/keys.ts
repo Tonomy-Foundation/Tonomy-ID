@@ -48,3 +48,28 @@ export async function generatePrivateKeyFromPassword(
         salt,
     };
 }
+
+export async function generatePrivateKeyForEthereum(
+    password: string,
+    salt?: Checksum256 | undefined,
+    chainId?: string
+): Promise<{ privateKey: PrivateKey; salt: Checksum256 }> {
+    if (!salt) salt = Checksum256.from(randomBytes(32));
+    if (chainId) password = password + chainId;
+    const result = await argon2(password, salt.hexString, {
+        mode: 'argon2id',
+        iterations: 40,
+        memory: 64 * 1024,
+        parallelism: 1,
+        hashLength: 32,
+    });
+
+    const bytes = Bytes.from(result.rawHash, 'hex');
+    const privateKey = new PrivateKey(KeyType.K1, bytes);
+
+    console.log('frontend key', privateKey);
+    return {
+        privateKey,
+        salt,
+    };
+}

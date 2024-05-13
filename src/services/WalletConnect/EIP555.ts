@@ -22,14 +22,17 @@ export default class EIP155Lib {
     static init({ mnemonic }: IInitArgs) {
         const wallet = mnemonic ? Wallet.fromMnemonic(mnemonic) : Wallet.createRandom();
 
+        console.log('wallet', wallet);
         return new EIP155Lib(wallet);
     }
 
     getMnemonic() {
+        console.log('this.wallet.mnemonic.phrase;', this.wallet.mnemonic);
         return this.wallet.mnemonic.phrase;
     }
 
     getAddress() {
+        console.log('this.wallet.mnemonic.phrase;', this.wallet.address);
         return this.wallet.address;
     }
 
