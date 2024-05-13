@@ -7,7 +7,6 @@ export let web3wallet: IWeb3Wallet;
 export let core: ICore;
 export let currentETHAddress: string;
 
-// @ts-expect-error - env is a virtualised module via Babel config.
 import { createOrRestoreEIP155Wallet } from './EIP155Wallet';
 
 export async function createWeb3Wallet() {
@@ -20,7 +19,7 @@ export async function createWeb3Wallet() {
 
     const { eip155Addresses } = await createOrRestoreEIP155Wallet();
 
-    currentETHAddress = '0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'; //eip155Addresses[0];
+    currentETHAddress = eip155Addresses[0];
 
     web3wallet = await Web3Wallet.init({
         core,
