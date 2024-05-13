@@ -178,7 +178,7 @@ export default function MainContainer({ did }: { did?: string }) {
                                     <Text style={styles.balanceView}>
                                         {formatCurrencyValue(balance) || 0} LEOS
                                         <Text style={styles.secondaryColor}>
-                                            (${balance ? formatCurrencyValue(Math.floor(balance * 0.002)) : 0.0})
+                                            (${balance ? formatCurrencyValue(balance * 0.002) : 0.0})
                                         </Text>
                                     </Text>
                                 </View>
