@@ -9,6 +9,6 @@ export function numberToOrdinal(value: number) {
     return screenNumber;
 }
 
-export function formatLEOSAmount(value: number) {
+export function formatCurrencyValue(value: number) {
     return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
