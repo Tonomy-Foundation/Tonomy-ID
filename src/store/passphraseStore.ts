@@ -37,7 +37,7 @@ function generate3PassphraseIndexes(): number[] {
 export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'piano', 'sport'];
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
-    passphraseList: settings.isProduction() ? util.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
+    passphraseList: util.generateRandomKeywords(), // settings.isProduction() ? util.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
     randomWordIndexes: generate3PassphraseIndexes(),
     confirmPassphraseWords: ['', '', ''],
     getPassphrase: () => {
@@ -56,7 +56,7 @@ const usePassphraseStore = create<PassphraseStore>((set, get) => ({
         set({ randomWordIndexes: randomWordIndexesList });
     },
     unsetPassphraseList: () => {
-        set({ passphraseList: settings.isProduction() ? [] : DEFAULT_DEV_PASSPHRASE_LIST });
+        set([]);
     },
     unsetConfirmPassphraseWord: () => {
         set({ confirmPassphraseWords: [] });

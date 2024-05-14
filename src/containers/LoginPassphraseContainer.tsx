@@ -9,10 +9,11 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { AccountType, SdkError, SdkErrors, TonomyUsername, util } from '@tonomy/tonomy-id-sdk';
-import { generatePrivateKeyFromPassword } from '../utils/keys';
+import { generatePrivateKeyForEthereum, generatePrivateKeyFromPassword } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
+import { createWeb3Wallet } from '../services/WalletConnect/Web3WalletClient';
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -44,6 +45,9 @@ export default function LoginPassphraseContainer({
                 passphrase.join(' '),
                 { keyFromPasswordFn: generatePrivateKeyFromPassword }
             );
+            const key = await generatePrivateKeyForEthereum(passphrase.join(' '), username);
+
+            await createWeb3Wallet(key.web3PrivateKey);
 
             if (result?.account_name !== undefined) {
                 setPassphrase(['', '', '', '', '', '']);

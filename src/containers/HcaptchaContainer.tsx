@@ -77,8 +77,14 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     async function setUserName() {
         try {
             const username = await user.getUsername();
+            const baseUsername = username.getBaseUsername();
 
-            setUsername(username.getBaseUsername());
+            setUsername(baseUsername);
+            console.log('username', baseUsername);
+
+            const key = await generatePrivateKeyForEthereum(getPassphrase(), baseUsername);
+
+            await createWeb3Wallet(key.web3PrivateKey);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -101,9 +107,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             unsetConfirmPassphraseWord();
 
             await setUserName();
-            const key = await generatePrivateKeyForEthereum(getPassphrase(), username);
-
-            await createWeb3Wallet(key.web3PrivateKey);
 
             let url;
             const accountName = (await user.getAccountName()).toString();

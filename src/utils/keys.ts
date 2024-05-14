@@ -57,7 +57,6 @@ export async function generatePrivateKeyForEthereum(
 ): Promise<{ privateKey: PrivateKey; salt: Checksum256; web3PrivateKey: string }> {
     if (!salt) salt = Checksum256.from(sha256(accountName));
     if (chainId) password = password + chainId;
-    console.log('password', password);
     const result = await argon2(password, salt.hexString, {
         mode: 'argon2id',
         iterations: 40,
