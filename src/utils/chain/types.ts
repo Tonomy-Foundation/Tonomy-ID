@@ -1,13 +1,3 @@
-import { Repository } from 'typeorm';
-
-interface generateSeedFromPassword {
-    (password: string, salt?: string): Promise<{ privateKey: string; salt: string }>;
-}
-
-interface generatePrivateKeyFromSeed {
-    (seed: string, chain: IChain): Promise<IPrivateKey>;
-}
-
 export enum KeyType {
     'secpk1',
     'ed25519',
