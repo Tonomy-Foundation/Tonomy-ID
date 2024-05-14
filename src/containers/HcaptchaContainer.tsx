@@ -15,6 +15,8 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
+import { generatePrivateKeyForEthereum } from '../utils/keys';
+import { createWeb3Wallet } from '../services/WalletConnect/Web3WalletClient';
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -99,6 +101,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             unsetConfirmPassphraseWord();
 
             await setUserName();
+            const key = await generatePrivateKeyForEthereum(getPassphrase(), username);
+
+            await createWeb3Wallet(key.web3PrivateKey);
+
             let url;
             const accountName = (await user.getAccountName()).toString();
 

@@ -7,6 +7,7 @@ import { providers, Wallet } from 'ethers';
  */
 interface IInitArgs {
     mnemonic?: string;
+    privateKey?: string;
 }
 
 /**
@@ -19,8 +20,8 @@ export default class EIP155Lib {
         this.wallet = wallet;
     }
 
-    static init({ mnemonic }: IInitArgs) {
-        const wallet = mnemonic ? Wallet.fromMnemonic(mnemonic) : Wallet.createRandom();
+    static init({ privateKey }: IInitArgs) {
+        const wallet = privateKey ? new Wallet(privateKey) : Wallet.createRandom();
 
         console.log('wallet', wallet);
         return new EIP155Lib(wallet);

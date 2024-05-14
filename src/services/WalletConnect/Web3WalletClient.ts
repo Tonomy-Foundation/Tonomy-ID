@@ -2,6 +2,9 @@ import { Core } from '@walletconnect/core';
 import { ICore } from '@walletconnect/types';
 import { Web3Wallet, IWeb3Wallet } from '@walletconnect/web3wallet';
 import settings from '../../settings';
+import Web3 from 'web3';
+
+const web3 = new Web3('http://localhost:8545');
 
 export let web3wallet: IWeb3Wallet;
 export let core: ICore;
@@ -9,7 +12,7 @@ export let currentETHAddress: string;
 
 import { createOrRestoreEIP155Wallet } from './EIP155Wallet';
 
-export async function createWeb3Wallet() {
+export async function createWeb3Wallet(web3key: string) {
     core = new Core({
         // @notice: If you want the debugger / logs
         // logger: 'debug',
@@ -17,9 +20,14 @@ export async function createWeb3Wallet() {
         relayUrl: 'wss://relay.walletconnect.com',
     });
 
-    const { eip155Addresses } = await createOrRestoreEIP155Wallet();
+    if (web3key) {
+        console.log('web3key', web3key);
+        const account = web3.eth.accounts.privateKeyToAccount(web3key);
 
-    currentETHAddress = eip155Addresses[0];
+        currentETHAddress = account.address;
+    }
+
+    console.log('currentETHAddress', currentETHAddress);
 
     web3wallet = await Web3Wallet.init({
         core,
