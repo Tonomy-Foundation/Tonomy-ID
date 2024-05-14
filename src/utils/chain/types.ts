@@ -140,6 +140,7 @@ export interface ITransaction {
     getType(): Promise<TransactionType>;
     getFrom(): IAccount;
     getTo(): IAccount;
+    getValue(): Promise<number>;
     getFunction(): Promise<string>;
     getArguments(): Promise<Record<string, string>>;
     estimateTransactionFee(): Promise<number>;

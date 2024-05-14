@@ -7,6 +7,7 @@ import {
     JsonRpcProvider,
     TransactionReceipt,
     computeAddress,
+    Interface,
 } from 'ethers';
 import {
     IPrivateKey,
@@ -133,7 +134,7 @@ class ETHToken extends AbstractToken {
 class EthereumTransaction implements ITransaction {
     private transaction: TransactionRequest;
     private type?: TransactionType;
-    private abi?: unknown;
+    private abi?: string;
 
     constructor(transaction: TransactionRequest) {
         this.transaction = transaction;
@@ -149,7 +150,7 @@ class EthereumTransaction implements ITransaction {
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
         const isContract = await this.getTo().isContract();
-        const isValuable = formatEther(this.transaction.value || 0) !== '0.0';
+        const isValuable = (await this.getValue()) > 0;
 
         if (isContract && this.transaction.data) {
             if (isValuable) {
@@ -177,7 +178,7 @@ class EthereumTransaction implements ITransaction {
 
         return new EthereumAccount(this.transaction.to.toString());
     }
-    async fetchAbi(): Promise<unknown> {
+    async fetchAbi(): Promise<string> {
         if ((await this.getType()) === TransactionType.transfer) {
             throw new Error('Not a contract call');
         }
@@ -192,20 +193,39 @@ class EthereumTransaction implements ITransaction {
             throw new Error('Failed to fetch ABI');
         }
 
-        this.abi = res.abi;
+        this.abi = res.abi as string;
+        return this.abi;
     }
     async getFunction(): Promise<string> {
         const abi = await this.fetchAbi();
 
-        // TODO
+        if (!this.transaction.data) throw new Error('Transaction has no data');
+        const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
+
+        if (!decodedData?.name) throw new Error('Failed to decode function name');
+        return decodedData.name;
     }
-    async getArguments(): Record<string, string> {
+    async getArguments(): Promise<Record<string, string>> {
         const abi = await this.fetchAbi();
 
-        // TODO
+        if (!this.transaction.data) throw new Error('Transaction has no data');
+        const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
+
+        if (!decodedData?.args) throw new Error('Failed to decode function name');
+        return decodedData.args;
     }
-    estimateTransactionFee(): Promise<number>;
-    estimateTransactionTotal(): Promise<number>;
+    async getValue(): Promise<number> {
+        return parseFloat(formatEther(this.transaction.value || 0));
+    }
+    async estimateTransactionFee(): Promise<number> {
+        const wei = await provider.estimateGas(this.transaction);
+        const ether = formatEther(wei);
+
+        return parseFloat(ether);
+    }
+    async estimateTransactionTotal(): Promise<number> {
+        return (await this.getValue()) + (await this.estimateTransactionFee());
+    }
 }
 
 class EthereumAccount extends AbstractAccount {
