@@ -68,7 +68,6 @@ export async function generatePrivateKeyForEthereum(
     const bytes = Bytes.from(result.rawHash, 'hex');
     const privateKey = new PrivateKey(KeyType.K1, bytes);
 
-    console.log('frontend key', privateKey);
     return {
         privateKey,
         salt,

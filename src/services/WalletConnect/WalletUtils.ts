@@ -83,20 +83,6 @@ export function isEIP155Chain(chain: string) {
 }
 
 /**
- * Check if chain is part of COSMOS standard
- */
-export function isCosmosChain(chain: string) {
-    return chain.includes('cosmos');
-}
-
-/**
- * Check if chain is part of SOLANA standard
- */
-export function isSolanaChain(chain: string) {
-    return chain.includes('solana');
-}
-
-/**
  * Formats chainId to its name
  */
 export function formatChainName(chainId: string) {

@@ -10,14 +10,12 @@ export default function useInitialization() {
     const userStore = useUserStore();
     const user = userStore.user;
 
-    console.log('getPassphrase', getPassphrase());
     const onInitialize = useCallback(async () => {
         try {
             const u = await user.getUsername();
 
             const username = u.getBaseUsername();
 
-            console.log('username', username);
             if (username) {
                 const key = await generatePrivateKeyForEthereum(getPassphrase(), username); //TODO update this
 

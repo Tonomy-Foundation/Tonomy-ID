@@ -10,8 +10,6 @@ export let web3wallet: IWeb3Wallet;
 export let core: ICore;
 export let currentETHAddress: string;
 
-import { createOrRestoreEIP155Wallet } from './EIP155Wallet';
-
 export async function createWeb3Wallet(web3key: string) {
     core = new Core({
         // @notice: If you want the debugger / logs
@@ -21,13 +19,10 @@ export async function createWeb3Wallet(web3key: string) {
     });
 
     if (web3key) {
-        console.log('web3key', web3key);
         const account = web3.eth.accounts.privateKeyToAccount(web3key);
 
         currentETHAddress = account.address;
     }
-
-    console.log('currentETHAddress', currentETHAddress);
 
     web3wallet = await Web3Wallet.init({
         core,
@@ -41,6 +36,5 @@ export async function createWeb3Wallet(web3key: string) {
 }
 
 export async function _pair(params: { uri: string }) {
-    console.log('param uri', await core.pairing.pair({ uri: params.uri }));
     return await core.pairing.pair({ uri: params.uri });
 }
