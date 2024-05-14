@@ -130,6 +130,22 @@ export interface IAccount {
     sendTransaction(transaction: unknown): Promise<unknown>;
 }
 
+export enum TransactionType {
+    'contract',
+    'transfer',
+    'both',
+}
+
+export interface ITransaction {
+    getType(): Promise<TransactionType>;
+    getFrom(): IAccount;
+    getTo(): IAccount;
+    getFunction(): Promise<string>;
+    getArguments(): Promise<Record<string, string>>;
+    estimateTransactionFee(): Promise<number>;
+    estimateTransactionTotal(): Promise<number>;
+}
+
 export abstract class AbstractAccount implements IAccount {
     protected abstract name: string;
     protected abstract did: string;
