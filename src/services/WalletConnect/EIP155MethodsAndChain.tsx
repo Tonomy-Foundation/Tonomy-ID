@@ -37,6 +37,5 @@ export const EIP155_CHAINS = { ...EIP155_MAINNET_CHAINS, ...EIP155_TEST_CHAINS }
  * Methods
  */
 export const EIP155_SIGNING_METHODS = {
-    PERSONAL_SIGN: 'personal_sign',
     ETH_SEND_TRANSACTION: 'eth_sendTransaction',
 };
