@@ -167,7 +167,7 @@ class EthereumTransaction implements ITransaction {
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
         const isContract = await this.getTo().isContract();
-        const isValuable = (await this.getValue()) > 0;
+        const isValuable = (await this.getValue()).getAmount() > BigInt(0);
 
         if (isContract && this.transaction.data) {
             if (isValuable) {
@@ -269,9 +269,7 @@ class EthereumAccount extends AbstractAccount {
     }
 
     async fromPublicKey(publicKey: EthereumPublicKey): Promise<EthereumAccount> {
-        const address = computeAddress(publicKey.toString());
-
-        return new EthereumAccount(address);
+        return new EthereumAccount(await publicKey.getAddress());
     }
 
     async getTokens(): Promise<IToken[]> {
