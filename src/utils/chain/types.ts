@@ -1,3 +1,5 @@
+// TODO: replace key with @veramo/key-manager IKeyManager
+
 export enum KeyType {
     'secpk1',
     'ed25519',
@@ -53,6 +55,42 @@ export abstract class AbstractChain {
     }
 }
 
+export interface IAsset {
+    getToken(): IToken;
+    getAmount(): bigint;
+    getUsdValue(): Promise<number>;
+    getSymbol(): string;
+    getPrecision(): number;
+    toString(): string;
+}
+
+export abstract class AbstractAsset implements IAsset {
+    protected abstract token: IToken;
+    protected abstract amount: bigint;
+
+    getToken(): IToken {
+        return this.token;
+    }
+    getAmount(): bigint {
+        return this.amount;
+    }
+    abstract getUsdValue(): Promise<number>;
+    getSymbol(): string {
+        return this.token.getSymbol();
+    }
+    getPrecision(): number {
+        return this.token.getPrecision();
+    }
+    printValue(): string {
+        const value = this.amount / BigInt(10 ** this.token.getPrecision());
+
+        return value.toString();
+    }
+    toString(): string {
+        return `${this.printValue()} ${this.token.getSymbol()}`;
+    }
+}
+
 export interface IToken {
     // initialize with an account to easily get balance and usd value
     withAccount(account: IAccount): IToken;
@@ -65,7 +103,7 @@ export interface IToken {
     getContractAccount(): IAccount | undefined;
     getLogoUrl(): string;
     getAccount(): IAccount | undefined;
-    getBalance(account?: IAccount): Promise<number>;
+    getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
 }
 
