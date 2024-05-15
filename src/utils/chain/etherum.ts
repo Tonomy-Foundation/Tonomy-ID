@@ -20,8 +20,9 @@ import {
     AbstractPublicKey,
     AbstractPrivateKey,
     AbstractAsset,
+    IPrivateKey,
 } from './types';
-import { IKeyManager } from '@veramo/core-types';
+import { TKeyType } from '@veramo/core';
 
 const ETHERSCAN_API_KEY = 'your-etherscan-api-key';
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -38,37 +39,24 @@ export async function getPrice(token: string, currency: string): Promise<number>
     return res.ethereum.usd;
 }
 
-export class EthereumPublicKey extends AbstractPublicKey {
+export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
     async getAddress(): Promise<string> {
         return computeAddress(await this.toString());
     }
 }
 
-export class EthereumPrivateKey extends AbstractPrivateKey {
+export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKey {
     private signingKey: SigningKey;
     private wallet: Wallet;
-    protected kid: string;
-    protected keyManager: IKeyManager;
 
-    constructor(keyManager: IKeyManager, kid: string, signingKey: SigningKey) {
-        super();
-        this.keyManager = keyManager;
-        this.kid = kid;
-        this.signingKey = signingKey;
+    constructor(privateKeyHex: string) {
+        super(privateKeyHex, 'Secp256k1');
+        this.signingKey = new SigningKey(privateKeyHex);
         this.wallet = new Wallet(this.signingKey, provider);
     }
 
-    static async initialize(keyManager: IKeyManager, kid: string): Promise<EthereumPrivateKey> {
-        const privateKey = (await keyManager.keyManagerGet({ kid })).privateKeyHex;
-
-        if (!privateKey) throw new Error('Private key not found');
-        const signingKey = new SigningKey(privateKey);
-
-        return new EthereumPrivateKey(keyManager, kid, signingKey);
-    }
-
-    async getPublicKey(): Promise<IPublicKey> {
-        return new EthereumPublicKey(await this.getKey());
+    async getPublicKey(): Promise<EthereumPublicKey> {
+        return new EthereumPublicKey(await this.signingKey.publicKey.toString(), this.type);
     }
 
     async getAddress(): Promise<string> {
@@ -92,7 +80,6 @@ export class EthereumChain extends AbstractChain {
     protected name = 'Ethereum';
     protected chainId = '1';
     protected logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
-    protected apiEndpoint = new URL(INFURA_URL).origin;
     protected nativeToken = new ETHToken();
 }
 

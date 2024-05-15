@@ -2,10 +2,6 @@ import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 import { EthereumPrivateKey, EthereumAccount } from './chain/etherum';
-import { DataSource } from 'typeorm';
-import { KeyManagementSystem, SecretBox } from '@veramo/kms-local';
-import { KeyManager } from '@veramo/key-manager';
-import { Entities, KeyStore, migrations, PrivateKeyStore } from '@veramo/data-store';
 import { Wallet } from 'ethers';
 
 /**
@@ -31,30 +27,12 @@ export async function testKeyGenerator() {
 
         console.log('testing Chain libraries');
         // create EthereumPrivateKey and EthereumAccount
-        const dbConnection = new DataSource({
-            type: 'expo',
-            driver: require('expo-sqlite'),
-            database: 'veramo.sqlite',
-            migrations: migrations,
-            migrationsRun: true,
-            logging: ['error', 'info', 'warn'],
-            entities: Entities,
-        }).initialize();
+        const privateKeyEth = new EthereumPrivateKey(
+            Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
+        );
+        const ethereumAccount = new EthereumAccount(await privateKeyEth.getAddress(), privateKeyEth);
 
-        const DB_ENCRYPTION_KEY = 'test';
-
-        const kid = 'testing';
-        const key = Wallet.createRandom().privateKey;
-        const keyManager = new KeyManager({
-            store: new KeyStore(dbConnection),
-            kms: {
-                local: new KeyManagementSystem(new PrivateKeyStore(dbConnection, new SecretBox(DB_ENCRYPTION_KEY))),
-            },
-        });
-
-        keyManager.keyManagerCreate({ type: 'Secp256k1', kms: 'local', meta: { encryption: ['ECDH-ES'] } });
-        keyManager.keyManagerImport({ type: 'Secp256k1', kms: 'local', privateKeyHex: key, kid });
-        const ethPrivateKey = EthereumPrivateKey.initialize(keyManager, kid);
+        console.log('ethereumAccount:', ethereumAccount.getName());
     } catch (e) {
         console.error(e);
     }

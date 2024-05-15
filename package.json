@@ -32,10 +32,6 @@
         "@react-navigation/native-stack": "^6.8.0",
         "@tonomy/tonomy-id-sdk": "0.20.1",
         "@veramo/core": "^6.0.0",
-        "@veramo/core-types": "^6.0.0",
-        "@veramo/data-store": "^6.0.0",
-        "@veramo/key-manager": "^6.0.0",
-        "@veramo/kms-local": "^6.0.0",
         "@wharfkit/antelope": "^0.7.1",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
@@ -68,7 +64,6 @@
         "react-native-svg": "13.9.0",
         "react-native-web": "~0.19.6",
         "react-native-webview": "13.2.2",
-        "typeorm": "^0.3.20",
         "zustand": "^3.7.2"
     },
     "devDependencies": {

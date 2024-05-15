@@ -1,31 +1,26 @@
 import { TKeyType } from '@veramo/core';
-import { IKey, IKeyManager } from '@veramo/core-types';
 
 export type KeyFormat = string | 'hex' | 'base64' | 'base58' | 'wif';
-
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
     toString(format?: KeyFormat): Promise<string>;
 }
 
 export abstract class AbstractPublicKey implements IPublicKey {
-    protected key: IKey;
+    protected publicKeyHex: string;
+    protected type: TKeyType;
 
-    constructor(key: IKey) {
-        this.key = { ...key };
-        delete this.key.privateKeyHex;
-    }
-
-    protected async getKey(): Promise<IKey> {
-        return this.key;
+    constructor(publicKeyHex: string, type: TKeyType) {
+        this.publicKeyHex = publicKeyHex;
+        this.type = type;
     }
 
     async getType(): Promise<TKeyType> {
-        return (await this.getKey()).type;
+        return this.type;
     }
 
     async toString(format?: KeyFormat): Promise<string> {
-        return (await this.getKey()).publicKeyHex;
+        return this.publicKeyHex;
     }
 }
 
@@ -36,23 +31,16 @@ export interface IPrivateKey {
 }
 
 export abstract class AbstractPrivateKey implements IPrivateKey {
-    protected abstract kid: string;
-    protected abstract keyManager: IKeyManager;
+    protected privateKeyHex: string;
+    protected type: TKeyType;
 
-    getKid(): string {
-        return this.kid;
-    }
-
-    protected getKey(): Promise<IKey> {
-        return this.getKeyManager().keyManagerGet({ kid: this.getKid() });
-    }
-
-    protected getKeyManager(): IKeyManager {
-        return this.keyManager;
+    constructor(privateKeyHex: string, type: TKeyType) {
+        this.privateKeyHex = privateKeyHex;
+        this.type = type;
     }
 
     async getType(): Promise<TKeyType> {
-        return (await this.getKey()).type;
+        return this.type;
     }
 
     abstract getPublicKey(): Promise<IPublicKey>;
