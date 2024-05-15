@@ -1,7 +1,12 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import { IChain, IPrivateKey } from './chain/types';
+import { EthereumPrivateKey, EthereumAccount } from './chain/etherum';
+import { DataSource } from 'typeorm';
+import { KeyManagementSystem, SecretBox } from '@veramo/kms-local';
+import { KeyManager } from '@veramo/key-manager';
+import { Entities, KeyStore, migrations, PrivateKeyStore } from '@veramo/data-store';
+import { Wallet } from 'ethers';
 
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
@@ -23,6 +28,33 @@ export async function testKeyGenerator() {
             throw new Error('generatePrivateKeyFromPassword() test: Salt is not correct');
         if (privateKey.toString() !== 'PVT_K1_q4BZoScNYFCF5tDthn4m5KUgv9LLH4fTNtMFj3FUkG3p7UA4D')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
+
+        console.log('testing Chain libraries');
+        // create EthereumPrivateKey and EthereumAccount
+        const dbConnection = new DataSource({
+            type: 'expo',
+            driver: require('expo-sqlite'),
+            database: 'veramo.sqlite',
+            migrations: migrations,
+            migrationsRun: true,
+            logging: ['error', 'info', 'warn'],
+            entities: Entities,
+        }).initialize();
+
+        const DB_ENCRYPTION_KEY = 'test';
+
+        const kid = 'testing';
+        const key = Wallet.createRandom().privateKey;
+        const keyManager = new KeyManager({
+            store: new KeyStore(dbConnection),
+            kms: {
+                local: new KeyManagementSystem(new PrivateKeyStore(dbConnection, new SecretBox(DB_ENCRYPTION_KEY))),
+            },
+        });
+
+        keyManager.keyManagerCreate({ type: 'Secp256k1', kms: 'local', meta: { encryption: ['ECDH-ES'] } });
+        keyManager.keyManagerImport({ type: 'Secp256k1', kms: 'local', privateKeyHex: key, kid });
+        const ethPrivateKey = EthereumPrivateKey.initialize(keyManager, kid);
     } catch (e) {
         console.error(e);
     }
@@ -56,9 +88,9 @@ async function generateSeedFromPassword(password: string, salt?: string): Promis
     return { seed: result.rawHash as string, salt };
 }
 
-async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
-    const chainSeed = sha256(seed + chain.getChainId());
+// async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
+//     const chainSeed = sha256(seed + chain.getChainId());
 
-    // create privateKey from chainSeed
-    // return privateKey
-}
+//     // create privateKey from chainSeed
+//     // return privateKey
+// }

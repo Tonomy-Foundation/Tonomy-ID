@@ -56,8 +56,6 @@ export abstract class AbstractPrivateKey implements IPrivateKey {
     }
 
     abstract getPublicKey(): Promise<IPublicKey>;
-    // return new AbstractPublicKey(await this.getKey());
-
     abstract signTransaction(transaction: unknown): Promise<unknown>;
 }
 

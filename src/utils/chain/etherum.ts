@@ -2,7 +2,6 @@ import {
     SigningKey,
     Wallet,
     TransactionResponse,
-    formatEther,
     TransactionRequest,
     JsonRpcProvider,
     TransactionReceipt,
@@ -31,7 +30,7 @@ const INFURA_KEY = 'your-infura-id';
 const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_KEY}`;
 const provider = new JsonRpcProvider(INFURA_URL);
 
-async function getPrice(token: string, currency: string): Promise<number> {
+export async function getPrice(token: string, currency: string): Promise<number> {
     const res = await fetch(
         `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
     ).then((res) => res.json());
@@ -59,7 +58,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey {
         this.wallet = new Wallet(this.signingKey, provider);
     }
 
-    async initialize(keyManager: IKeyManager, kid: string): Promise<EthereumPrivateKey> {
+    static async initialize(keyManager: IKeyManager, kid: string): Promise<EthereumPrivateKey> {
         const privateKey = (await keyManager.keyManagerGet({ kid })).privateKeyHex;
 
         if (!privateKey) throw new Error('Private key not found');
@@ -89,7 +88,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey {
     }
 }
 
-class EthereumChain extends AbstractChain {
+export class EthereumChain extends AbstractChain {
     protected name = 'Ethereum';
     protected chainId = '1';
     protected logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
@@ -97,7 +96,7 @@ class EthereumChain extends AbstractChain {
     protected nativeToken = new ETHToken();
 }
 
-class ETHAsset extends AbstractAsset {
+export class ETHAsset extends AbstractAsset {
     protected token: IToken;
     protected amount: bigint;
 
@@ -115,7 +114,7 @@ class ETHAsset extends AbstractAsset {
     }
 }
 
-class ETHToken extends AbstractToken {
+export class ETHToken extends AbstractToken {
     protected name = 'Ether';
     protected symbol = 'ETH';
     protected precision = 18;
@@ -148,7 +147,7 @@ class ETHToken extends AbstractToken {
     }
 }
 
-class EthereumTransaction implements ITransaction {
+export class EthereumTransaction implements ITransaction {
     private transaction: TransactionRequest;
     private type?: TransactionType;
     private abi?: string;
@@ -246,7 +245,7 @@ class EthereumTransaction implements ITransaction {
     }
 }
 
-class EthereumAccount extends AbstractAccount {
+export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
     protected name: string;
     protected did: string;
