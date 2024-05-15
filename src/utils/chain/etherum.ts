@@ -10,10 +10,10 @@ import {
     Interface,
 } from 'ethers';
 import {
-    IPrivateKey,
-    IPublicKey,
-    KeyType,
-    KeyFormat,
+    // IPrivateKey,
+    // IPublicKey,
+    // KeyType,
+    // KeyFormat,
     IToken,
     TransactionType,
     AbstractChain,

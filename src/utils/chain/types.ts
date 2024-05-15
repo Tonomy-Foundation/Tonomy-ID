@@ -1,33 +1,68 @@
-// TODO: replace key with @veramo/key-manager IKeyManager
+// Lets use this for key management:
+// import { AbstractKeyManagementSystem } from '@veramo/key-manager';
+import { TKeyType } from '@veramo/core';
+import { IKey, IKeyManager } from '@veramo/core-types';
 
-export enum KeyType {
-    'secpk1',
-    'ed25519',
-}
-
-export enum KeyFormat {
-    'pem',
-    'jwk',
-    'hex',
-}
+type KeyFormat = string | 'hex' | 'base64' | 'base58' | 'wif';
 
 export interface IPublicKey {
-    getType(): KeyType;
-    toString(format?: KeyFormat): string;
+    getType(): Promise<TKeyType>;
+    toString(format?: KeyFormat): Promise<string>;
+}
+
+export abstract class AbstractPublicKey implements IPublicKey {
+    protected key: IKey;
+
+    constructor(key: IKey) {
+        this.key = key;
+    }
+
+    protected async getKey(): Promise<IKey> {
+        return this.key;
+    }
+
+    async getType(): Promise<TKeyType> {
+        return (await this.getKey()).type;
+    }
+
+    async toString(format?: KeyFormat): Promise<string> {
+        return (await this.getKey()).publicKeyHex;
+    }
 }
 
 export interface IPrivateKey {
-    getType(): KeyType;
-    toString(format?: KeyFormat): string;
-    getPublicKey(): IPublicKey;
+    getType(): Promise<TKeyType>;
+    getPublicKey(): Promise<IPublicKey>;
     signTransaction(transaction: unknown): Promise<unknown>;
+}
+
+export abstract class AbstractPrivateKey implements IPrivateKey {
+    protected abstract kid: string;
+    abstract keyManager: IKeyManager;
+
+    protected getKey(): Promise<IKey> {
+        return this.getKeyManager().keyManagerGet({ kid: this.kid });
+    }
+
+    protected getKeyManager(): IKeyManager {
+        return this.keyManager;
+    }
+
+    async getType(): Promise<TKeyType> {
+        return (await this.getKey()).type;
+    }
+
+    abstract getPublicKey(): Promise<IPublicKey>;
+    // return new AbstractPublicKey(await this.getKey());
+
+    abstract signTransaction(transaction: unknown): Promise<unknown>;
 }
 
 export interface IChain {
     getName(): string;
     getChainId(): string;
     getLogoUrl(): string;
-    getApiEndpoint(): string;
+    // getApiEndpoint(): string;
     getNativeToken(): IToken;
 }
 
@@ -35,7 +70,6 @@ export abstract class AbstractChain {
     protected abstract name: string;
     protected abstract chainId: string;
     protected abstract logoUrl: string;
-    protected abstract apiEndpoint: string;
     protected abstract nativeToken: IToken;
 
     getName(): string {
@@ -46,9 +80,6 @@ export abstract class AbstractChain {
     }
     getLogoUrl(): string {
         return this.logoUrl;
-    }
-    getApiEndpoint(): string {
-        return this.apiEndpoint;
     }
     getNativeToken(): IToken {
         return this.nativeToken;
@@ -62,6 +93,17 @@ export interface IAsset {
     getSymbol(): string;
     getPrecision(): number;
     toString(): string;
+    /*
+    gt(other: IAsset): boolean;
+    gte(other: IAsset): boolean;
+    lt(other: IAsset): boolean;
+    lte(other: IAsset): boolean;
+    eq(other: IAsset): boolean;
+    add(other: IAsset): IAsset;
+    sub(other: IAsset): IAsset;
+    mul(other: IAsset): IAsset;
+    div(other: IAsset): IAsset;
+    */
 }
 
 export abstract class AbstractAsset implements IAsset {
@@ -139,20 +181,20 @@ export abstract class AbstractToken implements IToken {
     getAccount(): IAccount | undefined {
         return this.account;
     }
-    abstract getBalance(account?: IAccount): Promise<number>;
+    abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
 }
 
 export interface IAccount {
     // initialize from private key + optional account name
-    fromPrivateKey(options): Promise<IAccount>;
+    fromPrivateKey(options: unknown): Promise<IAccount>;
 
     getName(): string;
     getDid(): string;
     getChain(): IChain;
     getNativeToken(): IToken;
     getTokens(): Promise<IToken[]>;
-    getBalance(token: IToken): Promise<number>;
+    getBalance(token: IToken): Promise<IAsset>;
     signTransaction(transaction: unknown): Promise<unknown>;
     sendSignedTransaction(signedTransaction: unknown): Promise<unknown>;
     sendTransaction(transaction: unknown): Promise<unknown>;
@@ -168,11 +210,11 @@ export interface ITransaction {
     getType(): Promise<TransactionType>;
     getFrom(): IAccount;
     getTo(): IAccount;
-    getValue(): Promise<number>;
+    getValue(): Promise<IAsset>;
     getFunction(): Promise<string>;
     getArguments(): Promise<Record<string, string>>;
-    estimateTransactionFee(): Promise<number>;
-    estimateTransactionTotal(): Promise<number>;
+    estimateTransactionFee(): Promise<IAsset>;
+    estimateTransactionTotal(): Promise<IAsset>;
 }
 
 export abstract class AbstractAccount implements IAccount {
@@ -197,7 +239,7 @@ export abstract class AbstractAccount implements IAccount {
         return this.nativeToken;
     }
     abstract getTokens(): Promise<IToken[]>;
-    getBalance(token: IToken): Promise<number> {
+    getBalance(token: IToken): Promise<IAsset> {
         return token.getBalance(this);
     }
     abstract signTransaction(transaction: unknown): Promise<unknown>;
