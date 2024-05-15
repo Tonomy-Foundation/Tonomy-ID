@@ -1,9 +1,7 @@
-// Lets use this for key management:
-// import { AbstractKeyManagementSystem } from '@veramo/key-manager';
 import { TKeyType } from '@veramo/core';
 import { IKey, IKeyManager } from '@veramo/core-types';
 
-type KeyFormat = string | 'hex' | 'base64' | 'base58' | 'wif';
+export type KeyFormat = string | 'hex' | 'base64' | 'base58' | 'wif';
 
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
@@ -14,7 +12,8 @@ export abstract class AbstractPublicKey implements IPublicKey {
     protected key: IKey;
 
     constructor(key: IKey) {
-        this.key = key;
+        this.key = { ...key };
+        delete this.key.privateKeyHex;
     }
 
     protected async getKey(): Promise<IKey> {
@@ -38,10 +37,14 @@ export interface IPrivateKey {
 
 export abstract class AbstractPrivateKey implements IPrivateKey {
     protected abstract kid: string;
-    abstract keyManager: IKeyManager;
+    protected abstract keyManager: IKeyManager;
+
+    getKid(): string {
+        return this.kid;
+    }
 
     protected getKey(): Promise<IKey> {
-        return this.getKeyManager().keyManagerGet({ kid: this.kid });
+        return this.getKeyManager().keyManagerGet({ kid: this.getKid() });
     }
 
     protected getKeyManager(): IKeyManager {

@@ -10,10 +10,7 @@ import {
     Interface,
 } from 'ethers';
 import {
-    // IPrivateKey,
-    // IPublicKey,
-    // KeyType,
-    // KeyFormat,
+    IPublicKey,
     IToken,
     TransactionType,
     AbstractChain,
@@ -21,7 +18,11 @@ import {
     IAccount,
     AbstractAccount,
     ITransaction,
+    AbstractPublicKey,
+    AbstractPrivateKey,
+    AbstractAsset,
 } from './types';
+import { IKeyManager } from '@veramo/core-types';
 
 const ETHERSCAN_API_KEY = 'your-etherscan-api-key';
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -30,47 +31,49 @@ const INFURA_KEY = 'your-infura-id';
 const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_KEY}`;
 const provider = new JsonRpcProvider(INFURA_URL);
 
-export class EthereumPublicKey implements IPublicKey {
-    private publicKey: string;
+async function getPrice(token: string, currency: string): Promise<number> {
+    const res = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
+    ).then((res) => res.json());
 
-    constructor(publicKey: string) {
-        this.publicKey = publicKey;
-    }
+    return res.ethereum.usd;
+}
 
-    getType(): KeyType {
-        return KeyType.secpk1;
-    }
-
-    toString(format?: KeyFormat): string {
-        return this.publicKey;
+export class EthereumPublicKey extends AbstractPublicKey {
+    async getAddress(): Promise<string> {
+        return computeAddress(await this.toString());
     }
 }
 
-export class EthereumPrivateKey implements IPrivateKey {
-    private privateKey: SigningKey;
+export class EthereumPrivateKey extends AbstractPrivateKey {
+    private signingKey: SigningKey;
     private wallet: Wallet;
+    protected kid: string;
+    protected keyManager: IKeyManager;
 
-    constructor(key: string | SigningKey) {
-        if (typeof key === 'string' && !key.startsWith('0x')) {
-            key = '0x' + key;
-        }
-
-        const signingKey = typeof key === 'string' ? new SigningKey(key) : key;
-
-        this.privateKey = signingKey;
-        this.wallet = new Wallet(signingKey, provider);
+    constructor(keyManager: IKeyManager, kid: string, signingKey: SigningKey) {
+        super();
+        this.keyManager = keyManager;
+        this.kid = kid;
+        this.signingKey = signingKey;
+        this.wallet = new Wallet(this.signingKey, provider);
     }
 
-    getType(): KeyType {
-        return KeyType.secpk1;
+    async initialize(keyManager: IKeyManager, kid: string): Promise<EthereumPrivateKey> {
+        const privateKey = (await keyManager.keyManagerGet({ kid })).privateKeyHex;
+
+        if (!privateKey) throw new Error('Private key not found');
+        const signingKey = new SigningKey(privateKey);
+
+        return new EthereumPrivateKey(keyManager, kid, signingKey);
     }
 
-    toString(format?: KeyFormat): string {
-        return this.privateKey.privateKey;
+    async getPublicKey(): Promise<IPublicKey> {
+        return new EthereumPublicKey(await this.getKey());
     }
 
-    getPublicKey(): IPublicKey {
-        return new EthereumPublicKey(this.privateKey.publicKey);
+    async getAddress(): Promise<string> {
+        return computeAddress(this.signingKey);
     }
 
     async signTransaction(transaction: TransactionRequest): Promise<string> {
@@ -94,6 +97,24 @@ class EthereumChain extends AbstractChain {
     protected nativeToken = new ETHToken();
 }
 
+class ETHAsset extends AbstractAsset {
+    protected token: IToken;
+    protected amount: bigint;
+
+    constructor(token: IToken, amount: bigint) {
+        super();
+        this.token = token;
+        this.amount = amount;
+    }
+
+    async getUsdValue(): Promise<number> {
+        const price = await getPrice('ethereum', 'usd');
+        const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
+
+        return parseFloat(usdValue.toString());
+    }
+}
+
 class ETHToken extends AbstractToken {
     protected name = 'Ether';
     protected symbol = 'ETH';
@@ -101,15 +122,13 @@ class ETHToken extends AbstractToken {
     protected chain = new EthereumChain();
     protected logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
 
-    getUsdPrice(): Promise<number> {
-        return fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
-            .then((res) => res.json())
-            .then((data) => data.ethereum.usd);
+    async getUsdPrice(): Promise<number> {
+        return await getPrice('ethereum', 'usd');
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
     }
-    async getBalance(account?: IAccount): Promise<number> {
+    async getBalance(account?: IAccount): Promise<ETHAsset> {
         const lookupAccount: IAccount =
             account ||
             this.account ||
@@ -118,16 +137,14 @@ class ETHToken extends AbstractToken {
             })();
 
         const balanceWei = await provider.getBalance(lookupAccount.getName() || '');
-        const balanceEther = formatEther(balanceWei);
 
-        return parseFloat(balanceEther);
+        return new ETHAsset(this, balanceWei);
     }
 
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
-        const usdPrice = await this.getUsdPrice();
 
-        return balance * usdPrice;
+        return balance.getUsdValue();
     }
 }
 
@@ -214,17 +231,18 @@ class EthereumTransaction implements ITransaction {
         if (!decodedData?.args) throw new Error('Failed to decode function name');
         return decodedData.args;
     }
-    async getValue(): Promise<number> {
-        return parseFloat(formatEther(this.transaction.value || 0));
+    async getValue(): Promise<ETHAsset> {
+        return new ETHAsset(new ETHToken(), BigInt(this.transaction.value || 0));
     }
-    async estimateTransactionFee(): Promise<number> {
+    async estimateTransactionFee(): Promise<ETHAsset> {
         const wei = await provider.estimateGas(this.transaction);
-        const ether = formatEther(wei);
 
-        return parseFloat(ether);
+        return new ETHAsset(new ETHToken(), wei);
     }
-    async estimateTransactionTotal(): Promise<number> {
-        return (await this.getValue()) + (await this.estimateTransactionFee());
+    async estimateTransactionTotal(): Promise<ETHAsset> {
+        const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
+
+        return new ETHAsset(new ETHToken(), amount);
     }
 }
 
