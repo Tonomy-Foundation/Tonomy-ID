@@ -287,7 +287,9 @@ export class EthereumAccount extends AbstractAccount {
             const code = await provider.getCode(this.name);
 
             if (code !== '0x') return true;
-        } catch (error) { }
+        } catch (error) {
+            console.log('error', error);
+        }
 
         return false;
     }
