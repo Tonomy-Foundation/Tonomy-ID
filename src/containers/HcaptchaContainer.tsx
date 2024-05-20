@@ -89,8 +89,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
     async function createEthereumAccount() {
         const key = await generatePrivateKeyFromPassword(getPassphrase());
+        const accountName = (await user.getAccountName()).toString();
 
         await agent.keyManagerImportKey({
+            kid: accountName,
             type: 'Secp256k1',
             privateKeyHex: key.privateKey,
             kms: 'local',

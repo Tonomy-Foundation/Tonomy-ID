@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -9,11 +9,12 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { AccountType, SdkError, SdkErrors, TonomyUsername, util } from '@tonomy/tonomy-id-sdk';
-import { generatePrivateKeyForEthereum, generatePrivateKeyFromPassword } from '../utils/keys';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
-import { createWeb3Wallet } from '../services/WalletConnect/Web3WalletClient';
+import { agent } from '../veramo/setup';
+import { EthereumAccount, EthereumPrivateKey } from '../utils/chain/etherum';
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -36,18 +37,33 @@ export default function LoginPassphraseContainer({
         await user.updateKeys(passphrase.join(' '));
     }
 
+    async function createEthereumAccount() {
+        const key = await generatePrivateKeyFromPassword(passphrase.join(' '));
+        const accountName = (await user.getAccountName()).toString();
+
+        await agent.keyManagerImportKey({
+            kid: accountName,
+            type: 'Secp256k1',
+            privateKeyHex: key.privateKey,
+            kms: 'local',
+        });
+        const ethereumAccount = new EthereumAccount(key.privateKey.toString());
+        const account = await ethereumAccount.fromPrivateKey(new EthereumPrivateKey(key.privateKey.toString()));
+
+        console.log('Account created:', account);
+    }
+
     async function onNext() {
         setLoading(true);
 
         try {
+            await createEthereumAccount();
+
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 passphrase.join(' '),
                 { keyFromPasswordFn: generatePrivateKeyFromPassword }
             );
-            const key = await generatePrivateKeyForEthereum(passphrase.join(' '), username);
-
-            await createWeb3Wallet(key.web3PrivateKey);
 
             if (result?.account_name !== undefined) {
                 setPassphrase(['', '', '', '', '', '']);
