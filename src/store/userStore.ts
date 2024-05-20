@@ -14,6 +14,7 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import { agent } from '../veramo/setup';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -52,6 +53,10 @@ const useUserStore = create<UserState>((set, get) => ({
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
+        const accountName = (await get().user.getAccountName()).toString();
+
+        await agent.keyManagerDeleteKey({ kid: accountName });
+
         await get().user.logout();
         get().setStatus(UserStatus.NOT_LOGGED_IN);
 

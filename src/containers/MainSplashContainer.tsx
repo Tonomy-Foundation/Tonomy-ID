@@ -11,6 +11,7 @@ import { Props } from '../screens/MainSplashScreen';
 import settings from '../settings';
 import { Images } from '../assets';
 import useInitialization from '../hooks/useWalletConnect';
+import { agent } from '../veramo/setup';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
@@ -35,6 +36,11 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
+                            const accountName = (await user.getAccountName()).toString();
+
+                            const importedKeyDetails = await agent.keyManagerGetKey({ kid: accountName });
+
+                            console.log('Imported Key Details:', importedKeyDetails);
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
