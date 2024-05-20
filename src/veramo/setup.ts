@@ -1,4 +1,4 @@
-import { createAgent, IKeyManager } from '@veramo/core';
+import { createAgent, IDataStore, IDataStoreORM, IKeyManager, IDIDManager } from '@veramo/core';
 import { KeyManager } from '@veramo/key-manager';
 import { KeyManagementSystem, SecretBox } from '@veramo/kms-local';
 import { KeyStore, PrivateKeyStore } from '@veramo/data-store';
@@ -13,7 +13,7 @@ const dbConnection = new DataSource({
     logging: ['error', 'info', 'warn'],
 }).initialize();
 
-export const agent = createAgent<IKeyManager>({
+export const agent = createAgent<IDIDManager & IKeyManager & IDataStore & IDataStoreORM>({
     plugins: [
         new KeyManager({
             store: new KeyStore(dbConnection),

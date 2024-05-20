@@ -8,13 +8,15 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername, util } from '@tonomy/tonomy-id-sdk';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, util, TonomyContract } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 import { agent } from '../veramo/setup';
 import { EthereumAccount, EthereumPrivateKey } from '../utils/chain/etherum';
+
+const tonomyContract = TonomyContract.Instance;
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -38,7 +40,11 @@ export default function LoginPassphraseContainer({
     }
 
     async function createEthereumAccount() {
-        const key = await generatePrivateKeyFromPassword(passphrase.join(' '));
+        const idData = await tonomyContract.getPerson(
+            TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix)
+        );
+        const salt = idData.password_salt;
+        const key = await generatePrivateKeyFromPassword(passphrase.join(' '), salt);
         const accountName = (await user.getAccountName()).toString();
 
         await agent.keyManagerImportKey({
