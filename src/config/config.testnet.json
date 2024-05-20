@@ -9,8 +9,8 @@
         "text":"#000000",
         "textGray": "#000000",
         "linkColor": "#4CAF50",
-        "infoBackground": "#F6F9FB"
-
+        "infoBackground": "#F6F9FB",
+        "lightBackground": "#F6F9FB"
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
     "appName": "Pangea Testnet",

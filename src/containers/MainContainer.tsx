@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, ScrollView } from 'react-native';
+import { StyleSheet, View, Image, Text } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -9,10 +9,15 @@ import QrCodeScanContainer from './QrCodeScanContainer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
-import TCard from '../components/TCard';
 import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
 import { _pair } from '../services/WalletConnect/Web3WalletClient';
+import theme from '../utils/theme';
+import { Images } from '../assets';
+import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import { formatCurrencyValue } from '../utils/numbers';
+
+const vestingContract = VestingContract.Instance;
 
 export default function MainContainer({ did }: { did?: string }) {
     const userStore = useUserStore();
@@ -20,6 +25,8 @@ export default function MainContainer({ did }: { did?: string }) {
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
+    const [balance, setBalance] = useState(0);
+    const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
 
     useEffect(() => {
@@ -30,11 +37,32 @@ export default function MainContainer({ did }: { did?: string }) {
         }
     }, []);
 
+    useEffect(() => {
+        async function getUpdatedBalance() {
+            const accountBalance = await vestingContract.getBalance(accountName);
+
+            if (balance !== accountBalance) {
+                setBalance(accountBalance);
+            }
+        }
+
+        getUpdatedBalance();
+
+        const interval = setInterval(() => {
+            getUpdatedBalance();
+        }, 20000);
+
+        return () => clearInterval(interval);
+    }, [user, balance, setBalance, accountName]);
+
     async function setUserName() {
         try {
             const u = await user.getUsername();
 
             setUsername(u.getBaseUsername());
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -152,24 +180,26 @@ export default function MainContainer({ did }: { did?: string }) {
                             </TButtonContained>
                         </View>
 
-                        <View style={[styles.marginTop, styles.card]}>
-                            <TP size={2}>SUGGESTED APPS:</TP>
-                            <ScrollView horizontal={true} style={styles.scrollView}>
-                                <TCard style={styles.card}>
-                                    <TCard.Cover source={require('../assets/images/tonomy-dao.png')} />
-                                    <TCard.Badge>Coming Soon</TCard.Badge>
-                                    <TCard.Content>
-                                        <TP>Tonomy Participate</TP>
-                                    </TCard.Content>
-                                </TCard>
-                                <TCard style={styles.card}>
-                                    <TCard.Cover source={require('../assets/images/tonomy-p.png')} />
-                                    <TCard.Badge>Coming Soon</TCard.Badge>
-                                    <TCard.Content>
-                                        <TP>Tonomy DAO</TP>
-                                    </TCard.Content>
-                                </TCard>
-                            </ScrollView>
+                        <View style={styles.accountsView}>
+                            <Text style={styles.accountHead}>Connected Accounts:</Text>
+                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                            <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                        </View>
+                                        <Text>{accountName}</Text>
+                                    </View>
+
+                                    <Text style={styles.balanceView}>
+                                        {formatCurrencyValue(balance) || 0} LEOS
+                                        <Text style={styles.secondaryColor}>
+                                            (${balance ? formatCurrencyValue(balance * 0.002) : 0.0})
+                                        </Text>
+                                    </Text>
+                                </View>
+                            </View>
                         </View>
                     </View>
                 )}
@@ -224,25 +254,52 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        marginBottom: 20,
     },
     button: {
         width: '50%',
     },
-    marginTop: {
-        marginTop: 28,
+    accountHead: {
+        fontSize: 16,
+        marginBottom: 4,
+        fontWeight: '600',
     },
     cards: {
         flex: 1,
     },
-    card: {
-        marginRight: 16,
-        marginVertical: 16,
-    },
+
     scrollView: {
         marginRight: -20,
+    },
+    appDialog: {
+        backgroundColor: theme.colors.lightBg,
+        borderStyle: 'solid',
+        borderRadius: 7,
+        padding: 10,
+        width: '100%',
+        marginTop: 5,
+    },
+    networkTitle: {
+        color: theme.colors.secondary2,
+        fontSize: 12,
+    },
+    secondaryColor: {
+        color: theme.colors.secondary2,
+    },
+    favicon: {
+        width: 15,
+        height: 15,
+        marginRight: 4,
+    },
+    accountsView: {
+        marginTop: 25,
+        paddingHorizontal: 5,
+    },
+    balanceView: {
+        marginTop: 7,
+    },
+    marginTop: {
+        marginTop: 28,
     },
 });

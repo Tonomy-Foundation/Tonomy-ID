@@ -22,6 +22,7 @@ type ConfigType = {
         textGray: string;
         linkColor: string;
         infoBackground: string;
+        lightBackground: string;
     };
     appName: string;
     ecosystemName: string;
