@@ -15,8 +15,9 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
-import { generatePrivateKeyForEthereum } from '../utils/keys';
-import { createWeb3Wallet } from '../services/WalletConnect/Web3WalletClient';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
+import { agent } from '../veramo/setup';
+import { EthereumAccount, EthereumPrivateKey } from '../utils/chain/etherum';
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -81,13 +82,23 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             setUsername(baseUsername);
             console.log('username', baseUsername);
-
-            const key = await generatePrivateKeyForEthereum(getPassphrase(), baseUsername);
-
-            await createWeb3Wallet(key.web3PrivateKey);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
+    }
+
+    async function createEthereumAccount() {
+        const key = await generatePrivateKeyFromPassword(getPassphrase());
+
+        await agent.keyManagerImportKey({
+            type: 'Secp256k1',
+            privateKeyHex: key.privateKey,
+            kms: 'local',
+        });
+        const ethereumAccount = new EthereumAccount(key.privateKey.toString());
+        const account = await ethereumAccount.fromPrivateKey(new EthereumPrivateKey(key.privateKey.toString()));
+
+        console.log('Account created:', account);
     }
 
     async function onNext() {
@@ -99,6 +110,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }
 
         try {
+            await createEthereumAccount();
             await user.saveCaptchaToken(code);
             await user.createPerson();
             await user.saveLocal();

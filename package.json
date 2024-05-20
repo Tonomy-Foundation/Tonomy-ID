@@ -34,6 +34,8 @@
         "@react-navigation/native-stack": "^6.8.0",
         "@tonomy/tonomy-id-sdk": "0.20.1-development.1",
         "@veramo/core": "^6.0.0",
+        "@veramo/data-store": "^6.0.0",
+        "@veramo/kms-local": "^6.0.0",
         "@wharfkit/antelope": "^0.7.1",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
