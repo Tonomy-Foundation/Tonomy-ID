@@ -89,18 +89,27 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
     async function createEthereumAccount() {
         const key = await generatePrivateKeyFromPassword(getPassphrase());
-        const accountName = (await user.getAccountName()).toString();
 
-        await agent.keyManagerImportKey({
-            kid: accountName,
-            type: 'Secp256k1',
-            privateKeyHex: key.privateKey,
-            kms: 'local',
+        const savedData = await agent.dataStoreSave({
+            data: {
+                key: 'ethereumPrivateKey',
+                value: key.privateKey.toString(),
+            },
         });
+
+        console.log('Saved data:', savedData);
+
         const ethereumAccount = new EthereumAccount(key.privateKey.toString());
         const account = await ethereumAccount.fromPrivateKey(new EthereumPrivateKey(key.privateKey.toString()));
 
         console.log('Account created:', account);
+        const queriedData = await agent.dataStoreORMGet({
+            where: {
+                key: 'ethereumPrivateKey',
+            },
+        });
+
+        console.log('Queried data:', queriedData);
     }
 
     async function onNext() {

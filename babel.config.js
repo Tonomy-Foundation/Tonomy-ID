@@ -6,6 +6,7 @@ module.exports = function (api) {
             'react-native-paper/babel',
             'transform-inline-environment-variables',
             'react-native-reanimated/plugin',
+            ['@babel/plugin-syntax-import-attributes', { deprecatedAssertSyntax: true }],
             ['@babel/plugin-transform-private-methods', { loose: true }],
             [
                 'babel-plugin-transform-builtin-extend',

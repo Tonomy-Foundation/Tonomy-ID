@@ -45,14 +45,21 @@ export default function LoginPassphraseContainer({
         );
         const salt = idData.password_salt;
         const key = await generatePrivateKeyFromPassword(passphrase.join(' '), salt);
-        const accountName = (await user.getAccountName()).toString();
 
-        await agent.keyManagerImportKey({
-            kid: accountName,
-            type: 'Secp256k1',
-            privateKeyHex: key.privateKey,
-            kms: 'local',
+        // await agent.keyManagerImportKey({
+        //     kid: accountName,
+        //     type: 'Secp256k1',
+        //     privateKeyHex: key.privateKey,
+        //     kms: 'local',
+        // });
+        const savedData = await agent.dataStoreSave({
+            data: {
+                key: 'ethereumPrivateKey',
+                value: key.privateKey.toString(),
+            },
         });
+
+        console.log('Saved data:', savedData);
         const ethereumAccount = new EthereumAccount(key.privateKey.toString());
         const account = await ethereumAccount.fromPrivateKey(new EthereumPrivateKey(key.privateKey.toString()));
 
