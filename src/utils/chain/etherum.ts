@@ -80,7 +80,12 @@ export class EthereumChain extends AbstractChain {
     protected name = 'Ethereum';
     protected chainId = '1';
     protected logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
-    protected nativeToken = new ETHToken();
+    protected nativeToken: ETHToken;
+
+    constructor() {
+        super();
+        this.nativeToken = new ETHToken(this);
+    }
 }
 
 export class ETHAsset extends AbstractAsset {
@@ -105,8 +110,13 @@ export class ETHToken extends AbstractToken {
     protected name = 'Ether';
     protected symbol = 'ETH';
     protected precision = 18;
-    protected chain = new EthereumChain();
+    protected chain: EthereumChain;
     protected logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
+
+    constructor(chain: EthereumChain) {
+        super();
+        this.chain = chain;
+    }
 
     async getUsdPrice(): Promise<number> {
         return await getPrice('ethereum', 'usd');
