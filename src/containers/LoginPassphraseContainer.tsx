@@ -39,7 +39,7 @@ export default function LoginPassphraseContainer({
         setLoading(true);
 
         try {
-            await savePrivateKeyToStorage(passphrase.join(' '));
+            savePrivateKeyToStorage(passphrase.join(' '));
 
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),

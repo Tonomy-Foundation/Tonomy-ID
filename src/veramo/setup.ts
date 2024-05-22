@@ -1,9 +1,10 @@
 import { DataSource } from 'typeorm/browser';
 import { keyStorage } from './entities/keyStorage';
+import * as ExpoSQLiteDriver from 'expo-sqlite';
 
 export const dataSource = new DataSource({
     database: 'storage',
-    driver: require('expo-sqlite'),
+    driver: ExpoSQLiteDriver,
     entities: [keyStorage],
     synchronize: false,
     type: 'expo',

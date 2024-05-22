@@ -42,9 +42,12 @@ export async function testKeyGenerator() {
 
 export async function generatePrivateKeyFromPassword(
     password: string,
-    salt?: Checksum256
+    salt?: Checksum256 | string
 ): Promise<{ privateKey: PrivateKey; salt: Checksum256 }> {
-    const { seed, salt: saltString } = await generateSeedFromPassword(password, salt?.hexString);
+    const { seed, salt: saltString } = await generateSeedFromPassword(
+        password,
+        typeof salt === 'string' ? salt : salt?.hexString
+    );
 
     const bytes = Bytes.from(seed, 'hex');
     const privateKey = new PrivateKey(KeyType.K1, bytes);
@@ -78,7 +81,9 @@ async function generateSeedFromPassword(password: string, salt?: string): Promis
 export async function savePrivateKeyToStorage(passphrase: string): Promise<void> {
     const dataSource = await connect();
     const keyStorageRepo = new keyStorageRepository(dataSource);
-    const key = await generatePrivateKeyFromPassword(passphrase);
+
+    const seedData = await generateSeedFromPassword(passphrase);
+    const key = await generatePrivateKeyFromPassword(passphrase, seedData.salt);
     const privateKey = key.privateKey.toString();
 
     // Save the key to the keyStorage

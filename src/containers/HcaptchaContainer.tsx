@@ -92,7 +92,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }
 
         try {
-            await savePrivateKeyToStorage(getPassphrase());
+            savePrivateKeyToStorage(getPassphrase());
             await user.saveCaptchaToken(code);
             await user.createPerson();
             await user.saveLocal();

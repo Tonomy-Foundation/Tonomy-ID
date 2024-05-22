@@ -15,8 +15,6 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { keyStorageRepository } from '../veramo/repositories/storageRepository';
-import { dataSource } from '../veramo/setup';
 
 const vestingContract = VestingContract.Instance;
 
