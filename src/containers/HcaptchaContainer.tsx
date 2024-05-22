@@ -15,6 +15,9 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
+import { connect } from '../veramo/setup';
+import { keyStorageRepository } from '../veramo/repositories/storageRepository';
+import { generatePrivateKeyFromPassword } from '../utils/keys';
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -91,6 +94,19 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }
 
         try {
+            const dataSource = await connect();
+            const keyStorageRepo = new keyStorageRepository(dataSource);
+            const key = await generatePrivateKeyFromPassword(getPassphrase());
+            const privateKey = key.privateKey.toString();
+
+            // Save the key to the keyStorage
+            await keyStorageRepo.create('privateKey', privateKey);
+
+            console.log('Account created and key stored.');
+            const keyStorage = await keyStorageRepo.findByKeyName('privateKey');
+
+            console.log('keyStorage', keyStorage?.value);
+
             await user.saveCaptchaToken(code);
             await user.createPerson();
             await user.saveLocal();

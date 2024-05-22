@@ -7,11 +7,14 @@
     "skipDefaultLibCheck": true,
     "experimentalDecorators": true, // needed for @wharfkit/antelope
     "useUnknownInCatchVariables": false, // needed for @wharfkit/antelope
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
   "include": [
     "App.tsx",
     "src/**/*",
-    "test/**/*"
+    "test/**/*",
+    "src/**/*.ts"  
   ],
   "exclude": [
     "node_modules",
