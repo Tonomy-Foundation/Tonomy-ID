@@ -5,6 +5,7 @@ import { EthereumPrivateKey, EthereumAccount } from './chain/etherum';
 import { Wallet } from 'ethers';
 import { connect } from '../veramo/setup';
 import { keyStorageRepository } from '../veramo/repositories/storageRepository';
+import { IPrivateKey, IChain } from '../utils/chain/types';
 
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
@@ -32,6 +33,7 @@ export async function testKeyGenerator() {
         const privateKeyEth = new EthereumPrivateKey(
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
+
         const ethereumAccount = new EthereumAccount(await privateKeyEth.getAddress(), privateKeyEth);
 
         console.log('ethereumAccount:', ethereumAccount.getName());
@@ -42,12 +44,9 @@ export async function testKeyGenerator() {
 
 export async function generatePrivateKeyFromPassword(
     password: string,
-    salt?: Checksum256 | string
+    salt?: Checksum256
 ): Promise<{ privateKey: PrivateKey; salt: Checksum256 }> {
-    const { seed, salt: saltString } = await generateSeedFromPassword(
-        password,
-        typeof salt === 'string' ? salt : salt?.hexString
-    );
+    const { seed, salt: saltString } = await generateSeedFromPassword(password, salt?.hexString);
 
     const bytes = Bytes.from(seed, 'hex');
     const privateKey = new PrivateKey(KeyType.K1, bytes);
@@ -71,21 +70,35 @@ async function generateSeedFromPassword(password: string, salt?: string): Promis
     return { seed: result.rawHash as string, salt };
 }
 
-// async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
-//     const chainSeed = sha256(seed + chain.getChainId());
+async function generatePrivateKeyFromSeed(
+    seed: string,
+    chain: IChain
+): Promise<{ privateKeyHex: string; privateKey: IPrivateKey }> {
+    const chainSeed = sha256(seed + chain.getChainId());
 
-//     // create privateKey from chainSeed
-//     // return privateKey
-// }
+    const bytes = Bytes.from(chainSeed, 'hex');
+    const privateKeyValue = new PrivateKey(KeyType.K1, bytes);
+    const privateKeyHex = '0x' + sha256(privateKeyValue.toString());
+    let privateKey;
 
-export async function savePrivateKeyToStorage(passphrase: string): Promise<void> {
+    if (chain.getName() === 'Ethereum') {
+        privateKey = new EthereumPrivateKey(privateKeyHex);
+    }
+
+    return {
+        privateKeyHex,
+        privateKey,
+    };
+}
+
+export async function savePrivateKeyToStorage(passphrase: string, chain: IChain): Promise<void> {
     const dataSource = await connect();
     const keyStorageRepo = new keyStorageRepository(dataSource);
 
     const seedData = await generateSeedFromPassword(passphrase);
-    const key = await generatePrivateKeyFromPassword(passphrase, seedData.salt);
-    const privateKey = key.privateKey.toString();
+    const key = await generatePrivateKeyFromSeed(passphrase, chain);
 
-    // Save the key to the keyStorage
-    await keyStorageRepo.create('privateKey', privateKey);
+    // Save the key and seed to the keyStorage
+    await keyStorageRepo.create('privateKey', key.privateKeyHex);
+    await keyStorageRepo.create('seed', seedData.seed);
 }

@@ -13,6 +13,7 @@ import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../util
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
+import { EthereumChain } from '../utils/chain/etherum';
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -39,7 +40,9 @@ export default function LoginPassphraseContainer({
         setLoading(true);
 
         try {
-            savePrivateKeyToStorage(passphrase.join(' '));
+            const ethereumChain = new EthereumChain();
+
+            savePrivateKeyToStorage(passphrase.join(' '), ethereumChain);
 
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
