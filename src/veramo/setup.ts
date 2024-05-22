@@ -10,5 +10,6 @@ export const dataSource = new DataSource({
 });
 
 export function connect() {
-    return dataSource.initialize();
+    if (dataSource.isInitialized) return Promise.resolve(dataSource);
+    else return dataSource.initialize();
 }

@@ -3,6 +3,8 @@ import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 import { EthereumPrivateKey, EthereumAccount } from './chain/etherum';
 import { Wallet } from 'ethers';
+import { connect } from '../veramo/setup';
+import { keyStorageRepository } from '../veramo/repositories/storageRepository';
 
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
@@ -72,3 +74,13 @@ async function generateSeedFromPassword(password: string, salt?: string): Promis
 //     // create privateKey from chainSeed
 //     // return privateKey
 // }
+
+export async function savePrivateKeyToStorage(passphrase: string): Promise<void> {
+    const dataSource = await connect();
+    const keyStorageRepo = new keyStorageRepository(dataSource);
+    const key = await generatePrivateKeyFromPassword(passphrase);
+    const privateKey = key.privateKey.toString();
+
+    // Save the key to the keyStorage
+    await keyStorageRepo.create('privateKey', privateKey);
+}

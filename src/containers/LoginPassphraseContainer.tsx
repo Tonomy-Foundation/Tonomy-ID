@@ -9,7 +9,7 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { AccountType, SdkError, SdkErrors, TonomyUsername, util } from '@tonomy/tonomy-id-sdk';
-import { generatePrivateKeyFromPassword } from '../utils/keys';
+import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
@@ -39,6 +39,8 @@ export default function LoginPassphraseContainer({
         setLoading(true);
 
         try {
+            await savePrivateKeyToStorage(passphrase.join(' '));
+
             const result = await user.login(
                 TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
                 passphrase.join(' '),
