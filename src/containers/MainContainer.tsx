@@ -15,8 +15,6 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { connect } from '../veramo/setup';
-import { keyStorageRepository } from '../veramo/repositories/storageRepository';
 
 const vestingContract = VestingContract.Instance;
 
@@ -193,32 +191,8 @@ export default function MainContainer({ did }: { did?: string }) {
         );
     };
 
-    const connectandstoretypeorm = async () => {
-        try {
-            const dataSource = await connect();
-
-            const keyStorageRepo = new keyStorageRepository(dataSource);
-
-            console.log('datasource', keyStorageRepo);
-
-            // Retrieve the key from the keyStorage
-            const keyStorage = await keyStorageRepo.findByKeyName('privateKey');
-            const keyStorage2 = await keyStorageRepo.findByKeyName('seed');
-
-            if (keyStorage) {
-                console.log('Logged in. Retrieved key:', keyStorage?.value, keyStorage2?.value);
-            } else {
-                console.log('No key found for the user.');
-            }
-        } catch (e) {
-            console.log('error', e);
-        }
-    };
-
     return (
         <SafeAreaView style={styles.container}>
-            <TButtonOutlined onPress={() => connectandstoretypeorm()}>Cancel</TButtonOutlined>
-
             {isLoadingView ? (
                 <View style={styles.requestView}>
                     <Image source={require('../assets/tonomy/connecting.png')}></Image>
