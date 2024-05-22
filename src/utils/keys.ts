@@ -91,11 +91,11 @@ async function generatePrivateKeyFromSeed(
     };
 }
 
-export async function savePrivateKeyToStorage(passphrase: string, chain: IChain): Promise<void> {
+export async function savePrivateKeyToStorage(passphrase: string, chain: IChain, salt?: string): Promise<void> {
     const dataSource = await connect();
     const keyStorageRepo = new keyStorageRepository(dataSource);
 
-    const seedData = await generateSeedFromPassword(passphrase);
+    const seedData = await generateSeedFromPassword(passphrase, salt);
     const key = await generatePrivateKeyFromSeed(passphrase, chain);
 
     // Save the key and seed to the keyStorage

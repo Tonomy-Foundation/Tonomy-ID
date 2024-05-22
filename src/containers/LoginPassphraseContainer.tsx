@@ -8,12 +8,14 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername, util } from '@tonomy/tonomy-id-sdk';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, util, TonomyContract } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 import { EthereumChain } from '../utils/chain/etherum';
+
+const tonomyContract = TonomyContract.Instance;
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -40,15 +42,22 @@ export default function LoginPassphraseContainer({
         setLoading(true);
 
         try {
+            const tonomyUsername = TonomyUsername.fromUsername(
+                username,
+                AccountType.PERSON,
+                settings.config.accountSuffix
+            );
+
+            const idData = await tonomyContract.getPerson(tonomyUsername);
+            const salt = idData.password_salt;
+
             const ethereumChain = new EthereumChain();
 
-            savePrivateKeyToStorage(passphrase.join(' '), ethereumChain);
+            savePrivateKeyToStorage(passphrase.join(' '), ethereumChain, salt.toString());
 
-            const result = await user.login(
-                TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
-                passphrase.join(' '),
-                { keyFromPasswordFn: generatePrivateKeyFromPassword }
-            );
+            const result = await user.login(tonomyUsername, passphrase.join(' '), {
+                keyFromPasswordFn: generatePrivateKeyFromPassword,
+            });
 
             if (result?.account_name !== undefined) {
                 setPassphrase(['', '', '', '', '', '']);
