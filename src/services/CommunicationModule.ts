@@ -148,7 +148,7 @@ export default function CommunicationModule() {
                 const dataSource = await connect();
                 const keyStorageRepo = new keyStorageRepository(dataSource);
 
-                const key = await keyStorageRepo.findByKeyName('privateKey');
+                const key = await keyStorageRepo.findByName('privateKey');
 
                 if (key?.value) {
                     const wallet = new EthereumPrivateKey(key.value);

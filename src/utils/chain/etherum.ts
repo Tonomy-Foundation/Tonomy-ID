@@ -23,6 +23,8 @@ import {
     IPrivateKey,
 } from './types';
 import { TKeyType } from '@veramo/core';
+import { Bytes, KeyType, PrivateKey } from '@wharfkit/antelope';
+import { sha256 } from '@tonomy/tonomy-id-sdk';
 
 const ETHERSCAN_API_KEY = 'your-etherscan-api-key';
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -88,6 +90,15 @@ export class EthereumChain extends AbstractChain {
         this.chainId = chainId;
         this.logoUrl = logoUrl;
         this.nativeToken = new ETHToken(this);
+    }
+
+    createKeyFromSeed(seed: string): IPrivateKey {
+        const chainSeed = sha256(seed + this.chainId);
+        const bytes = Bytes.from(chainSeed, 'hex');
+        const privateKeyValue = new PrivateKey(KeyType.K1, bytes);
+        const privateKeyHex = '0x' + sha256(privateKeyValue.toString());
+
+        return new EthereumPrivateKey(privateKeyHex);
     }
 }
 
