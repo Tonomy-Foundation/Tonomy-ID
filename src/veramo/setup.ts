@@ -10,11 +10,6 @@ export const dataSource = new DataSource({
     type: 'expo',
 });
 
-// export function connect() {
-//     if (dataSource.isInitialized) return Promise.resolve(dataSource);
-//     else return dataSource.initialize();
-// }
-
 export async function connect() {
     if (!dataSource.isInitialized) {
         await dataSource.initialize();
