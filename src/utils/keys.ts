@@ -73,7 +73,7 @@ async function generateSeedFromPassword(password: string, salt?: string): Promis
 async function generatePrivateKeyFromSeed(
     seed: string,
     chain: IChain
-): Promise<{ privateKeyHex: string; privateKey: IPrivateKey }> {
+): Promise<{ privateKeyHex: string; privateKey: IPrivateKey; ethereumAccount: string }> {
     const chainSeed = sha256(seed + chain.getChainId());
 
     const bytes = Bytes.from(chainSeed, 'hex');
@@ -85,9 +85,12 @@ async function generatePrivateKeyFromSeed(
         privateKey = new EthereumPrivateKey(privateKeyHex);
     }
 
+    const ethereumAccount = new EthereumAccount(await privateKey.getAddress(), privateKey).getName();
+
     return {
         privateKeyHex,
         privateKey,
+        ethereumAccount,
     };
 }
 
@@ -101,4 +104,5 @@ export async function savePrivateKeyToStorage(passphrase: string, chain: IChain,
     // Save the key and seed to the keyStorage
     await keyStorageRepo.create('privateKey', key.privateKeyHex);
     await keyStorageRepo.create('seed', seedData.seed);
+    await keyStorageRepo.create('ethereumAccount', key.ethereumAccount);
 }

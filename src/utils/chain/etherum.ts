@@ -148,6 +148,7 @@ export class EthereumTransaction implements ITransaction {
     private transaction: TransactionRequest;
     private type?: TransactionType;
     private abi?: string;
+    protected chain = new EthereumChain();
 
     constructor(transaction: TransactionRequest) {
         this.transaction = transaction;
@@ -228,17 +229,17 @@ export class EthereumTransaction implements ITransaction {
         return decodedData.args;
     }
     async getValue(): Promise<ETHAsset> {
-        return new ETHAsset(new ETHToken(), BigInt(this.transaction.value || 0));
+        return new ETHAsset(new ETHToken(this.chain), BigInt(this.transaction.value || 0));
     }
     async estimateTransactionFee(): Promise<ETHAsset> {
         const wei = await provider.estimateGas(this.transaction);
 
-        return new ETHAsset(new ETHToken(), wei);
+        return new ETHAsset(new ETHToken(this.chain), wei);
     }
     async estimateTransactionTotal(): Promise<ETHAsset> {
         const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
 
-        return new ETHAsset(new ETHToken(), amount);
+        return new ETHAsset(new ETHToken(this.chain), amount);
     }
 }
 
@@ -247,7 +248,7 @@ export class EthereumAccount extends AbstractAccount {
     protected name: string;
     protected did: string;
     protected chain = new EthereumChain();
-    protected nativeToken = new ETHToken();
+    protected nativeToken = new ETHToken(this.chain);
 
     constructor(address: string, privateKey?: EthereumPrivateKey) {
         super();
