@@ -53,6 +53,7 @@ export interface IChain {
     getLogoUrl(): string;
     // getApiEndpoint(): string;
     getNativeToken(): IToken;
+    createKeyFromSeed(seed: string): IPrivateKey;
 }
 
 export abstract class AbstractChain {
@@ -73,6 +74,7 @@ export abstract class AbstractChain {
     getNativeToken(): IToken {
         return this.nativeToken;
     }
+    abstract createKeyFromSeed(seed: string): IPrivateKey;
 }
 
 export interface IAsset {

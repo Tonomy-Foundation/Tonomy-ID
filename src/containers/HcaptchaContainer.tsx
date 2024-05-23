@@ -93,9 +93,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }
 
         try {
-            const ethereumChain = new EthereumChain();
-
-            savePrivateKeyToStorage(getPassphrase(), ethereumChain);
+            savePrivateKeyToStorage(getPassphrase());
             await user.saveCaptchaToken(code);
             await user.createPerson();
             await user.saveLocal();
