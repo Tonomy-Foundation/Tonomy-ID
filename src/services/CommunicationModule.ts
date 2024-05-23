@@ -9,11 +9,14 @@ import {
     objToBase64Url,
     parseDid,
 } from '@tonomy/tonomy-id-sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
+import { EthereumPrivateKey } from '../utils/chain/etherum';
+import { connect } from '../veramo/setup';
+import { keyStorageRepository } from '../veramo/repositories/storageRepository';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -124,10 +127,41 @@ export default function CommunicationModule() {
         }
     }
 
+    const onSessionProposal = useCallback(async (proposal) => {
+        if (proposal) {
+            console.log('proposal', proposal);
+            // navigation.navigate('WalletConnectLogin', {
+            //     payload: proposal,
+            //     platform: 'browser',
+            // });
+        }
+    }, []);
+
     useEffect(() => {
         loginToService();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const dataSource = await connect();
+                const keyStorageRepo = new keyStorageRepository(dataSource);
+
+                const key = await keyStorageRepo.findByKeyName('privateKey');
+
+                if (key?.value) {
+                    const wallet = new EthereumPrivateKey(key.value);
+
+                    console.log('wallet', wallet);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     useEffect(() => {
         return () => {
