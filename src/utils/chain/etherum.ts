@@ -77,13 +77,16 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
 }
 
 export class EthereumChain extends AbstractChain {
-    protected name = 'Ethereum';
-    protected chainId = '1';
-    protected logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
+    protected name: string;
+    protected chainId: string;
+    protected logoUrl: string;
     protected nativeToken: ETHToken;
 
-    constructor() {
+    constructor(name: string, chainId: string, logoUrl: string) {
         super();
+        this.name = name;
+        this.chainId = chainId;
+        this.logoUrl = logoUrl;
         this.nativeToken = new ETHToken(this);
     }
 }
