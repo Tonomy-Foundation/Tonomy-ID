@@ -106,7 +106,7 @@ class EthereumChain extends AbstractChain {
     }
 }
 
-class Token extends AbstractToken {
+class EthereumToken extends AbstractToken {
     protected name: string;
     protected symbol: string;
     protected precision: number;
@@ -177,7 +177,7 @@ if (settings.env === 'testnet' || settings.env === 'staging') {
     provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
 }
 
-const ETHToken = new Token(
+const ETHToken = new EthereumToken(
     EthereumMainnetChain,
     'Ether',
     'ETH',
@@ -185,7 +185,7 @@ const ETHToken = new Token(
     'https://cryptologos.cc/logos/ethereum-eth-logo.png',
     'ethereum'
 );
-const ETHSepoliaToken = new Token(
+const ETHSepoliaToken = new EthereumToken(
     EthereumSepoliaChain,
     'Ether',
     'ETH',
