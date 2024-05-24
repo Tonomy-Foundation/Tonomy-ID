@@ -1,0 +1,24 @@
+import { AppStorageRepository } from './AppSettingRepository';
+
+export abstract class AppStorage {
+    protected repository: AppStorageRepository;
+
+    constructor(repository: AppStorageRepository) {
+        this.repository = repository;
+    }
+
+    public async addNewSetting(name: string, value: string): Promise<void> {
+        await this.repository.storeSetting(name, value);
+    }
+
+    public async findByName(name: string): Promise<string | null> {
+        const key = await this.repository.findByName(name);
+
+        if (key) return key.value;
+        else return null;
+    }
+
+    public async delete(name: string): Promise<void> {
+        await this.repository.delete(name);
+    }
+}

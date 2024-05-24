@@ -1,24 +1,20 @@
 import { Repository, DataSource } from 'typeorm/browser';
-import { keyStorage } from '../entities/keyStorage';
+import { storage } from '../entities/storage';
 
 export class KeyStorageRepository {
-    private ormRepository: Repository<keyStorage>;
+    private ormRepository: Repository<storage>;
 
     constructor(dataSource: DataSource) {
-        this.ormRepository = dataSource.getRepository(keyStorage);
+        this.ormRepository = dataSource.getRepository(storage);
     }
 
-    public async getAll(): Promise<keyStorage[]> {
-        return this.ormRepository.find();
-    }
-
-    public async create(name: string, value: string): Promise<keyStorage> {
+    public async storeKey(name: string, value: string): Promise<storage> {
         const keyStorageEntity = this.ormRepository.create({ name, value });
 
         return this.ormRepository.save(keyStorageEntity);
     }
 
-    public async findByName(name: string): Promise<keyStorage | null> {
+    public async findByName(name: string): Promise<storage | null> {
         return this.ormRepository.findOne({ where: { name } });
     }
 

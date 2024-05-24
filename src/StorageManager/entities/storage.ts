@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm/browser';
 
-@Entity('keyStorage')
-export class keyStorage {
+@Entity('storage')
+export class storage {
     @PrimaryGeneratedColumn()
     id!: number;
 
@@ -10,4 +10,7 @@ export class keyStorage {
 
     @Column()
     value!: string;
+
+    addedAt: Date;
+    updatedAt: Date;
 }
