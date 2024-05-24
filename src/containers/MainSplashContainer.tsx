@@ -10,10 +10,23 @@ import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import settings from '../settings';
 import { Images } from '../assets';
+import { connect } from '../veramo/setup';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
+
+    useEffect(() => {
+        async function initializeApp() {
+            try {
+                await connect();
+            } catch (error) {
+                console.log('Failed to initialize data source:', error);
+            }
+        }
+
+        initializeApp();
+    }, []);
 
     useEffect(() => {
         async function main() {
