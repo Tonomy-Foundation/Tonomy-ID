@@ -29,7 +29,7 @@ import settings from '../../settings';
 const ETHERSCAN_API_KEY = 'your-etherscan-api-key';
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
-const INFURA_KEY = 'your-infura-id';
+const INFURA_KEY = settings.config.infuraKey;
 
 export async function getPrice(token: string, currency: string): Promise<number> {
     const res = await fetch(

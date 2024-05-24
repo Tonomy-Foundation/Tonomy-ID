@@ -52,6 +52,7 @@ type ConfigType = {
     loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
     blockExplorerUrl: string;
+    infuraKey: string;
 };
 
 type SettingsType = {
