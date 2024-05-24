@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import './src/utils/polyfill';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import RootNavigation from './src/navigation/Root';
 import 'expo-dev-client';
@@ -11,7 +11,6 @@ import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
 import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
-import { connect } from './src/veramo/setup';
 
 if (!settings.isProduction()) {
     runTests();
@@ -21,18 +20,6 @@ export default function App() {
     const errorStore = useErrorStore();
 
     setErrorHandlers(errorStore);
-
-    useEffect(() => {
-        async function initializeApp() {
-            try {
-                await connect();
-            } catch (error) {
-                console.log('Failed to initialize data source:', error);
-            }
-        }
-
-        initializeApp();
-    }, []);
 
     return (
         <PaperProvider theme={theme}>
