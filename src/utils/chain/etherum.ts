@@ -169,12 +169,12 @@ const EthereumSepoliaChain = new EthereumChain(
     '1',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
-let provider;
+let provider: JsonRpcProvider;
 
-if (settings.env === 'testnet' || settings.env === 'staging') {
-    provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
-} else {
+if (settings.env === 'production') {
     provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+} else {
+    provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
 }
 
 const ETHToken = new EthereumToken(
