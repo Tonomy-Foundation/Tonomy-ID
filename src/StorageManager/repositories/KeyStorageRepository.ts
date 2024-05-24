@@ -1,5 +1,5 @@
 import { Repository, DataSource } from 'typeorm/browser';
-import { storage } from '../entities/storage';
+import { storage } from '../entities/keyStorage';
 
 export class KeyStorageRepository {
     private ormRepository: Repository<storage>;
@@ -18,7 +18,7 @@ export class KeyStorageRepository {
         return this.ormRepository.findOne({ where: { name } });
     }
 
-    public async delete(name: string): Promise<void> {
-        await this.ormRepository.delete({ name });
+    public async delete(): Promise<void> {
+        await this.ormRepository.delete({});
     }
 }

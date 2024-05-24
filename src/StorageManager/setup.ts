@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm/browser';
-import { storage } from './entities/storage';
+import { storage } from './entities/keyStorage';
 import * as ExpoSQLiteDriver from 'expo-sqlite';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyManager';

@@ -23,7 +23,7 @@ export abstract class KeyManager {
         return null;
     }
 
-    public async delete(name: string): Promise<void> {
-        await this.repository.delete(name);
+    public async delete(): Promise<void> {
+        await this.repository.delete();
     }
 }
