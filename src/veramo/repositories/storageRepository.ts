@@ -19,6 +19,7 @@ export class keyStorageRepository extends KeyManager {
     public async create(name: string, value: string): Promise<keyStorage> {
         const keyStorage = this.ormRepository.create({ name, value });
 
+        console.log('keyStorage', keyStorage);
         return this.ormRepository.save(keyStorage);
     }
 
@@ -26,7 +27,7 @@ export class keyStorageRepository extends KeyManager {
         return this.ormRepository.findOne({ where: { name } });
     }
 
-    public async delete(id: number): Promise<void> {
-        await this.ormRepository.delete(id);
+    public async delete(): Promise<void> {
+        await this.ormRepository.clear();
     }
 }

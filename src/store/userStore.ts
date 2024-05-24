@@ -14,6 +14,8 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import { keyStorageRepository } from '../veramo/repositories/storageRepository';
+import { dataSource } from '../veramo/setup';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -53,6 +55,10 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     logout: async (reason: string) => {
         await get().user.logout();
+        const keyStorageRepo = new keyStorageRepository(dataSource);
+
+        await keyStorageRepo.delete();
+
         get().setStatus(UserStatus.NOT_LOGGED_IN);
 
         await printStorage('logout(): ' + reason);

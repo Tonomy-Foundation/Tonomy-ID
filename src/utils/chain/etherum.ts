@@ -98,7 +98,7 @@ class EthereumChain extends AbstractChain {
     createKeyFromSeed(seed: string): IPrivateKey {
         const wallet = new ethers.Wallet(seed);
 
-        console.log('Wallet', wallet);
+        console.log('Wallet', wallet.privateKey);
         return new EthereumPrivateKey(wallet.privateKey);
     }
 
