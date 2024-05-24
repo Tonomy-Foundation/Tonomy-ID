@@ -1,14 +1,10 @@
 import { Repository, DataSource } from 'typeorm/browser';
 import { keyStorage } from '../entities/keyStorage';
-import { KeyManager } from './keyManager';
-import { IPrivateKey } from '../../utils/chain/types';
 
-export class keyStorageRepository extends KeyManager {
-    protected repository: keyStorageRepository;
+export class KeyStorageRepository {
     private ormRepository: Repository<keyStorage>;
 
     constructor(dataSource: DataSource) {
-        super();
         this.ormRepository = dataSource.getRepository(keyStorage);
     }
 
@@ -17,17 +13,16 @@ export class keyStorageRepository extends KeyManager {
     }
 
     public async create(name: string, value: string): Promise<keyStorage> {
-        const keyStorage = this.ormRepository.create({ name, value });
+        const keyStorageEntity = this.ormRepository.create({ name, value });
 
-        console.log('keyStorage', keyStorage);
-        return this.ormRepository.save(keyStorage);
+        return this.ormRepository.save(keyStorageEntity);
     }
 
     public async findByName(name: string): Promise<keyStorage | null> {
         return this.ormRepository.findOne({ where: { name } });
     }
 
-    public async delete(): Promise<void> {
-        await this.ormRepository.clear();
+    public async delete(name: string): Promise<void> {
+        await this.ormRepository.delete({ name });
     }
 }

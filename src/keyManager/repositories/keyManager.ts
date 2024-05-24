@@ -1,11 +1,13 @@
-import { keyStorageRepository } from './storageRepository';
-import { keyStorage } from '../entities/keyStorage';
+import { KeyStorageRepository } from './storageRepository';
+import { IPrivateKey } from '../../utils/chain/types';
 
 export abstract class KeyManager {
-    protected abstract repository: keyStorageRepository;
+    protected abstract repository: KeyStorageRepository;
 
-    abstract getAll(): Promise<keyStorage[]>;
-    abstract create(name: string, value: string): Promise<keyStorage>;
-    abstract findByName(name: string): Promise<keyStorage | null>;
-    abstract delete(id: number): Promise<void>;
+    abstract getPublicKeys(): Promise<IPrivateKey[]>;
+    abstract addKey(name: string, privateKey: IPrivateKey): Promise<void>;
+    abstract addSeed(name: string, privateKey: string): Promise<void>;
+
+    abstract findByName(name: string): Promise<IPrivateKey>;
+    abstract delete(name: string): Promise<void>;
 }
