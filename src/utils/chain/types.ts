@@ -237,3 +237,14 @@ export abstract class AbstractAccount implements IAccount {
     abstract sendSignedTransaction(signedTransaction: unknown): Promise<unknown>;
     abstract sendTransaction(transaction: unknown): Promise<unknown>;
 }
+
+export class Asset extends AbstractAsset {
+    protected token: IToken;
+    protected amount: bigint;
+
+    constructor(token: IToken, amount: bigint) {
+        super();
+        this.token = token;
+        this.amount = amount;
+    }
+}

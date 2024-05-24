@@ -23,6 +23,7 @@ import {
     AbstractPrivateKey,
     AbstractAsset,
     IPrivateKey,
+    Asset,
 } from './types';
 import settings from '../../settings';
 
@@ -104,17 +105,6 @@ class EthereumChain extends AbstractChain {
 
     getInfuraUrl(): string {
         return this.infuraUrl;
-    }
-}
-
-export class Asset extends AbstractAsset {
-    protected token: IToken;
-    protected amount: bigint;
-
-    constructor(token: IToken, amount: bigint) {
-        super();
-        this.token = token;
-        this.amount = amount;
     }
 }
 
