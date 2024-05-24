@@ -21,7 +21,6 @@ import {
     ITransaction,
     AbstractPublicKey,
     AbstractPrivateKey,
-    AbstractAsset,
     IPrivateKey,
     Asset,
 } from './types';
