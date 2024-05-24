@@ -1,9 +1,9 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import { EthereumPrivateKey, EthereumAccount, EthereumChain } from './chain/etherum';
+import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
 import { Wallet } from 'ethers';
-import { connect, dataSource } from '../veramo/setup';
+import { dataSource } from '../veramo/setup';
 import { keyStorageRepository } from '../veramo/repositories/storageRepository';
 import { IPrivateKey, IChain } from '../utils/chain/types';
 import settings from '../settings';
@@ -35,7 +35,11 @@ export async function testKeyGenerator() {
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
 
-        const ethereumAccount = new EthereumAccount(await privateKeyEth.getAddress(), privateKeyEth);
+        const ethereumAccount = new EthereumAccount(
+            EthereumSepoliaChain,
+            await privateKeyEth.getAddress(),
+            privateKeyEth
+        );
 
         console.log('ethereumAccount:', ethereumAccount.getName());
     } catch (e) {
@@ -86,15 +90,9 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     let ethereumKey;
 
     if (settings.env === 'staging' || settings.env === 'testnet') {
-        ethereumKey = await generatePrivateKeyFromSeed(
-            passphrase,
-            new EthereumChain('Sepolia', '11155111', 'https://cryptologos.cc/logos/ethereum-eth-logo.png')
-        );
+        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
     } else {
-        ethereumKey = await generatePrivateKeyFromSeed(
-            passphrase,
-            new EthereumChain('Ethereum', '1', 'https://cryptologos.cc/logos/ethereum-eth-logo.png')
-        );
+        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
     }
 
     // Save the key and seed to the keyStorage

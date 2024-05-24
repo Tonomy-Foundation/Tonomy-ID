@@ -54,6 +54,7 @@ export interface IChain {
     // getApiEndpoint(): string;
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
+    getInfuraUrl(): string;
 }
 
 export abstract class AbstractChain {

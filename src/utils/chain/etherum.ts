@@ -7,6 +7,7 @@ import {
     TransactionReceipt,
     computeAddress,
     Interface,
+    ethers,
 } from 'ethers';
 import {
     IPublicKey,
@@ -23,15 +24,12 @@ import {
     AbstractAsset,
     IPrivateKey,
 } from './types';
-import { Bytes, KeyType, PrivateKey } from '@wharfkit/antelope';
-import { sha256 } from '@tonomy/tonomy-id-sdk';
+import settings from '../../settings';
 
 const ETHERSCAN_API_KEY = 'your-etherscan-api-key';
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
 const INFURA_KEY = 'your-infura-id';
-const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_KEY}`;
-const provider = new JsonRpcProvider(INFURA_URL);
 
 export async function getPrice(token: string, currency: string): Promise<number> {
     const res = await fetch(
@@ -79,13 +77,15 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
 }
 
 class EthereumChain extends AbstractChain {
+    protected infuraUrl: string;
     protected name: string;
     protected chainId: string;
     protected logoUrl: string;
     protected nativeToken: IToken;
 
-    constructor(name: string, chainId: string, logoUrl: string) {
+    constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string) {
         super();
+        this.infuraUrl = infuraUrl;
         this.name = name;
         this.chainId = chainId;
         this.logoUrl = logoUrl;
@@ -96,12 +96,14 @@ class EthereumChain extends AbstractChain {
     }
 
     createKeyFromSeed(seed: string): IPrivateKey {
-        const chainSeed = sha256(seed + this.chainId);
-        const bytes = Bytes.from(chainSeed, 'hex');
-        const privateKeyValue = new PrivateKey(KeyType.K1, bytes);
-        const privateKeyHex = '0x' + sha256(privateKeyValue.toString());
+        const wallet = new ethers.Wallet(seed);
 
-        return new EthereumPrivateKey(privateKeyHex);
+        console.log('Wallet', wallet);
+        return new EthereumPrivateKey(wallet.privateKey);
+    }
+
+    getInfuraUrl(): string {
+        return this.infuraUrl;
     }
 }
 
@@ -167,8 +169,26 @@ class Token extends AbstractToken {
     }
 }
 
-const EthereumMainnetChain = new EthereumChain('Ethereum', '1', 'https://cryptologos.cc/logos/ethereum-eth-logo.png');
-const EthereumSepoliaChain = new EthereumChain('Sepolia', '1', 'https://cryptologos.cc/logos/ethereum-eth-logo.png');
+const EthereumMainnetChain = new EthereumChain(
+    `https://mainnet.infura.io/v3/${INFURA_KEY}`,
+    'Ethereum',
+    '1',
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png'
+);
+const EthereumSepoliaChain = new EthereumChain(
+    `https://sepolia.infura.io/v3/${INFURA_KEY}`,
+    'Sepolia',
+    '1',
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png'
+);
+let provider;
+
+if (settings.env === 'testnet' || settings.env === 'staging') {
+    provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
+} else {
+    provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+}
+
 const ETHToken = new Token(
     EthereumMainnetChain,
     'Ether',
