@@ -11,6 +11,7 @@ import {
 import {
     IPublicKey,
     IToken,
+    IChain,
     TransactionType,
     AbstractChain,
     AbstractToken,
@@ -22,7 +23,6 @@ import {
     AbstractAsset,
     IPrivateKey,
 } from './types';
-import { TKeyType } from '@veramo/core';
 import { Bytes, KeyType, PrivateKey } from '@wharfkit/antelope';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 
@@ -78,18 +78,21 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 }
 
-export class EthereumChain extends AbstractChain {
+class EthereumChain extends AbstractChain {
     protected name: string;
     protected chainId: string;
     protected logoUrl: string;
-    protected nativeToken: ETHToken;
+    protected nativeToken: IToken;
 
     constructor(name: string, chainId: string, logoUrl: string) {
         super();
         this.name = name;
         this.chainId = chainId;
         this.logoUrl = logoUrl;
-        this.nativeToken = new ETHToken(this);
+    }
+
+    addToken(token: IToken): void {
+        this.nativeToken = token;
     }
 
     createKeyFromSeed(seed: string): IPrivateKey {
@@ -102,7 +105,7 @@ export class EthereumChain extends AbstractChain {
     }
 }
 
-export class ETHAsset extends AbstractAsset {
+export class Asset extends AbstractAsset {
     protected token: IToken;
     protected amount: bigint;
 
@@ -111,34 +114,40 @@ export class ETHAsset extends AbstractAsset {
         this.token = token;
         this.amount = amount;
     }
-
-    async getUsdValue(): Promise<number> {
-        const price = await getPrice('ethereum', 'usd');
-        const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
-
-        return parseFloat(usdValue.toString());
-    }
 }
 
-export class ETHToken extends AbstractToken {
-    protected name = 'Ether';
-    protected symbol = 'ETH';
-    protected precision = 18;
-    protected chain: EthereumChain;
-    protected logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
+class Token extends AbstractToken {
+    protected name: string;
+    protected symbol: string;
+    protected precision: number;
+    protected chain: IChain;
+    protected logoUrl: string;
+    protected coinmarketCapId: string;
 
-    constructor(chain: EthereumChain) {
+    constructor(
+        chain: IChain,
+        name: string,
+        symbol: string,
+        precision: number,
+        logoUrl: string,
+        coinmarketCapId: string
+    ) {
         super();
+        this.name = name;
+        this.symbol = symbol;
+        this.precision = precision;
+        this.logoUrl = logoUrl;
+        this.coinmarketCapId = coinmarketCapId;
         this.chain = chain;
     }
 
     async getUsdPrice(): Promise<number> {
-        return await getPrice('ethereum', 'usd');
+        return await getPrice(this.coinmarketCapId, 'usd');
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
     }
-    async getBalance(account?: IAccount): Promise<ETHAsset> {
+    async getBalance(account?: IAccount): Promise<Asset> {
         const lookupAccount: IAccount =
             account ||
             this.account ||
@@ -148,7 +157,7 @@ export class ETHToken extends AbstractToken {
 
         const balanceWei = await provider.getBalance(lookupAccount.getName() || '');
 
-        return new ETHAsset(this, balanceWei);
+        return new Asset(this, balanceWei);
     }
 
     async getUsdValue(account?: IAccount): Promise<number> {
@@ -158,21 +167,46 @@ export class ETHToken extends AbstractToken {
     }
 }
 
+const EthereumMainnetChain = new EthereumChain('Ethereum', '1', 'https://cryptologos.cc/logos/ethereum-eth-logo.png');
+const EthereumSepoliaChain = new EthereumChain('Sepolia', '1', 'https://cryptologos.cc/logos/ethereum-eth-logo.png');
+const ETHToken = new Token(
+    EthereumMainnetChain,
+    'Ether',
+    'ETH',
+    18,
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    'ethereum'
+);
+const ETHSepoliaToken = new Token(
+    EthereumSepoliaChain,
+    'Ether',
+    'ETH',
+    18,
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    'ethereum'
+);
+
+EthereumMainnetChain.addToken(ETHToken);
+EthereumSepoliaChain.addToken(ETHSepoliaToken);
+export { EthereumMainnetChain, EthereumSepoliaChain, ETHToken, ETHSepoliaToken };
+
 export class EthereumTransaction implements ITransaction {
     private transaction: TransactionRequest;
     private type?: TransactionType;
     private abi?: string;
-    protected chain = new EthereumChain();
+    protected chain: EthereumChain;
 
-    constructor(transaction: TransactionRequest) {
+    constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
+        this.chain = chain;
     }
 
-    async fromTransaction(
+    static async fromTransaction(
         privateKey: EthereumPrivateKey,
-        transaction: TransactionRequest
+        transaction: TransactionRequest,
+        chain: EthereumChain
     ): Promise<EthereumTransaction> {
-        return new EthereumTransaction(await privateKey.populateTransaction(transaction));
+        return new EthereumTransaction(await privateKey.populateTransaction(transaction), chain);
     }
 
     async getType(): Promise<TransactionType> {
@@ -197,14 +231,14 @@ export class EthereumTransaction implements ITransaction {
             throw new Error('Transaction has no sender');
         }
 
-        return new EthereumAccount(this.transaction.from.toString());
+        return new EthereumAccount(this.chain, this.transaction.from.toString());
     }
     getTo(): EthereumAccount {
         if (!this.transaction.to) {
             throw new Error('Transaction has no recipient');
         }
 
-        return new EthereumAccount(this.transaction.to.toString());
+        return new EthereumAccount(this.chain, this.transaction.to.toString());
     }
     async fetchAbi(): Promise<string> {
         if ((await this.getType()) === TransactionType.transfer) {
@@ -242,18 +276,18 @@ export class EthereumTransaction implements ITransaction {
         if (!decodedData?.args) throw new Error('Failed to decode function name');
         return decodedData.args;
     }
-    async getValue(): Promise<ETHAsset> {
-        return new ETHAsset(new ETHToken(this.chain), BigInt(this.transaction.value || 0));
+    async getValue(): Promise<Asset> {
+        return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
     }
-    async estimateTransactionFee(): Promise<ETHAsset> {
+    async estimateTransactionFee(): Promise<Asset> {
         const wei = await provider.estimateGas(this.transaction);
 
-        return new ETHAsset(new ETHToken(this.chain), wei);
+        return new Asset(this.chain.getNativeToken(), wei);
     }
-    async estimateTransactionTotal(): Promise<ETHAsset> {
+    async estimateTransactionTotal(): Promise<Asset> {
         const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
 
-        return new ETHAsset(new ETHToken(this.chain), amount);
+        return new Asset(this.chain.getNativeToken(), amount);
     }
 }
 
@@ -261,30 +295,37 @@ export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
     protected name: string;
     protected did: string;
-    protected chain = new EthereumChain();
-    protected nativeToken = new ETHToken(this.chain);
+    protected chain: EthereumChain;
 
-    constructor(address: string, privateKey?: EthereumPrivateKey) {
+    constructor(chain: EthereumChain, address: string, privateKey?: EthereumPrivateKey) {
         super();
         this.privateKey = privateKey;
         this.name = address;
-        const did = `did:ethr:${address}`;
+        const did = `did:ethr:${address}`; // needs to be different for different chains
 
         this.did = did;
     }
 
-    async fromPrivateKey(privateKey: EthereumPrivateKey): Promise<EthereumAccount> {
-        const address = computeAddress(privateKey.getPublicKey().toString());
-
-        return new EthereumAccount(address, privateKey);
+    static async fromAddress(chain: EthereumChain, address: string): Promise<EthereumAccount> {
+        return new EthereumAccount(chain, address);
     }
 
-    async fromPublicKey(publicKey: EthereumPublicKey): Promise<EthereumAccount> {
-        return new EthereumAccount(await publicKey.getAddress());
+    static async fromPublicKey(chain: EthereumChain, publicKey: EthereumPublicKey): Promise<EthereumAccount> {
+        return new EthereumAccount(chain, await publicKey.getAddress());
+    }
+
+    static async fromPrivateKey(chain: EthereumChain, privateKey: EthereumPrivateKey): Promise<EthereumAccount> {
+        const address = computeAddress(privateKey.getPublicKey().toString());
+
+        return new EthereumAccount(chain, address, privateKey);
+    }
+
+    getDid(): string {
+        throw new Error('Method not implemented.');
     }
 
     async getTokens(): Promise<IToken[]> {
-        return [this.nativeToken];
+        return [this.getNativeToken()];
     }
 
     async signTransaction(transaction: TransactionRequest): Promise<string> {

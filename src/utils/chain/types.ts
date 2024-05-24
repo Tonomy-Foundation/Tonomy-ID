@@ -60,7 +60,7 @@ export abstract class AbstractChain {
     protected abstract name: string;
     protected abstract chainId: string;
     protected abstract logoUrl: string;
-    protected abstract nativeToken: IToken;
+    protected abstract nativeToken?: IToken;
 
     getName(): string {
         return this.name;
@@ -72,6 +72,7 @@ export abstract class AbstractChain {
         return this.logoUrl;
     }
     getNativeToken(): IToken {
+        if (!this.nativeToken) throw new Error('Native token not set');
         return this.nativeToken;
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
@@ -107,7 +108,12 @@ export abstract class AbstractAsset implements IAsset {
     getAmount(): bigint {
         return this.amount;
     }
-    abstract getUsdValue(): Promise<number>;
+    async getUsdValue(): Promise<number> {
+        const price = await this.token.getUsdPrice();
+        const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
+
+        return parseFloat(usdValue.toString());
+    }
     getSymbol(): string {
         return this.token.getSymbol();
     }
@@ -177,9 +183,6 @@ export abstract class AbstractToken implements IToken {
 }
 
 export interface IAccount {
-    // initialize from private key + optional account name
-    fromPrivateKey(options: unknown): Promise<IAccount>;
-
     getName(): string;
     getDid(): string;
     getChain(): IChain;
@@ -212,10 +215,6 @@ export abstract class AbstractAccount implements IAccount {
     protected abstract name: string;
     protected abstract did: string;
     protected abstract chain: IChain;
-    protected abstract nativeToken: IToken;
-
-    // initialize from private key + optional account name
-    abstract fromPrivateKey(options: unknown): Promise<IAccount>;
 
     getName(): string {
         return this.name;
@@ -227,7 +226,7 @@ export abstract class AbstractAccount implements IAccount {
         return this.chain;
     }
     getNativeToken(): IToken {
-        return this.nativeToken;
+        return this.chain.getNativeToken();
     }
     abstract getTokens(): Promise<IToken[]>;
     getBalance(token: IToken): Promise<IAsset> {
