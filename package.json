@@ -30,7 +30,7 @@
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "0.20.1-development.1",
+        "@tonomy/tonomy-id-sdk": "0.21.0-development.1",
         "@veramo/core": "^6.0.0",
         "@wharfkit/antelope": "^0.7.1",
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
