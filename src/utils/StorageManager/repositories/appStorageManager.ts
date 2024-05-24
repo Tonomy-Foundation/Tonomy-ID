@@ -1,6 +1,6 @@
-import { AppStorageRepository } from './AppSettingRepository';
+import { AppStorageRepository } from './appSettingRepository';
 
-export abstract class AppStorage {
+export abstract class AppStorageManager {
     protected repository: AppStorageRepository;
 
     constructor(repository: AppStorageRepository) {

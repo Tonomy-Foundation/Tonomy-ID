@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm/browser';
 
-@Entity('storage')
-export class storage {
+@Entity('AppStorage')
+export class AppStorage {
     @PrimaryGeneratedColumn()
     id!: number;
 

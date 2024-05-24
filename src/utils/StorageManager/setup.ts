@@ -1,15 +1,16 @@
 import { DataSource } from 'typeorm/browser';
-import { storage } from './entities/keyStorage';
+import { KeyStorage } from './entities/keyStorage';
+import { AppStorage } from './entities/appStorage';
 import * as ExpoSQLiteDriver from 'expo-sqlite';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyManager';
-import { AppStorageRepository } from './repositories/AppSettingRepository';
-import { AppStorage } from './repositories/appStorage';
+import { AppStorageRepository } from './repositories/appSettingRepository';
+import { AppStorageManager } from './repositories/appStorageManager';
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLiteDriver,
-    entities: [storage],
+    entities: [KeyStorage, AppStorage],
     synchronize: false,
     type: 'expo',
 });
@@ -27,7 +28,7 @@ export const keyManager = new ConcreteKeyManager(keyStorageRepository);
 // Create the app storage repository instances
 const appStorageRepository = new AppStorageRepository(dataSource);
 
-class ConcreteAppManager extends AppStorage {
+class ConcreteAppManager extends AppStorageManager {
     constructor(repository: AppStorageRepository) {
         super(repository);
     }

@@ -1,6 +1,6 @@
 import { KeyStorageRepository } from './KeyStorageRepository';
-import { IPrivateKey } from '../../utils/chain/types';
-import { EthereumPrivateKey } from '../../utils/chain/etherum';
+import { IPrivateKey } from '../../chain/types';
+import { EthereumPrivateKey } from '../../chain/etherum';
 
 export abstract class KeyManager {
     protected repository: KeyStorageRepository;
@@ -10,7 +10,7 @@ export abstract class KeyManager {
     }
 
     public async addKey(name: string, privateKey: IPrivateKey): Promise<void> {
-        await this.repository.storeKey(name, privateKey.getPrivateKey());
+        await this.repository.storeKey(name, privateKey);
     }
 
     public async findByName(name: string): Promise<IPrivateKey | null> {

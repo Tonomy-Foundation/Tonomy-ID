@@ -3,8 +3,8 @@ import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
 import { Wallet } from 'ethers';
-import { appStorage, keyManager } from '../StorageManager/setup';
-import { keyStorageRepository } from '../StorageManager/repositories/storageRepository';
+import { appStorage, keyManager } from './StorageManager/setup';
+import { keyStorageRepository } from './StorageManager/repositories/storageRepository';
 import { IPrivateKey, IChain } from '../utils/chain/types';
 import settings from '../settings';
 

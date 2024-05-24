@@ -15,7 +15,7 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { appStorage, keyManager } from '../StorageManager/setup';
+import { appStorage, keyManager } from '../utils/StorageManager/setup';
 
 const vestingContract = VestingContract.Instance;
 

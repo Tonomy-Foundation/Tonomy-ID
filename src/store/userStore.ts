@@ -14,8 +14,8 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import { keyStorageRepository } from '../StorageManager/repositories/storageRepository';
-import { appStorage, dataSource, keyManager } from '../StorageManager/setup';
+import { keyStorageRepository } from '../utils/StorageManager/repositories/storageRepository';
+import { appStorage, dataSource, keyManager } from '../utils/StorageManager/setup';
 
 export enum UserStatus {
     NONE = 'NONE',
