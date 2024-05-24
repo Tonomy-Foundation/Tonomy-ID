@@ -95,7 +95,6 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
         ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
     }
 
-    console.log('ethereum', ethereumKey);
     // Save the key and seed to the keyStorage
     await keyStorageRepo.create('seed', seedData.seed);
     await keyStorageRepo.create('ethereum', ethereumKey.privateKeyHex);
