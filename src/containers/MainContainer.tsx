@@ -15,7 +15,6 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 
 const vestingContract = VestingContract.Instance;
 
@@ -192,25 +191,8 @@ export default function MainContainer({ did }: { did?: string }) {
         );
     };
 
-    const getStorageData = async () => {
-        console.log('storage');
-        const account = await keyStorage.findByName('ethereum');
-        const seed = await appStorage.findByName('seed');
-
-        console.log(seed, account);
-    };
-
     return (
         <SafeAreaView style={styles.container}>
-            <TButtonContained
-                style={[styles.button, styles.marginTop]}
-                icon="qrcode-scan"
-                onPress={() => {
-                    getStorageData();
-                }}
-            >
-                Scan QR Code
-            </TButtonContained>
             {isLoadingView ? (
                 <View style={styles.requestView}>
                     <Image source={require('../assets/tonomy/connecting.png')}></Image>
