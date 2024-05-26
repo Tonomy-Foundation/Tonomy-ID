@@ -28,6 +28,7 @@ export interface IPrivateKey {
     getType(): Promise<TKeyType>;
     getPublicKey(): Promise<IPublicKey>;
     signTransaction(transaction: unknown): Promise<unknown>;
+    toString(): Promise<string>;
 }
 
 export abstract class AbstractPrivateKey implements IPrivateKey {
@@ -45,6 +46,9 @@ export abstract class AbstractPrivateKey implements IPrivateKey {
 
     abstract getPublicKey(): Promise<IPublicKey>;
     abstract signTransaction(transaction: unknown): Promise<unknown>;
+    async toString(): Promise<string> {
+        return this.privateKeyHex;
+    }
 }
 
 export interface IChain {

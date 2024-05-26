@@ -3,8 +3,7 @@ import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
 import { Wallet } from 'ethers';
-import { appStorage, keyManager } from './StorageManager/setup';
-import { keyStorageRepository } from './StorageManager/repositories/storageRepository';
+import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
 import settings from '../settings';
 
@@ -94,6 +93,6 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     }
 
     // Save the key and seed to the keyStorage
-    await keyManager.addKey('ethereum', ethereumKey);
+    await keyStorage.addKey('ethereum', ethereumKey);
     await appStorage.addNewSetting('seed', seedData.seed);
 }

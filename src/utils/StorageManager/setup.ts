@@ -3,7 +3,7 @@ import { KeyStorage } from './entities/keyStorage';
 import { AppStorage } from './entities/appStorage';
 import * as ExpoSQLiteDriver from 'expo-sqlite';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
-import { KeyManager } from './repositories/keyManager';
+import { KeyManager } from './repositories/keyStorageManager';
 import { AppStorageRepository } from './repositories/appSettingRepository';
 import { AppStorageManager } from './repositories/appStorageManager';
 
@@ -23,7 +23,7 @@ class ConcreteKeyManager extends KeyManager {
         super(repository);
     }
 }
-export const keyManager = new ConcreteKeyManager(keyStorageRepository);
+export const keyStorage = new ConcreteKeyManager(keyStorageRepository);
 
 // Create the app storage repository instances
 const appStorageRepository = new AppStorageRepository(dataSource);

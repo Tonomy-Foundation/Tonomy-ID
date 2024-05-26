@@ -9,13 +9,20 @@ export class AppStorageRepository {
     }
 
     public async storeSetting(name: string, value: string): Promise<AppStorage> {
-        const appStorageEntity = this.ormRepository.create({ name, value });
+        const appStorageEntity = this.ormRepository.create({
+            name,
+            value,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
 
         return this.ormRepository.save(appStorageEntity);
     }
 
     public async findByName(name: string): Promise<AppStorage | null> {
-        return this.ormRepository.findOne({ where: { name } });
+        const storage = this.ormRepository.findOne({ where: { name } });
+
+        return storage;
     }
 
     public async delete(): Promise<void> {

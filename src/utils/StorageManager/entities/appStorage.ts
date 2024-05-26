@@ -11,6 +11,9 @@ export class AppStorage {
     @Column()
     value!: string;
 
-    addedAt: Date;
-    updatedAt: Date;
+    @Column({ type: 'datetime' })
+    createdAt!: Date;
+
+    @Column({ type: 'datetime' })
+    updatedAt!: Date;
 }

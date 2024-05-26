@@ -14,8 +14,6 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import { keyStorageRepository } from '../utils/StorageManager/repositories/storageRepository';
-import { appStorage, dataSource, keyManager } from '../utils/StorageManager/setup';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -55,9 +53,6 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     logout: async (reason: string) => {
         await get().user.logout();
-
-        await keyManager.delete();
-        await appStorage.delete();
 
         get().setStatus(UserStatus.NOT_LOGGED_IN);
 

@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm/browser';
-import { IPrivateKey } from '../../chain/types';
 
 @Entity('KeyStorage')
 export class KeyStorage {
@@ -10,8 +9,11 @@ export class KeyStorage {
     name!: string;
 
     @Column()
-    value!: IPrivateKey;
+    value!: string;
 
-    addedAt: Date;
-    updatedAt: Date;
+    @Column({ type: 'datetime' })
+    createdAt!: Date;
+
+    @Column({ type: 'datetime' })
+    updatedAt!: Date;
 }

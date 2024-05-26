@@ -9,10 +9,17 @@ export class KeyStorageRepository {
         this.ormRepository = dataSource.getRepository(KeyStorage);
     }
 
-    public async storeKey(name: string, value: IPrivateKey): Promise<KeyStorage> {
-        const keyStorageEntity = this.ormRepository.create({ name, value });
+    public async storeKey(name: string, value: string): Promise<KeyStorage> {
+        const keyStorageEntity = this.ormRepository.create({
+            name,
+            value,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
 
-        return this.ormRepository.save(keyStorageEntity);
+        const storage = this.ormRepository.save(keyStorageEntity);
+
+        return storage;
     }
 
     public async findByName(name: string): Promise<KeyStorage | null> {

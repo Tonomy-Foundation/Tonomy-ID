@@ -10,14 +10,19 @@ export abstract class KeyManager {
     }
 
     public async addKey(name: string, privateKey: IPrivateKey): Promise<void> {
-        await this.repository.storeKey(name, privateKey);
+        await this.repository.storeKey(name, await privateKey.toString());
     }
 
     public async findByName(name: string): Promise<IPrivateKey | null> {
         const key = await this.repository.findByName(name);
+        let privateKey;
 
-        if (key && name === 'ethereum') {
-            return new EthereumPrivateKey(key.value);
+        if (key && key.name === 'ethereum') {
+            privateKey = new EthereumPrivateKey(key.value);
+        }
+
+        if (key) {
+            return privateKey;
         }
 
         return null;
