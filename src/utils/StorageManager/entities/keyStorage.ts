@@ -1,11 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm/browser';
+import { Entity, Unique, PrimaryGeneratedColumn, Column, Index } from 'typeorm/browser';
 
 @Entity('KeyStorage')
+@Unique(['name'])
 export class KeyStorage {
     @PrimaryGeneratedColumn()
     id!: number;
 
     @Column()
+    @Index()
     name!: string;
 
     @Column()

@@ -7,18 +7,24 @@ export abstract class AppStorageManager {
         this.repository = repository;
     }
 
-    public async addNewSetting(name: string, value: string): Promise<void> {
-        await this.repository.storeSetting(name, value);
+    public async setCryptoSeed(seed: string): Promise<void> {
+        const existingValue = await this.repository.findByName('seed');
+
+        if (existingValue) {
+            existingValue.value = seed;
+            await this.repository.updateSetting(existingValue);
+        } else {
+            await this.repository.addNewSetting('seed', seed);
+        }
     }
 
-    public async findByName(name: string): Promise<string | null> {
-        const key = await this.repository.findByName(name);
+    public async getCryptoSeed(): Promise<string | null> {
+        const seed = await this.repository.findByName('seed');
 
-        if (key) return key.value;
-        else return null;
+        return seed ? seed.value : null;
     }
 
     public async delete(): Promise<void> {
-        await this.repository.delete();
+        await this.repository.deleteAll();
     }
 }

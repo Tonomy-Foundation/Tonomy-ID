@@ -34,13 +34,9 @@ export async function testKeyGenerator() {
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
 
-        const ethereumAccount = new EthereumAccount(
-            EthereumSepoliaChain,
-            await privateKeyEth.getAddress(),
-            privateKeyEth
-        );
+        const ethereumAccount = EthereumAccount.fromPrivateKey(EthereumSepoliaChain, privateKeyEth);
 
-        console.log('ethereumAccount:', ethereumAccount.getName());
+        console.log('ethereumAccount:', (await ethereumAccount).getName());
     } catch (e) {
         console.error(e);
     }
@@ -93,6 +89,6 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     }
 
     // Save the key and seed to the keyStorage
-    await keyStorage.addKey('ethereum', ethereumKey);
-    await appStorage.addNewSetting('seed', seedData.seed);
+    await keyStorage.emplaceKey('ethereum', ethereumKey);
+    await appStorage.setCryptoSeed(seedData.seed);
 }

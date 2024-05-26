@@ -1,6 +1,5 @@
 import { Repository, DataSource } from 'typeorm/browser';
 import { KeyStorage } from '../entities/keyStorage';
-import { IPrivateKey } from '../../chain/types';
 
 export class KeyStorageRepository {
     private ormRepository: Repository<KeyStorage>;
@@ -9,7 +8,7 @@ export class KeyStorageRepository {
         this.ormRepository = dataSource.getRepository(KeyStorage);
     }
 
-    public async storeKey(name: string, value: string): Promise<KeyStorage> {
+    public async storeNewKey(name: string, value: string): Promise<KeyStorage> {
         const keyStorageEntity = this.ormRepository.create({
             name,
             value,
@@ -22,11 +21,16 @@ export class KeyStorageRepository {
         return storage;
     }
 
+    public async updateKey(key: KeyStorage): Promise<KeyStorage> {
+        key.updatedAt = new Date();
+        return await this.ormRepository.save(key);
+    }
+
     public async findByName(name: string): Promise<KeyStorage | null> {
         return this.ormRepository.findOne({ where: { name } });
     }
 
-    public async delete(): Promise<void> {
+    public async deleteAll(): Promise<void> {
         await this.ormRepository.delete({});
     }
 }

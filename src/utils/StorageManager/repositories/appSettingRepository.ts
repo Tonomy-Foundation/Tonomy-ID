@@ -1,5 +1,5 @@
 import { Repository, DataSource } from 'typeorm/browser';
-import { AppStorage } from '../entities/appStorage';
+import { AppStorage } from '../entities/appSettings';
 
 export class AppStorageRepository {
     private ormRepository: Repository<AppStorage>;
@@ -8,7 +8,7 @@ export class AppStorageRepository {
         this.ormRepository = dataSource.getRepository(AppStorage);
     }
 
-    public async storeSetting(name: string, value: string): Promise<AppStorage> {
+    public async addNewSetting(name: string, value: string): Promise<AppStorage> {
         const appStorageEntity = this.ormRepository.create({
             name,
             value,
@@ -20,12 +20,17 @@ export class AppStorageRepository {
     }
 
     public async findByName(name: string): Promise<AppStorage | null> {
-        const storage = this.ormRepository.findOne({ where: { name } });
+        const settings = this.ormRepository.findOne({ where: { name } });
 
-        return storage;
+        return settings;
     }
 
-    public async delete(): Promise<void> {
+    public async deleteAll(): Promise<void> {
         await this.ormRepository.delete({});
+    }
+
+    public async updateSetting(settings: AppStorage): Promise<AppStorage> {
+        settings.updatedAt = new Date();
+        return await this.ormRepository.save(settings);
     }
 }

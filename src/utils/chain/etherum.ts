@@ -26,7 +26,7 @@ import {
 } from './types';
 import settings from '../../settings';
 
-const ETHERSCAN_API_KEY = 'your-etherscan-api-key';
+const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
 const INFURA_KEY = settings.config.infuraKey;

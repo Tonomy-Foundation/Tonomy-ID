@@ -1,11 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm/browser';
+import { Entity, Unique, PrimaryGeneratedColumn, Column, Index } from 'typeorm/browser';
 
 @Entity('AppStorage')
+@Unique(['name'])
 export class AppStorage {
     @PrimaryGeneratedColumn()
     id!: number;
 
     @Column()
+    @Index()
     name!: string;
 
     @Column()

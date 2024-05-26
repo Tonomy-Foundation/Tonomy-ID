@@ -53,6 +53,7 @@ type ConfigType = {
     captchaSiteKey: string;
     blockExplorerUrl: string;
     infuraKey: string;
+    etherscanApiKey: string;
 };
 
 type SettingsType = {

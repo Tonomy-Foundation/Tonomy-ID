@@ -9,26 +9,27 @@ export abstract class KeyManager {
         this.repository = repository;
     }
 
-    public async addKey(name: string, privateKey: IPrivateKey): Promise<void> {
-        await this.repository.storeKey(name, await privateKey.toString());
+    public async emplaceKey(name: string, privateKey: IPrivateKey): Promise<void> {
+        const existingKey = await this.repository.findByName(name);
+        const value = await privateKey.exportPrivateKey();
+
+        if (existingKey) {
+            existingKey.value = value;
+            await this.repository.saveKey(existingKey);
+        } else {
+            await this.repository.storeNewKey(name, value);
+        }
     }
 
     public async findByName(name: string): Promise<IPrivateKey | null> {
         const key = await this.repository.findByName(name);
-        let privateKey;
 
         if (key && key.name === 'ethereum') {
-            privateKey = new EthereumPrivateKey(key.value);
-        }
-
-        if (key) {
-            return privateKey;
-        }
-
-        return null;
+            return new EthereumPrivateKey(key.value);
+        } else return null;
     }
 
     public async delete(): Promise<void> {
-        await this.repository.delete();
+        await this.repository.deleteAll();
     }
 }
