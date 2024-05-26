@@ -15,8 +15,6 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
-import { savePrivateKeyToStorage } from '../utils/keys';
-import { EthereumChain } from '../utils/chain/etherum';
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -93,7 +91,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }
 
         try {
-            savePrivateKeyToStorage(getPassphrase());
             await user.saveCaptchaToken(code);
             await user.createPerson();
             await user.saveLocal();
