@@ -39,5 +39,7 @@
     "loggerLevel": "error",
     "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb",
     "blockExplorerUrl": "https://explorer.pangea.web4.world",
-    "tonomyIdSlug": "united-wallet://"
+    "tonomyIdSlug": "united-wallet://",
+    "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
+    "etherscanApiKey":"ID6DBNPAV79QFD8M784Y7SH58HNDDP25PZ"
 }

@@ -1,8 +1,11 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import { EthereumPrivateKey, EthereumAccount } from './chain/etherum';
+import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
 import { Wallet } from 'ethers';
+import { appStorage, keyStorage } from './StorageManager/setup';
+import { IPrivateKey, IChain } from '../utils/chain/types';
+import settings from '../settings';
 
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
@@ -30,9 +33,10 @@ export async function testKeyGenerator() {
         const privateKeyEth = new EthereumPrivateKey(
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
-        const ethereumAccount = new EthereumAccount(await privateKeyEth.getAddress(), privateKeyEth);
 
-        console.log('ethereumAccount:', ethereumAccount.getName());
+        const ethereumAccount = EthereumAccount.fromPrivateKey(EthereumSepoliaChain, privateKeyEth);
+
+        console.log('ethereumAccount:', (await ethereumAccount).getName());
     } catch (e) {
         console.error(e);
     }
@@ -66,9 +70,25 @@ async function generateSeedFromPassword(password: string, salt?: string): Promis
     return { seed: result.rawHash as string, salt };
 }
 
-// async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
-//     const chainSeed = sha256(seed + chain.getChainId());
+async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
+    const chainSeed = sha256(seed + chain.getChainId());
 
-//     // create privateKey from chainSeed
-//     // return privateKey
-// }
+    const privateKey = chain.createKeyFromSeed(chainSeed);
+
+    return privateKey;
+}
+
+export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
+    const seedData = await generateSeedFromPassword(passphrase, salt);
+    let ethereumKey;
+
+    if (settings.env === 'production') {
+        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
+    } else {
+        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
+    }
+
+    // Save the key and seed to the keyStorage
+    await keyStorage.emplaceKey('ethereum', ethereumKey);
+    await appStorage.setCryptoSeed(seedData.seed);
+}

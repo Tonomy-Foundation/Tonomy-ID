@@ -30,9 +30,10 @@
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "0.20.1-development.1",
+        "@tonomy/tonomy-id-sdk": "0.21.0-development.1",
         "@veramo/core": "^6.0.0",
         "@wharfkit/antelope": "^0.7.1",
+        "babel-plugin-transform-typescript-metadata": "^0.3.2",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
         "deepmerge": "^4.2.2",
@@ -46,6 +47,7 @@
         "expo-local-authentication": "~13.4.1",
         "expo-notifications": "~0.20.1",
         "expo-secure-store": "~12.3.1",
+        "expo-sqlite": "~11.3.3",
         "expo-status-bar": "~1.6.0",
         "fast-text-encoding": "^1.0.6",
         "react": "18.2.0",
@@ -64,6 +66,8 @@
         "react-native-svg": "13.9.0",
         "react-native-web": "~0.19.6",
         "react-native-webview": "13.2.2",
+        "reflect-metadata": "^0.1.13",
+        "typeorm": "^0.3.6",
         "zustand": "^3.7.2"
     },
     "devDependencies": {
@@ -95,7 +99,8 @@
         "preset": "jest-expo",
         "transformIgnorePatterns": [
             "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)|argon2"
-        ]
+        ],
+        "testEnvironment": "node"
     },
     "private": true,
     "packageManager": "yarn@3.1.1",

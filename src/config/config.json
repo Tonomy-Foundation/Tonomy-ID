@@ -30,7 +30,7 @@
         "transparencyLearnMore": "#",
         "securityLearnMore": "#"
     },
-    "expoProjectId": "6c32ba89-729d-4286-b909-e1f48918839e",
+    "expoProjectId": "3a65b31c-572d-4537-9ead-f7c4bddf7d29",
     "accountSuffix": ".stag.tonomy.id",
     "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
@@ -39,5 +39,7 @@
     "blockExplorerUrl": "https://local.bloks.io",
     "loggerLevel": "debug",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
-    "tonomyIdSlug": "tonomy-id-development://"
+    "tonomyIdSlug": "tonomy-id-development://",
+    "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
+    "etherscanApiKey":"ESTDTCEUZWS9R56V3FYTXBNAFVQE3EZVIT"
 }

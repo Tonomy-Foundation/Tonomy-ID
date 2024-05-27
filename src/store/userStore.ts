@@ -53,6 +53,7 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     logout: async (reason: string) => {
         await get().user.logout();
+
         get().setStatus(UserStatus.NOT_LOGGED_IN);
 
         await printStorage('logout(): ' + reason);
