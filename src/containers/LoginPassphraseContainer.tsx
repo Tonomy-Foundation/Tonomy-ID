@@ -13,7 +13,6 @@ import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../util
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
-import { EthereumChain } from '../utils/chain/etherum';
 
 const tonomyContract = TonomyContract.Instance;
 
