@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Entity, Unique, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
 @Entity('KeyStorage')
