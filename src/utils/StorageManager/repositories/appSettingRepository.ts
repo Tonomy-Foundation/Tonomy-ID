@@ -30,7 +30,6 @@ export class AppStorageRepository {
     }
 
     public async updateSetting(settings: AppStorage): Promise<AppStorage> {
-        settings.updatedAt = new Date();
         return await this.ormRepository.save(settings);
     }
 }

@@ -22,7 +22,6 @@ export class KeyStorageRepository {
     }
 
     public async updateKey(key: KeyStorage): Promise<KeyStorage> {
-        key.updatedAt = new Date();
         return await this.ormRepository.save(key);
     }
 

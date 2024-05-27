@@ -15,7 +15,8 @@ export abstract class KeyManager {
 
         if (existingKey) {
             existingKey.value = value;
-            await this.repository.saveKey(existingKey);
+            existingKey.updatedAt = new Date();
+            await this.repository.updateKey(existingKey);
         } else {
             await this.repository.storeNewKey(name, value);
         }
@@ -29,7 +30,7 @@ export abstract class KeyManager {
         } else return null;
     }
 
-    public async delete(): Promise<void> {
+    public async deleteAll(): Promise<void> {
         await this.repository.deleteAll();
     }
 }

@@ -6,7 +6,7 @@ export class KeyStorage {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+    @Column({ unique: true })
     @Index()
     name!: string;
 

@@ -50,7 +50,7 @@ export async function connect() {
 
     // Get the repositories
     const appTableExists = await checkTableExists(dataSource, 'AppStorage');
-    const keyTableExists = await checkTableExists(dataSource, 'AppStorage');
+    const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
 
     // If the tables don't exist, synchronize the schema
     if (!appTableExists || !keyTableExists) {

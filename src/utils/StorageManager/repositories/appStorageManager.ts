@@ -12,6 +12,7 @@ export abstract class AppStorageManager {
 
         if (existingValue) {
             existingValue.value = seed;
+            existingValue.updatedAt = new Date();
             await this.repository.updateSetting(existingValue);
         } else {
             await this.repository.addNewSetting('seed', seed);
@@ -24,7 +25,7 @@ export abstract class AppStorageManager {
         return seed ? seed.value : null;
     }
 
-    public async delete(): Promise<void> {
+    public async deleteAll(): Promise<void> {
         await this.repository.deleteAll();
     }
 }

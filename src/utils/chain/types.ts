@@ -58,10 +58,9 @@ export interface IChain {
     // getApiEndpoint(): string;
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
-    getInfuraUrl(): string;
 }
 
-export abstract class AbstractChain {
+export abstract class AbstractChain implements IChain {
     protected abstract name: string;
     protected abstract chainId: string;
     protected abstract logoUrl: string;
