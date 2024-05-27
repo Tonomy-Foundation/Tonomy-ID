@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.86.0",
+    "version": "0.87.0",
     "scripts": {
         "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "yarn run build:prepare && npx eas device:create",
@@ -30,7 +30,7 @@
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
-        "@tonomy/tonomy-id-sdk": "0.20.1-development.1",
+        "@tonomy/tonomy-id-sdk": "0.21.0-development.1",
         "@veramo/core": "^6.0.0",
         "@wharfkit/antelope": "^0.7.1",
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
@@ -99,7 +99,8 @@
         "preset": "jest-expo",
         "transformIgnorePatterns": [
             "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)|argon2"
-        ]
+        ],
+        "testEnvironment": "node"
     },
     "private": true,
     "packageManager": "yarn@3.1.1",

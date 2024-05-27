@@ -1,10 +1,9 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import { EthereumPrivateKey, EthereumAccount, EthereumChain } from './chain/etherum';
+import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
 import { Wallet } from 'ethers';
-import { dataSource } from '../veramo/setup';
-import { keyStorageRepository } from '../veramo/repositories/storageRepository';
+import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
 import settings from '../settings';
 
@@ -35,9 +34,9 @@ export async function testKeyGenerator() {
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
 
-        const ethereumAccount = new EthereumAccount(await privateKeyEth.getAddress(), privateKeyEth);
+        const ethereumAccount = EthereumAccount.fromPrivateKey(EthereumSepoliaChain, privateKeyEth);
 
-        console.log('ethereumAccount:', ethereumAccount.getName());
+        console.log('ethereumAccount:', (await ethereumAccount).getName());
     } catch (e) {
         console.error(e);
     }
@@ -80,24 +79,16 @@ async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<
 }
 
 export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
-    const keyStorageRepo = new keyStorageRepository(dataSource);
-
     const seedData = await generateSeedFromPassword(passphrase, salt);
     let ethereumKey;
 
-    if (settings.env === 'staging' || settings.env === 'testnet') {
-        ethereumKey = await generatePrivateKeyFromSeed(
-            passphrase,
-            new EthereumChain('Sepolia', '11155111', 'https://cryptologos.cc/logos/ethereum-eth-logo.png')
-        );
+    if (settings.env === 'production') {
+        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
     } else {
-        ethereumKey = await generatePrivateKeyFromSeed(
-            passphrase,
-            new EthereumChain('Ethereum', '1', 'https://cryptologos.cc/logos/ethereum-eth-logo.png')
-        );
+        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
     }
 
     // Save the key and seed to the keyStorage
-    await keyStorageRepo.create('seed', seedData.seed);
-    await keyStorageRepo.create('ethereum', ethereumKey.privateKeyHex);
+    await keyStorage.emplaceKey('ethereum', ethereumKey);
+    await appStorage.setCryptoSeed(seedData.seed);
 }
