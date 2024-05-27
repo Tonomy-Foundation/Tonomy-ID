@@ -1,4 +1,4 @@
-import { Repository, DataSource } from 'typeorm/browser';
+import { Repository, DataSource } from 'typeorm';
 import { KeyStorage } from '../entities/keyStorage';
 
 export class KeyStorageRepository {

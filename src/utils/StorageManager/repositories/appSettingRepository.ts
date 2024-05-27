@@ -1,4 +1,4 @@
-import { Repository, DataSource } from 'typeorm/browser';
+import { Repository, DataSource } from 'typeorm';
 import { AppStorage } from '../entities/appSettings';
 
 export class AppStorageRepository {

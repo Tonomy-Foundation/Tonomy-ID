@@ -1,4 +1,4 @@
-import { DataSource, Repository, getRepository } from 'typeorm/browser';
+import { DataSource } from 'typeorm';
 import { KeyStorage } from './entities/keyStorage';
 import { AppStorage } from './entities/appSettings';
 import * as ExpoSQLiteDriver from 'expo-sqlite';

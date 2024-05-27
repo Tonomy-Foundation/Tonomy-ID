@@ -1,4 +1,4 @@
-import { Entity, Unique, PrimaryGeneratedColumn, Column, Index } from 'typeorm/browser';
+import { Entity, Unique, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
 @Entity('AppStorage')
 @Unique(['name'])
