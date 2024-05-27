@@ -30,6 +30,9 @@ export class AppStorageRepository {
     }
 
     public async updateSetting(settings: AppStorage): Promise<AppStorage> {
-        return await this.ormRepository.save(settings);
+        const findDoc = await this.ormRepository.findOne({ where: { name: settings.name, id: settings.id } });
+
+        if (findDoc) return await this.ormRepository.save(settings);
+        else throw new Error('Name not exists ');
     }
 }

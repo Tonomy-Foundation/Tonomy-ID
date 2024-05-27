@@ -22,7 +22,10 @@ export class KeyStorageRepository {
     }
 
     public async updateKey(key: KeyStorage): Promise<KeyStorage> {
-        return await this.ormRepository.save(key);
+        const findDoc = await this.ormRepository.findOne({ where: { name: key.name, id: key.id } });
+
+        if (findDoc) return await this.ormRepository.save(key);
+        else throw new Error('Name not exists ');
     }
 
     public async findByName(name: string): Promise<KeyStorage | null> {
