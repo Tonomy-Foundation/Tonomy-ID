@@ -64,7 +64,7 @@ export default function CommunicationModule() {
                 if (method !== 'jwk' && id !== parseDid(await user.getDid()).id) {
                     if (getSettings().loggerLevel === 'debug')
                         console.log(
-                            'LoginRequestsMessage sender did not match user did',
+                            'LoginRequesrtsMessage sender did not match user did',
                             senderDid,
                             await user.getDid()
                         );
