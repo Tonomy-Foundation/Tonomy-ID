@@ -40,11 +40,11 @@ export default function SignTransactionConsentContainer({
         if (requestEvent) {
             const response = rejectRequest(requestEvent);
 
-            await web3wallet.respondSessionRequest({
+            await web3wallet?.respondSessionRequest({
                 topic,
                 response,
             });
-            navigation.navigate('Drawer', { screen: 'UserHome' });
+            navigation.navigate('UserHome');
         }
     }
 

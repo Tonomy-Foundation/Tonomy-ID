@@ -25,7 +25,7 @@ export default function WalletConnectLoginContainer({
     const parsedUrl = new URL(url);
 
     const onCancel = async () => {
-        await web3wallet.rejectSession({
+        await web3wallet?.rejectSession({
             id: id,
             reason: getSdkError('USER_REJECTED'),
         });
@@ -52,14 +52,14 @@ export default function WalletConnectLoginContainer({
                     };
                 });
 
-                await web3wallet.approveSession({
+                await web3wallet?.approveSession({
                     id,
                     relayProtocol: relays[0].protocol,
                     namespaces,
                 });
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             } catch (e) {
-                await web3wallet.rejectSession({
+                await web3wallet?.rejectSession({
                     id: id,
                     reason: getSdkError('USER_REJECTED'),
                 });
