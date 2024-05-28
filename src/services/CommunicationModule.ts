@@ -162,7 +162,7 @@ export default function CommunicationModule() {
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
         const { topic, params } = requestEvent;
         const { request } = params;
-        const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+        const requestSessionData = web3wallet?.engine.signClient.session.get(topic);
 
         switch (request.method) {
             case 'eth_sendTransaction':

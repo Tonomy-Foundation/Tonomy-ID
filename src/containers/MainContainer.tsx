@@ -16,6 +16,7 @@ import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
 import { _pair } from '../services/WalletConnect/WalletConnectModule';
+import useInitialization from '../hooks/useWalletConnect';
 
 const vestingContract = VestingContract.Instance;
 
@@ -28,6 +29,11 @@ export default function MainContainer({ did }: { did?: string }) {
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
+    const initialized = useInitialization();
+
+    useEffect(() => {
+        console.log('Web3WalletSDK initialized:', initialized);
+    }, [initialized]);
 
     useEffect(() => {
         setUserName();
