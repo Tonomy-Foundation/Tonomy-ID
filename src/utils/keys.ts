@@ -34,7 +34,7 @@ export async function testKeyGenerator() {
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
 
-        const ethereumAccount = EthereumAccount.fromPrivateKey(EthereumSepoliaChain, privateKeyEth);
+        const ethereumAccount = await EthereumAccount.fromPrivateKey(EthereumSepoliaChain, privateKeyEth);
 
         console.log('ethereumAccount:', (await ethereumAccount).getName());
     } catch (e) {

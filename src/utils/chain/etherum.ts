@@ -165,8 +165,8 @@ const EthereumMainnetChain = new EthereumChain(
 );
 const EthereumSepoliaChain = new EthereumChain(
     `https://sepolia.infura.io/v3/${INFURA_KEY}`,
-    'Sepolia',
-    '1',
+    'sepolia',
+    '11155111',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
 let provider: JsonRpcProvider;
@@ -323,6 +323,7 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     static async fromPrivateKey(chain: EthereumChain, privateKey: EthereumPrivateKey): Promise<EthereumAccount> {
+        console.log('privateKey.getPublicKey()', privateKey.getPublicKey());
         const address = computeAddress(privateKey.getPublicKey().toString());
 
         return new EthereumAccount(chain, address, privateKey);

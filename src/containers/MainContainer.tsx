@@ -15,6 +15,8 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
+import { initWalletConnect } from '../services/WalletConnect/WalletConnectModule';
+import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 
 const vestingContract = VestingContract.Instance;
 
@@ -79,9 +81,12 @@ export default function MainContainer({ did }: { did?: string }) {
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
-            const did = validateQrCode(data);
+            console.log('Scanned QR Code:', data);
+            await initWalletConnect(data);
 
-            await connectToDid(did);
+            // const did = validateQrCode(data);
+
+            // await connectToDid(did);
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 console.log('Invalid QR Code', JSON.stringify(e, null, 2));
@@ -144,6 +149,18 @@ export default function MainContainer({ did }: { did?: string }) {
 
         return (
             <View style={styles.content}>
+                <TButtonContained
+                    style={[styles.button, styles.marginTop]}
+                    icon="qrcode-scan"
+                    onPress={async () => {
+                        const key = await keyStorage.findByName('ethereum');
+                        const seed = await appStorage.getCryptoSeed();
+
+                        console.log('key:', key, 'seed:', seed);
+                    }}
+                >
+                    Scan QR Code
+                </TButtonContained>
                 {!qrOpened && (
                     <View style={styles.content}>
                         <View style={styles.header}>
