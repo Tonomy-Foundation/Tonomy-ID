@@ -84,16 +84,10 @@ export default function MainContainer({ did }: { did?: string }) {
         }
     }
 
-    async function pair(WCURI: string) {
-        const pairing = await _pair(WCURI);
-
-        return pairing;
-    }
-
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                await pair(data);
+                await _pair(data);
             } else if (data.startsWith('did:')) {
                 const did = validateQrCode(data);
 
