@@ -1,5 +1,7 @@
 import { Core } from '@walletconnect/core';
-import { ICore } from '@walletconnect/types';
+import { ICore, SignClientTypes } from '@walletconnect/types';
+import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
+import { getSdkError } from '@walletconnect/utils';
 import { Web3Wallet, IWeb3Wallet } from '@walletconnect/web3wallet';
 import settings from '../../settings';
 import { keyStorage } from '../../utils/StorageManager/setup';
@@ -45,4 +47,10 @@ export async function createWeb3Wallet() {
 
 export async function _pair(params: { uri: string }) {
     return await core.pairing.pair({ uri: params.uri });
+}
+
+export function rejectRequest(request: SignClientTypes.EventArguments['session_request']) {
+    const { id } = request;
+
+    return formatJsonRpcError(id, getSdkError('USER_REJECTED_METHODS').message);
 }

@@ -14,7 +14,7 @@ import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
-import { currentETHAddress, web3wallet, _pair, createWeb3Wallet } from './WalletConnect/WalletConnectModule';
+import { web3wallet, _pair } from './WalletConnect/WalletConnectModule';
 import { SignClientTypes } from '@walletconnect/types';
 
 export default function CommunicationModule() {
@@ -138,6 +138,19 @@ export default function CommunicationModule() {
             }
         };
     }, [subscribers, user]);
+
+    function sendWalletConnectNotificationOnBackground(title: string, body: string) {
+        if (AppState.currentState === 'background') {
+            scheduleNotificationAsync({
+                content: {
+                    title,
+                    body,
+                },
+                trigger: null,
+            });
+        }
+    }
+
     const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
         if (proposal) {
             navigation.navigate('WalletConnectLogin', {
@@ -150,6 +163,19 @@ export default function CommunicationModule() {
         const { topic, params } = requestEvent;
         const { request } = params;
         const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+
+        switch (request.method) {
+            case 'eth_sendTransaction':
+                navigation.navigate('SignTransaction', {
+                    requestSession: requestSessionData,
+                    requestEvent: requestEvent,
+                });
+                sendWalletConnectNotificationOnBackground(
+                    'Transaction Request',
+                    'Ethereum transaction signing request'
+                );
+                return;
+        }
     }, []);
 
     useEffect(() => {

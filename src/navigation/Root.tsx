@@ -58,7 +58,7 @@ export type RouteStackParamList = {
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
-    SignTransaction: undefined;
+    SignTransaction: { requestEvent: any; requestSession: any };
     WalletConnectLogin: { payload: any; platform?: 'mobile' | 'browser' };
 };
 

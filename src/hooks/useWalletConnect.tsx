@@ -8,8 +8,6 @@ export default function useInitialization() {
     const onInitialize = useCallback(async () => {
         try {
             await connect();
-
-            console.log('initialize');
             await createWeb3Wallet();
             setInitialized(true);
         } catch (err: unknown) {
