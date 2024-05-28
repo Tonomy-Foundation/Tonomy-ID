@@ -32,7 +32,7 @@ const initWalletConnect = async (uri) => {
         );
     }
 
-    console.log('ethereumAccount', ethereumAccount);
+    console.log('ethereumAccount', ethereumAccount.name);
 
     const web3wallet = await Web3Wallet.init({
         core,
@@ -57,16 +57,16 @@ const initWalletConnect = async (uri) => {
                         chains: [`eip155:${EthereumSepoliaChain.getChainId()}`],
                         methods: ['eth_sendTransaction', 'personal_sign'],
                         events: ['accountsChanged', 'chainChanged'],
-                        accounts: [`eip155:${EthereumSepoliaChain.getChainId()}:${ethereumAccount}`],
+                        accounts: [`eip155:${EthereumSepoliaChain.getChainId()}:${ethereumAccount.name}`],
                     },
                 },
             });
 
-            console.log('namespace', ethereumAccount, {
+            console.log('namespace', ethereumAccount.name, {
                 chains: [`eip155:${EthereumSepoliaChain.getChainId()}`],
                 methods: ['eth_sendTransaction', 'personal_sign'],
                 events: ['accountsChanged', 'chainChanged'],
-                accounts: [`eip155:${EthereumSepoliaChain.getChainId()}:${ethereumAccount}`],
+                accounts: [`eip155:${EthereumSepoliaChain.getChainId()}:${ethereumAccount.name}`],
             });
             const session = await web3wallet.approveSession({
                 id: proposal.id,
