@@ -12,9 +12,9 @@ import {
     EthereumSepoliaChain,
 } from '../../utils/chain/etherum';
 
-export let web3wallet: IWeb3Wallet;
+export let web3wallet: IWeb3Wallet | null = null;
 export let core: ICore;
-export let currentETHAddress: string;
+export let currentETHAddress: string | null = null;
 
 export async function createWeb3Wallet() {
     core = new Core({
@@ -64,4 +64,12 @@ export function rejectRequest(request: SignClientTypes.EventArguments['session_r
     const { id } = request;
 
     return formatJsonRpcError(id, getSdkError('USER_REJECTED_METHODS').message);
+}
+
+export async function disconnect() {
+    if (web3wallet) {
+        web3wallet = null;
+    }
+
+    currentETHAddress = null;
 }
