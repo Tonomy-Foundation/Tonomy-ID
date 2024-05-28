@@ -1,6 +1,6 @@
 import { Core } from '@walletconnect/core';
 import { ICore, SignClientTypes } from '@walletconnect/types';
-import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
+import { formatJsonRpcError } from '@json-rpc-tools/utils';
 import { getSdkError } from '@walletconnect/utils';
 import { Web3Wallet, IWeb3Wallet } from '@walletconnect/web3wallet';
 import settings from '../../settings';
@@ -23,8 +23,6 @@ export async function createWeb3Wallet() {
 
     if (privateKey) {
         const ethereumPrivateKey = new EthereumPrivateKey(privateKey?.privateKeyHex); // Cast privateKey to EthereumPrivateKey
-
-        console.log('ethereumPrivateKey', await ethereumPrivateKey.getPublicKey());
 
         ethereumAccount = await EthereumAccount.fromPublicKey(
             EthereumSepoliaChain,

@@ -162,18 +162,6 @@ export default function MainContainer({ did }: { did?: string }) {
 
         return (
             <View style={styles.content}>
-                <TButtonContained
-                    style={[styles.button, styles.marginTop]}
-                    icon="qrcode-scan"
-                    onPress={async () => {
-                        const key = await keyStorage.findByName('ethereum');
-                        const seed = await appStorage.getCryptoSeed();
-
-                        console.log('key:', key, 'seed:', seed);
-                    }}
-                >
-                    Scan QR Code
-                </TButtonContained>
                 {!qrOpened && (
                     <View style={styles.content}>
                         <View style={styles.header}>

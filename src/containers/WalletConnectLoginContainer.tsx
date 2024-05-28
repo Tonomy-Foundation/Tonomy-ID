@@ -23,8 +23,6 @@ export default function WalletConnectLoginContainer({
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const { id, params } = payload;
 
-    console.log('currentETHAddress', currentETHAddress);
-
     const onCancel = async () => {
         await web3wallet.rejectSession({
             id: id,
@@ -60,11 +58,11 @@ export default function WalletConnectLoginContainer({
                 });
                 navigation.navigate('Drawer', { screen: 'UserHome' });
             } catch (e) {
-                console.log('error ');
                 await web3wallet.rejectSession({
                     id: id,
-                    reason: getSdkError('EXPIRED'),
+                    reason: getSdkError('USER_REJECTED'),
                 });
+                navigation.navigate('Drawer', { screen: 'UserHome' });
             }
         }
     }
