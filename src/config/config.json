@@ -41,5 +41,6 @@
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
     "tonomyIdSlug": "tonomy-id-development://",
     "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
-    "etherscanApiKey":"ESTDTCEUZWS9R56V3FYTXBNAFVQE3EZVIT"
+    "etherscanApiKey":"ESTDTCEUZWS9R56V3FYTXBNAFVQE3EZVIT",
+    "walletConnectProjectId":"2850896ad9cf6c1d958203b00b199c2d"
 }

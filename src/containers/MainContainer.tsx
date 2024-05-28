@@ -15,7 +15,7 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { initWalletConnect } from '../services/WalletConnect/WalletConnectModule';
+import { _pair } from '../services/WalletConnect/WalletConnectModule';
 import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 
 const vestingContract = VestingContract.Instance;
@@ -79,14 +79,27 @@ export default function MainContainer({ did }: { did?: string }) {
         }
     }
 
+    async function pair(WCURI: string) {
+        const pairing = await _pair({ uri: WCURI });
+
+        return pairing;
+    }
+
     async function onScan({ data }: BarCodeScannerResult) {
         try {
-            console.log('Scanned QR Code:', data);
-            await initWalletConnect(data);
+            if (data.startsWith('wc:')) {
+                await pair(data);
+            } else if (data.startsWith('did:')) {
+                const did = validateQrCode(data);
 
-            // const did = validateQrCode(data);
-
-            // await connectToDid(did);
+                await connectToDid(did);
+            } else {
+                errorStore.setError({
+                    title: 'Invalid QR Code',
+                    error: new Error(`This is not a supported QR code.`),
+                    expected: false,
+                });
+            }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 console.log('Invalid QR Code', JSON.stringify(e, null, 2));

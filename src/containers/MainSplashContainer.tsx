@@ -8,25 +8,13 @@ import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
-import settings from '../settings';
 import { Images } from '../assets';
-import { connect } from '../utils/StorageManager/setup';
+import useInitialization from '../hooks/useWalletConnect';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
-
-    useEffect(() => {
-        async function initializeApp() {
-            try {
-                await connect();
-            } catch (error) {
-                console.log('Failed to initialize data source:', error);
-            }
-        }
-
-        initializeApp();
-    }, []);
+    const initialized = useInitialization();
 
     useEffect(() => {
         async function main() {
@@ -64,14 +52,14 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         }
 
         main();
-    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user]);
+    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, initialized]);
 
     return (
         <LayoutComponent
             body={
                 <View>
-                    <Image style={styles.mainlogo} source={Images.GetImage('logo1024')}></Image>
-                    <Image style={styles.tonomylogo} source={Images.GetImage('logo1024')}></Image>
+                    <Image style={styles.mainlogo} source={Images.GetImage('logo1024')} />
+                    <Image style={styles.tonomylogo} source={Images.GetImage('logo1024')} />
                     <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
                 </View>
             }

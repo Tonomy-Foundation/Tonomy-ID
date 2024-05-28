@@ -54,6 +54,7 @@ type ConfigType = {
     blockExplorerUrl: string;
     infuraKey: string;
     etherscanApiKey: string;
+    walletConnectProjectId: string;
 };
 
 type SettingsType = {

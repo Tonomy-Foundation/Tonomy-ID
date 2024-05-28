@@ -9,11 +9,13 @@ import {
     objToBase64Url,
     parseDid,
 } from '@tonomy/tonomy-id-sdk';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
+import { currentETHAddress, web3wallet, _pair, createWeb3Wallet } from './WalletConnect/WalletConnectModule';
+import { SignClientTypes } from '@walletconnect/types';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -136,6 +138,25 @@ export default function CommunicationModule() {
             }
         };
     }, [subscribers, user]);
+    const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
+        if (proposal) {
+            navigation.navigate('WalletConnectLogin', {
+                payload: proposal,
+                platform: 'browser',
+            });
+        }
+    }, []);
+    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
+        const { topic, params } = requestEvent;
+        const { request } = params;
+        const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+    }, []);
 
+    useEffect(() => {
+        if (web3wallet) {
+            web3wallet.on('session_proposal', onSessionProposal);
+            web3wallet.on('session_request', onSessionRequest);
+        }
+    }, [onSessionProposal, onSessionRequest]);
     return null;
 }

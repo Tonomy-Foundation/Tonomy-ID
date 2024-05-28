@@ -9,7 +9,7 @@ import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { useNavigation } from '@react-navigation/native';
 import { SessionTypes } from '@walletconnect/types';
-import { currentETHAddress, web3wallet, _pair } from '../services/WalletConnect/Web3WalletClient';
+import { currentETHAddress, web3wallet, _pair } from '../services/WalletConnect/WalletConnectModule';
 import { getSdkError } from '@walletconnect/utils';
 
 export default function WalletConnectLoginContainer({
@@ -22,6 +22,8 @@ export default function WalletConnectLoginContainer({
     const navigation = useNavigation();
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const { id, params } = payload;
+
+    console.log('currentETHAddress', currentETHAddress);
 
     const onCancel = async () => {
         await web3wallet.rejectSession({
