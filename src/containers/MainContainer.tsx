@@ -16,7 +16,6 @@ import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
 import { _pair } from '../services/WalletConnect/WalletConnectModule';
-import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 
 const vestingContract = VestingContract.Instance;
 
@@ -80,7 +79,7 @@ export default function MainContainer({ did }: { did?: string }) {
     }
 
     async function pair(WCURI: string) {
-        const pairing = await _pair({ uri: WCURI });
+        const pairing = await _pair(WCURI);
 
         return pairing;
     }

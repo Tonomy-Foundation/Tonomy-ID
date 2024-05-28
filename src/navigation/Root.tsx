@@ -13,6 +13,7 @@ import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import merge from 'deepmerge';
+import { SignClientTypes } from '@walletconnect/types';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
@@ -58,8 +59,14 @@ export type RouteStackParamList = {
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
-    SignTransaction: { requestEvent: any; requestSession: any };
-    WalletConnectLogin: { payload: any; platform?: 'mobile' | 'browser' };
+    SignTransaction: {
+        requestEvent: SignClientTypes.EventArguments['session_request'];
+        requestSession: any; //TODO remove this in sign transaction task and use requestEvent
+    };
+    WalletConnectLogin: {
+        payload: SignClientTypes.EventArguments['session_proposal'];
+        platform?: 'mobile' | 'browser';
+    };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();

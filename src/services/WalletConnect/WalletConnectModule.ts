@@ -5,7 +5,12 @@ import { getSdkError } from '@walletconnect/utils';
 import { Web3Wallet, IWeb3Wallet } from '@walletconnect/web3wallet';
 import settings from '../../settings';
 import { keyStorage } from '../../utils/StorageManager/setup';
-import { EthereumAccount, EthereumPrivateKey, EthereumSepoliaChain } from '../../utils/chain/etherum';
+import {
+    EthereumAccount,
+    EthereumMainnetChain,
+    EthereumPrivateKey,
+    EthereumSepoliaChain,
+} from '../../utils/chain/etherum';
 
 export let web3wallet: IWeb3Wallet;
 export let core: ICore;
@@ -24,11 +29,19 @@ export async function createWeb3Wallet() {
     if (privateKey) {
         const ethereumPrivateKey = new EthereumPrivateKey(privateKey?.privateKeyHex); // Cast privateKey to EthereumPrivateKey
 
-        ethereumAccount = await EthereumAccount.fromPublicKey(
-            EthereumSepoliaChain,
-            await ethereumPrivateKey.getPublicKey()
-        );
-        currentETHAddress = ethereumAccount.name;
+        if (settings.env === 'production ') {
+            ethereumAccount = await EthereumAccount.fromPublicKey(
+                EthereumMainnetChain,
+                await ethereumPrivateKey.getPublicKey()
+            );
+        } else {
+            ethereumAccount = await EthereumAccount.fromPublicKey(
+                EthereumSepoliaChain,
+                await ethereumPrivateKey.getPublicKey()
+            );
+        }
+
+        currentETHAddress = ethereumAccount.getName();
         web3wallet = await Web3Wallet.init({
             core,
             metadata: {
@@ -43,8 +56,8 @@ export async function createWeb3Wallet() {
     }
 }
 
-export async function _pair(params: { uri: string }) {
-    return await core.pairing.pair({ uri: params.uri });
+export async function _pair(uri: string) {
+    return await core.pairing.pair({ uri });
 }
 
 export function rejectRequest(request: SignClientTypes.EventArguments['session_request']) {

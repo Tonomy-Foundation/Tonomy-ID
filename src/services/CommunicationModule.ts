@@ -14,7 +14,7 @@ import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
-import { web3wallet, _pair } from './WalletConnect/WalletConnectModule';
+import { web3wallet } from './WalletConnect/WalletConnectModule';
 import { SignClientTypes } from '@walletconnect/types';
 
 export default function CommunicationModule() {
@@ -175,6 +175,8 @@ export default function CommunicationModule() {
                     'Ethereum transaction signing request'
                 );
                 return;
+            default:
+                return 'Method not supported';
         }
     }, []);
 

@@ -8,7 +8,7 @@ import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { useNavigation } from '@react-navigation/native';
-import { SessionTypes } from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { currentETHAddress, web3wallet, _pair } from '../services/WalletConnect/WalletConnectModule';
 import { getSdkError } from '@walletconnect/utils';
 
@@ -16,12 +16,13 @@ export default function WalletConnectLoginContainer({
     payload,
     platform,
 }: {
-    payload: any;
+    payload: SignClientTypes.EventArguments['session_proposal'];
     platform: 'mobile' | 'browser';
 }) {
     const navigation = useNavigation();
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const { id, params } = payload;
+    const parsedUrl = new URL(url);
 
     const onCancel = async () => {
         await web3wallet.rejectSession({
@@ -87,7 +88,7 @@ export default function WalletConnectLoginContainer({
                         <Image style={styles.appDialogImage} source={{ uri: icons[0] }} />
                         <TH1 style={commonStyles.textAlignCenter}>{name}</TH1>
                         <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                        <TLink to={url}>{url}</TLink>
+                        <TLink to={url}>{parsedUrl.origin}</TLink>
                     </View>
                 </View>
             }

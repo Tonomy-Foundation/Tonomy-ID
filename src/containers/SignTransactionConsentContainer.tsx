@@ -8,6 +8,7 @@ import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { web3wallet, rejectRequest } from '../services/WalletConnect/WalletConnectModule';
+import { SignClientTypes } from '@walletconnect/types';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -15,8 +16,8 @@ export default function SignTransactionConsentContainer({
     requestEvent,
 }: {
     navigation: Props['navigation'];
-    requestSession: any;
-    requestEvent: any;
+    requestSession: any; //TODO remove this and use requestEvent
+    requestEvent: SignClientTypes.EventArguments['session_request'];
 }) {
     const [showDetails, setShowDetails] = useState(false);
 
