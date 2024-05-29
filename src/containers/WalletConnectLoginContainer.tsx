@@ -7,36 +7,45 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
-import { useNavigation } from '@react-navigation/native';
 import { SignClientTypes } from '@walletconnect/types';
-import { currentETHAddress, web3wallet, _pair } from '../services/WalletConnect/WalletConnectModule';
-import { getSdkError } from '@walletconnect/utils';
+import { currentETHAddress, _pair } from '../services/WalletConnect/WalletConnectModule';
 import { EthereumChainSession, EthereumSepoliaChain } from '../utils/chain/etherum';
+import { Props } from '../screens/WalletConnectLoginScreen';
 
 export default function WalletConnectLoginContainer({
+    navigation,
     payload,
     platform,
 }: {
+    navigation: Props['navigation'];
     payload: SignClientTypes.EventArguments['session_proposal'];
     platform: 'mobile' | 'browser';
 }) {
-    const navigation = useNavigation();
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
     const session = new EthereumChainSession(payload, EthereumSepoliaChain);
 
     const onCancel = async () => {
         await session.rejectSession();
-        navigation.navigate('UserHome');
+        navigation.navigate({
+            name: 'UserHome',
+            params: {},
+        });
     };
 
     const handleAccept = async () => {
         try {
             await session.acceptSession();
-            navigation.navigate('UserHome');
+            navigation.navigate({
+                name: 'UserHome',
+                params: {},
+            });
         } catch (e) {
             await session.rejectSession();
-            navigation.navigate('UserHome');
+            navigation.navigate({
+                name: 'UserHome',
+                params: {},
+            });
         }
     };
 

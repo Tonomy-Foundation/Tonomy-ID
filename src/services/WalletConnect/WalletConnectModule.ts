@@ -24,10 +24,11 @@ export async function createWeb3Wallet() {
 
     const privateKey = await keyStorage.findByName('ethereum');
 
+    console.log(await privateKey?.exportPrivateKey(), 'keyyyy');
     let ethereumAccount;
 
     if (privateKey) {
-        const ethereumPrivateKey = new EthereumPrivateKey(privateKey?.privateKeyHex); // Cast privateKey to EthereumPrivateKey
+        const ethereumPrivateKey = new EthereumPrivateKey(await privateKey?.exportPrivateKey()); // Cast privateKey to EthereumPrivateKey
 
         if (settings.env === 'production ') {
             ethereumAccount = await EthereumAccount.fromPublicKey(

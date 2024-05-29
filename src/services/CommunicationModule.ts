@@ -159,6 +159,7 @@ export default function CommunicationModule() {
             });
         }
     }, []);
+
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
         const { topic, params } = requestEvent;
         const { request } = params;
@@ -186,5 +187,6 @@ export default function CommunicationModule() {
             web3wallet.on('session_request', onSessionRequest);
         }
     }, [onSessionProposal, onSessionRequest]);
+
     return null;
 }

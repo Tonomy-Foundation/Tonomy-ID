@@ -44,7 +44,10 @@ export default function SignTransactionConsentContainer({
                 topic,
                 response,
             });
-            navigation.navigate('UserHome');
+            navigation.navigate({
+                name: 'UserHome',
+                params: {},
+            });
         }
     }
 
