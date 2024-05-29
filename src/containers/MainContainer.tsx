@@ -15,6 +15,8 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
+import { _pair } from '../services/WalletConnect/WalletConnectModule';
+import useInitialization from '../hooks/useWalletConnect';
 
 const vestingContract = VestingContract.Instance;
 
@@ -27,6 +29,11 @@ export default function MainContainer({ did }: { did?: string }) {
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
+    const initialized = useInitialization();
+
+    useEffect(() => {
+        console.log('Web3WalletSDK initialized:', initialized);
+    }, [initialized]);
 
     useEffect(() => {
         setUserName();
@@ -79,9 +86,19 @@ export default function MainContainer({ did }: { did?: string }) {
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
-            const did = validateQrCode(data);
+            if (data.startsWith('wc:')) {
+                await _pair(data);
+            } else if (data.startsWith('did:')) {
+                const did = validateQrCode(data);
 
-            await connectToDid(did);
+                await connectToDid(did);
+            } else {
+                errorStore.setError({
+                    title: 'Invalid QR Code',
+                    error: new Error(`This is not a supported QR code.`),
+                    expected: false,
+                });
+            }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 console.log('Invalid QR Code', JSON.stringify(e, null, 2));

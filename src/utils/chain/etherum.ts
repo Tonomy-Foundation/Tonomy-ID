@@ -23,8 +23,12 @@ import {
     AbstractPrivateKey,
     IPrivateKey,
     Asset,
+    IChainSession,
 } from './types';
 import settings from '../../settings';
+import { currentETHAddress, web3wallet } from '../../services/WalletConnect/WalletConnectModule';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { getSdkError } from '@walletconnect/utils';
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -165,8 +169,8 @@ const EthereumMainnetChain = new EthereumChain(
 );
 const EthereumSepoliaChain = new EthereumChain(
     `https://sepolia.infura.io/v3/${INFURA_KEY}`,
-    'Sepolia',
-    '1',
+    'sepolia',
+    '11155111',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
 let provider: JsonRpcProvider;
@@ -366,5 +370,72 @@ export class EthereumAccount extends AbstractAccount {
         }
 
         return false;
+    }
+}
+
+export class EthereumChainSession implements IChainSession {
+    private payload: SignClientTypes.EventArguments['session_proposal'];
+    private chain: EthereumChain;
+
+    constructor(payload: SignClientTypes.EventArguments['session_proposal'], chain: EthereumChain) {
+        this.payload = payload;
+        this.chain = chain;
+    }
+
+    getId(): number {
+        return this.payload.id;
+    }
+
+    getName(): string {
+        return this.payload.params.proposer.metadata.name;
+    }
+
+    getUrl(): string {
+        return this.payload.params.proposer.metadata.url;
+    }
+
+    getIcons(): string | null {
+        if (this.payload.params.proposer.metadata.icons?.length > 0) {
+            return this.payload.params.proposer.metadata.icons[0];
+        }
+
+        return null;
+    }
+
+    getNamespaces(): SessionTypes.Namespaces {
+        const namespaces: SessionTypes.Namespaces = {};
+        const { requiredNamespaces } = this.payload.params;
+
+        Object.keys(requiredNamespaces).forEach((key) => {
+            const accounts: string[] = [];
+
+            requiredNamespaces[key].chains?.map((chain) => {
+                [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
+            });
+            namespaces[key] = {
+                accounts,
+                methods: requiredNamespaces[key].methods,
+                events: requiredNamespaces[key].events,
+            };
+        });
+
+        return namespaces;
+    }
+
+    async acceptSession() {
+        const namespaces = this.getNamespaces();
+
+        await web3wallet?.approveSession({
+            id: this.getId(),
+            relayProtocol: this.payload.params.relays[0].protocol,
+            namespaces,
+        });
+    }
+
+    async rejectSession() {
+        await web3wallet?.rejectSession({
+            id: this.getId(),
+            reason: getSdkError('USER_REJECTED'),
+        });
     }
 }

@@ -9,11 +9,13 @@ import {
     objToBase64Url,
     parseDid,
 } from '@tonomy/tonomy-id-sdk';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
+import { web3wallet } from './WalletConnect/WalletConnectModule';
+import { SignClientTypes } from '@walletconnect/types';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -62,7 +64,7 @@ export default function CommunicationModule() {
                 if (method !== 'jwk' && id !== parseDid(await user.getDid()).id) {
                     if (getSettings().loggerLevel === 'debug')
                         console.log(
-                            'LoginRequestsMessage sender did not match user did',
+                            'LoginRequesrtsMessage sender did not match user did',
                             senderDid,
                             await user.getDid()
                         );
@@ -136,6 +138,55 @@ export default function CommunicationModule() {
             }
         };
     }, [subscribers, user]);
+
+    function sendWalletConnectNotificationOnBackground(title: string, body: string) {
+        if (AppState.currentState === 'background') {
+            scheduleNotificationAsync({
+                content: {
+                    title,
+                    body,
+                },
+                trigger: null,
+            });
+        }
+    }
+
+    const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
+        if (proposal) {
+            navigation.navigate('WalletConnectLogin', {
+                payload: proposal,
+                platform: 'browser',
+            });
+        }
+    }, []);
+
+    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
+        const { topic, params } = requestEvent;
+        const { request } = params;
+        const requestSessionData = web3wallet?.engine.signClient.session.get(topic);
+
+        switch (request.method) {
+            case 'eth_sendTransaction':
+                navigation.navigate('SignTransaction', {
+                    requestSession: requestSessionData,
+                    requestEvent: requestEvent,
+                });
+                sendWalletConnectNotificationOnBackground(
+                    'Transaction Request',
+                    'Ethereum transaction signing request'
+                );
+                return;
+            default:
+                return 'Method not supported';
+        }
+    }, []);
+
+    useEffect(() => {
+        if (web3wallet) {
+            web3wallet.on('session_proposal', onSessionProposal);
+            web3wallet.on('session_request', onSessionRequest);
+        }
+    }, [onSessionProposal, onSessionRequest]);
 
     return null;
 }

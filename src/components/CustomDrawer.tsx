@@ -15,6 +15,8 @@ const icons: Record<keyof DrawerStackParamList, string> = {
     Logout: 'logout',
     ChangePin: 'security',
     SSO: 'login',
+    SignTransaction: 'SignTransaction',
+    WalletConnectLogin: 'WalletConnectLogin',
 };
 
 export default function CustomDrawer(props: DrawerContentComponentProps) {

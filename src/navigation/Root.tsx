@@ -13,6 +13,7 @@ import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import merge from 'deepmerge';
+import { SignClientTypes } from '@walletconnect/types';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
@@ -28,6 +29,7 @@ import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
+import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 
 const prefix = Linking.createURL('');
 
@@ -57,7 +59,14 @@ export type RouteStackParamList = {
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
-    SignTransaction: undefined;
+    SignTransaction: {
+        requestEvent: SignClientTypes.EventArguments['session_request'];
+        requestSession: any; //TODO remove this in sign transaction task and use requestEvent
+    };
+    WalletConnectLogin: {
+        payload: SignClientTypes.EventArguments['session_proposal'];
+        platform?: 'mobile' | 'browser';
+    };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -189,6 +198,11 @@ export default function RootNavigation() {
                             name="SignTransaction"
                             options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
                             component={SignTransactionConsentScreen}
+                        />
+                        <Stack.Screen
+                            name="WalletConnectLogin"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={WalletConnectLoginScreen}
                         />
                     </Stack.Navigator>
                 </>
