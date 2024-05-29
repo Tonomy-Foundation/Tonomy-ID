@@ -51,6 +51,7 @@ export async function createWeb3Wallet() {
                 icons: [settings.config.images.logo48],
             },
         });
+        return web3wallet;
     } else {
         throw new Error('No private key found');
     }

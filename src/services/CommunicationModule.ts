@@ -14,14 +14,15 @@ import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
-import { web3wallet } from './WalletConnect/WalletConnectModule';
 import { SignClientTypes } from '@walletconnect/types';
+import useInitialization from '../hooks/useWalletConnect';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
+    const { web3wallet } = useInitialization();
 
     /**
      *  Login to communication microservice
@@ -186,7 +187,7 @@ export default function CommunicationModule() {
             web3wallet.on('session_proposal', onSessionProposal);
             web3wallet.on('session_request', onSessionRequest);
         }
-    }, [onSessionProposal, onSessionRequest]);
+    }, [onSessionProposal, onSessionRequest, web3wallet]);
 
     return null;
 }
