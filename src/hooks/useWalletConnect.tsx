@@ -11,8 +11,8 @@ export default function useInitialization() {
             await createWeb3Wallet();
             setInitialized(true);
         } catch (err: unknown) {
-            console.log('Error initializing:', err);
-            if (!initialized) setTimeout(onInitialize, 30000);
+            console.log('Error initializing, Please try again in 10 seconds:', err);
+            if (!initialized) setTimeout(onInitialize, 20000);
         }
     }, []);
 
