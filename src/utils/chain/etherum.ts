@@ -23,8 +23,11 @@ import {
     AbstractPrivateKey,
     IPrivateKey,
     Asset,
+    IChainSession,
 } from './types';
 import settings from '../../settings';
+import { currentETHAddress } from '../../services/WalletConnect/WalletConnectModule';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -366,5 +369,66 @@ export class EthereumAccount extends AbstractAccount {
         }
 
         return false;
+    }
+}
+
+export class EthereumChainSession implements IChainSession {
+    private payload: SignClientTypes.EventArguments['session_proposal'];
+    private chain: EthereumChain;
+
+    constructor(payload: SignClientTypes.EventArguments['session_proposal'], chain: EthereumChain) {
+        this.payload = payload;
+        this.chain = chain;
+    }
+
+    getId(): number {
+        return this.payload.id;
+    }
+
+    getName(): string {
+        return this.payload.params.proposer.metadata.name;
+    }
+
+    getUrl(): string {
+        return this.payload.params.proposer.metadata.url;
+    }
+
+    getIcons(): string[] {
+        return this.payload.params.proposer.metadata.icons;
+    }
+
+    getNamespaces(): SessionTypes.Namespaces {
+        const namespaces: SessionTypes.Namespaces = {};
+        const { requiredNamespaces } = this.payload.params;
+
+        Object.keys(requiredNamespaces).forEach((key) => {
+            const accounts: string[] = [];
+
+            requiredNamespaces[key].chains?.map((chain) => {
+                [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
+            });
+            namespaces[key] = {
+                accounts,
+                methods: requiredNamespaces[key].methods,
+                events: requiredNamespaces[key].events,
+            };
+        });
+
+        return namespaces;
+    }
+
+    async verifySession(): Promise<void> {
+        // Verify the session details
+        const { name, url, icons } = this.payload.params.proposer.metadata;
+
+        if (!name || !url || !icons.length) {
+            throw new Error('Invalid session metadata');
+        }
+
+        const namespaces = this.getNamespaces();
+
+        if (!namespaces) {
+            throw new Error('Invalid session namespaces');
+        }
     }
 }

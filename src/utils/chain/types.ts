@@ -1,4 +1,5 @@
 import { TKeyType } from '@veramo/core';
+import { SessionTypes } from '@walletconnect/types';
 
 export type KeyFormat = string | 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -250,4 +251,13 @@ export class Asset extends AbstractAsset {
         this.token = token;
         this.amount = amount;
     }
+}
+
+export interface IChainSession {
+    getId(): number;
+    getName(): string;
+    getUrl(): string;
+    getIcons(): string[];
+    getNamespaces(): SessionTypes.Namespaces;
+    verifySession(): Promise<void>;
 }

@@ -8,9 +8,10 @@ import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { useNavigation } from '@react-navigation/native';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { SignClientTypes } from '@walletconnect/types';
 import { currentETHAddress, web3wallet, _pair } from '../services/WalletConnect/WalletConnectModule';
 import { getSdkError } from '@walletconnect/utils';
+import { EthereumChainSession, EthereumSepoliaChain } from '../utils/chain/etherum';
 
 export default function WalletConnectLoginContainer({
     payload,
@@ -21,50 +22,34 @@ export default function WalletConnectLoginContainer({
 }) {
     const navigation = useNavigation();
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
-    const { id, params } = payload;
     const parsedUrl = new URL(url);
+    const session = new EthereumChainSession(payload, EthereumSepoliaChain);
 
     const onCancel = async () => {
         await web3wallet?.rejectSession({
-            id: id,
+            id: session.getId(),
             reason: getSdkError('USER_REJECTED'),
         });
-        navigation.navigate('Drawer', { screen: 'UserHome' });
+        navigation.navigate('UserHome');
     };
 
     async function handleAccept() {
-        const { requiredNamespaces, relays } = params;
+        try {
+            await session.verifySession();
+            const namespaces = session.getNamespaces();
 
-        if (payload) {
-            const namespaces: SessionTypes.Namespaces = {};
-
-            try {
-                Object.keys(requiredNamespaces).forEach((key) => {
-                    const accounts: string[] = [];
-
-                    requiredNamespaces[key].chains.map((chain) => {
-                        [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-                    });
-                    namespaces[key] = {
-                        accounts,
-                        methods: requiredNamespaces[key].methods,
-                        events: requiredNamespaces[key].events,
-                    };
-                });
-
-                await web3wallet?.approveSession({
-                    id,
-                    relayProtocol: relays[0].protocol,
-                    namespaces,
-                });
-                navigation.navigate('Drawer', { screen: 'UserHome' });
-            } catch (e) {
-                await web3wallet?.rejectSession({
-                    id: id,
-                    reason: getSdkError('USER_REJECTED'),
-                });
-                navigation.navigate('Drawer', { screen: 'UserHome' });
-            }
+            await web3wallet?.approveSession({
+                id: session.getId(),
+                relayProtocol: payload.params.relays[0].protocol,
+                namespaces,
+            });
+            navigation.navigate('UserHome');
+        } catch (e) {
+            await web3wallet?.rejectSession({
+                id: session.getId(),
+                reason: getSdkError('USER_REJECTED'),
+            });
+            navigation.navigate('UserHome');
         }
     }
 
