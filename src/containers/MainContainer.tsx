@@ -29,7 +29,7 @@ export default function MainContainer({ did }: { did?: string }) {
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const initialized = useInitialization();
+    const { initialized } = useInitialization();
 
     useEffect(() => {
         console.log('Web3WalletSDK initialized:', initialized);
