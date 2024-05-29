@@ -257,7 +257,8 @@ export interface IChainSession {
     getId(): number;
     getName(): string;
     getUrl(): string;
-    getIcons(): string[];
+    getIcons(): string | null;
     getNamespaces(): SessionTypes.Namespaces;
-    verifySession(): Promise<void>;
+    acceptSession(): Promise<void>;
+    rejectSession(): Promise<void>;
 }

@@ -26,32 +26,19 @@ export default function WalletConnectLoginContainer({
     const session = new EthereumChainSession(payload, EthereumSepoliaChain);
 
     const onCancel = async () => {
-        await web3wallet?.rejectSession({
-            id: session.getId(),
-            reason: getSdkError('USER_REJECTED'),
-        });
+        await session.rejectSession();
         navigation.navigate('UserHome');
     };
 
-    async function handleAccept() {
+    const handleAccept = async () => {
         try {
-            await session.verifySession();
-            const namespaces = session.getNamespaces();
-
-            await web3wallet?.approveSession({
-                id: session.getId(),
-                relayProtocol: payload.params.relays[0].protocol,
-                namespaces,
-            });
+            await session.acceptSession();
             navigation.navigate('UserHome');
         } catch (e) {
-            await web3wallet?.rejectSession({
-                id: session.getId(),
-                reason: getSdkError('USER_REJECTED'),
-            });
+            await session.rejectSession();
             navigation.navigate('UserHome');
         }
-    }
+    };
 
     return (
         <LayoutComponent

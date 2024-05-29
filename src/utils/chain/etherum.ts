@@ -26,8 +26,9 @@ import {
     IChainSession,
 } from './types';
 import settings from '../../settings';
-import { currentETHAddress } from '../../services/WalletConnect/WalletConnectModule';
+import { currentETHAddress, web3wallet } from '../../services/WalletConnect/WalletConnectModule';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { getSdkError } from '@walletconnect/utils';
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -393,8 +394,12 @@ export class EthereumChainSession implements IChainSession {
         return this.payload.params.proposer.metadata.url;
     }
 
-    getIcons(): string[] {
-        return this.payload.params.proposer.metadata.icons;
+    getIcons(): string | null {
+        if (this.payload.params.proposer.metadata.icons?.length > 0) {
+            return this.payload.params.proposer.metadata.icons[0];
+        }
+
+        return null;
     }
 
     getNamespaces(): SessionTypes.Namespaces {
@@ -417,18 +422,20 @@ export class EthereumChainSession implements IChainSession {
         return namespaces;
     }
 
-    async verifySession(): Promise<void> {
-        // Verify the session details
-        const { name, url, icons } = this.payload.params.proposer.metadata;
-
-        if (!name || !url || !icons.length) {
-            throw new Error('Invalid session metadata');
-        }
-
+    async acceptSession() {
         const namespaces = this.getNamespaces();
 
-        if (!namespaces) {
-            throw new Error('Invalid session namespaces');
-        }
+        await web3wallet?.approveSession({
+            id: this.getId(),
+            relayProtocol: this.payload.params.relays[0].protocol,
+            namespaces,
+        });
+    }
+
+    async rejectSession() {
+        await web3wallet?.rejectSession({
+            id: this.getId(),
+            reason: getSdkError('USER_REJECTED'),
+        });
     }
 }
