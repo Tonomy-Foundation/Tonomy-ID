@@ -22,7 +22,7 @@ export async function createWeb3Wallet() {
         relayUrl: 'wss://relay.walletconnect.com',
     });
 
-    const privateKey = await keyStorage.findByName('ethereuum');
+    const privateKey = await keyStorage.findByName('ethereum');
 
     let ethereumAccount;
 

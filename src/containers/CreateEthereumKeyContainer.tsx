@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { TButtonContained } from '../components/atoms/TButton';
-import { TH1, TP } from '../components/atoms/THeadings';
+import { TH1 } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreateEthereumKeyScreen';
-import useUserStore, { UserStatus } from '../store/userStore';
+import useUserStore from '../store/userStore';
 import {
     AccountType,
     SdkError,
@@ -18,7 +18,7 @@ import {
     getAccountInfo,
     KeyManagerLevel,
 } from '@tonomy/tonomy-id-sdk';
-import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
+import { savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
@@ -26,9 +26,16 @@ import RNKeyManager from '../utils/RNKeyManager';
 
 const tonomyContract = TonomyContract.Instance;
 
-export default function CreateEthereumKeyContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function CreateEthereumKeyContainer({
+    route,
+    navigation,
+}: {
+    route: Props['route'];
+    navigation: Props['navigation'];
+}) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
+    const { requestEvent, requestSession } = route.params;
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -81,10 +88,18 @@ export default function CreateEthereumKeyContainer({ navigation }: { navigation:
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
             setLoading(false);
-            navigation.navigate({
-                name: 'UserHome',
-                params: {},
-            });
+
+            if (requestEvent && requestSession) {
+                navigation.navigate('SignTransaction', {
+                    requestSession,
+                    requestEvent,
+                });
+            } else {
+                navigation.navigate({
+                    name: 'UserHome',
+                    params: {},
+                });
+            }
         } catch (e) {
             console.log('error', e);
 

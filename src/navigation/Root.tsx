@@ -68,7 +68,10 @@ export type RouteStackParamList = {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform?: 'mobile' | 'browser';
     };
-    CreateEthereumKey: undefined;
+    CreateEthereumKey: {
+        requestEvent: SignClientTypes.EventArguments['session_request'];
+        requestSession: any; //TODO remove this in sign transaction task and use requestEvent
+    };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
