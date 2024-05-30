@@ -30,6 +30,7 @@ import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
+import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 
 const prefix = Linking.createURL('');
 
@@ -67,6 +68,7 @@ export type RouteStackParamList = {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform?: 'mobile' | 'browser';
     };
+    CreateEthereumKey: { username: string };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -171,6 +173,11 @@ export default function RootNavigation() {
                         name="LoginPassphrase"
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
+                    />
+                    <Stack.Screen
+                        name="CreateEthereumKey"
+                        options={{ headerBackTitleVisible: false, title: 'Generate key' }}
+                        component={CreateEthereumKeyScreen}
                     />
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
