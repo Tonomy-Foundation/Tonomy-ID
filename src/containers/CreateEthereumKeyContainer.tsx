@@ -76,7 +76,7 @@ export default function CreateEthereumKeyContainer({
 
             const accountData = await getAccountInfo(idData.account_name);
 
-            const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key; // TODO change to active/other permissions when we make the change
+            const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key; 
             const rnKeyManager = new RNKeyManager();
             const publicKey = await rnKeyManager.getKey({
                 level: KeyManagerLevel.PASSWORD,
