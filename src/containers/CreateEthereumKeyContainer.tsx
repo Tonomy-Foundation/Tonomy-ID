@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -17,18 +17,18 @@ import {
     TonomyContract,
     getAccountInfo,
     KeyManagerLevel,
-    KeyManager as keyManager,
 } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
+import RNKeyManager from '../utils/RNKeyManager';
 
 const tonomyContract = TonomyContract.Instance;
 
 export default function CreateEthereumKeyContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorsStore = useErrorStore();
-    const { user, setStatus } = useUserStore();
+    const { user } = useUserStore();
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -36,56 +36,80 @@ export default function CreateEthereumKeyContainer({ navigation }: { navigation:
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [username, setUsername] = useState('');
+
+    async function setUserName() {
+        try {
+            const u = await user.getUsername();
+
+            setUsername(u.getBaseUsername());
+        } catch (e) {
+            errorsStore.setError({ error: e, expected: false });
+        }
+    }
+
+    useEffect(() => {
+        setUserName();
+    }, []);
 
     async function onNext() {
-        setLoading(false);
+        setLoading(true);
 
-        // try {
-        //     const tonomyUsername = TonomyUsername.fromUsername(
-        //         username,
-        //         AccountType.PERSON,
-        //         settings.config.accountSuffix
-        //     );
+        try {
+            const tonomyUsername = TonomyUsername.fromUsername(
+                username,
+                AccountType.PERSON,
+                settings.config.accountSuffix
+            );
 
-        //     const idData = await tonomyContract.getPerson(tonomyUsername);
-        //     const salt = idData.password_salt;
+            const idData = await tonomyContract.getPerson(tonomyUsername);
+            const salt = idData.password_salt;
 
-        //     savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
-        //     const passwordKey = await keyManager.getKey({
-        //         level: KeyManagerLevel.PASSWORD,
-        //     });
-        //     const accountData = await getAccountInfo(idData.account_name);
+            await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
-        //     const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key; // TODO change to active/other permissions when we make the change
+            const accountData = await getAccountInfo(idData.account_name);
 
-        //     if (passwordKey.toString() !== onchainKey.toString())
-        //         throw new Error(`Password is incorrect ${SdkErrors.PasswordInvalid}`);
+            const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key; // TODO change to active/other permissions when we make the change
+            const rnKeyManager = new RNKeyManager();
+            const publicKey = await rnKeyManager.getKey({
+                level: KeyManagerLevel.PASSWORD,
+            });
 
-        //     setPassphrase(['', '', '', '', '', '']);
-        // } catch (e) {
-        //     if (e instanceof SdkError) {
-        //         switch (e.code) {
-        //             case SdkErrors.UsernameNotFound:
-        //             case SdkErrors.PasswordInvalid:
-        //             case SdkErrors.PasswordFormatInvalid:
-        //             case SdkErrors.AccountDoesntExist:
-        //                 setErrorMessage('Incorrect passphrase. Please try again.');
-        //                 break;
-        //             default:
-        //                 setErrorMessage('');
-        //                 errorsStore.setError({ error: e, expected: false });
-        //         }
+            if (publicKey.toString() !== onchainKey.toString())
+                throw new Error(`Password is incorrect ${SdkErrors.PasswordInvalid}`);
 
-        //         setNextDisabled(true);
-        //         setLoading(false);
-        //         return;
-        //     } else {
-        //         errorsStore.setError({ error: e, expected: false });
-        //         setNextDisabled(true);
-        //         setLoading(false);
-        //         return;
-        //     }
-        // }
+            setPassphrase(['', '', '', '', '', '']);
+            setNextDisabled(false);
+            setLoading(false);
+            navigation.navigate({
+                name: 'UserHome',
+                params: {},
+            });
+        } catch (e) {
+            console.log('error', e);
+
+            if (e instanceof SdkError) {
+                switch (e.code) {
+                    case SdkErrors.PasswordInvalid:
+                    case SdkErrors.PasswordFormatInvalid:
+                    case SdkErrors.AccountDoesntExist:
+                        setErrorMessage('Incorrect passphrase. Please try again.');
+                        break;
+                    default:
+                        setErrorMessage('');
+                        errorsStore.setError({ error: e, expected: false });
+                }
+
+                setNextDisabled(true);
+                setLoading(false);
+                return;
+            } else {
+                errorsStore.setError({ error: e, expected: false });
+                setNextDisabled(true);
+                setLoading(false);
+                return;
+            }
+        }
     }
 
     async function onChangeWord(index: number, word: string) {
