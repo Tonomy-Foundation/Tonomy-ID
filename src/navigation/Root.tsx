@@ -68,7 +68,7 @@ export type RouteStackParamList = {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform?: 'mobile' | 'browser';
     };
-    CreateEthereumKey: { username: string };
+    CreateEthereumKey: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -174,11 +174,7 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
-                    <Stack.Screen
-                        name="CreateEthereumKey"
-                        options={{ headerBackTitleVisible: false, title: 'Generate key' }}
-                        component={CreateEthereumKeyScreen}
-                    />
+
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
@@ -210,6 +206,11 @@ export default function RootNavigation() {
                             name="WalletConnectLogin"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={WalletConnectLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="CreateEthereumKey"
+                            options={{ headerBackTitleVisible: false, title: 'Generate key' }}
+                            component={CreateEthereumKeyScreen}
                         />
                     </Stack.Navigator>
                 </>

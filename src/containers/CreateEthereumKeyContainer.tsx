@@ -6,7 +6,7 @@ import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
-import { Props } from '../screens/LoginPassphraseScreen';
+import { Props } from '../screens/CreateEthereumKeyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import {
     AccountType,
@@ -26,13 +26,7 @@ import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord
 
 const tonomyContract = TonomyContract.Instance;
 
-export default function CreateEthereumKeyContainer({
-    navigation,
-    username,
-}: {
-    navigation: Props['navigation'];
-    username: string;
-}) {
+export default function CreateEthereumKeyContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorsStore = useErrorStore();
     const { user, setStatus } = useUserStore();
 
@@ -118,7 +112,11 @@ export default function CreateEthereumKeyContainer({
             <LayoutComponent
                 body={
                     <View>
-                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Passphrase</TH1>
+                        <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Enter your passphrase</TH1>
+                        <Text style={styles.subHeading}>
+                            We use your passphrase to generate a highly secure private key that’s gonna be used across
+                            the devices
+                        </Text>
                         <View style={styles.innerContainer}>
                             <View style={styles.columnContainer}>
                                 {passphrase.map((text, index) => (
@@ -143,7 +141,7 @@ export default function CreateEthereumKeyContainer({
                         <TInfoBox
                             align="left"
                             icon="security"
-                            description="Your passphrase and private keys are self-sovereign meaning hackers have a very hard time! "
+                            description="Your password and private keys are self-sovereign meaning hackers have a very very hard time! "
                             linkUrl={settings.config.links.securityLearnMore}
                             linkUrlText="Learn more"
                         />
@@ -153,16 +151,8 @@ export default function CreateEthereumKeyContainer({
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={nextDisabled || loading}>
-                                NEXT
+                                PROCEED
                             </TButtonContained>
-                        </View>
-                        <View style={styles.textContainer}>
-                            <TP size={1}>Don&apos;t have an account?</TP>
-                            <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
-                                <TP size={1} style={styles.link}>
-                                    Sign Up
-                                </TP>
-                            </TouchableOpacity>
                         </View>
                     </View>
                 }
@@ -172,6 +162,12 @@ export default function CreateEthereumKeyContainer({
 }
 
 const styles = StyleSheet.create({
+    subHeading: {
+        textAlign: 'center',
+        paddingHorizontal: 15,
+        color: theme.colors.grey1,
+        marginBottom: 20,
+    },
     errorText: {
         ...commonStyles.textAlignCenter,
         color: theme.colors.error,
