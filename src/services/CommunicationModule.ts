@@ -168,37 +168,30 @@ export default function CommunicationModule() {
         const requestSessionData = web3wallet?.engine.signClient.session.get(topic);
 
         switch (request.method) {
-            case 'eth_sendTransaction':
-                switch (request.method) {
-                    case 'eth_sendTransaction': {
-                        const ethereumKeyExists = await keyStorage.findByName('ethereum');
+            case 'eth_sendTransaction': {
+                const ethereumKeyExists = await keyStorage.findByName('ethereum');
 
-                        if (!ethereumKeyExists) {
-                            navigation.navigate('CreateEthereumKey', {
-                                requestSession: requestSessionData,
-                                requestEvent: requestEvent,
-                            });
-                        } else {
-                            navigation.navigate('SignTransaction', {
-                                requestSession: requestSessionData,
-                                requestEvent: requestEvent,
-                            });
-                        }
-
-                        sendWalletConnectNotificationOnBackground(
-                            'Transaction Request',
-                            'Ethereum transaction signing request'
-                        );
-                        break;
-                    }
-
-                    default:
-                        return 'Method not supported';
+                if (!ethereumKeyExists) {
+                    navigation.navigate('CreateEthereumKey', {
+                        requestSession: requestSessionData,
+                        requestEvent: requestEvent,
+                    });
+                } else {
+                    navigation.navigate('SignTransaction', {
+                        requestSession: requestSessionData,
+                        requestEvent: requestEvent,
+                    });
                 }
 
-                return;
+                sendWalletConnectNotificationOnBackground(
+                    'Transaction Request',
+                    'Ethereum transaction signing request'
+                );
+                break;
+            }
+
             default:
-                return 'Method not supported';
+                throw new Error('Method not supported');
         }
     }, []);
 

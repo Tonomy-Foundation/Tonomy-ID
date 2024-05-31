@@ -18,6 +18,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import { _pair, currentETHAddress } from '../services/WalletConnect/WalletConnectModule';
 import useInitialization from '../hooks/useWalletConnect';
 import { useNavigation } from '@react-navigation/native';
+import { USD_CONVERSION } from '../utils/chain/etherum';
 
 const vestingContract = VestingContract.Instance;
 
@@ -198,7 +199,7 @@ export default function MainContainer({ did }: { did?: string }) {
                                             <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
                                         </View>
                                         <Text style={styles.secondaryColor}>
-                                            ${balance ? formatCurrencyValue(balance * 0.002) : 0.0}
+                                            ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
                                         </Text>
                                     </View>
                                 </View>
@@ -238,7 +239,7 @@ export default function MainContainer({ did }: { did?: string }) {
                                                 <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                ${balance ? formatCurrencyValue(balance * 0.002) : 0.0}
+                                                ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
                                             </Text>
                                         </View>
                                     )}
