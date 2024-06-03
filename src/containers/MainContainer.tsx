@@ -1,8 +1,9 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import TButton, { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/TButton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -33,6 +34,7 @@ export default function MainContainer({ did }: { did?: string }) {
     const errorStore = useErrorStore();
     const { initialized, web3wallet } = useInitialization();
     const navigation = useNavigation();
+    const refMessage = useRef(null);
 
     useEffect(() => {
         console.log('Web3WalletSDK initialized:', initialized);
@@ -185,67 +187,83 @@ export default function MainContainer({ did }: { did?: string }) {
 
                         <View style={styles.accountsView}>
                             <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                                            <Text style={styles.networkTitle}>Pangea Network:</Text>
+                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                                <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                            </View>
+                                            <Text>{accountName}</Text>
                                         </View>
-                                        <Text>{accountName}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
-                                        </View>
-                                        <Text style={styles.secondaryColor}>
-                                            ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image
-                                                source={require('../assets/icons/eth-img.png')}
-                                                style={styles.favicon}
-                                            />
-                                            <Text style={styles.networkTitle}>Ethereum Network:</Text>
-                                        </View>
-                                        {currentETHAddress ? (
-                                            <Text>
-                                                {currentETHAddress.substring(0, 7)}....
-                                                {currentETHAddress.substring(currentETHAddress.length - 6)}
-                                            </Text>
-                                        ) : (
-                                            <Text>Not connected</Text>
-                                        )}
-                                    </View>
-                                    {!initialized && web3wallet === null ? (
-                                        <TButton
-                                            style={styles.generateKey}
-                                            onPress={() => navigation.navigate('CreateEthereumKey')}
-                                            color={theme.colors.white}
-                                            size="medium"
-                                        >
-                                            Generate key
-                                        </TButton>
-                                    ) : (
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
+                                                <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
                                                 ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
                                             </Text>
                                         </View>
-                                    )}
+                                    </View>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image
+                                                    source={require('../assets/icons/eth-img.png')}
+                                                    style={styles.favicon}
+                                                />
+                                                <Text style={styles.networkTitle}>Ethereum Network:</Text>
+                                            </View>
+                                            {currentETHAddress ? (
+                                                <Text>
+                                                    {currentETHAddress.substring(0, 7)}....
+                                                    {currentETHAddress.substring(currentETHAddress.length - 6)}
+                                                </Text>
+                                            ) : (
+                                                <Text>Not connected</Text>
+                                            )}
+                                        </View>
+                                        {!initialized && web3wallet === null ? (
+                                            <TButton
+                                                style={styles.generateKey}
+                                                onPress={() => navigation.navigate('CreateEthereumKey', {})}
+                                                color={theme.colors.white}
+                                                size="medium"
+                                            >
+                                                Generate key
+                                            </TButton>
+                                        ) : (
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
+                                                </View>
+                                                <Text style={styles.secondaryColor}>
+                                                    ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                                </Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
                         </View>
+                        <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
+                            <View style={styles.rawTransactionDrawer}>
+                                <Text style={styles.drawerHead}>Receive</Text>
+                                <TouchableOpacity
+                                    style={styles.crossIcon}
+                                    onPress={() => (refMessage.current as any)?.close()}
+                                >
+                                    <Text style={styles.crossText}>x</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <Text>Only send LEOS assets to this address. Other assets will be lost forever</Text>
+                        </RBSheet>
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
@@ -350,5 +368,30 @@ const styles = StyleSheet.create({
         width: '40%',
         backgroundColor: theme.colors.primary,
         borderRadius: 10,
+    },
+    rawTransactionDrawer: {
+        padding: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    drawerHead: {
+        fontSize: 20,
+        fontWeight: '600',
+        marginTop: 8,
+    },
+    crossIcon: {
+        backgroundColor: theme.colors.lightBg,
+        borderRadius: 100,
+        width: 35,
+        height: 35,
+    },
+    crossText: {
+        fontSize: 20,
+        fontWeight: '400',
+        paddingHorizontal: 5,
+        paddingVertical: 2,
+        marginLeft: 8,
+        marginTop: 2,
     },
 });
