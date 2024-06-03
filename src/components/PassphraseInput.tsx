@@ -5,17 +5,17 @@ import theme, { commonStyles } from '../utils/theme';
 import { util } from '@tonomy/tonomy-id-sdk';
 
 interface PassphraseInputProps {
-    initialPassphrase: string[];
-    onPassphraseChange: (passphrase: string[]) => void;
+    value: string[];
+    onChange: (passphrase: string[]) => void;
 }
 
-const PassphraseInput: React.FC<PassphraseInputProps> = ({ initialPassphrase, onPassphraseChange }) => {
-    const [passphrase, setPassphrase] = useState<string[]>(initialPassphrase);
+const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange }) => {
+    const [passphrase, setPassphrase] = useState<string[]>(value);
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        onPassphraseChange(passphrase);
-    }, [passphrase]);
+        onChange(passphrase);
+    }, [passphrase, onChange]);
 
     const onChangeWord = (index: number, word: string) => {
         setErrorMessage('');

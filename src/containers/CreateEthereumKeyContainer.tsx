@@ -134,7 +134,7 @@ export default function CreateEthereumKeyContainer({
                             the devices
                         </Text>
                         <View style={styles.innerContainer}>
-                            <PassphraseInput initialPassphrase={passphrase} onPassphraseChange={setPassphrase} />
+                            <PassphraseInput value={passphrase} onChange={setPassphrase} />
                         </View>
                     </View>
                 }
