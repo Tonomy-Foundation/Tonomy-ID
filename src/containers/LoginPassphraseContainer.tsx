@@ -12,7 +12,7 @@ import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract } from
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
-import PassphraseInput from '../components/PassphraseInpu';
+import PassphraseInput from '../components/PassphraseInput';
 
 const tonomyContract = TonomyContract.Instance;
 
