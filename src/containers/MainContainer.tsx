@@ -2,6 +2,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -20,6 +21,8 @@ import { _pair, currentETHAddress } from '../services/WalletConnect/WalletConnec
 import useInitialization from '../hooks/useWalletConnect';
 import { useNavigation } from '@react-navigation/native';
 import { USD_CONVERSION } from '../utils/chain/etherum';
+import TIconButton from '../components/TIconButton';
+import AccountDetails from '../components/AccountDetails';
 
 const vestingContract = VestingContract.Instance;
 
@@ -252,18 +255,7 @@ export default function MainContainer({ did }: { did?: string }) {
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
-                            <View style={styles.rawTransactionDrawer}>
-                                <Text style={styles.drawerHead}>Receive</Text>
-                                <TouchableOpacity
-                                    style={styles.crossIcon}
-                                    onPress={() => (refMessage.current as any)?.close()}
-                                >
-                                    <Text style={styles.crossText}>x</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text>Only send LEOS assets to this address. Other assets will be lost forever</Text>
-                        </RBSheet>
+                        <AccountDetails refMessage={refMessage} accountName={accountName} />
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
@@ -368,30 +360,5 @@ const styles = StyleSheet.create({
         width: '40%',
         backgroundColor: theme.colors.primary,
         borderRadius: 10,
-    },
-    rawTransactionDrawer: {
-        padding: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-    },
-    drawerHead: {
-        fontSize: 20,
-        fontWeight: '600',
-        marginTop: 8,
-    },
-    crossIcon: {
-        backgroundColor: theme.colors.lightBg,
-        borderRadius: 100,
-        width: 35,
-        height: 35,
-    },
-    crossText: {
-        fontSize: 20,
-        fontWeight: '400',
-        paddingHorizontal: 5,
-        paddingVertical: 2,
-        marginLeft: 8,
-        marginTop: 2,
     },
 });
