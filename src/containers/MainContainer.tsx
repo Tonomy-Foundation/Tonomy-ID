@@ -2,7 +2,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Text } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -15,12 +15,20 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { _pair } from '../services/WalletConnect/WalletConnectModule';
+import { _pair, currentETHAddress } from '../services/WalletConnect/WalletConnectModule';
 import useInitialization from '../hooks/useWalletConnect';
+import { USD_CONVERSION } from '../utils/chain/etherum';
+import { MainScreenNavigationProp } from '../screens/MainScreen';
 
 const vestingContract = VestingContract.Instance;
 
-export default function MainContainer({ did }: { did?: string }) {
+export default function MainContainer({
+    did,
+    navigation,
+}: {
+    did?: string;
+    navigation: MainScreenNavigationProp['navigation'];
+}) {
     const userStore = useUserStore();
     const user = userStore.user;
     const [username, setUsername] = useState('');
@@ -29,7 +37,7 @@ export default function MainContainer({ did }: { did?: string }) {
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const { initialized } = useInitialization();
+    const { initialized, web3wallet } = useInitialization();
 
     useEffect(() => {
         console.log('Web3WalletSDK initialized:', initialized);
@@ -191,13 +199,55 @@ export default function MainContainer({ did }: { did?: string }) {
                                         </View>
                                         <Text>{accountName}</Text>
                                     </View>
-
-                                    <Text style={styles.balanceView}>
-                                        {formatCurrencyValue(balance) || 0} LEOS
+                                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
+                                        </View>
                                         <Text style={styles.secondaryColor}>
-                                            (${balance ? formatCurrencyValue(balance * 0.002) : 0.0})
+                                            ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
                                         </Text>
-                                    </Text>
+                                    </View>
+                                </View>
+                            </View>
+
+                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image
+                                                source={require('../assets/icons/eth-img.png')}
+                                                style={styles.favicon}
+                                            />
+                                            <Text style={styles.networkTitle}>Ethereum Network:</Text>
+                                        </View>
+                                        {currentETHAddress ? (
+                                            <Text>
+                                                {currentETHAddress.substring(0, 7)}....
+                                                {currentETHAddress.substring(currentETHAddress.length - 6)}
+                                            </Text>
+                                        ) : (
+                                            <Text>Not connected</Text>
+                                        )}
+                                    </View>
+                                    {!initialized && web3wallet === null ? (
+                                        <TButton
+                                            style={styles.generateKey}
+                                            onPress={() => navigation.navigate('CreateEthereumKey')}
+                                            color={theme.colors.white}
+                                            size="medium"
+                                        >
+                                            Generate key
+                                        </TButton>
+                                    ) : (
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
+                                            </View>
+                                            <Text style={styles.secondaryColor}>
+                                                ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                            </Text>
+                                        </View>
+                                    )}
                                 </View>
                             </View>
                         </View>
@@ -268,7 +318,6 @@ const styles = StyleSheet.create({
     cards: {
         flex: 1,
     },
-
     scrollView: {
         marginRight: -20,
     },
@@ -288,8 +337,8 @@ const styles = StyleSheet.create({
         color: theme.colors.secondary2,
     },
     favicon: {
-        width: 15,
-        height: 15,
+        width: 13,
+        height: 13,
         marginRight: 4,
     },
     accountsView: {
@@ -301,5 +350,10 @@ const styles = StyleSheet.create({
     },
     marginTop: {
         marginTop: 28,
+    },
+    generateKey: {
+        width: '40%',
+        backgroundColor: theme.colors.primary,
+        borderRadius: 10,
     },
 });

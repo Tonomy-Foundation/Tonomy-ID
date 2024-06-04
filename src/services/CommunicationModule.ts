@@ -16,6 +16,7 @@ import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 import useInitialization from '../hooks/useWalletConnect';
+import { keyStorage } from '../utils/StorageManager/setup';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -167,18 +168,30 @@ export default function CommunicationModule() {
         const requestSessionData = web3wallet?.engine.signClient.session.get(topic);
 
         switch (request.method) {
-            case 'eth_sendTransaction':
-                navigation.navigate('SignTransaction', {
-                    requestSession: requestSessionData,
-                    requestEvent: requestEvent,
-                });
+            case 'eth_sendTransaction': {
+                const ethereumKeyExists = await keyStorage.findByName('ethereum');
+
+                if (!ethereumKeyExists) {
+                    navigation.navigate('CreateEthereumKey', {
+                        requestSession: requestSessionData,
+                        requestEvent: requestEvent,
+                    });
+                } else {
+                    navigation.navigate('SignTransaction', {
+                        requestSession: requestSessionData,
+                        requestEvent: requestEvent,
+                    });
+                }
+
                 sendWalletConnectNotificationOnBackground(
                     'Transaction Request',
                     'Ethereum transaction signing request'
                 );
-                return;
+                break;
+            }
+
             default:
-                return 'Method not supported';
+                throw new Error('Method not supported');
         }
     }, []);
 

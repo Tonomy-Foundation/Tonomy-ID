@@ -30,6 +30,7 @@ import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
+import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 
 const prefix = Linking.createURL('');
 
@@ -66,6 +67,10 @@ export type RouteStackParamList = {
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform?: 'mobile' | 'browser';
+    };
+    CreateEthereumKey?: {
+        requestEvent?: SignClientTypes.EventArguments['session_request'];
+        requestSession?: any; //TODO remove this in sign transaction task and use requestEvent
     };
 };
 
@@ -172,6 +177,7 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
+
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
@@ -203,6 +209,12 @@ export default function RootNavigation() {
                             name="WalletConnectLogin"
                             options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
                             component={WalletConnectLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="CreateEthereumKey"
+                            options={{ headerBackTitleVisible: false, title: 'Generate key' }}
+                            component={CreateEthereumKeyScreen}
+                            initialParams={{}}
                         />
                     </Stack.Navigator>
                 </>
