@@ -16,14 +16,8 @@ export default function useInitialization() {
             setWeb3wallet(wallet);
             setInitialized(true);
         } catch (err: unknown) {
-            console.log(err, typeof err);
-
-            if (err instanceof Error && err.message === 'No private key found') {
-                setWeb3wallet(null);
-                setInitialized(false);
-            } else {
-                if (!initialized) setTimeout(onInitialize, 20000);
-            }
+            console.log('Error initializing, Please try again in 10 seconds:', err);
+            if (!initialized) setTimeout(onInitialize, 20000);
         }
     }, [initialized]);
 
