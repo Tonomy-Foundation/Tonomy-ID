@@ -41,7 +41,7 @@ export async function createWeb3Wallet() {
             );
         }
 
-        currentETHAddress = ethereumAccount.getName();
+        currentETHAddress = '0x253c8d99c27d47A4DcdB04B40115AB1dAc466280'; //ethereumAccount.getName();
         web3wallet = await Web3Wallet.init({
             core,
             metadata: {
