@@ -15,7 +15,6 @@ export type DrawerStackParamList = {
     SSO: { payload: string; platform: 'mobile' | 'browser' };
     SignTransaction: {
         requestEvent: SignClientTypes.EventArguments['session_request'];
-        requestSession: any; //TODO remove this in sign transaction task and use requestEvent
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
@@ -23,7 +22,6 @@ export type DrawerStackParamList = {
     };
     CreateEthereumKey?: {
         requestEvent?: SignClientTypes.EventArguments['session_request'];
-        requestSession?: any; //TODO remove this in sign transaction task and use requestEvent
     };
 };
 

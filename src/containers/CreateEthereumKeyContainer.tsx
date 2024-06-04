@@ -35,7 +35,7 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { requestEvent, requestSession } = route.params ?? {};
+    const { requestEvent } = route.params ?? {};
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -94,8 +94,8 @@ export default function CreateEthereumKeyContainer({
             setNextDisabled(false);
             setLoading(false);
 
-            if (requestEvent && requestSession) {
-                navigation.navigate('SignTransaction', { requestSession, requestEvent });
+            if (requestEvent) {
+                navigation.navigate('SignTransaction', { requestEvent });
             } else {
                 navigation.navigate({ name: 'UserHome', params: {} });
             }

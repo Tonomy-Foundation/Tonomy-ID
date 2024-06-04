@@ -163,9 +163,8 @@ export default function CommunicationModule() {
     }, []);
 
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-        const { topic, params } = requestEvent;
+        const { params } = requestEvent;
         const { request } = params;
-        const requestSessionData = web3wallet?.engine.signClient.session.get(topic);
 
         switch (request.method) {
             case 'eth_sendTransaction': {
@@ -173,12 +172,10 @@ export default function CommunicationModule() {
 
                 if (!ethereumKeyExists) {
                     navigation.navigate('CreateEthereumKey', {
-                        requestSession: requestSessionData,
                         requestEvent: requestEvent,
                     });
                 } else {
                     navigation.navigate('SignTransaction', {
-                        requestSession: requestSessionData,
                         requestEvent: requestEvent,
                     });
                 }

@@ -62,7 +62,6 @@ export type RouteStackParamList = {
     ProfilePreview: undefined;
     SignTransaction: {
         requestEvent: SignClientTypes.EventArguments['session_request'];
-        requestSession: any; //TODO remove this in sign transaction task and use requestEvent
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
@@ -70,7 +69,6 @@ export type RouteStackParamList = {
     };
     CreateEthereumKey?: {
         requestEvent?: SignClientTypes.EventArguments['session_request'];
-        requestSession?: any; //TODO remove this in sign transaction task and use requestEvent
     };
 };
 

@@ -12,16 +12,17 @@ import { SignClientTypes } from '@walletconnect/types';
 
 export default function SignTransactionConsentContainer({
     navigation,
-    requestSession,
     requestEvent,
 }: {
     navigation: Props['navigation'];
-    requestSession: any; //TODO remove this and use requestEvent
     requestEvent: SignClientTypes.EventArguments['session_request'];
 }) {
     const [showDetails, setShowDetails] = useState(false);
 
     const refMessage = useRef(null);
+    const { topic, params } = requestEvent;
+
+    const requestSession = web3wallet?.engine.signClient.session.get(topic);
 
     const chainID = requestEvent?.params?.chainId?.toUpperCase();
     const method = requestEvent?.params?.request?.method;
@@ -30,7 +31,6 @@ export default function SignTransactionConsentContainer({
     const requestIcon = requestSession?.peer?.metadata?.icons[0];
     const requestURL = requestSession?.peer?.metadata?.url;
 
-    const { topic, params } = requestEvent;
     const { request, chainId } = params;
     const transaction = request.params[0];
 
