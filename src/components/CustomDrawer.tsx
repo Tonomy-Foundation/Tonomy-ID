@@ -17,6 +17,7 @@ const icons: Record<keyof DrawerStackParamList, string> = {
     SSO: 'login',
     SignTransaction: 'SignTransaction',
     WalletConnectLogin: 'WalletConnectLogin',
+    CreateEthereumKey: 'CreateEthereumKey',
 };
 
 export default function CustomDrawer(props: DrawerContentComponentProps) {

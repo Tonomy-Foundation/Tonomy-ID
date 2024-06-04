@@ -68,9 +68,9 @@ export type RouteStackParamList = {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform?: 'mobile' | 'browser';
     };
-    CreateEthereumKey: {
-        requestEvent: SignClientTypes.EventArguments['session_request'];
-        requestSession: any; //TODO remove this in sign transaction task and use requestEvent
+    CreateEthereumKey?: {
+        requestEvent?: SignClientTypes.EventArguments['session_request'];
+        requestSession?: any; //TODO remove this in sign transaction task and use requestEvent
     };
 };
 
@@ -214,6 +214,7 @@ export default function RootNavigation() {
                             name="CreateEthereumKey"
                             options={{ headerBackTitleVisible: false, title: 'Generate key' }}
                             component={CreateEthereumKeyScreen}
+                            initialParams={{}}
                         />
                     </Stack.Navigator>
                 </>

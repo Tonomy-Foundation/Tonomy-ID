@@ -16,6 +16,7 @@ import {
     TonomyContract,
     getAccountInfo,
     KeyManagerLevel,
+    util,
 } from '@tonomy/tonomy-id-sdk';
 import { savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
@@ -34,7 +35,7 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { requestEvent, requestSession } = route.params;
+    const { requestEvent, requestSession } = route.params ?? {};
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -134,7 +135,7 @@ export default function CreateEthereumKeyContainer({
                             the devices
                         </Text>
                         <View style={styles.innerContainer}>
-                            <PassphraseInput initialPassphrase={passphrase} onPassphraseChange={setPassphrase} />
+                            <PassphraseInput value={passphrase} onChange={setPassphrase} />
                         </View>
                     </View>
                 }
