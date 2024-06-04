@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -18,6 +18,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import { _pair, currentETHAddress } from '../services/WalletConnect/WalletConnectModule';
 import useInitialization from '../hooks/useWalletConnect';
 import { USD_CONVERSION } from '../utils/chain/etherum';
+import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 
 const vestingContract = VestingContract.Instance;
@@ -38,6 +39,7 @@ export default function MainContainer({
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const { initialized, web3wallet } = useInitialization();
+    const refMessage = useRef(null);
 
     useEffect(() => {
         console.log('Web3WalletSDK initialized:', initialized);
@@ -190,67 +192,72 @@ export default function MainContainer({
 
                         <View style={styles.accountsView}>
                             <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                                            <Text style={styles.networkTitle}>Pangea Network:</Text>
+                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                                <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                            </View>
+                                            <Text>{accountName}</Text>
                                         </View>
-                                        <Text>{accountName}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
-                                        </View>
-                                        <Text style={styles.secondaryColor}>
-                                            ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image
-                                                source={require('../assets/icons/eth-img.png')}
-                                                style={styles.favicon}
-                                            />
-                                            <Text style={styles.networkTitle}>Ethereum Network:</Text>
-                                        </View>
-                                        {currentETHAddress ? (
-                                            <Text>
-                                                {currentETHAddress.substring(0, 7)}....
-                                                {currentETHAddress.substring(currentETHAddress.length - 6)}
-                                            </Text>
-                                        ) : (
-                                            <Text>Not connected</Text>
-                                        )}
-                                    </View>
-                                    {!initialized && web3wallet === null ? (
-                                        <TButton
-                                            style={styles.generateKey}
-                                            onPress={() => navigation.navigate('CreateEthereumKey')}
-                                            color={theme.colors.white}
-                                            size="medium"
-                                        >
-                                            Generate key
-                                        </TButton>
-                                    ) : (
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
+                                                <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
                                                 ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
                                             </Text>
                                         </View>
-                                    )}
+                                    </View>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image
+                                                    source={require('../assets/icons/eth-img.png')}
+                                                    style={styles.favicon}
+                                                />
+                                                <Text style={styles.networkTitle}>Ethereum Network:</Text>
+                                            </View>
+                                            {currentETHAddress ? (
+                                                <Text>
+                                                    {currentETHAddress.substring(0, 7)}....
+                                                    {currentETHAddress.substring(currentETHAddress.length - 6)}
+                                                </Text>
+                                            ) : (
+                                                <Text>Not connected</Text>
+                                            )}
+                                        </View>
+                                        {!initialized && web3wallet === null ? (
+                                            <TButton
+                                                style={styles.generateKey}
+                                                onPress={() => navigation.navigate('CreateEthereumKey', {})}
+                                                color={theme.colors.white}
+                                                size="medium"
+                                            >
+                                                Generate key
+                                            </TButton>
+                                        ) : (
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
+                                                </View>
+                                                <Text style={styles.secondaryColor}>
+                                                    ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                                </Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
                         </View>
+                        <AccountDetails refMessage={refMessage} accountName={accountName} />
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
