@@ -21,6 +21,10 @@ export type DrawerStackParamList = {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform: 'mobile' | 'browser';
     };
+    CreateEthereumKey?: {
+        requestEvent?: SignClientTypes.EventArguments['session_request'];
+        requestSession?: any; //TODO remove this in sign transaction task and use requestEvent
+    };
 };
 
 const Drawer = createDrawerNavigator<DrawerStackParamList>();

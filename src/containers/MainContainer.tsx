@@ -2,7 +2,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Text } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import TButton, { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/TButton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -17,12 +17,18 @@ import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
 import { _pair, currentETHAddress } from '../services/WalletConnect/WalletConnectModule';
 import useInitialization from '../hooks/useWalletConnect';
-import { useNavigation } from '@react-navigation/native';
 import { USD_CONVERSION } from '../utils/chain/etherum';
+import { MainScreenNavigationProp } from '../screens/MainScreen';
 
 const vestingContract = VestingContract.Instance;
 
-export default function MainContainer({ did }: { did?: string }) {
+export default function MainContainer({
+    did,
+    navigation,
+}: {
+    did?: string;
+    navigation: MainScreenNavigationProp['navigation'];
+}) {
     const userStore = useUserStore();
     const user = userStore.user;
     const [username, setUsername] = useState('');
@@ -32,7 +38,6 @@ export default function MainContainer({ did }: { did?: string }) {
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const { initialized, web3wallet } = useInitialization();
-    const navigation = useNavigation();
 
     useEffect(() => {
         console.log('Web3WalletSDK initialized:', initialized);
