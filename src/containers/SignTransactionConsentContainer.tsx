@@ -24,12 +24,9 @@ export default function SignTransactionConsentContainer({
 
     const requestSession = web3wallet?.engine.signClient.session.get(topic);
 
-    const chainID = requestEvent?.params?.chainId?.toUpperCase();
     const method = requestEvent?.params?.request?.method;
 
-    const requestName = requestSession?.peer?.metadata?.name;
-    const requestIcon = requestSession?.peer?.metadata?.icons[0];
-    const requestURL = requestSession?.peer?.metadata?.url;
+    const { name: requestName, icons: [requestIcon] = [], url: requestURL } = requestSession?.peer?.metadata ?? {};
 
     const { request, chainId } = params;
     const transaction = request.params[0];
