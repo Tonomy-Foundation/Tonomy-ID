@@ -82,12 +82,8 @@ export abstract class AbstractChain implements IChain {
         return this.nativeToken;
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
+    abstract formatShortAccountName(account: string): string;
 }
-
-
-10.033 ETH
-ethereum = 18 precision
-10033000000000000000(bigint)
 
 export interface IAsset {
     getToken(): IToken;
@@ -212,6 +208,7 @@ export enum TransactionType {
 }
 
 export interface ITransaction {
+    getSession(): IChainSession;
     getChain(): IChain;
     getType(): Promise<TransactionType>;
     getFrom(): IAccount;

@@ -82,7 +82,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 }
 
-class EthereumChain extends AbstractChain {
+export class EthereumChain extends AbstractChain {
     protected infuraUrl: string;
     protected name: string;
     protected chainId: string;
@@ -109,6 +109,10 @@ class EthereumChain extends AbstractChain {
 
     getInfuraUrl(): string {
         return this.infuraUrl;
+    }
+
+    formatShortAccountName(account: string): string {
+        return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
     }
 }
 
@@ -209,10 +213,17 @@ export class EthereumTransaction implements ITransaction {
     private type?: TransactionType;
     private abi?: string;
     protected chain: EthereumChain;
+    protected session: EthereumChainSession;
 
     constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
         this.chain = chain;
+    }
+    getChain(): IChain {
+        return this.chain;
+    }
+    getSession(): IChainSession {
+        return this.session;
     }
 
     static async fromTransaction(

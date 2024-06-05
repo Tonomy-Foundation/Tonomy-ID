@@ -1,25 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import { View, TouchableOpacity, StyleSheet, Image, Text, Platform, ScrollView } from 'react-native';
-import { IconButton } from 'react-native-paper';
+// import RBSheet from 'react-native-raw-bottom-sheet';
+import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { web3wallet, rejectRequest } from '../services/WalletConnect/WalletConnectModule';
-import { SignClientTypes } from '@walletconnect/types';
-import { IChain, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
-import { EthereumTransaction, EthereumMainnetChain, EthereumSepoliaChain } from '../utils/chain/etherum';
-import { extractOrigin, formatAccountAddress } from '../utils/helper';
+import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import { extractOrigin } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
 import { TransactionRequest } from 'ethers';
-import { keyStorage } from '../utils/StorageManager/setup';
-import settings from '../settings';
+import { formatCurrencyValue } from '../utils/numbers';
 
 export default function SignTransactionConsentContainer({
     navigation,
-    requestEvent,
+    transaction,
+    key,
 }: {
     navigation: Props['navigation'];
     transaction: ITransaction;
@@ -47,31 +43,15 @@ export default function SignTransactionConsentContainer({
         usdValue: 0,
         functionName: '',
         args: {},
-        fee: BigInt(0),
+        fee: '',
         usdFee: 0,
-        total: BigInt(0),
+        total: '',
         usdTotal: 0,
     });
     const refMessage = useRef(null);
-    const { params, topic, id } = requestEvent;
 
-    const requestSession = web3wallet?.engine.signClient.session.get(topic);
-
-    const { name: requestName, icons: [requestIcon] = [], url: requestURL } = requestSession?.peer?.metadata ?? {};
-
-    const { request } = params;
-    const transactionData = request.params[0];
-    let ethereumChain;
-
-    if (settings.env === 'production') {
-        ethereumChain = EthereumMainnetChain;
-    } else {
-        ethereumChain = EthereumSepoliaChain;
-    }
-
+    //
     useEffect(() => {
-        const transaction: ITransaction = new EthereumTransaction(transactionData, ethereumChain);
-
         const fetchTransactionDetails = async () => {
             try {
                 setLoading(true);
@@ -80,12 +60,10 @@ export default function SignTransactionConsentContainer({
                 const fromAccount = await transaction.getFrom().getName();
                 const toAccount = await transaction.getTo().getName();
                 const value = (await transaction.getValue()).toString();
-
-                ('10.33 ETH');
                 const usdValue = await (await transaction.getValue()).getUsdValue();
-                const fee = (await transaction.estimateTransactionFee()).getAmount();
+                const fee = (await transaction.estimateTransactionFee()).toString();
                 const usdFee = await (await transaction.estimateTransactionFee()).getUsdValue();
-                const total = (await transaction.estimateTransactionTotal()).getAmount();
+                const total = (await transaction.estimateTransactionTotal()).toString();
                 const usdTotal = await (await transaction.estimateTransactionTotal()).getUsdValue();
 
                 const transactionType = await transaction.getType();
@@ -118,48 +96,35 @@ export default function SignTransactionConsentContainer({
         };
 
         fetchTransactionDetails();
-    }, [transactionData, ethereumChain, contractTransaction]);
+    }, [transaction, contractTransaction]);
 
     async function onReject() {
-        if (requestEvent) {
-            const response = rejectRequest(requestEvent);
+        await transaction.getSession().rejectSession();
+        navigation.navigate({
+            name: 'UserHome',
+            params: {},
+        });
+    }
 
-            await web3wallet?.respondSessionRequest({
-                topic,
-                response,
-            });
+    async function onAccept() {
+        try {
+            const transactionRequest: TransactionRequest = {
+                to: transactionDetails.toAccount,
+                from: transactionDetails.fromAccount,
+                value: transactionDetails.value,
+                chainId: transaction.getChain().getChainId(),
+                gasPrice: transactionDetails.fee,
+            };
+
+            await key.signTransaction(transactionRequest);
+            await transaction.getSession().acceptSession();
+
             navigation.navigate({
                 name: 'UserHome',
                 params: {},
             });
-        }
-    }
-
-    async function onAccept() {
-        if (requestEvent) {
-            const privateKeyValue = await keyStorage.findByName('ethereum');
-
-            if (privateKeyValue) {
-                const transactionRequest: TransactionRequest = {
-                    to: transactionDetails.toAccount,
-                    from: transactionDetails.fromAccount,
-                    value: transactionDetails.value,
-                    chainId: ethereumChain.getChainId(),
-                    gasPrice: transactionDetails.fee,
-                };
-                const signedTransaction = await privateKeyValue.signTransaction(transactionRequest);
-
-                // Wait for the transaction to be mined
-                const response = { id, result: signedTransaction, jsonrpc: '2.0' };
-
-                await web3wallet?.respondSessionRequest({ topic, response });
-                navigation.navigate({
-                    name: 'UserHome',
-                    params: {},
-                });
-            } else {
-                throw new Error('No private key found');
-            }
+        } catch (error) {
+            throw new Error('Error signing transaction');
         }
     }
 
@@ -168,31 +133,45 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: requestIcon }}></Image>
+                        <Image
+                            style={[styles.logo, commonStyles.marginBottom]}
+                            source={{ uri: transaction.getSession().getIcons() || '#' }}
+                        ></Image>
                         <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
-                            <Text style={styles.applink}>{extractOrigin(requestURL)}</Text>
+                            <Text style={styles.applink}>{extractOrigin(transaction.getSession().getUrl)}</Text>
                             wants you to send coins
                         </TH2>
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
-                                    <Image source={require(chain.getLogo())} style={styles.imageStyle} />
-                                    <Text style={styles.nameText}>{chain.getName()} Network</Text>
-                                    <Text>{formatAccountAddress(transactionDetails?.fromAccount)} </Text>
+                                    <Image
+                                        source={require(transaction.getChain().getLogoUrl())}
+                                        style={styles.imageStyle}
+                                    />
+                                    <Text style={styles.nameText}>{transaction.getChain().getName()} Network</Text>
+                                    <Text>
+                                        {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
+                                    </Text>
                                 </View>
                                 <View style={styles.transactionHeading}></View>
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.secondaryColor}>Recipient:</Text>
-                                        <Text>{formatAccountAddress(transactionDetails?.toAccount)} </Text>
+                                        <Text>
+                                            {transaction
+                                                .getChain()
+                                                .formatShortAccountName(transactionDetails?.toAccount)}{' '}
+                                        </Text>
                                     </View>
                                     <View
                                         style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}
                                     >
                                         <Text style={styles.secondaryColor}>Amount:</Text>
                                         <Text>
-                                            {value}
-                                            <Text style={styles.secondaryColor}>(${transactionDetails.usdValue}) </Text>
+                                            {transactionDetails.value}
+                                            <Text style={styles.secondaryColor}>
+                                                (${formatCurrencyValue(transactionDetails.usdValue)})
+                                            </Text>
                                         </Text>
                                     </View>
                                     {/* {contractTransaction && (
@@ -266,8 +245,10 @@ export default function SignTransactionConsentContainer({
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
                                         <Text>
-                                            {transactionDetails?.fee} Eth
-                                            <Text style={styles.secondaryColor}>(${transactionDetails.usdFee}) </Text>
+                                            {transactionDetails?.fee}
+                                            <Text style={styles.secondaryColor}>
+                                                (${formatCurrencyValue(transactionDetails.usdFee)})
+                                            </Text>
                                         </Text>
                                     </View>
                                 </View>
@@ -275,11 +256,10 @@ export default function SignTransactionConsentContainer({
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
                                         <Text style={{ fontWeight: '600' }}>
-                                            {transactionDetails?.total} ETH
+                                            {transactionDetails?.total}
                                             <Text style={styles.secondaryColor}>
-                                                (${transactionDetails.usdTotal}){' '}
-                                            </Text>{' '}
-                                            no 103232.5556465464 yes 103,232.56
+                                                (${formatCurrencyValue(transactionDetails.usdTotal)})
+                                            </Text>
                                         </Text>
                                     </View>
                                 </View>

@@ -23,6 +23,7 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import RNKeyManager from '../utils/RNKeyManager';
+import { keyStorage } from '../utils/StorageManager/setup';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -35,7 +36,7 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { requestEvent } = route.params ?? {};
+    const { transaction } = route.params ?? {};
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -93,9 +94,10 @@ export default function CreateEthereumKeyContainer({
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
             setLoading(false);
+            const key = await keyStorage.findByName('ethereum');
 
-            if (requestEvent) {
-                navigation.navigate('SignTransaction', { requestEvent });
+            if (key && transaction) {
+                navigation.navigate('SignTransaction', { transaction, key });
             } else {
                 navigation.navigate({ name: 'UserHome', params: {} });
             }
