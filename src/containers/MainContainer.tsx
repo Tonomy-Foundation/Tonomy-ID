@@ -160,8 +160,6 @@ export default function MainContainer({
         setQrOpened(false);
     }
 
-    console.log('currentETHAddress', currentETHAddress);
-
     const MainView = () => {
         const isFocused = useIsFocused();
 
