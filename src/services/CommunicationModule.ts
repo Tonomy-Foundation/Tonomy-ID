@@ -168,15 +168,38 @@ export default function CommunicationModule() {
 
         switch (request.method) {
             case 'eth_sendTransaction': {
-                const ethereumKeyExists = await keyStorage.findByName('ethereum');
+                const { params, topic, id } = requestEvent;
 
-                if (!ethereumKeyExists) {
+                const requestSession = web3wallet?.engine.signClient.session.get(topic);
+
+                const {
+                    name: requestName,
+                    icons: [requestIcon] = [],
+                    url: requestURL,
+                } = requestSession?.peer?.metadata ?? {};
+
+                const { request } = params;
+                const transactionData = request.params[0];
+                let ethereumChain;
+
+                // in the settings file
+                if (settings.env === 'production') {
+                    ethereumChain = EthereumMainnetChain;
+                } else {
+                    ethereumChain = EthereumSepoliaChain;
+                }
+
+                const transaction: ITransaction = new EthereumTransaction(transactionData, ethereumChain);
+                const key = await keyStorage.findByName('ethereum');
+
+                if (!key) {
                     navigation.navigate('CreateEthereumKey', {
-                        requestEvent: requestEvent,
+                        transaction,
                     });
                 } else {
                     navigation.navigate('SignTransaction', {
-                        requestEvent: requestEvent,
+                        transaction,
+                        key,
                     });
                 }
 

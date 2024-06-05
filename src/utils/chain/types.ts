@@ -59,6 +59,7 @@ export interface IChain {
     // getApiEndpoint(): string;
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
+    formatShortAccountName(account: string): string;
 }
 
 export abstract class AbstractChain implements IChain {
@@ -82,6 +83,11 @@ export abstract class AbstractChain implements IChain {
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
 }
+
+
+10.033 ETH
+ethereum = 18 precision
+10033000000000000000(bigint)
 
 export interface IAsset {
     getToken(): IToken;
@@ -206,6 +212,7 @@ export enum TransactionType {
 }
 
 export interface ITransaction {
+    getChain(): IChain;
     getType(): Promise<TransactionType>;
     getFrom(): IAccount;
     getTo(): IAccount;

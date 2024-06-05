@@ -9,7 +9,7 @@ import { TH2 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { web3wallet, rejectRequest } from '../services/WalletConnect/WalletConnectModule';
 import { SignClientTypes } from '@walletconnect/types';
-import { IChain, ITransaction, TransactionType } from '../utils/chain/types';
+import { IChain, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { EthereumTransaction, EthereumMainnetChain, EthereumSepoliaChain } from '../utils/chain/etherum';
 import { extractOrigin, formatAccountAddress } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
@@ -22,7 +22,8 @@ export default function SignTransactionConsentContainer({
     requestEvent,
 }: {
     navigation: Props['navigation'];
-    requestEvent: SignClientTypes.EventArguments['session_request'];
+    transaction: ITransaction;
+    key: IPrivateKey;
 }) {
     const [contractTransaction, setContractTransaction] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -30,19 +31,19 @@ export default function SignTransactionConsentContainer({
         transactionType: TransactionType | null;
         fromAccount: string;
         toAccount: string;
-        value: bigint;
+        value: string;
         usdValue: number;
         functionName: string;
         args: Record<string, string> | null;
-        fee: bigint;
+        fee: string;
         usdFee: number;
-        total: bigint;
+        total: string;
         usdTotal: number;
     }>({
         transactionType: null,
         fromAccount: '',
         toAccount: '',
-        value: BigInt(0),
+        value: '',
         usdValue: 0,
         functionName: '',
         args: {},
@@ -78,7 +79,9 @@ export default function SignTransactionConsentContainer({
 
                 const fromAccount = await transaction.getFrom().getName();
                 const toAccount = await transaction.getTo().getName();
-                const value = (await transaction.getValue()).getAmount();
+                const value = (await transaction.getValue()).toString();
+
+                ('10.33 ETH');
                 const usdValue = await (await transaction.getValue()).getUsdValue();
                 const fee = (await transaction.estimateTransactionFee()).getAmount();
                 const usdFee = await (await transaction.estimateTransactionFee()).getUsdValue();
@@ -173,8 +176,8 @@ export default function SignTransactionConsentContainer({
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
-                                    <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
-                                    <Text style={styles.nameText}>Ethereum Network</Text>
+                                    <Image source={require(chain.getLogo())} style={styles.imageStyle} />
+                                    <Text style={styles.nameText}>{chain.getName()} Network</Text>
                                     <Text>{formatAccountAddress(transactionDetails?.fromAccount)} </Text>
                                 </View>
                                 <View style={styles.transactionHeading}></View>
@@ -188,7 +191,7 @@ export default function SignTransactionConsentContainer({
                                     >
                                         <Text style={styles.secondaryColor}>Amount:</Text>
                                         <Text>
-                                            {transactionDetails?.value} Eth
+                                            {value}
                                             <Text style={styles.secondaryColor}>(${transactionDetails.usdValue}) </Text>
                                         </Text>
                                     </View>
@@ -273,7 +276,10 @@ export default function SignTransactionConsentContainer({
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
                                         <Text style={{ fontWeight: '600' }}>
                                             {transactionDetails?.total} ETH
-                                            <Text style={styles.secondaryColor}>(${transactionDetails.usdTotal}) </Text>
+                                            <Text style={styles.secondaryColor}>
+                                                (${transactionDetails.usdTotal}){' '}
+                                            </Text>{' '}
+                                            no 103232.5556465464 yes 103,232.56
                                         </Text>
                                     </View>
                                 </View>
