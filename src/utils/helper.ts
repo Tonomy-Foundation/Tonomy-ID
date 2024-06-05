@@ -12,7 +12,6 @@ export function extractOrigin(url) {
         return 'Invalid URL - Must use HTTPS';
     }
 
-    console.log('hostname', hostname);
     return hostname;
 }
 

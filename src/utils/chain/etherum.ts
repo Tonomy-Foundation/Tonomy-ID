@@ -245,7 +245,6 @@ export class EthereumTransaction implements ITransaction {
             throw new Error('Transaction has no sender');
         }
 
-        console.log('getFrom', this.transaction.from.toString());
         return new EthereumAccount(this.chain, this.transaction.from.toString());
     }
     getTo(): EthereumAccount {
@@ -297,7 +296,6 @@ export class EthereumTransaction implements ITransaction {
     async estimateTransactionFee(): Promise<Asset> {
         const wei = await provider.estimateGas(this.transaction);
 
-        console.log('wei', wei, this.transaction);
         return new Asset(this.chain.getNativeToken(), wei);
     }
     async estimateTransactionTotal(): Promise<Asset> {
