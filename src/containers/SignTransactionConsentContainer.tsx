@@ -9,12 +9,19 @@ import { TH2 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { web3wallet, rejectRequest } from '../services/WalletConnect/WalletConnectModule';
 import { SignClientTypes } from '@walletconnect/types';
-import { EthereumTransaction, EthereumSepoliaChain, EthereumAccount, EthereumPrivateKey } from '../utils/chain/etherum';
+import {
+    EthereumTransaction,
+    EthereumSepoliaChain,
+    EthereumAccount,
+    EthereumPrivateKey,
+    EthereumMainnetChain,
+} from '../utils/chain/etherum';
 import { Asset, TransactionType } from '../utils/chain/types';
 import { extractOrigin, formatAccountAddress } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
 import { TransactionRequest } from 'ethers';
 import { keyStorage } from '../utils/StorageManager/setup';
+import settings from '../settings';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -23,7 +30,6 @@ export default function SignTransactionConsentContainer({
     navigation: Props['navigation'];
     requestEvent: SignClientTypes.EventArguments['session_request'];
 }) {
-    const [showDetails, setShowDetails] = useState(false);
     const [contractTransaction, setContractTransaction] = useState(false);
     const [loading, setLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
@@ -31,19 +37,25 @@ export default function SignTransactionConsentContainer({
         fromAccount: string;
         toAccount: string;
         value: string;
+        usdValue: number;
         functionName: string;
         args: Record<string, string> | null;
         fee: string;
+        usdFee: number;
         total: string;
+        usdTotal: number;
     }>({
         transactionType: null,
         fromAccount: '',
         toAccount: '',
         value: '',
+        usdValue: 0,
         functionName: '',
         args: {},
         fee: '',
+        usdFee: 0,
         total: '',
+        usdTotal: 0,
     });
     const refMessage = useRef(null);
     const { params, topic, id } = requestEvent;
@@ -54,47 +66,63 @@ export default function SignTransactionConsentContainer({
 
     const { request } = params;
     const transactionData = request.params[0];
-    const ethereumChain = EthereumSepoliaChain;
-    const transaction = new EthereumTransaction(transactionData, ethereumChain);
+    let ethereumChain;
 
-    const fetchTransactionDetails = async () => {
-        try {
-            setLoading(true);
-            setContractTransaction(true);
-
-            const fromAccount = await transaction.getFrom().getName();
-
-            console.log('fromAccount', fromAccount);
-            const toAccount = await transaction.getTo().getName;
-            const value = (await transaction.getValue()).printValue();
-            const fee = (await transaction.estimateTransactionFee()).printValue();
-            const total = (await transaction.estimateTransactionTotal()).printValue();
-
-            let transactionType;
-            let functionName = '';
-            let args: Record<string, string> | null = null;
-
-            if (!contractTransaction) {
-                transactionType = (await transaction.getType())?.toString() ?? null;
-                functionName = await transaction.getFunction();
-                args = await transaction.getArguments();
-            }
-
-            setLoading(false);
-
-            return { transactionType, fromAccount, toAccount, value, functionName, args, fee, total };
-        } catch (error) {
-            if (error.message === 'Not a contract call') {
-                setContractTransaction(false);
-            }
-
-            setLoading(false);
-        }
-    };
+    if (settings.env === 'production') {
+        ethereumChain = EthereumMainnetChain;
+    } else {
+        ethereumChain = EthereumSepoliaChain;
+    }
 
     useEffect(() => {
-        fetchTransactionDetails().then((details) => setTransactionDetails(details));
-    }, []);
+        const transaction = new EthereumTransaction(transactionData, ethereumChain);
+
+        const fetchTransactionDetails = async () => {
+            try {
+                setLoading(true);
+                setContractTransaction(true);
+
+                const fromAccount = await transaction.getFrom().getName();
+                const toAccount = await transaction.getTo().getName();
+                const value = (await transaction.getValue()).printValue();
+                const usdValue = await (await transaction.getValue()).getUsdValue();
+                const fee = (await transaction.estimateTransactionFee()).printValue();
+                const usdFee = await (await transaction.estimateTransactionFee()).getUsdValue();
+                const total = (await transaction.estimateTransactionTotal()).printValue();
+                const usdTotal = await (await transaction.estimateTransactionTotal()).getUsdValue();
+
+                let transactionType;
+                let functionName = '';
+                let args: Record<string, string> | null = null;
+
+                if (!contractTransaction) {
+                    transactionType = (await transaction.getType())?.toString() ?? null;
+                    functionName = await transaction.getFunction();
+                    args = await transaction.getArguments();
+                }
+
+                setLoading(false);
+                setTransactionDetails({
+                    transactionType,
+                    fromAccount,
+                    toAccount,
+                    value,
+                    usdValue,
+                    functionName,
+                    args,
+                    fee,
+                    usdFee,
+                    total,
+                    usdTotal,
+                });
+            } catch (error) {
+                console.error(error);
+                setLoading(false);
+            }
+        };
+
+        fetchTransactionDetails();
+    }, [transactionData, ethereumChain, contractTransaction]);
 
     async function onReject() {
         if (requestEvent) {
@@ -116,33 +144,19 @@ export default function SignTransactionConsentContainer({
             const privateKeyValue = await keyStorage.findByName('ethereum');
 
             if (privateKeyValue) {
-                const ethereumPrivateKey = new EthereumPrivateKey(
-                    '0xc7709ab54044f7a97d8b3d006c404644a15286c7cc13e7a597353a405610e690'
-                ); // Cast privateKey to EthereumPrivateKey
-                const toAccount = await transaction.getTo().getName();
-                const value = (await transaction.getValue()).printValue();
-                const fee = (await transaction.estimateTransactionFee()).printValue();
-                const total = (await transaction.estimateTransactionTotal()).printValue();
-
-                console.log({
-                    to: toAccount.toString(),
-                    from: '0x253c8d99c27d47A4DcdB04B40115AB1dAc466280',
-                    value: value,
-                    chainId: ethereumChain.getChainId(),
-                });
+                const ethereumPrivateKey = new EthereumPrivateKey(await privateKeyValue?.exportPrivateKey());
                 const transactionRequest: TransactionRequest = {
-                    to: toAccount.toString(),
-                    from: '0x253c8d99c27d47A4DcdB04B40115AB1dAc466280',
-                    value: value,
+                    to: transactionDetails.toAccount,
+                    from: transactionDetails.fromAccount,
+                    value: transactionDetails.value,
                     chainId: ethereumChain.getChainId(),
+                    gasPrice: transactionDetails.fee,
                 };
                 const signedTransaction = await ethereumPrivateKey.signTransaction(transactionRequest);
 
-                console.log('signedTransaction', signedTransaction);
                 // Wait for the transaction to be mined
                 const response = { id, result: signedTransaction, jsonrpc: '2.0' };
 
-                console.log('response', response);
                 await web3wallet?.respondSessionRequest({ topic, response });
                 navigation.navigate({
                     name: 'UserHome',
@@ -164,7 +178,7 @@ export default function SignTransactionConsentContainer({
                             <Text style={styles.applink}>{extractOrigin(requestURL)}</Text>
                             wants you to send coins
                         </TH2>
-                        {loading ? (
+                        {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
                                     <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
@@ -183,7 +197,7 @@ export default function SignTransactionConsentContainer({
                                         <Text style={styles.secondaryColor}>Amount:</Text>
                                         <Text>
                                             {transactionDetails?.value} Eth
-                                            <Text style={styles.secondaryColor}>($117.02) </Text>
+                                            <Text style={styles.secondaryColor}>(${transactionDetails.usdValue}) </Text>
                                         </Text>
                                     </View>
                                     {/* {contractTransaction && (
@@ -258,14 +272,17 @@ export default function SignTransactionConsentContainer({
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
                                         <Text>
                                             {transactionDetails?.fee} Eth
-                                            <Text style={styles.secondaryColor}>($17.02) </Text>
+                                            <Text style={styles.secondaryColor}>(${transactionDetails.usdFee}) </Text>
                                         </Text>
                                     </View>
                                 </View>
                                 <View style={styles.totalSection}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
-                                        <Text style={{ fontWeight: '600' }}>{transactionDetails?.total}</Text>
+                                        <Text style={{ fontWeight: '600' }}>
+                                            {transactionDetails?.total} ETH
+                                            <Text style={styles.secondaryColor}>(${transactionDetails.usdTotal}) </Text>
+                                        </Text>
                                     </View>
                                 </View>
                             </>
@@ -311,7 +328,7 @@ const styles = StyleSheet.create({
         color: theme.colors.linkColor,
         margin: 0,
         padding: 0,
-        marginLeft: 2,
+        marginRight: 2,
     },
     imageStyle: {
         width: 10,
