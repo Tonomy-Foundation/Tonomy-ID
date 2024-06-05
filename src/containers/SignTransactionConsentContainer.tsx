@@ -9,14 +9,8 @@ import { TH2 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { web3wallet, rejectRequest } from '../services/WalletConnect/WalletConnectModule';
 import { SignClientTypes } from '@walletconnect/types';
-import {
-    EthereumTransaction,
-    EthereumSepoliaChain,
-    EthereumAccount,
-    EthereumPrivateKey,
-    EthereumMainnetChain,
-} from '../utils/chain/etherum';
-import { Asset, TransactionType } from '../utils/chain/types';
+import { IChain, ITransaction, TransactionType } from '../utils/chain/types';
+import { EthereumTransaction, EthereumMainnetChain, EthereumSepoliaChain } from '../utils/chain/etherum';
 import { extractOrigin, formatAccountAddress } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
 import { TransactionRequest } from 'ethers';
@@ -36,25 +30,25 @@ export default function SignTransactionConsentContainer({
         transactionType: TransactionType | null;
         fromAccount: string;
         toAccount: string;
-        value: string;
+        value: bigint;
         usdValue: number;
         functionName: string;
         args: Record<string, string> | null;
-        fee: string;
+        fee: bigint;
         usdFee: number;
-        total: string;
+        total: bigint;
         usdTotal: number;
     }>({
         transactionType: null,
         fromAccount: '',
         toAccount: '',
-        value: '',
+        value: BigInt(0),
         usdValue: 0,
         functionName: '',
         args: {},
-        fee: '',
+        fee: BigInt(0),
         usdFee: 0,
-        total: '',
+        total: BigInt(0),
         usdTotal: 0,
     });
     const refMessage = useRef(null);
@@ -75,7 +69,7 @@ export default function SignTransactionConsentContainer({
     }
 
     useEffect(() => {
-        const transaction = new EthereumTransaction(transactionData, ethereumChain);
+        const transaction: ITransaction = new EthereumTransaction(transactionData, ethereumChain);
 
         const fetchTransactionDetails = async () => {
             try {
@@ -84,19 +78,18 @@ export default function SignTransactionConsentContainer({
 
                 const fromAccount = await transaction.getFrom().getName();
                 const toAccount = await transaction.getTo().getName();
-                const value = (await transaction.getValue()).printValue();
+                const value = (await transaction.getValue()).getAmount();
                 const usdValue = await (await transaction.getValue()).getUsdValue();
-                const fee = (await transaction.estimateTransactionFee()).printValue();
+                const fee = (await transaction.estimateTransactionFee()).getAmount();
                 const usdFee = await (await transaction.estimateTransactionFee()).getUsdValue();
-                const total = (await transaction.estimateTransactionTotal()).printValue();
+                const total = (await transaction.estimateTransactionTotal()).getAmount();
                 const usdTotal = await (await transaction.estimateTransactionTotal()).getUsdValue();
 
-                let transactionType;
+                const transactionType = await transaction.getType();
                 let functionName = '';
                 let args: Record<string, string> | null = null;
 
                 if (!contractTransaction) {
-                    transactionType = (await transaction.getType())?.toString() ?? null;
                     functionName = await transaction.getFunction();
                     args = await transaction.getArguments();
                 }
@@ -144,7 +137,6 @@ export default function SignTransactionConsentContainer({
             const privateKeyValue = await keyStorage.findByName('ethereum');
 
             if (privateKeyValue) {
-                const ethereumPrivateKey = new EthereumPrivateKey(await privateKeyValue?.exportPrivateKey());
                 const transactionRequest: TransactionRequest = {
                     to: transactionDetails.toAccount,
                     from: transactionDetails.fromAccount,
@@ -152,7 +144,7 @@ export default function SignTransactionConsentContainer({
                     chainId: ethereumChain.getChainId(),
                     gasPrice: transactionDetails.fee,
                 };
-                const signedTransaction = await ethereumPrivateKey.signTransaction(transactionRequest);
+                const signedTransaction = await privateKeyValue.signTransaction(transactionRequest);
 
                 // Wait for the transaction to be mined
                 const response = { id, result: signedTransaction, jsonrpc: '2.0' };
