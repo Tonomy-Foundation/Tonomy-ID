@@ -17,7 +17,12 @@ import { AppState } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
-import { EthereumChainSession, EthereumTransaction } from '../utils/chain/etherum';
+import {
+    EthereumChainSession,
+    EthereumMainnetChain,
+    EthereumSepoliaChain,
+    EthereumTransaction,
+} from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
 import settings from '../settings';
 
@@ -158,7 +163,15 @@ export default function CommunicationModule() {
 
     const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
         if (proposal) {
-            const session = new EthereumChainSession(proposal, settings.config.chain);
+            let chain;
+
+            if (settings.env === 'production') {
+                chain = EthereumMainnetChain;
+            } else {
+                chain = EthereumSepoliaChain;
+            }
+
+            const session = new EthereumChainSession(proposal, chain);
 
             navigation.navigate('WalletConnectLogin', {
                 payload: proposal,
@@ -170,6 +183,13 @@ export default function CommunicationModule() {
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
         const { params } = requestEvent;
         const { request } = params;
+        let chain;
+
+        if (settings.env === 'production') {
+            chain = EthereumMainnetChain;
+        } else {
+            chain = EthereumSepoliaChain;
+        }
 
         switch (request.method) {
             case 'eth_sendTransaction': {
@@ -177,7 +197,7 @@ export default function CommunicationModule() {
 
                 const { request } = params;
                 const transactionData = request.params[0];
-                const transaction: ITransaction = new EthereumTransaction(transactionData, settings.config.chain);
+                const transaction: ITransaction = new EthereumTransaction(transactionData, chain);
                 const key = await keyStorage.findByName('ethereum');
 
                 if (!key) {

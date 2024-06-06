@@ -57,7 +57,6 @@ type ConfigType = {
     infuraKey: string;
     etherscanApiKey: string;
     walletConnectProjectId: string;
-    chain: EthereumChain;
 };
 
 type SettingsType = {
@@ -120,12 +119,6 @@ if (process.env.HCAPTCHA_SITE_KEY) {
 if (process.env.LOG === 'true') {
     console.log(`Using logger level from env: ${process.env.LOG}`);
     config.loggerLevel = 'debug';
-}
-
-if (env === 'production') {
-    config.chain = EthereumMainnetChain;
-} else {
-    config.chain = EthereumSepoliaChain;
 }
 
 settings.config = config;
