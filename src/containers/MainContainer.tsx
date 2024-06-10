@@ -40,7 +40,7 @@ export default function MainContainer({
     const { initialized, web3wallet } = useInitialization();
 
     useEffect(() => {
-        console.log('Web3WalletSDK initialized:', initialized);
+        console.log('Web3WalletSDKs initialized:', initialized);
     }, [initialized]);
 
     useEffect(() => {

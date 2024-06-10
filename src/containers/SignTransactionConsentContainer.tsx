@@ -60,11 +60,18 @@ export default function SignTransactionConsentContainer({
                 const fromAccount = await transaction.getFrom().getName();
                 const toAccount = await transaction.getTo().getName();
                 const value = (await transaction.getValue()).toString();
-                const usdValue = await (await transaction.getValue()).getUsdValue();
+
+                const usdValue = await (await transaction.getValue()).getToken().getUsdPrice();
+
                 const fee = (await transaction.estimateTransactionFee()).toString();
-                const usdFee = await (await transaction.estimateTransactionFee()).getUsdValue();
+
+                const usdFee = fee ? await (await transaction.estimateTransactionFee()).getToken().getUsdPrice() : 0;
+
                 const total = (await transaction.estimateTransactionTotal()).toString();
-                const usdTotal = await (await transaction.estimateTransactionTotal()).getUsdValue();
+
+                const usdTotal = total
+                    ? await (await transaction.estimateTransactionTotal()).getToken().getUsdPrice()
+                    : 0;
 
                 const transactionType = await transaction.getType();
                 let functionName = '';
@@ -97,6 +104,7 @@ export default function SignTransactionConsentContainer({
 
         fetchTransactionDetails();
     }, [transaction, contractTransaction]);
+    console.log('session', transaction.getSession());
 
     async function onReject() {
         await transaction.getSession().rejectSession();
@@ -128,6 +136,8 @@ export default function SignTransactionConsentContainer({
         }
     }
 
+    console.log('test', transaction.getSession());
+
     return (
         <LayoutComponent
             body={
@@ -135,24 +145,24 @@ export default function SignTransactionConsentContainer({
                     <View style={styles.container}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
-                            source={{ uri: transaction.getSession().getIcons() || '#' }}
+                            source={{ uri: transaction?.getSession().getIcons() || '#' }}
                         ></Image>
                         <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
-                            <Text style={styles.applink}>{extractOrigin(transaction.getSession().getUrl)}</Text>
+                            <Text style={styles.applink}>{extractOrigin(transaction?.getSession().getUrl)}</Text>
                             wants you to send coins
                         </TH2>
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
                                     <Image
-                                        source={require(transaction.getChain().getLogoUrl())}
+                                        source={{ uri: transaction.getChain().getLogoUrl() }}
                                         style={styles.imageStyle}
                                     />
                                     <Text style={styles.nameText}>{transaction.getChain().getName()} Network</Text>
-                                    <Text>
-                                        {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
-                                    </Text>
                                 </View>
+                                <Text>
+                                    {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
+                                </Text>
                                 <View style={styles.transactionHeading}></View>
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

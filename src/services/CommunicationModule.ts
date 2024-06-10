@@ -163,16 +163,6 @@ export default function CommunicationModule() {
 
     const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
         if (proposal) {
-            let chain;
-
-            if (settings.env === 'production') {
-                chain = EthereumMainnetChain;
-            } else {
-                chain = EthereumSepoliaChain;
-            }
-
-            const session = new EthereumChainSession(proposal, chain);
-
             navigation.navigate('WalletConnectLogin', {
                 payload: proposal,
                 platform: 'browser',
@@ -181,7 +171,7 @@ export default function CommunicationModule() {
     }, []);
 
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-        const { params } = requestEvent;
+        const { params, topic } = requestEvent;
         const { request } = params;
         let chain;
 
@@ -197,6 +187,8 @@ export default function CommunicationModule() {
 
                 const { request } = params;
                 const transactionData = request.params[0];
+
+                console.log('transactionData', transactionData);
                 const transaction: ITransaction = new EthereumTransaction(transactionData, chain);
                 const key = await keyStorage.findByName('ethereum');
 
