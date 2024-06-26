@@ -8,8 +8,8 @@ Tonomy ID is a React Native application in typescript.
 
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
-- Linux debian distribution (Ubuntu 20.0.4 LTS used)
-- [Nodejs](https://nodejs.org) v18.12.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
+-   Linux debian distribution (Ubuntu 20.0.4 LTS used)
+-   [Nodejs](https://nodejs.org) v18.12.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 
 ## Install
 
@@ -26,7 +26,22 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (for first time build only) `export EXPO_FIRST_TIME=true`
 3. (for every time after first time only) Change the value of `"projectId"` in `prepare.app.config.ts` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
-4. (for IOS only) Run `yarn run build:ios:create` to create a device profile for your phone
+4. (for IOS only) Run `yarn run build:ios:create` to create a device profile for your phone. Follow the steps below:
+
+    If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
+
+    This is optional, but without Apple account access you will need to provide all the missing values manually and we can only run minimal validation on them.
+
+    - Do you want to log in to your Apple account? (Y/n)
+    - Login to your Apple Developer account to continue
+        - Enter Apple ID and Password
+    - Select Team [Stichting Tonomy - Company/Organization (6BLD42QR78)]
+    - Select Provider [Stichting Tonomy (125811354)]
+    - How would you like to register your devices?
+        - Select Website - generate a registration URL to be opened on your devices
+
+    After choosing Website, it will generate the URL and QR code. Open the link or scan the QR code and follow the instructions to install the development profile on ios device.
+
 5. Run `yarn run build:ios` (ios) or `yarn run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
 7. Install the created app on your phone.
@@ -90,23 +105,23 @@ Set the configuration variables in the desired file in `./src/config`
 
 Values for EXPO_NODE_ENV
 
-- EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
-- EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
-- EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
-- EXPO_NODE_ENV=demo - uses `./src/config/config.demo.json`
-- EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
-- EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
+-   EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
+-   EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
+-   EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+-   EXPO_NODE_ENV=demo - uses `./src/config/config.demo.json`
+-   EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
+-   EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
 
 Values for EXPO_PLATFORM
 
-- EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
-- EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
+-   EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
+-   EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
 
 Other environment variables override the values in the config file:
 
-- BLOCKCHAIN_URL
-- SSO_WEBSITE_ORIGIN
-- VITE_COMMUNICATION_URL
+-   BLOCKCHAIN_URL
+-   SSO_WEBSITE_ORIGIN
+-   VITE_COMMUNICATION_URL
 
 ### Linting
 
