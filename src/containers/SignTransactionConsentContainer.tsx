@@ -11,6 +11,7 @@ import { extractOrigin } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
 import { TransactionRequest } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
+import useErrorStore from '../store/errorStore';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -21,6 +22,7 @@ export default function SignTransactionConsentContainer({
     transaction: ITransaction;
     key: IPrivateKey;
 }) {
+    const errorStore = useErrorStore();
     const [contractTransaction, setContractTransaction] = useState(false);
     const [loading, setLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
@@ -50,7 +52,6 @@ export default function SignTransactionConsentContainer({
     });
     const refMessage = useRef(null);
 
-    //
     useEffect(() => {
         const fetchTransactionDetails = async () => {
             try {
@@ -96,14 +97,14 @@ export default function SignTransactionConsentContainer({
                     total,
                     usdTotal,
                 });
-            } catch (error) {
-                console.error(error);
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
                 setLoading(false);
             }
         };
 
         fetchTransactionDetails();
-    }, [transaction, contractTransaction]);
+    }, [transaction, contractTransaction, errorStore]);
 
     async function onReject() {
         navigation.navigate({
@@ -129,7 +130,7 @@ export default function SignTransactionConsentContainer({
                 params: {},
             });
         } catch (error) {
-            throw new Error('Error signing transaction');
+            throw new Error(`Error signing transaction, ${error}`);
         }
     }
 

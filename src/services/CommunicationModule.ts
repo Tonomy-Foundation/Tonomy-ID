@@ -18,6 +18,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
 import {
+    EthereumChainSession,
     // EthereumChainSession,
     // EthereumMainnetChain,
     // EthereumSepoliaChain,
@@ -174,13 +175,6 @@ export default function CommunicationModule() {
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
         const { params, topic } = requestEvent;
         const { request } = params;
-        // let chain;
-
-        // if (settings.env === 'production') {
-        //     chain = EthereumMainnetChain;
-        // } else {
-        //     chain = EthereumSepoliaChain;
-        // }
 
         switch (request.method) {
             case 'eth_sendTransaction': {
@@ -189,7 +183,6 @@ export default function CommunicationModule() {
                 const { request } = params;
                 const transactionData = request.params[0];
 
-                console.log('transactionData', transactionData);
                 const transaction: ITransaction = new EthereumTransaction(transactionData, chain);
                 const key = await keyStorage.findByName('ethereum');
 
