@@ -166,7 +166,7 @@ export default function SignTransactionConsentContainer({
                                         <Text>
                                             {transaction
                                                 .getChain()
-                                                .formatShortAccountName(transactionDetails?.toAccount)}{' '}
+                                                .formatShortAccountName(transactionDetails?.toAccount)}
                                         </Text>
                                     </View>
                                     <View

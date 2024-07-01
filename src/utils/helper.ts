@@ -13,7 +13,3 @@ export function extractOrigin(url): string {
 
     return urlObject.origin;
 }
-
-export function formatAccountAddress(account) {
-    return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
-}

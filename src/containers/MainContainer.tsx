@@ -229,6 +229,7 @@ export default function MainContainer({
                                             <Text>Not connected</Text>
                                         )}
                                     </View>
+
                                     {!initialized && web3wallet === null ? (
                                         <TButton
                                             style={styles.generateKey}
