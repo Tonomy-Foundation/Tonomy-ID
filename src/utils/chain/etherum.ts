@@ -82,7 +82,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 }
 
-class EthereumChain extends AbstractChain {
+export class EthereumChain extends AbstractChain {
     protected infuraUrl: string;
     protected name: string;
     protected chainId: string;
@@ -109,6 +109,10 @@ class EthereumChain extends AbstractChain {
 
     getInfuraUrl(): string {
         return this.infuraUrl;
+    }
+
+    formatShortAccountName(account: string): string {
+        return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
     }
 }
 
@@ -177,10 +181,14 @@ const EthereumSepoliaChain = new EthereumChain(
 );
 let provider: JsonRpcProvider;
 
-if (settings.env === 'production') {
+export let chain: EthereumChain;
+
+if (settings.isProduction()) {
     provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+    chain = EthereumMainnetChain;
 } else {
     provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
+    chain = EthereumSepoliaChain;
 }
 
 const ETHToken = new EthereumToken(
@@ -209,10 +217,14 @@ export class EthereumTransaction implements ITransaction {
     private type?: TransactionType;
     private abi?: string;
     protected chain: EthereumChain;
+    protected session: EthereumChainSession;
 
     constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
         this.chain = chain;
+    }
+    getChain(): IChain {
+        return this.chain;
     }
 
     static async fromTransaction(

@@ -17,6 +17,16 @@ import { AppState } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
+import {
+    EthereumChainSession,
+    // EthereumChainSession,
+    // EthereumMainnetChain,
+    // EthereumSepoliaChain,
+    EthereumTransaction,
+    chain,
+} from '../utils/chain/etherum';
+import { ITransaction } from '../utils/chain/types';
+import settings from '../settings';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -163,23 +173,27 @@ export default function CommunicationModule() {
     }, []);
 
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-        const { topic, params } = requestEvent;
+        const { params, topic } = requestEvent;
         const { request } = params;
-        const requestSessionData = web3wallet?.engine.signClient.session.get(topic);
 
         switch (request.method) {
             case 'eth_sendTransaction': {
-                const ethereumKeyExists = await keyStorage.findByName('ethereum');
+                const { params } = requestEvent;
 
-                if (!ethereumKeyExists) {
+                const { request } = params;
+                const transactionData = request.params[0];
+
+                const transaction: ITransaction = new EthereumTransaction(transactionData, chain);
+                const key = await keyStorage.findByName('ethereum');
+
+                if (!key) {
                     navigation.navigate('CreateEthereumKey', {
-                        requestSession: requestSessionData,
-                        requestEvent: requestEvent,
+                        transaction,
                     });
                 } else {
                     navigation.navigate('SignTransaction', {
-                        requestSession: requestSessionData,
-                        requestEvent: requestEvent,
+                        transaction,
+                        key,
                     });
                 }
 

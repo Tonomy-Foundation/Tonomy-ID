@@ -59,6 +59,7 @@ export interface IChain {
     // getApiEndpoint(): string;
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
+    formatShortAccountName(account: string): string;
 }
 
 export abstract class AbstractChain implements IChain {
@@ -81,6 +82,7 @@ export abstract class AbstractChain implements IChain {
         return this.nativeToken;
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
+    abstract formatShortAccountName(account: string): string;
 }
 
 export interface IAsset {
@@ -206,6 +208,7 @@ export enum TransactionType {
 }
 
 export interface ITransaction {
+    getChain(): IChain;
     getType(): Promise<TransactionType>;
     getFrom(): IAccount;
     getTo(): IAccount;

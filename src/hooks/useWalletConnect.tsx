@@ -22,7 +22,7 @@ export default function useInitialization() {
                 setWeb3wallet(null);
                 setInitialized(false);
             } else {
-                if (!initialized) setTimeout(onInitialize, 20000);
+                if (!initialized) setTimeout(onInitialize, 10000);
             }
         }
     }, [initialized]);

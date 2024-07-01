@@ -82,7 +82,7 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     const seedData = await generateSeedFromPassword(passphrase, salt);
     let ethereumKey;
 
-    if (settings.env === 'production') {
+    if (settings.isProduction()) {
         ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
     } else {
         ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
