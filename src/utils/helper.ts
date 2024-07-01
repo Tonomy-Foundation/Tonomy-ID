@@ -1,19 +1,17 @@
 import settings from '../settings';
 
 export function extractOrigin(url): string {
-    const hasHttpsProtocol = new URL(url);
+    const urlObject = new URL(url);
 
-    if (hasHttpsProtocol.protocol !== 'https:' && hasHttpsProtocol.protocol !== 'http:') {
+    if (urlObject.protocol !== 'https:' && urlObject.protocol !== 'http:') {
         return 'Invalid URL';
     }
 
-    const hostname = new URL(url).hostname;
-
-    if (settings.isProduction() && !hasHttpsProtocol) {
+    if (settings.isProduction() && !urlObject) {
         return 'Invalid URL - Must use HTTPS';
     }
 
-    return hostname;
+    return urlObject.origin;
 }
 
 export function formatAccountAddress(account) {

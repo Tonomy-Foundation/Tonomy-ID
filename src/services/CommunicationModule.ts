@@ -18,10 +18,11 @@ import { SignClientTypes } from '@walletconnect/types';
 import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
 import {
-    EthereumChainSession,
-    EthereumMainnetChain,
-    EthereumSepoliaChain,
+    // EthereumChainSession,
+    // EthereumMainnetChain,
+    // EthereumSepoliaChain,
     EthereumTransaction,
+    chain,
 } from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
 import settings from '../settings';
@@ -173,13 +174,13 @@ export default function CommunicationModule() {
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
         const { params, topic } = requestEvent;
         const { request } = params;
-        let chain;
+        // let chain;
 
-        if (settings.env === 'production') {
-            chain = EthereumMainnetChain;
-        } else {
-            chain = EthereumSepoliaChain;
-        }
+        // if (settings.env === 'production') {
+        //     chain = EthereumMainnetChain;
+        // } else {
+        //     chain = EthereumSepoliaChain;
+        // }
 
         switch (request.method) {
             case 'eth_sendTransaction': {

@@ -181,10 +181,14 @@ const EthereumSepoliaChain = new EthereumChain(
 );
 let provider: JsonRpcProvider;
 
-if (settings.env === 'production') {
+export let chain: EthereumChain;
+
+if (settings.isProduction()) {
     provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+    chain = EthereumMainnetChain;
 } else {
     provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
+    chain = EthereumSepoliaChain;
 }
 
 const ETHToken = new EthereumToken(
