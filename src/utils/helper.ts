@@ -1,14 +1,15 @@
-export function extractOrigin(url) {
-    const hasHttpProtocol = url.startsWith('http://');
-    const hasHttpsProtocol = url.startsWith('https://');
+import settings from '../settings';
 
-    if (!hasHttpProtocol && !hasHttpsProtocol) {
+export function extractOrigin(url): string {
+    const hasHttpsProtocol = new URL(url);
+
+    if (hasHttpsProtocol.protocol !== 'https:' && hasHttpsProtocol.protocol !== 'http:') {
         return 'Invalid URL';
     }
 
     const hostname = new URL(url).hostname;
 
-    if (process.env.NODE_ENV === 'production' && !hasHttpsProtocol) {
+    if (settings.isProduction() && !hasHttpsProtocol) {
         return 'Invalid URL - Must use HTTPS';
     }
 

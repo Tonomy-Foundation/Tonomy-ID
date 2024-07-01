@@ -222,9 +222,6 @@ export class EthereumTransaction implements ITransaction {
     getChain(): IChain {
         return this.chain;
     }
-    getSession(): IChainSession {
-        return this.session;
-    }
 
     static async fromTransaction(
         privateKey: EthereumPrivateKey,

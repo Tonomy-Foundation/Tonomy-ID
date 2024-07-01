@@ -104,10 +104,8 @@ export default function SignTransactionConsentContainer({
 
         fetchTransactionDetails();
     }, [transaction, contractTransaction]);
-    console.log('session', transaction.getSession());
 
     async function onReject() {
-        await transaction.getSession().rejectSession();
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -125,7 +123,6 @@ export default function SignTransactionConsentContainer({
             };
 
             await key.signTransaction(transactionRequest);
-            await transaction.getSession().acceptSession();
 
             navigation.navigate({
                 name: 'UserHome',
@@ -136,21 +133,19 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    console.log('test', transaction.getSession());
-
     return (
         <LayoutComponent
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        <Image
+                        {/* <Image
                             style={[styles.logo, commonStyles.marginBottom]}
                             source={{ uri: transaction?.getSession().getIcons() || '#' }}
                         ></Image>
                         <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
                             <Text style={styles.applink}>{extractOrigin(transaction?.getSession().getUrl)}</Text>
                             wants you to send coins
-                        </TH2>
+                        </TH2> */}
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
