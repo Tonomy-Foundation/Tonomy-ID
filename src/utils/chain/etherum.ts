@@ -316,9 +316,6 @@ export class EthereumTransaction implements ITransaction {
 
         return new Asset(this.chain.getNativeToken(), amount);
     }
-    getSession(): IChainSession {
-        return this.session;
-    }
 }
 
 export class EthereumAccount extends AbstractAccount {
