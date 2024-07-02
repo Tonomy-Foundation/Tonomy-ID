@@ -36,7 +36,7 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { transaction } = route.params ?? {};
+    const { transaction, session } = route.params ?? {};
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -97,7 +97,7 @@ export default function CreateEthereumKeyContainer({
             const key = await keyStorage.findByName('ethereum');
 
             if (key && transaction) {
-                navigation.navigate('SignTransaction', { transaction, key });
+                navigation.navigate('SignTransaction', { transaction, key, session });
             } else {
                 navigation.navigate({ name: 'UserHome', params: {} });
             }

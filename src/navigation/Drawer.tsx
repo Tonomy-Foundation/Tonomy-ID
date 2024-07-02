@@ -17,6 +17,11 @@ export type DrawerStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         key: IPrivateKey;
+        session: {
+            origin: string;
+            id: number;
+            topic: string;
+        };
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
@@ -24,6 +29,11 @@ export type DrawerStackParamList = {
     };
     CreateEthereumKey?: {
         transaction: ITransaction;
+        session: {
+            origin: string;
+            id: number;
+            topic: string;
+        };
     };
 };
 

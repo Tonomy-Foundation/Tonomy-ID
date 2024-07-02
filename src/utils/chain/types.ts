@@ -208,6 +208,7 @@ export enum TransactionType {
 }
 
 export interface ITransaction {
+    getSession(): IChainSession;
     getChain(): IChain;
     getType(): Promise<TransactionType>;
     getFrom(): IAccount;

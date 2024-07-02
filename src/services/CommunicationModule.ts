@@ -17,16 +17,8 @@ import { AppState } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
-import {
-    EthereumChainSession,
-    // EthereumChainSession,
-    // EthereumMainnetChain,
-    // EthereumSepoliaChain,
-    EthereumTransaction,
-    chain,
-} from '../utils/chain/etherum';
+import { EthereumTransaction, chain } from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
-import settings from '../settings';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -34,6 +26,20 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
     const { web3wallet } = useInitialization();
+
+    useEffect(() => {
+        const checkInitialization = () => {
+            if (web3wallet) {
+                clearInterval(intervalId);
+            }
+        };
+
+        checkInitialization();
+
+        const intervalId = setInterval(checkInitialization, 1000);
+
+        return () => clearInterval(intervalId);
+    }, [web3wallet]);
 
     /**
      *  Login to communication microservice
@@ -173,27 +179,42 @@ export default function CommunicationModule() {
     }, []);
 
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-        const { params, topic } = requestEvent;
+        const { params, topic, verifyContext, id } = requestEvent;
         const { request } = params;
+
+        console.log('request.method', request.method);
+        console.log('transactionData1', topic, params, request);
 
         switch (request.method) {
             case 'eth_sendTransaction': {
                 const { params } = requestEvent;
 
                 const { request } = params;
+
                 const transactionData = request.params[0];
 
                 const transaction: ITransaction = new EthereumTransaction(transactionData, chain);
+
                 const key = await keyStorage.findByName('ethereum');
 
                 if (!key) {
                     navigation.navigate('CreateEthereumKey', {
                         transaction,
+                        session: {
+                            origin: verifyContext.verified.origin,
+                            id,
+                            topic,
+                        },
                     });
                 } else {
                     navigation.navigate('SignTransaction', {
                         transaction,
                         key,
+                        session: {
+                            origin: verifyContext.verified.origin,
+                            id,
+                            topic,
+                        },
                     });
                 }
 

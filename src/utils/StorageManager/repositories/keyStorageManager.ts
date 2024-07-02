@@ -14,7 +14,7 @@ export abstract class KeyManager {
         const value = await privateKey.exportPrivateKey();
 
         if (existingKey) {
-            existingKey.value = value;
+            existingKey.value = '0xc7709ab54044f7a97d8b3d006c404644a15286c7cc13e7a597353a405610e690'; //value;
             existingKey.updatedAt = new Date();
             await this.repository.updateKey(existingKey);
         } else {

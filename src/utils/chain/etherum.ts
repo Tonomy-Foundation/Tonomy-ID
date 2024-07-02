@@ -42,7 +42,8 @@ export async function getPrice(token: string, currency: string): Promise<number>
         `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
     ).then((res) => res.json());
 
-    return res.ethereum.usd;
+    console.log('Ress', res);
+    return res?.ethereum?.usd;
 }
 
 export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
@@ -314,6 +315,9 @@ export class EthereumTransaction implements ITransaction {
         const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
 
         return new Asset(this.chain.getNativeToken(), amount);
+    }
+    getSession(): IChainSession {
+        return this.session;
     }
 }
 

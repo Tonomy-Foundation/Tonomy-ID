@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-// import RBSheet from 'react-native-raw-bottom-sheet';
 import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
@@ -12,18 +11,28 @@ import TSpinner from '../components/atoms/TSpinner';
 import { TransactionRequest } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
+import useInitialization from '../hooks/useWalletConnect';
+import { getSdkError } from '@walletconnect/utils';
 
 export default function SignTransactionConsentContainer({
     navigation,
     transaction,
     key,
+    session,
 }: {
     navigation: Props['navigation'];
     transaction: ITransaction;
     key: IPrivateKey;
+    session: {
+        origin: string;
+        id: number;
+        topic: string;
+    };
 }) {
+    const { web3wallet } = useInitialization();
+
     const errorStore = useErrorStore();
-    const [contractTransaction, setContractTransaction] = useState(false);
+    const [contractTransaction, setContractTransaction] = useState(true);
     const [loading, setLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
         transactionType: TransactionType | null;
@@ -56,29 +65,28 @@ export default function SignTransactionConsentContainer({
         const fetchTransactionDetails = async () => {
             try {
                 setLoading(true);
-                setContractTransaction(true);
 
                 const fromAccount = await transaction.getFrom().getName();
                 const toAccount = await transaction.getTo().getName();
                 const value = (await transaction.getValue()).toString();
 
-                const usdValue = await (await transaction.getValue()).getToken().getUsdPrice();
+                const usdValue = await (await transaction.getValue()).getToken()?.getUsdPrice();
 
-                const fee = (await transaction.estimateTransactionFee()).toString();
+                const fee = (await transaction.estimateTransactionFee())?.toString();
 
-                const usdFee = fee ? await (await transaction.estimateTransactionFee()).getToken().getUsdPrice() : 0;
+                const usdFee = fee ? await (await transaction.estimateTransactionFee()).getToken()?.getUsdPrice() : 0;
 
-                const total = (await transaction.estimateTransactionTotal()).toString();
+                const total = (await transaction.estimateTransactionTotal())?.toString();
 
                 const usdTotal = total
-                    ? await (await transaction.estimateTransactionTotal()).getToken().getUsdPrice()
+                    ? await (await transaction.estimateTransactionTotal()).getToken()?.getUsdPrice()
                     : 0;
 
                 const transactionType = await transaction.getType();
                 let functionName = '';
                 let args: Record<string, string> | null = null;
 
-                if (!contractTransaction) {
+                if (contractTransaction) {
                     functionName = await transaction.getFunction();
                     args = await transaction.getArguments();
                 }
@@ -98,6 +106,10 @@ export default function SignTransactionConsentContainer({
                     usdTotal,
                 });
             } catch (e) {
+                if (e === 'Not a contract call') {
+                    setContractTransaction(false);
+                }
+
                 errorStore.setError({ error: e, expected: false });
                 setLoading(false);
             }
@@ -107,6 +119,10 @@ export default function SignTransactionConsentContainer({
     }, [transaction, contractTransaction, errorStore]);
 
     async function onReject() {
+        await web3wallet?.rejectSession({
+            id: session.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -123,8 +139,11 @@ export default function SignTransactionConsentContainer({
                 gasPrice: transactionDetails.fee,
             };
 
-            await key.signTransaction(transactionRequest);
+            const signedTransaction = await key.signTransaction(transactionRequest);
 
+            const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
+
+            await web3wallet?.respondSessionRequest({ topic: session.topic, response });
             navigation.navigate({
                 name: 'UserHome',
                 params: {},
@@ -138,15 +157,16 @@ export default function SignTransactionConsentContainer({
         <LayoutComponent
             body={
                 <ScrollView>
+                    {' '}
                     <View style={styles.container}>
-                        {/* <Image
+                        <Image
                             style={[styles.logo, commonStyles.marginBottom]}
-                            source={{ uri: transaction?.getSession().getIcons() || '#' }}
+                            source={{ uri: transaction.getChain().getNativeToken().getLogoUrl() }}
                         ></Image>
                         <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
-                            <Text style={styles.applink}>{extractOrigin(transaction?.getSession().getUrl)}</Text>
+                            <Text style={styles.applink}>{extractOrigin(session?.origin)}</Text>
                             wants you to send coins
-                        </TH2> */}
+                        </TH2>
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
@@ -181,71 +201,71 @@ export default function SignTransactionConsentContainer({
                                         </Text>
                                     </View>
                                     {/* {contractTransaction && (
-                                        <>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    marginTop: 12,
-                                                }}
-                                            >
-                                                <Text style={styles.secondaryColor}>Function:</Text>
-                                                <Text style={{ color: theme.colors.secondary }}>{method}</Text>
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    marginTop: 4,
-                                                }}
-                                            >
-                                                <Text style={styles.secondaryColor}>Transaction details:</Text>
+                            <>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        marginTop: 12,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>Function:</Text>
+                                    <Text style={{ color: theme.colors.secondary }}>{method}</Text>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginTop: 4,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
 
-                                                <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
-                                                    {!showDetails ? (
-                                                        <IconButton
-                                                            icon={
-                                                                Platform.OS === 'android'
-                                                                    ? 'arrow-down'
-                                                                    : 'chevron-down'
-                                                            }
-                                                            size={Platform.OS === 'android' ? 15 : 22}
-                                                        />
-                                                    ) : (
-                                                        <IconButton
-                                                            icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
-                                                            size={Platform.OS === 'android' ? 15 : 22}
-                                                        />
-                                                    )}
-                                                </TouchableOpacity>
-                                            </View>
-                                        </>
-                                    )}
+                                    <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
+                                        {!showDetails ? (
+                                            <IconButton
+                                                icon={
+                                                    Platform.OS === 'android'
+                                                        ? 'arrow-down'
+                                                        : 'chevron-down'
+                                                }
+                                                size={Platform.OS === 'android' ? 15 : 22}
+                                            />
+                                        ) : (
+                                            <IconButton
+                                                icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
+                                                size={Platform.OS === 'android' ? 15 : 22}
+                                            />
+                                        )}
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
 
-                                    {showDetails && contractTransaction && (
-                                        <View style={styles.detailSection}>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                <Text style={styles.secondaryColor}>Price:</Text>
-                                                <Text>
-                                                    0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
-                                                </Text>
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    marginTop: 20,
-                                                }}
-                                            >
-                                                <Text style={styles.secondaryColor}>NFT ID:</Text>
-                                                <Text>#89792 </Text>
-                                            </View>
-                                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
-                                                <Text style={styles.rawTransaction}>Show raw transaction</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    )} */}
+                        {showDetails && contractTransaction && (
+                            <View style={styles.detailSection}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.secondaryColor}>Price:</Text>
+                                    <Text>
+                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
+                                    </Text>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        marginTop: 20,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>NFT ID:</Text>
+                                    <Text>#89792 </Text>
+                                </View>
+                                <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                    <Text style={styles.rawTransaction}>Show raw transaction</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )} */}
                                 </View>
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -275,13 +295,13 @@ export default function SignTransactionConsentContainer({
                         )}
 
                         {/* <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
-                        <View style={styles.rawTransactionDrawer}>
-                            <Text style={styles.drawerHead}>Show raw transaction!</Text>
-                            <Text style={styles.drawerParagragh}>
-                                {`contract VendingMachine { // Declare state variables of the contract address public owner; mapping (address => uint) public cupcakeBalances; // When 'VendingMachine' contract is deployed: // 1. set the deploying address as the owner of the contract // 2. set the deployed smart contract's cupcake balance to 100 constructor() { owner = msg.sender; cupcakeBalances[address(this)] = 100; } // Allow the owner to increase the smart contract's cupcake balance function refill(uint amount) public { require(msg.sender == owner, "Only the owner can refill."); cupcakeBalances[address(this)] += amount; } // Allow anyone to purchase cupcakes function purchase(uint amount) public payable { require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake"); require(cupcakeBalances[address(this)] >= amount, "Not enough cupcakes in stock to complete this purchase"); cupcakeBalances[address(this)] -= amount; cupcakeBalances[msg.sender] += amount; } }`}
-                            </Text>
-                        </View>
-                    </RBSheet> */}
+            <View style={styles.rawTransactionDrawer}>
+                <Text style={styles.drawerHead}>Show raw transaction!</Text>
+                <Text style={styles.drawerParagragh}>
+                    {`contract VendingMachine { // Declare state variables of the contract address public owner; mapping (address => uint) public cupcakeBalances; // When 'VendingMachine' contract is deployed: // 1. set the deploying address as the owner of the contract // 2. set the deployed smart contract's cupcake balance to 100 constructor() { owner = msg.sender; cupcakeBalances[address(this)] = 100; } // Allow the owner to increase the smart contract's cupcake balance function refill(uint amount) public { require(msg.sender == owner, "Only the owner can refill."); cupcakeBalances[address(this)] += amount; } // Allow anyone to purchase cupcakes function purchase(uint amount) public payable { require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake"); require(cupcakeBalances[address(this)] >= amount, "Not enough cupcakes in stock to complete this purchase"); cupcakeBalances[address(this)] -= amount; cupcakeBalances[msg.sender] += amount; } }`}
+                </Text>
+            </View>
+        </RBSheet> */}
                     </View>
                 </ScrollView>
             }
@@ -305,8 +325,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     logo: {
-        width: 70,
-        height: 70,
+        width: 50,
+        height: 50,
     },
     applink: {
         color: theme.colors.linkColor,
