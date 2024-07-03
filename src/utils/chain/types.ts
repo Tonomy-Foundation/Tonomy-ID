@@ -265,3 +265,9 @@ export interface IChainSession {
     acceptSession(): Promise<void>;
     rejectSession(): Promise<void>;
 }
+
+export interface ISession {
+    origin: string;
+    id: number;
+    topic: string;
+}

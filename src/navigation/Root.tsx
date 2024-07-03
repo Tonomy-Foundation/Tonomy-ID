@@ -31,7 +31,7 @@ import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import { IPrivateKey, ITransaction } from '../utils/chain/types';
+import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
 
 const prefix = Linking.createURL('');
 
@@ -64,11 +64,7 @@ export type RouteStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        session: {
-            origin: string;
-            id: number;
-            topic: string;
-        };
+        session: ISession;
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
@@ -76,11 +72,7 @@ export type RouteStackParamList = {
     };
     CreateEthereumKey?: {
         transaction: ITransaction;
-        session: {
-            origin: string;
-            id: number;
-            topic: string;
-        };
+        session: ISession;
     };
 };
 

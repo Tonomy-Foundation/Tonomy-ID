@@ -5,7 +5,7 @@ import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
 import { SignClientTypes } from '@walletconnect/types';
-import { IPrivateKey, ITransaction } from '../utils/chain/types';
+import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
 
 export type DrawerStackParamList = {
     UserHome: { did?: string };
@@ -17,11 +17,7 @@ export type DrawerStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        session: {
-            origin: string;
-            id: number;
-            topic: string;
-        };
+        session: ISession;
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
@@ -29,11 +25,7 @@ export type DrawerStackParamList = {
     };
     CreateEthereumKey?: {
         transaction: ITransaction;
-        session: {
-            origin: string;
-            id: number;
-            topic: string;
-        };
+        session: ISession;
     };
 };
 
