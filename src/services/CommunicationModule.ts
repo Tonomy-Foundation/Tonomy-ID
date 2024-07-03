@@ -182,9 +182,6 @@ export default function CommunicationModule() {
         const { params, topic, verifyContext, id } = requestEvent;
         const { request } = params;
 
-        console.log('request.method', request.method);
-        console.log('transactionData1', topic, params, request);
-
         switch (request.method) {
             case 'eth_sendTransaction': {
                 const { params } = requestEvent;
@@ -209,7 +206,7 @@ export default function CommunicationModule() {
                 } else {
                     navigation.navigate('SignTransaction', {
                         transaction,
-                        key,
+                        privateKey: key,
                         session: {
                             origin: verifyContext.verified.origin,
                             id,

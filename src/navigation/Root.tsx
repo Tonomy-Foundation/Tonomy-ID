@@ -63,7 +63,7 @@ export type RouteStackParamList = {
     ProfilePreview: undefined;
     SignTransaction: {
         transaction: ITransaction;
-        key: IPrivateKey;
+        privateKey: IPrivateKey;
         session: {
             origin: string;
             id: number;

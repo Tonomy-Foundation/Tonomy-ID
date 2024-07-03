@@ -16,7 +16,7 @@ export type DrawerStackParamList = {
     SSO: { payload: string; platform: 'mobile' | 'browser' };
     SignTransaction: {
         transaction: ITransaction;
-        key: IPrivateKey;
+        privateKey: IPrivateKey;
         session: {
             origin: string;
             id: number;

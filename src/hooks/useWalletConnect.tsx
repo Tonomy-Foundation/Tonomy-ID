@@ -9,7 +9,6 @@ export default function useInitialization() {
 
     const onInitialize = useCallback(async () => {
         try {
-            console.log('Initializing WalletConnect');
             await connect();
             const wallet = await createWeb3Wallet();
 
@@ -29,7 +28,11 @@ export default function useInitialization() {
 
     useEffect(() => {
         if (!initialized) {
-            onInitialize();
+            const retryInitialization = setTimeout(() => {
+                onInitialize();
+            }, 10000);
+
+            return () => clearTimeout(retryInitialization);
         }
     }, [initialized, onInitialize]);
 

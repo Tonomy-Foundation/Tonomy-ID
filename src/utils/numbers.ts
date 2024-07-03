@@ -11,7 +11,6 @@ export function numberToOrdinal(value: number) {
 
 export function formatCurrencyValue(value: number) {
     if (value) {
-        console.log('value', value);
         return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 

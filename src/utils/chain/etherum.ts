@@ -42,7 +42,6 @@ export async function getPrice(token: string, currency: string): Promise<number>
         `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
     ).then((res) => res.json());
 
-    console.log('Ress', res);
     return res?.ethereum?.usd;
 }
 

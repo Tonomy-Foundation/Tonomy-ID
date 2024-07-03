@@ -17,12 +17,12 @@ import { getSdkError } from '@walletconnect/utils';
 export default function SignTransactionConsentContainer({
     navigation,
     transaction,
-    key,
+    privateKey,
     session,
 }: {
     navigation: Props['navigation'];
     transaction: ITransaction;
-    key: IPrivateKey;
+    privateKey: IPrivateKey;
     session: {
         origin: string;
         id: number;
@@ -139,7 +139,7 @@ export default function SignTransactionConsentContainer({
                 gasPrice: transactionDetails.fee,
             };
 
-            const signedTransaction = await key.signTransaction(transactionRequest);
+            const signedTransaction = await privateKey.signTransaction(transactionRequest);
 
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 

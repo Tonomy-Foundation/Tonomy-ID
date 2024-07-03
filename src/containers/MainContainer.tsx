@@ -40,7 +40,15 @@ export default function MainContainer({
     const { initialized, web3wallet } = useInitialization();
 
     useEffect(() => {
-        console.log('Web3WalletSDKs initialized:', initialized);
+        if (!initialized) {
+            const intervalId = setInterval(() => {
+                console.log('Waiting for Web3WalletSDKs to be initialized...');
+            }, 1000); // Check every 1000 milliseconds (1 second)
+
+            return () => clearInterval(intervalId);
+        } else {
+            console.log('Web3WalletSDKs initialized:', initialized);
+        }
     }, [initialized]);
 
     useEffect(() => {
