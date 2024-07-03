@@ -28,13 +28,8 @@ export default function useInitialization() {
 
     useEffect(() => {
         if (!initialized) {
-            const retryInitialization = setTimeout(() => {
-                onInitialize();
-            }, 10000);
-
-            return () => clearTimeout(retryInitialization);
+            onInitialize();
         }
     }, [initialized, onInitialize]);
-
     return { initialized, web3wallet };
 }

@@ -57,6 +57,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
                 }
 
+                console.log('envvv', settings.env);
+
                 if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
                     hideHcaptcha();

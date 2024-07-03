@@ -18,12 +18,13 @@ import {
     KeyManagerLevel,
     util,
 } from '@tonomy/tonomy-id-sdk';
-import { savePrivateKeyToStorage } from '../utils/keys';
+import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import RNKeyManager from '../utils/RNKeyManager';
 import { keyStorage } from '../utils/StorageManager/setup';
+import useInitialization from '../hooks/useWalletConnect';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -38,6 +39,7 @@ export default function CreateEthereumKeyContainer({
     const { user } = useUserStore();
     const { transaction } = route.params ?? {};
     const session = route.params?.session;
+    const { initialized, web3wallet } = useInitialization();
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -64,7 +66,7 @@ export default function CreateEthereumKeyContainer({
         const isValid = passphrase.every(util.isKeyword);
 
         setNextDisabled(!isValid);
-    }, [passphrase]);
+    }, [passphrase, initialized, web3wallet]);
 
     async function onNext() {
         setLoading(true);
@@ -79,18 +81,29 @@ export default function CreateEthereumKeyContainer({
             const idData = await tonomyContract.getPerson(tonomyUsername);
             const salt = idData.password_salt;
 
-            await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
+            // const accountData = await getAccountInfo(idData.account_name);
+            // const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key;
 
-            const accountData = await getAccountInfo(idData.account_name);
-            const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key;
+            // const rnKeyManager = new RNKeyManager();
+            // const publicKey = await rnKeyManager.getKey({
+            //     level: KeyManagerLevel.PASSWORD,
+            // });
 
-            const rnKeyManager = new RNKeyManager();
-            const publicKey = await rnKeyManager.getKey({
-                level: KeyManagerLevel.PASSWORD,
+            // console.log('publicKey', publicKey.toString(), username, salt.toString());
+            // console.log('onchainKey', onchainKey.toString());
+
+            // if (publicKey.toString() !== onchainKey.toString()) {
+            //     errorsStore.setError({
+            //         error: new Error(`Password is incorrect ${SdkErrors.PasswordInvalid}`),
+            //         expected: false,
+            //     });
+            // }
+
+            await user.login(tonomyUsername, passphrase.join(' '), {
+                keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
-            if (publicKey.toString() !== onchainKey.toString())
-                throw new Error(`Password is incorrect ${SdkErrors.PasswordInvalid}`);
+            await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
@@ -126,7 +139,7 @@ export default function CreateEthereumKeyContainer({
                 errorsStore.setError({ error: e, expected: false });
             }
 
-            setNextDisabled(true);
+            setNextDisabled(false);
             setLoading(false);
         }
     }

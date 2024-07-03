@@ -25,7 +25,7 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { web3wallet } = useInitialization();
+    const { initialized, web3wallet } = useInitialization();
 
     useEffect(() => {
         const checkInitialization = () => {
@@ -147,7 +147,7 @@ export default function CommunicationModule() {
     useEffect(() => {
         loginToService();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigation, user]);
+    }, [navigation, user, initialized, web3wallet]);
 
     useEffect(() => {
         return () => {
@@ -228,10 +228,8 @@ export default function CommunicationModule() {
     }, []);
 
     useEffect(() => {
-        if (web3wallet) {
-            web3wallet.on('session_proposal', onSessionProposal);
-            web3wallet.on('session_request', onSessionRequest);
-        }
+        web3wallet?.on('session_proposal', onSessionProposal);
+        web3wallet?.on('session_request', onSessionRequest);
     }, [onSessionProposal, onSessionRequest, web3wallet]);
 
     return null;
