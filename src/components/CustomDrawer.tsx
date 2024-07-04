@@ -24,6 +24,7 @@ const icons: Record<keyof DrawerStackParamList, string> = {
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { logout } = useUserStore();
+
     const theme = useAppTheme();
     const styles = StyleSheet.create({
         container: {
@@ -87,7 +88,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         color={theme.colors.grey2}
                         size="huge"
                     >
-                        {'Logout'}
+                        {'Logoutt'}
                     </TButton>
                 </View>
             </DrawerContentScrollView>

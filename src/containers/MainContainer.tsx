@@ -15,10 +15,11 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { _pair, currentETHAddress } from '../services/WalletConnect/WalletConnectModule';
+import { _pair, createWeb3Wallet } from '../services/WalletConnect/WalletConnectModule';
 import useInitialization from '../hooks/useWalletConnect';
 import { USD_CONVERSION } from '../utils/chain/etherum';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
+import useWalletStore from '../store/useWalletStore';
 
 const vestingContract = VestingContract.Instance;
 
@@ -38,18 +39,35 @@ export default function MainContainer({
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const { initialized, web3wallet } = useInitialization();
+    const currentETHAddress = useWalletStore((state) => state.currentETHAddress);
+    const privateKey = useWalletStore((state) => state.privateKey);
 
+    console.log('currentETHAddress', currentETHAddress, privateKey);
     useEffect(() => {
-        if (!initialized || web3wallet === null) {
-            const intervalId = setInterval(() => {
-                console.log('Waiting for Web3WalletSDKs to be initialized....');
-            }, 2000);
-
-            return () => clearInterval(intervalId);
-        } else {
-            console.log('Web3WalletSDKs initialized:', initialized);
+        async function initializeWallet() {
+            try {
+                await createWeb3Wallet();
+            } catch (error) {
+                console.error('Failed to initialize wallet:', error);
+            }
         }
-    }, [initialized, web3wallet]);
+
+        // Only initialize if privateKey or web3wallet changes
+        if (privateKey && !web3wallet) {
+            initializeWallet();
+        }
+    }, [privateKey, web3wallet]);
+    // useEffect(() => {
+    //     if (!initialized || web3wallet === null) {
+    //         const intervalId = setInterval(() => {
+    //             console.log('Waiting for Web3WalletSDKs to be initialized....');
+    //         }, 2000);
+
+    //         return () => clearInterval(intervalId);
+    //     } else {
+    //         console.log('Web3WalletSDKs initialized:', initialized);
+    //     }
+    // }, [initialized, web3wallet]);
 
     useEffect(() => {
         setUserName();
@@ -238,7 +256,7 @@ export default function MainContainer({
                                         )}
                                     </View>
 
-                                    {!initialized && web3wallet === null ? (
+                                    {!currentETHAddress ? (
                                         <TButton
                                             style={styles.generateKey}
                                             onPress={() => navigation.navigate('CreateEthereumKey')}

@@ -25,6 +25,7 @@ import PassphraseInput from '../components/PassphraseInput';
 import RNKeyManager from '../utils/RNKeyManager';
 import { keyStorage } from '../utils/StorageManager/setup';
 import useInitialization from '../hooks/useWalletConnect';
+import useWalletStore from '../store/useWalletStore';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -47,6 +48,7 @@ export default function CreateEthereumKeyContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
+    const setPrivateKey = useWalletStore.getState().setPrivateKey;
 
     async function setUserName() {
         try {
@@ -109,6 +111,9 @@ export default function CreateEthereumKeyContainer({
             setNextDisabled(false);
             setLoading(false);
             const key = await keyStorage.findByName('ethereum');
+            const exportedPrivateKey = (await key?.exportPrivateKey()) || null;
+
+            setPrivateKey(exportedPrivateKey);
 
             if (session && key && transaction) {
                 navigation.navigate('SignTransaction', {

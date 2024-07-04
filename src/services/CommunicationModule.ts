@@ -19,6 +19,8 @@ import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
 import { EthereumTransaction, chain } from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
+import { createWeb3Wallet } from './WalletConnect/WalletConnectModule';
+import useWalletStore from '../store/useWalletStore';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -26,20 +28,19 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
     const { initialized, web3wallet } = useInitialization();
+    const privateKey = useWalletStore((state) => state.privateKey);
 
     useEffect(() => {
-        const checkInitialization = () => {
-            if (web3wallet) {
-                clearInterval(intervalId);
+        async function initializeWallet() {
+            try {
+                await createWeb3Wallet();
+            } catch (error) {
+                console.error('Failed to initialize wallet:', error);
             }
-        };
+        }
 
-        checkInitialization();
-
-        const intervalId = setInterval(checkInitialization, 1000);
-
-        return () => clearInterval(intervalId);
-    }, [web3wallet]);
+        initializeWallet();
+    }, [privateKey]);
 
     /**
      *  Login to communication microservice

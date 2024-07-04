@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { createWeb3Wallet } from '../services/WalletConnect/WalletConnectModule';
 import { connect } from '../utils/StorageManager/setup';
-import { IWeb3Wallet } from '@walletconnect/web3wallet';
+import useWalletStore from '../store/useWalletStore';
 
 export default function useInitialization() {
-    const [initialized, setInitialized] = useState(false);
-    const [web3wallet, setWeb3wallet] = useState<IWeb3Wallet | null>(null);
+    const { initialized, setInitialized, web3wallet, setWeb3wallet } = useWalletStore();
 
     const onInitialize = useCallback(async () => {
         try {
@@ -14,17 +13,12 @@ export default function useInitialization() {
 
             setWeb3wallet(wallet);
             setInitialized(true);
-        } catch (err: unknown) {
+        } catch (err) {
             if (err instanceof Error && err.message === 'No private key found') {
-                setWeb3wallet(null);
-                setInitialized(false);
-            } else {
-                if (!initialized || web3wallet === null) {
-                    setTimeout(onInitialize, 10000);
-                }
+                console.log('error', err);
             }
         }
-    }, [initialized, web3wallet]);
+    }, [setInitialized, setWeb3wallet]);
 
     useEffect(() => {
         if (!initialized) {

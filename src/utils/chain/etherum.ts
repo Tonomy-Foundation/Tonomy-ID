@@ -26,9 +26,9 @@ import {
     IChainSession,
 } from './types';
 import settings from '../../settings';
-import { currentETHAddress, web3wallet } from '../../services/WalletConnect/WalletConnectModule';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
-import { getSdkError } from '@walletconnect/utils';
+// import { currentETHAddress, web3wallet } from '../../services/WalletConnect/WalletConnectModule';
+// import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+// import { getSdkError } from '@walletconnect/utils';
 
 export const USD_CONVERSION = 0.002;
 
@@ -416,40 +416,40 @@ export class EthereumChainSession implements IChainSession {
         return null;
     }
 
-    getNamespaces(): SessionTypes.Namespaces {
-        const namespaces: SessionTypes.Namespaces = {};
-        const { requiredNamespaces } = this.payload.params;
+    // getNamespaces(): SessionTypes.Namespaces {
+    //     const namespaces: SessionTypes.Namespaces = {};
+    //     const { requiredNamespaces } = this.payload.params;
 
-        Object.keys(requiredNamespaces).forEach((key) => {
-            const accounts: string[] = [];
+    //     Object.keys(requiredNamespaces).forEach((key) => {
+    //         const accounts: string[] = [];
 
-            requiredNamespaces[key].chains?.map((chain) => {
-                [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-            });
-            namespaces[key] = {
-                accounts,
-                methods: requiredNamespaces[key].methods,
-                events: requiredNamespaces[key].events,
-            };
-        });
+    //         requiredNamespaces[key].chains?.map((chain) => {
+    //             [].map((acc) => accounts.push(`${chain}:${acc}`));
+    //         });
+    //         namespaces[key] = {
+    //             accounts,
+    //             methods: requiredNamespaces[key].methods,
+    //             events: requiredNamespaces[key].events,
+    //         };
+    //     });
 
-        return namespaces;
-    }
+    //     return namespaces;
+    // }
 
-    async acceptSession() {
-        const namespaces = this.getNamespaces();
+    // async acceptSession() {
+    //     const namespaces = this.getNamespaces();
 
-        await web3wallet?.approveSession({
-            id: this.getId(),
-            relayProtocol: this.payload.params.relays[0].protocol,
-            namespaces,
-        });
-    }
+    //     await web3wallet?.approveSession({
+    //         id: this.getId(),
+    //         relayProtocol: this.payload.params.relays[0].protocol,
+    //         namespaces,
+    //     });
+    // }
 
-    async rejectSession() {
-        await web3wallet?.rejectSession({
-            id: this.getId(),
-            reason: getSdkError('USER_REJECTED'),
-        });
-    }
+    // async rejectSession() {
+    //     await web3wallet?.rejectSession({
+    //         id: this.getId(),
+    //         reason: getSdkError('USER_REJECTED'),
+    //     });
+    // }
 }
