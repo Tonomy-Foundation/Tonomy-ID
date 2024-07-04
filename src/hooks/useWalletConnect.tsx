@@ -14,17 +14,14 @@ export default function useInitialization() {
 
             setWeb3wallet(wallet);
             setInitialized(true);
-        } catch (err: unknown) {
-            if (err instanceof Error && err.message === 'No private key found') {
-                setWeb3wallet(null);
-                setInitialized(false);
+        } catch (err) {
+            if (err instanceof Error && err.message !== 'No private key found') {
+                setTimeout(onInitialize, 10000);
             } else {
-                if (!initialized || web3wallet === null) {
-                    setTimeout(onInitialize, 10000);
-                }
+                throw new Error(err);
             }
         }
-    }, [initialized, web3wallet]);
+    }, []);
 
     useEffect(() => {
         if (!initialized) {
