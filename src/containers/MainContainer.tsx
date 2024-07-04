@@ -42,7 +42,7 @@ export default function MainContainer({
     const currentETHAddress = useWalletStore((state) => state.currentETHAddress);
     const privateKey = useWalletStore((state) => state.privateKey);
 
-    console.log('currentETHAddress', currentETHAddress, privateKey);
+    console.log('currentETHAddress', currentETHAddress);
     useEffect(() => {
         async function initializeWallet() {
             try {

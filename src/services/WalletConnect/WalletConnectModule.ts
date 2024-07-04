@@ -10,6 +10,7 @@ import {
     EthereumMainnetChain,
     EthereumPrivateKey,
     EthereumSepoliaChain,
+    ETHSepoliaToken,
 } from '../../utils/chain/etherum';
 import useWalletStore from '../../store/useWalletStore';
 
@@ -31,7 +32,7 @@ export async function createWeb3Wallet() {
     let ethereumAccount;
 
     if (privateKey) {
-        const exportedPrivateKey = await privateKey.exportPrivateKey();
+        const exportedPrivateKey = '0xc7709ab54044f7a97d8b3d006c404644a15286c7cc13e7a597353a405610e690'; //await privateKey.exportPrivateKey();
         const ethereumPrivateKey = new EthereumPrivateKey(exportedPrivateKey);
 
         setPrivateKey(exportedPrivateKey);
@@ -49,6 +50,16 @@ export async function createWeb3Wallet() {
         }
 
         const currentETHAddress = ethereumAccount.getName();
+
+        console.log(
+            'currentETHAddress1',
+            currentETHAddress,
+            (await ethereumAccount.getBalance(ETHSepoliaToken)).amount.toString() //730920113875596000
+        );
+        // Call the getBalance function from the token instance
+        // const balance = await ETHSepoliaToken.getUsdValue(ethereumAccount);
+
+        // console.log('Balance:', balance.toString());
 
         setCurrentETHAddress(currentETHAddress);
     }

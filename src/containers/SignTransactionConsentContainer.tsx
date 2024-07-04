@@ -157,7 +157,6 @@ export default function SignTransactionConsentContainer({
         <LayoutComponent
             body={
                 <ScrollView>
-                    {' '}
                     <View style={styles.container}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
