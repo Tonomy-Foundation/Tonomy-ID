@@ -8,10 +8,14 @@ import theme from '../utils/theme';
 import RBSheet from 'react-native-raw-bottom-sheet';
 
 export type AccountDetailsProps = {
-    accountName: string;
-    refMessage: {
-        current: any;
+    accountDetails: {
+        symbol: string;
+        icon: string;
+        name: string;
+        address: string;
     };
+    refMessage: React.RefObject<any>;
+    setAccountDetails: React.Dispatch<React.SetStateAction<any>>;
 };
 
 const AccountDetails = (props: AccountDetailsProps) => {
@@ -19,20 +23,25 @@ const AccountDetails = (props: AccountDetailsProps) => {
         <RBSheet ref={props.refMessage} openDuration={150} closeDuration={100} height={600}>
             <View style={styles.rawTransactionDrawer}>
                 <Text style={styles.drawerHead}>Receive</Text>
-                <TouchableOpacity onPress={() => (props.refMessage.current as any)?.close()}>
+                <TouchableOpacity
+                    onPress={() => {
+                        (props.refMessage.current as any)?.close();
+                        props.setAccountDetails({ symbol: '', icon: '', name: '', address: '' });
+                    }}
+                >
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} />
                 </TouchableOpacity>
             </View>
             <Text style={styles.subHeading}>
-                Only send LEOS assets to this address. Other assets will be lost forever
+                Only send {props.accountDetails.symbol} assets to this address. Other assets will be lost forever
             </Text>
             <View style={styles.networkHeading}>
-                <Image source={Images.GetImage('logo48')} style={styles.faviconIcon} />
-                <Text style={styles.networkTitleName}>Pangea Network</Text>
+                <Image source={props.accountDetails.icon} style={styles.faviconIcon} />
+                <Text style={styles.networkTitleName}>{props.accountDetails.name} Network</Text>
             </View>
             <View style={{ ...styles.qrView, flexDirection: 'column' }}>
                 <QRCode value="testValue" size={150} />
-                <Text style={styles.accountName}>{props.accountName}</Text>
+                <Text style={styles.accountName}>{props.accountDetails.address}</Text>
             </View>
             <View style={styles.iconContainer}>
                 <TouchableOpacity style={styles.iconButton}>
@@ -106,7 +115,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 70,
     },
     accountName: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '600',
         marginTop: 10,
     },

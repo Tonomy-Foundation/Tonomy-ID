@@ -40,6 +40,12 @@ export default function MainContainer({
     const errorStore = useErrorStore();
     const { initialized, web3wallet } = useInitialization();
     const refMessage = useRef(null);
+    const [accountDetails, setAccountDetails] = useState({
+        symbol: '',
+        icon: '',
+        name: '',
+        address: '',
+    });
 
     useEffect(() => {
         if (!initialized || web3wallet === null) {
@@ -170,6 +176,12 @@ export default function MainContainer({
         setQrOpened(false);
     }
 
+    useEffect(() => {
+        if (accountDetails.address) {
+            (refMessage.current as any)?.open();
+        }
+    }, [accountDetails]);
+
     const MainView = () => {
         const isFocused = useIsFocused();
 
@@ -200,7 +212,17 @@ export default function MainContainer({
 
                         <View style={styles.accountsView}>
                             <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setAccountDetails({
+                                        symbol: 'LEOS',
+                                        icon: Images.GetImage('logo48'),
+                                        name: 'Pangea',
+                                        address: accountName,
+                                    });
+                                    (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                }}
+                            >
                                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -222,7 +244,16 @@ export default function MainContainer({
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setAccountDetails({
+                                        symbol: 'Eth',
+                                        icon: require('../assets/icons/eth-img.png'),
+                                        name: 'Ethereum',
+                                        address: currentETHAddress || '',
+                                    });
+                                }}
+                            >
                                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -245,7 +276,7 @@ export default function MainContainer({
                                         {!initialized && web3wallet === null ? (
                                             <TButton
                                                 style={styles.generateKey}
-                                                onPress={() => navigation.navigate('CreateEthereumKey', {})}
+                                                onPress={() => navigation.navigate('CreateEthereumKey')}
                                                 color={theme.colors.white}
                                                 size="medium"
                                             >
@@ -265,7 +296,11 @@ export default function MainContainer({
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        <AccountDetails refMessage={refMessage} accountName={accountName} />
+                        <AccountDetails
+                            refMessage={refMessage}
+                            accountDetails={accountDetails}
+                            setAccountDetails={setAccountDetails}
+                        />
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
