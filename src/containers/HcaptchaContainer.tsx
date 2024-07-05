@@ -150,7 +150,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
     async function onModalPress() {
         userStore.setStatus(UserStatus.LOGGED_IN);
-        initia;
         setShowModal(false);
     }
 
