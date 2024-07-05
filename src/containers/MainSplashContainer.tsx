@@ -36,7 +36,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                             await user.getUsername();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
-                                await logout("Invalid data in user's storage");
+                                logout("Invalid data in user's storage");
                             } else {
                                 throw e;
                             }

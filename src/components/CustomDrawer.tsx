@@ -88,7 +88,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         color={theme.colors.grey2}
                         size="huge"
                     >
-                        {'Logoutt'}
+                        {'Logout'}
                     </TButton>
                 </View>
             </DrawerContentScrollView>
