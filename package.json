@@ -51,6 +51,7 @@
         "expo-local-authentication": "~13.4.1",
         "expo-notifications": "~0.20.1",
         "expo-secure-store": "~12.3.1",
+        "expo-sharing": "~11.5.0",
         "expo-sqlite": "~11.3.3",
         "expo-status-bar": "~1.6.0",
         "fast-text-encoding": "^1.0.6",

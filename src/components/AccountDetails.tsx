@@ -1,6 +1,6 @@
 // New component file: QrCodeReceiveSheet.tsx
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Share } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { Images } from '../assets';
 import TIconButton from '../components/TIconButton';
@@ -19,6 +19,20 @@ export type AccountDetailsProps = {
 };
 
 const AccountDetails = (props: AccountDetailsProps) => {
+    const onShare = async () => {
+        try {
+            await Share.share({
+                message:
+                    `Please use the following account name to send ${props.accountDetails.symbol} tokens to on the
+                    ${props.accountDetails.name} network:` +
+                    '\n' +
+                    `${props.accountDetails.address}`,
+            });
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
     return (
         <RBSheet ref={props.refMessage} openDuration={150} closeDuration={100} height={600}>
             <View style={styles.rawTransactionDrawer}>
@@ -53,7 +67,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
                     />
                     <Text style={styles.socialText}>Copy</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onShare()}>
                     <TIconButton
                         icon={'share-variant'}
                         color={theme.colors.lightBg}
