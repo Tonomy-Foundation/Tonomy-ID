@@ -15,8 +15,6 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { _pair, createWeb3Wallet } from '../services/WalletConnect/WalletConnectModule';
-import useInitialization from '../hooks/useWalletConnect';
 import { USD_CONVERSION } from '../utils/chain/etherum';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
@@ -38,36 +36,12 @@ export default function MainContainer({
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const { initialized, web3wallet } = useInitialization();
-    const currentETHAddress = useWalletStore((state) => state.currentETHAddress);
-    const privateKey = useWalletStore((state) => state.privateKey);
+    const { web3wallet, currentETHAddress } = useWalletStore();
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
-    console.log('currentETHAddress', currentETHAddress);
     useEffect(() => {
-        async function initializeWallet() {
-            try {
-                await createWeb3Wallet();
-            } catch (error) {
-                console.error('Failed to initialize wallet:', error);
-            }
-        }
-
-        // Only initialize if privateKey or web3wallet changes
-        if (privateKey && !web3wallet) {
-            initializeWallet();
-        }
-    }, [privateKey, web3wallet]);
-    // useEffect(() => {
-    //     if (!initialized || web3wallet === null) {
-    //         const intervalId = setInterval(() => {
-    //             console.log('Waiting for Web3WalletSDKs to be initialized....');
-    //         }, 2000);
-
-    //         return () => clearInterval(intervalId);
-    //     } else {
-    //         console.log('Web3WalletSDKs initialized:', initialized);
-    //     }
-    // }, [initialized, web3wallet]);
+        initializeWallet();
+    }, [initializeWallet, currentETHAddress]);
 
     useEffect(() => {
         setUserName();
@@ -121,7 +95,7 @@ export default function MainContainer({
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                await _pair(data);
+                if (web3wallet) await web3wallet.pair({ uri: data });
             } else if (data.startsWith('did:')) {
                 const did = validateQrCode(data);
 

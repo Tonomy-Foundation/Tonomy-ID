@@ -8,23 +8,12 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreateEthereumKeyScreen';
 import useUserStore from '../store/userStore';
-import {
-    AccountType,
-    SdkError,
-    SdkErrors,
-    TonomyUsername,
-    TonomyContract,
-    getAccountInfo,
-    KeyManagerLevel,
-    util,
-} from '@tonomy/tonomy-id-sdk';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract, util } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
-import RNKeyManager from '../utils/RNKeyManager';
 import { keyStorage } from '../utils/StorageManager/setup';
-import useInitialization from '../hooks/useWalletConnect';
 import useWalletStore from '../store/useWalletStore';
 
 const tonomyContract = TonomyContract.Instance;
@@ -40,15 +29,13 @@ export default function CreateEthereumKeyContainer({
     const { user } = useUserStore();
     const { transaction } = route.params ?? {};
     const session = route.params?.session;
-    const { initialized, web3wallet } = useInitialization();
-
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
-    const setPrivateKey = useWalletStore.getState().setPrivateKey;
 
     async function setUserName() {
         try {
@@ -68,7 +55,7 @@ export default function CreateEthereumKeyContainer({
         const isValid = passphrase.every(util.isKeyword);
 
         setNextDisabled(!isValid);
-    }, [passphrase, initialized, web3wallet]);
+    }, [passphrase]);
 
     async function onNext() {
         setLoading(true);
@@ -83,24 +70,6 @@ export default function CreateEthereumKeyContainer({
             const idData = await tonomyContract.getPerson(tonomyUsername);
             const salt = idData.password_salt;
 
-            // const accountData = await getAccountInfo(idData.account_name);
-            // const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key;
-
-            // const rnKeyManager = new RNKeyManager();
-            // const publicKey = await rnKeyManager.getKey({
-            //     level: KeyManagerLevel.PASSWORD,
-            // });
-
-            // console.log('publicKey', publicKey.toString(), username, salt.toString());
-            // console.log('onchainKey', onchainKey.toString());
-
-            // if (publicKey.toString() !== onchainKey.toString()) {
-            //     errorsStore.setError({
-            //         error: new Error(`Password is incorrect ${SdkErrors.PasswordInvalid}`),
-            //         expected: false,
-            //     });
-            // }
-
             await user.login(tonomyUsername, passphrase.join(' '), {
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
@@ -111,9 +80,8 @@ export default function CreateEthereumKeyContainer({
             setNextDisabled(false);
             setLoading(false);
             const key = await keyStorage.findByName('ethereum');
-            const exportedPrivateKey = (await key?.exportPrivateKey()) || null;
 
-            setPrivateKey(exportedPrivateKey);
+            initializeWallet();
 
             if (session && key && transaction) {
                 navigation.navigate('SignTransaction', {

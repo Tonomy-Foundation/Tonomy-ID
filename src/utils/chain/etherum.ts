@@ -26,9 +26,7 @@ import {
     IChainSession,
 } from './types';
 import settings from '../../settings';
-// import { currentETHAddress, web3wallet } from '../../services/WalletConnect/WalletConnectModule';
-// import { SessionTypes, SignClientTypes } from '@walletconnect/types';
-// import { getSdkError } from '@walletconnect/utils';
+import { SignClientTypes } from '@walletconnect/types';
 
 export const USD_CONVERSION = 0.002;
 

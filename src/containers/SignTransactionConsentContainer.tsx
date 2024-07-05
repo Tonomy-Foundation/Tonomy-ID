@@ -11,7 +11,7 @@ import TSpinner from '../components/atoms/TSpinner';
 import { TransactionRequest } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import useInitialization from '../hooks/useWalletConnect';
+// import useInitialization from '../hooks/useWalletConnect';
 import { getSdkError } from '@walletconnect/utils';
 
 export default function SignTransactionConsentContainer({
@@ -29,7 +29,7 @@ export default function SignTransactionConsentContainer({
         topic: string;
     };
 }) {
-    const { web3wallet } = useInitialization();
+    // const { web3wallet } = useInitialization();
 
     const errorStore = useErrorStore();
     const [contractTransaction, setContractTransaction] = useState(true);
@@ -119,10 +119,10 @@ export default function SignTransactionConsentContainer({
     }, [transaction, contractTransaction, errorStore]);
 
     async function onReject() {
-        await web3wallet?.rejectSession({
-            id: session.id,
-            reason: getSdkError('USER_REJECTED'),
-        });
+        // await web3wallet?.rejectSession({
+        //     id: session.id,
+        //     reason: getSdkError('USER_REJECTED'),
+        // });
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -143,7 +143,7 @@ export default function SignTransactionConsentContainer({
 
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
-            await web3wallet?.respondSessionRequest({ topic: session.topic, response });
+            // await web3wallet?.respondSessionRequest({ topic: session.topic, response });
             navigation.navigate({
                 name: 'UserHome',
                 params: {},

@@ -1,32 +1,99 @@
 // useWalletStore.js
 import create from 'zustand';
-import { ICore } from '@walletconnect/types';
-import { IWeb3Wallet } from '@walletconnect/web3wallet';
+import { Core } from '@walletconnect/core';
+import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
+import { appStorage, keyStorage } from '../utils/StorageManager/setup';
+import settings from '../settings';
+import {
+    EthereumAccount,
+    EthereumMainnetChain,
+    EthereumPrivateKey,
+    EthereumSepoliaChain,
+} from '../utils/chain/etherum';
+
+export const core = new Core({
+    projectId: settings.config.walletConnectProjectId,
+    relayUrl: 'wss://relay.walletconnect.com',
+});
 
 interface WalletState {
     privateKey: string | null;
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
-    core: ICore | null;
     currentETHAddress: string | null;
-    setWeb3wallet: (wallet: IWeb3Wallet | null) => void;
-    setCore: (core: ICore | null) => void;
-    setCurrentETHAddress: (address: string | null) => void;
-    setInitialized: (initialized: boolean) => void;
-    setPrivateKey: (privateKey: string | null) => void;
+    initializeWalletState: () => Promise<void>;
+    clearState: () => void;
 }
 
 const useWalletStore = create<WalletState>((set) => ({
     initialized: false,
     web3wallet: null,
-    core: null,
     currentETHAddress: null,
     privateKey: null,
-    setWeb3wallet: (web3wallet) => set({ web3wallet }),
-    setCore: (core) => set({ core }),
-    setCurrentETHAddress: (currentETHAddress) => set({ currentETHAddress }),
-    setInitialized: (initialized) => set({ initialized }),
-    setPrivateKey: (privateKey) => set({ privateKey }),
+    initializeWalletState: async () => {
+        try {
+            const ethereumKey = await keyStorage.findByName('ethereum');
+
+            if (ethereumKey) {
+                const web3wallet = await Web3Wallet.init({
+                    core,
+                    metadata: {
+                        name: settings.config.appName,
+                        description: settings.config.ecosystemName,
+                        url: 'https://walletconnect.com/',
+                        icons: [settings.config.images.logo48],
+                    },
+                });
+                const exportPrivateKey = await ethereumKey.exportPrivateKey();
+                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
+                let ethereumAccount;
+
+                if (settings.env === 'production') {
+                    ethereumAccount = await EthereumAccount.fromPublicKey(
+                        EthereumMainnetChain,
+                        await ethereumPrivateKey.getPublicKey()
+                    );
+                } else {
+                    ethereumAccount = await EthereumAccount.fromPublicKey(
+                        EthereumSepoliaChain,
+                        await ethereumPrivateKey.getPublicKey()
+                    );
+                }
+
+                set({
+                    initialized: true,
+                    privateKey: exportPrivateKey,
+                    web3wallet: web3wallet,
+                    currentETHAddress: ethereumAccount.getName(),
+                });
+            } else {
+                set({
+                    initialized: true,
+                    privateKey: null,
+                    web3wallet: null,
+                    currentETHAddress: null,
+                });
+            }
+        } catch (error) {
+            console.error('Error initializing wallet state:', error);
+            set({
+                initialized: false,
+                privateKey: null,
+                web3wallet: null,
+                currentETHAddress: null,
+            });
+        }
+    },
+    clearState: async () => {
+        await keyStorage.deleteAll();
+        await appStorage.deleteAll();
+        set({
+            initialized: false,
+            privateKey: null,
+            web3wallet: null,
+            currentETHAddress: null,
+        });
+    },
 }));
 
 export default useWalletStore;

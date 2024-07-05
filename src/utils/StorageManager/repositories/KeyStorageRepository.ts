@@ -11,7 +11,7 @@ export class KeyStorageRepository {
     public async storeNewKey(name: string, value: string): Promise<KeyStorage> {
         const keyStorageEntity = this.ormRepository.create({
             name,
-            value: '0xc7709ab54044f7a97d8b3d006c404644a15286c7cc13e7a597353a405610e690',
+            value,
             createdAt: new Date(),
             updatedAt: new Date(),
         });

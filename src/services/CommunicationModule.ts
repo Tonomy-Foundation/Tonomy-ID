@@ -15,11 +15,9 @@ import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
-import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
 import { EthereumTransaction, chain } from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
-import { createWeb3Wallet } from './WalletConnect/WalletConnectModule';
 import useWalletStore from '../store/useWalletStore';
 
 export default function CommunicationModule() {
@@ -27,20 +25,7 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { initialized, web3wallet } = useInitialization();
-    const privateKey = useWalletStore((state) => state.privateKey);
-
-    useEffect(() => {
-        async function initializeWallet() {
-            try {
-                await createWeb3Wallet();
-            } catch (error) {
-                console.error('Failed to initialize wallet:', error);
-            }
-        }
-
-        initializeWallet();
-    }, [privateKey]);
+    const { initialized, web3wallet } = useWalletStore();
 
     /**
      *  Login to communication microservice
@@ -148,7 +133,7 @@ export default function CommunicationModule() {
     useEffect(() => {
         loginToService();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigation, user, initialized, web3wallet]);
+    }, [navigation, user]);
 
     useEffect(() => {
         return () => {
@@ -171,6 +156,8 @@ export default function CommunicationModule() {
     }
 
     const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
+        console.log('session proposal');
+
         if (proposal) {
             navigation.navigate('WalletConnectLogin', {
                 payload: proposal,
@@ -231,7 +218,7 @@ export default function CommunicationModule() {
     useEffect(() => {
         web3wallet?.on('session_proposal', onSessionProposal);
         web3wallet?.on('session_request', onSessionRequest);
-    }, [onSessionProposal, onSessionRequest, web3wallet]);
+    }, [onSessionProposal, onSessionRequest, web3wallet, initialized]);
 
     return null;
 }

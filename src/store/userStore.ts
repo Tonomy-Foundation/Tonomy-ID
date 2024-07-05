@@ -14,8 +14,6 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import { disconnect } from '../services/WalletConnect/WalletConnectModule';
-import useWalletStore from './useWalletStore';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -58,10 +56,6 @@ const useUserStore = create<UserState>((set, get) => ({
 
         get().setStatus(UserStatus.NOT_LOGGED_IN);
 
-        await disconnect();
-        // Reset wallet state
-        await useWalletStore.getState().setPrivateKey(null);
-        await useWalletStore.getState().setCurrentETHAddress(null);
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {

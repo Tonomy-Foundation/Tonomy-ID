@@ -7,10 +7,8 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
-import { _pair } from '../services/WalletConnect/WalletConnectModule';
 import { EthereumChainSession, EthereumSepoliaChain } from '../utils/chain/etherum';
 import { Props } from '../screens/WalletConnectLoginScreen';
-import useInitialization from '../hooks/useWalletConnect';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
@@ -26,12 +24,15 @@ export default function WalletConnectLoginContainer({
 }) {
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
+    const { web3wallet, currentETHAddress } = useWalletStore();
+
     const session = new EthereumChainSession(payload, EthereumSepoliaChain);
-    const { web3wallet } = useInitialization();
-    const currentETHAddress = useWalletStore((state) => state.currentETHAddress);
 
     const onCancel = async () => {
-        // await session.rejectSession();
+        await web3wallet?.rejectSession({
+            id: payload.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
         navigation.navigate({
             name: 'UserHome',
             params: {},

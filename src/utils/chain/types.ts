@@ -69,8 +69,6 @@ export abstract class AbstractChain implements IChain {
     protected abstract nativeToken?: IToken;
 
     getName(): string {
-        console.log('name11 chain');
-
         return this.name;
     }
     getChainId(): string {
@@ -168,7 +166,6 @@ export abstract class AbstractToken implements IToken {
         return this;
     }
     getName(): string {
-        console.log('name11 token');
         return this.name;
     }
     getSymbol(): string {
@@ -228,7 +225,6 @@ export abstract class AbstractAccount implements IAccount {
     protected abstract chain: IChain;
 
     getName(): string {
-        console.log('name11');
         return this.name;
     }
     getDid(): string {
