@@ -26,9 +26,7 @@ import {
     IChainSession,
 } from './types';
 import settings from '../../settings';
-import { currentETHAddress, web3wallet } from '../../services/WalletConnect/WalletConnectModule';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
-import { getSdkError } from '@walletconnect/utils';
+import { SignClientTypes } from '@walletconnect/types';
 
 export const USD_CONVERSION = 0.002;
 
@@ -163,6 +161,7 @@ class EthereumToken extends AbstractToken {
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
 
+        console.log('balance12', balance);
         return balance.getUsdValue();
     }
 }
@@ -305,9 +304,27 @@ export class EthereumTransaction implements ITransaction {
     async getValue(): Promise<Asset> {
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
     }
-    async estimateTransactionFee(): Promise<Asset> {
-        const wei = await provider.estimateGas(this.transaction);
+    // async estimateTransactionFee(): Promise<Asset> {
+    //     const wei = await provider.estimateGas(this.transaction);
 
+    //     return new Asset(this.chain.getNativeToken(), wei);
+    // }
+    async estimateTransactionFee(): Promise<Asset> {
+        // Get the current fee data
+        const feeData = await provider.getFeeData();
+
+        // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
+        const transaction = {
+            ...this.transaction,
+            maxFeePerGas: feeData.maxFeePerGas,
+            maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+            gasLimit: await provider.estimateGas(this.transaction),
+        };
+
+        // Estimate gas
+        const wei = await provider.estimateGas(transaction);
+
+        // Return the estimated fee as an Asset
         return new Asset(this.chain.getNativeToken(), wei);
     }
     async estimateTransactionTotal(): Promise<Asset> {
@@ -416,40 +433,40 @@ export class EthereumChainSession implements IChainSession {
         return null;
     }
 
-    getNamespaces(): SessionTypes.Namespaces {
-        const namespaces: SessionTypes.Namespaces = {};
-        const { requiredNamespaces } = this.payload.params;
+    // getNamespaces(): SessionTypes.Namespaces {
+    //     const namespaces: SessionTypes.Namespaces = {};
+    //     const { requiredNamespaces } = this.payload.params;
 
-        Object.keys(requiredNamespaces).forEach((key) => {
-            const accounts: string[] = [];
+    //     Object.keys(requiredNamespaces).forEach((key) => {
+    //         const accounts: string[] = [];
 
-            requiredNamespaces[key].chains?.map((chain) => {
-                [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-            });
-            namespaces[key] = {
-                accounts,
-                methods: requiredNamespaces[key].methods,
-                events: requiredNamespaces[key].events,
-            };
-        });
+    //         requiredNamespaces[key].chains?.map((chain) => {
+    //             [].map((acc) => accounts.push(`${chain}:${acc}`));
+    //         });
+    //         namespaces[key] = {
+    //             accounts,
+    //             methods: requiredNamespaces[key].methods,
+    //             events: requiredNamespaces[key].events,
+    //         };
+    //     });
 
-        return namespaces;
-    }
+    //     return namespaces;
+    // }
 
-    async acceptSession() {
-        const namespaces = this.getNamespaces();
+    // async acceptSession() {
+    //     const namespaces = this.getNamespaces();
 
-        await web3wallet?.approveSession({
-            id: this.getId(),
-            relayProtocol: this.payload.params.relays[0].protocol,
-            namespaces,
-        });
-    }
+    //     await web3wallet?.approveSession({
+    //         id: this.getId(),
+    //         relayProtocol: this.payload.params.relays[0].protocol,
+    //         namespaces,
+    //     });
+    // }
 
-    async rejectSession() {
-        await web3wallet?.rejectSession({
-            id: this.getId(),
-            reason: getSdkError('USER_REJECTED'),
-        });
-    }
+    // async rejectSession() {
+    //     await web3wallet?.rejectSession({
+    //         id: this.getId(),
+    //         reason: getSdkError('USER_REJECTED'),
+    //     });
+    // }
 }

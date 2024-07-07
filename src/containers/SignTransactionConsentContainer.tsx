@@ -11,8 +11,8 @@ import TSpinner from '../components/atoms/TSpinner';
 import { TransactionRequest } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import useInitialization from '../hooks/useWalletConnect';
 import { getSdkError } from '@walletconnect/utils';
+import useWalletStore from '../store/useWalletStore';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -29,7 +29,7 @@ export default function SignTransactionConsentContainer({
         topic: string;
     };
 }) {
-    const { web3wallet } = useInitialization();
+    const { web3wallet } = useWalletStore();
 
     const errorStore = useErrorStore();
     const [contractTransaction, setContractTransaction] = useState(true);
@@ -67,44 +67,53 @@ export default function SignTransactionConsentContainer({
                 setLoading(true);
 
                 const fromAccount = await transaction.getFrom().getName();
+
+                console.log('fromAccount', fromAccount);
                 const toAccount = await transaction.getTo().getName();
+
+                console.log('toAccount', toAccount);
                 const value = (await transaction.getValue()).toString();
 
-                const usdValue = await (await transaction.getValue()).getToken()?.getUsdPrice();
+                console.log('value', value);
+                const usdValue = await (await transaction.getValue()).getUsdValue();
+
+                console.log('usdValue', usdValue);
 
                 const fee = (await transaction.estimateTransactionFee())?.toString();
 
-                const usdFee = fee ? await (await transaction.estimateTransactionFee()).getToken()?.getUsdPrice() : 0;
+                console.log('fee', fee);
+                // const usdFee = fee ? await (await transaction.estimateTransactionFee()).getUsdValue() : 0;
 
-                const total = (await transaction.estimateTransactionTotal())?.toString();
+                // console.log('usdFee', usdFee);
+                // const total = (await transaction.estimateTransactionTotal())?.toString();
 
-                const usdTotal = total
-                    ? await (await transaction.estimateTransactionTotal()).getToken()?.getUsdPrice()
-                    : 0;
+                // const usdTotal = total
+                //     ? await (await transaction.estimateTransactionTotal()).getToken()?.getUsdPrice()
+                //     : 0;
 
-                const transactionType = await transaction.getType();
-                let functionName = '';
-                let args: Record<string, string> | null = null;
+                // const transactionType = await transaction.getType();
+                // let functionName = '';
+                // let args: Record<string, string> | null = null;
 
-                if (contractTransaction) {
-                    functionName = await transaction.getFunction();
-                    args = await transaction.getArguments();
-                }
+                // if (contractTransaction) {
+                //     functionName = await transaction.getFunction();
+                //     args = await transaction.getArguments();
+                // }
 
-                setLoading(false);
-                setTransactionDetails({
-                    transactionType,
-                    fromAccount,
-                    toAccount,
-                    value,
-                    usdValue,
-                    functionName,
-                    args,
-                    fee,
-                    usdFee,
-                    total,
-                    usdTotal,
-                });
+                // setLoading(false);
+                // setTransactionDetails({
+                //     transactionType,
+                //     fromAccount,
+                //     toAccount,
+                //     value,
+                //     usdValue,
+                //     functionName,
+                //     args,
+                //     fee,
+                //     usdFee,
+                //     total,
+                //     usdTotal,
+                // });
             } catch (e) {
                 if (e === 'Not a contract call') {
                     setContractTransaction(false);
@@ -157,7 +166,6 @@ export default function SignTransactionConsentContainer({
         <LayoutComponent
             body={
                 <ScrollView>
-                    {' '}
                     <View style={styles.container}>
                         <Image
                             style={[styles.logo, commonStyles.marginBottom]}
@@ -167,132 +175,6 @@ export default function SignTransactionConsentContainer({
                             <Text style={styles.applink}>{extractOrigin(session?.origin)}</Text>
                             wants you to send coins
                         </TH2>
-                        {!loading ? (
-                            <>
-                                <View style={styles.networkHeading}>
-                                    <Image
-                                        source={{ uri: transaction.getChain().getLogoUrl() }}
-                                        style={styles.imageStyle}
-                                    />
-                                    <Text style={styles.nameText}>{transaction.getChain().getName()} Network</Text>
-                                </View>
-                                <Text>
-                                    {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
-                                </Text>
-                                <View style={styles.transactionHeading}></View>
-                                <View style={styles.appDialog}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={styles.secondaryColor}>Recipient:</Text>
-                                        <Text>
-                                            {transaction
-                                                .getChain()
-                                                .formatShortAccountName(transactionDetails?.toAccount)}
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}
-                                    >
-                                        <Text style={styles.secondaryColor}>Amount:</Text>
-                                        <Text>
-                                            {transactionDetails.value}
-                                            <Text style={styles.secondaryColor}>
-                                                (${formatCurrencyValue(transactionDetails.usdValue)})
-                                            </Text>
-                                        </Text>
-                                    </View>
-                                    {/* {contractTransaction && (
-                            <>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        marginTop: 12,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>Function:</Text>
-                                    <Text style={{ color: theme.colors.secondary }}>{method}</Text>
-                                </View>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        marginTop: 4,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
-
-                                    <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
-                                        {!showDetails ? (
-                                            <IconButton
-                                                icon={
-                                                    Platform.OS === 'android'
-                                                        ? 'arrow-down'
-                                                        : 'chevron-down'
-                                                }
-                                                size={Platform.OS === 'android' ? 15 : 22}
-                                            />
-                                        ) : (
-                                            <IconButton
-                                                icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
-                                                size={Platform.OS === 'android' ? 15 : 22}
-                                            />
-                                        )}
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
-
-                        {showDetails && contractTransaction && (
-                            <View style={styles.detailSection}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.secondaryColor}>Price:</Text>
-                                    <Text>
-                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
-                                    </Text>
-                                </View>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        marginTop: 20,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>NFT ID:</Text>
-                                    <Text>#89792 </Text>
-                                </View>
-                                <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
-                                    <Text style={styles.rawTransaction}>Show raw transaction</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )} */}
-                                </View>
-                                <View style={styles.appDialog}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                        <Text>
-                                            {transactionDetails?.fee}
-                                            <Text style={styles.secondaryColor}>
-                                                (${formatCurrencyValue(transactionDetails.usdFee)})
-                                            </Text>
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.totalSection}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
-                                        <Text style={{ fontWeight: '600' }}>
-                                            {transactionDetails?.total}
-                                            <Text style={styles.secondaryColor}>
-                                                (${formatCurrencyValue(transactionDetails.usdTotal)})
-                                            </Text>
-                                        </Text>
-                                    </View>
-                                </View>
-                            </>
-                        ) : (
-                            <TSpinner style={{ marginBottom: 12 }} />
-                        )}
 
                         {/* <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
             <View style={styles.rawTransactionDrawer}>
