@@ -115,9 +115,26 @@ export abstract class AbstractAsset implements IAsset {
     getAmount(): bigint {
         return this.amount;
     }
+    // async getUsdValue(): Promise<number> {
+    //     const price = await this.token.getUsdPrice();
+
+    //     console.log('pricee', price);
+    //     const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
+
+    //     return parseFloat(usdValue.toString());
+    // }
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
-        const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
+
+        console.log('price', price);
+
+        // Assuming price needs to be rounded or is already an integer suitable for BigInt conversion
+        const priceBigInt = BigInt(Math.round(price)); // Adjust rounding as necessary
+
+        // Use BigInt for base 10 to ensure the result of exponentiation is a BigInt
+        const precisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
+
+        const usdValue = BigInt(this.amount) * priceBigInt * precisionMultiplier;
 
         return parseFloat(usdValue.toString());
     }
@@ -128,10 +145,15 @@ export abstract class AbstractAsset implements IAsset {
         return this.token.getPrecision();
     }
     printValue(): string {
-        const value = this.amount / BigInt(10 ** this.token.getPrecision());
+        const amountNumber = Number(this.amount);
+        const precisionNumber = Number(10 ** this.token.getPrecision());
+
+        // Perform the division
+        const value = amountNumber / precisionNumber;
 
         return value.toString();
     }
+
     toString(): string {
         return `${this.printValue()} ${this.token.getSymbol()}`;
     }

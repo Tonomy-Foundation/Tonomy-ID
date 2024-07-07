@@ -18,6 +18,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import { USD_CONVERSION } from '../utils/chain/etherum';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
+import { keyStorage } from '../utils/StorageManager/setup';
 
 const vestingContract = VestingContract.Instance;
 
@@ -37,11 +38,12 @@ export default function MainContainer({
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const { web3wallet, currentETHAddress } = useWalletStore();
+    const [keyExists, setKeyExists] = useState(false);
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     useEffect(() => {
         initializeWallet();
-    }, [initializeWallet, currentETHAddress]);
+    }, [initializeWallet, keyExists]);
 
     useEffect(() => {
         setUserName();
@@ -77,6 +79,14 @@ export default function MainContainer({
             const accountName = (await user.getAccountName()).toString();
 
             setAccountName(accountName);
+            const ethereumKey = await keyStorage.findByName('ethereum');
+
+            if (ethereumKey) {
+                setKeyExists(true);
+                initializeWallet();
+            }
+
+            console.log('currentETHAddress', ethereumKey);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }

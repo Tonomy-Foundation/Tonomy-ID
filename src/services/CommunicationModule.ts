@@ -178,6 +178,8 @@ export default function CommunicationModule() {
 
                 const transactionData = request.params[0];
 
+                console.log('transactionData', transactionData);
+
                 const transaction: ITransaction = new EthereumTransaction(transactionData, chain);
 
                 const key = await keyStorage.findByName('ethereum');
