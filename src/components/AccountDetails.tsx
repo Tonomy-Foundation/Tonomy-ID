@@ -9,9 +9,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 
 export type AccountDetailsProps = {
     accountName: string;
-    refMessage: {
-        current: any;
-    };
+    refMessage: React.RefObject<any>;
 };
 
 const AccountDetails = (props: AccountDetailsProps) => {
