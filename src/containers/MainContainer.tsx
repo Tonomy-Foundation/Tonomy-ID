@@ -45,7 +45,7 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, currentETHAddress } = useWalletStore();
+    const { web3wallet, currentETHAddress, accountBalance, usdBalance } = useWalletStore();
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     useEffect(() => {
@@ -278,34 +278,14 @@ export default function MainContainer({
                                         ) : (
                                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
+                                                    <Text> {accountBalance}</Text>
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
-                                                    ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                                    ${formatCurrencyValue(Number(usdBalance))}
                                                 </Text>
                                             </View>
                                         )}
                                     </View>
-
-                                    {!currentETHAddress ? (
-                                        <TButton
-                                            style={styles.generateKey}
-                                            onPress={() => navigation.navigate('CreateEthereumKey')}
-                                            color={theme.colors.white}
-                                            size="medium"
-                                        >
-                                            Generate key
-                                        </TButton>
-                                    ) : (
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
-                                            </View>
-                                            <Text style={styles.secondaryColor}>
-                                                ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
-                                            </Text>
-                                        </View>
-                                    )}
                                 </View>
                             </TouchableOpacity>
                         </View>

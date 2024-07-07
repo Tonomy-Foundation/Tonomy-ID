@@ -115,28 +115,18 @@ export abstract class AbstractAsset implements IAsset {
     getAmount(): bigint {
         return this.amount;
     }
-    // async getUsdValue(): Promise<number> {
-    //     const price = await this.token.getUsdPrice();
 
-    //     console.log('pricee', price);
-    //     const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
-
-    //     return parseFloat(usdValue.toString());
-    // }
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
+        const precision = BigInt(this.token.getPrecision());
 
-        console.log('price', price);
+        // Convert the amount to a decimal value
+        const amountDecimal = Number(this.amount) / Number(BigInt(10) ** precision);
 
-        // Assuming price needs to be rounded or is already an integer suitable for BigInt conversion
-        const priceBigInt = BigInt(Math.round(price)); // Adjust rounding as necessary
+        // Calculate the USD value
+        const usdValue = amountDecimal * price;
 
-        // Use BigInt for base 10 to ensure the result of exponentiation is a BigInt
-        const precisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
-
-        const usdValue = BigInt(this.amount) * priceBigInt * precisionMultiplier;
-
-        return parseFloat(usdValue.toString());
+        return usdValue;
     }
     getSymbol(): string {
         return this.token.getSymbol();
