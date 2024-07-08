@@ -1,6 +1,6 @@
 // New component file: AccountDetails.tsx
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Share } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Share, ImageSourcePropType } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Popover from 'react-native-popover-view';
@@ -11,7 +11,7 @@ import theme from '../utils/theme';
 export type AccountDetailsProps = {
     accountDetails: {
         symbol: string;
-        icon: string;
+        icon: ImageSourcePropType;
         name: string;
         address: string;
     };
@@ -61,7 +61,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
                 Only send {props.accountDetails.symbol} assets to this address. Other assets will be lost forever
             </Text>
             <View style={styles.networkHeading}>
-                <Image source={{ uri: props.accountDetails.icon }} style={styles.faviconIcon} />
+                <Image source={props.accountDetails.icon} style={styles.faviconIcon} />
                 <Text style={styles.networkTitleName}>{props.accountDetails.name} Network</Text>
             </View>
             <View style={{ ...styles.qrView, flexDirection: 'column' }}>

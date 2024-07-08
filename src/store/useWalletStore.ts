@@ -71,7 +71,6 @@ const useWalletStore = create<WalletState>((set) => ({
                     usdBalance = await ETHSepoliaToken.getUsdValue(ethereumAccount);
                 }
 
-                console.log('usdBalance: ', usdBalance);
                 set({
                     initialized: true,
                     privateKey: exportPrivateKey,
