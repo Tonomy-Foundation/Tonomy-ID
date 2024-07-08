@@ -49,7 +49,7 @@ const useWalletStore = create<WalletState>((set) => ({
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
                 let ethereumAccount;
 
-                if (settings.env === 'production') {
+                if (settings.isProduction()) {
                     ethereumAccount = await EthereumAccount.fromPublicKey(
                         EthereumMainnetChain,
                         await ethereumPrivateKey.getPublicKey()
@@ -69,7 +69,7 @@ const useWalletStore = create<WalletState>((set) => ({
                 });
             } else {
                 set({
-                    initialized: true,
+                    initialized: false,
                     privateKey: null,
                     web3wallet: null,
                     currentETHAddress: null,
