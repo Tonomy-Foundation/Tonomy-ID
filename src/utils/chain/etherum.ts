@@ -315,15 +315,22 @@ export class EthereumTransaction implements ITransaction {
 
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
-            ...this.transaction,
+            // ...this.transaction,
+            // maxFeePerGas: feeData.maxFeePerGas,
+            // maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+            // gasLimit: await provider.estimateGas(this.transaction),
+            to: this.transaction.to,
+            from: this.transaction.from,
             maxFeePerGas: feeData.maxFeePerGas,
             maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-            gasLimit: await provider.estimateGas(this.transaction),
+            data: this.transaction.data,
         };
 
+        console.log('transaction', transaction);
         // Estimate gas
         const wei = await provider.estimateGas(transaction);
 
+        console.log('wei', wei, new Asset(this.chain.getNativeToken(), wei));
         // Return the estimated fee as an Asset
         return new Asset(this.chain.getNativeToken(), wei);
     }
@@ -331,6 +338,10 @@ export class EthereumTransaction implements ITransaction {
         const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
 
         return new Asset(this.chain.getNativeToken(), amount);
+    }
+
+    async getData(): Promise<string> {
+        return this.transaction.data || '';
     }
 }
 

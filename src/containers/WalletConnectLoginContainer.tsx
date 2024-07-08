@@ -56,7 +56,7 @@ export default function WalletConnectLoginContainer({
                     events: requiredNamespaces[key].events,
                 };
             });
-
+            console.log('payload.id', payload.id);
             await web3wallet?.approveSession({
                 id: payload.id,
                 relayProtocol: payload.params.relays[0].protocol,

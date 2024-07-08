@@ -38,12 +38,12 @@ export default function MainContainer({
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const { web3wallet, currentETHAddress } = useWalletStore();
-    const [keyExists, setKeyExists] = useState(false);
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
+    console.log(currentETHAddress);
     useEffect(() => {
         initializeWallet();
-    }, [initializeWallet, keyExists]);
+    }, [initializeWallet, currentETHAddress]);
 
     useEffect(() => {
         setUserName();
@@ -79,14 +79,6 @@ export default function MainContainer({
             const accountName = (await user.getAccountName()).toString();
 
             setAccountName(accountName);
-            const ethereumKey = await keyStorage.findByName('ethereum');
-
-            if (ethereumKey) {
-                setKeyExists(true);
-                initializeWallet();
-            }
-
-            console.log('currentETHAddress', ethereumKey);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }

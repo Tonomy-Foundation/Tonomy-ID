@@ -156,7 +156,7 @@ export default function CommunicationModule() {
     }
 
     const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-        console.log('session proposal');
+        console.log('session proposal', proposal);
 
         if (proposal) {
             navigation.navigate('WalletConnectLogin', {
@@ -169,6 +169,8 @@ export default function CommunicationModule() {
     const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
         const { params, topic, verifyContext, id } = requestEvent;
         const { request } = params;
+
+        console.log('requestEvent', requestEvent);
 
         switch (request.method) {
             case 'eth_sendTransaction': {

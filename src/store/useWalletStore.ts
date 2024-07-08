@@ -35,6 +35,8 @@ const useWalletStore = create<WalletState>((set) => ({
             await connect();
             const ethereumKey = await keyStorage.findByName('ethereum');
 
+            console.log('ethereumKey', ethereumKey);
+
             if (ethereumKey) {
                 const web3wallet = await Web3Wallet.init({
                     core,
