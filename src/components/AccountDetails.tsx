@@ -1,11 +1,12 @@
-// New component file: QrCodeReceiveSheet.tsx
-import React from 'react';
+// New component file: AccountDetails.tsx
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Share } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { Images } from '../assets';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import Popover from 'react-native-popover-view';
+import Clipboard from '@react-native-clipboard/clipboard';
 import TIconButton from '../components/TIconButton';
 import theme from '../utils/theme';
-import RBSheet from 'react-native-raw-bottom-sheet';
 
 export type AccountDetailsProps = {
     accountDetails: {
@@ -19,14 +20,24 @@ export type AccountDetailsProps = {
 };
 
 const AccountDetails = (props: AccountDetailsProps) => {
+    const [showPopover, setShowPopover] = useState(false);
+
+    const message =
+        `Please use the following account name to send ${props.accountDetails.symbol} tokens to on the
+    ${props.accountDetails.name} network:` +
+        '\n' +
+        `${props.accountDetails.address}`;
+
+    const copyToClipboard = () => {
+        setShowPopover(true);
+        Clipboard.setString(message);
+        setTimeout(() => setShowPopover(false), 400);
+    };
+
     const onShare = async () => {
         try {
             await Share.share({
-                message:
-                    `Please use the following account name to send ${props.accountDetails.symbol} tokens to on the
-                    ${props.accountDetails.name} network:` +
-                    '\n' +
-                    `${props.accountDetails.address}`,
+                message: message,
             });
         } catch (error) {
             alert(error.message);
@@ -50,7 +61,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
                 Only send {props.accountDetails.symbol} assets to this address. Other assets will be lost forever
             </Text>
             <View style={styles.networkHeading}>
-                <Image source={props.accountDetails.icon} style={styles.faviconIcon} />
+                <Image source={{ uri: props.accountDetails.icon }} style={styles.faviconIcon} />
                 <Text style={styles.networkTitleName}>{props.accountDetails.name} Network</Text>
             </View>
             <View style={{ ...styles.qrView, flexDirection: 'column' }}>
@@ -58,15 +69,23 @@ const AccountDetails = (props: AccountDetailsProps) => {
                 <Text style={styles.accountName}>{props.accountDetails.address}</Text>
             </View>
             <View style={styles.iconContainer}>
-                <TouchableOpacity style={styles.iconButton}>
-                    <TIconButton
-                        icon={'content-copy'}
-                        color={theme.colors.lightBg}
-                        iconColor={theme.colors.primary}
-                        size={24}
-                    />
-                    <Text style={styles.socialText}>Copy</Text>
-                </TouchableOpacity>
+                <Popover
+                    isVisible={showPopover}
+                    popoverStyle={{ padding: 10 }}
+                    from={
+                        <TouchableOpacity style={styles.iconButton} onPress={() => copyToClipboard()}>
+                            <TIconButton
+                                icon={'content-copy'}
+                                color={theme.colors.lightBg}
+                                iconColor={theme.colors.primary}
+                                size={24}
+                            />
+                            <Text style={styles.socialText}>Copy</Text>
+                        </TouchableOpacity>
+                    }
+                >
+                    <Text>Message Copied</Text>
+                </Popover>
                 <TouchableOpacity onPress={() => onShare()}>
                     <TIconButton
                         icon={'share-variant'}
