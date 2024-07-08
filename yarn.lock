@@ -2656,9 +2656,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hcaptcha/react-native-hcaptcha@npm:^1.5.1":
-  version: 1.7.1
-  resolution: "@hcaptcha/react-native-hcaptcha@npm:1.7.1"
+"@hcaptcha/react-native-hcaptcha@npm:^1.7.2":
+  version: 1.7.2
+  resolution: "@hcaptcha/react-native-hcaptcha@npm:1.7.2"
   dependencies:
     "@babel/core": ^7.15.5
     "@babel/runtime": ^7.15.4
@@ -2670,7 +2670,7 @@ __metadata:
     react-native: "*"
     react-native-modal: ">=11.5.4"
     react-native-webview: ">=9.0.1"
-  checksum: 8663f261914e5a4153c5e268f2ec3f16bd7a59cabd6f0d72ca6a533514010c41970790044ca8b7d09f8a5a249685e22b0ecb68163f7026e76dde204105577c49
+  checksum: 659e6dadcedab982de8fdce7542cb2e483ff976421592c0512ff857347ee2cd388857ca898c66dd7fd8a56d8fa6336f544f8b5a09c5a7699aecd4025f49526fe
   languageName: node
   linkType: hard
 
@@ -16374,7 +16374,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.20.0
     "@babel/plugin-transform-private-methods": ^7.24.1
-    "@hcaptcha/react-native-hcaptcha": ^1.5.1
+    "@hcaptcha/react-native-hcaptcha": ^1.7.2
     "@json-rpc-tools/utils": ^1.7.6
     "@react-native-async-storage/async-storage": 1.18.2
     "@react-navigation/bottom-tabs": ^6.5.0
