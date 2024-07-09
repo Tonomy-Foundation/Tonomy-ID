@@ -166,10 +166,10 @@ export default function SignTransactionConsentContainer({
                             style={[styles.logo, commonStyles.marginBottom]}
                             source={{ uri: transaction.getChain().getNativeToken().getLogoUrl() }}
                         ></Image>
-                        <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
-                            <Text style={styles.applinkText}>{extractHostname(session?.origin)}</Text>
-                            wants you to send coins
-                        </TH2>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <TH2 style={styles.applinkText}>{extractHostname(session?.origin)}</TH2>
+                            <TH2 style={{ marginLeft: 10 }}>wants you to send coins</TH2>
+                        </View>
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>

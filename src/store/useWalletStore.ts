@@ -22,7 +22,7 @@ interface WalletState {
     web3wallet: IWeb3Wallet | null;
     currentETHAddress: string | null;
     initializeWalletState: () => Promise<void>;
-    clearState: () => void;
+    clearState: () => Promise<void>; // Ensure clearState returns a Promise
 }
 
 const useWalletStore = create<WalletState>((set) => ({
@@ -35,18 +35,7 @@ const useWalletStore = create<WalletState>((set) => ({
             await connect();
             const ethereumKey = await keyStorage.findByName('ethereum');
 
-            console.log('ethereumKey', ethereumKey);
-
             if (ethereumKey) {
-                const web3wallet = await Web3Wallet.init({
-                    core,
-                    metadata: {
-                        name: settings.config.appName,
-                        description: settings.config.ecosystemName,
-                        url: 'https://walletconnect.com/',
-                        icons: [settings.config.images.logo48],
-                    },
-                });
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
                 let ethereumAccount;
@@ -63,13 +52,24 @@ const useWalletStore = create<WalletState>((set) => ({
                     );
                 }
 
+                const web3wallet = await Web3Wallet.init({
+                    core,
+                    metadata: {
+                        name: settings.config.appName,
+                        description: settings.config.ecosystemName,
+                        url: 'https://walletconnect.com/',
+                        icons: [settings.config.images.logo48],
+                    },
+                });
+
                 set({
                     initialized: true,
                     privateKey: exportPrivateKey,
-                    web3wallet: web3wallet,
+                    web3wallet,
                     currentETHAddress: ethereumAccount.getName(),
                 });
             } else {
+                console.warn('No Ethereum key found.');
                 set({
                     initialized: false,
                     privateKey: null,
@@ -88,14 +88,18 @@ const useWalletStore = create<WalletState>((set) => ({
         }
     },
     clearState: async () => {
-        await keyStorage.deleteAll();
-        await appStorage.deleteAll();
-        set({
-            initialized: false,
-            privateKey: null,
-            web3wallet: null,
-            currentETHAddress: null,
-        });
+        try {
+            await keyStorage.deleteAll();
+            await appStorage.deleteAll();
+            set({
+                initialized: false,
+                privateKey: null,
+                web3wallet: null,
+                currentETHAddress: null,
+            });
+        } catch (error) {
+            console.error('Error clearing wallet state:', error);
+        }
     },
 }));
 

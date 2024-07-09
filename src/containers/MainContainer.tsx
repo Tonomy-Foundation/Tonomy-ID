@@ -42,13 +42,12 @@ export default function MainContainer({
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const { web3wallet, currentETHAddress, initialized } = useWalletStore();
+    const { web3wallet, currentETHAddress, privateKey } = useWalletStore();
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
-    console.log('address', currentETHAddress);
     useEffect(() => {
         initializeWallet();
-    }, [initializeWallet, currentETHAddress, initialized]);
+    }, [initializeWallet, currentETHAddress, privateKey]);
 
     useEffect(() => {
         setUserName();
