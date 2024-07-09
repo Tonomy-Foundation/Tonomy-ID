@@ -35,7 +35,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             await connect();
             const ethereumKey = await keyStorage.findByName('ethereum');
 
-            if (ethereumKey && !get().initialized) {
+            if (ethereumKey) {
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
                 let ethereumAccount;
