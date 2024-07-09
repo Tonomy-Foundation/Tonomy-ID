@@ -303,11 +303,7 @@ export class EthereumTransaction implements ITransaction {
     async getValue(): Promise<Asset> {
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
     }
-    // async estimateTransactionFee(): Promise<Asset> {
-    //     const wei = await provider.estimateGas(this.transaction);
 
-    //     return new Asset(this.chain.getNativeToken(), wei);
-    // }
     async estimateTransactionFee(): Promise<Asset> {
         // Get the current fee data
         const feeData = await provider.getFeeData();
