@@ -115,28 +115,28 @@ export abstract class AbstractAsset implements IAsset {
     getAmount(): bigint {
         return this.amount;
     }
-    // async getUsdValue(): Promise<number> {
-    //     const price = await this.token.getUsdPrice();
 
-    //     console.log('pricee', price);
-    //     const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
-
-    //     return parseFloat(usdValue.toString());
-    // }
     async getUsdValue(): Promise<number> {
-        const price = await this.token.getUsdPrice();
+        const price = await this.token.getUsdPrice(); // Step 1
 
-        console.log('price', price);
+        // Use a higher precision for the multiplier to ensure small values are accurately represented
+        const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
+        const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
 
-        // Assuming price needs to be rounded or is already an integer suitable for BigInt conversion
-        const priceBigInt = BigInt(Math.round(price)); // Adjust rounding as necessary
+        // Convert price to a BigInteger without losing precision
+        const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
 
-        // Use BigInt for base 10 to ensure the result of exponentiation is a BigInt
-        const precisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
+        // Adjust the amount to match the high precision multiplier
+        const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
 
-        const usdValue = BigInt(this.amount) * priceBigInt * precisionMultiplier;
+        // Calculate usdValue using BigInt for accurate arithmetic operations
+        const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
 
-        return parseFloat(usdValue.toString());
+        // Convert the result back to a floating-point number with controlled precision
+        const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
+
+        // Ensure the result is formatted to a fixed number of decimal places without rounding issues
+        return parseFloat(usdValue.toFixed(10)); // Adjust the number of decimal places as needed
     }
     getSymbol(): string {
         return this.token.getSymbol();

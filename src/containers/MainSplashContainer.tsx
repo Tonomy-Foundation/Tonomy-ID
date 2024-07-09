@@ -25,6 +25,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 await initializeStatusFromStorage();
                 const status = getStatus();
 
+                await connect();
+
                 switch (status) {
                     case UserStatus.NONE:
                         navigation.dispatch(StackActions.replace('SplashSecurity'));
@@ -34,7 +36,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         break;
                     case UserStatus.LOGGED_IN:
                         try {
-                            await connect();
                             await user.getUsername();
                             await initializeWallet();
                         } catch (e) {

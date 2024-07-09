@@ -19,9 +19,14 @@ import { USD_CONVERSION } from '../utils/chain/etherum';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { keyStorage } from '../utils/StorageManager/setup';
+import Core from '@walletconnect/core';
 
 const vestingContract = VestingContract.Instance;
 
+export const core = new Core({
+    projectId: settings.config.walletConnectProjectId,
+    relayUrl: 'wss://relay.walletconnect.com',
+});
 export default function MainContainer({
     did,
     navigation,
@@ -37,13 +42,13 @@ export default function MainContainer({
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const { web3wallet, currentETHAddress } = useWalletStore();
+    const { web3wallet, currentETHAddress, initialized } = useWalletStore();
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
-    console.log(currentETHAddress);
+    console.log('address', currentETHAddress);
     useEffect(() => {
         initializeWallet();
-    }, [initializeWallet, currentETHAddress]);
+    }, [initializeWallet, currentETHAddress, initialized]);
 
     useEffect(() => {
         setUserName();
@@ -97,7 +102,7 @@ export default function MainContainer({
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                if (web3wallet) await web3wallet.pair({ uri: data });
+                if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('did:')) {
                 const did = validateQrCode(data);
 

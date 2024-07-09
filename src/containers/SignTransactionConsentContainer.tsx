@@ -68,34 +68,26 @@ export default function SignTransactionConsentContainer({
 
                 const fromAccount = await transaction.getFrom().getName();
 
-                console.log('fromAccount', fromAccount);
                 const toAccount = await transaction.getTo().getName();
 
-                console.log('toAccount', toAccount);
                 const value = (await transaction.getValue()).toString();
 
-                console.log('value', value);
                 const usdValue = await (await transaction.getValue()).getUsdValue();
 
-                console.log('usdValue', await transaction.estimateTransactionFee());
-
-                let fee = (await transaction.estimateTransactionFee())?.toString();
+                const estimateFee = await transaction.estimateTransactionFee();
+                let fee = estimateFee?.toString();
 
                 fee = parseFloat(fee).toFixed(18);
-                console.log('fee', parseFloat(fee).toFixed(18));
-                const usdFee = fee ? await (await transaction.estimateTransactionFee()).getUsdValue() : 0;
+                const usdFee = fee ? await estimateFee.getUsdValue() : 0;
 
-                console.log('usdFee', usdFee);
-
-                let total = (await transaction.estimateTransactionTotal())?.toString();
+                const estimateTotal = await transaction.estimateTransactionTotal();
+                let total = estimateTotal?.toString();
 
                 total = parseFloat(total).toFixed(18);
-
-                const usdTotal = total ? await (await transaction.estimateTransactionTotal()).getUsdValue() : 0;
+                const usdTotal = total ? await estimateTotal.getUsdValue() : 0;
 
                 const transactionType = await transaction.getType();
 
-                console.log('transactionType', transactionType, total);
                 const functionName = '';
                 const args: Record<string, string> | null = null;
 
@@ -142,23 +134,17 @@ export default function SignTransactionConsentContainer({
         });
     }
 
-    console.log('transactionDetails', transactionDetails);
-
     async function onAccept() {
         try {
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
-                // value: ethers.parseEther(transactionDetails.total),
-                chainId: transaction.getChain().getChainId(),
-                gasPrice: ethers.parseEther(transactionDetails.fee),
+                value: ethers.parseEther(transactionDetails.total),
                 data: await transaction.getData(),
             };
 
-            console.log('transactionRequest signedTransaction', transactionRequest);
             const signedTransaction = await privateKey.signTransaction(transactionRequest);
 
-            console.log('signedTransaction', signedTransaction);
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
@@ -210,13 +196,16 @@ export default function SignTransactionConsentContainer({
                                         style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}
                                     >
                                         <Text style={styles.secondaryColor}>Amount:</Text>
-                                        <Text>
-                                            {transactionDetails.value}
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text> {transactionDetails.value}</Text>
+                                            </View>
                                             <Text style={styles.secondaryColor}>
                                                 (${formatCurrencyValue(transactionDetails.usdValue)})
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
+
                                     {/* {contractTransaction && (
                             <>
                                 <View
@@ -287,23 +276,27 @@ export default function SignTransactionConsentContainer({
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                        <Text>
-                                            {transactionDetails?.fee}
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text> {transactionDetails?.fee}</Text>
+                                            </View>
                                             <Text style={styles.secondaryColor}>
-                                                (${formatCurrencyValue(transactionDetails.usdFee)})
+                                                (${transactionDetails?.usdFee.toFixed(10)})
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
                                 </View>
                                 <View style={styles.totalSection}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
-                                        <Text style={{ fontWeight: '600' }}>
-                                            {transactionDetails?.total}
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text> {transactionDetails?.total}</Text>
+                                            </View>
                                             <Text style={styles.secondaryColor}>
-                                                (${formatCurrencyValue(transactionDetails.usdTotal)})
+                                                (${transactionDetails?.usdTotal.toFixed(10)})
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
                                 </View>
                             </>

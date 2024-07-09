@@ -161,7 +161,6 @@ class EthereumToken extends AbstractToken {
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
 
-        console.log('balance12', balance);
         return balance.getUsdValue();
     }
 }
@@ -315,10 +314,6 @@ export class EthereumTransaction implements ITransaction {
 
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
-            // ...this.transaction,
-            // maxFeePerGas: feeData.maxFeePerGas,
-            // maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-            // gasLimit: await provider.estimateGas(this.transaction),
             to: this.transaction.to,
             from: this.transaction.from,
             maxFeePerGas: feeData.maxFeePerGas,
@@ -326,11 +321,9 @@ export class EthereumTransaction implements ITransaction {
             data: this.transaction.data,
         };
 
-        console.log('transaction', transaction);
         // Estimate gas
         const wei = await provider.estimateGas(transaction);
 
-        console.log('wei', wei, new Asset(this.chain.getNativeToken(), wei));
         // Return the estimated fee as an Asset
         return new Asset(this.chain.getNativeToken(), wei);
     }
