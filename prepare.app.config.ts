@@ -94,6 +94,8 @@ const expo: ExpoConfig = {
             {
                 android: {
                     minSdkVersion: 26,
+                    targetSdkVersion: 34,
+                    compileSdkVersion: 34,
                 },
             },
         ],
