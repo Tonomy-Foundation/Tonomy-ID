@@ -25,7 +25,7 @@ interface WalletState {
     clearState: () => Promise<void>; // Ensure clearState returns a Promise
 }
 
-const useWalletStore = create<WalletState>((set) => ({
+const useWalletStore = create<WalletState>((set, get) => ({
     initialized: false,
     web3wallet: null,
     currentETHAddress: null,
@@ -35,7 +35,7 @@ const useWalletStore = create<WalletState>((set) => ({
             await connect();
             const ethereumKey = await keyStorage.findByName('ethereum');
 
-            if (ethereumKey) {
+            if (ethereumKey && !get().initialized) {
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
                 let ethereumAccount;
