@@ -432,41 +432,4 @@ export class EthereumChainSession implements IChainSession {
 
         return null;
     }
-
-    // getNamespaces(): SessionTypes.Namespaces {
-    //     const namespaces: SessionTypes.Namespaces = {};
-    //     const { requiredNamespaces } = this.payload.params;
-
-    //     Object.keys(requiredNamespaces).forEach((key) => {
-    //         const accounts: string[] = [];
-
-    //         requiredNamespaces[key].chains?.map((chain) => {
-    //             [].map((acc) => accounts.push(`${chain}:${acc}`));
-    //         });
-    //         namespaces[key] = {
-    //             accounts,
-    //             methods: requiredNamespaces[key].methods,
-    //             events: requiredNamespaces[key].events,
-    //         };
-    //     });
-
-    //     return namespaces;
-    // }
-
-    // async acceptSession() {
-    //     const namespaces = this.getNamespaces();
-
-    //     await web3wallet?.approveSession({
-    //         id: this.getId(),
-    //         relayProtocol: this.payload.params.relays[0].protocol,
-    //         namespaces,
-    //     });
-    // }
-
-    // async rejectSession() {
-    //     await web3wallet?.rejectSession({
-    //         id: this.getId(),
-    //         reason: getSdkError('USER_REJECTED'),
-    //     });
-    // }
 }

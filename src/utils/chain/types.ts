@@ -284,9 +284,6 @@ export interface IChainSession {
     getName(): string;
     getUrl(): string;
     getIcons(): string | null;
-    // getNamespaces(): SessionTypes.Namespaces;
-    // acceptSession(): Promise<void>;
-    // rejectSession(): Promise<void>;
 }
 
 export interface ISession {
