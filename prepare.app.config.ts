@@ -97,6 +97,9 @@ const expo: ExpoConfig = {
                     targetSdkVersion: 34,
                     compileSdkVersion: 34,
                 },
+                ios: {
+                    deploymentTarget: '13.4',
+                },
             },
         ],
         ['./android.manifest.plugin.js'],
