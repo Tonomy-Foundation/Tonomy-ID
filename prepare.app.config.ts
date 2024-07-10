@@ -93,13 +93,12 @@ const expo: ExpoConfig = {
             'expo-build-properties',
             {
                 android: {
-                    minSdkVersion: 26,
-                    targetSdkVersion: 34,
                     compileSdkVersion: 34,
+                    targetSdkVersion: 34,
                     buildToolsVersion: '34.0.0',
                 },
                 ios: {
-                    deploymentTarget: 13.4,
+                    deploymentTarget: '13.4',
                 },
             },
         ],
