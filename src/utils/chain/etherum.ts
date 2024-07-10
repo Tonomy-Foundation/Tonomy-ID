@@ -177,17 +177,20 @@ const EthereumSepoliaChain = new EthereumChain(
     '11155111',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
-let provider: JsonRpcProvider;
+// let provider: JsonRpcProvider;
 
-export let chain: EthereumChain;
+// export let chain: EthereumChain;
 
-if (settings.isProduction()) {
-    provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
-    chain = EthereumMainnetChain;
-} else {
-    provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
-    chain = EthereumSepoliaChain;
-}
+// if (settings.isProduction()) {
+//     provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+//     chain = EthereumMainnetChain;
+// } else {
+//     provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
+//     chain = EthereumSepoliaChain;
+// }
+const provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+
+export const chain = EthereumMainnetChain;
 
 const ETHToken = new EthereumToken(
     EthereumMainnetChain,

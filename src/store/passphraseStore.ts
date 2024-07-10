@@ -34,7 +34,8 @@ function generate3PassphraseIndexes(): number[] {
     return randomWordIndexesList;
 }
 
-export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'piano', 'sport'];
+// export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'piano', 'sport'];
+export const DEFAULT_DEV_PASSPHRASE_LIST = ['eyebrow', 'path', 'toast', 'twenty', 'dream', 'victory'];
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
     passphraseList: settings.isProduction() ? util.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
