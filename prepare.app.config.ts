@@ -98,7 +98,7 @@ const expo: ExpoConfig = {
                     compileSdkVersion: 34,
                 },
                 ios: {
-                    deploymentTarget: '13.4',
+                    deploymentTarget: 13.4,
                 },
             },
         ],
