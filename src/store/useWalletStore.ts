@@ -59,7 +59,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     await ethereumPrivateKey.getPublicKey()
                 );
 
-                console.log('ethereumAccount', ethereumAccount);
                 const web3wallet = await Web3Wallet.init({
                     core,
                     metadata: {

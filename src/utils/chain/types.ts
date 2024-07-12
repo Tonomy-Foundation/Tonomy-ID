@@ -148,8 +148,13 @@ export abstract class AbstractAsset implements IAsset {
         const amountNumber = Number(this.amount);
         const precisionNumber = Number(10 ** this.token.getPrecision());
 
+        console.log('ammountNumber', amountNumber);
+        console.log('ammountNumber', precisionNumber);
+
         // Perform the division
         const value = amountNumber / precisionNumber;
+
+        console.log('value', value);
 
         return value.toString();
     }

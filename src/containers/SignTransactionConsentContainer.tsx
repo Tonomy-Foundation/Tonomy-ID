@@ -8,7 +8,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
-import { ethers, TransactionRequest } from 'ethers';
+import { ethers, TransactionRequest, BigNumberish } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
@@ -75,6 +75,7 @@ export default function SignTransactionConsentContainer({
                 const usdValue = await (await transaction.getValue()).getUsdValue();
 
                 const estimateFee = await transaction.estimateTransactionFee();
+
                 let fee = estimateFee?.toString();
 
                 fee = parseFloat(fee).toFixed(18);
@@ -124,10 +125,6 @@ export default function SignTransactionConsentContainer({
     }, [transaction, contractTransaction, errorStore]);
 
     async function onReject() {
-        await web3wallet?.rejectSession({
-            id: session.id,
-            reason: getSdkError('USER_REJECTED'),
-        });
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -137,7 +134,7 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             const transactionRequest: TransactionRequest = {
-                to: '0x9b516EFc77e3774634797467Be32Bc50b0E2C489', //transactionDetails.toAccount,
+                to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
                 value: ethers.parseEther(transactionDetails.total),
                 data: await transaction.getData(),
@@ -179,7 +176,7 @@ export default function SignTransactionConsentContainer({
                                     />
                                     <Text style={styles.nameText}>{transaction.getChain().getName()} Network</Text>
                                 </View>
-                                <Text>
+                                <Text style={styles.accountNameStyle}>
                                     {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
                                 </Text>
                                 <View style={styles.transactionHeading}></View>
@@ -350,11 +347,16 @@ const styles = StyleSheet.create({
     networkHeading: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 14,
+        marginTop: 15,
+    },
+    accountNameStyle: {
+        fontSize: 17,
+        marginTop: 10,
     },
     nameText: {
         color: theme.colors.secondary2,
         marginLeft: 5,
+        fontSize: 17,
     },
     transactionHeading: {
         marginTop: 11,

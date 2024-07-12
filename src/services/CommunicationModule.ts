@@ -15,9 +15,10 @@ import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 import { keyStorage } from '../utils/StorageManager/setup';
-import { EthereumTransaction, chain } from '../utils/chain/etherum';
+import { EthereumPrivateKey, EthereumTransaction, chain } from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
+import { ethers, BigNumberish } from 'ethers';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -157,6 +158,8 @@ export default function CommunicationModule() {
     const handleConnect = useCallback(async () => {
         try {
             web3wallet?.on('session_proposal', async (proposal) => {
+                console.log('session_proposal', proposal);
+
                 if (proposal) {
                     navigation.navigate('WalletConnectLogin', {
                         payload: proposal,
@@ -179,13 +182,22 @@ export default function CommunicationModule() {
                     case 'eth_sendTransaction': {
                         const transactionData = request.params[0];
 
-                        const transaction: ITransaction = new EthereumTransaction(transactionData, chain);
-
                         const key = await keyStorage.findByName('ethereum');
 
-                        if (!key) {
-                            navigation.navigate('CreateEthereumKey', {
+                        let transaction: ITransaction;
+
+                        if (key) {
+                            const exportPrivateKey = await key.exportPrivateKey();
+                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
+
+                            transaction = await EthereumTransaction.fromTransaction(
+                                ethereumPrivateKey,
+                                transactionData,
+                                chain
+                            );
+                            navigation.navigate('SignTransaction', {
                                 transaction,
+                                privateKey: key,
                                 session: {
                                     origin: verifyContext?.verified?.origin,
                                     id,
@@ -193,9 +205,9 @@ export default function CommunicationModule() {
                                 },
                             });
                         } else {
-                            navigation.navigate('SignTransaction', {
+                            transaction = new EthereumTransaction(transactionData, chain);
+                            navigation.navigate('CreateEthereumKey', {
                                 transaction,
-                                privateKey: key,
                                 session: {
                                     origin: verifyContext?.verified?.origin,
                                     id,

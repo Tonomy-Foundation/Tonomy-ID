@@ -20,6 +20,7 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { keyStorage } from '../utils/StorageManager/setup';
 import Core from '@walletconnect/core';
+import Web3Wallet from '@walletconnect/web3wallet';
 
 const vestingContract = VestingContract.Instance;
 
@@ -45,7 +46,7 @@ export default function MainContainer({
     const { web3wallet, currentETHAddress, privateKey } = useWalletStore();
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
-    console.log('');
+    console.log('currentETHAddress:', currentETHAddress);
     useEffect(() => {
         initializeWallet();
     }, [initializeWallet, currentETHAddress, privateKey]);
