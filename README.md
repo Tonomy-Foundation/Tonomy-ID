@@ -132,4 +132,3 @@ You might be running in stand-alone mode and trying to complete the SSO loin flo
 ## Releases
 
 Release versioning is done automatically with [https://github.com/marketplace/actions/automated-version-bump](automated-version-bump). This will do a major, minor or patch release based on words in the commits. See [Workflow](https://github.com/marketplace/actions/automated-version-bump#workflow) for details.
-
