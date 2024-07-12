@@ -177,21 +177,17 @@ const EthereumSepoliaChain = new EthereumChain(
     '11155111',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
-// let provider: JsonRpcProvider;
+let provider: JsonRpcProvider;
 
-// export let chain: EthereumChain;
+export let chain: EthereumChain;
 
-// if (settings.isProduction()) {
-//     provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
-//     chain = EthereumMainnetChain;
-// } else {
-//     provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
-//     chain = EthereumSepoliaChain;
-// }
-console.log('EthereumMainnetChain.getInfuraUrl()', EthereumMainnetChain.getInfuraUrl());
-const provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
-
-export const chain = EthereumMainnetChain;
+if (settings.isProduction()) {
+    provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+    chain = EthereumMainnetChain;
+} else {
+    provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
+    chain = EthereumSepoliaChain;
+}
 
 const ETHToken = new EthereumToken(
     EthereumMainnetChain,
@@ -310,26 +306,18 @@ export class EthereumTransaction implements ITransaction {
 
     async estimateTransactionFee(): Promise<Asset> {
         // Get the current fee data
-        // console.log('provider', provider);
         const feeData = await provider.getFeeData();
 
-        // console.log('feeData', feeData);
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
             to: this.transaction.to,
-
             data: this.transaction.data,
             value: this.transaction.value,
         };
 
-        // console.log('transaction', transaction);
-        // console.log('gassPrice', feeData.gasPrice); //4857212671n wei
         // Estimate gas
         const wei = await provider.estimateGas(transaction);
-        // const gwei = await ethers.formatUnits(wei, 'gwei');
-        // const eth = await ethers.formatUnits(wei, 'ether');
 
-        // console.log('BigNumberish', gwei, eth);
         const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
 
         return new Asset(this.chain.getNativeToken(), totalGasFee);

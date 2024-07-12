@@ -11,6 +11,5 @@ export function extractHostname(url): string {
         return 'Invalid URL - Must use HTTPS';
     }
 
-    console.log('urlObject', urlObject.host);
     return urlObject.hostname;
 }

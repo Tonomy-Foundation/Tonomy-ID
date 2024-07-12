@@ -40,25 +40,19 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
 
-                console.log('ethereumPrivateKey', exportPrivateKey);
-                // let ethereumAccount;
+                let ethereumAccount;
 
-                // if (settings.isProduction()) {
-                //     ethereumAccount = await EthereumAccount.fromPublicKey(
-                //         EthereumMainnetChain,
-                //         await ethereumPrivateKey.getPublicKey()
-                //     );
-                // } else {
-                //     ethereumAccount = await EthereumAccount.fromPublicKey(
-                //         EthereumSepoliaChain,
-                //         await ethereumPrivateKey.getPublicKey()
-                //     );
-                // }
-
-                const ethereumAccount = await EthereumAccount.fromPublicKey(
-                    EthereumMainnetChain,
-                    await ethereumPrivateKey.getPublicKey()
-                );
+                if (settings.isProduction()) {
+                    ethereumAccount = await EthereumAccount.fromPublicKey(
+                        EthereumMainnetChain,
+                        await ethereumPrivateKey.getPublicKey()
+                    );
+                } else {
+                    ethereumAccount = await EthereumAccount.fromPublicKey(
+                        EthereumSepoliaChain,
+                        await ethereumPrivateKey.getPublicKey()
+                    );
+                }
 
                 const web3wallet = await Web3Wallet.init({
                     core,

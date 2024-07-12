@@ -117,26 +117,30 @@ export abstract class AbstractAsset implements IAsset {
     }
 
     async getUsdValue(): Promise<number> {
-        const price = await this.token.getUsdPrice(); // Step 1
+        const price = await this.token.getUsdPrice();
 
-        // Use a higher precision for the multiplier to ensure small values are accurately represented
-        const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
-        const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
+        if (price) {
+            // Use a higher precision for the multiplier to ensure small values are accurately represented
+            const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
+            const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
 
-        // Convert price to a BigInteger without losing precision
-        const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
+            // Convert price to a BigInteger without losing precision
+            const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
 
-        // Adjust the amount to match the high precision multiplier
-        const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
+            // Adjust the amount to match the high precision multiplier
+            const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
 
-        // Calculate usdValue using BigInt for accurate arithmetic operations
-        const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
+            // Calculate usdValue using BigInt for accurate arithmetic operations
+            const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
 
-        // Convert the result back to a floating-point number with controlled precision
-        const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
+            // Convert the result back to a floating-point number with controlled precision
+            const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
 
-        // Ensure the result is formatted to a fixed number of decimal places without rounding issues
-        return parseFloat(usdValue.toFixed(10)); // Adjust the number of decimal places as needed
+            // Ensure the result is formatted to a fixed number of decimal places without rounding issues
+            return parseFloat(usdValue.toFixed(10));
+        } else {
+            return 0;
+        }
     }
     getSymbol(): string {
         return this.token.getSymbol();
@@ -148,13 +152,8 @@ export abstract class AbstractAsset implements IAsset {
         const amountNumber = Number(this.amount);
         const precisionNumber = Number(10 ** this.token.getPrecision());
 
-        console.log('ammountNumber', amountNumber);
-        console.log('ammountNumber', precisionNumber);
-
         // Perform the division
         const value = amountNumber / precisionNumber;
-
-        console.log('value', value);
 
         return value.toString();
     }

@@ -34,6 +34,7 @@ export default function SignTransactionConsentContainer({
     const errorStore = useErrorStore();
     const [contractTransaction, setContractTransaction] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [transactionLoading, setTransactionLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
         transactionType: TransactionType | null;
         fromAccount: string;
@@ -65,6 +66,7 @@ export default function SignTransactionConsentContainer({
         const fetchTransactionDetails = async () => {
             try {
                 setLoading(true);
+                setTransactionLoading(true);
 
                 const fromAccount = await transaction.getFrom().getName();
 
@@ -75,17 +77,18 @@ export default function SignTransactionConsentContainer({
                 const usdValue = await (await transaction.getValue()).getUsdValue();
 
                 const estimateFee = await transaction.estimateTransactionFee();
+                const usdFee = await estimateFee.getUsdValue();
 
                 let fee = estimateFee?.toString();
 
                 fee = parseFloat(fee).toFixed(18);
-                const usdFee = fee ? await estimateFee.getUsdValue() : 0;
 
                 const estimateTotal = await transaction.estimateTransactionTotal();
+                const usdTotal = await estimateTotal.getUsdValue();
+
                 let total = estimateTotal?.toString();
 
                 total = parseFloat(total).toFixed(18);
-                const usdTotal = total ? await estimateTotal.getUsdValue() : 0;
 
                 const transactionType = await transaction.getType();
 
@@ -98,6 +101,7 @@ export default function SignTransactionConsentContainer({
                 // }
 
                 setLoading(false);
+
                 setTransactionDetails({
                     transactionType,
                     fromAccount,
@@ -111,6 +115,7 @@ export default function SignTransactionConsentContainer({
                     total,
                     usdTotal,
                 });
+                setTransactionLoading(false);
             } catch (e) {
                 if (e === 'Not a contract call') {
                     setContractTransaction(false);
@@ -118,6 +123,7 @@ export default function SignTransactionConsentContainer({
 
                 errorStore.setError({ error: e, expected: false });
                 setLoading(false);
+                setTransactionLoading(false);
             }
         };
 
@@ -125,10 +131,20 @@ export default function SignTransactionConsentContainer({
     }, [transaction, contractTransaction, errorStore]);
 
     async function onReject() {
-        await web3wallet?.rejectSession({
+        setTransactionLoading(true);
+
+        const response = {
             id: session.id,
-            reason: getSdkError('USER_REJECTED'),
+            error: getSdkError('USER_REJECTED'),
+            jsonrpc: '2.0',
+        };
+
+        await web3wallet?.respondSessionRequest({
+            topic: session.topic,
+            response,
         });
+        setTransactionLoading(false);
+
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -137,6 +153,7 @@ export default function SignTransactionConsentContainer({
 
     async function onAccept() {
         try {
+            setTransactionLoading(true);
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
@@ -149,11 +166,14 @@ export default function SignTransactionConsentContainer({
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
+            setTransactionLoading(false);
             navigation.navigate({
                 name: 'UserHome',
                 params: {},
             });
         } catch (error) {
+            setTransactionLoading(false);
+
             throw new Error(`Error signing transaction, ${error}`);
         }
     }
@@ -279,10 +299,11 @@ export default function SignTransactionConsentContainer({
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {transactionDetails?.fee}</Text>
+                                                <Text> {formatCurrencyValue(Number(transactionDetails?.fee), 4)}</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                (${transactionDetails?.usdFee.toFixed(10)})
+                                                ($
+                                                {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
                                             </Text>
                                         </View>
                                     </View>
@@ -292,10 +313,15 @@ export default function SignTransactionConsentContainer({
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {transactionDetails?.total}</Text>
+                                                <Text>{formatCurrencyValue(Number(transactionDetails?.total), 4)}</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                (${transactionDetails?.usdTotal.toFixed(10)})
+                                                ($
+                                                {formatCurrencyValue(
+                                                    Number(transactionDetails?.usdTotal.toFixed(4)),
+                                                    3
+                                                )}
+                                                )
                                             </Text>
                                         </View>
                                     </View>
@@ -318,10 +344,16 @@ export default function SignTransactionConsentContainer({
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained onPress={() => onAccept()} style={commonStyles.marginBottom}>
+                    <TButtonContained
+                        disabled={transactionLoading}
+                        onPress={() => onAccept()}
+                        style={commonStyles.marginBottom}
+                    >
                         Proceed
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => onReject()}>Cancel</TButtonOutlined>
+                    <TButtonOutlined disabled={transactionLoading} onPress={() => onReject()}>
+                        Cancel
+                    </TButtonOutlined>
                 </View>
             }
             noFooterHintLayout={true}
@@ -351,16 +383,16 @@ const styles = StyleSheet.create({
     networkHeading: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 15,
+        marginTop: 18,
     },
     accountNameStyle: {
-        fontSize: 17,
+        fontSize: 15,
         marginTop: 10,
     },
     nameText: {
         color: theme.colors.secondary2,
         marginLeft: 5,
-        fontSize: 17,
+        fontSize: 16,
     },
     transactionHeading: {
         marginTop: 11,

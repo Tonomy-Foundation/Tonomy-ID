@@ -176,8 +176,6 @@ export default function CommunicationModule() {
                 const { topic, params, id, verifyContext } = event;
                 const { request } = params;
 
-                // Prepare the transaction object
-
                 switch (request.method) {
                     case 'eth_sendTransaction': {
                         const transactionData = request.params[0];

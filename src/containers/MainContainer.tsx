@@ -46,9 +46,10 @@ export default function MainContainer({
     const { web3wallet, currentETHAddress, privateKey } = useWalletStore();
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
-    console.log('currentETHAddress:', currentETHAddress);
     useEffect(() => {
-        initializeWallet();
+        if (privateKey && !currentETHAddress) {
+            initializeWallet();
+        }
     }, [initializeWallet, currentETHAddress, privateKey]);
 
     useEffect(() => {
