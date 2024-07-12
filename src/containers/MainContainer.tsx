@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -16,18 +16,12 @@ import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
 import { USD_CONVERSION } from '../utils/chain/etherum';
+import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-import { keyStorage } from '../utils/StorageManager/setup';
-import Core from '@walletconnect/core';
-import Web3Wallet from '@walletconnect/web3wallet';
 
 const vestingContract = VestingContract.Instance;
 
-export const core = new Core({
-    projectId: settings.config.walletConnectProjectId,
-    relayUrl: 'wss://relay.walletconnect.com',
-});
 export default function MainContainer({
     did,
     navigation,
@@ -45,6 +39,7 @@ export default function MainContainer({
     const errorStore = useErrorStore();
     const { web3wallet, currentETHAddress, privateKey } = useWalletStore();
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
+    const refMessage = useRef(null);
 
     useEffect(() => {
         if (privateKey && !currentETHAddress) {
@@ -199,44 +194,48 @@ export default function MainContainer({
 
                         <View style={styles.accountsView}>
                             <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                                            <Text style={styles.networkTitle}>Pangea Network:</Text>
+                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                                <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                            </View>
+                                            <Text>{accountName}</Text>
                                         </View>
-                                        <Text>{accountName}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
+                                            </View>
+                                            <Text style={styles.secondaryColor}>
+                                                ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                            </Text>
                                         </View>
-                                        <Text style={styles.secondaryColor}>
-                                            ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
-                                        </Text>
                                     </View>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
 
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image
-                                                source={require('../assets/icons/eth-img.png')}
-                                                style={styles.favicon}
-                                            />
-                                            <Text style={styles.networkTitle}>Ethereum Network:</Text>
+                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image
+                                                    source={require('../assets/icons/eth-img.png')}
+                                                    style={styles.favicon}
+                                                />
+                                                <Text style={styles.networkTitle}>Ethereum Network:</Text>
+                                            </View>
+                                            {currentETHAddress ? (
+                                                <Text>
+                                                    {currentETHAddress.substring(0, 7)}....
+                                                    {currentETHAddress.substring(currentETHAddress.length - 6)}
+                                                </Text>
+                                            ) : (
+                                                <Text>Not connected</Text>
+                                            )}
                                         </View>
-                                        {currentETHAddress ? (
-                                            <Text>
-                                                {currentETHAddress.substring(0, 7)}....
-                                                {currentETHAddress.substring(currentETHAddress.length - 6)}
-                                            </Text>
-                                        ) : (
-                                            <Text>Not connected</Text>
-                                        )}
                                     </View>
 
                                     {!currentETHAddress ? (
@@ -259,8 +258,9 @@ export default function MainContainer({
                                         </View>
                                     )}
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         </View>
+                        <AccountDetails refMessage={refMessage} accountName={accountName} />
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
