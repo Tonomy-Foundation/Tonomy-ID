@@ -58,6 +58,7 @@ Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to P
 7. Turn OFF "JS Dev Mode"
 8. Reload
 
+
 This is now running in production mode connected to the staging environment.
 
 ## Run Staging or Demo and see debug logs (Android only)
