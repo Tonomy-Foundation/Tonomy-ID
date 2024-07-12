@@ -158,8 +158,6 @@ export default function CommunicationModule() {
     const handleConnect = useCallback(async () => {
         try {
             web3wallet?.on('session_proposal', async (proposal) => {
-                console.log('session_proposal', proposal);
-
                 if (proposal) {
                     navigation.navigate('WalletConnectLogin', {
                         payload: proposal,

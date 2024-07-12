@@ -311,7 +311,7 @@ export default function SignTransactionConsentContainer({
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
                                         <Text>
-                                            {formatCurrencyValue(Number(transactionDetails?.fee), 4)}
+                                            {formatCurrencyValue(Number(transactionDetails?.fee), 5)}
                                             <Text style={styles.secondaryColor}>
                                                 ($
                                                 {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
@@ -323,7 +323,7 @@ export default function SignTransactionConsentContainer({
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
                                         <Text>
-                                            {formatCurrencyValue(Number(transactionDetails?.total), 4)}
+                                            {formatCurrencyValue(Number(transactionDetails?.total), 5)}
                                             <Text style={styles.secondaryColor}>
                                                 ($
                                                 {formatCurrencyValue(
