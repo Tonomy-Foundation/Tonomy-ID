@@ -6,7 +6,7 @@ import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
-import { extractHostname } from '../utils/helper';
+import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
 import { ethers, TransactionRequest, BigNumberish } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
@@ -208,7 +208,9 @@ export default function SignTransactionConsentContainer({
                                         source={{ uri: transaction.getChain().getLogoUrl() }}
                                         style={styles.imageStyle}
                                     />
-                                    <Text style={styles.nameText}>{transaction.getChain().getName()} Network</Text>
+                                    <Text style={styles.nameText}>
+                                        {capitalizeFirstLetter(transaction.getChain().getName())} Network
+                                    </Text>
                                 </View>
                                 <Text style={styles.accountNameStyle}>
                                     {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
