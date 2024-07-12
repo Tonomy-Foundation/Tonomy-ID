@@ -45,17 +45,17 @@ export default function WalletConnectLoginContainer({
             const { requiredNamespaces, optionalNamespaces } = payload.params;
 
             console.log('requiredNamespaces', payload.params.optionalNamespaces);
-            Object.keys(optionalNamespaces).forEach((key) => {
+            Object.keys(requiredNamespaces).forEach((key) => {
                 const accounts: string[] = [];
 
-                optionalNamespaces[key].chains?.map((chain) => {
+                requiredNamespaces[key].chains?.map((chain) => {
                     [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
                 });
                 namespaces[key] = {
-                    chains: optionalNamespaces[key].chains,
+                    chains: requiredNamespaces[key].chains,
                     accounts,
-                    methods: optionalNamespaces[key].methods,
-                    events: optionalNamespaces[key].events,
+                    methods: requiredNamespaces[key].methods,
+                    events: requiredNamespaces[key].events,
                 };
             });
             console.log('payload.id', payload.id, namespaces);

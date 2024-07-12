@@ -125,6 +125,10 @@ export default function SignTransactionConsentContainer({
     }, [transaction, contractTransaction, errorStore]);
 
     async function onReject() {
+        await web3wallet?.rejectSession({
+            id: session.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
         navigation.navigate({
             name: 'UserHome',
             params: {},
