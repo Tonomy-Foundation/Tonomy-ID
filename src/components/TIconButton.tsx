@@ -13,9 +13,5 @@ export default function TButton(props: IconButtonProps) {
     });
 
     // https://materialdesignicons.com/
-<<<<<<< HEAD
     return <IconButton {...props} color={props?.iconColor || 'white'} style={styles.icon} />;
-=======
-    return <IconButton {...props} color={props.iconColor ? props.iconColor : 'white'} style={styles.icon} />;
->>>>>>> feature/354-signed-transaction
 }
