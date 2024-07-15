@@ -15,6 +15,7 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
+import useWalletStore from '../store/useWalletStore';
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -29,6 +30,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const user = userStore.user;
     const siteKey = settings.config.captchaSiteKey;
     const { getPassphrase, unsetPassphraseList, unsetConfirmPassphraseWord } = usePassphraseStore();
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
@@ -95,6 +97,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             await user.createPerson();
             await user.saveLocal();
             await user.updateKeys(getPassphrase());
+            initializeWallet();
+
             unsetPassphraseList();
             unsetConfirmPassphraseWord();
 
