@@ -6,13 +6,14 @@ import LayoutComponent from '../components/layout';
 import { TH2 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
-import { extractOrigin } from '../utils/helper';
+import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
-import { TransactionRequest } from 'ethers';
+import { ethers, TransactionRequest, BigNumberish } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
+import TModal from '../components/TModal';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -34,6 +35,7 @@ export default function SignTransactionConsentContainer({
     const errorStore = useErrorStore();
     const [contractTransaction, setContractTransaction] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [transactionLoading, setTransactionLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
         transactionType: TransactionType | null;
         fromAccount: string;
@@ -59,61 +61,65 @@ export default function SignTransactionConsentContainer({
         total: '',
         usdTotal: 0,
     });
+    const [showModal, setShowModal] = useState(false);
+    const [signedTransaction, setSignedTransaction] = useState<any>(null);
+
     const refMessage = useRef(null);
 
     useEffect(() => {
         const fetchTransactionDetails = async () => {
             try {
                 setLoading(true);
+                setTransactionLoading(true);
 
                 const fromAccount = await transaction.getFrom().getName();
 
-                console.log('fromAccount', fromAccount);
                 const toAccount = await transaction.getTo().getName();
 
-                console.log('toAccount', toAccount);
                 const value = (await transaction.getValue()).toString();
 
-                console.log('value', value);
                 const usdValue = await (await transaction.getValue()).getUsdValue();
 
-                console.log('usdValue', usdValue);
+                const estimateFee = await transaction.estimateTransactionFee();
+                const usdFee = await estimateFee.getUsdValue();
 
-                const fee = (await transaction.estimateTransactionFee())?.toString();
+                let fee = estimateFee?.toString();
 
-                console.log('fee', fee);
-                // const usdFee = fee ? await (await transaction.estimateTransactionFee()).getUsdValue() : 0;
+                fee = parseFloat(fee).toFixed(18);
 
-                // console.log('usdFee', usdFee);
-                // const total = (await transaction.estimateTransactionTotal())?.toString();
+                const estimateTotal = await transaction.estimateTransactionTotal();
+                const usdTotal = await estimateTotal.getUsdValue();
 
-                // const usdTotal = total
-                //     ? await (await transaction.estimateTransactionTotal()).getToken()?.getUsdPrice()
-                //     : 0;
+                let total = estimateTotal?.toString();
 
-                // const transactionType = await transaction.getType();
-                // let functionName = '';
-                // let args: Record<string, string> | null = null;
+                total = parseFloat(total).toFixed(18);
+
+                const transactionType = await transaction.getType();
+
+                const functionName = '';
+                const args: Record<string, string> | null = null;
 
                 // if (contractTransaction) {
                 //     functionName = await transaction.getFunction();
                 //     args = await transaction.getArguments();
                 // }
 
-                // setLoading(false);
-                // setTransactionDetails({
-                //     transactionType,
-                //     fromAccount,
-                //     toAccount,
-                //     value,
-                //     usdValue,
-                //     functionName,
-                //     args,
-                //     fee,
-                //     usdFee,
-                //     total,
-                //     usdTotal,
-                // });
+                setLoading(false);
+
+                setTransactionDetails({
+                    transactionType,
+                    fromAccount,
+                    toAccount,
+                    value,
+                    usdValue,
+                    functionName,
+                    args,
+                    fee,
+                    usdFee,
+                    total,
+                    usdTotal,
+                });
+                setTransactionLoading(false);
             } catch (e) {
                 if (e === 'Not a contract call') {
                     setContractTransaction(false);
@@ -121,6 +127,7 @@ export default function SignTransactionConsentContainer({
 
                 errorStore.setError({ error: e, expected: false });
                 setLoading(false);
+                setTransactionLoading(false);
             }
         };
 
@@ -128,10 +135,20 @@ export default function SignTransactionConsentContainer({
     }, [transaction, contractTransaction, errorStore]);
 
     async function onReject() {
-        await web3wallet?.rejectSession({
+        setTransactionLoading(true);
+
+        const response = {
             id: session.id,
-            reason: getSdkError('USER_REJECTED'),
+            error: getSdkError('USER_REJECTED'),
+            jsonrpc: '2.0',
+        };
+
+        await web3wallet?.respondSessionRequest({
+            topic: session.topic,
+            response,
         });
+        setTransactionLoading(false);
+
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -140,27 +157,36 @@ export default function SignTransactionConsentContainer({
 
     async function onAccept() {
         try {
+            setTransactionLoading(true);
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
-                value: transactionDetails.value,
-                chainId: transaction.getChain().getChainId(),
-                gasPrice: transactionDetails.fee,
+                value: ethers.parseEther(transactionDetails.total),
+                data: await transaction.getData(),
             };
 
             const signedTransaction = await privateKey.signTransaction(transactionRequest);
 
+            setSignedTransaction(signedTransaction);
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
-            navigation.navigate({
-                name: 'UserHome',
-                params: {},
-            });
+            setTransactionLoading(false);
+            setShowModal(true);
         } catch (error) {
+            setTransactionLoading(false);
+
             throw new Error(`Error signing transaction, ${error}`);
         }
     }
+
+    const onModalPress = async () => {
+        setShowModal(false);
+        navigation.navigate({
+            name: 'UserHome',
+            params: {},
+        });
+    };
 
     return (
         <LayoutComponent
@@ -171,10 +197,150 @@ export default function SignTransactionConsentContainer({
                             style={[styles.logo, commonStyles.marginBottom]}
                             source={{ uri: transaction.getChain().getNativeToken().getLogoUrl() }}
                         ></Image>
-                        <TH2 style={[commonStyles.textAlignCenter, styles.padding]}>
-                            <Text style={styles.applink}>{extractOrigin(session?.origin)}</Text>
-                            wants you to send coins
-                        </TH2>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <TH2 style={styles.applinkText}>{extractHostname(session?.origin)}</TH2>
+                            <TH2 style={{ marginLeft: 10 }}>wants you to send coins</TH2>
+                        </View>
+                        {!loading ? (
+                            <>
+                                <View style={styles.networkHeading}>
+                                    <Image
+                                        source={{ uri: transaction.getChain().getLogoUrl() }}
+                                        style={styles.imageStyle}
+                                    />
+                                    <Text style={styles.nameText}>
+                                        {capitalizeFirstLetter(transaction.getChain().getName())} Network
+                                    </Text>
+                                </View>
+                                <Text style={styles.accountNameStyle}>
+                                    {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
+                                </Text>
+                                <View style={styles.transactionHeading}></View>
+                                <View style={styles.appDialog}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={styles.secondaryColor}>Recipient:</Text>
+                                        <Text>
+                                            {transaction
+                                                .getChain()
+                                                .formatShortAccountName(transactionDetails?.toAccount)}
+                                        </Text>
+                                    </View>
+                                    <View
+                                        style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}
+                                    >
+                                        <Text style={styles.secondaryColor}>Amount:</Text>
+                                        <Text>
+                                            {formatCurrencyValue(Number(transactionDetails?.value), 4)}
+                                            <Text style={styles.secondaryColor}>
+                                                ($
+                                                {formatCurrencyValue(
+                                                    Number(transactionDetails?.usdValue.toFixed(4)),
+                                                    3
+                                                )}
+                                                )
+                                            </Text>
+                                        </Text>
+                                    </View>
+
+                                    {/* {contractTransaction && (
+                            <>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        marginTop: 12,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>Function:</Text>
+                                    <Text style={{ color: theme.colors.secondary }}>{method}</Text>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginTop: 4,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
+
+                                    <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
+                                        {!showDetails ? (
+                                            <IconButton
+                                                icon={
+                                                    Platform.OS === 'android'
+                                                        ? 'arrow-down'
+                                                        : 'chevron-down'
+                                                }
+                                                size={Platform.OS === 'android' ? 15 : 22}
+                                            />
+                                        ) : (
+                                            <IconButton
+                                                icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
+                                                size={Platform.OS === 'android' ? 15 : 22}
+                                            />
+                                        )}
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
+
+                        {showDetails && contractTransaction && (
+                            <View style={styles.detailSection}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.secondaryColor}>Price:</Text>
+                                    <Text>
+                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
+                                    </Text>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        marginTop: 20,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>NFT ID:</Text>
+                                    <Text>#89792 </Text>
+                                </View>
+                                <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                    <Text style={styles.rawTransaction}>Show raw transaction</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )} */}
+                                </View>
+                                <View style={styles.appDialog}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={styles.secondaryColor}>Gas fee:</Text>
+                                        <Text>
+                                            {formatCurrencyValue(Number(transactionDetails?.fee), 5)}
+                                            <Text style={styles.secondaryColor}>
+                                                ($
+                                                {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
+                                            </Text>
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.totalSection}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
+                                        <Text>
+                                            {formatCurrencyValue(Number(transactionDetails?.total), 5)}
+                                            <Text style={styles.secondaryColor}>
+                                                ($
+                                                {formatCurrencyValue(
+                                                    Number(transactionDetails?.usdTotal.toFixed(4)),
+                                                    3
+                                                )}
+                                                )
+                                            </Text>
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                        ) : (
+                            <TSpinner style={{ marginBottom: 12 }} />
+                        )}
 
                         {/* <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
             <View style={styles.rawTransactionDrawer}>
@@ -185,14 +351,28 @@ export default function SignTransactionConsentContainer({
             </View>
         </RBSheet> */}
                     </View>
+                    <TModal visible={showModal} icon="check" onPress={onModalPress}>
+                        <View style={{ marginTop: 10 }}>
+                            <Text style={{ fontSize: 15, fontWeight: '600' }}>Transaction completed successfully!</Text>
+                            <Text style={{ fontSize: 15, fontWeight: '600', marginTop: 10 }}>Result: </Text>
+                            <Text style={{ fontSize: 14, marginTop: 8 }}>{signedTransaction}</Text>
+                        </View>
+                    </TModal>
                 </ScrollView>
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained onPress={() => onAccept()} style={commonStyles.marginBottom}>
+                    <TButtonContained
+                        disabled={transactionLoading}
+                        onPress={() => onAccept()}
+                        style={commonStyles.marginBottom}
+                        size="large"
+                    >
                         Proceed
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => onReject()}>Cancel</TButtonOutlined>
+                    <TButtonOutlined size="large" disabled={transactionLoading} onPress={() => onReject()}>
+                        Cancel
+                    </TButtonOutlined>
                 </View>
             }
             noFooterHintLayout={true}
@@ -210,11 +390,10 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
     },
-    applink: {
+    applinkText: {
         color: theme.colors.linkColor,
-        margin: 0,
-        padding: 0,
-        marginRight: 2,
+        margin: 2,
+        padding: 2,
     },
     imageStyle: {
         width: 10,
@@ -223,11 +402,16 @@ const styles = StyleSheet.create({
     networkHeading: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 14,
+        marginTop: 18,
+    },
+    accountNameStyle: {
+        fontSize: 15,
+        marginTop: 10,
     },
     nameText: {
         color: theme.colors.secondary2,
         marginLeft: 5,
+        fontSize: 16,
     },
     transactionHeading: {
         marginTop: 11,
@@ -259,6 +443,7 @@ const styles = StyleSheet.create({
     },
     secondaryColor: {
         color: theme.colors.secondary2,
+        marginLeft: 4,
     },
     rawTransaction: {
         color: theme.colors.secondary,

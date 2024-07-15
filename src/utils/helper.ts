@@ -1,6 +1,6 @@
 import settings from '../settings';
 
-export function extractOrigin(url): string {
+export function extractHostname(url): string {
     const urlObject = new URL(url);
 
     if (urlObject.protocol !== 'https:' && urlObject.protocol !== 'http:') {
@@ -11,5 +11,9 @@ export function extractOrigin(url): string {
         return 'Invalid URL - Must use HTTPS';
     }
 
-    return urlObject.origin;
+    return urlObject.hostname;
 }
+
+export const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};

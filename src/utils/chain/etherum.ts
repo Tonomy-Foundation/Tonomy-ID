@@ -303,33 +303,33 @@ export class EthereumTransaction implements ITransaction {
     async getValue(): Promise<Asset> {
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
     }
-    // async estimateTransactionFee(): Promise<Asset> {
-    //     const wei = await provider.estimateGas(this.transaction);
 
-    //     return new Asset(this.chain.getNativeToken(), wei);
-    // }
     async estimateTransactionFee(): Promise<Asset> {
         // Get the current fee data
         const feeData = await provider.getFeeData();
 
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
-            ...this.transaction,
-            maxFeePerGas: feeData.maxFeePerGas,
-            maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-            gasLimit: await provider.estimateGas(this.transaction),
+            to: this.transaction.to,
+            data: this.transaction.data,
+            value: this.transaction.value,
         };
 
         // Estimate gas
         const wei = await provider.estimateGas(transaction);
 
-        // Return the estimated fee as an Asset
-        return new Asset(this.chain.getNativeToken(), wei);
+        const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
+
+        return new Asset(this.chain.getNativeToken(), totalGasFee);
     }
     async estimateTransactionTotal(): Promise<Asset> {
         const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
 
         return new Asset(this.chain.getNativeToken(), amount);
+    }
+
+    async getData(): Promise<string> {
+        return this.transaction.data || '';
     }
 }
 
@@ -431,41 +431,4 @@ export class EthereumChainSession implements IChainSession {
 
         return null;
     }
-
-    // getNamespaces(): SessionTypes.Namespaces {
-    //     const namespaces: SessionTypes.Namespaces = {};
-    //     const { requiredNamespaces } = this.payload.params;
-
-    //     Object.keys(requiredNamespaces).forEach((key) => {
-    //         const accounts: string[] = [];
-
-    //         requiredNamespaces[key].chains?.map((chain) => {
-    //             [].map((acc) => accounts.push(`${chain}:${acc}`));
-    //         });
-    //         namespaces[key] = {
-    //             accounts,
-    //             methods: requiredNamespaces[key].methods,
-    //             events: requiredNamespaces[key].events,
-    //         };
-    //     });
-
-    //     return namespaces;
-    // }
-
-    // async acceptSession() {
-    //     const namespaces = this.getNamespaces();
-
-    //     await web3wallet?.approveSession({
-    //         id: this.getId(),
-    //         relayProtocol: this.payload.params.relays[0].protocol,
-    //         namespaces,
-    //     });
-    // }
-
-    // async rejectSession() {
-    //     await web3wallet?.rejectSession({
-    //         id: this.getId(),
-    //         reason: getSdkError('USER_REJECTED'),
-    //     });
-    // }
 }

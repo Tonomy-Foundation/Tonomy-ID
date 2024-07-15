@@ -42,21 +42,23 @@ export default function WalletConnectLoginContainer({
     const handleAccept = async () => {
         try {
             const namespaces: SessionTypes.Namespaces = {};
-            const { requiredNamespaces } = payload.params;
+            const { requiredNamespaces, optionalNamespaces } = payload.params;
+            const activeNamespaces =
+                Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
 
-            Object.keys(requiredNamespaces).forEach((key) => {
+            Object.keys(activeNamespaces).forEach((key) => {
                 const accounts: string[] = [];
 
-                requiredNamespaces[key].chains?.map((chain) => {
+                activeNamespaces[key].chains?.map((chain) => {
                     [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
                 });
                 namespaces[key] = {
+                    chains: activeNamespaces[key].chains,
                     accounts,
-                    methods: requiredNamespaces[key].methods,
-                    events: requiredNamespaces[key].events,
+                    methods: activeNamespaces[key].methods,
+                    events: activeNamespaces[key].events,
                 };
             });
-
             await web3wallet?.approveSession({
                 id: payload.id,
                 relayProtocol: payload.params.relays[0].protocol,

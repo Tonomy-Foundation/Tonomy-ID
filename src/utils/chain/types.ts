@@ -118,15 +118,29 @@ export abstract class AbstractAsset implements IAsset {
 
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
-        const precision = BigInt(this.token.getPrecision());
 
-        // Convert the amount to a decimal value
-        const amountDecimal = Number(this.amount) / Number(BigInt(10) ** precision);
+        if (price) {
+            // Use a higher precision for the multiplier to ensure small values are accurately represented
+            const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
+            const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
 
-        // Calculate the USD value
-        const usdValue = amountDecimal * price;
+            // Convert price to a BigInteger without losing precision
+            const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
 
-        return usdValue;
+            // Adjust the amount to match the high precision multiplier
+            const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
+
+            // Calculate usdValue using BigInt for accurate arithmetic operations
+            const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
+
+            // Convert the result back to a floating-point number with controlled precision
+            const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
+
+            // Ensure the result is formatted to a fixed number of decimal places without rounding issues
+            return parseFloat(usdValue.toFixed(10));
+        } else {
+            return 0;
+        }
     }
     getSymbol(): string {
         return this.token.getSymbol();
@@ -229,6 +243,7 @@ export interface ITransaction {
     getArguments(): Promise<Record<string, string>>;
     estimateTransactionFee(): Promise<IAsset>;
     estimateTransactionTotal(): Promise<IAsset>;
+    getData(): Promise<string>;
 }
 
 export abstract class AbstractAccount implements IAccount {
@@ -273,9 +288,6 @@ export interface IChainSession {
     getName(): string;
     getUrl(): string;
     getIcons(): string | null;
-    // getNamespaces(): SessionTypes.Namespaces;
-    // acceptSession(): Promise<void>;
-    // rejectSession(): Promise<void>;
 }
 
 export interface ISession {

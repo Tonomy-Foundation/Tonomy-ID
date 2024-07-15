@@ -15,6 +15,7 @@ import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { keyStorage } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
+import TModal from '../components/TModal';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -36,6 +37,7 @@ export default function CreateEthereumKeyContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     async function setUserName() {
         try {
@@ -79,19 +81,9 @@ export default function CreateEthereumKeyContainer({
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
             setLoading(false);
-            const key = await keyStorage.findByName('ethereum');
 
             initializeWallet();
-
-            if (session && key && transaction) {
-                navigation.navigate('SignTransaction', {
-                    transaction,
-                    privateKey: key,
-                    session,
-                });
-            } else {
-                navigation.navigate({ name: 'UserHome', params: {} });
-            }
+            setShowModal(true);
         } catch (e) {
             console.log('error', e);
 
@@ -116,6 +108,22 @@ export default function CreateEthereumKeyContainer({
             setLoading(false);
         }
     }
+
+    const onModalPress = async () => {
+        const key = await keyStorage.findByName('ethereum');
+
+        setShowModal(false);
+
+        if (session && key && transaction) {
+            navigation.navigate('SignTransaction', {
+                transaction,
+                privateKey: key,
+                session,
+            });
+        } else {
+            navigation.navigate({ name: 'UserHome', params: {} });
+        }
+    };
 
     return (
         <>
@@ -153,6 +161,11 @@ export default function CreateEthereumKeyContainer({
                     </View>
                 }
             />
+            <TModal visible={showModal} icon="check" onPress={onModalPress}>
+                <View style={{ marginTop: 10 }}>
+                    <Text style={{ fontSize: 15, fontWeight: '500' }}>Your key successfully generated </Text>
+                </View>
+            </TModal>
         </>
     );
 }
