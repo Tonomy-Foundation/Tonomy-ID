@@ -7,26 +7,34 @@ import Popover from 'react-native-popover-view';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TIconButton from '../components/TIconButton';
 import theme from '../utils/theme';
+import { formatCurrencyValue } from '../utils/numbers';
+import { Images } from '../assets';
 
 export type AccountDetailsProps = {
     accountDetails: {
         symbol: string;
-        icon: ImageSourcePropType;
         name: string;
-        address: string;
+        icon?: ImageSourcePropType | undefined;
+        ethBalance?: string;
+        usdBalance?: number;
+        address?: string;
+        image?: string;
     };
     refMessage: React.RefObject<any>;
-    setAccountDetails: React.Dispatch<React.SetStateAction<any>>;
+    onClose: () => void;
 };
 
 const AccountDetails = (props: AccountDetailsProps) => {
     const [showPopover, setShowPopover] = useState(false);
-
+    const accountData = {
+        ...props.accountDetails,
+        icon: props.accountDetails.icon || Images.GetImage('logo48'),
+    };
     const message =
-        `Please use the following account name to send ${props.accountDetails.symbol} tokens to on the
-    ${props.accountDetails.name} network:` +
+        `Please use the following account name to send ${accountData.symbol} tokens to on the
+    ${accountData.name} network:` +
         '\n' +
-        `${props.accountDetails.address}`;
+        `${accountData.address}`;
 
     const copyToClipboard = () => {
         setShowPopover(true);
@@ -45,28 +53,35 @@ const AccountDetails = (props: AccountDetailsProps) => {
     };
 
     return (
-        <RBSheet ref={props.refMessage} openDuration={150} closeDuration={100} height={600}>
+        <RBSheet ref={props.refMessage} openDuration={150} closeDuration={100} height={560}>
             <View style={styles.rawTransactionDrawer}>
-                <Text style={styles.drawerHead}>Receive</Text>
-                <TouchableOpacity
-                    onPress={() => {
-                        (props.refMessage.current as any)?.close();
-                        props.setAccountDetails({ symbol: '', icon: '', name: '', address: '' });
-                    }}
-                >
+                <Text style={styles.drawerHead}>{accountData.address ? 'Receive' : 'Top up'}</Text>
+                <TouchableOpacity onPress={props.onClose}>
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} />
                 </TouchableOpacity>
             </View>
             <Text style={styles.subHeading}>
-                Only send {props.accountDetails.symbol} assets to this address. Other assets will be lost forever
+                {accountData.address
+                    ? `Only send ${accountData.symbol} assets to this address. Other assets will be lost forever`
+                    : 'To complete the transaction, top up your account balance using this QR code'}
             </Text>
             <View style={styles.networkHeading}>
-                <Image source={props.accountDetails.icon} style={styles.faviconIcon} />
-                <Text style={styles.networkTitleName}>{props.accountDetails.name} Network</Text>
+                {accountData.image ? (
+                    <Image source={{ uri: accountData.image }} style={styles.faviconIcon} />
+                ) : (
+                    <Image source={accountData.icon} style={styles.faviconIcon} />
+                )}
+                <Text style={styles.networkTitleName}>{accountData.name} Network</Text>
             </View>
             <View style={{ ...styles.qrView, flexDirection: 'column' }}>
                 <QRCode value="testValue" size={150} />
-                <Text style={styles.accountName}>{props.accountDetails.address}</Text>
+                {accountData.address ? (
+                    <Text style={styles.accountName}>{accountData.address}</Text>
+                ) : (
+                    <Text style={styles.accountName}>
+                        {accountData.ethBalance} ( ${formatCurrencyValue(Number(accountData.usdBalance), 3)})
+                    </Text>
+                )}
             </View>
             <View style={styles.iconContainer}>
                 <Popover

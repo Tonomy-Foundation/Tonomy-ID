@@ -39,7 +39,7 @@ export default function MainContainer({
     const errorStore = useErrorStore();
     const [accountDetails, setAccountDetails] = useState({
         symbol: '',
-        icon: '',
+        icon: undefined,
         name: '',
         address: '',
     });
@@ -280,7 +280,7 @@ export default function MainContainer({
                                         ) : (
                                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text>{formatCurrencyValue(Number(accountBalance), 4)}</Text>
+                                                    <Text>{accountBalance}</Text>
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
                                                     ${formatCurrencyValue(Number(usdBalance), 3)}
@@ -294,7 +294,10 @@ export default function MainContainer({
                         <AccountDetails
                             refMessage={refMessage}
                             accountDetails={accountDetails}
-                            setAccountDetails={setAccountDetails}
+                            onClose={() => {
+                                (refMessage.current as any)?.close();
+                                setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
+                            }}
                         />
                     </View>
                 )}
