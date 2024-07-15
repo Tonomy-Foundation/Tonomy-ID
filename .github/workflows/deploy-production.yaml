@@ -29,3 +29,4 @@ jobs:
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: yarn --immutable
       - run: yarn run deploy:production
+      
