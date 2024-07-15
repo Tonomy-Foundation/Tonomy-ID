@@ -2,7 +2,7 @@ import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
-import { Wallet } from 'ethers';
+import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
 import settings from '../settings';
@@ -28,15 +28,35 @@ export async function testKeyGenerator() {
         if (privateKey.toString() !== 'PVT_K1_q4BZoScNYFCF5tDthn4m5KUgv9LLH4fTNtMFj3FUkG3p7UA4D')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
 
-        console.log('testing Chain libraries');
-        // create EthereumPrivateKey and EthereumAccount
-        const privateKeyEth = new EthereumPrivateKey(
+        console.log(
+            'testing Chain libraries',
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
+        const wallet = Wallet.fromPhrase(
+            'save west spatial goose rotate glass any phrase manual pause category flight'
+        );
+        const privateKeyHex = wallet.privateKey;
 
-        const ethereumAccount = await EthereumAccount.fromPrivateKey(EthereumSepoliaChain, privateKeyEth);
+        const privateKeyEth = new EthereumPrivateKey(privateKeyHex);
 
-        console.log('ethereumAccount:', (await ethereumAccount).getName());
+        const ethereumAccount = await EthereumAccount.fromPublicKey(
+            EthereumMainnetChain,
+            await privateKeyEth.getPublicKey()
+        );
+        const accountAddress = await ethereumAccount.getName();
+
+        console.log('accountAddress:', accountAddress);
+
+        const transactionRequest: TransactionRequest = {
+            to: accountAddress,
+            from: accountAddress,
+            value: ethers.parseEther('0'),
+            data: '0x00',
+        };
+
+        const signedTransaction = await privateKeyEth.signTransaction(transactionRequest);
+
+        console.log('signedTransaction:', signedTransaction);
     } catch (e) {
         console.error(e);
     }
