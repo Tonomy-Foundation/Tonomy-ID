@@ -280,10 +280,10 @@ export default function MainContainer({
                                         ) : (
                                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text> {accountBalance}</Text>
+                                                    <Text>{formatCurrencyValue(Number(accountBalance), 4)}</Text>
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
-                                                    ${formatCurrencyValue(Number(usdBalance))}
+                                                    ${formatCurrencyValue(Number(usdBalance), 3)}
                                                 </Text>
                                             </View>
                                         )}
