@@ -30,6 +30,7 @@ export interface IPrivateKey {
     getPublicKey(): Promise<IPublicKey>;
     signTransaction(transaction: unknown): Promise<unknown>;
     exportPrivateKey(): Promise<string>;
+    sendTransaction(transaction: unknown): Promise<unknown>;
 }
 
 export abstract class AbstractPrivateKey implements IPrivateKey {
@@ -47,6 +48,7 @@ export abstract class AbstractPrivateKey implements IPrivateKey {
 
     abstract getPublicKey(): Promise<IPublicKey>;
     abstract signTransaction(transaction: unknown): Promise<unknown>;
+    abstract sendTransaction(transaction: unknown): Promise<unknown>;
     async exportPrivateKey(): Promise<string> {
         return this.privateKeyHex;
     }

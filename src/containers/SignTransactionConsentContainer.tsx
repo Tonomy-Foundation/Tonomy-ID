@@ -62,7 +62,7 @@ export default function SignTransactionConsentContainer({
         usdTotal: 0,
     });
     const [showModal, setShowModal] = useState(false);
-    const [signedTransaction, setSignedTransaction] = useState<any>(null);
+    const [signedTransaction, setSignedTransaction] = useState('');
 
     const refMessage = useRef(null);
 
@@ -165,9 +165,9 @@ export default function SignTransactionConsentContainer({
                 data: await transaction.getData(),
             };
 
-            const signedTransaction = await privateKey.signTransaction(transactionRequest);
+            const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
-            setSignedTransaction(signedTransaction);
+            setSignedTransaction((signedTransaction as { hash?: string })?.hash ?? '');
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
@@ -354,8 +354,8 @@ export default function SignTransactionConsentContainer({
                     <TModal visible={showModal} icon="check" onPress={onModalPress}>
                         <View style={{ marginTop: 10 }}>
                             <Text style={{ fontSize: 15, fontWeight: '600' }}>Transaction completed successfully!</Text>
-                            <Text style={{ fontSize: 15, fontWeight: '600', marginTop: 10 }}>Result: </Text>
-                            <Text style={{ fontSize: 14, marginTop: 8 }}>{signedTransaction}</Text>
+                            <Text style={{ fontSize: 15, fontWeight: '600', marginTop: 10 }}>Transaction hash: </Text>
+                            <Text style={{ fontSize: 14, marginTop: 5 }}>{signedTransaction}</Text>
                         </View>
                     </TModal>
                 </ScrollView>

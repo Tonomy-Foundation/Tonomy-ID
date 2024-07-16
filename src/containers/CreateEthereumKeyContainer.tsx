@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Keyboard } from 'react-native';
 import { TButtonContained } from '../components/atoms/TButton';
 import { TH1 } from '../components/atoms/THeadings';
 import settings from '../settings';
@@ -125,6 +125,19 @@ export default function CreateEthereumKeyContainer({
         }
     };
 
+    // Inside your component
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
+
     return (
         <>
             <LayoutComponent
@@ -152,13 +165,15 @@ export default function CreateEthereumKeyContainer({
                     </View>
                 }
                 footer={
-                    <View style={styles.createAccountMargin}>
-                        <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={nextDisabled || loading}>
-                                PROCEED
-                            </TButtonContained>
+                    !isKeyboardVisible ? (
+                        <View style={styles.createAccountMargin}>
+                            <View style={commonStyles.marginBottom}>
+                                <TButtonContained onPress={onNext} disabled={nextDisabled || loading}>
+                                    PROCEED
+                                </TButtonContained>
+                            </View>
                         </View>
-                    </View>
+                    ) : undefined
                 }
             />
             <TModal visible={showModal} icon="check" onPress={onModalPress}>
@@ -183,7 +198,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     innerContainer: {
-        marginTop: 20,
+        marginTop: 10,
         justifyContent: 'center',
     },
     createAccountMargin: {
