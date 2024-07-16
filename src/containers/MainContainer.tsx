@@ -236,6 +236,7 @@ export default function MainContainer({
                                                 <Text>Not connected</Text>
                                             )}
                                         </View>
+
                                         {!currentETHAddress ? (
                                             <TButton
                                                 style={styles.generateKey}
