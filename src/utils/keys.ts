@@ -90,7 +90,7 @@ async function generateSeedFromPassword(password: string, salt?: string): Promis
     return { seed: result.rawHash as string, salt };
 }
 
-async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
+export async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
     const chainSeed = sha256(seed + chain.getChainId());
 
     const privateKey = chain.createKeyFromSeed(chainSeed);
