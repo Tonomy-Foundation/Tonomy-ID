@@ -102,7 +102,11 @@ export default function LoginPassphraseContainer({
                     <View>
                         <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Passphrase</TH1>
                         <View style={styles.innerContainer}>
-                            <PassphraseInput value={passphrase} onChange={setPassphrase} />
+                            <PassphraseInput
+                                value={passphrase}
+                                onChange={setPassphrase}
+                                setNextDisabled={setNextDisabled}
+                            />
                         </View>
                         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
                     </View>
