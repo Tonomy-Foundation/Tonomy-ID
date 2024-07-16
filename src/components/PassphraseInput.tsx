@@ -25,12 +25,20 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setN
             const newPassphrase = [...prev];
 
             newPassphrase[index] = word;
+            let hasError = false;
+
             setNextDisabled(false);
 
             for (let i = 0; i < newPassphrase.length; i++) {
                 if (!util.isKeyword(newPassphrase[i])) {
+                    hasError = true;
+
                     setNextDisabled(true);
                 }
+            }
+
+            if (hasError) {
+                setErrorMessage('Incorrect passphrase. Please try again.');
             }
 
             return newPassphrase;
