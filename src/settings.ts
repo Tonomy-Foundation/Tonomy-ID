@@ -1,3 +1,5 @@
+import { EthereumChain, EthereumMainnetChain, EthereumSepoliaChain } from './utils/chain/etherum';
+
 const env = process.env.EXPO_NODE_ENV ?? 'development';
 
 const settingsInputs = {

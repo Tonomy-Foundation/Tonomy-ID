@@ -14,16 +14,18 @@ import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
-import { SignClientTypes } from '@walletconnect/types';
-import useInitialization from '../hooks/useWalletConnect';
 import { keyStorage } from '../utils/StorageManager/setup';
+import { EthereumPrivateKey, EthereumTransaction, chain } from '../utils/chain/etherum';
+import { ITransaction } from '../utils/chain/types';
+import useWalletStore from '../store/useWalletStore';
+import { ethers, BigNumberish } from 'ethers';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { web3wallet } = useInitialization();
+    const { initialized, web3wallet } = useWalletStore();
 
     /**
      *  Login to communication microservice
@@ -153,54 +155,82 @@ export default function CommunicationModule() {
         }
     }
 
-    const onSessionProposal = useCallback(async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-        if (proposal) {
-            navigation.navigate('WalletConnectLogin', {
-                payload: proposal,
-                platform: 'browser',
-            });
-        }
-    }, []);
-
-    const onSessionRequest = useCallback(async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-        const { topic, params } = requestEvent;
-        const { request } = params;
-        const requestSessionData = web3wallet?.engine.signClient.session.get(topic);
-
-        switch (request.method) {
-            case 'eth_sendTransaction': {
-                const ethereumKeyExists = await keyStorage.findByName('ethereum');
-
-                if (!ethereumKeyExists) {
-                    navigation.navigate('CreateEthereumKey', {
-                        requestSession: requestSessionData,
-                        requestEvent: requestEvent,
-                    });
-                } else {
-                    navigation.navigate('SignTransaction', {
-                        requestSession: requestSessionData,
-                        requestEvent: requestEvent,
+    const handleConnect = useCallback(async () => {
+        try {
+            web3wallet?.on('session_proposal', async (proposal) => {
+                if (proposal) {
+                    navigation.navigate('WalletConnectLogin', {
+                        payload: proposal,
+                        platform: 'browser',
                     });
                 }
-
-                sendWalletConnectNotificationOnBackground(
-                    'Transaction Request',
-                    'Ethereum transaction signing request'
-                );
-                break;
-            }
-
-            default:
-                throw new Error('Method not supported');
+            });
+        } catch (error) {
+            console.log('session_proposal', error);
         }
-    }, []);
+
+        try {
+            web3wallet?.on('session_request', async (event) => {
+                const { topic, params, id, verifyContext } = event;
+                const { request } = params;
+
+                switch (request.method) {
+                    case 'eth_sendTransaction': {
+                        const transactionData = request.params[0];
+
+                        const key = await keyStorage.findByName('ethereum');
+
+                        let transaction: ITransaction;
+
+                        if (key) {
+                            const exportPrivateKey = await key.exportPrivateKey();
+                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
+
+                            transaction = await EthereumTransaction.fromTransaction(
+                                ethereumPrivateKey,
+                                transactionData,
+                                chain
+                            );
+                            navigation.navigate('SignTransaction', {
+                                transaction,
+                                privateKey: key,
+                                session: {
+                                    origin: verifyContext?.verified?.origin,
+                                    id,
+                                    topic,
+                                },
+                            });
+                        } else {
+                            transaction = new EthereumTransaction(transactionData, chain);
+                            navigation.navigate('CreateEthereumKey', {
+                                transaction,
+                                session: {
+                                    origin: verifyContext?.verified?.origin,
+                                    id,
+                                    topic,
+                                },
+                            });
+                        }
+
+                        sendWalletConnectNotificationOnBackground(
+                            'Transaction Request',
+                            'Ethereum transaction signing request'
+                        );
+                        break;
+                    }
+
+                    default:
+                        throw new Error('Method not supported');
+                }
+            });
+        } catch (error) {
+            console.log('error2', error);
+        }
+    }, [navigation, web3wallet]);
 
     useEffect(() => {
-        if (web3wallet) {
-            web3wallet.on('session_proposal', onSessionProposal);
-            web3wallet.on('session_request', onSessionRequest);
-        }
-    }, [onSessionProposal, onSessionRequest, web3wallet]);
+        handleConnect();
+    }, [handleConnect, web3wallet, initialized]);
 
     return null;
 }

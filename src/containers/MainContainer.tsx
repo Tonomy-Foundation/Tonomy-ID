@@ -15,11 +15,10 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { _pair, currentETHAddress } from '../services/WalletConnect/WalletConnectModule';
-import useInitialization from '../hooks/useWalletConnect';
 import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
+import useWalletStore from '../store/useWalletStore';
 
 const vestingContract = VestingContract.Instance;
 
@@ -38,12 +37,15 @@ export default function MainContainer({
     const [balance, setBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const { initialized, web3wallet } = useInitialization();
+    const { web3wallet, currentETHAddress, privateKey } = useWalletStore();
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const refMessage = useRef(null);
 
     useEffect(() => {
-        console.log('Web3WalletSDK initialized:', initialized);
-    }, [initialized]);
+        if (privateKey && !currentETHAddress) {
+            initializeWallet();
+        }
+    }, [initializeWallet, currentETHAddress, privateKey]);
 
     useEffect(() => {
         setUserName();
@@ -97,7 +99,7 @@ export default function MainContainer({
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                await _pair(data);
+                if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('did:')) {
                 const did = validateQrCode(data);
 
@@ -234,10 +236,10 @@ export default function MainContainer({
                                                 <Text>Not connected</Text>
                                             )}
                                         </View>
-                                        {!initialized && web3wallet === null ? (
+                                        {!currentETHAddress ? (
                                             <TButton
                                                 style={styles.generateKey}
-                                                onPress={() => navigation.navigate('CreateEthereumKey', {})}
+                                                onPress={() => navigation.navigate('CreateEthereumKey')}
                                                 color={theme.colors.white}
                                                 size="medium"
                                             >

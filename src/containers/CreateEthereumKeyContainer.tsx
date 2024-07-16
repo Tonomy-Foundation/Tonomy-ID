@@ -8,21 +8,14 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreateEthereumKeyScreen';
 import useUserStore from '../store/userStore';
-import {
-    AccountType,
-    SdkError,
-    SdkErrors,
-    TonomyUsername,
-    TonomyContract,
-    getAccountInfo,
-    KeyManagerLevel,
-    util,
-} from '@tonomy/tonomy-id-sdk';
-import { savePrivateKeyToStorage } from '../utils/keys';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract, util } from '@tonomy/tonomy-id-sdk';
+import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
-import RNKeyManager from '../utils/RNKeyManager';
+import { keyStorage } from '../utils/StorageManager/setup';
+import useWalletStore from '../store/useWalletStore';
+import TModal from '../components/TModal';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -35,14 +28,16 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { requestEvent, requestSession } = route.params ?? {};
-
+    const { transaction } = route.params ?? {};
+    const session = route.params?.session;
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     async function setUserName() {
         try {
@@ -77,28 +72,18 @@ export default function CreateEthereumKeyContainer({
             const idData = await tonomyContract.getPerson(tonomyUsername);
             const salt = idData.password_salt;
 
-            await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
-
-            const accountData = await getAccountInfo(idData.account_name);
-            const onchainKey = accountData.getPermission('owner').required_auth.keys[0].key;
-
-            const rnKeyManager = new RNKeyManager();
-            const publicKey = await rnKeyManager.getKey({
-                level: KeyManagerLevel.PASSWORD,
+            await user.login(tonomyUsername, passphrase.join(' '), {
+                keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
-            if (publicKey.toString() !== onchainKey.toString())
-                throw new Error(`Password is incorrect ${SdkErrors.PasswordInvalid}`);
+            await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
             setLoading(false);
 
-            if (requestEvent && requestSession) {
-                navigation.navigate('SignTransaction', { requestSession, requestEvent });
-            } else {
-                navigation.navigate({ name: 'UserHome', params: {} });
-            }
+            initializeWallet();
+            setShowModal(true);
         } catch (e) {
             console.log('error', e);
 
@@ -119,10 +104,26 @@ export default function CreateEthereumKeyContainer({
                 errorsStore.setError({ error: e, expected: false });
             }
 
-            setNextDisabled(true);
+            setNextDisabled(false);
             setLoading(false);
         }
     }
+
+    const onModalPress = async () => {
+        const key = await keyStorage.findByName('ethereum');
+
+        setShowModal(false);
+
+        if (session && key && transaction) {
+            navigation.navigate('SignTransaction', {
+                transaction,
+                privateKey: key,
+                session,
+            });
+        } else {
+            navigation.navigate({ name: 'UserHome', params: {} });
+        }
+    };
 
     return (
         <>
@@ -160,6 +161,11 @@ export default function CreateEthereumKeyContainer({
                     </View>
                 }
             />
+            <TModal visible={showModal} icon="check" onPress={onModalPress}>
+                <View style={{ marginTop: 10 }}>
+                    <Text style={{ fontSize: 15, fontWeight: '500' }}>Your key successfully generated </Text>
+                </View>
+            </TModal>
         </>
     );
 }

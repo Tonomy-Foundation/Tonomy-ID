@@ -59,6 +59,7 @@ export interface IChain {
     // getApiEndpoint(): string;
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
+    formatShortAccountName(account: string): string;
 }
 
 export abstract class AbstractChain implements IChain {
@@ -81,6 +82,7 @@ export abstract class AbstractChain implements IChain {
         return this.nativeToken;
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
+    abstract formatShortAccountName(account: string): string;
 }
 
 export interface IAsset {
@@ -113,11 +115,32 @@ export abstract class AbstractAsset implements IAsset {
     getAmount(): bigint {
         return this.amount;
     }
+
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
-        const usdValue = BigInt(this.amount) * BigInt(price) * BigInt(10) ** BigInt(this.token.getPrecision());
 
-        return parseFloat(usdValue.toString());
+        if (price) {
+            // Use a higher precision for the multiplier to ensure small values are accurately represented
+            const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
+            const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
+
+            // Convert price to a BigInteger without losing precision
+            const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
+
+            // Adjust the amount to match the high precision multiplier
+            const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
+
+            // Calculate usdValue using BigInt for accurate arithmetic operations
+            const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
+
+            // Convert the result back to a floating-point number with controlled precision
+            const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
+
+            // Ensure the result is formatted to a fixed number of decimal places without rounding issues
+            return parseFloat(usdValue.toFixed(10));
+        } else {
+            return 0;
+        }
     }
     getSymbol(): string {
         return this.token.getSymbol();
@@ -126,10 +149,15 @@ export abstract class AbstractAsset implements IAsset {
         return this.token.getPrecision();
     }
     printValue(): string {
-        const value = this.amount / BigInt(10 ** this.token.getPrecision());
+        const amountNumber = Number(this.amount);
+        const precisionNumber = Number(10 ** this.token.getPrecision());
+
+        // Perform the division
+        const value = amountNumber / precisionNumber;
 
         return value.toString();
     }
+
     toString(): string {
         return `${this.printValue()} ${this.token.getSymbol()}`;
     }
@@ -206,6 +234,7 @@ export enum TransactionType {
 }
 
 export interface ITransaction {
+    getChain(): IChain;
     getType(): Promise<TransactionType>;
     getFrom(): IAccount;
     getTo(): IAccount;
@@ -214,6 +243,7 @@ export interface ITransaction {
     getArguments(): Promise<Record<string, string>>;
     estimateTransactionFee(): Promise<IAsset>;
     estimateTransactionTotal(): Promise<IAsset>;
+    getData(): Promise<string>;
 }
 
 export abstract class AbstractAccount implements IAccount {
@@ -258,7 +288,10 @@ export interface IChainSession {
     getName(): string;
     getUrl(): string;
     getIcons(): string | null;
-    getNamespaces(): SessionTypes.Namespaces;
-    acceptSession(): Promise<void>;
-    rejectSession(): Promise<void>;
+}
+
+export interface ISession {
+    origin: string;
+    id: number;
+    topic: string;
 }

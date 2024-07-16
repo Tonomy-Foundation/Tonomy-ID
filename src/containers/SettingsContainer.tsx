@@ -8,6 +8,7 @@ import useUserStore from '../store/userStore';
 import TModal from '../components/TModal';
 import theme from '../utils/theme';
 import { TButtonText } from '../components/atoms/TButton';
+import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { logout } = useUserStore();
@@ -93,6 +94,11 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                 <TNavigationButton
                     onPress={async () => {
                         await logout('Logout in settings menu');
+
+                        if (keyStorage && appStorage) {
+                            await keyStorage.deleteAll();
+                            await appStorage.deleteAll();
+                        }
                     }}
                     title={'Logout'}
                     icon={'logout-variant'}

@@ -6,6 +6,8 @@ import TButton from './atoms/TButton';
 import { DrawerStackParamList } from '../navigation/Drawer';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { useAppTheme } from '../utils/theme';
+import { appStorage, keyStorage } from '../utils/StorageManager/setup';
+import useWalletStore from '../store/useWalletStore';
 
 // https://callstack.github.io/react-native-paper/docs/guides/icons/
 const icons: Record<keyof DrawerStackParamList, string> = {
@@ -23,6 +25,8 @@ const icons: Record<keyof DrawerStackParamList, string> = {
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { logout } = useUserStore();
+    const { clearState } = useWalletStore();
+
     const theme = useAppTheme();
     const styles = StyleSheet.create({
         container: {
@@ -76,6 +80,8 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         style={styles.button}
                         onPress={async () => {
                             await logout('Logout in main menu');
+
+                            clearState();
                         }}
                         icon={icons['Logout']}
                         color={theme.colors.grey2}

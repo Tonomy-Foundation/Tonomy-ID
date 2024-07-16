@@ -5,11 +5,12 @@ import { RouteStackParamList } from '../navigation/Root';
 
 export type Props = NativeStackScreenProps<RouteStackParamList, 'SignTransaction'>;
 
-export default function SSOLoginScreen(props: Props) {
+export default function SignTransactionConsentScreen(props: Props) {
     return (
         <SignTransactionConsentContainer
-            requestEvent={props.route.params.requestEvent}
-            requestSession={props.route.params.requestSession}
+            transaction={props.route.params.transaction}
+            privateKey={props.route.params.privateKey}
+            session={props.route.params.session}
             navigation={props.navigation}
         />
     );

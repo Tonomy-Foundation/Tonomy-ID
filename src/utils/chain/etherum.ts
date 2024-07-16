@@ -26,9 +26,7 @@ import {
     IChainSession,
 } from './types';
 import settings from '../../settings';
-import { currentETHAddress, web3wallet } from '../../services/WalletConnect/WalletConnectModule';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
-import { getSdkError } from '@walletconnect/utils';
+import { SignClientTypes } from '@walletconnect/types';
 
 export const USD_CONVERSION = 0.002;
 
@@ -42,7 +40,7 @@ export async function getPrice(token: string, currency: string): Promise<number>
         `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
     ).then((res) => res.json());
 
-    return res.ethereum.usd;
+    return res?.ethereum?.usd;
 }
 
 export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
@@ -82,7 +80,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 }
 
-class EthereumChain extends AbstractChain {
+export class EthereumChain extends AbstractChain {
     protected infuraUrl: string;
     protected name: string;
     protected chainId: string;
@@ -109,6 +107,10 @@ class EthereumChain extends AbstractChain {
 
     getInfuraUrl(): string {
         return this.infuraUrl;
+    }
+
+    formatShortAccountName(account: string): string {
+        return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
     }
 }
 
@@ -177,10 +179,14 @@ const EthereumSepoliaChain = new EthereumChain(
 );
 let provider: JsonRpcProvider;
 
-if (settings.env === 'production') {
+export let chain: EthereumChain;
+
+if (settings.isProduction()) {
     provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
+    chain = EthereumMainnetChain;
 } else {
     provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
+    chain = EthereumSepoliaChain;
 }
 
 const ETHToken = new EthereumToken(
@@ -209,10 +215,14 @@ export class EthereumTransaction implements ITransaction {
     private type?: TransactionType;
     private abi?: string;
     protected chain: EthereumChain;
+    protected session: EthereumChainSession;
 
     constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
         this.chain = chain;
+    }
+    getChain(): IChain {
+        return this.chain;
     }
 
     static async fromTransaction(
@@ -293,15 +303,33 @@ export class EthereumTransaction implements ITransaction {
     async getValue(): Promise<Asset> {
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
     }
-    async estimateTransactionFee(): Promise<Asset> {
-        const wei = await provider.estimateGas(this.transaction);
 
-        return new Asset(this.chain.getNativeToken(), wei);
+    async estimateTransactionFee(): Promise<Asset> {
+        // Get the current fee data
+        const feeData = await provider.getFeeData();
+
+        // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
+        const transaction = {
+            to: this.transaction.to,
+            data: this.transaction.data,
+            value: this.transaction.value,
+        };
+
+        // Estimate gas
+        const wei = await provider.estimateGas(transaction);
+
+        const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
+
+        return new Asset(this.chain.getNativeToken(), totalGasFee);
     }
     async estimateTransactionTotal(): Promise<Asset> {
         const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
 
         return new Asset(this.chain.getNativeToken(), amount);
+    }
+
+    async getData(): Promise<string> {
+        return this.transaction.data || '';
     }
 }
 
@@ -402,42 +430,5 @@ export class EthereumChainSession implements IChainSession {
         }
 
         return null;
-    }
-
-    getNamespaces(): SessionTypes.Namespaces {
-        const namespaces: SessionTypes.Namespaces = {};
-        const { requiredNamespaces } = this.payload.params;
-
-        Object.keys(requiredNamespaces).forEach((key) => {
-            const accounts: string[] = [];
-
-            requiredNamespaces[key].chains?.map((chain) => {
-                [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
-            });
-            namespaces[key] = {
-                accounts,
-                methods: requiredNamespaces[key].methods,
-                events: requiredNamespaces[key].events,
-            };
-        });
-
-        return namespaces;
-    }
-
-    async acceptSession() {
-        const namespaces = this.getNamespaces();
-
-        await web3wallet?.approveSession({
-            id: this.getId(),
-            relayProtocol: this.payload.params.relays[0].protocol,
-            namespaces,
-        });
-    }
-
-    async rejectSession() {
-        await web3wallet?.rejectSession({
-            id: this.getId(),
-            reason: getSdkError('USER_REJECTED'),
-        });
     }
 }

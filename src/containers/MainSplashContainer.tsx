@@ -9,12 +9,13 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
-import useInitialization from '../hooks/useWalletConnect';
+import useWalletStore from '../store/useWalletStore';
+import { connect } from '../utils/StorageManager/setup';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
-    const initialized = useInitialization();
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     useEffect(() => {
         async function main() {
@@ -23,6 +24,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             try {
                 await initializeStatusFromStorage();
                 const status = getStatus();
+
+                await connect();
 
                 switch (status) {
                     case UserStatus.NONE:
@@ -34,6 +37,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
+                            await initializeWallet();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
@@ -52,7 +56,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         }
 
         main();
-    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, initialized]);
+    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, initializeWallet]);
 
     return (
         <LayoutComponent
