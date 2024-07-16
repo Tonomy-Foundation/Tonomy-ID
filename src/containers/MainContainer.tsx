@@ -236,14 +236,7 @@ export default function MainContainer({
                                                 <Text>Not connected</Text>
                                             )}
                                         </View>
-                                        <TButton
-                                            style={styles.generateKey}
-                                            onPress={() => navigation.navigate('CreateEthereumKey')}
-                                            color={theme.colors.white}
-                                            size="medium"
-                                        >
-                                            Generate key
-                                        </TButton>
+
                                         {!currentETHAddress ? (
                                             <TButton
                                                 style={styles.generateKey}
