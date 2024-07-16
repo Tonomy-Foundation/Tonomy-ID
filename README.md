@@ -109,6 +109,7 @@ Values for EXPO_NODE_ENV
 -   EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
 -   EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
 -   EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
+-   EXPO_NODE_ENV=testnet - uses `./src/config/config.testnet.json`
 -   EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
 
 Values for EXPO_PLATFORM
