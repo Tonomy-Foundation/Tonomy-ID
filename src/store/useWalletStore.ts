@@ -26,7 +26,8 @@ interface WalletState {
     account: IAccount | null;
     balance: Asset | null;
     initializeWalletState: () => Promise<void>;
-    clearState: () => Promise<void>; // Ensure clearState returns a Promise
+    clearState: () => Promise<void>;
+    updateBalance: () => Promise<void>;
 }
 
 const useWalletStore = create<WalletState>((set, get) => ({
@@ -111,6 +112,30 @@ const useWalletStore = create<WalletState>((set, get) => ({
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
+        }
+    },
+    updateBalance: async () => {
+        try {
+            const { account } = get();
+
+            if (!account) {
+                console.warn('No account found.');
+                return;
+            }
+
+            let balance;
+
+            if (settings.isProduction()) {
+                balance = await ETHToken.getBalance(account);
+            } else {
+                balance = await ETHSepoliaToken.getBalance(account);
+            }
+
+            set({
+                balance: balance,
+            });
+        } catch (error) {
+            console.error('Error updating balance:', error);
         }
     },
 }));

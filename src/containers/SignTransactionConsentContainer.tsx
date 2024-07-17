@@ -65,7 +65,7 @@ export default function SignTransactionConsentContainer({
     const [showModal, setShowModal] = useState(false);
     const [signedTransaction, setSignedTransaction] = useState('');
     const [balanceError, showBalanceError] = useState(false);
-    const { balance } = useWalletStore();
+    const { balance, updateBalance } = useWalletStore();
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
 
@@ -183,6 +183,7 @@ export default function SignTransactionConsentContainer({
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
+            await updateBalance();
             setTransactionLoading(false);
             setShowModal(true);
         } catch (error) {
