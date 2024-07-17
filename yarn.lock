@@ -3518,6 +3518,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-clipboard/clipboard@npm:^1.14.1":
+  version: 1.14.1
+  resolution: "@react-native-clipboard/clipboard@npm:1.14.1"
+  peerDependencies:
+    react: 16.9.0 || 16.11.0 || 16.13.1 || 17.0.1 || 17.0.2 || 18.0.0 || 18.1.0 || 18.2.0
+    react-native: ^0.61.5 || ^0.62.3 || ^0.63.2 || ^0.64.2 || ^0.65.0 || ^0.66.0 || ^0.67.0 || ^0.68.0 || ^0.69.0 || ^0.70.0 || ^0.71.0 || ^0.72.0 || ^0.73.0
+    react-native-macos: ^0.61.0 || ^0.62.0 || ^0.63.0 || ^0.64.0 || ^0.65.0 || ^0.66.0 || ^0.67.0 || ^0.68.0 || ^0.69.0 || ^0.70.0 || ^0.71.0 || ^0.72.0 || ^0.73.0
+    react-native-windows: ^0.61.0 || ^0.62.0 || ^0.63.0 || ^0.64.0 || ^0.65.0 || ^0.66.0 || ^0.67.0 || ^0.68.0 || ^0.69.0 || ^0.70.0 || ^0.71.0 || ^0.72.0 || ^0.73.0
+  checksum: 005ce2bee4d6e30b2a6b11be0d0ee169ab108d24f2a9b518b0ba8e5b96616c6dfb089c28644c1b5e3c1b9aa786c92cbf781e525223f56ab8589da1df79cae31f
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-clean@npm:11.3.6":
   version: 11.3.6
   resolution: "@react-native-community/cli-clean@npm:11.3.6"
@@ -8812,6 +8824,15 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: b4e0bb14b39d9276483e6d219a445399dbe556921fa71c10dbd7927ae8f3fb8c964fab35c7ba4a9e3acc4e944130d779edaf1337c2b8d74ed25b5621ebbb0cd4
+  languageName: node
+  linkType: hard
+
+"expo-sharing@npm:~11.5.0":
+  version: 11.5.0
+  resolution: "expo-sharing@npm:11.5.0"
+  peerDependencies:
+    expo: "*"
+  checksum: aab2ab61a6e60a642fffec1c8a45a763d802a440a4f8c04785e6d3a1009b0055378d3ae7f1d49d24362d78718c476980a5f0292ec3df7a2a387b44fb3f7b3882
   languageName: node
   linkType: hard
 
@@ -14542,6 +14563,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-popover-view@npm:^5.1.8":
+  version: 5.1.8
+  resolution: "react-native-popover-view@npm:5.1.8"
+  dependencies:
+    deprecated-react-native-prop-types: ^2.3.0
+    prop-types: ^15.8.1
+  checksum: d219dccbf89d9536ef4edf73a7576b6cb9d828cb8cc92fa851821d0e55e7b9bbff2a3907e88c2e3a0e267301e5c2c50980bb4507640fac1eba6d9d0429bca615
+  languageName: node
+  linkType: hard
+
 "react-native-qrcode-svg@npm:^6.3.1":
   version: 6.3.1
   resolution: "react-native-qrcode-svg@npm:6.3.1"
@@ -16369,6 +16400,7 @@ __metadata:
     "@hcaptcha/react-native-hcaptcha": 1.7.2
     "@json-rpc-tools/utils": ^1.7.6
     "@react-native-async-storage/async-storage": 1.18.2
+    "@react-native-clipboard/clipboard": ^1.14.1
     "@react-navigation/bottom-tabs": ^6.5.0
     "@react-navigation/drawer": ^6.5.0
     "@react-navigation/native": ^6.0.12
@@ -16410,6 +16442,7 @@ __metadata:
     expo-local-authentication: ~13.4.1
     expo-notifications: ~0.20.1
     expo-secure-store: ~12.3.1
+    expo-sharing: ~11.5.0
     expo-sqlite: ~11.3.3
     expo-status-bar: ~1.6.0
     fast-text-encoding: ^1.0.6
@@ -16426,6 +16459,7 @@ __metadata:
     react-native-get-random-values: ^1.9.0
     react-native-modal: ^13.0.1
     react-native-paper: ^4.12.5
+    react-native-popover-view: ^5.1.8
     react-native-qrcode-svg: ^6.3.1
     react-native-raw-bottom-sheet: ^3.0.0
     react-native-reanimated: ~3.3.0

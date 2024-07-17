@@ -9,7 +9,10 @@ import {
     EthereumMainnetChain,
     EthereumPrivateKey,
     EthereumSepoliaChain,
+    ETHSepoliaToken,
+    ETHToken,
 } from '../utils/chain/etherum';
+import { Asset, IAccount } from '../utils/chain/types';
 
 export const core = new Core({
     projectId: settings.config.walletConnectProjectId,
@@ -20,16 +23,19 @@ interface WalletState {
     privateKey: string | null;
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
-    currentETHAddress: string | null;
+    account: IAccount | null;
+    balance: Asset | null;
     initializeWalletState: () => Promise<void>;
-    clearState: () => Promise<void>; // Ensure clearState returns a Promise
+    clearState: () => Promise<void>;
+    updateBalance: () => Promise<void>;
 }
 
 const useWalletStore = create<WalletState>((set, get) => ({
     initialized: false,
     web3wallet: null,
-    currentETHAddress: null,
+    account: null,
     privateKey: null,
+    balance: null,
     initializeWalletState: async () => {
         try {
             await connect();
@@ -40,18 +46,20 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
 
-                let ethereumAccount;
+                let ethereumAccount, balance;
 
                 if (settings.isProduction()) {
                     ethereumAccount = await EthereumAccount.fromPublicKey(
                         EthereumMainnetChain,
                         await ethereumPrivateKey.getPublicKey()
                     );
+                    balance = await ETHToken.getBalance(ethereumAccount);
                 } else {
                     ethereumAccount = await EthereumAccount.fromPublicKey(
                         EthereumSepoliaChain,
                         await ethereumPrivateKey.getPublicKey()
                     );
+                    balance = await ETHSepoliaToken.getBalance(ethereumAccount);
                 }
 
                 const web3wallet = await Web3Wallet.init({
@@ -68,7 +76,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     initialized: true,
                     privateKey: exportPrivateKey,
                     web3wallet,
-                    currentETHAddress: ethereumAccount.getName(),
+                    account: ethereumAccount,
+                    balance: balance,
                 });
             } else {
                 console.warn('No Ethereum key found.');
@@ -76,7 +85,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     initialized: false,
                     privateKey: null,
                     web3wallet: null,
-                    currentETHAddress: null,
+                    account: null,
+                    balance: null,
                 });
             }
         } catch (error) {
@@ -85,7 +95,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 initialized: false,
                 privateKey: null,
                 web3wallet: null,
-                currentETHAddress: null,
+                account: null,
+                balance: null,
             });
         }
     },
@@ -97,10 +108,34 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 initialized: false,
                 privateKey: null,
                 web3wallet: null,
-                currentETHAddress: null,
+                account: null,
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
+        }
+    },
+    updateBalance: async () => {
+        try {
+            const { account } = get();
+
+            if (!account) {
+                console.warn('No account found.');
+                return;
+            }
+
+            let balance;
+
+            if (settings.isProduction()) {
+                balance = await ETHToken.getBalance(account);
+            } else {
+                balance = await ETHSepoliaToken.getBalance(account);
+            }
+
+            set({
+                balance: balance,
+            });
+        } catch (error) {
+            console.error('Error updating balance:', error);
         }
     },
 }));
