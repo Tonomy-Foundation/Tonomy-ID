@@ -343,6 +343,7 @@ export class EthereumAccount extends AbstractAccount {
         super();
         this.privateKey = privateKey;
         this.name = address;
+        this.chain = chain;
         const did = `did:ethr:${address}`; // needs to be different for different chains
 
         this.did = did;

@@ -19,8 +19,17 @@ import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
+import { capitalizeFirstLetter } from '../utils/helper';
 
 const vestingContract = VestingContract.Instance;
+
+interface AccountDetails {
+    symbol: string;
+    image?: string;
+    name: string;
+    address: string;
+    icon?: string;
+}
 
 export default function MainContainer({
     did,
@@ -37,13 +46,12 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const [accountDetails, setAccountDetails] = useState({
+    const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
-        icon: undefined,
         name: '',
         address: '',
     });
-    const { web3wallet, currentETHAddress, balance, privateKey } = useWalletStore();
+    const { web3wallet, account, balance, privateKey } = useWalletStore();
     const [accountBalance, setAccountBalance] = useState({
         balance: '0.00 Eth',
         usdValue: 0,
@@ -51,10 +59,11 @@ export default function MainContainer({
 
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const refMessage = useRef(null);
+    const currentETHAddress = account?.getName();
 
     useEffect(() => {
         const fetchBalance = async () => {
-            if (privateKey && !currentETHAddress) {
+            if (privateKey && !account?.getName()) {
                 await initializeWallet();
             } else {
                 if (balance) {
@@ -69,7 +78,7 @@ export default function MainContainer({
         };
 
         fetchBalance();
-    }, [initializeWallet, currentETHAddress, privateKey, balance]);
+    }, [initializeWallet, account, privateKey, balance]);
 
     useEffect(() => {
         setUserName();
@@ -194,6 +203,20 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
+    const updateAccountDetail = async () => {
+        if (account) {
+            const accountToken = await account.getNativeToken();
+            const logoUrl = accountToken.getLogoUrl();
+
+            setAccountDetails({
+                symbol: accountToken.getSymbol(),
+                name: capitalizeFirstLetter(account.getChain().getName()),
+                address: account.getName() || '',
+                ...(logoUrl && { image: logoUrl }),
+            });
+        }
+    };
+
     const MainView = () => {
         const isFocused = useIsFocused();
 
@@ -228,9 +251,9 @@ export default function MainContainer({
                                 onPress={() => {
                                     setAccountDetails({
                                         symbol: 'LEOS',
-                                        icon: Images.GetImage('logo48'),
                                         name: 'Pangea',
                                         address: accountName,
+                                        icon: Images.GetImage('logo48'),
                                     });
                                     (refMessage.current as any)?.open(); // Open the AccountDetails component here
                                 }}
@@ -258,12 +281,8 @@ export default function MainContainer({
 
                             <TouchableOpacity
                                 onPress={() => {
-                                    setAccountDetails({
-                                        symbol: 'Eth',
-                                        icon: require('../assets/icons/eth-img.png'),
-                                        name: 'Ethereum',
-                                        address: currentETHAddress || '',
-                                    });
+                                    updateAccountDetail();
+                                    (refMessage.current as any)?.open();
                                 }}
                             >
                                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>

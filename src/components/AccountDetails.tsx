@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 70,
     },
     accountName: {
-        fontSize: 15,
-        fontWeight: '600',
+        fontSize: 14,
+        fontWeight: '700',
         marginTop: 10,
     },
     iconContainer: {

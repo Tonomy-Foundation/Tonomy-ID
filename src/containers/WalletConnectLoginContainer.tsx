@@ -24,8 +24,8 @@ export default function WalletConnectLoginContainer({
 }) {
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
-    const { web3wallet, currentETHAddress } = useWalletStore();
-
+    const { web3wallet, account } = useWalletStore();
+    const currentETHAddress = account ? account.getName() : '';
     const session = new EthereumChainSession(payload, EthereumSepoliaChain);
 
     const onCancel = async () => {

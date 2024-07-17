@@ -12,7 +12,7 @@ import {
     ETHSepoliaToken,
     ETHToken,
 } from '../utils/chain/etherum';
-import { Asset } from '../utils/chain/types';
+import { Asset, IAccount } from '../utils/chain/types';
 
 export const core = new Core({
     projectId: settings.config.walletConnectProjectId,
@@ -23,7 +23,7 @@ interface WalletState {
     privateKey: string | null;
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
-    currentETHAddress: string | null;
+    account: IAccount | null;
     balance: Asset | null;
     initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>; // Ensure clearState returns a Promise
@@ -32,7 +32,7 @@ interface WalletState {
 const useWalletStore = create<WalletState>((set, get) => ({
     initialized: false,
     web3wallet: null,
-    currentETHAddress: null,
+    account: null,
     privateKey: null,
     balance: null,
     initializeWalletState: async () => {
@@ -45,7 +45,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
 
-                let ethereumAccount, balance, usdBalance;
+                let ethereumAccount, balance;
 
                 if (settings.isProduction()) {
                     ethereumAccount = await EthereumAccount.fromPublicKey(
@@ -59,7 +59,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         await ethereumPrivateKey.getPublicKey()
                     );
                     balance = await ETHSepoliaToken.getBalance(ethereumAccount);
-                    usdBalance = await ETHSepoliaToken.getUsdValue(ethereumAccount);
                 }
 
                 const web3wallet = await Web3Wallet.init({
@@ -72,18 +71,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     },
                 });
 
-                console.log(
-                    'balance',
-                    balance,
-                    balance.toString(),
-                    // await balance.getUsdPrice(),
-                    await balance.getUsdValue()
-                );
                 set({
                     initialized: true,
                     privateKey: exportPrivateKey,
                     web3wallet,
-                    currentETHAddress: ethereumAccount.getName(),
+                    account: ethereumAccount,
                     balance: balance,
                 });
             } else {
@@ -92,7 +84,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     initialized: false,
                     privateKey: null,
                     web3wallet: null,
-                    currentETHAddress: null,
+                    account: null,
                     balance: null,
                 });
             }
@@ -102,7 +94,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 initialized: false,
                 privateKey: null,
                 web3wallet: null,
-                currentETHAddress: null,
+                account: null,
                 balance: null,
             });
         }
@@ -115,7 +107,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 initialized: false,
                 privateKey: null,
                 web3wallet: null,
-                currentETHAddress: null,
+                account: null,
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
