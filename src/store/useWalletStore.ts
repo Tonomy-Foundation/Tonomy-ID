@@ -12,6 +12,7 @@ import {
     ETHSepoliaToken,
     ETHToken,
 } from '../utils/chain/etherum';
+import { Asset } from '../utils/chain/types';
 
 export const core = new Core({
     projectId: settings.config.walletConnectProjectId,
@@ -23,8 +24,7 @@ interface WalletState {
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
     currentETHAddress: string | null;
-    accountBalance: string | null;
-    usdBalance: string | null;
+    balance: Asset | null;
     initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>; // Ensure clearState returns a Promise
 }
@@ -34,8 +34,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
     web3wallet: null,
     currentETHAddress: null,
     privateKey: null,
-    usdBalance: null,
-    accountBalance: null,
+    balance: null,
     initializeWalletState: async () => {
         try {
             await connect();
@@ -73,13 +72,19 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     },
                 });
 
+                console.log(
+                    'balance',
+                    balance,
+                    balance.toString(),
+                    // await balance.getUsdPrice(),
+                    await balance.getUsdValue()
+                );
                 set({
                     initialized: true,
                     privateKey: exportPrivateKey,
                     web3wallet,
                     currentETHAddress: ethereumAccount.getName(),
-                    accountBalance: balance.toString(),
-                    usdBalance,
+                    balance: balance,
                 });
             } else {
                 console.warn('No Ethereum key found.');
@@ -88,8 +93,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     privateKey: null,
                     web3wallet: null,
                     currentETHAddress: null,
-                    accountBalance: null,
-                    usdBalance: null,
+                    balance: null,
                 });
             }
         } catch (error) {
@@ -99,8 +103,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 privateKey: null,
                 web3wallet: null,
                 currentETHAddress: null,
-                accountBalance: null,
-                usdBalance: null,
+                balance: null,
             });
         }
     },

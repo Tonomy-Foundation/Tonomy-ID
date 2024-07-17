@@ -1,5 +1,5 @@
 // New component file: AccountDetails.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Share, ImageSourcePropType } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import RBSheet from 'react-native-raw-bottom-sheet';
@@ -9,14 +9,14 @@ import TIconButton from '../components/TIconButton';
 import theme from '../utils/theme';
 import { formatCurrencyValue } from '../utils/numbers';
 import { Images } from '../assets';
+import { Asset } from '../utils/chain/types';
 
 export type AccountDetailsProps = {
     accountDetails: {
         symbol: string;
         name: string;
         icon?: ImageSourcePropType | undefined;
-        ethBalance?: string;
-        usdBalance?: number;
+        balance?: Asset | null;
         address?: string;
         image?: string;
     };
@@ -30,6 +30,27 @@ const AccountDetails = (props: AccountDetailsProps) => {
         ...props.accountDetails,
         icon: props.accountDetails.icon || Images.GetImage('logo48'),
     };
+    const balance = props.accountDetails.balance;
+    const [accountBalance, setAccountBalance] = useState({
+        balance: '0.00 Eth',
+        usdValue: 0,
+    });
+
+    useEffect(() => {
+        const fetchBalance = async () => {
+            if (balance) {
+                const usdValue = await balance.getUsdValue();
+
+                setAccountBalance({
+                    balance: balance.toString(),
+                    usdValue: usdValue,
+                });
+            }
+        };
+
+        fetchBalance();
+    }, [balance]);
+
     const message =
         `Please use the following account name to send ${accountData.symbol} tokens to on the
     ${accountData.name} network:` +
@@ -79,7 +100,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
                     <Text style={styles.accountName}>{accountData.address}</Text>
                 ) : (
                     <Text style={styles.accountName}>
-                        {accountData.ethBalance} ( ${formatCurrencyValue(Number(accountData.usdBalance), 3)})
+                        {accountBalance.balance} ( ${formatCurrencyValue(Number(accountBalance.usdValue), 3)})
                     </Text>
                 )}
             </View>

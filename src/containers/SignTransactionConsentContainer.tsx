@@ -65,7 +65,7 @@ export default function SignTransactionConsentContainer({
     const [showModal, setShowModal] = useState(false);
     const [signedTransaction, setSignedTransaction] = useState('');
     const [balanceError, showBalanceError] = useState(false);
-    const { usdBalance, accountBalance } = useWalletStore();
+    const { balance } = useWalletStore();
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
 
@@ -105,8 +105,9 @@ export default function SignTransactionConsentContainer({
 
                 const functionName = '';
                 const args: Record<string, string> | null = null;
+                const usdBalance = await balance?.getUsdValue();
 
-                if (Number(usdBalance) < usdTotal) {
+                if (usdBalance && usdBalance < usdTotal) {
                     showBalanceError(true);
                 }
 
@@ -143,7 +144,7 @@ export default function SignTransactionConsentContainer({
         };
 
         fetchTransactionDetails();
-    }, [transaction, contractTransaction, errorStore, usdBalance]);
+    }, [transaction, contractTransaction, errorStore, balance]);
 
     async function onReject() {
         setTransactionLoading(true);
@@ -393,8 +394,7 @@ export default function SignTransactionConsentContainer({
                             symbol: transaction.getChain().getNativeToken().getSymbol(),
                             image: chainIcon,
                             name: chainName,
-                            usdBalance: Number(usdBalance),
-                            ethBalance: accountBalance || '',
+                            balance,
                         }}
                         onClose={() => (refTopUpDetail.current as any)?.close()}
                     />

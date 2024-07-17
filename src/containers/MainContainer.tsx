@@ -34,7 +34,7 @@ export default function MainContainer({
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [balance, setBalance] = useState(0);
+    const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const [accountDetails, setAccountDetails] = useState({
@@ -43,16 +43,33 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, currentETHAddress, accountBalance, usdBalance, privateKey } = useWalletStore();
+    const { web3wallet, currentETHAddress, balance, privateKey } = useWalletStore();
+    const [accountBalance, setAccountBalance] = useState({
+        balance: '0.00 Eth',
+        usdValue: 0,
+    });
 
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const refMessage = useRef(null);
 
     useEffect(() => {
-        if (privateKey && !currentETHAddress) {
-            initializeWallet();
-        }
-    }, [initializeWallet, currentETHAddress, privateKey]);
+        const fetchBalance = async () => {
+            if (privateKey && !currentETHAddress) {
+                await initializeWallet();
+            } else {
+                if (balance) {
+                    const usdValue = await balance.getUsdValue();
+
+                    setAccountBalance({
+                        balance: balance.toString(),
+                        usdValue: usdValue,
+                    });
+                }
+            }
+        };
+
+        fetchBalance();
+    }, [initializeWallet, currentETHAddress, privateKey, balance]);
 
     useEffect(() => {
         setUserName();
@@ -66,8 +83,8 @@ export default function MainContainer({
         async function getUpdatedBalance() {
             const accountBalance = await vestingContract.getBalance(accountName);
 
-            if (balance !== accountBalance) {
-                setBalance(accountBalance);
+            if (pangeaBalance !== accountBalance) {
+                setPangeaBalance(accountBalance);
             }
         }
 
@@ -78,7 +95,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, balance, setBalance, accountName]);
+    }, [user, pangeaBalance, setPangeaBalance, accountName]);
 
     async function setUserName() {
         try {
@@ -229,10 +246,10 @@ export default function MainContainer({
                                         </View>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
+                                                <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                                ${balance ? formatCurrencyValue(pangeaBalance * USD_CONVERSION) : 0.0}
                                             </Text>
                                         </View>
                                     </View>
@@ -281,10 +298,10 @@ export default function MainContainer({
                                         ) : (
                                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text>{accountBalance}</Text>
+                                                    <Text>{accountBalance.balance}</Text>
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
-                                                    ${formatCurrencyValue(Number(usdBalance), 3)}
+                                                    ${formatCurrencyValue(Number(accountBalance.usdValue), 3)}
                                                 </Text>
                                             </View>
                                         )}
