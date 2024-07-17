@@ -211,7 +211,7 @@ export default function MainContainer({
             setAccountDetails({
                 symbol: accountToken.getSymbol(),
                 name: capitalizeFirstLetter(account.getChain().getName()),
-                address: account.getName() || '',
+                address: currentETHAddress || '',
                 ...(logoUrl && { image: logoUrl }),
             });
         }
