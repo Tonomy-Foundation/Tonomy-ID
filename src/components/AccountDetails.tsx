@@ -18,7 +18,7 @@ export type AccountDetailsProps = {
         icon?: ImageSourcePropType | undefined;
         balance?: Asset | null;
         address?: string;
-        image?: string;
+        image?: string | null;
     };
     refMessage: React.RefObject<any>;
     onClose: () => void;

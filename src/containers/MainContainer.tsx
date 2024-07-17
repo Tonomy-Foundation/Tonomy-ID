@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -28,7 +28,7 @@ interface AccountDetails {
     image?: string;
     name: string;
     address: string;
-    icon?: string;
+    icon?: ImageSourcePropType | undefined;
 }
 
 export default function MainContainer({
