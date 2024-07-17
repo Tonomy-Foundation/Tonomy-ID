@@ -7,9 +7,10 @@ import { util } from '@tonomy/tonomy-id-sdk';
 interface PassphraseInputProps {
     value: string[];
     onChange: (passphrase: string[]) => void;
+    setNextDisabled: (boolean) => void;
 }
 
-const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange }) => {
+const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setNextDisabled }) => {
     const [passphrase, setPassphrase] = useState<string[]>(value);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -17,19 +18,22 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange }) =>
         onChange(passphrase);
     }, [passphrase, onChange]);
 
-    const onChangeWord = (index: number, word: string) => {
+    async function onChangeWord(index: number, word: string) {
         setErrorMessage('');
 
         setPassphrase((prev) => {
             const newPassphrase = [...prev];
 
             newPassphrase[index] = word;
-
             let hasError = false;
+
+            setNextDisabled(false);
 
             for (let i = 0; i < newPassphrase.length; i++) {
                 if (!util.isKeyword(newPassphrase[i])) {
                     hasError = true;
+
+                    setNextDisabled(true);
                 }
             }
 
@@ -39,7 +43,7 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange }) =>
 
             return newPassphrase;
         });
-    };
+    }
 
     return (
         <View>
