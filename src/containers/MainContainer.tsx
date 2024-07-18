@@ -133,16 +133,10 @@ export default function MainContainer({
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
-            } else if (data.startsWith('did:')) {
+            } else {
                 const did = validateQrCode(data);
 
                 await connectToDid(did);
-            } else {
-                errorStore.setError({
-                    title: 'Invalid QR Code',
-                    error: new Error(`This is not a supported QR code.`),
-                    expected: false,
-                });
             }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
