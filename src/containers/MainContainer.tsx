@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -19,8 +19,17 @@ import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
+import { capitalizeFirstLetter } from '../utils/helper';
 
 const vestingContract = VestingContract.Instance;
+
+interface AccountDetails {
+    symbol: string;
+    image?: string;
+    name: string;
+    address: string;
+    icon?: ImageSourcePropType | undefined;
+}
 
 export default function MainContainer({
     did,
@@ -34,18 +43,42 @@ export default function MainContainer({
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [balance, setBalance] = useState(0);
+    const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const { web3wallet, currentETHAddress, privateKey } = useWalletStore();
+    const [accountDetails, setAccountDetails] = useState<AccountDetails>({
+        symbol: '',
+        name: '',
+        address: '',
+    });
+    const { web3wallet, account, balance, privateKey } = useWalletStore();
+    const [accountBalance, setAccountBalance] = useState({
+        balance: '0.00 Eth',
+        usdValue: 0,
+    });
+
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const refMessage = useRef(null);
+    const currentETHAddress = account?.getName();
 
     useEffect(() => {
-        if (privateKey && !currentETHAddress) {
-            initializeWallet();
-        }
-    }, [initializeWallet, currentETHAddress, privateKey]);
+        const fetchBalance = async () => {
+            if (privateKey && !account?.getName()) {
+                await initializeWallet();
+            } else {
+                if (balance) {
+                    const usdValue = await balance.getUsdValue();
+
+                    setAccountBalance({
+                        balance: balance.toString(),
+                        usdValue: usdValue,
+                    });
+                }
+            }
+        };
+
+        fetchBalance();
+    }, [initializeWallet, account, privateKey, balance]);
 
     useEffect(() => {
         setUserName();
@@ -59,8 +92,8 @@ export default function MainContainer({
         async function getUpdatedBalance() {
             const accountBalance = await vestingContract.getBalance(accountName);
 
-            if (balance !== accountBalance) {
-                setBalance(accountBalance);
+            if (pangeaBalance !== accountBalance) {
+                setPangeaBalance(accountBalance);
             }
         }
 
@@ -71,7 +104,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, balance, setBalance, accountName]);
+    }, [user, pangeaBalance, setPangeaBalance, accountName]);
 
     async function setUserName() {
         try {
@@ -100,16 +133,10 @@ export default function MainContainer({
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
-            } else if (data.startsWith('did:')) {
+            } else {
                 const did = validateQrCode(data);
 
                 await connectToDid(did);
-            } else {
-                errorStore.setError({
-                    title: 'Invalid QR Code',
-                    error: new Error(`This is not a supported QR code.`),
-                    expected: false,
-                });
             }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
@@ -164,6 +191,26 @@ export default function MainContainer({
         setQrOpened(false);
     }
 
+    useEffect(() => {
+        if (accountDetails.address) {
+            (refMessage.current as any)?.open();
+        }
+    }, [accountDetails]);
+
+    const updateAccountDetail = async () => {
+        if (account) {
+            const accountToken = await account.getNativeToken();
+            const logoUrl = accountToken.getLogoUrl();
+
+            setAccountDetails({
+                symbol: accountToken.getSymbol(),
+                name: capitalizeFirstLetter(account.getChain().getName()),
+                address: currentETHAddress || '',
+                ...(logoUrl && { image: logoUrl }),
+            });
+        }
+    };
+
     const MainView = () => {
         const isFocused = useIsFocused();
 
@@ -194,7 +241,17 @@ export default function MainContainer({
 
                         <View style={styles.accountsView}>
                             <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setAccountDetails({
+                                        symbol: 'LEOS',
+                                        name: 'Pangea',
+                                        address: accountName,
+                                        icon: Images.GetImage('logo48'),
+                                    });
+                                    (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                }}
+                            >
                                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -206,17 +263,22 @@ export default function MainContainer({
                                         </View>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {formatCurrencyValue(balance) || 0} LEOS</Text>
+                                                <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                                ${balance ? formatCurrencyValue(pangeaBalance * USD_CONVERSION) : 0.0}
                                             </Text>
                                         </View>
                                     </View>
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    updateAccountDetail();
+                                    (refMessage.current as any)?.open();
+                                }}
+                            >
                                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -249,10 +311,10 @@ export default function MainContainer({
                                         ) : (
                                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text> {formatCurrencyValue(balance) || 0} ETH</Text>
+                                                    <Text>{accountBalance.balance}</Text>
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
-                                                    ${balance ? formatCurrencyValue(balance * USD_CONVERSION) : 0.0}
+                                                    ${formatCurrencyValue(Number(accountBalance.usdValue), 3)}
                                                 </Text>
                                             </View>
                                         )}
@@ -260,7 +322,14 @@ export default function MainContainer({
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        <AccountDetails refMessage={refMessage} accountName={accountName} />
+                        <AccountDetails
+                            refMessage={refMessage}
+                            accountDetails={accountDetails}
+                            onClose={() => {
+                                (refMessage.current as any)?.close();
+                                setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
+                            }}
+                        />
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
