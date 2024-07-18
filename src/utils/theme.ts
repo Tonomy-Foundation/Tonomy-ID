@@ -35,6 +35,7 @@ const theme = {
         shadowDark: '#000',
         error: '#F44336',
         success: '#4CAF50',
+        errorBackground: '#F443361A',
     },
 };
 

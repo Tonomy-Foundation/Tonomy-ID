@@ -14,6 +14,7 @@ import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
 import TModal from '../components/TModal';
+import AccountDetails from '../components/AccountDetails';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -63,6 +64,12 @@ export default function SignTransactionConsentContainer({
     });
     const [showModal, setShowModal] = useState(false);
     const [signedTransaction, setSignedTransaction] = useState('');
+    const [balanceError, showBalanceError] = useState(false);
+    const { balance, updateBalance } = useWalletStore();
+    const chainName = capitalizeFirstLetter(transaction.getChain().getName());
+    const chainIcon = transaction.getChain().getLogoUrl();
+
+    const refTopUpDetail = useRef(null);
 
     const refMessage = useRef(null);
 
@@ -98,6 +105,11 @@ export default function SignTransactionConsentContainer({
 
                 const functionName = '';
                 const args: Record<string, string> | null = null;
+                const usdBalance = await balance?.getUsdValue();
+
+                if (usdBalance && usdBalance < usdTotal) {
+                    showBalanceError(true);
+                }
 
                 // if (contractTransaction) {
                 //     functionName = await transaction.getFunction();
@@ -132,7 +144,7 @@ export default function SignTransactionConsentContainer({
         };
 
         fetchTransactionDetails();
-    }, [transaction, contractTransaction, errorStore]);
+    }, [transaction, contractTransaction, errorStore, balance]);
 
     async function onReject() {
         setTransactionLoading(true);
@@ -171,6 +183,7 @@ export default function SignTransactionConsentContainer({
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
+            await updateBalance();
             setTransactionLoading(false);
             setShowModal(true);
         } catch (error) {
@@ -204,13 +217,8 @@ export default function SignTransactionConsentContainer({
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
-                                    <Image
-                                        source={{ uri: transaction.getChain().getLogoUrl() }}
-                                        style={styles.imageStyle}
-                                    />
-                                    <Text style={styles.nameText}>
-                                        {capitalizeFirstLetter(transaction.getChain().getName())} Network
-                                    </Text>
+                                    <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
+                                    <Text style={styles.nameText}>{chainName} Network</Text>
                                 </View>
                                 <Text style={styles.accountNameStyle}>
                                     {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
@@ -230,7 +238,7 @@ export default function SignTransactionConsentContainer({
                                     >
                                         <Text style={styles.secondaryColor}>Amount:</Text>
                                         <Text>
-                                            {formatCurrencyValue(Number(transactionDetails?.value), 4)}
+                                            {transactionDetails?.value}
                                             <Text style={styles.secondaryColor}>
                                                 ($
                                                 {formatCurrencyValue(
@@ -321,9 +329,18 @@ export default function SignTransactionConsentContainer({
                                         </Text>
                                     </View>
                                 </View>
-                                <View style={styles.totalSection}>
+                                <View
+                                    style={[
+                                        styles.totalSection,
+                                        {
+                                            backgroundColor: balanceError
+                                                ? theme.colors.errorBackground
+                                                : theme.colors.info,
+                                        },
+                                    ]}
+                                >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={{ marginRight: 8, fontWeight: '600' }}>Total:</Text>
+                                        <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
                                         <Text>
                                             {formatCurrencyValue(Number(transactionDetails?.total), 5)}
                                             <Text style={styles.secondaryColor}>
@@ -336,7 +353,21 @@ export default function SignTransactionConsentContainer({
                                             </Text>
                                         </Text>
                                     </View>
+                                    {balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
                                 </View>
+                                {balanceError && (
+                                    <View style={{ width: '100%', marginTop: 10 }}>
+                                        <TButtonContained
+                                            onPress={() => {
+                                                (refTopUpDetail.current as any)?.open(); // Open the AccountDetails component here
+                                            }}
+                                            style={commonStyles.marginBottom}
+                                            size="medium"
+                                        >
+                                            Top Up
+                                        </TButtonContained>
+                                    </View>
+                                )}
                             </>
                         ) : (
                             <TSpinner style={{ marginBottom: 12 }} />
@@ -358,12 +389,22 @@ export default function SignTransactionConsentContainer({
                             <Text style={{ fontSize: 14, marginTop: 5 }}>{signedTransaction}</Text>
                         </View>
                     </TModal>
+                    <AccountDetails
+                        refMessage={refTopUpDetail}
+                        accountDetails={{
+                            symbol: transaction.getChain().getNativeToken().getSymbol(),
+                            image: chainIcon,
+                            name: chainName,
+                            balance,
+                        }}
+                        onClose={() => (refTopUpDetail.current as any)?.close()}
+                    />
                 </ScrollView>
             }
             footer={
                 <View style={{ marginTop: 30 }}>
                     <TButtonContained
-                        disabled={transactionLoading}
+                        disabled={transactionLoading || balanceError}
                         onPress={() => onAccept()}
                         style={commonStyles.marginBottom}
                         size="large"
@@ -392,7 +433,7 @@ const styles = StyleSheet.create({
     },
     applinkText: {
         color: theme.colors.linkColor,
-        margin: 2,
+        margin: 0,
         padding: 2,
     },
     imageStyle: {
@@ -402,16 +443,16 @@ const styles = StyleSheet.create({
     networkHeading: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 18,
+        marginTop: 17,
     },
     accountNameStyle: {
-        fontSize: 15,
-        marginTop: 10,
+        fontSize: 14,
+        marginTop: 8,
     },
     nameText: {
         color: theme.colors.secondary2,
         marginLeft: 5,
-        fontSize: 16,
+        fontSize: 15,
     },
     transactionHeading: {
         marginTop: 11,
@@ -429,7 +470,6 @@ const styles = StyleSheet.create({
         padding: 16,
         width: '100%',
         marginTop: 20,
-        backgroundColor: theme.colors.info,
         borderRadius: 7,
     },
     detailSection: {
@@ -468,5 +508,11 @@ const styles = StyleSheet.create({
         paddingRight: 18,
         paddingVertical: 0,
         margin: 0,
+    },
+    balanceError: {
+        textAlign: 'right',
+        marginTop: 5,
+        color: theme.colors.error,
+        fontSize: 13,
     },
 });
