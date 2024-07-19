@@ -22,3 +22,16 @@ jobs:
       - run: yarn run test
       - run: yarn run lint
       - run: yarn run typeCheck
+    
+  check-outdated-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for outdated packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.3.0
+          cache: yarn
+      - run: yarn outdated || echo "WARNING:Packages outdate. Update packages with 'yarn upgrade-interactive --latest'" && exit 1
+  
