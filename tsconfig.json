@@ -1,5 +1,8 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": "expo/tsconfig.base", // https://github.com/expo/expo/blob/master/packages/expo-module-scripts/tsconfig.base.json
+  "target": "ES2022",
+  "module": "ES2022",
+  "moduleResolution": "bundler",
   "compilerOptions": {
     "strict": true,
     "noImplicitAny": false,
@@ -8,7 +11,8 @@
     "experimentalDecorators": true, // needed for @wharfkit/antelope
     "useUnknownInCatchVariables": false, // needed for @wharfkit/antelope
     "emitDecoratorMetadata": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "allowSyntheticDefaultImports": true,
   },
   "include": [
     "App.tsx",

@@ -1,7 +1,9 @@
+// shims and polyfills
 import 'reflect-metadata';
-import '@walletconnect/react-native-compat';
 import './src/utils/polyfill';
+
 import React from 'react';
+import '@walletconnect/react-native-compat';
 import { Provider as PaperProvider } from 'react-native-paper';
 import RootNavigation from './src/navigation/Root';
 import 'expo-dev-client';
