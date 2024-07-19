@@ -33,7 +33,7 @@
         "@react-navigation/native": "^6.1.18",
         "@react-navigation/native-stack": "^6.10.1",
         "@sinonjs/text-encoding": "^0.7.2",
-        "@tonomy/tonomy-id-sdk": "file:../Tonomy-ID-SDK",
+        "@tonomy/tonomy-id-sdk": "0.21.0-test.1",
         "@veramo/core": "^6.0.0",
         "@walletconnect/core": "^2.13.0",
         "@walletconnect/react-native-compat": "^2.14.0",
@@ -83,6 +83,8 @@
     },
     "devDependencies": {
         "@babel/core": "^7.20.0",
+        "@babel/plugin-syntax-import-assertions": "^7.24.7",
+        "@babel/plugin-transform-class-properties": "^7.24.7",
         "@babel/plugin-transform-private-methods": "^7.24.1",
         "@types/jest": "^29.5.0",
         "@types/react": "~18.2.79",
