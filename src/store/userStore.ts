@@ -43,6 +43,7 @@ setSettings({
 });
 
 const useUserStore = create<UserState>((set, get) => ({
+    // @ts-expect-error PrivateKey version incompatibility
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
     getStatus: () => {

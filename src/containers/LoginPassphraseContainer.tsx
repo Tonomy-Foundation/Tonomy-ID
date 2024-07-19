@@ -53,6 +53,7 @@ export default function LoginPassphraseContainer({
             savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
             const result = await user.login(tonomyUsername, passphrase.join(' '), {
+                // @ts-expect-error PrivateKey version incompatibility
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 

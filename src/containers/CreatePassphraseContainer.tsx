@@ -43,6 +43,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 
     async function onNext() {
         setLoading(true);
+        // @ts-expect-error Checksum256 version incompatibility
         await user.savePassword(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyFromPassword });
         setLoading(false);
         navigation.navigate('ConfirmPassphrase', { index: 0 });

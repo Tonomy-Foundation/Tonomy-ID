@@ -27,10 +27,13 @@ type KeyStorage = {
 export const KEY_STORAGE_NAMESPACE = STORAGE_NAMESPACE + 'key.';
 
 export default class RNKeyManager implements KeyManager {
+    // @ts-expect-error PrivateKey version incompatibility
     async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
         StoreKeyOptions.validate(options);
         const keyStore: KeyStorage = {
+            // @ts-expect-error PrivateKey version incompatibility
             privateKey: options.privateKey,
+            // @ts-expect-error PrivateKey version incompatibility
             publicKey: options.privateKey.toPublic(),
         };
 
@@ -54,6 +57,7 @@ export default class RNKeyManager implements KeyManager {
         return keyStore.publicKey;
     }
 
+    // @ts-expect-error PrivateKey version incompatibility
     async signData(options: SignDataOptions): Promise<string | Signature> {
         SignDataOptions.validate(options);
 
@@ -86,6 +90,7 @@ export default class RNKeyManager implements KeyManager {
             if (options.data instanceof String) {
                 digest = Checksum256.hash(Bytes.from(options.data));
             } else {
+                // @ts-expect-error Checksum256 version incompatibility
                 digest = options.data as Checksum256;
             }
 
@@ -118,6 +123,7 @@ export default class RNKeyManager implements KeyManager {
         });
     }
 
+    // @ts-expect-error PrivateKey version incompatibility
     async getKey(options: GetKeyOptions): Promise<PublicKey> {
         GetKeyOptions.validate(options);
         const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
