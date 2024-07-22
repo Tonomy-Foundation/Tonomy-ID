@@ -8,8 +8,8 @@ Tonomy ID is a React Native application in typescript.
 
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
--   Linux debian distribution (Ubuntu 20.0.4 LTS used)
--   [Nodejs](https://nodejs.org) v18.12.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
+- Linux debian distribution (Ubuntu 20.0.4 LTS used)
+- [Nodejs](https://nodejs.org) v20+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 
 ## Install
 
@@ -73,7 +73,6 @@ Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to P
 7. Turn OFF "JS Dev Mode"
 8. Reload
 
-
 This is now running in production mode connected to the staging environment.
 
 ## Run Staging or Demo and see debug logs (Android only)
@@ -106,23 +105,23 @@ Set the configuration variables in the desired file in `./src/config`
 
 Values for EXPO_NODE_ENV
 
--   EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
--   EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
--   EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
--   EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
--   EXPO_NODE_ENV=testnet - uses `./src/config/config.testnet.json`
--   EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
+- EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
+- EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
+- EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
+- EXPO_NODE_ENV=testnet - uses `./src/config/config.testnet.json`
+- EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
 
 Values for EXPO_PLATFORM
 
--   EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
--   EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
+- EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
+- EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
 
 Other environment variables override the values in the config file:
 
--   BLOCKCHAIN_URL
--   SSO_WEBSITE_ORIGIN
--   VITE_COMMUNICATION_URL
+- BLOCKCHAIN_URL
+- SSO_WEBSITE_ORIGIN
+- VITE_COMMUNICATION_URL
 
 ### Linting
 

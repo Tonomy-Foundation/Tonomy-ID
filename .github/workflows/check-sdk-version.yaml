@@ -13,7 +13,7 @@ jobs:
       - name: 📦 Check it is using the latest version of the SDK
         uses: actions/setup-node@v4
         with:
-          node-version: 18.12.1
+          node-version: 22.3.0
       - run: corepack enable
       - run: yarn install --immutable
       - run: yarn run updateSdkVersion $GITHUB_BASE_REF check
