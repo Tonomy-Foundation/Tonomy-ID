@@ -1,38 +1,35 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import TButton from './atoms/TButton';
 import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
-import AccountDetails from './AccountDetails';
-
-interface AccountDetails {
-    symbol: string;
-    image?: string;
-    name: string;
-    address: string;
-    icon?: ImageSourcePropType | undefined;
-}
+import { IAccount } from '../utils/chain/types';
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
     accountBalance: { balance: string; usdValue: number };
-    handleModalOpen: () => void;
-    accountDetails: AccountDetails;
+    updateAccountDetail: (address: IAccount) => void;
+    address: any;
+    networkName: string;
 };
 
 const AccountSummary = (props: AccountSummaryProps) => {
-    const currentAddress = props.accountDetails.address;
+    const currentAddress = props.address?.getName();
 
     return (
         <>
-            <TouchableOpacity onPress={props.handleModalOpen}>
+            <TouchableOpacity
+                onPress={() => {
+                    props.updateAccountDetail(props.address);
+                }}
+            >
                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Image source={require('../assets/icons/eth-img.png')} style={styles.favicon} />
-                                <Text style={styles.networkTitle}>{props.accountDetails.name} Network:</Text>
+                                <Text style={styles.networkTitle}>{props.networkName} Network:</Text>
                             </View>
                             {currentAddress ? (
                                 <Text>

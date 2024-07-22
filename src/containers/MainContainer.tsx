@@ -2,7 +2,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -20,6 +20,7 @@ import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
+import AccountSummary from '../components/AccountSummary';
 
 const vestingContract = VestingContract.Instance;
 
@@ -72,8 +73,6 @@ export default function MainContainer({
     });
 
     const refMessage = useRef(null);
-    const currentETHAddress = ethereumAccount?.getName();
-    const currentSepoliaEthAddress = sepoliaAccount?.getName();
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -101,7 +100,15 @@ export default function MainContainer({
         if (ethereumBalance && sepoliaBalance && !initialized) {
             initializeWalletState();
         }
-    }, [ethereumAccount, ethereumPrivateKey, ethereumBalance, sepoliaAccount, sepoliaBalance]);
+    }, [
+        ethereumAccount,
+        ethereumPrivateKey,
+        ethereumBalance,
+        sepoliaAccount,
+        sepoliaBalance,
+        initialized,
+        initializeWalletState,
+    ]);
 
     useEffect(() => {
         setUserName();
@@ -228,7 +235,7 @@ export default function MainContainer({
             setAccountDetails({
                 symbol: accountToken.getSymbol(),
                 name: capitalizeFirstLetter(account.getChain().getName()),
-                address: currentETHAddress || '',
+                address: account?.getName() || '',
                 ...(logoUrl && { image: logoUrl }),
             });
         }
@@ -299,104 +306,20 @@ export default function MainContainer({
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                onPress={() => {
-                                    updateAccountDetail(ethereumAccount);
-                                    (refMessage.current as any)?.open();
-                                }}
-                            >
-                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Image
-                                                    source={require('../assets/icons/eth-img.png')}
-                                                    style={styles.favicon}
-                                                />
-                                                <Text style={styles.networkTitle}>Ethereum Network:</Text>
-                                            </View>
-                                            {currentETHAddress ? (
-                                                <Text>
-                                                    {currentETHAddress.substring(0, 7)}....
-                                                    {currentETHAddress.substring(currentETHAddress.length - 6)}
-                                                </Text>
-                                            ) : (
-                                                <Text>Not connected</Text>
-                                            )}
-                                        </View>
-
-                                        {!currentETHAddress ? (
-                                            <TButton
-                                                style={styles.generateKey}
-                                                onPress={() => navigation.navigate('CreateEthereumKey')}
-                                                color={theme.colors.white}
-                                                size="medium"
-                                            >
-                                                Generate key
-                                            </TButton>
-                                        ) : (
-                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text>{accountBalance.balance}</Text>
-                                                </View>
-                                                <Text style={styles.secondaryColor}>
-                                                    ${formatCurrencyValue(Number(accountBalance.usdValue), 3)}
-                                                </Text>
-                                            </View>
-                                        )}
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    updateAccountDetail(sepoliaAccount);
-                                    (refMessage.current as any)?.open();
-                                }}
-                            >
-                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Image
-                                                    source={require('../assets/icons/eth-img.png')}
-                                                    style={styles.favicon}
-                                                />
-                                                <Text style={styles.networkTitle}>Sepolia Network:</Text>
-                                            </View>
-                                            {currentSepoliaEthAddress ? (
-                                                <Text>
-                                                    {currentSepoliaEthAddress.substring(0, 7)}....
-                                                    {currentSepoliaEthAddress.substring(
-                                                        currentSepoliaEthAddress.length - 6
-                                                    )}
-                                                </Text>
-                                            ) : (
-                                                <Text>Not connected</Text>
-                                            )}
-                                        </View>
-
-                                        {!currentETHAddress ? (
-                                            <TButton
-                                                style={styles.generateKey}
-                                                onPress={() => navigation.navigate('CreateEthereumKey')}
-                                                color={theme.colors.white}
-                                                size="medium"
-                                            >
-                                                Generate key
-                                            </TButton>
-                                        ) : (
-                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text>{sepoliaEthBalance.balance}</Text>
-                                                </View>
-                                                <Text style={styles.secondaryColor}>
-                                                    ${formatCurrencyValue(Number(sepoliaEthBalance.usdValue), 3)}
-                                                </Text>
-                                            </View>
-                                        )}
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
+                            <AccountSummary
+                                navigation={navigation}
+                                accountBalance={accountBalance}
+                                address={ethereumAccount}
+                                updateAccountDetail={updateAccountDetail}
+                                networkName="Ethereum"
+                            />
+                            <AccountSummary
+                                navigation={navigation}
+                                accountBalance={sepoliaEthBalance}
+                                address={sepoliaAccount}
+                                updateAccountDetail={updateAccountDetail}
+                                networkName="Sepolia"
+                            />
                         </View>
                         <AccountDetails
                             refMessage={refMessage}
