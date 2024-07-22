@@ -24,8 +24,8 @@ export default function WalletConnectLoginContainer({
 }) {
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
-    const { web3wallet, account } = useWalletStore();
-    const currentETHAddress = account ? account.getName() : '';
+    const { web3wallet, ethereumAccount } = useWalletStore();
+    const currentETHAddress = ethereumAccount ? ethereumAccount.getName() : '';
     const session = new EthereumChainSession(payload, EthereumSepoliaChain);
 
     const onCancel = async () => {
@@ -46,6 +46,7 @@ export default function WalletConnectLoginContainer({
             const activeNamespaces =
                 Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
 
+            console.log('activeNamespaces', activeNamespaces);
             Object.keys(activeNamespaces).forEach((key) => {
                 const accounts: string[] = [];
 

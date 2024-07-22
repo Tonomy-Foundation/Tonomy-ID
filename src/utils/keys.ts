@@ -1,7 +1,13 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
+import {
+    EthereumPrivateKey,
+    EthereumAccount,
+    EthereumMainnetChain,
+    EthereumSepoliaChain,
+    EthereumPolygonChain,
+} from './chain/etherum';
 import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
@@ -100,15 +106,15 @@ export async function generatePrivateKeyFromSeed(seed: string, chain: IChain): P
 
 export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
     const seedData = await generateSeedFromPassword(passphrase, salt);
-    let ethereumKey;
-
-    if (settings.isProduction()) {
-        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
-    } else {
-        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
-    }
+    const ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
+    const sepoliaKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
+    const polygonKey = await generatePrivateKeyFromSeed(passphrase, EthereumPolygonChain);
 
     // Save the key and seed to the keyStorage
     await keyStorage.emplaceKey('ethereum', ethereumKey);
+    await keyStorage.emplaceKey('sepolia', sepoliaKey);
+    await keyStorage.emplaceKey('polygon', polygonKey);
     await appStorage.setCryptoSeed(seedData.seed);
 }
+
+//ethereum, polygon, sepolia, pangea

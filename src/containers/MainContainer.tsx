@@ -51,7 +51,7 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, account, balance, privateKey } = useWalletStore();
+    const { web3wallet, ethereumAccount, ethereumBalance, initialized } = useWalletStore();
     const [accountBalance, setAccountBalance] = useState({
         balance: '0.00 Eth',
         usdValue: 0,
@@ -59,18 +59,18 @@ export default function MainContainer({
 
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const refMessage = useRef(null);
-    const currentETHAddress = account?.getName();
+    const currentETHAddress = ethereumAccount?.getName();
 
     useEffect(() => {
         const fetchBalance = async () => {
-            if (privateKey && !account?.getName()) {
+            if (!initialized) {
                 await initializeWallet();
             } else {
-                if (balance) {
-                    const usdValue = await balance.getUsdValue();
+                if (ethereumBalance) {
+                    const usdValue = await ethereumBalance.getUsdValue();
 
                     setAccountBalance({
-                        balance: balance.toString(),
+                        balance: ethereumBalance.toString(),
                         usdValue: usdValue,
                     });
                 }
@@ -78,7 +78,7 @@ export default function MainContainer({
         };
 
         fetchBalance();
-    }, [initializeWallet, account, privateKey, balance]);
+    }, [initializeWallet, ethereumAccount, initialized, ethereumBalance]);
 
     useEffect(() => {
         setUserName();
@@ -198,13 +198,13 @@ export default function MainContainer({
     }, [accountDetails]);
 
     const updateAccountDetail = async () => {
-        if (account) {
-            const accountToken = await account.getNativeToken();
+        if (ethereumAccount) {
+            const accountToken = await ethereumAccount.getNativeToken();
             const logoUrl = accountToken.getLogoUrl();
 
             setAccountDetails({
                 symbol: accountToken.getSymbol(),
-                name: capitalizeFirstLetter(account.getChain().getName()),
+                name: capitalizeFirstLetter(ethereumAccount.getChain().getName()),
                 address: currentETHAddress || '',
                 ...(logoUrl && { image: logoUrl }),
             });
