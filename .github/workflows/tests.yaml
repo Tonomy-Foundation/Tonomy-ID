@@ -33,4 +33,4 @@ jobs:
         with:
           node-version: 22.3.0
           cache: yarn
-      - run: yarn outdated || echo "WARNING:Packages outdate. Update packages with 'yarn upgrade-interactive --latest' then 'npx expo install --fix --yarn'" && exit 1
+      - run: yarn outdated || echo "WARNING:Packages outdate. Update packages with 'yarn upgrade-interactive --latest' then 'npx expo install --fix --yarn' then 'npx expo-doctor@latest'" && exit 1
