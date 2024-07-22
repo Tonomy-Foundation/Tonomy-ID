@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = function (api) {
     api.cache(true);
     return {
@@ -17,6 +19,17 @@ module.exports = function (api) {
                     globals: ['Error', 'Array'],
                 },
                 // this will help with extending Error and Array classes
+            ],
+            [
+                'module-resolver',
+                {
+                    alias: {
+                        // fix for https://github.com/decentralized-identity/ethr-did-resolver/issues/186
+                        'ethr-did-resolver': path.resolve(__dirname, 'node_modules/ethr-did-resolver/src/index.ts'),
+                        // fix for https://github.com/Shopify/flash-list/issues/896
+                        tslib: path.resolve(__dirname, 'node_modules/tslib/tslib.es6.js'),
+                    },
+                },
             ],
         ],
     };
