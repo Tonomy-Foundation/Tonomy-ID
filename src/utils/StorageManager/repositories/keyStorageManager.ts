@@ -25,7 +25,7 @@ export abstract class KeyManager {
     public async findByName(name: string): Promise<IPrivateKey | null> {
         const key = await this.repository.findByName(name);
 
-        if (key && key.name === 'ethereum') {
+        if (key) {
             return new EthereumPrivateKey(key.value);
         } else return null;
     }

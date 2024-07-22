@@ -24,9 +24,21 @@ export default function WalletConnectLoginContainer({
 }) {
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
-    const { web3wallet, ethereumAccount } = useWalletStore();
-    const currentETHAddress = ethereumAccount ? ethereumAccount.getName() : '';
-    const session = new EthereumChainSession(payload, EthereumSepoliaChain);
+    const { web3wallet, ethereumAccount, sepoliaAccount } = useWalletStore();
+    let currentETHAddress;
+    const { requiredNamespaces, optionalNamespaces } = payload.params;
+    const activeNamespaces = Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
+    const chains = activeNamespaces.eip155.chains;
+    const chainIds = chains?.map((chain) => chain.split(':')[1]);
+    let networkName;
+
+    if (chainIds?.[0] === '11155111') {
+        currentETHAddress = sepoliaAccount ? sepoliaAccount.getName() : '';
+        networkName = 'Sepolia';
+    } else if (chainIds?.[0] === '1') {
+        currentETHAddress = ethereumAccount ? ethereumAccount.getName() : '';
+        networkName = 'Ethereum';
+    }
 
     const onCancel = async () => {
         await web3wallet?.rejectSession({
@@ -42,11 +54,7 @@ export default function WalletConnectLoginContainer({
     const handleAccept = async () => {
         try {
             const namespaces: SessionTypes.Namespaces = {};
-            const { requiredNamespaces, optionalNamespaces } = payload.params;
-            const activeNamespaces =
-                Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
 
-            console.log('activeNamespaces', activeNamespaces);
             Object.keys(activeNamespaces).forEach((key) => {
                 const accounts: string[] = [];
 
@@ -87,7 +95,7 @@ export default function WalletConnectLoginContainer({
                 <View style={styles.container}>
                     <View style={[styles.networkHeading, styles.marginTop]}>
                         <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
-                        <Text style={styles.nameText}>Ethereum Network</Text>
+                        <Text style={styles.nameText}>{networkName} Network</Text>
                     </View>
 
                     {currentETHAddress && (

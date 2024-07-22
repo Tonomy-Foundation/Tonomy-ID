@@ -51,34 +51,57 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, ethereumAccount, ethereumBalance, initialized } = useWalletStore();
+    const {
+        web3wallet,
+        ethereumAccount,
+        ethereumBalance,
+        ethereumPrivateKey,
+        initialized,
+        sepoliaAccount,
+        sepoliaBalance,
+        initializeWalletState,
+    } = useWalletStore();
+
     const [accountBalance, setAccountBalance] = useState({
         balance: '0.00 Eth',
         usdValue: 0,
     });
+    const [sepoliaEthBalance, setSepoliaEthBalance] = useState({
+        balance: '0.00 Eth',
+        usdValue: 0,
+    });
 
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const refMessage = useRef(null);
     const currentETHAddress = ethereumAccount?.getName();
+    const currentSepoliaEthAddress = sepoliaAccount?.getName();
 
     useEffect(() => {
         const fetchBalance = async () => {
-            if (!initialized) {
-                await initializeWallet();
-            } else {
-                if (ethereumBalance) {
-                    const usdValue = await ethereumBalance.getUsdValue();
+            if (ethereumBalance) {
+                const usdValue = await ethereumBalance.getUsdValue();
 
-                    setAccountBalance({
-                        balance: ethereumBalance.toString(),
-                        usdValue: usdValue,
-                    });
-                }
+                setAccountBalance({
+                    balance: ethereumBalance.toString(),
+                    usdValue: usdValue,
+                });
+            }
+
+            if (sepoliaBalance) {
+                const usdValue = await sepoliaBalance.getUsdValue();
+
+                setSepoliaEthBalance({
+                    balance: sepoliaBalance.toString(),
+                    usdValue: usdValue,
+                });
             }
         };
 
         fetchBalance();
-    }, [initializeWallet, ethereumAccount, initialized, ethereumBalance]);
+
+        if (ethereumBalance && sepoliaBalance && !initialized) {
+            initializeWalletState();
+        }
+    }, [ethereumAccount, ethereumPrivateKey, ethereumBalance, sepoliaAccount, sepoliaBalance]);
 
     useEffect(() => {
         setUserName();
@@ -197,14 +220,14 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
-    const updateAccountDetail = async () => {
-        if (ethereumAccount) {
-            const accountToken = await ethereumAccount.getNativeToken();
+    const updateAccountDetail = async (account) => {
+        if (account) {
+            const accountToken = await account.getNativeToken();
             const logoUrl = accountToken.getLogoUrl();
 
             setAccountDetails({
                 symbol: accountToken.getSymbol(),
-                name: capitalizeFirstLetter(ethereumAccount.getChain().getName()),
+                name: capitalizeFirstLetter(account.getChain().getName()),
                 address: currentETHAddress || '',
                 ...(logoUrl && { image: logoUrl }),
             });
@@ -266,7 +289,10 @@ export default function MainContainer({
                                                 <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                ${balance ? formatCurrencyValue(pangeaBalance * USD_CONVERSION) : 0.0}
+                                                $
+                                                {ethereumBalance
+                                                    ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                    : 0.0}
                                             </Text>
                                         </View>
                                     </View>
@@ -275,7 +301,7 @@ export default function MainContainer({
 
                             <TouchableOpacity
                                 onPress={() => {
-                                    updateAccountDetail();
+                                    updateAccountDetail(ethereumAccount);
                                     (refMessage.current as any)?.open();
                                 }}
                             >
@@ -315,6 +341,56 @@ export default function MainContainer({
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
                                                     ${formatCurrencyValue(Number(accountBalance.usdValue), 3)}
+                                                </Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    updateAccountDetail(sepoliaAccount);
+                                    (refMessage.current as any)?.open();
+                                }}
+                            >
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image
+                                                    source={require('../assets/icons/eth-img.png')}
+                                                    style={styles.favicon}
+                                                />
+                                                <Text style={styles.networkTitle}>Sepolia Network:</Text>
+                                            </View>
+                                            {currentSepoliaEthAddress ? (
+                                                <Text>
+                                                    {currentSepoliaEthAddress.substring(0, 7)}....
+                                                    {currentSepoliaEthAddress.substring(
+                                                        currentSepoliaEthAddress.length - 6
+                                                    )}
+                                                </Text>
+                                            ) : (
+                                                <Text>Not connected</Text>
+                                            )}
+                                        </View>
+
+                                        {!currentETHAddress ? (
+                                            <TButton
+                                                style={styles.generateKey}
+                                                onPress={() => navigation.navigate('CreateEthereumKey')}
+                                                color={theme.colors.white}
+                                                size="medium"
+                                            >
+                                                Generate key
+                                            </TButton>
+                                        ) : (
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Text>{sepoliaEthBalance.balance}</Text>
+                                                </View>
+                                                <Text style={styles.secondaryColor}>
+                                                    ${formatCurrencyValue(Number(sepoliaEthBalance.usdValue), 3)}
                                                 </Text>
                                             </View>
                                         )}

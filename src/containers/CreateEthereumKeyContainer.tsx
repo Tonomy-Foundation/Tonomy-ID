@@ -110,9 +110,16 @@ export default function CreateEthereumKeyContainer({
     }
 
     const onModalPress = async () => {
-        const key = await keyStorage.findByName('ethereum');
+        let key;
 
         setShowModal(false);
+        const chainId = transaction?.getChain().getChainId();
+
+        if (chainId === '11155111') {
+            key = await keyStorage.findByName('sepolia');
+        } else if (chainId === '1') {
+            key = await keyStorage.findByName('ethereum');
+        }
 
         if (session && key && transaction) {
             navigation.navigate('SignTransaction', {
