@@ -21,6 +21,7 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import AccountSummary from '../components/AccountSummary';
+import { IAccount } from '../utils/chain/types';
 
 const vestingContract = VestingContract.Instance;
 
@@ -428,10 +429,5 @@ const styles = StyleSheet.create({
     },
     marginTop: {
         marginTop: 28,
-    },
-    generateKey: {
-        width: '40%',
-        backgroundColor: theme.colors.primary,
-        borderRadius: 10,
     },
 });

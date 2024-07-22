@@ -10,7 +10,7 @@ export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
     accountBalance: { balance: string; usdValue: number };
     updateAccountDetail: (address: IAccount) => void;
-    address: any;
+    address: IAccount;
     networkName: string;
 };
 
@@ -68,50 +68,6 @@ const AccountSummary = (props: AccountSummaryProps) => {
 };
 
 const styles = StyleSheet.create({
-    requestView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    requestText: {
-        paddingHorizontal: 30,
-        marginHorizontal: 10,
-        paddingVertical: 30,
-        marginTop: 10,
-        textAlign: 'center',
-    },
-    image: {
-        width: 200,
-        height: 190,
-        resizeMode: 'contain',
-        marginTop: 20,
-        marginBottom: 20,
-    },
-    container: {
-        padding: 16,
-        flex: 1,
-    },
-    content: {
-        flex: 1,
-    },
-    header: {
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    button: {
-        width: '50%',
-    },
-    accountHead: {
-        fontSize: 16,
-        marginBottom: 4,
-        fontWeight: '600',
-    },
-    cards: {
-        flex: 1,
-    },
-    scrollView: {
-        marginRight: -20,
-    },
     appDialog: {
         backgroundColor: theme.colors.lightBg,
         borderStyle: 'solid',
@@ -124,28 +80,18 @@ const styles = StyleSheet.create({
         color: theme.colors.secondary2,
         fontSize: 12,
     },
-    secondaryColor: {
-        color: theme.colors.secondary2,
-    },
     favicon: {
         width: 13,
         height: 13,
         marginRight: 4,
     },
-    accountsView: {
-        marginTop: 25,
-        paddingHorizontal: 5,
-    },
-    balanceView: {
-        marginTop: 7,
-    },
-    marginTop: {
-        marginTop: 28,
-    },
     generateKey: {
         width: '40%',
         backgroundColor: theme.colors.primary,
         borderRadius: 10,
+    },
+    secondaryColor: {
+        color: theme.colors.secondary2,
     },
 });
 

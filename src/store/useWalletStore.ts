@@ -45,6 +45,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             await connect();
 
             if (get().initialized) console.log('Already initialized.');
+
             const ethereumKey = await keyStorage.findByName('ethereum');
             const sepoliaKey = await keyStorage.findByName('sepolia');
 
@@ -65,8 +66,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 });
             }
 
-            console.log('account', get().sepoliaAccount);
-
             if (sepoliaKey && !get().sepoliaAccount) {
                 const exportPrivateKey = await sepoliaKey.exportPrivateKey();
                 const sepoliaPrivateKey = new EthereumPrivateKey(exportPrivateKey);
@@ -76,7 +75,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     await sepoliaPrivateKey.getPublicKey()
                 );
 
-                console.log('sepoliaAccount', sepoliaAccount);
                 const sepoliaBalance = await ETHSepoliaToken.getBalance(sepoliaAccount);
 
                 set({
@@ -135,15 +133,17 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             const { ethereumAccount, sepoliaAccount } = get();
 
-            if(ethereumAccount) {
+            if (ethereumAccount) {
                 const ethereumBalance = await ETHToken.getBalance(ethereumAccount);
 
                 set({
                     ethereumBalance,
                 });
             }
-            if(sepoliaAccount) {
+
+            if (sepoliaAccount) {
                 const sepoliaBalance = await ETHSepoliaToken.getBalance(sepoliaAccount);
+
                 set({
                     sepoliaBalance,
                 });
