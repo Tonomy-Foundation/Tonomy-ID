@@ -21,7 +21,9 @@ const AccountSummary = (props: AccountSummaryProps) => {
         <>
             <TouchableOpacity
                 onPress={() => {
-                    props.updateAccountDetail(props?.address);
+                    if (props.address) {
+                        props.updateAccountDetail(props.address);
+                    }
                 }}
             >
                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>

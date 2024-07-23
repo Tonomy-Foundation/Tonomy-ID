@@ -28,8 +28,8 @@ interface WalletState {
     ethereumBalance: Asset | null;
     sepoliaAccount: IAccount | null;
     sepoliaBalance: Asset | null;
-    polygonAccount:  IAccount | null;
-    polygonBalance: Asset | null;   
+    polygonAccount: IAccount | null;
+    polygonBalance: Asset | null;
     initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
@@ -48,14 +48,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
     initializeWalletState: async () => {
         try {
             await connect();
-
-            if (get().initialized) console.log('Already initialized.');
-
             const ethereumKey = await keyStorage.findByName('ethereum');
             const sepoliaKey = await keyStorage.findByName('sepolia');
             const polygonKey = await keyStorage.findByName('polygon');
 
-            if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {
+            if (get().initialized) console.log('Already initialized.');
+            else if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
 
@@ -75,7 +73,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                 const sepoliaBalance = await ETHSepoliaToken.getBalance(sepoliaAccount);
 
-                
                 const exportPolygonPrivateKey = await polygonKey.exportPrivateKey();
                 const polygonPrivateKey = new EthereumPrivateKey(exportPolygonPrivateKey);
 
@@ -84,8 +81,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     await polygonPrivateKey.getPublicKey()
                 );
                 const polygonBalance = await ETHToken.getBalance(polygonAccount);
-
-
 
                 const web3wallet = await Web3Wallet.init({
                     core,
@@ -118,7 +113,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 ethereumBalance: null,
                 sepoliaAccount: null,
                 sepoliaBalance: null,
-                polygonAccount: null,   
+                polygonAccount: null,
                 polygonBalance: null,
             });
         }
@@ -135,7 +130,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 ethereumBalance: null,
                 sepoliaAccount: null,
                 sepoliaBalance: null,
-                polygonAccount: null,   
+                polygonAccount: null,
                 polygonBalance: null,
             });
         } catch (error) {
@@ -145,23 +140,20 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         try {
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
-            if(ethereumAccount
-                && sepoliaAccount
-                && polygonAccount) {
-                    const ethereumBalance = await ETHToken.getBalance(ethereumAccount);               
 
-                    const sepoliaBalance = await ETHSepoliaToken.getBalance(sepoliaAccount);
-        
-                    const polygonBalance = await ETHToken.getBalance(polygonAccount);
-                      
-                    set({
-                        ethereumBalance,
-                        sepoliaBalance,
-                        polygonBalance
-                    });
+            if (ethereumAccount && sepoliaAccount && polygonAccount) {
+                const ethereumBalance = await ETHToken.getBalance(ethereumAccount);
+
+                const sepoliaBalance = await ETHSepoliaToken.getBalance(sepoliaAccount);
+
+                const polygonBalance = await ETHToken.getBalance(polygonAccount);
+
+                set({
+                    ethereumBalance,
+                    sepoliaBalance,
+                    polygonBalance,
+                });
             }
-
-          
         } catch (error) {
             console.error('Error updating balance:', error);
         }
