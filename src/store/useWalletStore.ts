@@ -10,6 +10,7 @@ import {
     EthereumPolygonChain,
     EthereumPrivateKey,
     EthereumSepoliaChain,
+    ETHPolygonToken,
     ETHSepoliaToken,
     ETHToken,
 } from '../utils/chain/etherum';
@@ -80,7 +81,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     EthereumPolygonChain,
                     await polygonPrivateKey.getPublicKey()
                 );
-                const polygonBalance = await ETHToken.getBalance(polygonAccount);
+                const polygonBalance = await ETHPolygonToken.getBalance(polygonAccount);
 
                 const web3wallet = await Web3Wallet.init({
                     core,

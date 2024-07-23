@@ -208,7 +208,7 @@ const ETHToken = new EthereumToken(
 const ETHSepoliaToken = new EthereumToken(
     EthereumSepoliaChain,
     'Ether',
-    'SeoliaETH',
+    'SepoliaETH',
     18,
     'https://cryptologos.cc/logos/ethereum-eth-logo.png',
     'ethereum'
