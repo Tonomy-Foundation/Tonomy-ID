@@ -1,7 +1,13 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import { EthereumPrivateKey, EthereumAccount, EthereumMainnetChain, EthereumSepoliaChain } from './chain/etherum';
+import {
+    EthereumPrivateKey,
+    EthereumAccount,
+    EthereumMainnetChain,
+    EthereumSepoliaChain,
+    EthereumPolygonChain,
+} from './chain/etherum';
 import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
@@ -99,16 +105,17 @@ export async function generatePrivateKeyFromSeed(seed: string, chain: IChain): P
 }
 
 export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
+    // Generate the seed data from the password and salt (computationally expensive)
     const seedData = await generateSeedFromPassword(passphrase, salt);
-    let ethereumKey;
 
-    if (settings.isProduction()) {
-        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
-    } else {
-        ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
-    }
+    // Use the generated seed to derive private keys for different chains (computationally inexpensive)
+    const ethereumKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumMainnetChain);
+    const sepoliaKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumSepoliaChain);
+    const polygonKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumPolygonChain);
 
-    // Save the key and seed to the keyStorage
+    // Save the keys and seed to the storage
     await keyStorage.emplaceKey('ethereum', ethereumKey);
+    await keyStorage.emplaceKey('ethereumTestnetSepolia', sepoliaKey);
+    await keyStorage.emplaceKey('ethereumPolygon', polygonKey);
     await appStorage.setCryptoSeed(seedData.seed);
 }

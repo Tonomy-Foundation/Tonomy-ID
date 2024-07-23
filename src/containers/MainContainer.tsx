@@ -1,8 +1,8 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity, ImageSourcePropType, ScrollView } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -20,6 +20,8 @@ import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
+import AccountSummary from '../components/AccountSummary';
+import { IAccount } from '../utils/chain/types';
 
 const vestingContract = VestingContract.Instance;
 
@@ -51,34 +53,79 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, account, balance, privateKey } = useWalletStore();
+    const {
+        web3wallet,
+        ethereumAccount,
+        ethereumBalance,
+        ethereumPrivateKey,
+        initialized,
+        sepoliaAccount,
+        sepoliaBalance,
+        polygonAccount,
+        polygonBalance,
+        initializeWalletState,
+    } = useWalletStore();
+
     const [accountBalance, setAccountBalance] = useState({
         balance: '0.00 Eth',
         usdValue: 0,
     });
+    const [sepoliaEthBalance, setSepoliaEthBalance] = useState({
+        balance: '0.00 SepoliaETH',
+        usdValue: 0,
+    });
+    const [polygonEthBalance, setPolygonEthBalance] = useState({
+        balance: '0.00 MATIC',
+        usdValue: 0,
+    });
 
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const refMessage = useRef(null);
-    const currentETHAddress = account?.getName();
 
     useEffect(() => {
         const fetchBalance = async () => {
-            if (privateKey && !account?.getName()) {
-                await initializeWallet();
-            } else {
-                if (balance) {
-                    const usdValue = await balance.getUsdValue();
+            if (ethereumBalance) {
+                const usdValue = await ethereumBalance.getUsdValue();
 
-                    setAccountBalance({
-                        balance: balance.toString(),
-                        usdValue: usdValue,
-                    });
-                }
+                setAccountBalance({
+                    balance: ethereumBalance.toString(),
+                    usdValue: usdValue,
+                });
+            }
+
+            if (sepoliaBalance) {
+                const usdValue = await sepoliaBalance.getUsdValue();
+
+                setSepoliaEthBalance({
+                    balance: sepoliaBalance.toString(),
+                    usdValue: usdValue,
+                });
+            }
+
+            if (polygonBalance) {
+                const usdValue = await polygonBalance.getUsdValue();
+
+                setPolygonEthBalance({
+                    balance: polygonBalance.toString(),
+                    usdValue: usdValue,
+                });
             }
         };
 
         fetchBalance();
-    }, [initializeWallet, account, privateKey, balance]);
+
+        if (ethereumBalance && sepoliaBalance && !initialized) {
+            initializeWalletState();
+        }
+    }, [
+        ethereumAccount,
+        ethereumPrivateKey,
+        ethereumBalance,
+        sepoliaAccount,
+        sepoliaBalance,
+        initialized,
+        polygonBalance,
+        initializeWalletState,
+    ]);
 
     useEffect(() => {
         setUserName();
@@ -197,7 +244,7 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
-    const updateAccountDetail = async () => {
+    const updateAccountDetail = async (account) => {
         if (account) {
             const accountToken = await account.getNativeToken();
             const logoUrl = accountToken.getLogoUrl();
@@ -205,7 +252,7 @@ export default function MainContainer({
             setAccountDetails({
                 symbol: accountToken.getSymbol(),
                 name: capitalizeFirstLetter(account.getChain().getName()),
-                address: currentETHAddress || '',
+                address: account?.getName() || '',
                 ...(logoUrl && { image: logoUrl }),
             });
         }
@@ -238,90 +285,67 @@ export default function MainContainer({
                                 Scan QR Code
                             </TButtonContained>
                         </View>
-
-                        <View style={styles.accountsView}>
-                            <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setAccountDetails({
-                                        symbol: 'LEOS',
-                                        name: 'Pangea',
-                                        address: accountName,
-                                        icon: Images.GetImage('logo48'),
-                                    });
-                                    (refMessage.current as any)?.open(); // Open the AccountDetails component here
-                                }}
-                            >
-                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                                                <Text style={styles.networkTitle}>Pangea Network:</Text>
+                        <ScrollView>
+                            <View style={styles.accountsView}>
+                                <Text style={styles.accountHead}>Connected Accounts:</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setAccountDetails({
+                                            symbol: 'LEOS',
+                                            name: 'Pangea',
+                                            address: accountName,
+                                            icon: Images.GetImage('logo48'),
+                                        });
+                                        (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                    }}
+                                >
+                                    <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                                    <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                                </View>
+                                                <Text>{accountName}</Text>
                                             </View>
-                                            <Text>{accountName}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
-                                            </View>
-                                            <Text style={styles.secondaryColor}>
-                                                ${balance ? formatCurrencyValue(pangeaBalance * USD_CONVERSION) : 0.0}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                onPress={() => {
-                                    updateAccountDetail();
-                                    (refMessage.current as any)?.open();
-                                }}
-                            >
-                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Image
-                                                    source={require('../assets/icons/eth-img.png')}
-                                                    style={styles.favicon}
-                                                />
-                                                <Text style={styles.networkTitle}>Ethereum Network:</Text>
-                                            </View>
-                                            {currentETHAddress ? (
-                                                <Text>
-                                                    {currentETHAddress.substring(0, 7)}....
-                                                    {currentETHAddress.substring(currentETHAddress.length - 6)}
-                                                </Text>
-                                            ) : (
-                                                <Text>Not connected</Text>
-                                            )}
-                                        </View>
-
-                                        {!currentETHAddress ? (
-                                            <TButton
-                                                style={styles.generateKey}
-                                                onPress={() => navigation.navigate('CreateEthereumKey')}
-                                                color={theme.colors.white}
-                                                size="medium"
-                                            >
-                                                Generate key
-                                            </TButton>
-                                        ) : (
                                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text>{accountBalance.balance}</Text>
+                                                    <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
-                                                    ${formatCurrencyValue(Number(accountBalance.usdValue), 3)}
+                                                    $
+                                                    {ethereumBalance
+                                                        ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                        : 0.0}
                                                 </Text>
                                             </View>
-                                        )}
+                                        </View>
                                     </View>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
+                                </TouchableOpacity>
+
+                                <AccountSummary
+                                    navigation={navigation}
+                                    accountBalance={accountBalance}
+                                    address={ethereumAccount}
+                                    updateAccountDetail={updateAccountDetail}
+                                    networkName="Ethereum"
+                                />
+                                <AccountSummary
+                                    navigation={navigation}
+                                    accountBalance={sepoliaEthBalance}
+                                    address={sepoliaAccount}
+                                    updateAccountDetail={updateAccountDetail}
+                                    networkName="Sepolia"
+                                />
+                                <AccountSummary
+                                    navigation={navigation}
+                                    accountBalance={polygonEthBalance}
+                                    address={polygonAccount}
+                                    updateAccountDetail={updateAccountDetail}
+                                    networkName="Polygon"
+                                />
+                            </View>
+                        </ScrollView>
                         <AccountDetails
                             refMessage={refMessage}
                             accountDetails={accountDetails}
@@ -429,10 +453,5 @@ const styles = StyleSheet.create({
     },
     marginTop: {
         marginTop: 28,
-    },
-    generateKey: {
-        width: '40%',
-        backgroundColor: theme.colors.primary,
-        borderRadius: 10,
     },
 });
