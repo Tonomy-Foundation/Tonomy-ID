@@ -180,9 +180,10 @@ export default function CommunicationModule() {
 
                         let key;
 
-                        if (chainId === 'eip155:11155111') key = await keyStorage.findByName('sepolia');
+                        if (chainId === 'eip155:11155111') key = await keyStorage.findByName('ethereumTestnetSepolia');
                         else if (chainId === 'eip155:1') key = await keyStorage.findByName('ethereum');
-                        else throw new Error('This chain is not supported.');
+                        else if (chainId === 'eip155:137') key = await keyStorage.findByName('polygon');
+                        else throw new Error('Unsupported chains');
 
                         let transaction: ITransaction;
 

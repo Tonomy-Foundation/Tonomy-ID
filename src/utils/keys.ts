@@ -105,14 +105,17 @@ export async function generatePrivateKeyFromSeed(seed: string, chain: IChain): P
 }
 
 export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
+    // Generate the seed data from the password and salt (computationally expensive)
     const seedData = await generateSeedFromPassword(passphrase, salt);
-    const ethereumKey = await generatePrivateKeyFromSeed(passphrase, EthereumMainnetChain);
-    const sepoliaKey = await generatePrivateKeyFromSeed(passphrase, EthereumSepoliaChain);
-    const polygonKey = await generatePrivateKeyFromSeed(passphrase, EthereumPolygonChain);
 
-    // Save the key and seed to the keyStorage
+    // Use the generated seed to derive private keys for different chains (computationally inexpensive)
+    const ethereumKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumMainnetChain);
+    const sepoliaKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumSepoliaChain);
+    const polygonKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumPolygonChain);
+
+    // Save the keys and seed to the storage
     await keyStorage.emplaceKey('ethereum', ethereumKey);
-    await keyStorage.emplaceKey('sepolia', sepoliaKey);
+    await keyStorage.emplaceKey('ethereumTestnetSepolia', sepoliaKey);
     await keyStorage.emplaceKey('polygon', polygonKey);
     await appStorage.setCryptoSeed(seedData.seed);
 }

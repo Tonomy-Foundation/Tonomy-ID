@@ -216,11 +216,11 @@ const ETHSepoliaToken = new EthereumToken(
 
 const ETHPolygonToken = new EthereumToken(
     EthereumPolygonChain,
-    'Ether',
-    'ETH',
+    'Polygon',
+    'MATIC',
     18,
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    'ethereum'
+    'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    'polygon'
 );
 
 EthereumMainnetChain.addToken(ETHToken);

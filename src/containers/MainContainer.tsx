@@ -71,11 +71,11 @@ export default function MainContainer({
         usdValue: 0,
     });
     const [sepoliaEthBalance, setSepoliaEthBalance] = useState({
-        balance: '0.00 Eth',
+        balance: '0.00 SepoliaETH',
         usdValue: 0,
     });
     const [polygonEthBalance, setPolygonEthBalance] = useState({
-        balance: '0.00 Eth',
+        balance: '0.00 MATIC',
         usdValue: 0,
     });
 
@@ -100,13 +100,14 @@ export default function MainContainer({
                     usdValue: usdValue,
                 });
             }
-            if(polygonBalance) { 
+
+            if (polygonBalance) {
                 const usdValue = await polygonBalance.getUsdValue();
 
                 setPolygonEthBalance({
                     balance: polygonBalance.toString(),
-                    usdValue: usdValue, 
-                })
+                    usdValue: usdValue,
+                });
             }
         };
 
@@ -284,65 +285,65 @@ export default function MainContainer({
                             </TButtonContained>
                         </View>
                         <ScrollView>
-                        <View style={styles.accountsView}>
-                            <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setAccountDetails({
-                                        symbol: 'LEOS',
-                                        name: 'Pangea',
-                                        address: accountName,
-                                        icon: Images.GetImage('logo48'),
-                                    });
-                                    (refMessage.current as any)?.open(); // Open the AccountDetails component here
-                                }}
-                            >
-                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                                                <Text style={styles.networkTitle}>Pangea Network:</Text>
+                            <View style={styles.accountsView}>
+                                <Text style={styles.accountHead}>Connected Accounts:</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setAccountDetails({
+                                            symbol: 'LEOS',
+                                            name: 'Pangea',
+                                            address: accountName,
+                                            icon: Images.GetImage('logo48'),
+                                        });
+                                        (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                    }}
+                                >
+                                    <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                                    <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                                </View>
+                                                <Text>{accountName}</Text>
                                             </View>
-                                            <Text>{accountName}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                </View>
+                                                <Text style={styles.secondaryColor}>
+                                                    $
+                                                    {ethereumBalance
+                                                        ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                        : 0.0}
+                                                </Text>
                                             </View>
-                                            <Text style={styles.secondaryColor}>
-                                                $
-                                                {ethereumBalance
-                                                    ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
-                                                    : 0.0}
-                                            </Text>
                                         </View>
                                     </View>
-                                </View>
-                            </TouchableOpacity>
+                                </TouchableOpacity>
 
-                            <AccountSummary
-                                navigation={navigation}
-                                accountBalance={accountBalance}
-                                address={ethereumAccount}
-                                updateAccountDetail={updateAccountDetail}
-                                networkName="Ethereum"
-                            />
-                            <AccountSummary
-                                navigation={navigation}
-                                accountBalance={sepoliaEthBalance}
-                                address={sepoliaAccount}
-                                updateAccountDetail={updateAccountDetail}
-                                networkName="Sepolia"
-                            />
-                             <AccountSummary
-                                navigation={navigation}
-                                accountBalance={polygonEthBalance}
-                                address={polygonAccount}
-                                updateAccountDetail={updateAccountDetail}
-                                networkName="Polygon"
-                            />
-                        </View>
+                                <AccountSummary
+                                    navigation={navigation}
+                                    accountBalance={accountBalance}
+                                    address={ethereumAccount}
+                                    updateAccountDetail={updateAccountDetail}
+                                    networkName="Ethereum"
+                                />
+                                <AccountSummary
+                                    navigation={navigation}
+                                    accountBalance={sepoliaEthBalance}
+                                    address={sepoliaAccount}
+                                    updateAccountDetail={updateAccountDetail}
+                                    networkName="Sepolia"
+                                />
+                                <AccountSummary
+                                    navigation={navigation}
+                                    accountBalance={polygonEthBalance}
+                                    address={polygonAccount}
+                                    updateAccountDetail={updateAccountDetail}
+                                    networkName="Polygon"
+                                />
+                            </View>
                         </ScrollView>
                         <AccountDetails
                             refMessage={refMessage}
