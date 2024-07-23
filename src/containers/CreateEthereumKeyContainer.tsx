@@ -110,20 +110,19 @@ export default function CreateEthereumKeyContainer({
     }
 
     const onModalPress = async () => {
-        let key;
-
         setShowModal(false);
-        const chainId = transaction?.getChain().getChainId();
 
-        if (chainId === '11155111') {
-            key = await keyStorage.findByName('ethereumTestnetSepolia');
-        } else if (chainId === '1') {
-            key = await keyStorage.findByName('ethereum');
-        } else if (chainId === '137') {
-            key = await keyStorage.findByName('polygon');
-        } else throw new Error('Unsupported chain');
+        if (session && transaction) {
+            const chainId = transaction?.getChain().getChainId();
+            let key;
 
-        if (session && key && transaction) {
+            if (chainId === '11155111') {
+                key = await keyStorage.findByName('ethereumTestnetSepolia');
+            } else if (chainId === '1') {
+                key = await keyStorage.findByName('ethereum');
+            } else if (chainId === '137') {
+                key = await keyStorage.findByName('polygon');
+            } else throw new Error('Unsupported chain');
             navigation.navigate('SignTransaction', {
                 transaction,
                 privateKey: key,

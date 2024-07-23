@@ -123,6 +123,7 @@ export default function MainContainer({
         sepoliaAccount,
         sepoliaBalance,
         initialized,
+        polygonBalance,
         initializeWalletState,
     ]);
 
