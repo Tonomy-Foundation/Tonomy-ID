@@ -116,8 +116,6 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     // Save the keys and seed to the storage
     await keyStorage.emplaceKey('ethereum', ethereumKey);
     await keyStorage.emplaceKey('ethereumTestnetSepolia', sepoliaKey);
-    await keyStorage.emplaceKey('polygon', polygonKey);
+    await keyStorage.emplaceKey('ethereumPolygon', polygonKey);
     await appStorage.setCryptoSeed(seedData.seed);
 }
-
-//ethereum, polygon, sepolia, pangea

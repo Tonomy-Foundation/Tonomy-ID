@@ -50,7 +50,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             await connect();
             const ethereumKey = await keyStorage.findByName('ethereum');
             const sepoliaKey = await keyStorage.findByName('ethereumTestnetSepolia');
-            const polygonKey = await keyStorage.findByName('polygon');
+            const polygonKey = await keyStorage.findByName('ethereumPolygon');
 
             if (get().initialized) console.log('Already initialized.');
             else if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {

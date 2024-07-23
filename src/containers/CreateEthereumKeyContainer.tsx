@@ -121,7 +121,7 @@ export default function CreateEthereumKeyContainer({
             } else if (chainId === '1') {
                 key = await keyStorage.findByName('ethereum');
             } else if (chainId === '137') {
-                key = await keyStorage.findByName('polygon');
+                key = await keyStorage.findByName('ethereumPolygon');
             } else throw new Error('Unsupported chain');
             navigation.navigate('SignTransaction', {
                 transaction,
