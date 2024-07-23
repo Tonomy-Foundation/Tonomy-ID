@@ -24,7 +24,7 @@ export default function WalletConnectLoginContainer({
 }) {
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
-    const { web3wallet, ethereumAccount, sepoliaAccount } = useWalletStore();
+    const { web3wallet, ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
     let currentETHAddress;
     const { requiredNamespaces, optionalNamespaces } = payload.params;
     const activeNamespaces = Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
@@ -32,13 +32,17 @@ export default function WalletConnectLoginContainer({
     const chainIds = chains?.map((chain) => chain.split(':')[1]);
     let networkName;
 
+
     if (chainIds?.[0] === '11155111') {
         currentETHAddress = sepoliaAccount ? sepoliaAccount.getName() : '';
         networkName = 'Sepolia';
     } else if (chainIds?.[0] === '1') {
         currentETHAddress = ethereumAccount ? ethereumAccount.getName() : '';
         networkName = 'Ethereum';
-    }
+    } else if(chainIds?.[0] === '137') {
+        currentETHAddress = polygonAccount ? polygonAccount.getName() : '';
+        networkName = 'Polygon';
+    }  else throw new Error('Unsupported chain');
 
     const onCancel = async () => {
         await web3wallet?.rejectSession({

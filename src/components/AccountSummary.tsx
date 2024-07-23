@@ -10,7 +10,7 @@ export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
     accountBalance: { balance: string; usdValue: number };
     updateAccountDetail: (address: IAccount) => void;
-    address: IAccount;
+    address: IAccount | null;
     networkName: string;
 };
 
@@ -21,7 +21,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
         <>
             <TouchableOpacity
                 onPress={() => {
-                    props.updateAccountDetail(props.address);
+                    props.updateAccountDetail(props?.address);
                 }}
             >
                 <View style={[styles.appDialog, { justifyContent: 'center' }]}>

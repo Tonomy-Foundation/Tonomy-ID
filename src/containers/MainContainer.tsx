@@ -1,6 +1,6 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity, ImageSourcePropType, ScrollView } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -61,6 +61,8 @@ export default function MainContainer({
         initialized,
         sepoliaAccount,
         sepoliaBalance,
+        polygonAccount,
+        polygonBalance,
         initializeWalletState,
     } = useWalletStore();
 
@@ -69,6 +71,10 @@ export default function MainContainer({
         usdValue: 0,
     });
     const [sepoliaEthBalance, setSepoliaEthBalance] = useState({
+        balance: '0.00 Eth',
+        usdValue: 0,
+    });
+    const [polygonEthBalance, setPolygonEthBalance] = useState({
         balance: '0.00 Eth',
         usdValue: 0,
     });
@@ -93,6 +99,14 @@ export default function MainContainer({
                     balance: sepoliaBalance.toString(),
                     usdValue: usdValue,
                 });
+            }
+            if(polygonBalance) { 
+                const usdValue = await polygonBalance.getUsdValue();
+
+                setPolygonEthBalance({
+                    balance: polygonBalance.toString(),
+                    usdValue: usdValue, 
+                })
             }
         };
 
@@ -269,7 +283,7 @@ export default function MainContainer({
                                 Scan QR Code
                             </TButtonContained>
                         </View>
-
+                        <ScrollView>
                         <View style={styles.accountsView}>
                             <Text style={styles.accountHead}>Connected Accounts:</Text>
                             <TouchableOpacity
@@ -321,7 +335,15 @@ export default function MainContainer({
                                 updateAccountDetail={updateAccountDetail}
                                 networkName="Sepolia"
                             />
+                             <AccountSummary
+                                navigation={navigation}
+                                accountBalance={polygonEthBalance}
+                                address={polygonAccount}
+                                updateAccountDetail={updateAccountDetail}
+                                networkName="Polygon"
+                            />
                         </View>
+                        </ScrollView>
                         <AccountDetails
                             refMessage={refMessage}
                             accountDetails={accountDetails}
