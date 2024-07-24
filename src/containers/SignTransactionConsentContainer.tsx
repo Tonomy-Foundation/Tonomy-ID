@@ -177,7 +177,7 @@ export default function SignTransactionConsentContainer({
                 data: await transaction.getData(),
             };
 
-            const signedTransaction = await privateKey.sendTransaction(transactionRequest);
+            const signedTransaction: any = await privateKey.sendTransaction(transactionRequest);
 
             setSignedTransaction((signedTransaction as { hash?: string })?.hash ?? '');
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
@@ -185,7 +185,12 @@ export default function SignTransactionConsentContainer({
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
             await updateBalance();
             setTransactionLoading(false);
-            setShowModal(true);
+            //setShowModal(true);
+            navigation.navigate('SignTransactionSuccess', {
+                transaction,
+                signedTransactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
+                transactionDetails,
+            });
         } catch (error) {
             setTransactionLoading(false);
 

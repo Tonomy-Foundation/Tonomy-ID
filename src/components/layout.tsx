@@ -55,5 +55,9 @@ const layoutStyles = StyleSheet.create({
     body: { flex: 3 },
     footerHint: { flex: 1, justifyContent: 'flex-end' },
     nofooterHint: { flex: 1.3, justifyContent: 'flex-end' },
-    footer: { flex: 1.2, flexDirection: 'column', justifyContent: 'flex-start' },
+    footer: {
+        flex: 1.2,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+    },
 });

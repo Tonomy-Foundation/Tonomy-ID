@@ -83,6 +83,20 @@ export function TButtonContained(props: ButtonProps) {
     );
 }
 
+export function TButtonSecondaryContained(props: ButtonProps) {
+    const theme = useAppTheme();
+    const color = theme.colors.black;
+    const style = {
+        backgroundColor: theme.colors.backgroundGray,
+    };
+    return (
+        // eslint-disable-next-line react/prop-types
+        <TButton {...props} style={[props.style, style]} color={color}>
+            {props.children}
+        </TButton>
+    );
+}
+
 export function TButtonOutlined(props: ButtonProps) {
     const style = {
         borderColor: props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme),
