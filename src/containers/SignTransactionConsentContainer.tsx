@@ -13,7 +13,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
-import TModal from '../components/TModal';
+//import TModal from '../components/TModal';
 import AccountDetails from '../components/AccountDetails';
 
 export default function SignTransactionConsentContainer({
@@ -62,7 +62,7 @@ export default function SignTransactionConsentContainer({
         total: '',
         usdTotal: 0,
     });
-    const [showModal, setShowModal] = useState(false);
+    //const [showModal, setShowModal] = useState(false);
     const [signedTransaction, setSignedTransaction] = useState('');
     const [balanceError, showBalanceError] = useState(false);
     const { ethereumBalance, updateBalance } = useWalletStore();
@@ -177,7 +177,7 @@ export default function SignTransactionConsentContainer({
                 data: await transaction.getData(),
             };
 
-            const signedTransaction: any = await privateKey.sendTransaction(transactionRequest);
+            const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
             setSignedTransaction((signedTransaction as { hash?: string })?.hash ?? '');
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
@@ -198,13 +198,13 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    const onModalPress = async () => {
-        setShowModal(false);
-        navigation.navigate({
-            name: 'UserHome',
-            params: {},
-        });
-    };
+    // const onModalPress = async () => {
+    //     setShowModal(false);
+    //     navigation.navigate({
+    //         name: 'UserHome',
+    //         params: {},
+    //     });
+    // };
 
     return (
         <LayoutComponent
@@ -387,13 +387,13 @@ export default function SignTransactionConsentContainer({
             </View>
         </RBSheet> */}
                     </View>
-                    <TModal visible={showModal} icon="check" onPress={onModalPress}>
+                    {/* <TModal visible={showModal} icon="check" onPress={onModalPress}>
                         <View style={{ marginTop: 10 }}>
                             <Text style={{ fontSize: 15, fontWeight: '600' }}>Transaction completed successfully!</Text>
                             <Text style={{ fontSize: 15, fontWeight: '600', marginTop: 10 }}>Transaction hash: </Text>
                             <Text style={{ fontSize: 14, marginTop: 5 }}>{signedTransaction}</Text>
                         </View>
-                    </TModal>
+                    </TModal> */}
                     <AccountDetails
                         refMessage={refTopUpDetail}
                         accountDetails={{
