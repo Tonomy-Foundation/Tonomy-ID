@@ -227,7 +227,11 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SignTransactionSuccess"
-                            options={{ headerBackTitleVisible: false, title: 'Transfer' }}
+                            options={{
+                                headerBackTitleVisible: false,
+                                title: 'Transfer',
+                                headerBackVisible: false,
+                            }}
                             component={SignTransactionConsentSuccessScreen}
                         />
                         <Stack.Screen

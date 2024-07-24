@@ -147,7 +147,7 @@ export default function WalletConnectLoginContainer({
             footer={
                 <View>
                     <TButtonContained style={commonStyles.marginBottom} onPress={handleAccept}>
-                        Accept
+                        Login
                     </TButtonContained>
                     <TButtonOutlined onPress={onCancel}>Cancel</TButtonOutlined>
                 </View>

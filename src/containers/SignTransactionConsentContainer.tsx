@@ -414,7 +414,7 @@ export default function SignTransactionConsentContainer({
                         style={commonStyles.marginBottom}
                         size="large"
                     >
-                        Proceed
+                        Sign Transaction
                     </TButtonContained>
                     <TButtonOutlined size="large" disabled={transactionLoading} onPress={() => onReject()}>
                         Cancel
