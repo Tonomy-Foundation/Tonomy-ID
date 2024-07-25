@@ -31,6 +31,15 @@ module.exports = function (api) {
                     },
                 },
             ],
+            [
+                'babel-plugin-rewrite-require',
+                {
+                    aliases: {
+                        crypto: 'crypto-browserify',
+                        stream: 'stream-browserify',
+                    },
+                },
+            ],
         ],
     };
 };

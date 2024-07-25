@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import '@walletconnect/react-native-compat';
 import './src/utils/polyfill';
+import '@walletconnect/react-native-compat';
 import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import RootNavigation from './src/navigation/Root';
