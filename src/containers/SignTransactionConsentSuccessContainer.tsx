@@ -5,7 +5,7 @@ import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 
 import { TButtonContained, TButtonSecondaryContained } from '../components/atoms/TButton';
-import { ITransaction } from '../utils/chain/types';
+
 import { TH1 } from '../components/atoms/THeadings';
 import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
