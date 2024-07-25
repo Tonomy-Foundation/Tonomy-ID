@@ -1,5 +1,5 @@
 // useWalletStore.js
-import create from 'zustand';
+import { create } from 'zustand';
 import { Core } from '@walletconnect/core';
 import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
 import { appStorage, connect, keyStorage } from '../utils/StorageManager/setup';
