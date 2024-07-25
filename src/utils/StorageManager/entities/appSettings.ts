@@ -9,11 +9,12 @@ export class AppStorage {
 
     @Column({
         unique: true,
+        type: 'varchar',
     })
     @Index()
     name!: string;
 
-    @Column()
+    @Column({ type: 'varchar' })
     value!: string;
 
     @Column({ type: 'datetime' })
