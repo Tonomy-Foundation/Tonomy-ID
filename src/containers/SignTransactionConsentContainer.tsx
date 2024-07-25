@@ -13,7 +13,6 @@ import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
-import TModal from '../components/TModal';
 import AccountDetails from '../components/AccountDetails';
 
 export default function SignTransactionConsentContainer({
@@ -62,16 +61,13 @@ export default function SignTransactionConsentContainer({
         total: '',
         usdTotal: 0,
     });
-    const [showModal, setShowModal] = useState(false);
-    const [signedTransaction, setSignedTransaction] = useState('');
+
     const [balanceError, showBalanceError] = useState(false);
     const { ethereumBalance, updateBalance } = useWalletStore();
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
 
     const refTopUpDetail = useRef(null);
-
-    const refMessage = useRef(null);
 
     useEffect(() => {
         const fetchTransactionDetails = async () => {
@@ -179,27 +175,29 @@ export default function SignTransactionConsentContainer({
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
-            setSignedTransaction((signedTransaction as { hash?: string })?.hash ?? '');
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
             await updateBalance();
             setTransactionLoading(false);
-            setShowModal(true);
+
+            navigation.navigate('SignTransactionSuccess', {
+                transactionDetails: {
+                    chainId: transaction.getChain().getChainId(),
+                    transactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
+                    toAccount: transactionDetails.toAccount,
+                    shortAccountName: transaction.getChain().formatShortAccountName(transactionDetails?.toAccount),
+                    fee: transactionDetails.fee,
+                    usdFee: transactionDetails.usdFee,
+                    total: transactionDetails.total,
+                    usdTotal: transactionDetails.usdTotal,
+                },
+            });
         } catch (error) {
             setTransactionLoading(false);
-
             throw new Error(`Error signing transaction, ${error}`);
         }
     }
-
-    const onModalPress = async () => {
-        setShowModal(false);
-        navigation.navigate({
-            name: 'UserHome',
-            params: {},
-        });
-    };
 
     return (
         <LayoutComponent
@@ -248,9 +246,7 @@ export default function SignTransactionConsentContainer({
                                                 )
                                             </Text>
                                         </Text>
-                                    </View>
-
-                                    {/* {contractTransaction && (
+                                        {/* {contractTransaction && (
                             <>
                                 <View
                                     style={{
@@ -316,6 +312,7 @@ export default function SignTransactionConsentContainer({
                                 </TouchableOpacity>
                             </View>
                         )} */}
+                                    </View>
                                 </View>
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -372,7 +369,6 @@ export default function SignTransactionConsentContainer({
                         ) : (
                             <TSpinner style={{ marginBottom: 12 }} />
                         )}
-
                         {/* <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
             <View style={styles.rawTransactionDrawer}>
                 <Text style={styles.drawerHead}>Show raw transaction!</Text>
@@ -382,13 +378,6 @@ export default function SignTransactionConsentContainer({
             </View>
         </RBSheet> */}
                     </View>
-                    <TModal visible={showModal} icon="check" onPress={onModalPress}>
-                        <View style={{ marginTop: 10 }}>
-                            <Text style={{ fontSize: 15, fontWeight: '600' }}>Transaction completed successfully!</Text>
-                            <Text style={{ fontSize: 15, fontWeight: '600', marginTop: 10 }}>Transaction hash: </Text>
-                            <Text style={{ fontSize: 14, marginTop: 5 }}>{signedTransaction}</Text>
-                        </View>
-                    </TModal>
                     <AccountDetails
                         refMessage={refTopUpDetail}
                         accountDetails={{
@@ -409,7 +398,7 @@ export default function SignTransactionConsentContainer({
                         style={commonStyles.marginBottom}
                         size="large"
                     >
-                        Proceed
+                        Sign Transaction
                     </TButtonContained>
                     <TButtonOutlined size="large" disabled={transactionLoading} onPress={() => onReject()}>
                         Cancel
