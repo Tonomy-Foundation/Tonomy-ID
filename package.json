@@ -19,7 +19,7 @@
         "start": "NODE_ENV=development yarn run build:prepare && NODE_ENV=development npx expo start --dev-client --clear",
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
         "lint:fix": "yarn run lint -- --fix",
-        "test": "cross-env BABEL_CONFIG_PATH=./test/babel.config.js jest",
+        "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
         "updateSdkVersion": "./update_sdk_version.sh"
@@ -94,7 +94,6 @@
         "babel-plugin-transform-builtin-extend": "^1.1.2",
         "babel-plugin-transform-inline-environment-variables": "^0.4.4",
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
-        "cross-env": "^7.0.3",
         "eas-cli": "^4.1.2",
         "eslint": "^8.25.0",
         "eslint-config-prettier": "^8.5.0",

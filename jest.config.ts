@@ -1,4 +1,4 @@
-import type { Config } from "jest";
+import type { Config } from 'jest';
 
 // List of node_module packages that will be transformed by jest
 const packagesRegexToTransform = [
@@ -44,9 +44,9 @@ const ignoreRegexString = 'node_modules/(?!(' + packagesRegexToTransform.join('|
 console.info('jest.transformIgnorePatterns:', ignoreRegexString);
 
 const config: Config = {
-    preset: "jest-expo",
+    preset: 'jest-expo',
     transformIgnorePatterns: [ignoreRegexString],
-    testEnvironment: "node",
+    testEnvironment: 'node',
     moduleNameMapper: {
         // Cannot find module ... from ...
         '^@ipld/dag-pb$': '<rootDir>/node_modules/@ipld/dag-pb/src/index.js',
@@ -55,7 +55,7 @@ const config: Config = {
         '^protons-runtime$': '<rootDir>/node_modules/protons-runtime/dist/src/index.js',
         '^uint8-varint$': '<rootDir>/node_modules/uint8-varint/dist/src/index.js',
         '^uint8arrays$': '<rootDir>/node_modules/uint8arrays/dist/src/index.js',
-    }
-}
+    },
+};
 
 export default config;
