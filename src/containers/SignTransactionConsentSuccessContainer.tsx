@@ -42,8 +42,10 @@ export default function SignTransactionConsentSuccessContainer({
             explorerUrl = `https://etherscan.io/tx/${transactionDetails.transactionHash}`;
         } else if (chainId.toString() === '137') {
             explorerUrl = `https://polygonscan.com/tx/${transactionDetails.transactionHash}`;
-        } else {
+        } else if (chainId.toString() === '11155111') {
             explorerUrl = `https://sepolia.etherscan.io/tx/${transactionDetails.transactionHash}`;
+        } else {
+            throw new Error('Unknown network: Cannot redirect to block explorer');
         }
         Linking.openURL(explorerUrl);
     };
