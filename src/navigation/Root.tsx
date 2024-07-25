@@ -68,16 +68,11 @@ export type RouteStackParamList = {
         session: ISession;
     };
     SignTransactionSuccess: {
-        transaction: ITransaction;
-        signedTransactionHash: string;
         transactionDetails: {
-            transactionType: TransactionType | null;
-            fromAccount: string;
+            chainId: string;
+            transactionHash: string;
             toAccount: string;
-            value: string;
-            usdValue: number;
-            functionName: string;
-            args: Record<string, string> | null;
+            shortAccountName: string;
             fee: string;
             usdFee: number;
             total: string;

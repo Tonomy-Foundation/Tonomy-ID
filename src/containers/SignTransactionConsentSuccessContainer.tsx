@@ -5,7 +5,7 @@ import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 
 import { TButtonContained, TButtonSecondaryContained } from '../components/atoms/TButton';
-import { ITransaction, TransactionType } from '../utils/chain/types';
+import { ITransaction } from '../utils/chain/types';
 import { TH1 } from '../components/atoms/THeadings';
 import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
@@ -14,21 +14,14 @@ import { formatDateTime } from '../utils/date';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
-    transaction,
-    signedTransactionHash,
     transactionDetails,
 }: {
     navigation: Props['navigation'];
-    transaction: ITransaction;
-    signedTransactionHash: string;
     transactionDetails: {
-        transactionType: TransactionType | null;
-        fromAccount: string;
+        transactionHash: string;
+        chainId: string;
         toAccount: string;
-        value: string;
-        usdValue: number;
-        functionName: string;
-        args: Record<string, string> | null;
+        shortAccountName: string;
         fee: string;
         usdFee: number;
         total: string;
@@ -44,12 +37,13 @@ export default function SignTransactionConsentSuccessContainer({
 
     const viewBlockExplorer = () => {
         let explorerUrl;
-        const chain = transaction.getChain();
-        const chainId = chain.getChainId();
+        const chainId = transactionDetails.chainId;
         if (chainId.toString() === '1') {
-            explorerUrl = `https://etherscan.io/tx/${signedTransactionHash}`;
+            explorerUrl = `https://etherscan.io/tx/${transactionDetails.transactionHash}`;
+        } else if (chainId.toString() === '137') {
+            explorerUrl = `https://polygonscan.com/tx/${transactionDetails.transactionHash}`;
         } else {
-            explorerUrl = `https://sepolia.etherscan.io/tx/${signedTransactionHash}`;
+            explorerUrl = `https://sepolia.etherscan.io/tx/${transactionDetails.transactionHash}`;
         }
         Linking.openURL(explorerUrl);
     };
@@ -76,9 +70,7 @@ export default function SignTransactionConsentSuccessContainer({
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.secondaryColor}>Recipient:</Text>
-                                <Text>
-                                    {transaction.getChain().formatShortAccountName(transactionDetails?.toAccount)}
-                                </Text>
+                                <Text>{transactionDetails?.shortAccountName}</Text>
                             </View>
                         </View>
 
