@@ -76,7 +76,6 @@ export default function WalletConnectLoginContainer({
                         accounts.push(`${chain}:${chainDetail.currentETHAddress}`);
                     }
                 });
-                console.log('activeNamespaces[key].methods', activeNamespaces[key].methods);
                 namespaces[key] = {
                     chains: activeNamespaces[key].chains,
                     accounts,
