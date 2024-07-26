@@ -41,6 +41,7 @@
         "@wharfkit/antelope": "^0.7.1",
         "base-64": "^1.0.0",
         "big-integer": "^1.6.51",
+        "chai": "^4.5.0",
         "deepmerge": "^4.2.2",
         "ethers": "^6.12.1",
         "expo": "~49.0.7",
@@ -77,6 +78,7 @@
         "react-native-webview": "13.2.2",
         "reflect-metadata": "^0.1.13",
         "typeorm": "^0.3.6",
+        "web3": "^4.11.1",
         "zustand": "^3.7.2"
     },
     "devDependencies": {

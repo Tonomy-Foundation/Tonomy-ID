@@ -27,6 +27,8 @@ import {
 } from './types';
 import settings from '../../settings';
 import { SignClientTypes } from '@walletconnect/types';
+import fs from 'fs';
+import path from 'path';
 
 export const USD_CONVERSION = 0.002;
 
@@ -172,9 +174,9 @@ const EthereumMainnetChain = new EthereumChain(
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
 const EthereumSepoliaChain = new EthereumChain(
-    `https://sepolia.infura.io/v3/${INFURA_KEY}`,
-    'sepolia',
-    '11155111',
+    `http://127.0.0.1:7545`,
+    'ganache',
+    '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
 
@@ -255,6 +257,7 @@ export class EthereumTransaction implements ITransaction {
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
         const isContract = await this.getTo().isContract();
+
         const isValuable = (await this.getValue()).getAmount() > BigInt(0);
 
         if (isContract && this.transaction.data) {
@@ -290,15 +293,25 @@ export class EthereumTransaction implements ITransaction {
 
         if (this.abi) return this.abi;
         // fetch the ABI from etherscan
-        const res = await fetch(`${ETHERSCAN_URL}&module=contract&action=getabi&address=${this.getTo().getName()}`)
-            .then((res) => res.json())
-            .then((data) => data.result);
+        // const res = await fetch(`${ETHERSCAN_URL}&module=contract&action=getabi&address=${this.getTo().getName()}`)
+        //     .then((res) => res.json())
+        //     .then((data) => data.result);
 
-        if (res.status !== '1') {
-            throw new Error('Failed to fetch ABI');
-        }
+        // if (res.status !== '1') {
+        //     throw new Error('Failed to fetch ABI');
+        // }
 
-        this.abi = res.abi as string;
+        // this.abi = res.abi as string;
+        const abiPath = path.join(__dirname, '../../../build/contracts/SimpleStorage.json');
+
+        // Read the ABI file
+        const abiFile = fs.readFileSync(abiPath, 'utf-8');
+
+        // Parse the ABI file content
+        const abiJson = JSON.parse(abiFile);
+
+        // Extract the ABI from the JSON file
+        this.abi = abiJson.abi as string;
         return this.abi;
     }
     async getFunction(): Promise<string> {
@@ -317,7 +330,18 @@ export class EthereumTransaction implements ITransaction {
         const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
 
         if (!decodedData?.args) throw new Error('Failed to decode function name');
-        return decodedData.args;
+
+        // Accessing the inputs of the fragment
+        const inputs = decodedData.fragment.inputs;
+        const args: Record<string, string> = {};
+
+        decodedData.args.forEach((arg: any, index: number) => {
+            const inputName = inputs[index].name;
+
+            args[inputName] = arg.toString();
+        });
+
+        return args;
     }
     async getValue(): Promise<Asset> {
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
