@@ -172,13 +172,18 @@ export default function CommunicationModule() {
         try {
             web3wallet?.on('session_request', async (event) => {
                 const { topic, params, id, verifyContext } = event;
-                const { request } = params;
+                const { request, chainId } = params;
 
                 switch (request.method) {
                     case 'eth_sendTransaction': {
                         const transactionData = request.params[0];
 
-                        const key = await keyStorage.findByName('ethereum');
+                        let key;
+
+                        if (chainId === 'eip155:11155111') key = await keyStorage.findByName('ethereumTestnetSepolia');
+                        else if (chainId === 'eip155:1') key = await keyStorage.findByName('ethereum');
+                        else if (chainId === 'eip155:137') key = await keyStorage.findByName('ethereumPolygon');
+                        else throw new Error('Unsupported chains');
 
                         let transaction: ITransaction;
 

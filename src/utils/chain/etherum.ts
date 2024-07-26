@@ -177,6 +177,14 @@ const EthereumSepoliaChain = new EthereumChain(
     '11155111',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
+
+const EthereumPolygonChain = new EthereumChain(
+    `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
+    'Polygon',
+    '137',
+    'https://cryptologos.cc/logos/polygon-matic-logo.png'
+);
+
 let provider: JsonRpcProvider;
 
 export let chain: EthereumChain;
@@ -200,15 +208,26 @@ const ETHToken = new EthereumToken(
 const ETHSepoliaToken = new EthereumToken(
     EthereumSepoliaChain,
     'Ether',
-    'ETH',
+    'SepoliaETH',
     18,
     'https://cryptologos.cc/logos/ethereum-eth-logo.png',
     'ethereum'
 );
 
+const ETHPolygonToken = new EthereumToken(
+    EthereumPolygonChain,
+    'Polygon',
+    'MATIC',
+    18,
+    'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    'polygon'
+);
+
 EthereumMainnetChain.addToken(ETHToken);
 EthereumSepoliaChain.addToken(ETHSepoliaToken);
-export { EthereumMainnetChain, EthereumSepoliaChain, ETHToken, ETHSepoliaToken };
+EthereumPolygonChain.addToken(ETHPolygonToken);
+
+export { EthereumMainnetChain, EthereumSepoliaChain, EthereumPolygonChain, ETHToken, ETHSepoliaToken, ETHPolygonToken };
 
 export class EthereumTransaction implements ITransaction {
     private transaction: TransactionRequest;
