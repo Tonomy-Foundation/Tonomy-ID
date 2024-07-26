@@ -76,11 +76,11 @@ export default function WalletConnectLoginContainer({
                         accounts.push(`${chain}:${chainDetail.currentETHAddress}`);
                     }
                 });
-
+                console.log('activeNamespaces[key].methods', activeNamespaces[key].methods);
                 namespaces[key] = {
                     chains: activeNamespaces[key].chains,
                     accounts,
-                    methods: ['eth_sendTransaction'],
+                    methods: activeNamespaces[key].methods,
                     events: activeNamespaces[key].events,
                 };
             });

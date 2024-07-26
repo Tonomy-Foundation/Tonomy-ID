@@ -74,6 +74,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                 const sepoliaBalance = await ETHSepoliaToken.getBalance(sepoliaAccount);
 
+                console.log('sepoliaBalance', sepoliaBalance);
                 const exportPolygonPrivateKey = await polygonKey.exportPrivateKey();
                 const polygonPrivateKey = new EthereumPrivateKey(exportPolygonPrivateKey);
 

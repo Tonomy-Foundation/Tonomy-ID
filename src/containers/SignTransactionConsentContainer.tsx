@@ -178,7 +178,7 @@ export default function SignTransactionConsentContainer({
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
-            await updateBalance(transaction.getChain().getChainId());
+            await updateBalance();
             setTransactionLoading(false);
 
             navigation.navigate('SignTransactionSuccess', {
@@ -232,12 +232,17 @@ export default function SignTransactionConsentContainer({
                                         </Text>
                                     </View>
                                     <View
-                                        style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}
+                                        style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            marginTop: 12,
+                                        }}
                                     >
                                         <Text style={styles.secondaryColor}>Amount:</Text>
-                                        <Text style={{ marginLeft: 5 }}>
-                                            {transactionDetails?.value}
-                                            <Text style={styles.secondaryColor}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text>{transactionDetails?.value} </Text>
+                                            <Text style={[styles.secondaryColor]}>
                                                 ($
                                                 {formatCurrencyValue(
                                                     Number(transactionDetails?.usdValue.toFixed(4)),
@@ -245,8 +250,10 @@ export default function SignTransactionConsentContainer({
                                                 )}
                                                 )
                                             </Text>
-                                        </Text>
-                                        {/* {contractTransaction && (
+                                        </View>
+                                    </View>
+
+                                    {/* {contractTransaction && (
                             <>
                                 <View
                                     style={{
@@ -312,18 +319,17 @@ export default function SignTransactionConsentContainer({
                                 </TouchableOpacity>
                             </View>
                         )} */}
-                                    </View>
                                 </View>
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                        <Text style={{ marginLeft: 5 }}>
-                                            {formatCurrencyValue(Number(transactionDetails?.fee), 5)}
-                                            <Text style={styles.secondaryColor}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
+                                            <Text style={[styles.secondaryColor]}>
                                                 ($
                                                 {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
                                 </View>
                                 <View
@@ -336,10 +342,16 @@ export default function SignTransactionConsentContainer({
                                         },
                                     ]}
                                 >
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <View
+                                        style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                        }}
+                                    >
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
-                                        <Text style={{ marginLeft: 5 }}>
-                                            {formatCurrencyValue(Number(transactionDetails?.total), 5)}
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text>{formatCurrencyValue(Number(transactionDetails?.total), 5)}</Text>
                                             <Text style={styles.secondaryColor}>
                                                 ($
                                                 {formatCurrencyValue(
@@ -348,8 +360,9 @@ export default function SignTransactionConsentContainer({
                                                 )}
                                                 )
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
+
                                     {balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
                                 </View>
                                 {balanceError && (
