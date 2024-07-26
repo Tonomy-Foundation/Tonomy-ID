@@ -19,6 +19,7 @@ import { EthereumPrivateKey, EthereumTransaction, chain } from '../utils/chain/e
 import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { ethers, BigNumberish } from 'ethers';
+import { getSdkError } from '@walletconnect/utils';
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -224,8 +225,19 @@ export default function CommunicationModule() {
                         break;
                     }
 
-                    default:
+                    default: {
+                        const response = {
+                            id: id,
+                            error: getSdkError('UNSUPPORTED_METHODS'),
+                            jsonrpc: '2.0',
+                        };
+
+                        await web3wallet?.respondSessionRequest({
+                            topic,
+                            response,
+                        });
                         throw new Error('Method not supported');
+                    }
                 }
             });
         } catch (error) {

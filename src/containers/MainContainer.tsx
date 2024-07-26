@@ -64,18 +64,19 @@ export default function MainContainer({
         polygonAccount,
         polygonBalance,
         initializeWalletState,
+        updateBalance,
     } = useWalletStore();
 
     const [accountBalance, setAccountBalance] = useState({
-        balance: '0.00 Eth',
+        balance: '0 Eth',
         usdValue: 0,
     });
     const [sepoliaEthBalance, setSepoliaEthBalance] = useState({
-        balance: '0.00 SepoliaETH',
+        balance: '0 SepoliaETH',
         usdValue: 0,
     });
     const [polygonEthBalance, setPolygonEthBalance] = useState({
-        balance: '0.00 MATIC',
+        balance: '0 MATIC',
         usdValue: 0,
     });
 
@@ -115,6 +116,7 @@ export default function MainContainer({
 
         if (ethereumBalance && sepoliaBalance && !initialized) {
             initializeWalletState();
+            updateBalance();
         }
     }, [
         ethereumAccount,
@@ -124,6 +126,7 @@ export default function MainContainer({
         sepoliaBalance,
         initialized,
         polygonBalance,
+        updateBalance,
         initializeWalletState,
     ]);
 
@@ -137,10 +140,10 @@ export default function MainContainer({
 
     useEffect(() => {
         async function getUpdatedBalance() {
-            const accountBalance = await vestingContract.getBalance(accountName);
+            const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-            if (pangeaBalance !== accountBalance) {
-                setPangeaBalance(accountBalance);
+            if (pangeaBalance !== accountPangeaBalance) {
+                setPangeaBalance(accountPangeaBalance);
             }
         }
 

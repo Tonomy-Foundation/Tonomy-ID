@@ -52,8 +52,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
     }, [balance]);
 
     const message =
-        `Please use the following account name to send ${accountData.symbol} tokens to on the
-    ${accountData.name} network:` +
+        `Please use the following account name to send ${accountData.symbol} tokens to on the ${accountData.name} network:` +
         '\n' +
         `${accountData.address}`;
 
