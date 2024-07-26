@@ -63,6 +63,7 @@ export default function MainContainer({
         sepoliaBalance,
         polygonAccount,
         polygonBalance,
+        updateBalance,
         initializeWalletState,
     } = useWalletStore();
 
@@ -137,10 +138,10 @@ export default function MainContainer({
 
     useEffect(() => {
         async function getUpdatedBalance() {
-            const accountBalance = await vestingContract.getBalance(accountName);
+            const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-            if (pangeaBalance !== accountBalance) {
-                setPangeaBalance(accountBalance);
+            if (pangeaBalance !== accountPangeaBalance) {
+                setPangeaBalance(accountPangeaBalance);
             }
         }
 

@@ -80,7 +80,7 @@ export default function WalletConnectLoginContainer({
                 namespaces[key] = {
                     chains: activeNamespaces[key].chains,
                     accounts,
-                    methods: activeNamespaces[key].methods,
+                    methods: ['eth_sendTransaction'],
                     events: activeNamespaces[key].events,
                 };
             });

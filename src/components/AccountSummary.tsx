@@ -30,7 +30,10 @@ const AccountSummary = (props: AccountSummaryProps) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Image source={require('../assets/icons/eth-img.png')} style={styles.favicon} />
+                                <Image
+                                    source={require('../assets/icons/eth-img.png')}
+                                    style={[styles.favicon, { resizeMode: 'contain' }]}
+                                />
                                 <Text style={styles.networkTitle}>{props.networkName} Network:</Text>
                             </View>
                             {currentAddress ? (

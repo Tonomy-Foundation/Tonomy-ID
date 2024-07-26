@@ -178,7 +178,7 @@ export default function SignTransactionConsentContainer({
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
-            await updateBalance();
+            await updateBalance(transaction.getChain().getChainId());
             setTransactionLoading(false);
 
             navigation.navigate('SignTransactionSuccess', {
@@ -235,7 +235,7 @@ export default function SignTransactionConsentContainer({
                                         style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}
                                     >
                                         <Text style={styles.secondaryColor}>Amount:</Text>
-                                        <Text>
+                                        <Text style={{ marginLeft: 5 }}>
                                             {transactionDetails?.value}
                                             <Text style={styles.secondaryColor}>
                                                 ($
@@ -317,7 +317,7 @@ export default function SignTransactionConsentContainer({
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                        <Text>
+                                        <Text style={{ marginLeft: 5 }}>
                                             {formatCurrencyValue(Number(transactionDetails?.fee), 5)}
                                             <Text style={styles.secondaryColor}>
                                                 ($
@@ -338,7 +338,7 @@ export default function SignTransactionConsentContainer({
                                 >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
-                                        <Text>
+                                        <Text style={{ marginLeft: 5 }}>
                                             {formatCurrencyValue(Number(transactionDetails?.total), 5)}
                                             <Text style={styles.secondaryColor}>
                                                 ($
