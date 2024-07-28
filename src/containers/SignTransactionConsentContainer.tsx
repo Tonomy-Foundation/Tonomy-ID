@@ -101,7 +101,7 @@ export default function SignTransactionConsentContainer({
 
                 const functionName = '';
                 const args: Record<string, string> | null = null;
-                const usdBalance = await ethereumBalance?.getUsdValue();
+                const usdBalance = ethereumBalance.usdBalance;
 
                 if (usdBalance && usdBalance < usdTotal) {
                     showBalanceError(true);
@@ -179,7 +179,6 @@ export default function SignTransactionConsentContainer({
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
             await updateBalance();
-            setTransactionLoading(false);
 
             navigation.navigate('SignTransactionSuccess', {
                 transactionDetails: {
@@ -193,6 +192,7 @@ export default function SignTransactionConsentContainer({
                     usdTotal: transactionDetails.usdTotal,
                 },
             });
+            setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
             throw new Error(`Error signing transaction, ${error}`);

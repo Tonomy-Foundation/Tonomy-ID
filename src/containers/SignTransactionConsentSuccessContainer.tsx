@@ -11,6 +11,7 @@ import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
 import { formatDateTime } from '../utils/date';
+import useWalletStore from '../store/useWalletStore';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
@@ -28,7 +29,11 @@ export default function SignTransactionConsentSuccessContainer({
         usdTotal: number;
     };
 }) {
-    const backToHome = () => {
+    const { updateBalance } = useWalletStore();
+
+    const backToHome = async () => {
+        await updateBalance();
+
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -38,6 +43,7 @@ export default function SignTransactionConsentSuccessContainer({
     const viewBlockExplorer = () => {
         let explorerUrl;
         const chainId = transactionDetails.chainId;
+
         if (chainId.toString() === '1') {
             explorerUrl = `https://etherscan.io/tx/${transactionDetails.transactionHash}`;
         } else if (chainId.toString() === '137') {
@@ -47,6 +53,7 @@ export default function SignTransactionConsentSuccessContainer({
         } else {
             throw new Error('Unknown network: Cannot redirect to block explorer');
         }
+
         Linking.openURL(explorerUrl);
     };
 
@@ -56,17 +63,17 @@ export default function SignTransactionConsentSuccessContainer({
                 <ScrollView>
                     <View style={styles.container}>
                         <TransactionSuccessIcon />
-                        <View style={{ marginTop: 15, ...commonStyles.alignItemsCenter }}>
+                        <View style={{ marginTop: 10, ...commonStyles.alignItemsCenter }}>
                             <TH1>Transaction successful</TH1>
                             <Text style={{ fontSize: 20 }}>
-                                {`${formatCurrencyValue(Number(transactionDetails?.total), 5)} ETH`}
+                                {`${formatCurrencyValue(Number(transactionDetails?.total), 5)}`}
                                 <Text style={styles.secondaryColor}>
                                     {` ($${formatCurrencyValue(Number(transactionDetails?.usdTotal.toFixed(4)), 3)})`}
                                 </Text>
                             </Text>
                         </View>
                         <View style={styles.appDialog}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                                 <Text style={styles.secondaryColor}>Date:</Text>
                                 <Text>{formatDateTime(new Date())}</Text>
                             </View>
@@ -122,9 +129,9 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.grey5,
         borderStyle: 'solid',
         borderRadius: 7,
-        padding: 16,
+        padding: 14,
         width: '100%',
-        marginTop: 20,
+        marginTop: 10,
     },
     secondaryColor: {
         color: theme.colors.secondary2,

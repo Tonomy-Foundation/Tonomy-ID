@@ -14,7 +14,7 @@ import {
     ETHSepoliaToken,
     ETHToken,
 } from '../utils/chain/etherum';
-import { Asset, IAccount } from '../utils/chain/types';
+import { IAccount } from '../utils/chain/types';
 
 export const core = new Core({
     projectId: settings.config.walletConnectProjectId,
@@ -26,11 +26,11 @@ interface WalletState {
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
     ethereumAccount: IAccount | null;
-    ethereumBalance: Asset | null;
+    ethereumBalance: { balance: string; usdBalance: number };
     sepoliaAccount: IAccount | null;
-    sepoliaBalance: Asset | null;
+    sepoliaBalance: { balance: string; usdBalance: number };
     polygonAccount: IAccount | null;
-    polygonBalance: Asset | null;
+    polygonBalance: { balance: string; usdBalance: number };
     initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
@@ -41,11 +41,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
     web3wallet: null,
     ethereumAccount: null,
     ethereumPrivateKey: null,
-    ethereumBalance: null,
+    ethereumBalance: { balance: '0', usdBalance: 0 },
     sepoliaAccount: null,
-    sepoliaBalance: null,
+    sepoliaBalance: { balance: '0', usdBalance: 0 },
     polygonAccount: null,
-    polygonBalance: null,
+    polygonBalance: { balance: '0', usdBalance: 0 },
     initializeWalletState: async () => {
         try {
             await connect();
@@ -53,8 +53,9 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const sepoliaKey = await keyStorage.findByName('ethereumTestnetSepolia');
             const polygonKey = await keyStorage.findByName('ethereumPolygon');
 
-            if (get().initialized) console.log('Already initialized.');
-            else if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {
+            if (get().initialized) {
+                console.log('Already initialized');
+            } else if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
 
@@ -96,11 +97,20 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 set({
                     initialized: true,
                     web3wallet,
-                    ethereumBalance,
+                    ethereumBalance: {
+                        balance: ethereumBalance.toString(),
+                        usdBalance: await ethereumBalance.getUsdValue(),
+                    },
                     ethereumAccount,
-                    sepoliaBalance,
+                    sepoliaBalance: {
+                        balance: sepoliaBalance.toString(),
+                        usdBalance: await sepoliaBalance.getUsdValue(),
+                    },
                     sepoliaAccount,
-                    polygonBalance,
+                    polygonBalance: {
+                        balance: polygonBalance.toString(),
+                        usdBalance: await polygonBalance.getUsdValue(),
+                    },
                     polygonAccount,
                 });
             }
@@ -111,11 +121,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 ethereumPrivateKey: null,
                 web3wallet: null,
                 ethereumAccount: null,
-                ethereumBalance: null,
+                ethereumBalance: { balance: '0', usdBalance: 0 },
                 sepoliaAccount: null,
-                sepoliaBalance: null,
+                sepoliaBalance: { balance: '0', usdBalance: 0 },
                 polygonAccount: null,
-                polygonBalance: null,
+                polygonBalance: { balance: '0', usdBalance: 0 },
             });
         }
     },
@@ -128,11 +138,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 ethereumPrivateKey: null,
                 web3wallet: null,
                 ethereumAccount: null,
-                ethereumBalance: null,
+                ethereumBalance: { balance: '0', usdBalance: 0 },
                 sepoliaAccount: null,
-                sepoliaBalance: null,
+                sepoliaBalance: { balance: '0', usdBalance: 0 },
                 polygonAccount: null,
-                polygonBalance: null,
+                polygonBalance: { balance: '0', usdBalance: 0 },
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
@@ -150,9 +160,18 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const polygonBalance = await ETHToken.getBalance(polygonAccount);
 
                 set({
-                    ethereumBalance,
-                    sepoliaBalance,
-                    polygonBalance,
+                    ethereumBalance: {
+                        balance: ethereumBalance.toString(),
+                        usdBalance: (await ethereumBalance.getUsdValue()) || 0,
+                    },
+                    sepoliaBalance: {
+                        balance: sepoliaBalance.toString(),
+                        usdBalance: (await sepoliaBalance.getUsdValue()) || 0,
+                    },
+                    polygonBalance: {
+                        balance: polygonBalance.toString(),
+                        usdBalance: (await polygonBalance.getUsdValue()) || 0,
+                    },
                 });
             }
         } catch (error) {
