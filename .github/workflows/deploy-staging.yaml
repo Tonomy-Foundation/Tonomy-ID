@@ -3,7 +3,7 @@ name: Deployment - Staging
 on:
   push:
     branches:
-      - development
+      - feature/354-signed-transaction
 
 jobs:
   deploy:
@@ -40,4 +40,4 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: yarn --immutable
-      - run: yarn run deploy:staging
+      - run: yarn run deploy:staging:ios

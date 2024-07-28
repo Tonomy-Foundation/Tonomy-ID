@@ -108,6 +108,7 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     // Generate the seed data from the password and salt (computationally expensive)
     const seedData = await generateSeedFromPassword(passphrase, salt);
 
+    console.log('seedData', seedData, salt);
     // Use the generated seed to derive private keys for different chains (computationally inexpensive)
     const ethereumKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumMainnetChain);
     const sepoliaKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumSepoliaChain);

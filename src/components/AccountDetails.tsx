@@ -16,7 +16,7 @@ export type AccountDetailsProps = {
         symbol: string;
         name: string;
         icon?: ImageSourcePropType | undefined;
-        balance?: Asset | null;
+        balance?: { balance: string; usdBalance: number };
         address?: string;
         image?: string | null;
     };
@@ -39,11 +39,9 @@ const AccountDetails = (props: AccountDetailsProps) => {
     useEffect(() => {
         const fetchBalance = async () => {
             if (balance) {
-                const usdValue = await balance.getUsdValue();
-
                 setAccountBalance({
-                    balance: balance.toString(),
-                    usdValue: usdValue,
+                    balance: balance.balance,
+                    usdValue: balance.usdBalance,
                 });
             }
         };

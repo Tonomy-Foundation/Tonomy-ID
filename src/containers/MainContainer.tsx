@@ -57,7 +57,6 @@ export default function MainContainer({
         web3wallet,
         ethereumAccount,
         ethereumBalance,
-        ethereumPrivateKey,
         initialized,
         sepoliaAccount,
         sepoliaBalance,
@@ -65,70 +64,32 @@ export default function MainContainer({
         polygonBalance,
         initializeWalletState,
         updateBalance,
-    } = useWalletStore();
-
-    const [accountBalance, setAccountBalance] = useState({
-        balance: '0 Eth',
-        usdValue: 0,
-    });
-    const [sepoliaEthBalance, setSepoliaEthBalance] = useState({
-        balance: '0 SepoliaETH',
-        usdValue: 0,
-    });
-    const [polygonEthBalance, setPolygonEthBalance] = useState({
-        balance: '0 MATIC',
-        usdValue: 0,
-    });
+    } = useWalletStore((state) => ({
+        web3wallet: state.web3wallet,
+        ethereumAccount: state.ethereumAccount,
+        ethereumBalance: state.ethereumBalance,
+        initialized: state.initialized,
+        sepoliaAccount: state.sepoliaAccount,
+        sepoliaBalance: state.sepoliaBalance,
+        polygonAccount: state.polygonAccount,
+        polygonBalance: state.polygonBalance,
+        initializeWalletState: state.initializeWalletState,
+        updateBalance: state.updateBalance,
+    }));
 
     const refMessage = useRef(null);
 
     useEffect(() => {
-        const fetchBalance = async () => {
-            if (ethereumBalance) {
-                const usdValue = await ethereumBalance.getUsdValue();
-
-                setAccountBalance({
-                    balance: ethereumBalance.toString(),
-                    usdValue: usdValue,
-                });
+        const initializeAndFetchBalances = async () => {
+            if (!initialized) {
+                await initializeWalletState();
             }
 
-            if (sepoliaBalance) {
-                const usdValue = await sepoliaBalance.getUsdValue();
-
-                setSepoliaEthBalance({
-                    balance: sepoliaBalance.toString(),
-                    usdValue: usdValue,
-                });
-            }
-
-            if (polygonBalance) {
-                const usdValue = await polygonBalance.getUsdValue();
-
-                setPolygonEthBalance({
-                    balance: polygonBalance.toString(),
-                    usdValue: usdValue,
-                });
-            }
+            await updateBalance();
         };
 
-        fetchBalance();
-
-        if (ethereumBalance && sepoliaBalance && !initialized) {
-            initializeWalletState();
-            updateBalance();
-        }
-    }, [
-        ethereumAccount,
-        ethereumPrivateKey,
-        ethereumBalance,
-        sepoliaAccount,
-        sepoliaBalance,
-        initialized,
-        polygonBalance,
-        updateBalance,
-        initializeWalletState,
-    ]);
+        initializeAndFetchBalances();
+    }, [initializeWalletState, updateBalance, initialized]);
 
     useEffect(() => {
         setUserName();
@@ -317,7 +278,7 @@ export default function MainContainer({
                                                 </View>
                                                 <Text style={styles.secondaryColor}>
                                                     $
-                                                    {ethereumBalance
+                                                    {pangeaBalance
                                                         ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
                                                         : 0.0}
                                                 </Text>
@@ -328,21 +289,21 @@ export default function MainContainer({
 
                                 <AccountSummary
                                     navigation={navigation}
-                                    accountBalance={accountBalance}
+                                    accountBalance={ethereumBalance}
                                     address={ethereumAccount}
                                     updateAccountDetail={updateAccountDetail}
                                     networkName="Ethereum"
                                 />
                                 <AccountSummary
                                     navigation={navigation}
-                                    accountBalance={sepoliaEthBalance}
+                                    accountBalance={sepoliaBalance}
                                     address={sepoliaAccount}
                                     updateAccountDetail={updateAccountDetail}
                                     networkName="Sepolia"
                                 />
                                 <AccountSummary
                                     navigation={navigation}
-                                    accountBalance={polygonEthBalance}
+                                    accountBalance={polygonBalance}
                                     address={polygonAccount}
                                     updateAccountDetail={updateAccountDetail}
                                     networkName="Polygon"

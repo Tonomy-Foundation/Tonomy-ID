@@ -8,7 +8,7 @@ import { IAccount } from '../utils/chain/types';
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
-    accountBalance: { balance: string; usdValue: number };
+    accountBalance: { balance: string; usdBalance: number };
     updateAccountDetail: (address: IAccount) => void;
     address: IAccount | null;
     networkName: string;
@@ -61,7 +61,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
                                     <Text>{props.accountBalance.balance}</Text>
                                 </View>
                                 <Text style={styles.secondaryColor}>
-                                    ${formatCurrencyValue(Number(props.accountBalance.usdValue), 3)}
+                                    ${formatCurrencyValue(Number(props.accountBalance.usdBalance), 3)}
                                 </Text>
                             </View>
                         )}
