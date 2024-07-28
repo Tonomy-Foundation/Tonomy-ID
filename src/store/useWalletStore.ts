@@ -53,8 +53,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const sepoliaKey = await keyStorage.findByName('ethereumTestnetSepolia');
             const polygonKey = await keyStorage.findByName('ethereumPolygon');
 
-            if (get().initialized) console.log('Already initialized.');
-            else if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {
+            console.log('call initialized', get().initialized);
+
+            if (get().initialized) {
+                console.log('Already initialized.');
+            } else if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {
+                console.log('else if');
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
 

@@ -53,27 +53,13 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const {
-        web3wallet,
-        ethereumAccount,
-        ethereumBalance,
-        initialized,
-        sepoliaAccount,
-        sepoliaBalance,
-        polygonAccount,
-        polygonBalance,
-        initializeWalletState,
-        updateBalance,
-    } = useWalletStore((state) => ({
-        web3wallet: state.web3wallet,
-        ethereumAccount: state.ethereumAccount,
+    const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
+        useWalletStore();
+
+    const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
         ethereumBalance: state.ethereumBalance,
-        initialized: state.initialized,
-        sepoliaAccount: state.sepoliaAccount,
         sepoliaBalance: state.sepoliaBalance,
-        polygonAccount: state.polygonAccount,
         polygonBalance: state.polygonBalance,
-        initializeWalletState: state.initializeWalletState,
         updateBalance: state.updateBalance,
     }));
 
@@ -81,7 +67,7 @@ export default function MainContainer({
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
-            if (!initialized) {
+            if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
                 await initializeWalletState();
             }
 
@@ -89,7 +75,7 @@ export default function MainContainer({
         };
 
         initializeAndFetchBalances();
-    }, [initializeWalletState, updateBalance, initialized]);
+    }, [initializeWalletState, updateBalance, initialized, ethereumAccount, sepoliaAccount, polygonAccount]);
 
     useEffect(() => {
         setUserName();

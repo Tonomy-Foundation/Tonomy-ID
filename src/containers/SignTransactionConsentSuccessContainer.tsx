@@ -11,6 +11,7 @@ import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
 import { formatDateTime } from '../utils/date';
+import useWalletStore from '../store/useWalletStore';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
@@ -28,7 +29,11 @@ export default function SignTransactionConsentSuccessContainer({
         usdTotal: number;
     };
 }) {
-    const backToHome = () => {
+    const { updateBalance } = useWalletStore();
+
+    const backToHome = async () => {
+        await updateBalance();
+
         navigation.navigate({
             name: 'UserHome',
             params: {},
