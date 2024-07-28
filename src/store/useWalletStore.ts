@@ -14,7 +14,7 @@ import {
     ETHSepoliaToken,
     ETHToken,
 } from '../utils/chain/etherum';
-import { Asset, IAccount } from '../utils/chain/types';
+import { IAccount } from '../utils/chain/types';
 
 export const core = new Core({
     projectId: settings.config.walletConnectProjectId,
@@ -54,6 +54,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const polygonKey = await keyStorage.findByName('ethereumPolygon');
 
             if (get().initialized) {
+                console.log('Already initialized');
             } else if (!get().initialized && ethereumKey && sepoliaKey && polygonKey) {
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
