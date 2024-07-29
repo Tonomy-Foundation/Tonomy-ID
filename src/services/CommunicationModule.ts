@@ -255,19 +255,50 @@ export default function CommunicationModule() {
         } catch (error) {
             throw new Error(error);
         }
-
-        try {
-            web3wallet?.on('session_delete', (event) => {
-                disconnectSession();
-            });
-        } catch (error) {
-            throw new Error(error);
-        }
-    }, [navigation, web3wallet, errorStore, disconnectSession]);
+    }, [navigation, web3wallet, errorStore]);
 
     useEffect(() => {
         handleConnect();
     }, [handleConnect, web3wallet, initialized]);
+
+    const debounce = (func, wait) => {
+        let timeout;
+
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    };
+
+    useEffect(() => {
+        const handleSessionDelete = debounce(async (event) => {
+            try {
+                if (event.topic) {
+                    const sessions = await web3wallet?.getActiveSessions();
+                    const sessionExists =
+                        Array.isArray(sessions) && sessions.some((session) => session.topic === event.topic);
+
+                    if (sessionExists) {
+                        await web3wallet?.disconnectSession({
+                            topic: event.topic,
+                            reason: getSdkError('INVALID_SESSION_SETTLE_REQUEST'),
+                        });
+                        disconnectSession();
+                    } else {
+                        console.log('Session already deleted or invalid');
+                    }
+                }
+            } catch (disconnectError) {
+                console.error('Failed to disconnect session:', disconnectError);
+            }
+        }, 1000);
+
+        web3wallet?.on('session_delete', handleSessionDelete);
+
+        return () => {
+            web3wallet?.off('session_delete', handleSessionDelete);
+        };
+    }, [web3wallet, disconnectSession]);
 
     return null;
 }
