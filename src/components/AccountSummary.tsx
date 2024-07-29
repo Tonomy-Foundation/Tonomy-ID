@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import TButton from './atoms/TButton';
 import { formatCurrencyValue } from '../utils/numbers';
@@ -16,7 +16,19 @@ export type AccountSummaryProps = {
 
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props.address?.getName();
+    const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchLogo = async () => {
+            if (props.address) {
+                const accountToken = await props.address.getNativeToken();
+
+                setLogoUrl(accountToken.getLogoUrl());
+            }
+        };
+
+        fetchLogo();
+    }, [props.address]);
     return (
         <>
             <TouchableOpacity
@@ -30,10 +42,12 @@ const AccountSummary = (props: AccountSummaryProps) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Image
-                                    source={require('../assets/icons/eth-img.png')}
-                                    style={[styles.favicon, { resizeMode: 'contain' }]}
-                                />
+                                {logoUrl && (
+                                    <Image
+                                        source={{ uri: logoUrl }}
+                                        style={[styles.favicon, { resizeMode: 'contain' }]}
+                                    />
+                                )}
                                 <Text style={styles.networkTitle}>{props.networkName} Network:</Text>
                             </View>
                             {currentAddress ? (

@@ -197,6 +197,21 @@ export default function SignTransactionConsentContainer({
         } catch (error) {
             setTransactionLoading(false);
             errorsStore.setError({ error: new Error(`Error signing transaction, ${error}`), expected: false });
+            const response = {
+                id: session.id,
+                error: getSdkError('USER_REJECTED'),
+                jsonrpc: '2.0',
+            };
+
+            await web3wallet?.respondSessionRequest({
+                topic: session.topic,
+                response,
+            });
+
+            navigation.navigate({
+                name: 'UserHome',
+                params: {},
+            });
         }
     }
 
