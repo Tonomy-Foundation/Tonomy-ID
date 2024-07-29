@@ -86,6 +86,7 @@ export class EthereumChain extends AbstractChain {
     protected chainId: string;
     protected logoUrl: string;
     protected nativeToken: IToken;
+    public provider: JsonRpcProvider;
 
     constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string) {
         super();
@@ -93,6 +94,7 @@ export class EthereumChain extends AbstractChain {
         this.name = name;
         this.chainId = chainId;
         this.logoUrl = logoUrl;
+        this.provider = new JsonRpcProvider(this.infuraUrl);
     }
 
     addToken(token: IToken): void {
@@ -118,12 +120,12 @@ class EthereumToken extends AbstractToken {
     protected name: string;
     protected symbol: string;
     protected precision: number;
-    protected chain: IChain;
+    protected chain: EthereumChain;
     protected logoUrl: string;
     protected coinmarketCapId: string;
 
     constructor(
-        chain: IChain,
+        chain: EthereumChain,
         name: string,
         symbol: string,
         precision: number,
@@ -153,7 +155,7 @@ class EthereumToken extends AbstractToken {
                 throw new Error('Account not found');
             })();
 
-        const balanceWei = await provider.getBalance(lookupAccount.getName() || '');
+        const balanceWei = await this.chain.provider.getBalance(lookupAccount.getName() || '');
 
         return new Asset(this, balanceWei);
     }
@@ -184,18 +186,6 @@ const EthereumPolygonChain = new EthereumChain(
     '137',
     'https://cryptologos.cc/logos/polygon-matic-logo.png'
 );
-
-let provider: JsonRpcProvider;
-
-export let chain: EthereumChain;
-
-if (settings.isProduction()) {
-    provider = new JsonRpcProvider(EthereumMainnetChain.getInfuraUrl());
-    chain = EthereumMainnetChain;
-} else {
-    provider = new JsonRpcProvider(EthereumSepoliaChain.getInfuraUrl());
-    chain = EthereumSepoliaChain;
-}
 
 const ETHToken = new EthereumToken(
     EthereumMainnetChain,
@@ -325,7 +315,7 @@ export class EthereumTransaction implements ITransaction {
 
     async estimateTransactionFee(): Promise<Asset> {
         // Get the current fee data
-        const feeData = await provider.getFeeData();
+        const feeData = await this.chain.provider.getFeeData();
 
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
@@ -335,7 +325,7 @@ export class EthereumTransaction implements ITransaction {
         };
 
         // Estimate gas
-        const wei = await provider.estimateGas(transaction);
+        const wei = await this.chain.provider.estimateGas(transaction);
 
         const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
 
@@ -399,7 +389,7 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     async sendSignedTransaction(signedTransaction: string): Promise<TransactionReceipt> {
-        return provider.send('eth_sendRawTransaction', [signedTransaction]);
+        return this.chain.provider.send('eth_sendRawTransaction', [signedTransaction]);
     }
 
     async sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse> {
@@ -412,7 +402,7 @@ export class EthereumAccount extends AbstractAccount {
 
     async isContract(): Promise<boolean> {
         try {
-            const code = await provider.getCode(this.name);
+            const code = await this.chain.provider.getCode(this.name);
 
             if (code !== '0x') return true;
         } catch (error) {

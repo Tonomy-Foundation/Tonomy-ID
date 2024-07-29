@@ -9,7 +9,6 @@ import TIconButton from '../components/TIconButton';
 import theme from '../utils/theme';
 import { formatCurrencyValue } from '../utils/numbers';
 import { Images } from '../assets';
-import { Asset } from '../utils/chain/types';
 
 export type AccountDetailsProps = {
     accountDetails: {
