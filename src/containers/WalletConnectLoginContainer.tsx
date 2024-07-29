@@ -100,7 +100,6 @@ export default function WalletConnectLoginContainer({
                 params: {},
             });
         } catch (e) {
-            alert(e);
             await web3wallet?.rejectSession({
                 id: payload.id,
                 reason: getSdkError('USER_REJECTED'),
@@ -109,7 +108,7 @@ export default function WalletConnectLoginContainer({
                 name: 'UserHome',
                 params: {},
             });
-            errorStore.setError({ error: e, expected: false });
+            errorStore.setError({ title: 'Error', error: e, expected: false });
         }
     };
 

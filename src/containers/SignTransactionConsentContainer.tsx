@@ -194,8 +194,6 @@ export default function SignTransactionConsentContainer({
             });
             setTransactionLoading(false);
         } catch (error) {
-            alert(error);
-
             setTransactionLoading(false);
             errorsStore.setError({
                 title: 'Signing Error',

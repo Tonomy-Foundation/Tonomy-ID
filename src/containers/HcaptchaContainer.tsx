@@ -117,13 +117,13 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         setShowUsernameErrorModal(true);
                         break;
                     default:
-                        errorStore.setError({ error: e, expected: false });
+                        errorStore.setError({ title: 'Error', error: e, expected: false });
                 }
 
                 setLoading(false);
                 return;
             } else {
-                errorStore.setError({ error: e, expected: false });
+                errorStore.setError({ title: 'Error', error: e, expected: false });
                 setLoading(false);
                 return;
             }
