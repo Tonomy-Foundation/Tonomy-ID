@@ -21,7 +21,6 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import AccountSummary from '../components/AccountSummary';
-import { IAccount } from '../utils/chain/types';
 
 const vestingContract = VestingContract.Instance;
 
@@ -70,12 +69,10 @@ export default function MainContainer({
             if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
                 await initializeWalletState();
             }
-
-            await updateBalance();
         };
 
         initializeAndFetchBalances();
-    }, [initializeWalletState, updateBalance, initialized, ethereumAccount, sepoliaAccount, polygonAccount]);
+    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount]);
 
     useEffect(() => {
         setUserName();
@@ -87,6 +84,8 @@ export default function MainContainer({
 
     useEffect(() => {
         async function getUpdatedBalance() {
+            await updateBalance();
+
             const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
             if (pangeaBalance !== accountPangeaBalance) {
@@ -101,7 +100,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName]);
+    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
 
     async function setUserName() {
         try {

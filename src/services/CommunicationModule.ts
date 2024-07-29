@@ -15,7 +15,13 @@ import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 import { keyStorage } from '../utils/StorageManager/setup';
-import { EthereumPrivateKey, EthereumTransaction, chain } from '../utils/chain/etherum';
+import {
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumPrivateKey,
+    EthereumSepoliaChain,
+    EthereumTransaction,
+} from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { ethers, BigNumberish } from 'ethers';
@@ -179,19 +185,29 @@ export default function CommunicationModule() {
                     case 'eth_sendTransaction': {
                         const transactionData = request.params[0];
 
-                        let key;
+                        let key, chain;
 
-                        if (chainId === 'eip155:11155111') key = await keyStorage.findByName('ethereumTestnetSepolia');
-                        else if (chainId === 'eip155:1') key = await keyStorage.findByName('ethereum');
-                        else if (chainId === 'eip155:137') key = await keyStorage.findByName('ethereumPolygon');
-                        else throw new Error('Unsupported chains');
+                        if (chainId === 'eip155:11155111') {
+                            console.log('iff');
+                            chain = EthereumSepoliaChain;
+                            key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
+                        } else if (chainId === 'eip155:1') {
+                            console.log('else iff');
+                            chain = EthereumMainnetChain;
+                            key = await keyStorage.findByName('ethereum', chain);
+                        } else if (chainId === 'eip155:137') {
+                            console.log('elseeeee ');
+                            chain = EthereumPolygonChain;
+                            key = await keyStorage.findByName('ethereumPolygon', chain);
+                        } else throw new Error('Unsupported chains');
 
                         let transaction: ITransaction;
 
                         if (key) {
                             const exportPrivateKey = await key.exportPrivateKey();
-                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
+                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
+                            console.log('chain');
                             transaction = await EthereumTransaction.fromTransaction(
                                 ethereumPrivateKey,
                                 transactionData,
@@ -236,7 +252,7 @@ export default function CommunicationModule() {
                             topic,
                             response,
                         });
-                        throw new Error('Method not supported');
+                        errorStore.setError({ error: new Error('Method not supported'), expected: false });
                     }
                 }
             });

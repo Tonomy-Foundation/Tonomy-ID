@@ -52,11 +52,13 @@ export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
 export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKey {
     private signingKey: SigningKey;
     private wallet: Wallet;
+    private chain: EthereumChain;
 
-    constructor(privateKeyHex: string) {
+    constructor(privateKeyHex: string, chain: EthereumChain) {
         super(privateKeyHex, 'Secp256k1');
         this.signingKey = new SigningKey(privateKeyHex);
-        this.wallet = new Wallet(this.signingKey, provider);
+        this.chain = chain;
+        this.wallet = new Wallet(this.signingKey, this.chain.getProvider());
     }
 
     async getPublicKey(): Promise<EthereumPublicKey> {
@@ -86,7 +88,7 @@ export class EthereumChain extends AbstractChain {
     protected chainId: string;
     protected logoUrl: string;
     protected nativeToken: IToken;
-    public provider: JsonRpcProvider;
+    private provider: JsonRpcProvider;
 
     constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string) {
         super();
@@ -104,7 +106,7 @@ export class EthereumChain extends AbstractChain {
     createKeyFromSeed(seed: string): IPrivateKey {
         const wallet = new ethers.Wallet(seed);
 
-        return new EthereumPrivateKey(wallet.privateKey);
+        return new EthereumPrivateKey(wallet.privateKey, this);
     }
 
     getInfuraUrl(): string {
@@ -114,9 +116,13 @@ export class EthereumChain extends AbstractChain {
     formatShortAccountName(account: string): string {
         return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
     }
+
+    public getProvider(): JsonRpcProvider {
+        return this.provider;
+    }
 }
 
-class EthereumToken extends AbstractToken {
+export class EthereumToken extends AbstractToken {
     protected name: string;
     protected symbol: string;
     protected precision: number;
@@ -155,7 +161,8 @@ class EthereumToken extends AbstractToken {
                 throw new Error('Account not found');
             })();
 
-        const balanceWei = await this.chain.provider.getBalance(lookupAccount.getName() || '');
+        console.log(await this.chain.getProvider());
+        const balanceWei = await this.chain.getProvider().getBalance(lookupAccount.getName() || '');
 
         return new Asset(this, balanceWei);
     }
@@ -315,7 +322,7 @@ export class EthereumTransaction implements ITransaction {
 
     async estimateTransactionFee(): Promise<Asset> {
         // Get the current fee data
-        const feeData = await this.chain.provider.getFeeData();
+        const feeData = await this.chain.getProvider().getFeeData();
 
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
@@ -325,7 +332,7 @@ export class EthereumTransaction implements ITransaction {
         };
 
         // Estimate gas
-        const wei = await this.chain.provider.estimateGas(transaction);
+        const wei = await this.chain.getProvider().estimateGas(transaction);
 
         const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
 
@@ -389,7 +396,8 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     async sendSignedTransaction(signedTransaction: string): Promise<TransactionReceipt> {
-        return this.chain.provider.send('eth_sendRawTransaction', [signedTransaction]);
+        console.log('this.chain', this.chain.getProvider());
+        return this.chain.getProvider().send('eth_sendRawTransaction', [signedTransaction]);
     }
 
     async sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse> {
@@ -402,7 +410,7 @@ export class EthereumAccount extends AbstractAccount {
 
     async isContract(): Promise<boolean> {
         try {
-            const code = await this.chain.provider.getCode(this.name);
+            const code = await this.chain.getProvider().getCode(this.name);
 
             if (code !== '0x') return true;
         } catch (error) {

@@ -12,6 +12,7 @@ import { Props } from '../screens/WalletConnectLoginScreen';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
+import useErrorStore from '../store/errorStore';
 
 export default function WalletConnectLoginContainer({
     navigation,
@@ -25,6 +26,7 @@ export default function WalletConnectLoginContainer({
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
     const { web3wallet, ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
+    const errorStore = useErrorStore();
 
     const { requiredNamespaces, optionalNamespaces } = payload.params;
     const activeNamespaces = Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
@@ -44,7 +46,7 @@ export default function WalletConnectLoginContainer({
             currentETHAddress = polygonAccount ? polygonAccount.getName() : '';
             networkName = 'Polygon';
         } else {
-            throw new Error('Unsupported chain');
+            errorStore.setError({ error: new Error('Unsupported chain'), expected: false });
         }
 
         return { chainId, currentETHAddress, networkName };

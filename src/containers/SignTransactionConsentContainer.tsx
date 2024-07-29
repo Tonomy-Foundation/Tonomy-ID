@@ -63,9 +63,10 @@ export default function SignTransactionConsentContainer({
     });
 
     const [balanceError, showBalanceError] = useState(false);
-    const { ethereumBalance, updateBalance } = useWalletStore();
+    const { ethereumBalance } = useWalletStore();
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
+    const errorsStore = useErrorStore();
 
     const refTopUpDetail = useRef(null);
 
@@ -173,12 +174,12 @@ export default function SignTransactionConsentContainer({
                 data: await transaction.getData(),
             };
 
+            console.log('transactionDetails.fromAccount', transactionDetails.fromAccount);
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
-            await updateBalance();
 
             navigation.navigate('SignTransactionSuccess', {
                 transactionDetails: {
@@ -195,7 +196,7 @@ export default function SignTransactionConsentContainer({
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
-            throw new Error(`Error signing transaction, ${error}`);
+            errorsStore.setError({ error: new Error(`Error signing transaction, ${error}`), expected: false });
         }
     }
 
