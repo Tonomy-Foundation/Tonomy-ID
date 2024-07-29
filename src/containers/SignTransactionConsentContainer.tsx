@@ -197,7 +197,11 @@ export default function SignTransactionConsentContainer({
             alert(error);
 
             setTransactionLoading(false);
-            errorsStore.setError({ error: new Error(`Error signing transaction, ${error}`), expected: false });
+            errorsStore.setError({
+                title: 'Signing Error',
+                error: new Error(`Error signing transaction, ${error}`),
+                expected: false,
+            });
             const response = {
                 id: session.id,
                 error: getSdkError('USER_REJECTED'),

@@ -46,7 +46,11 @@ export default function WalletConnectLoginContainer({
             currentETHAddress = polygonAccount ? polygonAccount.getName() : '';
             networkName = 'Polygon';
         } else {
-            errorStore.setError({ error: new Error('Unsupported chain'), expected: false });
+            errorStore.setError({
+                title: 'Unsupported',
+                error: new Error('This chain not supported.'),
+                expected: true,
+            });
         }
 
         return { chainId, currentETHAddress, networkName };
