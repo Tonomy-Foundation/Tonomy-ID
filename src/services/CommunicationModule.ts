@@ -248,7 +248,6 @@ export default function CommunicationModule() {
                             topic,
                             response,
                         });
-                        alert('error');
                         errorStore.setError({
                             title: 'Unsupported',
                             error: new Error('Method not supported'),
