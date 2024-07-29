@@ -261,12 +261,12 @@ export default function CommunicationModule() {
         handleConnect();
     }, [handleConnect, web3wallet, initialized]);
 
-    const debounce = (func, wait) => {
-        let timeout;
+    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
+        let timeout: ReturnType<typeof setTimeout>;
 
-        return (...args) => {
+        return (...args: Parameters<T>): void => {
             clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
+            timeout = setTimeout(() => func(...args), wait);
         };
     };
 
