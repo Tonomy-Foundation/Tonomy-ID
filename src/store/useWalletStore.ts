@@ -60,7 +60,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
 
             const state: Partial<WalletState> = { ...defaultState };
-
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 const key = await keyStorage.findByName(keyName, chain);
 
@@ -103,20 +102,22 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 state.polygonBalance = polygonData.value.balance;
             }
 
-            const web3wallet = await Web3Wallet.init({
-                core,
-                metadata: {
-                    name: settings.config.appName,
-                    description: settings.config.ecosystemName,
-                    url: 'https://walletconnect.com/',
-                    icons: [settings.config.images.logo48],
-                },
-            });
+            if (!get().initialized && !get().web3wallet) {
+                const web3wallet = await Web3Wallet.init({
+                    core,
+                    metadata: {
+                        name: settings.config.appName,
+                        description: settings.config.ecosystemName,
+                        url: 'https://walletconnect.com/',
+                        icons: [settings.config.images.logo48],
+                    },
+                });
 
-            state.web3wallet = web3wallet;
-            state.initialized = true;
+                state.web3wallet = web3wallet;
+                state.initialized = true;
 
-            set(state as WalletState);
+                set(state as WalletState);
+            }
         } catch (error) {
             console.error('Error initializing wallet state:', error);
             set({
