@@ -29,11 +29,7 @@ export default function SignTransactionConsentSuccessContainer({
         usdTotal: number;
     };
 }) {
-    const { updateBalance } = useWalletStore();
-
     const backToHome = async () => {
-        await updateBalance();
-
         navigation.navigate({
             name: 'UserHome',
             params: {},

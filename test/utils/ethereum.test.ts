@@ -34,7 +34,7 @@ describe('Ethereum sign transaction', () => {
     it('generate private key and sign transaction', async () => {
         const ethereumKey = await generatePrivateKeyFromSeed('test', EthereumSepoliaChain);
         const exportPrivateKey = await ethereumKey.exportPrivateKey();
-        const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
+        const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, EthereumSepoliaChain);
 
         const ethereumAccount = await EthereumAccount.fromPublicKey(
             EthereumSepoliaChain,

@@ -43,10 +43,10 @@ export async function testKeyGenerator() {
         );
         const privateKeyHex = wallet.privateKey;
 
-        const privateKeyEth = new EthereumPrivateKey(privateKeyHex);
+        const privateKeyEth = new EthereumPrivateKey(privateKeyHex, EthereumSepoliaChain);
 
         const ethereumAccount = await EthereumAccount.fromPublicKey(
-            EthereumMainnetChain,
+            EthereumSepoliaChain,
             await privateKeyEth.getPublicKey()
         );
         const accountAddress = await ethereumAccount.getName();
