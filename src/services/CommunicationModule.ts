@@ -32,7 +32,7 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { initialized, web3wallet } = useWalletStore();
+    const { initialized, web3wallet, disconnectSession } = useWalletStore();
 
     /**
      *  Login to communication microservice
@@ -259,7 +259,15 @@ export default function CommunicationModule() {
         } catch (error) {
             console.log('error2', error);
         }
-    }, [navigation, web3wallet]);
+
+        try {
+            web3wallet?.on('session_delete', (event) => {
+                disconnectSession();
+            });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }, [navigation, web3wallet, errorStore, disconnectSession]);
 
     useEffect(() => {
         handleConnect();

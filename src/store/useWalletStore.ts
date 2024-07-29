@@ -35,6 +35,7 @@ interface WalletState {
     initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
+    disconnectSession: () => Promise<void>;
 }
 const defaultState = {
     initialized: false,
@@ -184,6 +185,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
         } catch (error) {
             console.error('Error updating balance:', error);
         }
+    },
+    disconnectSession: async () => {
+        set({
+            initialized: false,
+            web3wallet: null,
+        });
     },
 }));
 
