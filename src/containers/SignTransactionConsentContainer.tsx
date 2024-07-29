@@ -174,7 +174,6 @@ export default function SignTransactionConsentContainer({
                 data: await transaction.getData(),
             };
 
-            console.log('transactionDetails.fromAccount', transactionDetails.fromAccount);
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };

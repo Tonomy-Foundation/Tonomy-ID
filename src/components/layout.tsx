@@ -58,6 +58,6 @@ const layoutStyles = StyleSheet.create({
     footer: {
         flex: 1.2,
         flexDirection: 'column',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-start',
     },
 });

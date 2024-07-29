@@ -395,7 +395,6 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     async sendSignedTransaction(signedTransaction: string): Promise<TransactionReceipt> {
-        console.log('this.chain', this.chain.getProvider());
         return this.chain.getProvider().send('eth_sendRawTransaction', [signedTransaction]);
     }
 

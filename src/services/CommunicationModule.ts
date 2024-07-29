@@ -188,15 +188,12 @@ export default function CommunicationModule() {
                         let key, chain;
 
                         if (chainId === 'eip155:11155111') {
-                            console.log('iff');
                             chain = EthereumSepoliaChain;
                             key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
                         } else if (chainId === 'eip155:1') {
-                            console.log('else iff');
                             chain = EthereumMainnetChain;
                             key = await keyStorage.findByName('ethereum', chain);
                         } else if (chainId === 'eip155:137') {
-                            console.log('elseeeee ');
                             chain = EthereumPolygonChain;
                             key = await keyStorage.findByName('ethereumPolygon', chain);
                         } else throw new Error('Unsupported chains');
@@ -207,7 +204,6 @@ export default function CommunicationModule() {
                             const exportPrivateKey = await key.exportPrivateKey();
                             const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
-                            console.log('chain');
                             transaction = await EthereumTransaction.fromTransaction(
                                 ethereumPrivateKey,
                                 transactionData,
@@ -257,16 +253,14 @@ export default function CommunicationModule() {
                 }
             });
         } catch (error) {
-            console.log('error2', error);
+            throw new Error(error);
         }
 
         try {
             web3wallet?.on('session_delete', (event) => {
                 disconnectSession();
             });
-        } catch (error) {
-            throw new Error(error);
-        }
+        } catch (error) {}
     }, [navigation, web3wallet, errorStore, disconnectSession]);
 
     useEffect(() => {
