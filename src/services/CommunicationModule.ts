@@ -248,12 +248,18 @@ export default function CommunicationModule() {
                             topic,
                             response,
                         });
-                        errorStore.setError({ error: new Error('Method not supported'), expected: false });
+                        alert('error');
+                        errorStore.setError({
+                            title: 'Unsupported',
+                            error: new Error('Method not supported'),
+                            expected: true,
+                        });
+                        return;
                     }
                 }
             });
         } catch (error) {
-            throw new Error(error);
+            errorStore.setError({ error, expected: false });
         }
     }, [navigation, web3wallet, errorStore]);
 
