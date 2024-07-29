@@ -260,7 +260,9 @@ export default function CommunicationModule() {
             web3wallet?.on('session_delete', (event) => {
                 disconnectSession();
             });
-        } catch (error) {}
+        } catch (error) {
+            throw new Error(error);
+        }
     }, [navigation, web3wallet, errorStore, disconnectSession]);
 
     useEffect(() => {
