@@ -135,6 +135,10 @@ yarn run lint
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
 
+### Debugging
+
+Uses [debug](https://www.npmjs.com/package/debug) package. Use `export DEBUG="tonomy*"` to see all debug logs.
+
 ### Common errors and how to fix
 
 `Origin not found`
