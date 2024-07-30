@@ -14,6 +14,9 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:store:userStore');
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -39,6 +42,7 @@ setSettings({
     accountsServiceUrl: settings.config.accountsServiceUrl,
     ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
 });
+// setFetch()
 
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
@@ -87,7 +91,7 @@ async function printStorage(message: string) {
     const keys = await AsyncStorage.getAllKeys();
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
-    console.log(message, 'AsyncStorage keys and status', keys, status);
+    debug(message, 'AsyncStorage keys and status', keys, status);
 
     const secureKeys: string[] = [];
 
@@ -97,7 +101,7 @@ async function printStorage(message: string) {
         if (value) secureKeys.push(KEY_STORAGE_NAMESPACE + level);
     }
 
-    console.log(message, 'SecureStore keys', secureKeys);
+    debug(message, 'SecureStore keys', secureKeys);
 }
 
 export default useUserStore;

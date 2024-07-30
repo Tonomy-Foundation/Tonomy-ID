@@ -85,7 +85,7 @@ export default function CreateEthereumKeyContainer({
             initializeWallet();
             setShowModal(true);
         } catch (e) {
-            console.log('error', e);
+            console.error('onNext()', e);
 
             if (e instanceof SdkError) {
                 switch (e.code) {

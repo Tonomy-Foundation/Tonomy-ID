@@ -5,7 +5,6 @@ import {
     CommunicationError,
     LinkAuthRequestMessage,
     LoginRequestsMessage,
-    getSettings,
     objToBase64Url,
     parseDid,
 } from '@tonomy/tonomy-id-sdk';
@@ -18,7 +17,9 @@ import { keyStorage } from '../utils/StorageManager/setup';
 import { EthereumPrivateKey, EthereumTransaction, chain } from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
-import { ethers, BigNumberish } from 'ethers';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:services:CommunicationModule');
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -66,12 +67,7 @@ export default function CommunicationModule() {
 
                 // did:jwk is used for the initial login request so is allowed
                 if (method !== 'jwk' && id !== parseDid(await user.getDid()).id) {
-                    if (getSettings().loggerLevel === 'debug')
-                        console.log(
-                            'LoginRequesrtsMessage sender did not match user did',
-                            senderDid,
-                            await user.getDid()
-                        );
+                    debug('LoginRequesrtsMessage sender did not match user did', senderDid, await user.getDid());
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -98,12 +94,7 @@ export default function CommunicationModule() {
                 const senderDid = message.getSender().split('#')[0];
 
                 if (senderDid !== (await user.getDid())) {
-                    if (getSettings().loggerLevel === 'debug')
-                        console.log(
-                            'LinkAuthRequestMessage sender did not match user did',
-                            senderDid,
-                            await user.getDid()
-                        );
+                    debug('LinkAuthRequestMessage sender did not match user did', senderDid, await user.getDid());
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -166,7 +157,7 @@ export default function CommunicationModule() {
                 }
             });
         } catch (error) {
-            console.log('session_proposal', error);
+            console.error('session_proposal', error);
         }
 
         try {
@@ -224,7 +215,7 @@ export default function CommunicationModule() {
                 }
             });
         } catch (error) {
-            console.log('error2', error);
+            console.error('handleConnect()', error);
         }
     }, [navigation, web3wallet]);
 

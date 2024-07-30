@@ -16,6 +16,9 @@ import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
 import useWalletStore from '../store/useWalletStore';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -54,9 +57,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else {
-                if (settings.config.loggerLevel === 'debug') {
-                    console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
-                }
+                debug('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
 
                 if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');

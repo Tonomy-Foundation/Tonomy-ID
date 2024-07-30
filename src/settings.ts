@@ -1,3 +1,6 @@
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:settings');
 const env = process.env.EXPO_NODE_ENV ?? 'development';
 
 const settingsInputs = {
@@ -7,7 +10,7 @@ const settingsInputs = {
     env,
 };
 
-console.log('settingsInputs', settingsInputs);
+debug('settingsInputs', settingsInputs);
 
 type ConfigType = {
     blockchainUrl: string;
@@ -90,32 +93,32 @@ switch (env) {
 }
 
 if (process.env.BLOCKCHAIN_URL) {
-    console.log(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);
+    debug(`Using BLOCKCHAIN_URL from env:  ${process.env.BLOCKCHAIN_URL}`);
     config.blockchainUrl = process.env.BLOCKCHAIN_URL;
 }
 
 if (process.env.SSO_WEBSITE_ORIGIN) {
-    console.log(`Using SSO_WEBSITE_ORIGIN from env:  ${process.env.SSO_WEBSITE_ORIGIN}`);
+    debug(`Using SSO_WEBSITE_ORIGIN from env:  ${process.env.SSO_WEBSITE_ORIGIN}`);
     config.ssoWebsiteOrigin = process.env.SSO_WEBSITE_ORIGIN;
 }
 
 if (process.env.VITE_COMMUNICATION_URL) {
-    console.log(`Using communication microService from env: ${process.env.VITE_COMMUNICATION_URL}`);
+    debug(`Using communication microService from env: ${process.env.VITE_COMMUNICATION_URL}`);
     config.communicationUrl = process.env.VITE_COMMUNICATION_URL;
 }
 
 if (process.env.ACCOUNTS_SERVICE_URL) {
-    console.log(`Using accounts microService from env: ${process.env.ACCOUNTS_SERVICE_URL}`);
+    debug(`Using accounts microService from env: ${process.env.ACCOUNTS_SERVICE_URL}`);
     config.accountsServiceUrl = process.env.ACCOUNTS_SERVICE_URL;
 }
 
 if (process.env.HCAPTCHA_SITE_KEY) {
-    console.log(`Using hCaptcha site key from env: ${process.env.HCAPTCHA_SITE_KEY}`);
+    debug(`Using hCaptcha site key from env: ${process.env.HCAPTCHA_SITE_KEY}`);
     config.captchaSiteKey = process.env.HCAPTCHA_SITE_KEY;
 }
 
 if (process.env.LOG === 'true') {
-    console.log(`Using logger level from env: ${process.env.LOG}`);
+    debug(`Using logger level from env: ${process.env.LOG}`);
     config.loggerLevel = 'debug';
 }
 

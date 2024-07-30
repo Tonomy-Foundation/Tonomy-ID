@@ -6,6 +6,9 @@ import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
 import settings from '../settings';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:keys');
 
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
@@ -28,7 +31,7 @@ export async function testKeyGenerator() {
         if (privateKey.toString() !== 'PVT_K1_q4BZoScNYFCF5tDthn4m5KUgv9LLH4fTNtMFj3FUkG3p7UA4D')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
 
-        console.log(
+        debug(
             'testing Chain libraries',
             Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
         );
@@ -45,7 +48,7 @@ export async function testKeyGenerator() {
         );
         const accountAddress = await ethereumAccount.getName();
 
-        console.log('accountAddress:', accountAddress);
+        debug('accountAddress:', accountAddress);
 
         const transactionRequest: TransactionRequest = {
             to: accountAddress,
@@ -56,7 +59,7 @@ export async function testKeyGenerator() {
 
         const signedTransaction = await privateKeyEth.signTransaction(transactionRequest);
 
-        console.log('signedTransaction:', signedTransaction);
+        debug('signedTransaction:', signedTransaction);
     } catch (e) {
         console.error(e);
     }

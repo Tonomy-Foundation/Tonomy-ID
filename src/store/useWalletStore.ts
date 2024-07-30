@@ -13,6 +13,9 @@ import {
     ETHToken,
 } from '../utils/chain/etherum';
 import { Asset, IAccount } from '../utils/chain/types';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:store:useWalletStore');
 
 export const core = new Core({
     projectId: settings.config.walletConnectProjectId,
@@ -41,7 +44,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             await connect();
             const ethereumKey = await keyStorage.findByName('ethereum');
 
-            if (get().initialized) console.log('Already initialized.');
+            if (get().initialized) debug('Already initialized.');
             else if (ethereumKey && !get().initialized) {
                 const exportPrivateKey = await ethereumKey.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey);
