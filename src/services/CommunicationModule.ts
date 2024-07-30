@@ -65,9 +65,9 @@ export default function CommunicationModule() {
 
                 const { method, id } = parseDid(senderDid);
 
-                // did:jwk is used for the initial login request so is allowed
-                if (method !== 'jwk' && id !== parseDid(await user.getDid()).id) {
-                    debug('LoginRequesrtsMessage sender did not match user did', senderDid, await user.getDid());
+                // did:key is used for the initial login request so is allowed
+                if (method !== 'key' && id !== parseDid(await user.getDid()).id) {
+                    debug('LoginRequestsMessage sender did not match user did', senderDid, await user.getDid());
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
