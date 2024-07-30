@@ -3401,18 +3401,10 @@
     "@stablelib/salsa20" "^1.0.2"
     "@stablelib/wipe" "^1.0.1"
 
-"@tonomy/antelope-did-resolver@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@tonomy/antelope-did-resolver/-/antelope-did-resolver-0.1.9.tgz#51f10746bbe90ba15eab0d6986a946020a92dcc2"
-  integrity sha512-oli1hMVweBkPEtbkK58i4oH7a25+tLtuOapXF0bV7qhvL7SWIQ0PjBEJpFtBUYs1oZ39fCRsu8ioVgwoOt+HQQ==
-  dependencies:
-    base64url "^3.0.1"
-    eosjs "^21.0.4"
-
-"@tonomy/antelope-did-resolver@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@tonomy/antelope-did-resolver/-/antelope-did-resolver-0.8.0.tgz#094188e562bde8aa946f7d1169a6785267c232d3"
-  integrity sha512-zFIsy4Zk0Q3wp+WnlK5cPK2sG76bu2jeSkfGx9XX7mkjNy4aux823KKezC+Lx6gqVlHAtXoJOI0L2GHukA/yWQ==
+"@tonomy/antelope-did-resolver@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@tonomy/antelope-did-resolver/-/antelope-did-resolver-0.10.0.tgz#13c32856d3d7ed692f783a1a423267a7755b7652"
+  integrity sha512-1698BVydqAN7x4LN4M7hACx/8LBbnm3l6+dxn2oiBkTKx4goPzF//a90z4C3QyXn4CCqxICHRSTcQzK2WDvlGA==
   dependencies:
     "@noble/curves" "^1.4.0"
     "@wharfkit/antelope" "^1.0.7"
@@ -3420,29 +3412,13 @@
     did-jwt "^8.0.4"
     did-resolver "^4.1.0"
 
-"@tonomy/antelope-did@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@tonomy/antelope-did/-/antelope-did-0.1.5.tgz#dcfd14b79ea4e236d28278603889fd3b1ef10884"
-  integrity sha512-CzWCx0sdXenIZthywHMydZVnmuRK2V5rwPo9YheLBxD7hm0OA85sDflW4ADmiFu8HaWjk0JgjS6jwS7Xsr56rg==
-  dependencies:
-    "@tonomy/antelope-did-resolver" "^0.1.9"
-    "@tonomy/did-resolver" "^4.0.4"
-    eosjs "^22.0.0"
-    node-fetch "^2.6.1"
-
-"@tonomy/did-resolver@^4.0.4":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@tonomy/did-resolver/-/did-resolver-4.0.4.tgz#4a0c5bc68e4498e992bca62914ec5d763eaacf82"
-  integrity sha512-7sgPKUENMsGfq2TaAo4/hwthy45pvVnZep79o6BpmPK5xSwzPctglITkgfM7OY6hyS4le4wQC0LYI7mrGShD2A==
-
-"@tonomy/tonomy-id-sdk@0.21.0-test.2":
-  version "0.21.0-test.2"
-  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.21.0-test.2.tgz#06c3cf94ccaffc4eba9b69f5c1be975c4f10fb4c"
-  integrity sha512-uFWpnWuaqwTiToGlsmVT+1pdfL61oaoefDUILDDxrTkxkSCya5dAB0t5j9aAJAAuBGSKqGdzTPOW3PVAMIzolw==
+"@tonomy/tonomy-id-sdk@0.21.0-test.5":
+  version "0.21.0-test.5"
+  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.21.0-test.5.tgz#d8e2b18fe84be8438d9071bf983ea753855969fc"
+  integrity sha512-RpaJ/Hy2//hALvvAeE0BOVGNumyfnYysxHQblF2C1PBUpm+7cJxnSAYinIRnxVtlnFk9Ti4Y5wz7gobD/Vv8gA==
   dependencies:
     "@consento/sync-randombytes" "^1.0.5"
-    "@tonomy/antelope-did" "^0.1.5"
-    "@tonomy/antelope-did-resolver" "^0.8.0"
+    "@tonomy/antelope-did-resolver" "^0.10.0"
     "@veramo/core" "^6.0.0"
     "@veramo/credential-w3c" "^6.0.0"
     "@veramo/data-store" "^6.0.0"
@@ -3454,11 +3430,8 @@
     "@veramo/kms-local" "^6.0.0"
     "@wharfkit/antelope" "^1.0.7"
     argon2 "^0.40.3"
-    base64url "^3.0.1"
     cross-fetch "^4.0.0"
-    did-jwt "^8.0.4"
-    did-jwt-vc "^4.0.4"
-    did-resolver "^4.1.0"
+    debug "^4.3.6"
     ethers "^6.13.1"
     ethr-did-resolver "^10.1.9"
     reflect-metadata "^0.2.2"
@@ -5237,11 +5210,6 @@ blueimp-md5@^2.10.0:
   resolved "https://registry.yarnpkg.com/blueimp-md5/-/blueimp-md5-2.19.0.tgz#b53feea5498dcb53dc6ec4b823adb84b729c4af0"
   integrity sha512-DRQrD6gJyy8FbiE4s+bDoXS9hiW3Vbx5uCdwvcCf3zLHL+Iv7LtGHLpr+GZV8rHG8tK766FGYBwRbu8pELTt+w==
 
-bn.js@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.0.tgz#358860674396c6997771a9d051fcc1b57d4ae002"
-  integrity sha512-D7iWRBvnZE8ecXiLj/9wbxH7Tk79fAh8IHaTNq1RWRixsS02W+5qS+iE9yq6RYl0asXx5tw0bLhmT5pIfbSquw==
-
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.0.tgz#775b3f278efbb9718eec7361f483fb36fbbfea88"
@@ -6269,6 +6237,13 @@ debug@^3.1.0:
   dependencies:
     ms "^2.1.1"
 
+debug@^4.3.6:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.6.tgz#2ab2c38fbaffebf8aa95fdfe6d88438c7a13c52b"
+  integrity sha512-O/09Bd4Z1fBrU4VzkhFqVgpPzaGbw6Sm9FEkBT1A/YBXQFGuuSxa1dN2nxgxS34JmKXqYx8CZAwEVoJFImUXIg==
+  dependencies:
+    ms "2.1.2"
+
 decamelize@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
@@ -6456,7 +6431,7 @@ dicer@^0.3.1:
   dependencies:
     streamsearch "^1.1.0"
 
-did-jwt-vc@^4.0.0, did-jwt-vc@^4.0.4:
+did-jwt-vc@^4.0.0:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/did-jwt-vc/-/did-jwt-vc-4.0.4.tgz#05f6e29778dd5655cb11cb94a3d1ee8e3cd2f255"
   integrity sha512-O/VSW+pux25+bERGQ1Z+LNv8z8gIy++yL8yjspxNZHCLjdmCelZz3hjuIpHlixhBCFP2YyTOQqGg8QeIMRwN9Q==
@@ -6835,26 +6810,6 @@ eol@^0.9.1:
   version "0.9.1"
   resolved "https://registry.yarnpkg.com/eol/-/eol-0.9.1.tgz#f701912f504074be35c6117a5c4ade49cd547acd"
   integrity sha512-Ds/TEoZjwggRoz/Q2O7SE3i4Jm66mqTDfmdHdq/7DKVk3bro9Q8h6WdXKdPqFLMoqxrDK5SVRzHVPOS6uuGtrg==
-
-eosjs@^21.0.4:
-  version "21.0.4"
-  resolved "https://registry.yarnpkg.com/eosjs/-/eosjs-21.0.4.tgz#67794a9fbc3c7659de19a7926c2c13cce4515571"
-  integrity sha512-XbuIoidplA1hHIejy7VQ+hmBfC6T28kYFaQMsn6G1DMTg1CFwUzxwzUvZg/dGNPuf7hgPxOpaQvAUsdidTgGhQ==
-  dependencies:
-    bn.js "5.2.0"
-    elliptic "6.5.4"
-    hash.js "1.1.7"
-    pako "2.0.3"
-
-eosjs@^22.0.0:
-  version "22.1.0"
-  resolved "https://registry.yarnpkg.com/eosjs/-/eosjs-22.1.0.tgz#7ac40e2f1f959fab70539c30ac8ae46c9038aa3c"
-  integrity sha512-Ka8KO7akC3RxNdSg/3dkGWuUWUQESTzSUzQljBdVP16UG548vmQoBqSGnZdnjlZyfcab8VOu2iEt+JjyfYc5+A==
-  dependencies:
-    bn.js "5.2.0"
-    elliptic "6.5.4"
-    hash.js "1.1.7"
-    pako "2.0.3"
 
 err-code@^2.0.2:
   version "2.0.3"
@@ -11403,11 +11358,6 @@ package-json-from-dist@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/package-json-from-dist/-/package-json-from-dist-1.0.0.tgz#e501cd3094b278495eb4258d4c9f6d5ac3019f00"
   integrity sha512-dATvCeZN/8wQsGywez1mzHtTlP22H8OEfPrVMLNr4/eGa+ijtLn/6M5f0dY8UKNrC2O9UCU6SSoG3qRKnt7STw==
-
-pako@2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/pako/-/pako-2.0.3.tgz#cdf475e31b678565251406de9e759196a0ea7a43"
-  integrity sha512-WjR1hOeg+kki3ZIOjaf4b5WVcay1jaliKSYiEaB1XzwhMQZJxRdQRv0V31EKBYlxb4T7SK3hjfc/jxyU64BoSw==
 
 pako@^2.1.0:
   version "2.1.0"
