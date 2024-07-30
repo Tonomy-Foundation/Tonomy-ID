@@ -16,7 +16,7 @@ elif [ "${BRANCH}" == "development" ]; then
     VERSION=$(npm view @tonomy/tonomy-id-sdk@development version)
 else
     # Print help
-    echo "Usage: yarn run updateSdkVersion master|development [check]"
+    echo "Usage: yarn run updateSdkVersion master|testnet|development [check]"
     echo ""
     echo "Example: yarn run updateSdkVersion development"
     echo "Example: yarn run updateSdkVersion master check"
