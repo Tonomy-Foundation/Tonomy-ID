@@ -371,7 +371,7 @@ export default function SignTransactionConsentContainer({
                                                 }
                                                 width={250}
                                                 height={50}
-                                                containerStyle={{ padding: 3, marginTop: -8 }}
+                                                containerStyle={{ padding: 3 }}
                                                 withOverlay={true}
                                                 backgroundColor={theme.colors.black}
                                             >
