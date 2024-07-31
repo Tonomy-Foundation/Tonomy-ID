@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { IconButton } from 'react-native-paper';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
@@ -8,7 +9,7 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
-import { ethers, TransactionRequest, BigNumberish } from 'ethers';
+import { ethers, TransactionRequest } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
@@ -34,7 +35,7 @@ export default function SignTransactionConsentContainer({
     const { web3wallet } = useWalletStore();
 
     const errorStore = useErrorStore();
-    const [contractTransaction, setContractTransaction] = useState(true);
+    const [contractTransaction, setContractTransaction] = useState(false);
     const [loading, setLoading] = useState(false);
     const [transactionLoading, setTransactionLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
@@ -66,6 +67,7 @@ export default function SignTransactionConsentContainer({
     const [signedTransaction, setSignedTransaction] = useState('');
     const [balanceError, showBalanceError] = useState(false);
     const { ethereumBalance, updateBalance } = useWalletStore();
+    const [showDetails, setShowDetails] = useState(false);
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
 
@@ -78,7 +80,9 @@ export default function SignTransactionConsentContainer({
             try {
                 setLoading(true);
                 setTransactionLoading(true);
+                const contractTransaction = await transaction.isContract();
 
+                setContractTransaction(contractTransaction);
                 const fromAccount = await transaction.getFrom().getName();
 
                 const toAccount = await transaction.getTo().getName();
@@ -103,18 +107,18 @@ export default function SignTransactionConsentContainer({
 
                 const transactionType = await transaction.getType();
 
-                const functionName = '';
-                const args: Record<string, string> | null = null;
+                let functionName = '';
+                let args: Record<string, string> | null = null;
                 const usdBalance = await ethereumBalance?.getUsdValue();
 
                 if (usdBalance && usdBalance < usdTotal) {
                     showBalanceError(true);
                 }
 
-                // if (contractTransaction) {
-                //     functionName = await transaction.getFunction();
-                //     args = await transaction.getArguments();
-                // }
+                if (contractTransaction) {
+                    functionName = await transaction.getFunction();
+                    args = await transaction.getArguments();
+                }
 
                 setLoading(false);
 
@@ -250,72 +254,73 @@ export default function SignTransactionConsentContainer({
                                         </Text>
                                     </View>
 
-                                    {/* {contractTransaction && (
-                            <>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        marginTop: 12,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>Function:</Text>
-                                    <Text style={{ color: theme.colors.secondary }}>{method}</Text>
-                                </View>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        marginTop: 4,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
+                                    {contractTransaction && (
+                                        <>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    marginTop: 12,
+                                                }}
+                                            >
+                                                <Text style={styles.secondaryColor}>Function:</Text>
+                                                <Text style={{ color: theme.colors.secondary }}>
+                                                    {transactionDetails.functionName}
+                                                </Text>
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    marginTop: 4,
+                                                }}
+                                            >
+                                                <Text style={styles.secondaryColor}>Transaction details:</Text>
 
-                                    <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
-                                        {!showDetails ? (
-                                            <IconButton
-                                                icon={
-                                                    Platform.OS === 'android'
-                                                        ? 'arrow-down'
-                                                        : 'chevron-down'
-                                                }
-                                                size={Platform.OS === 'android' ? 15 : 22}
-                                            />
-                                        ) : (
-                                            <IconButton
-                                                icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
-                                                size={Platform.OS === 'android' ? 15 : 22}
-                                            />
-                                        )}
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
+                                                <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
+                                                    {!showDetails ? (
+                                                        <IconButton
+                                                            icon={
+                                                                Platform.OS === 'android'
+                                                                    ? 'arrow-down'
+                                                                    : 'chevron-down'
+                                                            }
+                                                            size={Platform.OS === 'android' ? 15 : 22}
+                                                        />
+                                                    ) : (
+                                                        <IconButton
+                                                            icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
+                                                            size={Platform.OS === 'android' ? 15 : 22}
+                                                        />
+                                                    )}
+                                                </TouchableOpacity>
+                                            </View>
+                                        </>
+                                    )}
 
-                        {showDetails && contractTransaction && (
-                            <View style={styles.detailSection}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.secondaryColor}>Price:</Text>
-                                    <Text>
-                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
-                                    </Text>
-                                </View>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        marginTop: 20,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>NFT ID:</Text>
-                                    <Text>#89792 </Text>
-                                </View>
-                                <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
-                                    <Text style={styles.rawTransaction}>Show raw transaction</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )} */}
+                                    {showDetails && contractTransaction && (
+                                        <View style={styles.detailSection}>
+                                            {transactionDetails.args &&
+                                                Object.entries(transactionDetails.args).map(([key, value]) => (
+                                                    <View
+                                                        key={key}
+                                                        style={{
+                                                            flexDirection: 'row',
+                                                            justifyContent: 'space-between',
+                                                            marginBottom: 15,
+                                                        }}
+                                                    >
+                                                        <Text style={styles.secondaryColor}>{key}:</Text>
+                                                        <Text>{value}</Text>
+                                                    </View>
+                                                ))}
+
+                                            {/* <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                                <Text style={styles.rawTransaction}>Show raw transaction</Text>
+                                            </TouchableOpacity> */}
+                                        </View>
+                                    )}
                                 </View>
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

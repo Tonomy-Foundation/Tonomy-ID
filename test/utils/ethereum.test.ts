@@ -1,7 +1,6 @@
 import arg from 'argon2';
 import {
     EthereumAccount,
-    EthereumChain,
     EthereumPrivateKey,
     EthereumSepoliaChain,
     EthereumTransaction,
@@ -85,14 +84,14 @@ describe('Ethereum sign transaction', () => {
 
     it('deploy smart contract send raw transaction', async () => {
         // replace this data with data from your blockchain
-        const senderAddress = '0x57e6268C6aD846b2DC89cC1937e29E3Cb4F59f4d';
-        const senderPrivateKey = '0x44ae1814e76319f5e363a369760ce2a544fedb7b0f0d4a85bd592300008236d9';
+        const senderAddress = '0xd2a010dcC01bF923C9aa329bA88F61428B61e4f2';
+        const senderPrivateKey = '0xe75d0d4c927c0848a6c56fc7f20850959157ba109a3c9b0e40818e8ef0bc4a63';
         const nonce = await web3.eth.getTransactionCount(senderAddress, 'latest');
         const gasPrice = await web3.eth.getGasPrice();
-        const gasLimit = 3000000; // Adjust based on your contract's requirements
-        const contractAddress = '0x793f857acE3e94a35bd7E12DfdB1ba3ba0058a24'; // Replace with your contract address
+        const gasLimit = 3000000;
+        const contractAddress = '0x781DE4eeD3B6f2aaAdB35335e597995E05b0A2d5';
         const contract = new web3.eth.Contract(contractAbi, contractAddress);
-        const data = contract.methods.set(89).encodeABI(); // Replace setValue and 42 with your function and parameters
+        const data = contract.methods.set(89).encodeABI();
 
         const txParams: TransactionRequest = {
             nonce: Number(web3.utils.toHex(nonce)),
@@ -110,6 +109,9 @@ describe('Ethereum sign transaction', () => {
             EthereumSepoliaChain
         );
         const type = await transaction.getType();
+        const isContract = await transaction.getTo().isContract();
+
+        expect(isContract).toEqual(true);
 
         expect(type).toEqual(expect.any(Number));
         expect(type).toEqual(0);
@@ -142,9 +144,6 @@ describe('Ethereum sign transaction', () => {
                 await ethereumPrivateKey.getPublicKey()
             );
 
-            const isCotract = await ethereumAccount.isContract();
-
-            console.log('isCotract', isCotract);
             expect(await ethereumAccount.getName()).toBe(senderAddress);
 
             const tx = await ethereumAccount.sendSignedTransaction(signedTransaction);

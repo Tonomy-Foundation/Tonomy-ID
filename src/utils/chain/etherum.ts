@@ -374,6 +374,10 @@ export class EthereumTransaction implements ITransaction {
     async getData(): Promise<string> {
         return this.transaction.data || '';
     }
+
+    async isContract(): Promise<boolean> {
+        return this.getTo().isContract();
+    }
 }
 
 export class EthereumAccount extends AbstractAccount {
