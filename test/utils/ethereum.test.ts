@@ -140,5 +140,5 @@ describe('Ethereum sign transaction', () => {
 
         // Check if signedTransaction is a string in hexadecimal format
         expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
-    }, 30000);
+    }, 30000);rm -rf node_modules
 });

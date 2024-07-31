@@ -246,7 +246,6 @@ export interface ITransaction {
     estimateTransactionFee(): Promise<IAsset>;
     estimateTransactionTotal(): Promise<IAsset>;
     getData(): Promise<string>;
-    isContract(): Promise<boolean>;
 }
 
 export abstract class AbstractAccount implements IAccount {

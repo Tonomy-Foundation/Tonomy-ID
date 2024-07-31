@@ -34,7 +34,7 @@ export default function SignTransactionConsentContainer({
     const { web3wallet } = useWalletStore();
 
     const errorStore = useErrorStore();
-    const [contractTransaction, setContractTransaction] = useState(false);
+    const [contractTransaction, setContractTransaction] = useState('');
     const [loading, setLoading] = useState(false);
     const [transactionLoading, setTransactionLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
@@ -77,9 +77,9 @@ export default function SignTransactionConsentContainer({
             try {
                 setLoading(true);
                 setTransactionLoading(true);
-                const contractTransaction = await transaction.isContract();
+                const transactionType = await transaction.getType();
 
-                setContractTransaction(contractTransaction);
+                setContractTransaction(transactionType.toString());
                 const fromAccount = await transaction.getFrom().getName();
 
                 const toAccount = await transaction.getTo().getName();
@@ -102,8 +102,6 @@ export default function SignTransactionConsentContainer({
 
                 total = parseFloat(total).toFixed(18);
 
-                const transactionType = await transaction.getType();
-
                 let functionName = '';
                 let args: Record<string, string> | null = null;
                 const usdBalance = ethereumBalance.usdBalance;
@@ -112,7 +110,7 @@ export default function SignTransactionConsentContainer({
                     showBalanceError(true);
                 }
 
-                if (contractTransaction) {
+                if (['contract', 'both'].includes(transactionType.toString())) {
                     functionName = await transaction.getFunction();
                     args = await transaction.getArguments();
                 }
@@ -135,7 +133,7 @@ export default function SignTransactionConsentContainer({
                 setTransactionLoading(false);
             } catch (e) {
                 if (e === 'Not a contract call') {
-                    setContractTransaction(false);
+                    console.log('Not a contract call');
                 }
 
                 errorStore.setError({ error: e, expected: false });
@@ -254,29 +252,31 @@ export default function SignTransactionConsentContainer({
                                                 .formatShortAccountName(transactionDetails?.toAccount)}
                                         </Text>
                                     </View>
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            marginTop: 12,
-                                        }}
-                                    >
-                                        <Text style={styles.secondaryColor}>Amount:</Text>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>{transactionDetails?.value} </Text>
-                                            <Text style={[styles.secondaryColor]}>
-                                                ($
-                                                {formatCurrencyValue(
-                                                    Number(transactionDetails?.usdValue.toFixed(4)),
-                                                    3
-                                                )}
-                                                )
-                                            </Text>
+                                    {(contractTransaction === 'transfer' || contractTransaction === 'both') && (
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                marginTop: 12,
+                                            }}
+                                        >
+                                            <Text style={styles.secondaryColor}>Amount:</Text>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text>{transactionDetails?.value} </Text>
+                                                <Text style={[styles.secondaryColor]}>
+                                                    ($
+                                                    {formatCurrencyValue(
+                                                        Number(transactionDetails?.usdValue.toFixed(4)),
+                                                        3
+                                                    )}
+                                                    )
+                                                </Text>
+                                            </View>
                                         </View>
-                                    </View>
+                                    )}
 
-                                    {contractTransaction && (
+                                    {(contractTransaction === 'contract' || contractTransaction === 'both') && (
                                         <>
                                             <View
                                                 style={{
@@ -321,7 +321,7 @@ export default function SignTransactionConsentContainer({
                                         </>
                                     )}
 
-                                    {showDetails && contractTransaction && (
+                                    {showDetails && (
                                         <View style={styles.detailSection}>
                                             {transactionDetails.args &&
                                                 Object.entries(transactionDetails.args).map(([key, value]) => (
