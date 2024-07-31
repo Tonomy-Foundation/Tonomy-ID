@@ -37,13 +37,14 @@ export default function SignTransactionConsentContainer({
     const [contractTransaction, setContractTransaction] = useState('');
     const [loading, setLoading] = useState(false);
     const [transactionLoading, setTransactionLoading] = useState(false);
+    const [displayFunction, setDisplayFunction] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
         transactionType: TransactionType | null;
         fromAccount: string;
         toAccount: string;
         value: string;
         usdValue: number;
-        functionName: string;
+        functionName: string | null;
         args: Record<string, string> | null;
         fee: string;
         usdFee: number;
@@ -55,8 +56,8 @@ export default function SignTransactionConsentContainer({
         toAccount: '',
         value: '',
         usdValue: 0,
-        functionName: '',
-        args: {},
+        functionName: null,
+        args: null,
         fee: '',
         usdFee: 0,
         total: '',
@@ -102,7 +103,7 @@ export default function SignTransactionConsentContainer({
 
                 total = parseFloat(total).toFixed(18);
 
-                let functionName = '';
+                let functionName;
                 let args: Record<string, string> | null = null;
                 const usdBalance = ethereumBalance.usdBalance;
 
@@ -111,8 +112,18 @@ export default function SignTransactionConsentContainer({
                 }
 
                 if (['contract', 'both'].includes(transactionType.toString())) {
-                    functionName = await transaction.getFunction();
-                    args = await transaction.getArguments();
+                    try {
+                        functionName = await transaction.getFunction();
+                        args = await transaction.getArguments();
+                        setDisplayFunction(true);
+                    } catch (error) {
+                        if (error.message === 'Not a contract call') {
+                            functionName = null;
+                            args = null;
+                        } else {
+                            errorStore.setError({ error, expected: false });
+                        }
+                    }
                 }
 
                 setLoading(false);
@@ -276,7 +287,7 @@ export default function SignTransactionConsentContainer({
                                         </View>
                                     )}
 
-                                    {(contractTransaction === 'contract' || contractTransaction === 'both') && (
+                                    {displayFunction && (
                                         <>
                                             <View
                                                 style={{
@@ -299,7 +310,6 @@ export default function SignTransactionConsentContainer({
                                                 }}
                                             >
                                                 <Text style={styles.secondaryColor}>Transaction details:</Text>
-
                                                 <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
                                                     {!showDetails ? (
                                                         <IconButton
