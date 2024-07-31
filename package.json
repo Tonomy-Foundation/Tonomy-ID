@@ -56,6 +56,8 @@
         "expo-sqlite": "~11.3.3",
         "expo-status-bar": "~1.6.0",
         "fast-text-encoding": "^1.0.6",
+        "fs": "^0.0.1-security",
+        "ganache-cli": "^6.12.2",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-native": "0.72.4",
@@ -76,6 +78,7 @@
         "react-native-web": "~0.19.6",
         "react-native-webview": "13.2.2",
         "reflect-metadata": "^0.1.13",
+        "solc": "^0.8.26",
         "typeorm": "^0.3.6",
         "web3": "^4.11.1",
         "zustand": "^3.7.2"

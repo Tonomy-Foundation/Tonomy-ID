@@ -27,8 +27,6 @@ import {
 } from './types';
 import settings from '../../settings';
 import { SignClientTypes } from '@walletconnect/types';
-import fs from 'fs';
-import path from 'path';
 
 export const USD_CONVERSION = 0.002;
 
