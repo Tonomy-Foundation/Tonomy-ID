@@ -14,7 +14,6 @@ import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
-import TModal from '../components/TModal';
 import AccountDetails from '../components/AccountDetails';
 
 export default function SignTransactionConsentContainer({
@@ -63,17 +62,15 @@ export default function SignTransactionConsentContainer({
         total: '',
         usdTotal: 0,
     });
-    const [showModal, setShowModal] = useState(false);
-    const [signedTransaction, setSignedTransaction] = useState('');
+
     const [balanceError, showBalanceError] = useState(false);
-    const { ethereumBalance, updateBalance } = useWalletStore();
     const [showDetails, setShowDetails] = useState(false);
+    const { ethereumBalance } = useWalletStore();
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
+    const errorsStore = useErrorStore();
 
     const refTopUpDetail = useRef(null);
-
-    const refMessage = useRef(null);
 
     useEffect(() => {
         const fetchTransactionDetails = async () => {
@@ -109,7 +106,7 @@ export default function SignTransactionConsentContainer({
 
                 let functionName = '';
                 let args: Record<string, string> | null = null;
-                const usdBalance = await ethereumBalance?.getUsdValue();
+                const usdBalance = ethereumBalance.usdBalance;
 
                 if (usdBalance && usdBalance < usdTotal) {
                     showBalanceError(true);
@@ -183,27 +180,47 @@ export default function SignTransactionConsentContainer({
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
-            setSignedTransaction((signedTransaction as { hash?: string })?.hash ?? '');
             const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await web3wallet?.respondSessionRequest({ topic: session.topic, response });
-            await updateBalance();
+
+            navigation.navigate('SignTransactionSuccess', {
+                transactionDetails: {
+                    chainId: transaction.getChain().getChainId(),
+                    transactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
+                    toAccount: transactionDetails.toAccount,
+                    shortAccountName: transaction.getChain().formatShortAccountName(transactionDetails?.toAccount),
+                    fee: transactionDetails.fee,
+                    usdFee: transactionDetails.usdFee,
+                    total: transactionDetails.total,
+                    usdTotal: transactionDetails.usdTotal,
+                },
+            });
             setTransactionLoading(false);
-            setShowModal(true);
         } catch (error) {
             setTransactionLoading(false);
+            errorsStore.setError({
+                title: 'Signing Error',
+                error: new Error(`Error signing transaction, ${error}`),
+                expected: false,
+            });
+            const response = {
+                id: session.id,
+                error: getSdkError('USER_REJECTED'),
+                jsonrpc: '2.0',
+            };
 
-            throw new Error(`Error signing transaction, ${error}`);
+            await web3wallet?.respondSessionRequest({
+                topic: session.topic,
+                response,
+            });
+
+            navigation.navigate({
+                name: 'UserHome',
+                params: {},
+            });
         }
     }
-
-    const onModalPress = async () => {
-        setShowModal(false);
-        navigation.navigate({
-            name: 'UserHome',
-            params: {},
-        });
-    };
 
     return (
         <LayoutComponent
@@ -238,12 +255,17 @@ export default function SignTransactionConsentContainer({
                                         </Text>
                                     </View>
                                     <View
-                                        style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}
+                                        style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            marginTop: 12,
+                                        }}
                                     >
                                         <Text style={styles.secondaryColor}>Amount:</Text>
-                                        <Text>
-                                            {transactionDetails?.value}
-                                            <Text style={styles.secondaryColor}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text>{transactionDetails?.value} </Text>
+                                            <Text style={[styles.secondaryColor]}>
                                                 ($
                                                 {formatCurrencyValue(
                                                     Number(transactionDetails?.usdValue.toFixed(4)),
@@ -251,7 +273,7 @@ export default function SignTransactionConsentContainer({
                                                 )}
                                                 )
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
 
                                     {contractTransaction && (
@@ -325,13 +347,13 @@ export default function SignTransactionConsentContainer({
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                        <Text>
-                                            {formatCurrencyValue(Number(transactionDetails?.fee), 5)}
-                                            <Text style={styles.secondaryColor}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
+                                            <Text style={[styles.secondaryColor]}>
                                                 ($
                                                 {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
                                 </View>
                                 <View
@@ -344,10 +366,16 @@ export default function SignTransactionConsentContainer({
                                         },
                                     ]}
                                 >
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <View
+                                        style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                        }}
+                                    >
                                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
-                                        <Text>
-                                            {formatCurrencyValue(Number(transactionDetails?.total), 5)}
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text>{formatCurrencyValue(Number(transactionDetails?.total), 5)}</Text>
                                             <Text style={styles.secondaryColor}>
                                                 ($
                                                 {formatCurrencyValue(
@@ -356,8 +384,9 @@ export default function SignTransactionConsentContainer({
                                                 )}
                                                 )
                                             </Text>
-                                        </Text>
+                                        </View>
                                     </View>
+
                                     {balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
                                 </View>
                                 {balanceError && (
@@ -377,7 +406,6 @@ export default function SignTransactionConsentContainer({
                         ) : (
                             <TSpinner style={{ marginBottom: 12 }} />
                         )}
-
                         {/* <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
             <View style={styles.rawTransactionDrawer}>
                 <Text style={styles.drawerHead}>Show raw transaction!</Text>
@@ -387,13 +415,6 @@ export default function SignTransactionConsentContainer({
             </View>
         </RBSheet> */}
                     </View>
-                    <TModal visible={showModal} icon="check" onPress={onModalPress}>
-                        <View style={{ marginTop: 10 }}>
-                            <Text style={{ fontSize: 15, fontWeight: '600' }}>Transaction completed successfully!</Text>
-                            <Text style={{ fontSize: 15, fontWeight: '600', marginTop: 10 }}>Transaction hash: </Text>
-                            <Text style={{ fontSize: 14, marginTop: 5 }}>{signedTransaction}</Text>
-                        </View>
-                    </TModal>
                     <AccountDetails
                         refMessage={refTopUpDetail}
                         accountDetails={{
@@ -414,7 +435,7 @@ export default function SignTransactionConsentContainer({
                         style={commonStyles.marginBottom}
                         size="large"
                     >
-                        Proceed
+                        Sign Transaction
                     </TButtonContained>
                     <TButtonOutlined size="large" disabled={transactionLoading} onPress={() => onReject()}>
                         Cancel

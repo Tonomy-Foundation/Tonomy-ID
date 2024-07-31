@@ -12,6 +12,7 @@ import { Props } from '../screens/WalletConnectLoginScreen';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
+import useErrorStore from '../store/errorStore';
 
 export default function WalletConnectLoginContainer({
     navigation,
@@ -25,6 +26,7 @@ export default function WalletConnectLoginContainer({
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
     const { web3wallet, ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
+    const errorStore = useErrorStore();
 
     const { requiredNamespaces, optionalNamespaces } = payload.params;
     const activeNamespaces = Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
@@ -44,7 +46,11 @@ export default function WalletConnectLoginContainer({
             currentETHAddress = polygonAccount ? polygonAccount.getName() : '';
             networkName = 'Polygon';
         } else {
-            throw new Error('Unsupported chain');
+            errorStore.setError({
+                title: 'Unsupported',
+                error: new Error('This chain not supported.'),
+                expected: true,
+            });
         }
 
         return { chainId, currentETHAddress, networkName };
@@ -76,7 +82,6 @@ export default function WalletConnectLoginContainer({
                         accounts.push(`${chain}:${chainDetail.currentETHAddress}`);
                     }
                 });
-
                 namespaces[key] = {
                     chains: activeNamespaces[key].chains,
                     accounts,
@@ -103,6 +108,7 @@ export default function WalletConnectLoginContainer({
                 name: 'UserHome',
                 params: {},
             });
+            errorStore.setError({ title: 'Error', error: e, expected: false });
         }
     };
 
@@ -147,7 +153,7 @@ export default function WalletConnectLoginContainer({
             footer={
                 <View>
                     <TButtonContained style={commonStyles.marginBottom} onPress={handleAccept}>
-                        Accept
+                        Login
                     </TButtonContained>
                     <TButtonOutlined onPress={onCancel}>Cancel</TButtonOutlined>
                 </View>

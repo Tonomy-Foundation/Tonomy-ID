@@ -16,6 +16,7 @@ import PassphraseInput from '../components/PassphraseInput';
 import { keyStorage } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
 import TModal from '../components/TModal';
+import { EthereumMainnetChain, EthereumPolygonChain, EthereumSepoliaChain } from '../utils/chain/etherum';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -117,11 +118,11 @@ export default function CreateEthereumKeyContainer({
             let key;
 
             if (chainId === '11155111') {
-                key = await keyStorage.findByName('ethereumTestnetSepolia');
+                key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
             } else if (chainId === '1') {
-                key = await keyStorage.findByName('ethereum');
+                key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
             } else if (chainId === '137') {
-                key = await keyStorage.findByName('ethereumPolygon');
+                key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
             } else throw new Error('Unsupported chain');
             navigation.navigate('SignTransaction', {
                 transaction,

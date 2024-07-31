@@ -9,14 +9,13 @@ import TIconButton from '../components/TIconButton';
 import theme from '../utils/theme';
 import { formatCurrencyValue } from '../utils/numbers';
 import { Images } from '../assets';
-import { Asset } from '../utils/chain/types';
 
 export type AccountDetailsProps = {
     accountDetails: {
         symbol: string;
         name: string;
         icon?: ImageSourcePropType | undefined;
-        balance?: Asset | null;
+        balance?: { balance: string; usdBalance: number };
         address?: string;
         image?: string | null;
     };
@@ -39,11 +38,9 @@ const AccountDetails = (props: AccountDetailsProps) => {
     useEffect(() => {
         const fetchBalance = async () => {
             if (balance) {
-                const usdValue = await balance.getUsdValue();
-
                 setAccountBalance({
-                    balance: balance.toString(),
-                    usdValue: usdValue,
+                    balance: balance.balance,
+                    usdValue: balance.usdBalance,
                 });
             }
         };
@@ -52,8 +49,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
     }, [balance]);
 
     const message =
-        `Please use the following account name to send ${accountData.symbol} tokens to on the
-    ${accountData.name} network:` +
+        `Please use the following account name to send ${accountData.symbol} tokens on the ${accountData.name} network:` +
         '\n' +
         `${accountData.address}`;
 

@@ -43,33 +43,24 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
     const onMessage = (event: { nativeEvent: { data: string } }) => {
         if (event && event.nativeEvent.data) {
-            const eventData = event.nativeEvent.data;
-
             if (['cancel'].includes(event.nativeEvent.data)) {
                 hideHcaptcha();
-
+                setCode(event.nativeEvent.data);
                 setErrorMsg('You cancelled the challenge. Please try again.');
             } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
                 hideHcaptcha();
-
+                setCode(event.nativeEvent.data);
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
+            } else if (event.nativeEvent.data === 'open') {
+                console.log('Visual challenge opened');
             } else {
-                if (settings.config.loggerLevel === 'debug') {
-                    console.log('Verified code from hCaptcha', event.nativeEvent.data.substring(0, 10) + '...');
-                }
+                console.log('Verified code from hCaptcha', event.nativeEvent.data);
 
                 if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
-                    hideHcaptcha();
-                    setSuccess(true);
-                } else {
-                    setCode(eventData);
-
-                    if (eventData !== 'open' && captchaFormRef.current) {
-                        captchaFormRef.current.hide();
-                        setSuccess(true);
-                    }
-                }
+                } else setCode(event.nativeEvent.data);
+                hideHcaptcha();
+                setSuccess(true);
             }
         }
     };
@@ -126,13 +117,13 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         setShowUsernameErrorModal(true);
                         break;
                     default:
-                        errorStore.setError({ error: e, expected: false });
+                        errorStore.setError({ title: 'Error', error: e, expected: false });
                 }
 
                 setLoading(false);
                 return;
             } else {
-                errorStore.setError({ error: e, expected: false });
+                errorStore.setError({ title: 'Error', error: e, expected: false });
                 setLoading(false);
                 return;
             }

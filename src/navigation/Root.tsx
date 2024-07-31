@@ -29,9 +29,10 @@ import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
+import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
+import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
 
 const prefix = Linking.createURL('');
 
@@ -65,6 +66,18 @@ export type RouteStackParamList = {
         transaction: ITransaction;
         privateKey: IPrivateKey;
         session: ISession;
+    };
+    SignTransactionSuccess: {
+        transactionDetails: {
+            chainId: string;
+            transactionHash: string;
+            toAccount: string;
+            shortAccountName: string;
+            fee: string;
+            usdFee: number;
+            total: string;
+            usdTotal: number;
+        };
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
@@ -206,6 +219,15 @@ export default function RootNavigation() {
                             name="SignTransaction"
                             options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
                             component={SignTransactionConsentScreen}
+                        />
+                        <Stack.Screen
+                            name="SignTransactionSuccess"
+                            options={{
+                                headerBackTitleVisible: false,
+                                title: 'Transfer',
+                                headerBackVisible: false,
+                            }}
+                            component={SignTransactionConsentSuccessScreen}
                         />
                         <Stack.Screen
                             name="WalletConnectLogin"
