@@ -17,7 +17,7 @@ const mockarg = arg;
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
 const GanacheChain = new EthereumChain(
-    `http://127.0.0.1:7545`,
+    'http://localhost:7545',
     'ganache',
     '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
@@ -64,7 +64,7 @@ describe('Ethereum sign transaction', () => {
     let contractInstance;
 
     beforeAll(async () => {
-        web3 = new Web3('http://127.0.0.1:7545');
+        web3 = new Web3('http://localhost:7545');
         accounts = await web3.eth.getAccounts();
     });
 
