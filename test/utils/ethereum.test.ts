@@ -11,13 +11,14 @@ import { ethers, TransactionRequest } from 'ethers';
 import { generatePrivateKeyFromSeed } from '../../src/utils/keys';
 import Web3, { AbiItem } from 'web3';
 import { abi, bytecode } from '../../contracts/SimpleStorage.json';
+import ganache from 'ganache-cli';
 
 const mockarg = arg;
 
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
 const GanacheChain = new EthereumChain(
-    'http://localhost:7545',
+    ganache.provider(),
     'ganache',
     '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
@@ -64,7 +65,7 @@ describe('Ethereum sign transaction', () => {
     let contractInstance;
 
     beforeAll(async () => {
-        web3 = new Web3('http://localhost:7545');
+        web3 = new Web3(ganache.provider());
         accounts = await web3.eth.getAccounts();
     });
 

@@ -58,6 +58,7 @@
         "fast-text-encoding": "^1.0.6",
         "fs": "^0.0.1-security",
         "ganache-cli": "^6.12.2",
+        "ganache-core": "^2.13.2",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-native": "0.72.4",
