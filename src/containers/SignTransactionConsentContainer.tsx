@@ -143,10 +143,6 @@ export default function SignTransactionConsentContainer({
                 });
                 setTransactionLoading(false);
             } catch (e) {
-                if (e === 'Not a contract call') {
-                    console.log('Not a contract call');
-                }
-
                 errorStore.setError({ error: e, expected: false });
                 setLoading(false);
                 setTransactionLoading(false);
