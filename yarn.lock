@@ -3412,10 +3412,10 @@
     did-jwt "^8.0.4"
     did-resolver "^4.1.0"
 
-"@tonomy/tonomy-id-sdk@0.21.0-test.5":
-  version "0.21.0-test.5"
-  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.21.0-test.5.tgz#d8e2b18fe84be8438d9071bf983ea753855969fc"
-  integrity sha512-RpaJ/Hy2//hALvvAeE0BOVGNumyfnYysxHQblF2C1PBUpm+7cJxnSAYinIRnxVtlnFk9Ti4Y5wz7gobD/Vv8gA==
+"@tonomy/tonomy-id-sdk@0.21.0-test.6":
+  version "0.21.0-test.6"
+  resolved "https://registry.yarnpkg.com/@tonomy/tonomy-id-sdk/-/tonomy-id-sdk-0.21.0-test.6.tgz#0dcaa1dd1a27beb49d25d2b0652e072eefa1ea1e"
+  integrity sha512-0Zhw+P8W0MozwBAefBoVifVS51OABcR4N5CTaso9/+xOeKJ97jepC7YRATUq7cLDrJzWkWWZMBj5+1fcj279qA==
   dependencies:
     "@consento/sync-randombytes" "^1.0.5"
     "@tonomy/antelope-did-resolver" "^0.10.0"
