@@ -11,7 +11,6 @@ import { ethers, TransactionRequest } from 'ethers';
 import { generatePrivateKeyFromSeed } from '../../src/utils/keys';
 import Web3, { AbiItem } from 'web3';
 import { abi, bytecode } from '../../contracts/SimpleStorage.json';
-import ganache from 'ganache-cli';
 
 const mockarg = arg;
 const ganacheUrl = 'http://localhost:8545';
