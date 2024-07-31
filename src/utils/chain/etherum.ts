@@ -182,9 +182,9 @@ const EthereumMainnetChain = new EthereumChain(
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
 const EthereumSepoliaChain = new EthereumChain(
-    `http://127.0.0.1:7545`,
-    'ganache',
-    '1337',
+    `https://sepolia.infura.io/v3/${INFURA_KEY}`,
+    'sepolia',
+    '11155111',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
 );
 
@@ -289,25 +289,16 @@ export class EthereumTransaction implements ITransaction {
 
         if (this.abi) return this.abi;
         // fetch the ABI from etherscan
-        // const res = await fetch(`${ETHERSCAN_URL}&module=contract&action=getabi&address=${this.getTo().getName()}`)
-        //     .then((res) => res.json())
-        //     .then((data) => data.result);
+        const res = await fetch(`${ETHERSCAN_URL}&module=contract&action=getabi&address=${this.getTo().getName()}`)
+            .then((res) => res.json())
+            .then((data) => data.result);
 
-        // if (res.status !== '1') {
-        //     throw new Error('Failed to fetch ABI');
-        // }
-
-        // this.abi = res.abi as string;
-        const abiPath = path.join(__dirname, '../../../build/contracts/SimpleStorage.json');
-
-        // Read the ABI file
-        const abiFile = fs.readFileSync(abiPath, 'utf-8');
-
-        // Parse the ABI file content
-        const abiJson = JSON.parse(abiFile);
+        if (res.status !== '1') {
+            throw new Error('Failed to fetch ABI');
+        }
 
         // Extract the ABI from the JSON file
-        this.abi = abiJson.abi as string;
+        this.abi = res.abi as string;
         return this.abi;
     }
     async getFunction(): Promise<string> {

@@ -101,7 +101,7 @@ describe('Ethereum sign transaction', () => {
             data: data,
         };
 
-        const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey);
+        const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey, EthereumSepoliaChain);
 
         const transaction = await EthereumTransaction.fromTransaction(
             ethereumPrivateKey,
