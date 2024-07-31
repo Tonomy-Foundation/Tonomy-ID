@@ -10,8 +10,6 @@ import {
 import { ethers, TransactionRequest } from 'ethers';
 import { generatePrivateKeyFromSeed } from '../../src/utils/keys';
 import Web3, { AbiItem } from 'web3';
-
-import ganache from 'ganache-cli';
 import { abi, bytecode } from '../../contracts/SimpleStorage.json';
 
 const mockarg = arg;
@@ -26,12 +24,12 @@ const GanacheChain = new EthereumChain(
 );
 
 const ganacheToken = new EthereumToken(
-    GanacheChain, // Replace with your local chain identifier if needed
-    'Ganache Token', // The name of your test token
-    'GNT', // The symbol of your test token
-    18, // Decimals, usually 18 for ERC-20 tokens
-    'https://example.com/path-to-your-token-logo.png', // URL to your token's logo (can be a placeholder)
-    'ganache' // An identifier for your test token
+    GanacheChain,
+    'Ganache Token',
+    'GNT',
+    18,
+    'https://example.com/path-to-your-token-logo.png',
+    'ganache'
 );
 
 GanacheChain.addToken(ganacheToken);
