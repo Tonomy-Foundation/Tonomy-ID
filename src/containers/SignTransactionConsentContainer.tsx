@@ -117,7 +117,11 @@ export default function SignTransactionConsentContainer({
                         args = await transaction.getArguments();
                         setDisplayFunction(true);
                     } catch (error) {
-                        if (error.message === 'Not a contract call') {
+                        if (
+                            error.message === 'Not a contract call' ||
+                            error.message === 'Transaction has no data' ||
+                            error.message === 'Failed to decode function name'
+                        ) {
                             functionName = null;
                             args = null;
                         } else {

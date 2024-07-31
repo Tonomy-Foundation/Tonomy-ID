@@ -14,11 +14,12 @@ import { abi, bytecode } from '../../contracts/SimpleStorage.json';
 import ganache from 'ganache-cli';
 
 const mockarg = arg;
+const ganacheUrl = 'http://localhost:8545';
 
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
 const GanacheChain = new EthereumChain(
-    ganache.provider(),
+    ganacheUrl,
     'ganache',
     '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
@@ -65,7 +66,7 @@ describe('Ethereum sign transaction', () => {
     let contractInstance;
 
     beforeAll(async () => {
-        web3 = new Web3(ganache.provider());
+        web3 = new Web3(ganacheUrl);
         accounts = await web3.eth.getAccounts();
     });
 
