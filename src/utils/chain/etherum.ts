@@ -323,19 +323,17 @@ export class EthereumTransaction implements ITransaction {
         // Get the current fee data
         const feeData = await this.chain.getProvider().getFeeData();
 
-        console.log('feeData', feeData);
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
             to: this.transaction.to,
+            from: this.transaction.from,
             data: this.transaction.data,
-            value: this.transaction.value,
             gasPrice: feeData.gasPrice,
         };
 
         // Estimate gas
         const wei = await this.chain.getProvider().estimateGas(transaction);
 
-        console.log('wei', wei);
         const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
 
         return new Asset(this.chain.getNativeToken(), totalGasFee);

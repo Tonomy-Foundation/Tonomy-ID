@@ -104,15 +104,11 @@ export default function SignTransactionConsentContainer({
 
                 const estimateFee = await transaction.estimateTransactionFee();
 
-                console.log('estimateFee', estimateFee);
                 const usdFee = await estimateFee.getUsdValue();
-
-                console.log('usdFee', usdFee);
 
                 let fee = estimateFee?.toString();
 
                 fee = parseFloat(fee).toFixed(18);
-                console.log('usdFee', fee, estimateFee?.toString());
 
                 const estimateTotal = await transaction.estimateTransactionTotal();
                 const usdTotal = await estimateTotal.getUsdValue();
@@ -190,11 +186,14 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             setTransactionLoading(true);
+            const feeData = await transaction.getChain().getProvider().getFeeData();
+
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
-                value: ethers.parseEther(transactionDetails.total),
+                value: ethers.parseEther(parseFloat(transactionDetails.value).toFixed(18)),
                 data: await transaction.getData(),
+                gasPrice: feeData.gasPrice,
             };
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
