@@ -3895,15 +3895,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rneui/themed@npm:^4.0.0-rc.8":
-  version: 4.0.0-rc.8
-  resolution: "@rneui/themed@npm:4.0.0-rc.8"
-  peerDependencies:
-    "@rneui/base": 4.0.0-rc.7
-  checksum: 57e05e393d0d5e1188e650c1dbefd951b36a0b5f8615477659e24faaeabdd10be5b67e6a358aa9eb67e1cb2edd8f8f772fc05b21a58f82b59840e5a1f12b2b55
-  languageName: node
-  linkType: hard
-
 "@scure/base@npm:^1.1.3":
   version: 1.1.6
   resolution: "@scure/base@npm:1.1.6"
@@ -14247,7 +14238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:*, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.0, prop-types@npm:^15.8.1":
+"prop-types@npm:*, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.0, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -14440,6 +14431,13 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
   checksum: 7d323310bea3a91be2965f9468d552f201b1c27891e45ddc2d6b8f717680c95a75ae0bc1e3f5cf41472446a2589a75aed4483aee8169287909fcd59ad149e8cc
+  languageName: node
+  linkType: hard
+
+"react-fast-compare@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "react-fast-compare@npm:2.0.4"
+  checksum: 06046595f90a4e3e3a56f40a8078c00aa71bdb064ddb98343f577f546aa22e888831fd45f009c93b34707cc842b4c637737e956fd13d6f80607ee92fb9cf9a1c
   languageName: node
   linkType: hard
 
@@ -14668,6 +14666,18 @@ __metadata:
   peerDependencies:
     react-native: "*"
   checksum: 1a2e1030a62fd093764b5330ce0ff34d72246e581dd2892cddc347d8621931aeb2c9ea3e054960484a1259230e8461e569e1890f1ff452d3c5c0adef70190fc3
+  languageName: node
+  linkType: hard
+
+"react-native-walkthrough-tooltip@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "react-native-walkthrough-tooltip@npm:1.6.0"
+  dependencies:
+    prop-types: ^15.6.1
+    react-fast-compare: ^2.0.4
+  peerDependencies:
+    "@types/react": ">=16.8.24"
+  checksum: 568d4ef95128e36b0237180a8ea4ee040b74c2912a5916f446f9de611b9179368f168d6f12ae93cd90cf700b9464868df8d5af5a99f9029fd9b99dffdd1c2144
   languageName: node
   linkType: hard
 
@@ -16414,7 +16424,6 @@ __metadata:
     "@react-navigation/drawer": ^6.5.0
     "@react-navigation/native": ^6.0.12
     "@react-navigation/native-stack": ^6.8.0
-    "@rneui/themed": ^4.0.0-rc.8
     "@tonomy/tonomy-id-sdk": 0.21.0-development.5
     "@types/jest": ^29.5.0
     "@types/react": ~18.2.14
@@ -16476,6 +16485,7 @@ __metadata:
     react-native-safe-area-context: 4.6.3
     react-native-screens: ~3.22.0
     react-native-svg: ^15.3.0
+    react-native-walkthrough-tooltip: ^1.6.0
     react-native-web: ~0.19.6
     react-native-webview: 13.2.2
     reflect-metadata: ^0.1.13

@@ -240,6 +240,7 @@ export default function MainContainer({
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>
+
                                 <Image
                                     source={require('../assets/animations/qr-code.gif')}
                                     style={[styles.image, styles.marginTop]}
