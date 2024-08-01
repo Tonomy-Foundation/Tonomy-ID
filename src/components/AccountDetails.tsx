@@ -48,10 +48,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
         fetchBalance();
     }, [balance]);
 
-    const message =
-        `Please use the following account name to send ${accountData.symbol} tokens on the ${accountData.name} network:` +
-        '\n' +
-        `${accountData.address}`;
+    const message = `${accountData.address}`;
 
     const copyToClipboard = () => {
         setShowPopover(true);

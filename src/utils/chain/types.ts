@@ -1,5 +1,6 @@
 import { TKeyType } from '@veramo/core';
 import { SessionTypes } from '@walletconnect/types';
+import { JsonRpcPayload, JsonRpcProvider } from 'ethers';
 
 export type KeyFormat = string | 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -62,6 +63,7 @@ export interface IChain {
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
     formatShortAccountName(account: string): string;
+    getProvider(): JsonRpcProvider;
 }
 
 export abstract class AbstractChain implements IChain {
@@ -85,6 +87,7 @@ export abstract class AbstractChain implements IChain {
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
+    abstract getProvider(): JsonRpcProvider;
 }
 
 export interface IAsset {

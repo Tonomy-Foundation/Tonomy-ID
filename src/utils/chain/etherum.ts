@@ -326,8 +326,9 @@ export class EthereumTransaction implements ITransaction {
         // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
         const transaction = {
             to: this.transaction.to,
+            from: this.transaction.from,
             data: this.transaction.data,
-            value: this.transaction.value,
+            gasPrice: feeData.gasPrice,
         };
 
         // Estimate gas

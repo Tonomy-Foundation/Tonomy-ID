@@ -32,6 +32,7 @@
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
+        "@rneui/themed": "^4.0.0-rc.8",
         "@tonomy/tonomy-id-sdk": "0.21.0-development.5",
         "@veramo/core": "^6.0.0",
         "@walletconnect/core": "^2.13.0",

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
+import { Tooltip, TooltipProps } from '@rneui/themed';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
@@ -8,12 +9,29 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
-import { ethers, TransactionRequest, BigNumberish } from 'ethers';
+import { ethers, TransactionRequest } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
 import AccountDetails from '../components/AccountDetails';
+
+const ControlledTooltip: React.FC<TooltipProps> = (props) => {
+    const [open, setOpen] = React.useState(false);
+
+    return (
+        <Tooltip
+            visible={open}
+            onOpen={() => {
+                setOpen(true);
+            }}
+            onClose={() => {
+                setOpen(false);
+            }}
+            {...props}
+        />
+    );
+};
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -85,6 +103,7 @@ export default function SignTransactionConsentContainer({
                 const usdValue = await (await transaction.getValue()).getUsdValue();
 
                 const estimateFee = await transaction.estimateTransactionFee();
+
                 const usdFee = await estimateFee.getUsdValue();
 
                 let fee = estimateFee?.toString();
@@ -167,11 +186,14 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             setTransactionLoading(true);
+            const feeData = await transaction.getChain().getProvider().getFeeData();
+
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
-                value: ethers.parseEther(transactionDetails.total),
+                value: ethers.parseEther(parseFloat(transactionDetails.value).toFixed(18)),
                 data: await transaction.getData(),
+                gasPrice: feeData.gasPrice,
             };
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
@@ -339,9 +361,27 @@ export default function SignTransactionConsentContainer({
                             </View>
                         )} */}
                                 </View>
+
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={styles.secondaryColor}>Gas fee:</Text>
+                                        <Text style={styles.secondaryColor}>
+                                            Gas fee:
+                                            <ControlledTooltip
+                                                popover={
+                                                    <Text style={styles.popoverText}>
+                                                        This fee is paid to operators of the Ethereum Network to process
+                                                        this transaction
+                                                    </Text>
+                                                }
+                                                width={250}
+                                                height={50}
+                                                containerStyle={{ padding: 3 }}
+                                                withOverlay={true}
+                                                backgroundColor={theme.colors.black}
+                                            >
+                                                <Text style={[styles.secondaryColor, { fontSize: 12 }]}>(?)</Text>
+                                            </ControlledTooltip>
+                                        </Text>
                                         <View style={{ flexDirection: 'row' }}>
                                             <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
                                             <Text style={[styles.secondaryColor]}>
@@ -535,5 +575,9 @@ const styles = StyleSheet.create({
         marginTop: 5,
         color: theme.colors.error,
         fontSize: 13,
+    },
+    popoverText: {
+        color: theme.colors.white,
+        fontSize: 11,
     },
 });
