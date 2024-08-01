@@ -30,6 +30,7 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import AccountSummary from '../components/AccountSummary';
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 const vestingContract = VestingContract.Instance;
 
@@ -240,6 +241,7 @@ export default function MainContainer({
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>
+
                                 <Image
                                     source={require('../assets/animations/qr-code.gif')}
                                     style={[styles.image, styles.marginTop]}

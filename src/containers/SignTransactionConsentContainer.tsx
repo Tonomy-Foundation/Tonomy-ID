@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
-import { Tooltip, TooltipProps } from '@rneui/themed';
+import { View, StyleSheet, Image, Text, ScrollView, TouchableOpacity } from 'react-native';
+// import { Tooltip, TooltipProps } from '@rneui/themed';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
@@ -15,23 +15,24 @@ import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
 import AccountDetails from '../components/AccountDetails';
+import Tooltip from 'react-native-walkthrough-tooltip';
 
-const ControlledTooltip: React.FC<TooltipProps> = (props) => {
-    const [open, setOpen] = React.useState(false);
+// const ControlledTooltip: React.FC<TooltipProps> = (props) => {
+//     const [open, setOpen] = React.useState(false);
 
-    return (
-        <Tooltip
-            visible={open}
-            onOpen={() => {
-                setOpen(true);
-            }}
-            onClose={() => {
-                setOpen(false);
-            }}
-            {...props}
-        />
-    );
-};
+//     return (
+//         <Tooltip
+//             visible={open}
+//             onOpen={() => {
+//                 setOpen(true);
+//             }}
+//             onClose={() => {
+//                 setOpen(false);
+//             }}
+//             {...props}
+//         />
+//     );
+// };
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -81,7 +82,6 @@ export default function SignTransactionConsentContainer({
     });
 
     const [balanceError, showBalanceError] = useState(false);
-    const { ethereumBalance } = useWalletStore();
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
     const errorsStore = useErrorStore();
@@ -121,9 +121,14 @@ export default function SignTransactionConsentContainer({
 
                 const functionName = '';
                 const args: Record<string, string> | null = null;
-                const usdBalance = ethereumBalance.usdBalance;
+                const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
+                const etherFee = ethers.parseEther(fee);
 
-                if (usdBalance && usdBalance < usdTotal) {
+                const totalTransactionCost = transactionValue + etherFee;
+                const balance = await transaction.getChain().getProvider().getBalance(fromAccount);
+
+                // Check if the balance is sufficient
+                if (balance < totalTransactionCost) {
                     showBalanceError(true);
                 }
 
@@ -160,7 +165,7 @@ export default function SignTransactionConsentContainer({
         };
 
         fetchTransactionDetails();
-    }, [transaction, contractTransaction, errorStore, ethereumBalance]);
+    }, []);
 
     async function onReject() {
         setTransactionLoading(true);
@@ -239,6 +244,8 @@ export default function SignTransactionConsentContainer({
             });
         }
     }
+
+    const [toolTipVisible, setToolTipVisible] = useState(false);
 
     return (
         <LayoutComponent
@@ -364,25 +371,29 @@ export default function SignTransactionConsentContainer({
 
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={styles.secondaryColor}>
-                                            Gas fee:
-                                            <ControlledTooltip
-                                                popover={
-                                                    <Text style={styles.popoverText}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text style={styles.secondaryColor}>Gas fee:</Text>
+
+                                            <Tooltip
+                                                isVisible={toolTipVisible}
+                                                content={
+                                                    <Text style={{ color: theme.colors.white, fontSize: 13 }}>
                                                         This fee is paid to operators of the Ethereum Network to process
                                                         this transaction
                                                     </Text>
                                                 }
-                                                width={250}
-                                                height={50}
-                                                containerStyle={{ padding: 3 }}
-                                                withOverlay={true}
-                                                backgroundColor={theme.colors.black}
+                                                placement="top"
+                                                onClose={() => setToolTipVisible(false)}
+                                                contentStyle={{
+                                                    backgroundColor: theme.colors.black,
+                                                }}
                                             >
-                                                <Text style={[styles.secondaryColor, { fontSize: 12 }]}>(?)</Text>
-                                            </ControlledTooltip>
-                                        </Text>
-                                        <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                                                    <Text style={styles.secondaryColor}>(?)</Text>
+                                                </TouchableOpacity>
+                                            </Tooltip>
+                                        </View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
                                             <Text style={[styles.secondaryColor]}>
                                                 ($
@@ -456,7 +467,7 @@ export default function SignTransactionConsentContainer({
                             symbol: transaction.getChain().getNativeToken().getSymbol(),
                             image: chainIcon,
                             name: chainName,
-                            balance: ethereumBalance,
+                            address: transactionDetails.fromAccount,
                         }}
                         onClose={() => (refTopUpDetail.current as any)?.close()}
                     />
