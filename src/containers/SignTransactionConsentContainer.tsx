@@ -103,11 +103,16 @@ export default function SignTransactionConsentContainer({
                 const usdValue = await (await transaction.getValue()).getUsdValue();
 
                 const estimateFee = await transaction.estimateTransactionFee();
+
+                console.log('estimateFee', estimateFee);
                 const usdFee = await estimateFee.getUsdValue();
+
+                console.log('usdFee', usdFee);
 
                 let fee = estimateFee?.toString();
 
                 fee = parseFloat(fee).toFixed(18);
+                console.log('usdFee', fee, estimateFee?.toString());
 
                 const estimateTotal = await transaction.estimateTransactionTotal();
                 const usdTotal = await estimateTotal.getUsdValue();
