@@ -87,6 +87,7 @@ export abstract class AbstractChain implements IChain {
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
+    abstract getProvider(): JsonRpcProvider;
 }
 
 export interface IAsset {
