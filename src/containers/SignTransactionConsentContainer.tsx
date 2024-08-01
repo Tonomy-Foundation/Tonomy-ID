@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, Image, Text, ScrollView, TouchableOpacity } from 'react-native';
-// import { Tooltip, TooltipProps } from '@rneui/themed';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
@@ -16,23 +15,6 @@ import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
 import AccountDetails from '../components/AccountDetails';
 import Tooltip from 'react-native-walkthrough-tooltip';
-
-// const ControlledTooltip: React.FC<TooltipProps> = (props) => {
-//     const [open, setOpen] = React.useState(false);
-
-//     return (
-//         <Tooltip
-//             visible={open}
-//             onOpen={() => {
-//                 setOpen(true);
-//             }}
-//             onClose={() => {
-//                 setOpen(false);
-//             }}
-//             {...props}
-//         />
-//     );
-// };
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -80,7 +62,7 @@ export default function SignTransactionConsentContainer({
         total: '',
         usdTotal: 0,
     });
-
+    const [toolTipVisible, setToolTipVisible] = useState(false);
     const [balanceError, showBalanceError] = useState(false);
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
@@ -244,8 +226,6 @@ export default function SignTransactionConsentContainer({
             });
         }
     }
-
-    const [toolTipVisible, setToolTipVisible] = useState(false);
 
     return (
         <LayoutComponent

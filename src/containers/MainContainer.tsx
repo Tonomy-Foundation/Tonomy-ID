@@ -30,7 +30,6 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import AccountSummary from '../components/AccountSummary';
-import Tooltip from 'react-native-walkthrough-tooltip';
 
 const vestingContract = VestingContract.Instance;
 
