@@ -1,58 +1,9 @@
-name: Tests
+name: Check Tonomy SDK version
 
 on:
-  push
+  pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: 🏗 Setup repo
-        uses: actions/checkout@v4
-
-      - name: Enable Corepack before setting up Node
-        run: corepack enable
-
-      - name: 📦 Build, test and lint
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.3.0
-      - run: yarn --immutable
-      - run: yarn run test
-      - run: yarn run lint
-      - run: yarn run typeCheck
-
-  check-outdated-packages:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Enable Corepack before setting up Node
-        run: corepack enable
-
-      - name: Check for outdated packages
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.3.0
-          cache: yarn
-      - run: npx --yes npm-check-updates --target @latest --errorLevel 2
-    
-check-expo-doctor:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Enable Corepack before setting up Node
-        run: corepack enable
-
-      - name: Check for expo version inconsistencies
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.3.0
-          cache: yarn
-      - run: npx --yes expo-doctor
-
   check-tonomy-sdk-version:
       runs-on: ubuntu-latest
       steps:
