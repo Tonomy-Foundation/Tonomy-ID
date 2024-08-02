@@ -9,6 +9,13 @@ jobs:
   build:
     runs-on: ubuntu-20.04
 
+    services:
+      ganache:
+        image: trufflesuite/ganache-cli
+        options: --network-alias ganache -p 8545:8545
+        ports:
+          - 8545:8545
+
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
@@ -19,6 +26,10 @@ jobs:
           node-version: 18.12.1
       - run: corepack enable
       - run: yarn --immutable
+      - name: Wait for Ganache to be ready
+        run: |
+          # Wait for Ganache to start
+          timeout 30 sh -c 'until nc -z $1 $2; do sleep 1; done' _ localhost 8545
       - run: yarn run test
       - run: yarn run lint
       - run: yarn run typeCheck
