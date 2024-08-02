@@ -15,6 +15,7 @@ import useErrorStore from '../store/errorStore';
 import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
 import AccountDetails from '../components/AccountDetails';
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -63,10 +64,9 @@ export default function SignTransactionConsentContainer({
         total: '',
         usdTotal: 0,
     });
-
+    const [toolTipVisible, setToolTipVisible] = useState(false);
     const [balanceError, showBalanceError] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
-    const { ethereumBalance } = useWalletStore();
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
     const errorsStore = useErrorStore();
@@ -90,6 +90,7 @@ export default function SignTransactionConsentContainer({
                 const usdValue = await (await transaction.getValue()).getUsdValue();
 
                 const estimateFee = await transaction.estimateTransactionFee();
+
                 const usdFee = await estimateFee.getUsdValue();
 
                 let fee = estimateFee?.toString();
@@ -105,9 +106,14 @@ export default function SignTransactionConsentContainer({
 
                 let functionName;
                 let args: Record<string, string> | null = null;
-                const usdBalance = ethereumBalance.usdBalance;
+                const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
+                const etherFee = ethers.parseEther(fee);
 
-                if (usdBalance && usdBalance < usdTotal) {
+                const totalTransactionCost = transactionValue + etherFee;
+                const balance = await transaction.getChain().getProvider().getBalance(fromAccount);
+
+                // Check if the balance is sufficient
+                if (balance < totalTransactionCost) {
                     showBalanceError(true);
                 }
 
@@ -154,7 +160,7 @@ export default function SignTransactionConsentContainer({
         };
 
         fetchTransactionDetails();
-    }, [transaction, contractTransaction, errorStore, ethereumBalance]);
+    }, []);
 
     async function onReject() {
         setTransactionLoading(true);
@@ -180,11 +186,14 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             setTransactionLoading(true);
+            const feeData = await transaction.getChain().getProvider().getFeeData();
+
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
-                value: ethers.parseEther(transactionDetails.total),
+                value: ethers.parseEther(parseFloat(transactionDetails.value).toFixed(18)),
                 data: await transaction.getData(),
+                gasPrice: feeData.gasPrice,
             };
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
@@ -354,10 +363,32 @@ export default function SignTransactionConsentContainer({
                                         </View>
                                     )}
                                 </View>
+
                                 <View style={styles.appDialog}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                        <View style={{ flexDirection: 'row' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text style={styles.secondaryColor}>Gas fee:</Text>
+
+                                            <Tooltip
+                                                isVisible={toolTipVisible}
+                                                content={
+                                                    <Text style={{ color: theme.colors.white, fontSize: 13 }}>
+                                                        This fee is paid to operators of the Ethereum Network to process
+                                                        this transaction
+                                                    </Text>
+                                                }
+                                                placement="top"
+                                                onClose={() => setToolTipVisible(false)}
+                                                contentStyle={{
+                                                    backgroundColor: theme.colors.black,
+                                                }}
+                                            >
+                                                <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                                                    <Text style={styles.secondaryColor}>(?)</Text>
+                                                </TouchableOpacity>
+                                            </Tooltip>
+                                        </View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
                                             <Text style={[styles.secondaryColor]}>
                                                 ($
@@ -431,7 +462,7 @@ export default function SignTransactionConsentContainer({
                             symbol: transaction.getChain().getNativeToken().getSymbol(),
                             image: chainIcon,
                             name: chainName,
-                            balance: ethereumBalance,
+                            address: transactionDetails.fromAccount,
                         }}
                         onClose={() => (refTopUpDetail.current as any)?.close()}
                     />
@@ -550,5 +581,9 @@ const styles = StyleSheet.create({
         marginTop: 5,
         color: theme.colors.error,
         fontSize: 13,
+    },
+    popoverText: {
+        color: theme.colors.white,
+        fontSize: 11,
     },
 });
