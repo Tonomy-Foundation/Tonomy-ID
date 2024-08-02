@@ -14,7 +14,7 @@ import { abi, bytecode } from '../../contracts/SimpleStorage.json';
 import { exec } from 'child_process';
 
 const mockarg = arg;
-const ganacheUrl = 'http://localhost:8545';
+const ganacheUrl = 'http://127.0.0.1:7545';
 let ganacheProcess;
 
 // ABI of the contract
@@ -60,7 +60,7 @@ jest.mock('react-native-argon2', () => {
         }),
     };
 });
-jest.setTimeout(30000);
+jest.setTimeout(40000);
 describe('Ethereum sign transaction', () => {
     let web3;
     let accounts;
