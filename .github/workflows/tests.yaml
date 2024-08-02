@@ -8,12 +8,13 @@ jobs:
   build:
     runs-on: ubuntu-20.04
 
-    services:
+     services:
       ganache:
         image: trufflesuite/ganache-cli
-        options: --command-line "ganache-cli -a 10 --debug --network-alias ganache -p 8545"
+        options: --network-alias ganache -p 8545:8545
         ports:
           - 8545:8545
+        command: ["ganache-cli", "-a", "10", "--debug", "--network-alias", "ganache", "-p", "8545"]
 
     steps:
       - name: 🏗 Setup repo
