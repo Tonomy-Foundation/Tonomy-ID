@@ -18,7 +18,7 @@ jobs:
           sleep 5 # Wait for Ganache to start
       - name: Check if Ganache is running
         run: |
-          if curl -s http://localhost:8545; then
+          if curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://localhost:8545; then
             echo "Ganache is running"
           else
             echo "Ganache is not running"
