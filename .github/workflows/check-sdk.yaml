@@ -1,6 +1,11 @@
 name: Check Tonomy SDK version
 
-on: pull_request
+on:
+  pull_request:
+    branches:
+      - main
+      - testnet
+      - development
 
 jobs:
   check-tonomy-sdk-version:
