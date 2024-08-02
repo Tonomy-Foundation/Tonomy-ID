@@ -11,9 +11,11 @@ import { ethers, TransactionRequest } from 'ethers';
 import { generatePrivateKeyFromSeed } from '../../src/utils/keys';
 import Web3, { AbiItem } from 'web3';
 import { abi, bytecode } from '../../contracts/SimpleStorage.json';
+import { exec } from 'child_process';
 
 const mockarg = arg;
 const ganacheUrl = 'http://localhost:8545';
+let ganacheProcess;
 
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
@@ -64,9 +66,41 @@ describe('Ethereum sign transaction', () => {
     let accounts;
     let contractInstance;
 
+    // beforeAll(async () => {
+    //     web3 = new Web3(ganacheUrl);
+    //     accounts = await web3.eth.getAccounts();
+    // });
+
     beforeAll(async () => {
-        web3 = new Web3(ganacheUrl);
-        accounts = await web3.eth.getAccounts();
+        // Start Ganache programmatically
+        ganacheProcess = exec('npx ganache-cli -p 8545', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error starting Ganache: ${error.message}`);
+            }
+
+            if (stderr) {
+                console.error(`Ganache stderr: ${stderr}`);
+            }
+        });
+
+        // Wait for Ganache to start (increase the delay if needed)
+        await new Promise((resolve) => setTimeout(resolve, 10000)); // 10 seconds
+
+        try {
+            web3 = new Web3(ganacheUrl);
+            accounts = await web3.eth.getAccounts();
+            console.log('Ganache accounts:', accounts);
+        } catch (error) {
+            console.error('Error connecting to Ganache:', error);
+            throw error; // Fail the test if Ganache is not reachable
+        }
+    });
+
+    afterAll(() => {
+        // Kill the Ganache process after tests
+        if (ganacheProcess) {
+            ganacheProcess.kill();
+        }
     });
 
     it('deploy smart contract and send raw transaction', async () => {
