@@ -1,0 +1,26 @@
+name: Run Ganache CLI
+
+on:
+  push:
+    branches:
+      - feature/178-smart-contract-transaction
+
+jobs:
+  run-ganache:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run Ganache CLI with default settings
+      run: |
+        docker run --detach --publish 8545:8545 trufflesuite/ganache-cli:latest
+
+    - name: Run Ganache CLI with custom options
+      run: |
+        docker run --detach --publish 8545:8545 trufflesuite/ganache-cli:latest --accounts 10 --debug
+
+    - name: Run Ganache CLI with custom hostname
+      run: |
+        docker run --detach --publish 8545:8545 trufflesuite/ganache-cli:latest --host 0.0.0.0
