@@ -3,7 +3,7 @@ name: Check Tonomy SDK version
 on:
   pull_request:
     branches:
-      - main
+      - master
       - testnet
       - development
 
@@ -16,8 +16,8 @@ jobs:
       - name: Enable Corepack before setting up Node
         run: corepack enable
       
-      - name: Check @tonomy/tonomy-id-sdk version on main branch PR
-        if: ${{ github.base_ref == 'main' }}
+      - name: Check @tonomy/tonomy-id-sdk version on master branch PR
+        if: ${{ github.base_ref == 'master' }}
         uses: actions/setup-node@v4
         with:
           node-version: 22.3.0
