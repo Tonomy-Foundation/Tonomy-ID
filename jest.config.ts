@@ -50,7 +50,7 @@ const config: Config = {
     moduleNameMapper: {
         // Cannot find module ... from ...
         '^@ipld/dag-pb$': '<rootDir>/node_modules/@ipld/dag-pb/src/index.js',
-        '^multiformats/(.*)$': '<rootDir>/node_modules/multiformats/dist/src/$1',
+        '^multiformats/(.*)$': '<rootDir>/node_modules/multiformats/esm/src/$1',
         '^ipfs-unixfs$': '<rootDir>/node_modules/ipfs-unixfs/dist/src/index.js',
         '^protons-runtime$': '<rootDir>/node_modules/protons-runtime/dist/src/index.js',
         '^uint8-varint$': '<rootDir>/node_modules/uint8-varint/dist/src/index.js',
