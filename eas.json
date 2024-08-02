@@ -29,7 +29,7 @@
             "autoIncrement": true,
             "node": "22.3.0"
         },
-        "demo-apk": {
+        "testnet-internal": {
             "env": {
                 "EXPO_NODE_ENV": "testnet",
                 "DEBUG": "tonomy*"
