@@ -17,7 +17,7 @@ jobs:
           yarn add ganache-cli
       - name: Run Ganache CLI with default settings
         run: |
-          docker run --detach --publish 7545 trufflesuite/ganache-cli:latest
+          docker run --detach --publish 7545:8545 trufflesuite/ganache-cli:latest
           sleep 10 # Wait for Ganache to start
       - name: Check if Ganache is running
         run: |
