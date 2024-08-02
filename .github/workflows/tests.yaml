@@ -1,9 +1,7 @@
 name: Test - Pull Requests (not to master)
 
 on:
-  pull_request:
-    branches-ignore:
-      - master
+  push
 
 jobs:
   build:

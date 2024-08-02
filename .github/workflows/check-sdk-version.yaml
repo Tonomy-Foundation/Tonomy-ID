@@ -1,7 +1,12 @@
 name: Test - Check SDK version
 
-on: pull_request
-
+on:
+  pull_request:
+    branches:
+      - master
+      - testnet
+      - development
+      
 jobs:
   check-sdk-version:
     runs-on: ubuntu-20.04

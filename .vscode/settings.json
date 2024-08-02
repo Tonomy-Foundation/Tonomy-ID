@@ -16,4 +16,10 @@
     "jest.testExplorer": {
         "enabled": true
     },
+    "git.branchPrefix": "feature/",
+    "git.branchProtection": [
+        "master",
+        "main",
+        "development"
+    ],
 }
