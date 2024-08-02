@@ -12,16 +12,15 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
-      - name: Install Ganache
-        run: |
-          yarn add ganache-cli
+      - name: Install Dependencies
+        run: yarn --immutable
       - name: Run Ganache CLI with default settings
         run: |
-          docker run --detach --publish 7545:8545 trufflesuite/ganache-cli:latest
+          docker run --detach --publish 8545:8545 trufflesuite/ganache-cli:latest
           sleep 10 # Wait for Ganache to start
       - name: Check if Ganache is running
         run: |
-          if curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:7545; then
+          if curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:8545; then
             echo "Ganache is running"
           else
             echo "Ganache is not running"

@@ -14,13 +14,13 @@ import { abi, bytecode } from '../../contracts/SimpleStorage.json';
 import { exec } from 'child_process';
 
 const mockarg = arg;
-const ganacheUrl = 'http://127.0.0.1:7545';
+const ganacheUrl = 'http://127.0.0.1:8545';
 let ganacheProcess;
 
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
 const GanacheChain = new EthereumChain(
-    'http://127.0.0.1:7545',
+    'http://127.0.0.1:8545',
     'ganache',
     '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
@@ -68,7 +68,7 @@ describe('Ethereum sign transaction', () => {
 
     beforeAll(async () => {
         // Start Ganache programmatically
-        ganacheProcess = exec('npx ganache-cli -p 7545', (error, stdout, stderr) => {
+        ganacheProcess = exec('npx ganache-cli -p 8545', (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error starting Ganache: ${error.message}`);
             }
