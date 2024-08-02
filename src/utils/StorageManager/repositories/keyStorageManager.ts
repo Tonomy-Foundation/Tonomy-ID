@@ -1,6 +1,6 @@
 import { KeyStorageRepository } from './KeyStorageRepository';
 import { IPrivateKey } from '../../chain/types';
-import { EthereumPrivateKey } from '../../chain/etherum';
+import { EthereumChain, EthereumPrivateKey } from '../../chain/etherum';
 
 export abstract class KeyManager {
     protected repository: KeyStorageRepository;
@@ -22,11 +22,11 @@ export abstract class KeyManager {
         }
     }
 
-    public async findByName(name: string): Promise<IPrivateKey | null> {
+    public async findByName(name: string, chain: EthereumChain): Promise<IPrivateKey | null> {
         const key = await this.repository.findByName(name);
 
-        if (key && key.name === 'ethereum') {
-            return new EthereumPrivateKey(key.value);
+        if (key) {
+            return new EthereumPrivateKey(key.value, chain);
         } else return null;
     }
 

@@ -12,6 +12,7 @@ import { Props } from '../screens/WalletConnectLoginScreen';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
+import useErrorStore from '../store/errorStore';
 
 export default function WalletConnectLoginContainer({
     navigation,
@@ -24,9 +25,36 @@ export default function WalletConnectLoginContainer({
 }) {
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
-    const { web3wallet, account } = useWalletStore();
-    const currentETHAddress = account ? account.getName() : '';
-    const session = new EthereumChainSession(payload, EthereumSepoliaChain);
+    const { web3wallet, ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
+    const errorStore = useErrorStore();
+
+    const { requiredNamespaces, optionalNamespaces } = payload.params;
+    const activeNamespaces = Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
+    const chains = activeNamespaces.eip155.chains;
+    const chainIds = chains?.map((chain) => chain.split(':')[1]);
+    const chainDetails = chainIds?.map((chainId) => {
+        let currentETHAddress;
+        let networkName;
+
+        if (chainId === '11155111') {
+            currentETHAddress = sepoliaAccount ? sepoliaAccount.getName() : '';
+            networkName = 'Sepolia';
+        } else if (chainId === '1') {
+            currentETHAddress = ethereumAccount ? ethereumAccount.getName() : '';
+            networkName = 'Ethereum';
+        } else if (chainId === '137') {
+            currentETHAddress = polygonAccount ? polygonAccount.getName() : '';
+            networkName = 'Polygon';
+        } else {
+            errorStore.setError({
+                title: 'Unsupported',
+                error: new Error('This chain not supported.'),
+                expected: true,
+            });
+        }
+
+        return { chainId, currentETHAddress, networkName };
+    });
 
     const onCancel = async () => {
         await web3wallet?.rejectSession({
@@ -42,15 +70,17 @@ export default function WalletConnectLoginContainer({
     const handleAccept = async () => {
         try {
             const namespaces: SessionTypes.Namespaces = {};
-            const { requiredNamespaces, optionalNamespaces } = payload.params;
-            const activeNamespaces =
-                Object.keys(requiredNamespaces).length === 0 ? optionalNamespaces : requiredNamespaces;
 
             Object.keys(activeNamespaces).forEach((key) => {
                 const accounts: string[] = [];
 
-                activeNamespaces[key].chains?.map((chain) => {
-                    [currentETHAddress].map((acc) => accounts.push(`${chain}:${acc}`));
+                activeNamespaces[key].chains?.forEach((chain) => {
+                    const chainId = chain.split(':')[1];
+                    const chainDetail = chainDetails?.find((detail) => detail.chainId === chainId);
+
+                    if (chainDetail?.currentETHAddress) {
+                        accounts.push(`${chain}:${chainDetail.currentETHAddress}`);
+                    }
                 });
                 namespaces[key] = {
                     chains: activeNamespaces[key].chains,
@@ -59,6 +89,7 @@ export default function WalletConnectLoginContainer({
                     events: activeNamespaces[key].events,
                 };
             });
+
             await web3wallet?.approveSession({
                 id: payload.id,
                 relayProtocol: payload.params.relays[0].protocol,
@@ -77,6 +108,7 @@ export default function WalletConnectLoginContainer({
                 name: 'UserHome',
                 params: {},
             });
+            errorStore.setError({ title: 'Error', error: e, expected: false });
         }
     };
 
@@ -84,17 +116,20 @@ export default function WalletConnectLoginContainer({
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <View style={[styles.networkHeading, styles.marginTop]}>
-                        <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
-                        <Text style={styles.nameText}>Ethereum Network</Text>
+                    <View style={styles.marginTop}>
+                        {chainDetails?.map(({ networkName, currentETHAddress }, index) => (
+                            <View style={styles.networkHeading} key={index}>
+                                <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
+                                <Text style={styles.nameText}>{networkName} Network:</Text>
+                                {currentETHAddress && (
+                                    <Text style={commonStyles.textAlignCenter}>
+                                        {currentETHAddress.substring(0, 9)}....
+                                        {currentETHAddress.substring(currentETHAddress.length - 8)}
+                                    </Text>
+                                )}
+                            </View>
+                        ))}
                     </View>
-
-                    {currentETHAddress && (
-                        <Text style={commonStyles.textAlignCenter}>
-                            {currentETHAddress.substring(0, 9)}....
-                            {currentETHAddress.substring(currentETHAddress.length - 8)}
-                        </Text>
-                    )}
 
                     <View style={[styles.appDialog, styles.marginTop]}>
                         <Image style={styles.appDialogImage} source={{ uri: icons[0] }} />
@@ -117,8 +152,8 @@ export default function WalletConnectLoginContainer({
             }
             footer={
                 <View>
-                    <TButtonContained style={commonStyles.marginBottom} onPress={() => handleAccept()}>
-                        Accept
+                    <TButtonContained style={commonStyles.marginBottom} onPress={handleAccept}>
+                        Login
                     </TButtonContained>
                     <TButtonOutlined onPress={onCancel}>Cancel</TButtonOutlined>
                 </View>
@@ -144,10 +179,12 @@ const styles = StyleSheet.create({
     networkHeading: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginBottom: 10,
     },
     nameText: {
         color: theme.colors.secondary2,
-        marginLeft: 5,
+        marginLeft: 10,
+        marginRight: 10,
     },
     appDialog: {
         borderWidth: 1,
@@ -167,7 +204,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     marginTop: {
-        marginTop: 30,
+        marginTop: 20,
     },
     infoBox: {
         marginBottom: 32,
