@@ -31,16 +31,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Remove unused space on disk
-        run: |
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/*
-          sudo rm -rf /tmp/*
-          sudo rm -rf /var/tmp/*
-          sudo rm -rf /var/cache/*
-          sudo rm -rf /var/log/*
-          sudo rm -rf /var/backups/*
-          sudo rm -rf /var/lib/docker/tmp/*
+      # - name: Remove unused space on disk
+      #   run: |
+      #     sudo apt-get clean
+      #     sudo rm -rf /var/lib/apt/lists/*
+      #     sudo rm -rf /tmp/*
+      #     sudo rm -rf /var/tmp/*
+      #     sudo rm -rf /var/cache/*
+      #     sudo rm -rf /var/log/*
+      #     sudo rm -rf /var/backups/*
+      #     sudo rm -rf /var/lib/docker/tmp/*
           
       - name: Hello actor
         if: ${{ github.actor == 'nektos/act' }}
