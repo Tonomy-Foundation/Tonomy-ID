@@ -12,7 +12,9 @@ jobs:
       ganache:
         image: trufflesuite/ganache-cli
         options: --detach --publish 8545:8545
-        command: --accounts 10 --debug
+        ports:
+          - 8545:8545
+
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
