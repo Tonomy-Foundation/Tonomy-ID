@@ -16,11 +16,13 @@ jobs:
     - name: Run Ganache CLI with default settings
       run: |
         docker run --detach --publish 8545:8545 trufflesuite/ganache-cli:latest
+        sleep 5 # Wait for Ganache to start
 
-    - name: Run Ganache CLI with custom options
+    - name: Check if Ganache is running
       run: |
-        docker run --detach --publish 8545:8545 trufflesuite/ganache-cli:latest --accounts 10 --debug
-
-    - name: Run Ganache CLI with custom hostname
-      run: |
-        docker run --detach --publish 8545:8545 trufflesuite/ganache-cli:latest --host 0.0.0.0
+        if curl -s http://localhost:8545; then
+          echo "Ganache is running"
+        else
+          echo "Ganache is not running"
+          exit 1
+        fi
