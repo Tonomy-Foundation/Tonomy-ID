@@ -20,7 +20,7 @@ let ganacheProcess;
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
 const GanacheChain = new EthereumChain(
-    ganacheUrl,
+    'http://127.0.0.1:7545',
     'ganache',
     '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
@@ -87,7 +87,7 @@ describe('Ethereum sign transaction', () => {
         await new Promise((resolve) => setTimeout(resolve, 10000)); // 10 seconds
 
         try {
-            web3 = new Web3(ganacheUrl);
+            web3 = new Web3('http://127.0.0.1:7545');
             accounts = await web3.eth.getAccounts();
             console.log('Ganache accounts:', accounts);
         } catch (error) {
@@ -135,7 +135,7 @@ describe('Ethereum sign transaction', () => {
         console.log('txParams', txParams);
         const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey, GanacheChain);
 
-        console.log('ethereumPrivateKey', ethereumPrivateKey);
+        console.log('ethereumPrivateKey', ethereumPrivateKey.getType());
 
         const transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, txParams, GanacheChain);
 
