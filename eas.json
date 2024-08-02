@@ -6,7 +6,8 @@
         "production": {
             "node": "22.3.0",
             "env": {
-                "EXPO_NODE_ENV": "production"
+                "EXPO_NODE_ENV": "production",
+                "DEBUG": "tonomy-console*"
             },
             "autoIncrement": true,
             "ios": {
