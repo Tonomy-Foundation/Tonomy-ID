@@ -129,7 +129,7 @@ describe('Ethereum sign transaction', () => {
         console.log('ethereumPrivateKey', await ethereumPrivateKey.getType());
 
         // Increase the timeout for ethers.js provider
-        const provider = new ethers.JsonRpcProvider(ganacheUrl, { timeout: 10000 });
+        const provider = new ethers.JsonRpcProvider(ganacheUrl);
 
         await provider.ready;
 
