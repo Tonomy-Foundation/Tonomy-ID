@@ -108,13 +108,18 @@ describe('Ethereum sign transaction', () => {
         contractInstance = await new web3.eth.Contract(contractAbi)
             .deploy({ data: bytecode })
             .send({ from: accounts[0], gas: 1500000, gasPrice: '30000000000' });
+        console.log('contractInstance', contractInstance);
 
         const contractAddress = contractInstance.options.address;
         const data = contractInstance.methods.set(89).encodeABI();
 
+        console.log('contractAddress', contractAddress);
+
         const account = web3.eth.accounts.create();
         const senderAddress = account.address;
         const senderPrivateKey = account.privateKey;
+
+        console.log('account', account, senderAddress, senderPrivateKey);
         const nonce = await web3.eth.getTransactionCount(senderAddress, 'latest');
         const gasPrice = await web3.eth.getGasPrice();
         const gasLimit = 3000000;
