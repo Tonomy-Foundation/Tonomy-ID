@@ -12,9 +12,12 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
+      - name: Install Ganache
+        run: |
+          yarn global add ganache
       - name: Run Ganache CLI with default settings
         run: |
-          docker run --detach --publish 7545:8545 trufflesuite/ganache-cli:latest
+          ganache -p 7545 &
           sleep 10 # Wait for Ganache to start
       - name: Check if Ganache is running
         run: |
