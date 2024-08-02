@@ -73,7 +73,7 @@ describe('Ethereum sign transaction', () => {
 
     beforeAll(async () => {
         // Start Ganache programmatically
-        ganacheProcess = exec('npx ganache-cli -p 8545', (error, stdout, stderr) => {
+        ganacheProcess = exec('npx ganache-cli -p 7545', (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error starting Ganache: ${error.message}`);
             }
@@ -108,18 +108,14 @@ describe('Ethereum sign transaction', () => {
         contractInstance = await new web3.eth.Contract(contractAbi)
             .deploy({ data: bytecode })
             .send({ from: accounts[0], gas: 1500000, gasPrice: '30000000000' });
-        console.log('contractInstance', contractInstance);
 
         const contractAddress = contractInstance.options.address;
         const data = contractInstance.methods.set(89).encodeABI();
-
-        console.log('contractAddress', contractAddress);
 
         const account = web3.eth.accounts.create();
         const senderAddress = account.address;
         const senderPrivateKey = account.privateKey;
 
-        console.log('account', account, senderAddress, senderPrivateKey);
         const nonce = await web3.eth.getTransactionCount(senderAddress, 'latest');
         const gasPrice = await web3.eth.getGasPrice();
         const gasLimit = 3000000;
@@ -135,7 +131,7 @@ describe('Ethereum sign transaction', () => {
         console.log('txParams', txParams);
         const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey, GanacheChain);
 
-        console.log('ethereumPrivateKey', ethereumPrivateKey.getType());
+        console.log('ethereumPrivateKey', await ethereumPrivateKey.getType());
 
         const transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, txParams, GanacheChain);
 
