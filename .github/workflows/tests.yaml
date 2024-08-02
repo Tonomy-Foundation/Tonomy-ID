@@ -15,7 +15,7 @@ jobs:
       - name: Run Ganache CLI with default settings
         run: |
           docker run --detach --publish 7545:8545 trufflesuite/ganache-cli:latest
-          sleep 5 # Wait for Ganache to start
+          sleep 10 # Wait for Ganache to start
       - name: Check if Ganache is running
         run: |
           if curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:7545; then

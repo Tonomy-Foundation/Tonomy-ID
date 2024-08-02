@@ -66,11 +66,6 @@ describe('Ethereum sign transaction', () => {
     let accounts;
     let contractInstance;
 
-    // beforeAll(async () => {
-    //     web3 = new Web3(ganacheUrl);
-    //     accounts = await web3.eth.getAccounts();
-    // });
-
     beforeAll(async () => {
         // Start Ganache programmatically
         ganacheProcess = exec('npx ganache-cli -p 7545', (error, stdout, stderr) => {
@@ -87,7 +82,7 @@ describe('Ethereum sign transaction', () => {
         await new Promise((resolve) => setTimeout(resolve, 10000)); // 10 seconds
 
         try {
-            web3 = new Web3('http://127.0.0.1:7545');
+            web3 = new Web3(ganacheUrl);
             accounts = await web3.eth.getAccounts();
             console.log('Ganache accounts:', accounts);
         } catch (error) {
@@ -132,6 +127,11 @@ describe('Ethereum sign transaction', () => {
         const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey, GanacheChain);
 
         console.log('ethereumPrivateKey', await ethereumPrivateKey.getType());
+
+        // Increase the timeout for ethers.js provider
+        const provider = new ethers.JsonRpcProvider(ganacheUrl, { timeout: 10000 });
+
+        await provider.ready;
 
         const transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, txParams, GanacheChain);
 
