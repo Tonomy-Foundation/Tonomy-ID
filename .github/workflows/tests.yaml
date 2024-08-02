@@ -1,4 +1,5 @@
 name: Test - Pull Requests (not to master)
+
 on:
   pull_request:
     branches-ignore:
@@ -8,19 +9,18 @@ jobs:
   build:
     runs-on: ubuntu-20.04
 
-     services:
+    services:
       ganache:
-        image: trufflesuite/ganache-cli
-        options: --network-alias ganache -p 8545:8545
-        ports:
-          - 8545:8545
-        command: ["ganache-cli", "-a", "10", "--debug", "--network-alias", "ganache", "-p", "8545"]
+        image: trufflesuite/ganache-cli:latest
+        options: --detach --publish 8545:8545
+        # Adding Ganache CLI arguments
+        command: --accounts 10 --debug
 
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
 
-      - name: 📦 Build, test and lint
+      - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18.12.1
@@ -34,7 +34,7 @@ jobs:
       - name: Wait for Ganache to be ready
         run: |
           # Wait for Ganache to start
-          timeout 30 sh -c 'until nc -z $1 $2; do sleep 1; done' _ localhost 8545
+          timeout 30 sh -c 'until nc -z localhost 8545; do sleep 1; done'
 
       - name: Run tests
         run: yarn run test
