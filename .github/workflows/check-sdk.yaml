@@ -4,33 +4,33 @@ on: pull_request
 
 jobs:
   check-tonomy-sdk-version:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Enable Corepack before setting up Node
-          run: corepack enable
-        
-        - name: Check @tonomy/tonomy-id-sdk version on main branch PR
-          if: ${{ github.base_ref == 'main' }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22.3.0
-            cache: yarn
-        - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @latest
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
+      
+      - name: Check @tonomy/tonomy-id-sdk version on main branch PR
+        if: ${{ github.base_ref == 'main' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.3.0
+          cache: yarn
+      - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @latest
 
-        - name: Check @tonomy/tonomy-id-sdk version on testnet branch PR
-          if: ${{ github.base_ref == 'testnet' }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22.3.0
-            cache: yarn
-        - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @rc
+      - name: Check @tonomy/tonomy-id-sdk version on testnet branch PR
+        if: ${{ github.base_ref == 'testnet' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.3.0
+          cache: yarn
+      - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @rc
 
-        - name: Check @tonomy/tonomy-id-sdk version on development branch PR
-          if: ${{ github.base_ref == 'development' }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22.3.0
-            cache: yarn
-        - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @development
+      - name: Check @tonomy/tonomy-id-sdk version on development branch PR
+        if: ${{ github.base_ref == 'development' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.3.0
+          cache: yarn
+      - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @development
