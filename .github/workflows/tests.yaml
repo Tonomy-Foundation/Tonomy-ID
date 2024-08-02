@@ -1,7 +1,6 @@
 name: Tests
 
-on:
-  push
+on: push
 
 jobs:
   build:
@@ -38,49 +37,17 @@ jobs:
           cache: yarn
       - run: npx --yes npm-check-updates --target @latest --errorLevel 2
     
-check-expo-doctor:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Enable Corepack before setting up Node
-        run: corepack enable
-
-      - name: Check for expo version inconsistencies
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.3.0
-          cache: yarn
-      - run: npx --yes expo-doctor
-
-  check-tonomy-sdk-version:
+  check-expo-doctor:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
 
         - name: Enable Corepack before setting up Node
           run: corepack enable
-        
-        - name: Check @tonomy/tonomy-id-sdk version on main branch PR
-          if: ${{ github.base_ref == 'main' }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22.3.0
-            cache: yarn
-        - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @latest
 
-        - name: Check @tonomy/tonomy-id-sdk version on testnet branch PR
-          if: ${{ github.base_ref == 'testnet' }}
+        - name: Check for expo version inconsistencies
           uses: actions/setup-node@v4
           with:
             node-version: 22.3.0
             cache: yarn
-        - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @rc
-
-        - name: Check @tonomy/tonomy-id-sdk version on development branch PR
-          if: ${{ github.base_ref == 'development' }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22.3.0
-            cache: yarn
-        - run: npx --yes npm-check-updates --filter @tonomy/tonomy-id-sdk --errorLevel 2 --target @development
+        - run: npx --yes expo-doctor
