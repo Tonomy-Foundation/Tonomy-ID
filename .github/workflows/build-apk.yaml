@@ -49,13 +49,15 @@ jobs:
       - name: Goodbye actor
         if: ${{ github.actor != 'nektos/act' }}
         run: echo "Goodbye '$GITHUB_ACTOR'"
+      
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
 
       - name: 🚀 Build and publish tonomy app
         # if: ${{ github.actor != 'nektos/act' }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: corepack enable
       - run: yarn --immutable
       - run: yarn run build:prepare
       - run: npx eas build --clear-cache --profile testnet-internal --platform "${EXPO_PLATFORM}" --local
