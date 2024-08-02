@@ -50,4 +50,4 @@ jobs:
           with:
             node-version: 22.3.0
             cache: yarn
-        - run: npx --yes expo-doctor
+        - run: npx --yes expo-doctor@latest
