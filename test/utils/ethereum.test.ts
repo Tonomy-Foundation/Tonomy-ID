@@ -98,6 +98,33 @@ describe('Ethereum sign transaction', () => {
         }
     });
 
+    // generate key and sign transaction
+    it('generate private key and sign transaction', async () => {
+        const ethereumKey = await generatePrivateKeyFromSeed('test', EthereumSepoliaChain);
+        const exportPrivateKey = await ethereumKey.exportPrivateKey();
+        const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, EthereumSepoliaChain);
+
+        const ethereumAccount = await EthereumAccount.fromPublicKey(
+            EthereumSepoliaChain,
+            await ethereumPrivateKey.getPublicKey()
+        );
+        const transactionRequest: TransactionRequest = {
+            to: ethereumAccount.getName(),
+            from: ethereumAccount.getName(),
+            value: ethers.parseEther('0'),
+            data: '0x00',
+        };
+
+        const signedTransaction = await ethereumPrivateKey.signTransaction(transactionRequest);
+
+        // Check if signedTransaction is defined and not empty
+        expect(signedTransaction).toBeDefined();
+        expect(signedTransaction).not.toEqual('');
+
+        // Check if signedTransaction is a string in hexadecimal format
+        expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
+    }, 30000);
+
     it('deploy smart contract and send raw transaction', async () => {
         // Deploy the contract
         contractInstance = await new web3.eth.Contract(contractAbi)
@@ -131,7 +158,12 @@ describe('Ethereum sign transaction', () => {
         // Increase the timeout for ethers.js provider
         const provider = new ethers.JsonRpcProvider(ganacheUrl);
 
-        await provider.ready;
+        try {
+            await provider.ready;
+        } catch (error) {
+            console.error('Failed to connect to the network:', error);
+            throw error;
+        }
 
         const transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, txParams, GanacheChain);
 
@@ -154,31 +186,4 @@ describe('Ethereum sign transaction', () => {
             console.log('Error sending transaction:', e);
         }
     });
-
-    // generate key and sign transaction
-    it('generate private key and sign transaction', async () => {
-        const ethereumKey = await generatePrivateKeyFromSeed('test', EthereumSepoliaChain);
-        const exportPrivateKey = await ethereumKey.exportPrivateKey();
-        const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, EthereumSepoliaChain);
-
-        const ethereumAccount = await EthereumAccount.fromPublicKey(
-            EthereumSepoliaChain,
-            await ethereumPrivateKey.getPublicKey()
-        );
-        const transactionRequest: TransactionRequest = {
-            to: ethereumAccount.getName(),
-            from: ethereumAccount.getName(),
-            value: ethers.parseEther('0'),
-            data: '0x00',
-        };
-
-        const signedTransaction = await ethereumPrivateKey.signTransaction(transactionRequest);
-
-        // Check if signedTransaction is defined and not empty
-        expect(signedTransaction).toBeDefined();
-        expect(signedTransaction).not.toEqual('');
-
-        // Check if signedTransaction is a string in hexadecimal format
-        expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
-    }, 30000);
 });
