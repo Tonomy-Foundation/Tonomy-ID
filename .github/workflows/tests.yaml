@@ -1,5 +1,4 @@
 name: Test - Pull Requests (not to master)
-
 on:
   pull_request:
     branches-ignore:
@@ -11,15 +10,16 @@ jobs:
 
     services:
       ganache:
-        image: trufflesuite/ganache-cli:latest
-        options: --network-alias ganache -p 8545:8545
-        command: -a 10 --debug
+        image: trufflesuite/ganache-cli
+        options: --command-line "ganache-cli -a 10 --debug --network-alias ganache -p 8545"
+        ports:
+          - 8545:8545
 
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
 
-      - name: 📦 Setup Node.js
+      - name: 📦 Build, test and lint
         uses: actions/setup-node@v4
         with:
           node-version: 18.12.1
