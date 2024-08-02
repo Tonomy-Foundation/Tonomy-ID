@@ -11,9 +11,9 @@ jobs:
     services:
       ganache:
         image: trufflesuite/ganache-cli
-        options: --network-alias ganache -p 8546:8545
+        options: --network-alias ganache -p 5777:8545
         ports:
-          - 8546:8545
+          - 5777:8545
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
