@@ -31,7 +31,6 @@ jobs:
         with:
           node-version: 18.12.1
       - run: corepack enable
-      - run: yarn --immutable
       - run: yarn run test
       - run: yarn run lint
       - run: yarn run typeCheck

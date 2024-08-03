@@ -15,7 +15,6 @@ import { exec } from 'child_process';
 
 const mockarg = arg;
 const ganacheUrl = 'http://127.0.0.1:8545';
-let ganacheProcess;
 
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
@@ -67,20 +66,6 @@ describe('Ethereum sign transaction', () => {
     let contractInstance;
 
     beforeAll(async () => {
-        // Start Ganache programmatically
-        ganacheProcess = exec('npx ganache-cli -p 8545', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error starting Ganache: ${error.message}`);
-            }
-
-            if (stderr) {
-                console.error(`Ganache stderr: ${stderr}`);
-            }
-        });
-
-        // Wait for Ganache to start (increase the delay if needed)
-        await new Promise((resolve) => setTimeout(resolve, 10000)); // 10 seconds
-
         try {
             web3 = new Web3(ganacheUrl);
             accounts = await web3.eth.getAccounts();
@@ -88,13 +73,6 @@ describe('Ethereum sign transaction', () => {
         } catch (error) {
             console.error('Error connecting to Ganache:', error);
             throw error; // Fail the test if Ganache is not reachable
-        }
-    });
-
-    afterAll(() => {
-        // Kill the Ganache process after tests
-        if (ganacheProcess) {
-            ganacheProcess.kill();
         }
     });
 
