@@ -54,21 +54,21 @@ jobs:
           echo "Docker images size after cleanup:"
           sudo docker system df
       
-      - name: Clean up npm cache
-        run: |
-          echo "NPM cache size before cleanup:"
-          sudo du -sh ~/.npm
-          npm cache clean --force
-          echo "NPM cache size after cleanup:"
-          sudo du -sh ~/.npm
+      # - name: Clean up npm cache
+      #   run: |
+      #     echo "NPM cache size before cleanup:"
+      #     sudo du -sh ~/.npm
+      #     npm cache clean --force
+      #     echo "NPM cache size after cleanup:"
+      #     sudo du -sh ~/.npm
       
-      - name: Clean up yarn cache
-        run: |
-          echo "Yarn cache size before cleanup:"
-          sudo du -sh ~/.yarn
-          yarn cache clean
-          echo "Yarn cache size after cleanup:"
-          sudo du -sh ~/.yarn
+      # - name: Clean up yarn cache
+      #   run: |
+      #     echo "Yarn cache size before cleanup:"
+      #     sudo du -sh ~/.yarn
+      #     yarn cache clean
+      #     echo "Yarn cache size after cleanup:"
+      #     sudo du -sh ~/.yarn
         
       - name: Cleanup unused directories
         run: |
