@@ -6,7 +6,6 @@ const env = process.env.EXPO_NODE_ENV ?? 'development';
 const settingsInputs = {
     nodeEnv: process.env.NODE_ENV, // This is set by expo with webpack https://github.com/expo/expo/issues/20360
     expoNodeEnv: process.env.EXPO_NODE_ENV,
-    logEnv: process.env.LOG,
     env,
 };
 
@@ -115,11 +114,6 @@ if (process.env.ACCOUNTS_SERVICE_URL) {
 if (process.env.HCAPTCHA_SITE_KEY) {
     debug(`Using hCaptcha site key from env: ${process.env.HCAPTCHA_SITE_KEY}`);
     config.captchaSiteKey = process.env.HCAPTCHA_SITE_KEY;
-}
-
-if (process.env.LOG === 'true') {
-    debug(`Using logger level from env: ${process.env.LOG}`);
-    config.loggerLevel = 'debug';
 }
 
 settings.config = config;
