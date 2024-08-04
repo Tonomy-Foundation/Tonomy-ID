@@ -43,43 +43,16 @@ jobs:
       # Images: node:16/16-alpine/18/18-albine/20/20-alpine moby/buildkit:latest alpine:3.16/3.17/3.18/3.19 debian:10/11 ubuntu:20.04/22.04
       - name: Clean up Docker images
         run: |
-          echo "Docker images size before cleanup:"
+          echo "Docker before cleanup:"
           sudo docker ps
           sudo docker images
           sudo docker system df
           sudo docker system prune -af
-          echo "Docker images size after cleanup:"
+          echo "Docker after cleanup:"
           sudo docker ps
           sudo docker images
           sudo docker system df
         
-      # - name: Cleanup unused directories
-      #   run: |
-      #     to_delete=(
-      #       "/usr/share/dotnet"
-      #       "/usr/local/lib/android"
-      #       /usr/local/share/android
-      #       /usr/local/share/gradle
-      #       /usr/local/share/maven
-      #       /usr/local/share/dotnet
-      #       /usr/local/share/swift
-      #       ~/.gradle/caches/
-      #       /tmp
-      #     )
-      #     for dir in "${to_delete[@]}"; do
-      #       if [ -d "$dir" ]; then
-      #         echo "Deleting directory $dir"
-      #         sudo du -sh "$dir"
-      #         # sudo rm -rf "$dir"
-      #       fi
-      #       if [ -f "$dir" ]; then
-      #         echo "Deleting file $dir"
-      #         sudo du -sh "$dir"
-      #         # sudo rm -f "$dir"
-      #       fi
-      #     done
-      #     sudo mkdir -p /tmp
-
       - name: Install dependancies
         run: yarn --immutable
 
