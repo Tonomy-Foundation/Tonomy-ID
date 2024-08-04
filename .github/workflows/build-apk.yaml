@@ -1,4 +1,4 @@
-name: Build App locally and run security analysis
+name: Build Android APK
 
 # Use https://github.com/nektos/act to run this locally
 # INSTALL:
@@ -49,10 +49,10 @@ jobs:
       - name: Clean up Docker images
         run: |
           echo "Docker images size before cleanup:"
-          docker system df
-          docker system prune -af
+          sudo docker system df
+          sudo docker system prune -af
           echo "Docker images size after cleanup:"
-          docker system df
+          sudo docker system df
       
       - name: Clean up npm cache
         run: |
