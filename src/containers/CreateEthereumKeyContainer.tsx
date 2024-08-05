@@ -74,6 +74,7 @@ export default function CreateEthereumKeyContainer({
             const salt = idData.password_salt;
 
             await user.login(tonomyUsername, passphrase.join(' '), {
+                // @ts-ignore (Checksum256 type error)
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 

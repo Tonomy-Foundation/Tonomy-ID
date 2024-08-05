@@ -45,6 +45,7 @@ setSettings({
 // setFetch()
 
 const useUserStore = create<UserState>((set, get) => ({
+    // @ts-ignore PublicKey type error
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
     getStatus: () => {

@@ -55,6 +55,7 @@ export default function LoginPassphraseContainer({
             savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
             const result = await user.login(tonomyUsername, passphrase.join(' '), {
+                // @ts-ignore Checksum256 type error
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
