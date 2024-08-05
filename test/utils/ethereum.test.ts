@@ -108,57 +108,48 @@ describe('Ethereum sign transaction', () => {
     }, 30000);
 
     it('deploy smart contract and send raw transaction', async () => {
-        try {
-            // Deploy the contract
-            contractInstance = await new web3.eth.Contract(contractAbi)
-                .deploy({ data: bytecode })
-                .send({ from: accounts[0], gas: 1500000, gasPrice: '30000000000' });
+        // Deploy the contract
+        contractInstance = await new web3.eth.Contract(contractAbi)
+            .deploy({ data: bytecode })
+            .send({ from: accounts[0], gas: 1500000, gasPrice: '30000000000' });
 
-            const contractAddress = contractInstance.options.address;
-            const data = contractInstance.methods.set(89).encodeABI();
+        const contractAddress = contractInstance.options.address;
+        const data = contractInstance.methods.set(89).encodeABI();
 
-            const account = web3.eth.accounts.create();
-            const senderAddress = account.address;
-            const senderPrivateKey = account.privateKey;
+        const account = web3.eth.accounts.create();
+        const senderAddress = account.address;
+        const senderPrivateKey = account.privateKey;
 
-            const nonce = await web3.eth.getTransactionCount(senderAddress, 'latest');
-            const gasPrice = await web3.eth.getGasPrice();
-            const gasLimit = 3000000;
+        const nonce = await web3.eth.getTransactionCount(senderAddress, 'latest');
+        const gasPrice = await web3.eth.getGasPrice();
+        const gasLimit = 3000000;
 
-            const txParams: TransactionRequest = {
-                nonce: Number(web3.utils.toHex(nonce)),
-                gasPrice: web3.utils.toHex(gasPrice),
-                gasLimit: web3.utils.toHex(gasLimit),
-                to: contractAddress,
-                data: data,
-            };
+        const txParams: TransactionRequest = {
+            nonce: Number(web3.utils.toHex(nonce)),
+            gasPrice: web3.utils.toHex(gasPrice),
+            gasLimit: web3.utils.toHex(gasLimit),
+            to: contractAddress,
+            data: data,
+        };
 
-            const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey, GanacheChain);
+        const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey, GanacheChain);
 
-            // Create an EthereumTransaction instance (if needed)
-            const transaction = new EthereumTransaction(txParams, GanacheChain);
+        // Create an EthereumTransaction instance (if needed)
+        const transaction = new EthereumTransaction(txParams, GanacheChain);
 
-            const type = await transaction.getType();
+        const type = await transaction.getType();
 
-            const isContract = await transaction.getTo().isContract();
+        const isContract = await transaction.getTo().isContract();
 
-            expect(isContract).toEqual(true);
-            expect(type).toEqual(0);
+        expect(isContract).toEqual(true);
+        expect(type).toEqual(0);
 
-            // Sign and send the transaction
-            try {
-                const signedTransaction = await ethereumPrivateKey.signTransaction(txParams);
+        // Sign and send the transaction
+        const signedTransaction = await web3.eth.signTransaction(txParams);
 
-                console.log('signedTransaction', signedTransaction);
-                expect(signedTransaction).toBeDefined();
-                expect(signedTransaction).not.toEqual('');
-                expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
-            } catch (e) {
-                console.log('Error sending transaction:', e);
-            }
-        } catch (error) {
-            console.error('Error during transaction creation or sending:', error);
-            throw error; // Fail the test if there is an error
-        }
+        console.log('signedTransaction', signedTransaction);
+        expect(signedTransaction).toBeDefined();
+        expect(signedTransaction).not.toEqual('');
+        expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
     });
 });
