@@ -19,6 +19,11 @@ jobs:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
 
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.12.1
+
       - name: Install Dependencies
         run: yarn --immutable
 
@@ -38,12 +43,14 @@ jobs:
             exit 1
           fi
 
-      - name: 📦 Build, test and lint
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.12.1
+      - name: Enable Corepack
+        run: corepack enable
 
-      - run: corepack enable
-      - run: yarn run test
-      - run: yarn run lint
-      - run: yarn run typeCheck
+      - name: Run Tests
+        run: yarn run test
+
+      - name: Run Lint
+        run: yarn run lint
+
+      - name: Run Type Check
+        run: yarn run typeCheck
