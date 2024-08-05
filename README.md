@@ -106,14 +106,6 @@ Set the configuration variables in the desired file in `./src/config`
 
 Values for EXPO_NODE_ENV
 
-### Dependencies
-Install Ganache to run the unit test
-
-```bash
-npm install -g ganache-cli
-```
-
-- Run the `ganache-cli` command locally 
 -   EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
 -   EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
 -   EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
