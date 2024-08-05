@@ -8,13 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
-    services:
-      ganache:
-        image: trufflesuite/ganache-cli:latest
-        ports:
-          - 8545:8545
-
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
@@ -24,20 +17,6 @@ jobs:
         with:
           node-version: 18.12.1
           
-      - name: Wait for Ganache to be ready
-        run: |
-          echo "Waiting for Ganache to be ready..."
-          for i in {1..30}; do
-            if curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:8545 > /dev/null; then
-              echo "Ganache is running"
-              exit 0
-            fi
-            echo "Waiting for Ganache to be ready... attempt $i"
-            sleep 1
-          done
-          echo "Ganache failed to start"
-          exit 1
-
       - run: corepack enable
       - run: yarn --immutable
       - run: yarn run test
