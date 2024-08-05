@@ -360,8 +360,6 @@ export class EthereumTransaction implements ITransaction {
     async getData(): Promise<string> {
         return this.transaction.data || '';
     }
-
-  
 }
 
 export class EthereumAccount extends AbstractAccount {

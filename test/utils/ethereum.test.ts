@@ -137,7 +137,7 @@ describe('Ethereum sign transaction', () => {
 
         console.log('ethereumPrivateKey', await ethereumPrivateKey.getType());
 
-        // const transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, txParams, GanacheChain);
+        const transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, txParams, GanacheChain);
 
         // console.log('transaction', transaction);
 
