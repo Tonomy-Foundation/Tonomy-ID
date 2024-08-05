@@ -133,34 +133,28 @@ describe('Ethereum sign transaction', () => {
                 data: data,
             };
 
-            console.log('txParams', txParams);
             const ethereumPrivateKey = new EthereumPrivateKey(senderPrivateKey, GanacheChain);
-
-            console.log('ethereumPrivateKey', await ethereumPrivateKey.getType());
 
             // Create an EthereumTransaction instance (if needed)
             const transaction = new EthereumTransaction(txParams, GanacheChain);
 
-            console.log('transaction', transaction);
-
             const type = await transaction.getType();
 
-            console.log('type', type);
             const isContract = await transaction.getTo().isContract();
 
             expect(isContract).toEqual(true);
             expect(type).toEqual(0);
 
-            // // Sign and send the transaction
-            // try {
-            //     const signedTransaction = await ethereumPrivateKey.signTransaction(txParams);
+            // Sign and send the transaction
+            try {
+                const signedTransaction = await ethereumPrivateKey.signTransaction(txParams);
 
-            //     expect(signedTransaction).toBeDefined();
-            //     expect(signedTransaction).not.toEqual('');
-            //     expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
-            // } catch (e) {
-            //     console.log('Error sending transaction:', e);
-            // }
+                expect(signedTransaction).toBeDefined();
+                expect(signedTransaction).not.toEqual('');
+                expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
+            } catch (e) {
+                console.log('Error sending transaction:', e);
+            }
         } catch (error) {
             console.error('Error during transaction creation or sending:', error);
             throw error; // Fail the test if there is an error
