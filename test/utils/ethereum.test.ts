@@ -138,10 +138,12 @@ describe('Ethereum sign transaction', () => {
 
             console.log('ethereumPrivateKey', await ethereumPrivateKey.getType());
 
-            const walletTransaction = await web3.eth.populateTransaction(txParams);
+            const signedTx = await web3.eth.accounts.signTransaction(txParams, senderPrivateKey);
 
-            console.log('walletTransaction', walletTransaction);
-            const transaction = new EthereumTransaction(walletTransaction, GanacheChain);
+            console.log('signedTransaction', signedTx);
+
+            // Create an EthereumTransaction instance (if needed)
+            const transaction = new EthereumTransaction(signedTx.rawTransaction, GanacheChain);
 
             console.log('transaction', transaction);
 
