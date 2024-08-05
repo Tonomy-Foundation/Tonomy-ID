@@ -1,5 +1,4 @@
 import { dbConnection, setupDatabase, veramo, veramo2 } from '@tonomy/tonomy-id-sdk';
-import Debug from 'debug';
 
 describe('veramo', () => {
     beforeAll(async () => {
