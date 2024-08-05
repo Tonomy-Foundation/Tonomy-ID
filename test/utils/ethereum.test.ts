@@ -13,12 +13,12 @@ import Web3, { AbiItem } from 'web3';
 import { abi, bytecode } from '../../contracts/SimpleStorage.json';
 
 const mockarg = arg;
-const ganacheUrl = 'http://127.0.0.1:8545';
+const ganacheUrl = 'http://0.0.0.0:8545';
 
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
 const GanacheChain = new EthereumChain(
-    'http://127.0.0.1:8545',
+    'http://0.0.0.0:8545',
     'ganache',
     '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
