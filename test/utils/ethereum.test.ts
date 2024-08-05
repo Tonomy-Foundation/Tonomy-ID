@@ -150,6 +150,7 @@ describe('Ethereum sign transaction', () => {
         console.log('signedTransaction', signedTransaction);
         expect(signedTransaction).toBeDefined();
         expect(signedTransaction).not.toEqual('');
-        expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
+        expect(signedTransaction).toHaveProperty('rawTransaction');
+        expect(signedTransaction).toHaveProperty('transactionHash');
     });
 });
