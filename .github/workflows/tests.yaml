@@ -13,7 +13,7 @@ jobs:
       ganache:
         image: trufflesuite/ganache-cli:latest
         ports:
-          - 7545:8545
+          - 8545:8545
 
     steps:
       - name: 🏗 Setup repo
@@ -26,15 +26,15 @@ jobs:
         run: |
           echo "Waiting for Ganache to be ready..."
           for i in `seq 1 30`; do
-            if curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:7545 > /dev/null; then
+            if curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:8545 > /dev/null; then
               echo "Ganache is running"
               break
             fi
             echo "Waiting for Ganache to be ready... attempt $i"
             sleep 1
           done
-          if ! curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:7545 > /dev/null; then
-            echo "Ganache did not start in time"
+          if ! curl -s -X POST --data '{"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}' http://127.0.0.1:8545 > /dev/null; then
+            echo "Ganache failed to start"
             exit 1
           fi
 
@@ -44,12 +44,6 @@ jobs:
           node-version: 18.12.1
 
       - run: corepack enable
-
-      - name: Run tests
-        run: yarn run test
-
-      - name: Run lint
-        run: yarn run lint
-
-      - name: Run type check
-        run: yarn run typeCheck
+      - run: yarn run test
+      - run: yarn run lint
+      - run: yarn run typeCheck
