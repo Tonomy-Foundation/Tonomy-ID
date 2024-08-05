@@ -18,7 +18,9 @@
         "start": "NODE_ENV=development yarn run build:prepare && NODE_ENV=development npx expo start --dev-client --clear",
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
         "lint:fix": "yarn run lint -- --fix",
-        "test": "jest",
+        "test:ganache-start": "pm2 start 'npx ganache-cli' --name ganache --silent",
+        "test:ganache-stop": "pm2 stop ganache && pm2 delete ganache",
+        "test": "yarn run test:ganache-start && jest && yarn run test:ganache-stop",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
         "updateSdkVersion": "./update_sdk_version.sh"
@@ -103,8 +105,10 @@
         "eslint-plugin-react": "^7.31.10",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-native": "^4.0.0",
+        "ganache-cli": "^6.12.2",
         "jest": "^29.5.0",
         "jest-expo": "^49.0.0",
+        "pm2": "^5.1.0",
         "prettier": "^2.7.1",
         "ts-node": "^10.9.1",
         "typescript": "^5.1.3"

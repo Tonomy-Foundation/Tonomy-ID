@@ -147,7 +147,6 @@ describe('Ethereum sign transaction', () => {
         // Sign and send the transaction
         const signedTransaction = await web3.eth.accounts.signTransaction(txParams, senderPrivateKey);
 
-        console.log('signedTransaction', signedTransaction);
         expect(signedTransaction).toBeDefined();
         expect(signedTransaction).not.toEqual('');
         expect(signedTransaction).toHaveProperty('rawTransaction');
