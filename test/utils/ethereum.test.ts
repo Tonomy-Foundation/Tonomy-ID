@@ -11,7 +11,6 @@ import { ethers, TransactionRequest } from 'ethers';
 import { generatePrivateKeyFromSeed } from '../../src/utils/keys';
 import Web3, { AbiItem } from 'web3';
 import { abi, bytecode } from '../../contracts/SimpleStorage.json';
-import { exec } from 'child_process';
 
 const mockarg = arg;
 const ganacheUrl = 'http://127.0.0.1:8545';
