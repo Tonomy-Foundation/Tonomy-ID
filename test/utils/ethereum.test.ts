@@ -13,12 +13,12 @@ import Web3, { AbiItem } from 'web3';
 import { abi, bytecode } from '../../contracts/SimpleStorage.json';
 
 const mockarg = arg;
-const ganacheUrl = 'http://0.0.0.0:8545';
+const ganacheUrl = 'http://127.0.0.1:8545';
 
 // ABI of the contract
 const contractAbi: AbiItem[] = abi; // Use the actual ABI from the JSON file
 const GanacheChain = new EthereumChain(
-    'http://0.0.0.0:8545',
+    ganacheUrl,
     'ganache',
     '1337',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png'
@@ -138,20 +138,18 @@ describe('Ethereum sign transaction', () => {
 
             console.log('ethereumPrivateKey', await ethereumPrivateKey.getType());
 
-            const signedTx = await web3.eth.accounts.signTransaction(txParams, senderPrivateKey);
-
-            console.log('signedTransaction', signedTx);
-
             // Create an EthereumTransaction instance (if needed)
-            const transaction = new EthereumTransaction(signedTx.rawTransaction, GanacheChain);
+            const transaction = new EthereumTransaction(txParams, GanacheChain);
 
             console.log('transaction', transaction);
 
-            // const type = await transaction.getType();
-            // const isContract = await transaction.getTo().isContract();
+            const type = await transaction.getType();
 
-            // expect(isContract).toEqual(true);
-            // expect(type).toEqual(0);
+            console.log('type', type);
+            const isContract = await transaction.getTo().isContract();
+
+            expect(isContract).toEqual(true);
+            expect(type).toEqual(0);
 
             // // Sign and send the transaction
             // try {
