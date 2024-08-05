@@ -149,6 +149,7 @@ describe('Ethereum sign transaction', () => {
             try {
                 const signedTransaction = await ethereumPrivateKey.signTransaction(txParams);
 
+                console.log('signedTransaction', signedTransaction);
                 expect(signedTransaction).toBeDefined();
                 expect(signedTransaction).not.toEqual('');
                 expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
