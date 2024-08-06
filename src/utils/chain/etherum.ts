@@ -303,23 +303,23 @@ export class EthereumTransaction implements ITransaction {
         try {
             const abi = await this.fetchAbi();
 
-            if (!this.transaction.data) throw new Error('Transaction has no data');
+            if (!this.transaction.data) return null;
             const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
 
-            if (!decodedData?.name) throw new Error('Failed to decode function name');
+            if (!decodedData?.name) return null;
             return decodedData.name;
         } catch (error) {
-            return null;
+            throw new Error(error);
         }
     }
     async getArguments(): Promise<Record<string, string> | null> {
         try {
             const abi = await this.fetchAbi();
 
-            if (!this.transaction.data) throw new Error('Transaction has no data');
+            if (!this.transaction.data) return null;
             const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
 
-            if (!decodedData?.args) throw new Error('Failed to decode function name');
+            if (!decodedData?.args) return null;
 
             // Accessing the inputs of the fragment
             const inputs = decodedData.fragment.inputs;
@@ -333,7 +333,7 @@ export class EthereumTransaction implements ITransaction {
 
             return args;
         } catch (error) {
-            return null;
+            throw new Error(error);
         }
     }
     async getValue(): Promise<Asset> {

@@ -20,7 +20,7 @@
         "lint:fix": "yarn run lint -- --fix",
         "test:ganache-start": "pm2 start 'npx ganache-cli' --name ganache --silent",
         "test:ganache-stop": "pm2 stop ganache && pm2 delete ganache",
-        "test": "yarn run test:ganache-start && jest || true && yarn run test:ganache-stop",
+        "test": "yarn run test:ganache-start && jest && yarn run test:ganache-stop || (yarn run test:ganache-stop && exit 1)",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
         "updateSdkVersion": "./update_sdk_version.sh"
