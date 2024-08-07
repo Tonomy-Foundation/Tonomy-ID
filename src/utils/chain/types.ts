@@ -244,8 +244,8 @@ export interface ITransaction {
     getFrom(): IAccount;
     getTo(): IAccount;
     getValue(): Promise<IAsset>;
-    getFunction(): Promise<string>;
-    getArguments(): Promise<Record<string, string>>;
+    getFunction(): Promise<string | null>;
+    getArguments(): Promise<Record<string, string> | null>;
     estimateTransactionFee(): Promise<IAsset>;
     estimateTransactionTotal(): Promise<IAsset>;
     getData(): Promise<string>;

@@ -251,6 +251,7 @@ export class EthereumTransaction implements ITransaction {
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
         const isContract = await this.getTo().isContract();
+
         const isValuable = (await this.getValue()).getAmount() > BigInt(0);
 
         if (isContract && this.transaction.data) {
@@ -294,26 +295,46 @@ export class EthereumTransaction implements ITransaction {
             throw new Error('Failed to fetch ABI');
         }
 
+        // Extract the ABI from the JSON file
         this.abi = res.abi as string;
         return this.abi;
     }
-    async getFunction(): Promise<string> {
-        const abi = await this.fetchAbi();
+    async getFunction(): Promise<string | null> {
+        try {
+            const abi = await this.fetchAbi();
 
-        if (!this.transaction.data) throw new Error('Transaction has no data');
-        const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
+            if (!this.transaction.data) return null;
+            const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
 
-        if (!decodedData?.name) throw new Error('Failed to decode function name');
-        return decodedData.name;
+            if (!decodedData?.name) return null;
+            return decodedData.name;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
-    async getArguments(): Promise<Record<string, string>> {
-        const abi = await this.fetchAbi();
+    async getArguments(): Promise<Record<string, string> | null> {
+        try {
+            const abi = await this.fetchAbi();
 
-        if (!this.transaction.data) throw new Error('Transaction has no data');
-        const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
+            if (!this.transaction.data) return null;
+            const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
 
-        if (!decodedData?.args) throw new Error('Failed to decode function name');
-        return decodedData.args;
+            if (!decodedData?.args) return null;
+
+            // Accessing the inputs of the fragment
+            const inputs = decodedData.fragment.inputs;
+            const args: Record<string, string> = {};
+
+            decodedData.args.forEach((arg: any, index: number) => {
+                const inputName = inputs[index].name;
+
+                args[inputName] = arg.toString();
+            });
+
+            return args;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
     async getValue(): Promise<Asset> {
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));

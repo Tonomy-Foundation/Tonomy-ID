@@ -82,13 +82,13 @@ export default function SignTransactionConsentSuccessContainer({
                         <View style={styles.appDialog}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                <Text>
-                                    {formatCurrencyValue(Number(transactionDetails?.fee), 5)}
-                                    <Text style={styles.secondaryColor}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
+                                    <Text style={[styles.secondaryColor]}>
                                         ($
                                         {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
                                     </Text>
-                                </Text>
+                                </View>
                             </View>
                         </View>
                         <TButtonSecondaryContained

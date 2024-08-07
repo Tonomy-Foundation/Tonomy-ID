@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { IconButton } from 'react-native-paper';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
@@ -34,16 +35,17 @@ export default function SignTransactionConsentContainer({
     const { web3wallet } = useWalletStore();
 
     const errorStore = useErrorStore();
-    const [contractTransaction, setContractTransaction] = useState(true);
+    const [contractTransaction, setContractTransaction] = useState('');
     const [loading, setLoading] = useState(false);
     const [transactionLoading, setTransactionLoading] = useState(false);
+    const [displayFunction, setDisplayFunction] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
         transactionType: TransactionType | null;
         fromAccount: string;
         toAccount: string;
         value: string;
         usdValue: number;
-        functionName: string;
+        functionName: string | null;
         args: Record<string, string> | null;
         fee: string;
         usdFee: number;
@@ -55,8 +57,8 @@ export default function SignTransactionConsentContainer({
         toAccount: '',
         value: '',
         usdValue: 0,
-        functionName: '',
-        args: {},
+        functionName: null,
+        args: null,
         fee: '',
         usdFee: 0,
         total: '',
@@ -64,6 +66,7 @@ export default function SignTransactionConsentContainer({
     });
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const [balanceError, showBalanceError] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
     const errorsStore = useErrorStore();
@@ -75,7 +78,9 @@ export default function SignTransactionConsentContainer({
             try {
                 setLoading(true);
                 setTransactionLoading(true);
+                const transactionType = await transaction.getType();
 
+                setContractTransaction(transactionType.toString());
                 const fromAccount = await transaction.getFrom().getName();
 
                 const toAccount = await transaction.getTo().getName();
@@ -99,10 +104,8 @@ export default function SignTransactionConsentContainer({
 
                 total = parseFloat(total).toFixed(18);
 
-                const transactionType = await transaction.getType();
-
-                const functionName = '';
-                const args: Record<string, string> | null = null;
+                let functionName;
+                let args: Record<string, string> | null = null;
                 const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
                 const etherFee = ethers.parseEther(fee);
 
@@ -114,10 +117,17 @@ export default function SignTransactionConsentContainer({
                     showBalanceError(true);
                 }
 
-                // if (contractTransaction) {
-                //     functionName = await transaction.getFunction();
-                //     args = await transaction.getArguments();
-                // }
+                if (['contract', 'both'].includes(transactionType.toString())) {
+                    try {
+                        functionName = await transaction.getFunction();
+                        args = await transaction.getArguments();
+                        if (functionName && args) setDisplayFunction(true);
+                    } catch (error) {
+                        functionName = null;
+                        args = null;
+                        errorStore.setError({ error, expected: false });
+                    }
+                }
 
                 setLoading(false);
 
@@ -136,10 +146,6 @@ export default function SignTransactionConsentContainer({
                 });
                 setTransactionLoading(false);
             } catch (e) {
-                if (e === 'Not a contract call') {
-                    setContractTransaction(false);
-                }
-
                 errorStore.setError({ error: e, expected: false });
                 setLoading(false);
                 setTransactionLoading(false);
@@ -259,94 +265,96 @@ export default function SignTransactionConsentContainer({
                                                 .formatShortAccountName(transactionDetails?.toAccount)}
                                         </Text>
                                     </View>
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            marginTop: 12,
-                                        }}
-                                    >
-                                        <Text style={styles.secondaryColor}>Amount:</Text>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text>{transactionDetails?.value} </Text>
-                                            <Text style={[styles.secondaryColor]}>
-                                                ($
-                                                {formatCurrencyValue(
-                                                    Number(transactionDetails?.usdValue.toFixed(4)),
-                                                    3
-                                                )}
-                                                )
-                                            </Text>
+                                    {(contractTransaction === 'transfer' || contractTransaction === 'both') && (
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                marginTop: 12,
+                                            }}
+                                        >
+                                            <Text style={styles.secondaryColor}>Amount:</Text>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text>{transactionDetails?.value} </Text>
+                                                <Text style={[styles.secondaryColor]}>
+                                                    ($
+                                                    {formatCurrencyValue(
+                                                        Number(transactionDetails?.usdValue.toFixed(4)),
+                                                        3
+                                                    )}
+                                                    )
+                                                </Text>
+                                            </View>
                                         </View>
-                                    </View>
+                                    )}
 
-                                    {/* {contractTransaction && (
-                            <>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        marginTop: 12,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>Function:</Text>
-                                    <Text style={{ color: theme.colors.secondary }}>{method}</Text>
-                                </View>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        marginTop: 4,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
+                                    {displayFunction && (
+                                        <>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    marginTop: 12,
+                                                }}
+                                            >
+                                                <Text style={styles.secondaryColor}>Function:</Text>
+                                                <Text style={{ color: theme.colors.secondary }}>
+                                                    {transactionDetails.functionName}
+                                                </Text>
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    marginTop: 4,
+                                                }}
+                                            >
+                                                <Text style={styles.secondaryColor}>Transaction details:</Text>
+                                                <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
+                                                    {!showDetails ? (
+                                                        <IconButton
+                                                            icon={
+                                                                Platform.OS === 'android'
+                                                                    ? 'arrow-down'
+                                                                    : 'chevron-down'
+                                                            }
+                                                            size={Platform.OS === 'android' ? 15 : 22}
+                                                        />
+                                                    ) : (
+                                                        <IconButton
+                                                            icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
+                                                            size={Platform.OS === 'android' ? 15 : 22}
+                                                        />
+                                                    )}
+                                                </TouchableOpacity>
+                                            </View>
+                                        </>
+                                    )}
 
-                                    <TouchableOpacity onPress={() => setShowDetails(!showDetails)}>
-                                        {!showDetails ? (
-                                            <IconButton
-                                                icon={
-                                                    Platform.OS === 'android'
-                                                        ? 'arrow-down'
-                                                        : 'chevron-down'
-                                                }
-                                                size={Platform.OS === 'android' ? 15 : 22}
-                                            />
-                                        ) : (
-                                            <IconButton
-                                                icon={Platform.OS === 'android' ? 'arrow-up' : 'chevron-up'}
-                                                size={Platform.OS === 'android' ? 15 : 22}
-                                            />
-                                        )}
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
+                                    {showDetails && (
+                                        <View style={styles.detailSection}>
+                                            {transactionDetails.args &&
+                                                Object.entries(transactionDetails.args).map(([key, value]) => (
+                                                    <View
+                                                        key={key}
+                                                        style={{
+                                                            flexDirection: 'row',
+                                                            justifyContent: 'space-between',
+                                                            marginBottom: 15,
+                                                        }}
+                                                    >
+                                                        <Text style={styles.secondaryColor}>{key}:</Text>
+                                                        <Text>{value}</Text>
+                                                    </View>
+                                                ))}
 
-                        {showDetails && contractTransaction && (
-                            <View style={styles.detailSection}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.secondaryColor}>Price:</Text>
-                                    <Text>
-                                        0.001 Eth <Text style={styles.secondaryColor}>($17.02) </Text>
-                                    </Text>
-                                </View>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        marginTop: 20,
-                                    }}
-                                >
-                                    <Text style={styles.secondaryColor}>NFT ID:</Text>
-                                    <Text>#89792 </Text>
-                                </View>
-                                <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
-                                    <Text style={styles.rawTransaction}>Show raw transaction</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )} */}
+                                            {/* <TouchableOpacity onPress={() => (refMessage.current as any)?.open()}>
+                                                <Text style={styles.rawTransaction}>Show raw transaction</Text>
+                                            </TouchableOpacity> */}
+                                        </View>
+                                    )}
                                 </View>
 
                                 <View style={styles.appDialog}>
