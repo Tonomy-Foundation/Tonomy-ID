@@ -11,7 +11,7 @@ import { Camera, FlashMode } from 'expo-camera';
 import { Props } from '../screens/QrCodeScanScreen';
 
 export default function QrCodeScanContainer(props: Props) {
-    const [hasPermission, setHasPermission] = useState<null | boolean>(null);
+    const [hasPermission, setHasPermission] = useState(null as null | boolean);
     const [scanned, setScanned] = useState(false);
     const [isFlashlightOn, setFlashLightOn] = useState(false);
     const errorStore = useErrorStore();
@@ -53,11 +53,11 @@ export default function QrCodeScanContainer(props: Props) {
                                     icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
                                     onPress={toggleFlashLight}
                                     color={styles.colorWhite.color}
-                                    style={styles.iconButton}
-                                />
+                                    style={[styles.iconButton]}
+                                ></IconButton>
                             </View>
                             <View>
-                                <QrScannerBorders style={commonStyles.marginBottom} />
+                                <QrScannerBorders style={commonStyles.marginBottom}></QrScannerBorders>
                             </View>
 
                             <View style={commonStyles.marginBottom}>
@@ -75,20 +75,20 @@ export default function QrCodeScanContainer(props: Props) {
                                 )}
                             </View>
                         </View>
+                        <Camera
+                            flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
+                            barCodeScannerSettings={{
+                                barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+                            }}
+                            onBarCodeScanned={handleBarCodeScanned}
+                            style={StyleSheet.absoluteFill}
+                        />
                     </View>
-                    <Camera
-                        flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
-                        barCodeScannerSettings={{
-                            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-                        }}
-                        onBarCodeScanned={handleBarCodeScanned}
-                        style={StyleSheet.absoluteFill}
-                    />
                 </>
             )}
             {hasPermission !== true && (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator animating={true} />
+                    <ActivityIndicator animating={true}></ActivityIndicator>
                     {hasPermission === null && <TP size={2}>Requesting camera permission</TP>}
                     {hasPermission === false && <TP size={3}>No access to camera</TP>}
                 </View>
@@ -103,12 +103,13 @@ const styles = StyleSheet.create({
     },
     QROverlay: {
         ...StyleSheet.absoluteFillObject,
-        zIndex: 2, // Ensure this is higher than the camera
+        zIndex: 1,
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         padding: 16,
         justifyContent: 'space-between',
     },
+
     colorWhite: {
         color: theme.colors.white,
     },
