@@ -4,6 +4,8 @@ import CustomDrawer from '../components/CustomDrawer';
 import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
+import { SignClientTypes } from '@walletconnect/types';
+import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
 
 export type DrawerStackParamList = {
     UserHome: { did?: string };
@@ -12,6 +14,19 @@ export type DrawerStackParamList = {
     Logout: undefined;
     ChangePin: undefined;
     SSO: { payload: string; platform: 'mobile' | 'browser' };
+    SignTransaction: {
+        transaction: ITransaction;
+        privateKey: IPrivateKey;
+        session: ISession;
+    };
+    WalletConnectLogin: {
+        payload: SignClientTypes.EventArguments['session_proposal'];
+        platform: 'mobile' | 'browser';
+    };
+    CreateEthereumKey?: {
+        transaction: ITransaction;
+        session: ISession;
+    };
 };
 
 const Drawer = createDrawerNavigator<DrawerStackParamList>();

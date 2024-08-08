@@ -23,6 +23,7 @@ const theme = {
         info: settings.config.theme.infoBackground,
         lightBg: settings.config.theme.lightBackground,
         white: '#FDFEFF',
+        black: '#000',
         headerFooter: '#F9F9F9',
         grey: '#313938',
         grey1: '#5B6261',
@@ -35,6 +36,8 @@ const theme = {
         shadowDark: '#000',
         error: '#F44336',
         success: '#4CAF50',
+        errorBackground: '#F443361A',
+        backgroundGray: '#EDF2F9',
     },
 };
 

@@ -9,7 +9,7 @@ import { Modal } from 'react-native';
 export type ModalProps = React.ComponentProps<typeof Modal> & {
     icon?: string;
     iconColor?: string;
-    title: string;
+    title?: string;
     visible?: boolean;
     enableLinkButton?: boolean;
     linkButtonText?: string;

@@ -1,6 +1,17 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
+import {
+    EthereumPrivateKey,
+    EthereumAccount,
+    EthereumMainnetChain,
+    EthereumSepoliaChain,
+    EthereumPolygonChain,
+} from './chain/etherum';
+import { ethers, TransactionRequest, Wallet } from 'ethers';
+import { appStorage, keyStorage } from './StorageManager/setup';
+import { IPrivateKey, IChain } from '../utils/chain/types';
+import settings from '../settings';
 
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
@@ -22,6 +33,36 @@ export async function testKeyGenerator() {
             throw new Error('generatePrivateKeyFromPassword() test: Salt is not correct');
         if (privateKey.toString() !== 'PVT_K1_q4BZoScNYFCF5tDthn4m5KUgv9LLH4fTNtMFj3FUkG3p7UA4D')
             throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
+
+        console.log(
+            'testing Chain libraries',
+            Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
+        );
+        const wallet = Wallet.fromPhrase(
+            'save west spatial goose rotate glass any phrase manual pause category flight'
+        );
+        const privateKeyHex = wallet.privateKey;
+
+        const privateKeyEth = new EthereumPrivateKey(privateKeyHex, EthereumSepoliaChain);
+
+        const ethereumAccount = await EthereumAccount.fromPublicKey(
+            EthereumSepoliaChain,
+            await privateKeyEth.getPublicKey()
+        );
+        const accountAddress = await ethereumAccount.getName();
+
+        console.log('accountAddress:', accountAddress);
+
+        const transactionRequest: TransactionRequest = {
+            to: accountAddress,
+            from: accountAddress,
+            value: ethers.parseEther('0'),
+            data: '0x00',
+        };
+
+        const signedTransaction = await privateKeyEth.signTransaction(transactionRequest);
+
+        console.log('signedTransaction:', signedTransaction);
     } catch (e) {
         console.error(e);
     }
@@ -29,10 +70,22 @@ export async function testKeyGenerator() {
 
 export async function generatePrivateKeyFromPassword(
     password: string,
-    salt?: Checksum256 | undefined
+    salt?: Checksum256
 ): Promise<{ privateKey: PrivateKey; salt: Checksum256 }> {
-    if (!salt) salt = Checksum256.from(randomBytes(32));
-    const result = await argon2(password, salt.hexString, {
+    const { seed, salt: saltString } = await generateSeedFromPassword(password, salt?.hexString);
+
+    const bytes = Bytes.from(seed, 'hex');
+    const privateKey = new PrivateKey(KeyType.K1, bytes);
+
+    return {
+        privateKey,
+        salt: Checksum256.from(saltString),
+    };
+}
+
+async function generateSeedFromPassword(password: string, salt?: string): Promise<{ seed: string; salt: string }> {
+    if (!salt) salt = Checksum256.from(randomBytes(32)).hexString;
+    const result = await argon2(password, salt, {
         mode: 'argon2id',
         iterations: 40,
         memory: 64 * 1024,
@@ -40,11 +93,29 @@ export async function generatePrivateKeyFromPassword(
         hashLength: 32,
     });
 
-    const bytes = Bytes.from(result.rawHash, 'hex');
-    const privateKey = new PrivateKey(KeyType.K1, bytes);
+    return { seed: result.rawHash as string, salt };
+}
 
-    return {
-        privateKey,
-        salt,
-    };
+export async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
+    const chainSeed = sha256(seed + chain.getChainId());
+
+    const privateKey = chain.createKeyFromSeed(chainSeed);
+
+    return privateKey;
+}
+
+export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
+    // Generate the seed data from the password and salt (computationally expensive)
+    const seedData = await generateSeedFromPassword(passphrase, salt);
+
+    // Use the generated seed to derive private keys for different chains (computationally inexpensive)
+    const ethereumKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumMainnetChain);
+    const sepoliaKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumSepoliaChain);
+    const polygonKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumPolygonChain);
+
+    // Save the keys and seed to the storage
+    await keyStorage.emplaceKey('ethereum', ethereumKey);
+    await keyStorage.emplaceKey('ethereumTestnetSepolia', sepoliaKey);
+    await keyStorage.emplaceKey('ethereumPolygon', polygonKey);
+    await appStorage.setCryptoSeed(seedData.seed);
 }

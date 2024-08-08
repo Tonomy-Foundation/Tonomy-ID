@@ -13,6 +13,7 @@ import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import merge from 'deepmerge';
+import { SignClientTypes } from '@walletconnect/types';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
@@ -28,6 +29,10 @@ import TermsAndConditionScreen from '../screens/TermsAndConditionScreen';
 import PrivacyAndPolicyScreen from '../screens/PrivacyAndPolicyScreen';
 import ProfilePreviewScreen from '../screens/ProfilePreviewScreen';
 import SignTransactionConsentScreen from '../screens/SignTransactionConsentScreen';
+import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
+import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
+import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
+import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
 
 const prefix = Linking.createURL('');
 
@@ -57,7 +62,31 @@ export type RouteStackParamList = {
     TermsAndCondition: undefined;
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
-    SignTransaction: undefined;
+    SignTransaction: {
+        transaction: ITransaction;
+        privateKey: IPrivateKey;
+        session: ISession;
+    };
+    SignTransactionSuccess: {
+        transactionDetails: {
+            chainId: string;
+            transactionHash: string;
+            toAccount: string;
+            shortAccountName: string;
+            fee: string;
+            usdFee: number;
+            total: string;
+            usdTotal: number;
+        };
+    };
+    WalletConnectLogin: {
+        payload: SignClientTypes.EventArguments['session_proposal'];
+        platform?: 'mobile' | 'browser';
+    };
+    CreateEthereumKey?: {
+        transaction: ITransaction;
+        session: ISession;
+    };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -163,6 +192,7 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
+
                     <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
@@ -189,6 +219,26 @@ export default function RootNavigation() {
                             name="SignTransaction"
                             options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
                             component={SignTransactionConsentScreen}
+                        />
+                        <Stack.Screen
+                            name="SignTransactionSuccess"
+                            options={{
+                                headerBackTitleVisible: false,
+                                title: 'Transfer',
+                                headerBackVisible: false,
+                            }}
+                            component={SignTransactionConsentSuccessScreen}
+                        />
+                        <Stack.Screen
+                            name="WalletConnectLogin"
+                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            component={WalletConnectLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="CreateEthereumKey"
+                            options={{ headerBackTitleVisible: false, title: 'Generate key' }}
+                            component={CreateEthereumKeyScreen}
+                            initialParams={{}}
                         />
                     </Stack.Navigator>
                 </>

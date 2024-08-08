@@ -9,9 +9,19 @@ import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
 import usePassphraseStore from '../store/passphraseStore';
-import { generatePrivateKeyFromPassword } from '../utils/keys';
+import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useUserStore from '../store/userStore';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
+import { Checksum256, PrivateKey } from '@wharfkit/antelope';
+
+export interface ILoginOptions {
+    keyFromPasswordFn: KeyFromPasswordFn;
+}
+
+type KeyFromPasswordFn = (
+    password: string,
+    salt?: Checksum256
+) => Promise<{ privateKey: PrivateKey; salt: Checksum256 }>;
 
 export default function CreatePassphraseContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { passphraseList, generatePassphraseList, getPassphrase } = usePassphraseStore();
@@ -43,7 +53,16 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 
     async function onNext() {
         setLoading(true);
-        await user.savePassword(getPassphrase(), { keyFromPasswordFn: generatePrivateKeyFromPassword });
+        const passphrase = getPassphrase();
+        const { privateKey, salt } = await generatePrivateKeyFromPassword(passphrase);
+
+        const loginOptions: ILoginOptions = {
+            keyFromPasswordFn: async () => ({ privateKey, salt }),
+        };
+
+        await user.savePassword(passphrase, loginOptions);
+        savePrivateKeyToStorage(passphrase, salt.toString());
+
         setLoading(false);
         navigation.navigate('ConfirmPassphrase', { index: 0 });
     }

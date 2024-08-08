@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
@@ -8,11 +8,14 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername, util } from '@tonomy/tonomy-id-sdk';
-import { generatePrivateKeyFromPassword } from '../utils/keys';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract } from '@tonomy/tonomy-id-sdk';
+import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
-import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
+import PassphraseInput from '../components/PassphraseInput';
+import useWalletStore from '../store/useWalletStore';
+
+const tonomyContract = TonomyContract.Instance;
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -30,6 +33,7 @@ export default function LoginPassphraseContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     async function updateKeys() {
         await user.updateKeys(passphrase.join(' '));
@@ -39,11 +43,23 @@ export default function LoginPassphraseContainer({
         setLoading(true);
 
         try {
-            const result = await user.login(
-                TonomyUsername.fromUsername(username, AccountType.PERSON, settings.config.accountSuffix),
-                passphrase.join(' '),
-                { keyFromPasswordFn: generatePrivateKeyFromPassword }
+            const tonomyUsername = TonomyUsername.fromUsername(
+                username,
+                AccountType.PERSON,
+                settings.config.accountSuffix
             );
+
+            const idData = await tonomyContract.getPerson(tonomyUsername);
+            const salt = idData.password_salt;
+
+            console.log('salt', salt);
+            savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
+
+            const result = await user.login(tonomyUsername, passphrase.join(' '), {
+                keyFromPasswordFn: generatePrivateKeyFromPassword,
+            });
+
+            console.log('result', result);
 
             if (result?.account_name !== undefined) {
                 setPassphrase(['', '', '', '', '', '']);
@@ -51,6 +67,7 @@ export default function LoginPassphraseContainer({
                 setErrorMessage('');
                 await user.saveLocal();
                 await updateKeys();
+                initializeWallet();
                 setStatus(UserStatus.LOGGED_IN);
             } else {
                 throw new Error('Account name not found');
@@ -81,25 +98,6 @@ export default function LoginPassphraseContainer({
         }
     }
 
-    async function onChangeWord(index: number, word: string) {
-        setErrorMessage('');
-
-        setPassphrase((prev) => {
-            const newPassphrase = [...prev];
-
-            newPassphrase[index] = word;
-            setNextDisabled(false);
-
-            for (let i = 0; i < newPassphrase.length; i++) {
-                if (!util.isKeyword(newPassphrase[i])) {
-                    setNextDisabled(true);
-                }
-            }
-
-            return newPassphrase;
-        });
-    }
-
     return (
         <>
             <LayoutComponent
@@ -107,20 +105,11 @@ export default function LoginPassphraseContainer({
                     <View>
                         <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Passphrase</TH1>
                         <View style={styles.innerContainer}>
-                            <View style={styles.columnContainer}>
-                                {passphrase.map((text, index) => (
-                                    <View key={index} style={styles.autoCompleteViewContainer}>
-                                        <Text style={styles.autoCompleteNumber}>{index + 1}.</Text>
-                                        <AutoCompletePassphraseWord
-                                            textInputStyle={styles.autoCompleteTextInput}
-                                            containerStyle={styles.autoCompleteContainer}
-                                            value={text}
-                                            onChange={(text) => onChangeWord(index, text)}
-                                            menuStyle={index < 2 ? styles.menuViewBottom : styles.menuViewTop}
-                                        />
-                                    </View>
-                                ))}
-                            </View>
+                            <PassphraseInput
+                                value={passphrase}
+                                onChange={setPassphrase}
+                                setNextDisabled={setNextDisabled}
+                            />
                         </View>
                         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
                     </View>
