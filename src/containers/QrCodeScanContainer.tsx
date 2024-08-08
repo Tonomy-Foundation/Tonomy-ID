@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     },
     QROverlay: {
         ...StyleSheet.absoluteFillObject,
-        zIndex: 1,
+        zIndex: 2,
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         padding: 16,
