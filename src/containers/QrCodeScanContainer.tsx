@@ -11,7 +11,7 @@ import { Camera, FlashMode } from 'expo-camera';
 import { Props } from '../screens/QrCodeScanScreen';
 
 export default function QrCodeScanContainer(props: Props) {
-    const [hasPermission, setHasPermission] = useState(null as null | boolean);
+    const [hasPermission, setHasPermission] = useState<null | boolean>(null);
     const [scanned, setScanned] = useState(false);
     const [isFlashlightOn, setFlashLightOn] = useState(false);
     const errorStore = useErrorStore();
@@ -53,11 +53,11 @@ export default function QrCodeScanContainer(props: Props) {
                                     icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
                                     onPress={toggleFlashLight}
                                     color={styles.colorWhite.color}
-                                    style={[styles.iconButton]}
-                                ></IconButton>
+                                    style={styles.iconButton}
+                                />
                             </View>
                             <View>
-                                <QrScannerBorders style={commonStyles.marginBottom}></QrScannerBorders>
+                                <QrScannerBorders style={commonStyles.marginBottom} />
                             </View>
 
                             <View style={commonStyles.marginBottom}>
@@ -88,7 +88,7 @@ export default function QrCodeScanContainer(props: Props) {
             )}
             {hasPermission !== true && (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator animating={true}></ActivityIndicator>
+                    <ActivityIndicator animating={true} />
                     {hasPermission === null && <TP size={2}>Requesting camera permission</TP>}
                     {hasPermission === false && <TP size={3}>No access to camera</TP>}
                 </View>
@@ -103,13 +103,12 @@ const styles = StyleSheet.create({
     },
     QROverlay: {
         ...StyleSheet.absoluteFillObject,
-        zIndex: 1,
+        zIndex: 2, // Ensure this is higher than the camera
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         padding: 16,
         justifyContent: 'space-between',
     },
-
     colorWhite: {
         color: theme.colors.white,
     },
