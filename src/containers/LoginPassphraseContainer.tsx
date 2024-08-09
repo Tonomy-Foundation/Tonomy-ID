@@ -58,8 +58,6 @@ export default function LoginPassphraseContainer({
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
-            console.log('result', result);
-
             if (result?.account_name !== undefined) {
                 setPassphrase(['', '', '', '', '', '']);
                 setNextDisabled(false);

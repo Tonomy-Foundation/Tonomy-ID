@@ -102,7 +102,16 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 state.polygonBalance = polygonData.value.balance;
             }
 
-            if (!get().initialized && !get().web3wallet) {
+            set({
+                ethereumAccount: state.ethereumAccount,
+                ethereumBalance: state.ethereumBalance,
+                sepoliaAccount: state.sepoliaAccount,
+                sepoliaBalance: state.sepoliaBalance,
+                polygonAccount: state.polygonAccount,
+                polygonBalance: state.polygonBalance,
+            });
+
+            if (!get().initialized && !get().web3wallet && !get().ethereumAccount) {
                 const web3wallet = await Web3Wallet.init({
                     core,
                     metadata: {
@@ -116,15 +125,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 set({
                     initialized: true,
                     web3wallet,
-                });
-            } else {
-                set({
-                    ethereumAccount: state.ethereumAccount,
-                    ethereumBalance: state.ethereumBalance,
-                    sepoliaAccount: state.sepoliaAccount,
-                    sepoliaBalance: state.sepoliaBalance,
-                    polygonAccount: state.polygonAccount,
-                    polygonBalance: state.polygonBalance,
                 });
             }
         } catch (error) {
