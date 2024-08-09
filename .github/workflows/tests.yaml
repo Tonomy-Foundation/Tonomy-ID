@@ -1,9 +1,6 @@
-name: Test - Pull Requests (not to master)
+name: Tests
 
-on:
-  pull_request:
-    branches-ignore:
-      - master
+on: push
 
 jobs:
   build:
@@ -13,11 +10,13 @@ jobs:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
 
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
+
       - name: 📦 Build, test and lint
         uses: actions/setup-node@v4
         with:
-          node-version: 18.12.1
-      - run: corepack enable
+          node-version: 22.3.0
       - run: yarn --immutable
       - run: yarn run test
       - run: yarn run lint

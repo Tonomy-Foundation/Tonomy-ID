@@ -60,6 +60,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
             keyFromPasswordFn: async () => ({ privateKey, salt }),
         };
 
+        // @ts-ignore Checksum256 type error
         await user.savePassword(passphrase, loginOptions);
         savePrivateKeyToStorage(passphrase, salt.toString());
 

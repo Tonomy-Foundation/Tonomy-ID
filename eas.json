@@ -4,12 +4,13 @@
     },
     "build": {
         "production": {
-            "node": "18.17.1",
+            "node": "22.3.0",
             "env": {
-                "EXPO_NODE_ENV": "production"
+                "EXPO_NODE_ENV": "production",
+                "DEBUG": "tonomy-console*"
             },
             "autoIncrement": true,
-            "ios":{                
+            "ios": {
                 "image": "macos-ventura-13.6-xcode-15.1"
             }
         },
@@ -19,28 +20,31 @@
             },
             "developmentClient": true,
             "distribution": "internal",
-            "node": "18.17.1"
+            "node": "22.3.0"
         },
         "testnet": {
             "env": {
-                "EXPO_NODE_ENV": "testnet"
+                "EXPO_NODE_ENV": "testnet",
+                "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "18.17.1"
+            "node": "22.3.0"
         },
-        "demo-apk": {
+        "testnet-internal": {
             "env": {
-                "EXPO_NODE_ENV": "testnet"
+                "EXPO_NODE_ENV": "testnet",
+                "DEBUG": "tonomy*"
             },
             "distribution": "internal",
-            "node": "18.17.1"
+            "node": "22.3.0"
         },
         "staging": {
             "env": {
-                "EXPO_NODE_ENV": "staging"
+                "EXPO_NODE_ENV": "staging",
+                "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "18.17.1"
+            "node": "22.3.0"
         }
     },
     "submit": {
@@ -57,7 +61,7 @@
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309",
             }
         },
-        "productionTestnet": {            
+        "productionTestnet": {
             "ios": {
                 "ascAppId": "6476114575",
                 "appleTeamId": "6BLD42QR78",

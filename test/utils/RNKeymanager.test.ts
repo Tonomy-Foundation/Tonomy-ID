@@ -72,6 +72,7 @@ describe('RN Key Manager', () => {
     it('can store a key password', async () => {
         const { privateKey, salt } = await generatePrivateKeyFromPassword('test');
         const publicKey = await rn.storeKey({
+            // @ts-ignore PrivateKey type error
             privateKey,
             level: KeyManagerLevel.PASSWORD,
             challenge: 'test',
@@ -84,6 +85,7 @@ describe('RN Key Manager', () => {
     it('can get a key password', async () => {
         const { privateKey } = await generatePrivateKeyFromPassword('test');
         const publicKey = await rn.storeKey({
+            // @ts-ignore PrivateKey type error
             privateKey,
             level: KeyManagerLevel.PASSWORD,
             challenge: 'test',

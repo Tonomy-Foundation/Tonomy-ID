@@ -109,6 +109,7 @@ const expo: ExpoConfig = {
             projectId: settings.config.expoProjectId,
         },
         EXPO_NODE_ENV: process.env.EXPO_NODE_ENV,
+        DEBUG: process.env.DEBUG,
     },
 };
 
