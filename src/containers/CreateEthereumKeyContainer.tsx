@@ -78,6 +78,7 @@ export default function CreateEthereumKeyContainer({
             });
 
             await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
+            await initializeWallet();
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
@@ -114,7 +115,6 @@ export default function CreateEthereumKeyContainer({
         const requestType = route.params?.requestType;
 
         if (requestType === 'loginRequest' && route.params?.payload) {
-            initializeWallet();
             navigation.navigate('WalletConnectLogin', {
                 payload: route.params.payload,
                 platform: 'browser',

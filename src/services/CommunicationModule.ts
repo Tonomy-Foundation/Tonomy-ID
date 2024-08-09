@@ -220,6 +220,8 @@ export default function CommunicationModule() {
                     '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
                 };
 
+                let keyFound = false;
+
                 for (const chainId of chainIds) {
                     if (supportedChains[chainId]) {
                         const { name, chainObject } = supportedChains[chainId];
@@ -231,14 +233,18 @@ export default function CommunicationModule() {
                                 payload: proposal,
                             });
                             return;
+                        } else {
+                            keyFound = true;
                         }
                     }
                 }
 
-                navigation.navigate('WalletConnectLogin', {
-                    payload: proposal,
-                    platform: 'browser',
-                });
+                if (keyFound) {
+                    navigation.navigate('WalletConnectLogin', {
+                        payload: proposal,
+                        platform: 'browser',
+                    });
+                }
             }
         }, 1000);
 
