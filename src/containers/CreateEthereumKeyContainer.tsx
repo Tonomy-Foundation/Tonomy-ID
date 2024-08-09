@@ -29,8 +29,8 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { transaction } = route.params ?? {};
-    const session = route.params?.session;
+    const { transaction } = route.params?.transaction ?? {};
+    const session = route.params?.transaction?.session;
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -112,23 +112,34 @@ export default function CreateEthereumKeyContainer({
 
     const onModalPress = async () => {
         setShowModal(false);
+        const requestType = route.params?.requestType;
 
-        if (session && transaction) {
-            const chainId = transaction?.getChain().getChainId();
-            let key;
-
-            if (chainId === '11155111') {
-                key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
-            } else if (chainId === '1') {
-                key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
-            } else if (chainId === '137') {
-                key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
-            } else throw new Error('Unsupported chain');
-            navigation.navigate('SignTransaction', {
-                transaction,
-                privateKey: key,
-                session,
+        if (requestType === 'loginRequest' && route.params?.payload) {
+            initializeWallet();
+            navigation.navigate('WalletConnectLogin', {
+                payload: route.params.payload,
+                platform: 'browser',
             });
+        } else if (requestType === 'transactionRequest') {
+            if (session && transaction) {
+                const chainId = transaction?.getChain().getChainId();
+                let key;
+
+                if (chainId === '11155111') {
+                    key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
+                } else if (chainId === '1') {
+                    key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
+                } else if (chainId === '137') {
+                    key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
+                } else throw new Error('Unsupported chain');
+                navigation.navigate('SignTransaction', {
+                    transaction,
+                    privateKey: key,
+                    session,
+                });
+            } else {
+                navigation.navigate({ name: 'UserHome', params: {} });
+            }
         } else {
             navigation.navigate({ name: 'UserHome', params: {} });
         }

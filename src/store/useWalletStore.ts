@@ -54,11 +54,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             await connect();
 
-            if (get().initialized) {
-                console.log('Already initialized');
-                return;
-            }
-
             const state: Partial<WalletState> = { ...defaultState };
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 const key = await keyStorage.findByName(keyName, chain);
@@ -100,6 +95,14 @@ const useWalletStore = create<WalletState>((set, get) => ({
             if (polygonData.status === 'fulfilled' && polygonData.value) {
                 state.polygonAccount = polygonData.value.account;
                 state.polygonBalance = polygonData.value.balance;
+            }
+
+            if (get().initialized) {
+                console.log('Already initialized', state as WalletState);
+                state.web3wallet = get().web3wallet;
+                state.initialized = true;
+                set(state as WalletState);
+                return;
             }
 
             if (!get().initialized && !get().web3wallet) {

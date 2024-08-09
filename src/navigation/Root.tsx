@@ -84,8 +84,12 @@ export type RouteStackParamList = {
         platform?: 'mobile' | 'browser';
     };
     CreateEthereumKey?: {
-        transaction: ITransaction;
-        session: ISession;
+        transaction?: {
+            transaction: ITransaction;
+            session: ISession;
+        };
+        payload?: SignClientTypes.EventArguments['session_proposal'];
+        requestType?: string;
     };
 };
 
