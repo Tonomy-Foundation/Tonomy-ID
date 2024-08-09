@@ -54,7 +54,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             await connect();
 
-            const state: Partial<WalletState> = { ...defaultState };
+            if (get().initialized && get().ethereumAccount) {
+                console.log('Already initialized');
+                return;
+            }
+
+            const state = get();
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 const key = await keyStorage.findByName(keyName, chain);
 
@@ -97,14 +102,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 state.polygonBalance = polygonData.value.balance;
             }
 
-            if (get().initialized) {
-                console.log('Already initialized', state as WalletState);
-                state.web3wallet = get().web3wallet;
-                state.initialized = true;
-                set(state as WalletState);
-                return;
-            }
-
             if (!get().initialized && !get().web3wallet) {
                 const web3wallet = await Web3Wallet.init({
                     core,
@@ -116,10 +113,19 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     },
                 });
 
-                state.web3wallet = web3wallet;
-                state.initialized = true;
-
-                set(state as WalletState);
+                set({
+                    initialized: true,
+                    web3wallet,
+                });
+            } else {
+                set({
+                    ethereumAccount: state.ethereumAccount,
+                    ethereumBalance: state.ethereumBalance,
+                    sepoliaAccount: state.sepoliaAccount,
+                    sepoliaBalance: state.sepoliaBalance,
+                    polygonAccount: state.polygonAccount,
+                    polygonBalance: state.polygonBalance,
+                });
             }
         } catch (error) {
             console.error('Error initializing wallet state:', error);

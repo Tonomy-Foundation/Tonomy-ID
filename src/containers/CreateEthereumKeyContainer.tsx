@@ -83,7 +83,6 @@ export default function CreateEthereumKeyContainer({
             setNextDisabled(false);
             setLoading(false);
 
-            initializeWallet();
             setShowModal(true);
         } catch (e) {
             console.log('error', e);

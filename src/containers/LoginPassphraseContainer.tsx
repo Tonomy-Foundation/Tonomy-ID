@@ -52,7 +52,6 @@ export default function LoginPassphraseContainer({
             const idData = await tonomyContract.getPerson(tonomyUsername);
             const salt = idData.password_salt;
 
-            console.log('salt', salt);
             savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
             const result = await user.login(tonomyUsername, passphrase.join(' '), {
