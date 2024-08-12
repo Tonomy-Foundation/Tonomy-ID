@@ -12,33 +12,24 @@ interface PassphraseInputProps {
 
 const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setNextDisabled }) => {
     const [passphrase, setPassphrase] = useState<string[]>(value);
-    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         onChange(passphrase);
     }, [passphrase, onChange]);
 
     async function onChangeWord(index: number, word: string) {
-        setErrorMessage('');
-
         setPassphrase((prev) => {
+            console.log('prev', prev, index, word);
             const newPassphrase = [...prev];
 
             newPassphrase[index] = word;
-            let hasError = false;
 
             setNextDisabled(false);
 
             for (let i = 0; i < newPassphrase.length; i++) {
                 if (!util.isKeyword(newPassphrase[i])) {
-                    hasError = true;
-
                     setNextDisabled(true);
                 }
-            }
-
-            if (hasError) {
-                setErrorMessage('Incorrect passphrase. Please try again.');
             }
 
             return newPassphrase;
@@ -61,7 +52,6 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setN
                     </View>
                 ))}
             </View>
-            {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
         </View>
     );
 };
