@@ -10,12 +10,24 @@ import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
+import NetInfo from '@react-native-community/netinfo';
 import { connect } from '../utils/StorageManager/setup';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
-    const { clearState, initializeWalletState } = useWalletStore();
+    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
+
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener((state) => {
+            if (!state.isConnected) {
+                navigation.dispatch(StackActions.replace('Home'));
+            }
+        });
+
+        // Cleanup the event listener
+        return () => unsubscribe();
+    }, [navigation]);
 
     useEffect(() => {
         async function main() {
@@ -29,7 +41,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('SplashSecurity'));
+                        navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         navigation.dispatch(StackActions.replace('Home'));
@@ -37,11 +49,10 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
-                            await initializeWalletState();
+                            await initializeWallet();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
-                                clearState();
                             } else {
                                 throw e;
                             }
@@ -57,16 +68,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         }
 
         main();
-    }, [
-        errorStore,
-        getStatus,
-        initializeStatusFromStorage,
-        logout,
-        navigation,
-        user,
-        initializeWalletState,
-        clearState,
-    ]);
+    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, initializeWallet]);
 
     return (
         <LayoutComponent
