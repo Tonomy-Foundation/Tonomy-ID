@@ -30,17 +30,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     }, [navigation]);
 
     useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener((state) => {
-            if (!state.isConnected) {
-                navigation.dispatch(StackActions.replace('Home'));
-            }
-        });
-
-        // Cleanup the event listener
-        return () => unsubscribe();
-    }, [navigation]);
-
-    useEffect(() => {
         async function main() {
             await sleep(800);
 
