@@ -75,15 +75,15 @@ export default function QrCodeScanContainer(props: Props) {
                                 )}
                             </View>
                         </View>
+                        <Camera
+                            flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
+                            barCodeScannerSettings={{
+                                barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+                            }}
+                            onBarCodeScanned={handleBarCodeScanned}
+                            style={StyleSheet.absoluteFill}
+                        />
                     </View>
-                    <Camera
-                        flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
-                        barCodeScannerSettings={{
-                            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-                        }}
-                        onBarCodeScanned={handleBarCodeScanned}
-                        style={StyleSheet.absoluteFill}
-                    />
                 </>
             )}
             {hasPermission !== true && (
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     },
     QROverlay: {
         ...StyleSheet.absoluteFillObject,
-        zIndex: 1,
+        zIndex: 2,
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         padding: 16,

@@ -15,7 +15,6 @@ import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { keyStorage } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
-import TModal from '../components/TModal';
 import { EthereumMainnetChain, EthereumPolygonChain, EthereumSepoliaChain } from '../utils/chain/etherum';
 
 const tonomyContract = TonomyContract.Instance;
@@ -29,8 +28,8 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { transaction } = route.params ?? {};
-    const session = route.params?.session;
+    const { transaction } = route.params?.transaction ?? {};
+    const session = route.params?.transaction?.session;
     const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -38,7 +37,6 @@ export default function CreateEthereumKeyContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
-    const [showModal, setShowModal] = useState(false);
 
     async function setUserName() {
         try {
@@ -78,13 +76,13 @@ export default function CreateEthereumKeyContainer({
             });
 
             await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
+            await initializeWallet();
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
             setLoading(false);
 
-            initializeWallet();
-            setShowModal(true);
+            redirectFunc();
         } catch (e) {
             console.log('error', e);
 
@@ -110,25 +108,34 @@ export default function CreateEthereumKeyContainer({
         }
     }
 
-    const onModalPress = async () => {
-        setShowModal(false);
+    const redirectFunc = async () => {
+        const requestType = route.params?.requestType;
 
-        if (session && transaction) {
-            const chainId = transaction?.getChain().getChainId();
-            let key;
-
-            if (chainId === '11155111') {
-                key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
-            } else if (chainId === '1') {
-                key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
-            } else if (chainId === '137') {
-                key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
-            } else throw new Error('Unsupported chain');
-            navigation.navigate('SignTransaction', {
-                transaction,
-                privateKey: key,
-                session,
+        if (requestType === 'loginRequest' && route.params?.payload) {
+            navigation.navigate('WalletConnectLogin', {
+                payload: route.params.payload,
+                platform: 'browser',
             });
+        } else if (requestType === 'transactionRequest') {
+            if (session && transaction) {
+                const chainId = transaction?.getChain().getChainId();
+                let key;
+
+                if (chainId === '11155111') {
+                    key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
+                } else if (chainId === '1') {
+                    key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
+                } else if (chainId === '137') {
+                    key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
+                } else throw new Error('Unsupported chain');
+                navigation.navigate('SignTransaction', {
+                    transaction,
+                    privateKey: key,
+                    session,
+                });
+            } else {
+                navigation.navigate({ name: 'UserHome', params: {} });
+            }
         } else {
             navigation.navigate({ name: 'UserHome', params: {} });
         }
@@ -189,11 +196,6 @@ export default function CreateEthereumKeyContainer({
                     ) : undefined
                 }
             />
-            <TModal visible={showModal} icon="check" onPress={onModalPress}>
-                <View style={{ marginTop: 10 }}>
-                    <Text style={{ fontSize: 15, fontWeight: '500' }}>Your key successfully generated </Text>
-                </View>
-            </TModal>
         </>
     );
 }
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     headline: {
-        marginTop: -10,
+        marginTop: 10,
         fontSize: 20,
         marginBottom: 5,
     },
