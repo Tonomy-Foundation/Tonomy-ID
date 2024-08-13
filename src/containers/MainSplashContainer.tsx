@@ -16,7 +16,7 @@ import { connect } from '../utils/StorageManager/setup';
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
+    const { clearState, initializeWalletState } = useWalletStore();
 
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener((state) => {
@@ -60,7 +60,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
-                            await initializeWallet();
+                            await initializeWalletState();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
@@ -79,7 +79,16 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         }
 
         main();
-    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, initializeWallet]);
+    }, [
+        errorStore,
+        getStatus,
+        initializeStatusFromStorage,
+        logout,
+        navigation,
+        user,
+        initializeWalletState,
+        clearState,
+    ]);
 
     return (
         <LayoutComponent
