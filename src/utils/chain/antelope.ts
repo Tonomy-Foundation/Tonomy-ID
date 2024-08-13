@@ -2,6 +2,7 @@ import {
     IPublicKey,
     IToken,
     IChain,
+    IOperation,
     TransactionType,
     AbstractChain,
     AbstractToken,
@@ -12,7 +13,6 @@ import {
     AbstractPrivateKey,
     IPrivateKey,
     Asset,
-    IChainSession,
 } from './types';
 import { SignClientTypes } from '@walletconnect/types';
 import {
@@ -289,6 +289,58 @@ PangeaTestnetChain.addToken(LEOSTestnetToken);
 
 export { PangeaMainnetChain, PangeaTestnetChain, LEOSToken, LEOSTestnetToken };
 
+export class AntelopeAction implements IOperation {
+    private action: ActionData;
+    private chain: AntelopeChain;
+
+    constructor(action: ActionData, chain: AntelopeChain) {
+        this.action = action;
+        this.chain = chain;
+    }
+
+    async getType(): Promise<TransactionType> {
+        // TODO: need to also handle token transfers on other contracts
+        if (
+            this.action.name.toString() === 'transfer' &&
+            this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
+        ) {
+            return TransactionType.transfer;
+        } else {
+            return TransactionType.contract;
+        }
+    }
+
+    async getTo(): Promise<AntelopeAccount> {
+        if ((await this.getType()) === TransactionType.transfer) {
+            return AntelopeAccount.fromAccount(this.chain, this.action.data.to);
+        } else {
+            return AntelopeAccount.fromAccount(this.chain, this.action.account);
+        }
+    }
+
+    async getFrom(): Promise<AntelopeAccount> {
+        if ((await this.getType()) === TransactionType.transfer) {
+            return AntelopeAccount.fromAccount(this.chain, this.action.data.from);
+        } else {
+            return AntelopeAccount.fromAccount(this.chain, this.action.authorization[0].actor);
+        }
+    }
+    async getArguments(): Promise<Record<string, string>> {
+        return this.action.data;
+    }
+    async getFunction(): Promise<string> {
+        return this.action.name.toString();
+    }
+    async getValue(): Promise<Asset> {
+        // TODO: need to also handle token transfers on other contracts
+        if ((await this.getType()) === TransactionType.transfer) {
+            return new Asset(this.chain.getNativeToken(), this.action.data.quantity);
+        } else {
+            return new Asset(this.chain.getNativeToken(), BigInt(0));
+        }
+    }
+}
+
 export class AntelopeTransaction implements ITransaction {
     private actions: ActionData[];
     private type?: TransactionType;
@@ -308,103 +360,43 @@ export class AntelopeTransaction implements ITransaction {
     }
 
     async getType(): Promise<TransactionType> {
-        if (this.type) return this.type;
-        const isContract = await this.getTo().isContract();
-        const isValuable = (await this.getValue()).getAmount() > BigInt(0);
-
-        if (isContract && this.transaction.data) {
-            if (isValuable) {
-                this.type = TransactionType.both;
-            } else {
-                this.type = TransactionType.contract;
-            }
-        } else {
-            this.type = TransactionType.transfer;
-        }
-
-        return this.type;
+        throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    getFrom(): EthereumAccount {
-        if (!this.transaction.from) {
-            throw new Error('Transaction has no sender');
-        }
-
-        return new EthereumAccount(this.chain, this.transaction.from.toString());
+    getFrom(): AntelopeAccount {
+        throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    getTo(): EthereumAccount {
-        if (!this.transaction.to) {
-            throw new Error('Transaction has no recipient');
-        }
-
-        return new EthereumAccount(this.chain, this.transaction.to.toString());
-    }
-    async fetchAbi(): Promise<string> {
-        if ((await this.getType()) === TransactionType.transfer) {
-            throw new Error('Not a contract call');
-        }
-
-        if (this.abi) return this.abi;
-        // fetch the ABI from etherscan
-        const res = await fetch(`${ETHERSCAN_URL}&module=contract&action=getabi&address=${this.getTo().getName()}`)
-            .then((res) => res.json())
-            .then((data) => data.result);
-
-        if (res.status !== '1') {
-            throw new Error('Failed to fetch ABI');
-        }
-
-        this.abi = res.abi as string;
-        return this.abi;
+    getTo(): AntelopeAccount {
+        throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getFunction(): Promise<string> {
-        const abi = await this.fetchAbi();
-
-        if (!this.transaction.data) throw new Error('Transaction has no data');
-        const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
-
-        if (!decodedData?.name) throw new Error('Failed to decode function name');
-        return decodedData.name;
+        throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getArguments(): Promise<Record<string, string>> {
-        const abi = await this.fetchAbi();
-
-        if (!this.transaction.data) throw new Error('Transaction has no data');
-        const decodedData = new Interface(abi).parseTransaction({ data: this.transaction.data });
-
-        if (!decodedData?.args) throw new Error('Failed to decode function name');
-        return decodedData.args;
+        throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getValue(): Promise<Asset> {
-        return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
+        throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-
+    async getData(): Promise<string> {
+        throw new Error('Antelope transactions have multiple operations, call getOperations()');
+    }
     async estimateTransactionFee(): Promise<Asset> {
-        // Get the current fee data
-        const feeData = await this.chain.getProvider().getFeeData();
-
-        // Update the transaction object to use maxFeePerGas and maxPriorityFeePerGas
-        const transaction = {
-            to: this.transaction.to,
-            from: this.transaction.from,
-            data: this.transaction.data,
-            gasPrice: feeData.gasPrice,
-        };
-
-        // Estimate gas
-        const wei = await this.chain.getProvider().estimateGas(transaction);
-
-        const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
-
-        return new Asset(this.chain.getNativeToken(), totalGasFee);
+        return new Asset(this.chain.getNativeToken(), BigInt(0));
     }
     async estimateTransactionTotal(): Promise<Asset> {
-        const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
+        const operationAmountsPromises = (await this.getOperations()).map(async (operation) =>
+            (await operation.getValue()).getAmount()
+        );
+        const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
+        const amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
 
         return new Asset(this.chain.getNativeToken(), amount);
     }
-
-    async getData(): Promise<string> {
-        return this.transaction.data || '';
+    hasMultipleOperations(): boolean {
+        return true;
+    }
+    async getOperations(): Promise<IOperation[]> {
+        return this.actions.map((action) => new AntelopeAction(action, this.chain));
     }
 }
 

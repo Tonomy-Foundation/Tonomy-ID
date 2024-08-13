@@ -24,6 +24,7 @@ import {
     IPrivateKey,
     Asset,
     IChainSession,
+    IOperation,
 } from './types';
 import settings from '../../settings';
 import { SignClientTypes } from '@walletconnect/types';
@@ -287,6 +288,7 @@ export class EthereumTransaction implements ITransaction {
         return decodedData.args;
     }
     async getValue(): Promise<Asset> {
+        // TODO: also need to handle other tokens
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
     }
 
@@ -317,6 +319,16 @@ export class EthereumTransaction implements ITransaction {
 
     async getData(): Promise<string> {
         return this.transaction.data || '';
+    }
+
+    hasMultipleOperations(): boolean {
+        return false;
+    }
+
+    async getOperations(): Promise<IOperation[]> {
+        throw new Error(
+            'Ethereum transactions have no operations, call getTo() and other functions on EthereumTransaction instead'
+        );
     }
 }
 

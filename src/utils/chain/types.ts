@@ -251,17 +251,21 @@ export enum TransactionType {
     'both',
 }
 
-export interface ITransaction {
-    getChain(): IChain;
+export interface IOperation {
     getType(): Promise<TransactionType>;
-    getFrom(): IAccount;
-    getTo(): IAccount;
+    getFrom(): Promise<IAccount>;
+    getTo(): Promise<IAccount>;
     getValue(): Promise<IAsset>;
     getFunction(): Promise<string>;
     getArguments(): Promise<Record<string, string>>;
+}
+
+export interface ITransaction extends IOperation {
+    getChain(): IChain;
     estimateTransactionFee(): Promise<IAsset>;
     estimateTransactionTotal(): Promise<IAsset>;
-    getData(): Promise<string>;
+    hasMultipleOperations(): boolean;
+    getOperations(): Promise<IOperation[]>;
 }
 
 export abstract class AbstractAccount implements IAccount {
