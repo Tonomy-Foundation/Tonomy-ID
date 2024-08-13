@@ -133,7 +133,7 @@ export class EthereumToken extends AbstractToken {
                 throw new Error('Account not found');
             })();
 
-        const balanceWei = await this.chain.getProvider().getBalance(lookupAccount.getName() || '');
+        const balanceWei = (await lookupAccount.getBalance(this.chain.getNativeToken())).getAmount();
 
         return new Asset(this, balanceWei);
     }
@@ -222,7 +222,7 @@ export class EthereumTransaction implements ITransaction {
 
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
-        const isContract = await this.getTo().isContract();
+        const isContract = await (await this.getTo()).isContract();
         const isValuable = (await this.getValue()).getAmount() > BigInt(0);
 
         if (isContract && this.transaction.data) {
@@ -237,14 +237,14 @@ export class EthereumTransaction implements ITransaction {
 
         return this.type;
     }
-    getFrom(): EthereumAccount {
+    async getFrom(): Promise<EthereumAccount> {
         if (!this.transaction.from) {
             throw new Error('Transaction has no sender');
         }
 
         return new EthereumAccount(this.chain, this.transaction.from.toString());
     }
-    getTo(): EthereumAccount {
+    async getTo(): Promise<EthereumAccount> {
         if (!this.transaction.to) {
             throw new Error('Transaction has no recipient');
         }
@@ -258,7 +258,9 @@ export class EthereumTransaction implements ITransaction {
 
         if (this.abi) return this.abi;
         // fetch the ABI from etherscan
-        const res = await fetch(`${ETHERSCAN_URL}&module=contract&action=getabi&address=${this.getTo().getName()}`)
+        const res = await fetch(
+            `${ETHERSCAN_URL}&module=contract&action=getabi&address=${(await this.getTo()).getName()}`
+        )
             .then((res) => res.json())
             .then((data) => data.result);
 
@@ -334,6 +336,7 @@ export class EthereumTransaction implements ITransaction {
 
 export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
+    protected declare chain: EthereumChain;
 
     private static getDidChainName(chain: EthereumChain): string {
         switch (chain.getChainId()) {

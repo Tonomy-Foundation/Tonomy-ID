@@ -362,10 +362,10 @@ export class AntelopeTransaction implements ITransaction {
     async getType(): Promise<TransactionType> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    getFrom(): AntelopeAccount {
+    async getFrom(): Promise<AntelopeAccount> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    getTo(): AntelopeAccount {
+    async getTo(): Promise<AntelopeAccount> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getFunction(): Promise<string> {
@@ -377,8 +377,8 @@ export class AntelopeTransaction implements ITransaction {
     async getValue(): Promise<Asset> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    async getData(): Promise<string> {
-        throw new Error('Antelope transactions have multiple operations, call getOperations()');
+    async getData(): Promise<ActionData[]> {
+        return this.actions;
     }
     async estimateTransactionFee(): Promise<Asset> {
         return new Asset(this.chain.getNativeToken(), BigInt(0));

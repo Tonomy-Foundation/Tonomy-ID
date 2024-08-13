@@ -266,6 +266,7 @@ export interface ITransaction extends IOperation {
     estimateTransactionTotal(): Promise<IAsset>;
     hasMultipleOperations(): boolean;
     getOperations(): Promise<IOperation[]>;
+    getData(): Promise<unknown>;
 }
 
 export abstract class AbstractAccount implements IAccount {

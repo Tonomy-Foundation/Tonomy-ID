@@ -24,12 +24,12 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import AccountSummary from '../components/AccountSummary';
+import { LEOS_PUBLIC_SALE_PRICE } from '../utils/chain/antelope';
 
 const vestingContract = VestingContract.Instance;
 
@@ -288,7 +288,9 @@ export default function MainContainer({
                                                     <Text style={styles.secondaryColor}>
                                                         $
                                                         {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                            ? formatCurrencyValue(
+                                                                pangeaBalance * LEOS_PUBLIC_SALE_PRICE
+                                                            )
                                                             : 0.0}
                                                     </Text>
                                                 </View>
