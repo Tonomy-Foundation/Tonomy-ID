@@ -64,6 +64,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
+                                clearState();
                             } else {
                                 throw e;
                             }
