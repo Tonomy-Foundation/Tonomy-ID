@@ -2,7 +2,7 @@ import { TKeyType } from '@veramo/core';
 import { SessionTypes } from '@walletconnect/types';
 import { JsonRpcPayload, JsonRpcProvider } from 'ethers';
 
-export type KeyFormat = string | 'hex' | 'base64' | 'base58' | 'wif';
+export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
     toString(format?: KeyFormat): Promise<string>;
@@ -22,6 +22,7 @@ export abstract class AbstractPublicKey implements IPublicKey {
     }
 
     async toString(format?: KeyFormat): Promise<string> {
+        if (format && format !== 'hex') throw new Error('Unsupported format');
         return this.publicKeyHex;
     }
 }
@@ -59,19 +60,25 @@ export interface IChain {
     getName(): string;
     getChainId(): string;
     getLogoUrl(): string;
-    // getApiEndpoint(): string;
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
     formatShortAccountName(account: string): string;
-    getProvider(): JsonRpcProvider;
 }
 
 export abstract class AbstractChain implements IChain {
-    protected abstract name: string;
-    protected abstract chainId: string;
-    protected abstract logoUrl: string;
-    protected abstract nativeToken?: IToken;
+    protected name: string;
+    protected chainId: string;
+    protected logoUrl: string;
+    protected nativeToken?: IToken;
 
+    constructor(name: string, chainId: string, logoUrl: string) {
+        this.name = name;
+        this.chainId = chainId;
+        this.logoUrl = logoUrl;
+    }
+    addToken(token: IToken): void {
+        this.nativeToken = token;
+    }
     getName(): string {
         return this.name;
     }
@@ -87,7 +94,6 @@ export abstract class AbstractChain implements IChain {
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
-    abstract getProvider(): JsonRpcProvider;
 }
 
 export interface IAsset {
@@ -170,7 +176,7 @@ export abstract class AbstractAsset implements IAsset {
 
 export interface IToken {
     // initialize with an account to easily get balance and usd value
-    withAccount(account: IAccount): IToken;
+    setAccount(account: IAccount): IToken;
 
     getName(): string;
     getSymbol(): string;
@@ -186,13 +192,21 @@ export interface IToken {
 
 export abstract class AbstractToken implements IToken {
     protected account?: IAccount;
-    protected abstract name: string;
-    protected abstract symbol: string;
-    protected abstract precision: number;
-    protected abstract chain: IChain;
-    protected abstract logoUrl: string;
+    protected name: string;
+    protected symbol: string;
+    protected precision: number;
+    protected chain: IChain;
+    protected logoUrl: string;
 
-    withAccount(account: IAccount): IToken {
+    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string) {
+        this.name = name;
+        this.symbol = symbol;
+        this.precision = precision;
+        this.chain = chain;
+        this.logoUrl = logoUrl;
+    }
+
+    setAccount(account: IAccount): IToken {
         this.account = account;
         return this;
     }
@@ -228,7 +242,6 @@ export interface IAccount {
     getTokens(): Promise<IToken[]>;
     getBalance(token: IToken): Promise<IAsset>;
     signTransaction(transaction: unknown): Promise<unknown>;
-    sendSignedTransaction(signedTransaction: unknown): Promise<unknown>;
     sendTransaction(transaction: unknown): Promise<unknown>;
 }
 
@@ -252,9 +265,15 @@ export interface ITransaction {
 }
 
 export abstract class AbstractAccount implements IAccount {
-    protected abstract name: string;
-    protected abstract did: string;
-    protected abstract chain: IChain;
+    protected name: string;
+    protected did: string;
+    protected chain: IChain;
+
+    constructor(name: string, did: string, chain: IChain) {
+        this.name = name;
+        this.did = did;
+        this.chain = chain;
+    }
 
     getName(): string {
         return this.name;
@@ -273,7 +292,6 @@ export abstract class AbstractAccount implements IAccount {
         return token.getBalance(this);
     }
     abstract signTransaction(transaction: unknown): Promise<unknown>;
-    abstract sendSignedTransaction(signedTransaction: unknown): Promise<unknown>;
     abstract sendTransaction(transaction: unknown): Promise<unknown>;
 }
 

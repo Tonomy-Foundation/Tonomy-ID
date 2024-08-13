@@ -107,7 +107,7 @@ export default function SignTransactionConsentContainer({
                 const etherFee = ethers.parseEther(fee);
 
                 const totalTransactionCost = transactionValue + etherFee;
-                const balance = await transaction.getChain().getProvider().getBalance(fromAccount);
+                const balance = await transaction.getFrom().getBalance(transaction.getChain().getNativeToken());
 
                 // Check if the balance is sufficient
                 if (balance < totalTransactionCost) {
@@ -173,14 +173,11 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             setTransactionLoading(true);
-            const feeData = await transaction.getChain().getProvider().getFeeData();
-
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
                 value: ethers.parseEther(parseFloat(transactionDetails.value).toFixed(18)),
                 data: await transaction.getData(),
-                gasPrice: feeData.gasPrice,
             };
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);

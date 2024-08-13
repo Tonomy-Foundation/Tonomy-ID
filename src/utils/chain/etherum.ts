@@ -27,21 +27,12 @@ import {
 } from './types';
 import settings from '../../settings';
 import { SignClientTypes } from '@walletconnect/types';
-
-export const USD_CONVERSION = 0.002;
+import { getPriceCoinGecko } from './common';
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
 const INFURA_KEY = settings.config.infuraKey;
-
-export async function getPrice(token: string, currency: string): Promise<number> {
-    const res = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
-    ).then((res) => res.json());
-
-    return res?.ethereum?.usd;
-}
 
 export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
     async getAddress(): Promise<string> {
@@ -83,24 +74,14 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
 }
 
 export class EthereumChain extends AbstractChain {
+    // See https://chainlist.org/ for Chain IDs
     protected infuraUrl: string;
-    protected name: string;
-    protected chainId: string;
-    protected logoUrl: string;
-    protected nativeToken: IToken;
     private provider: JsonRpcProvider;
 
     constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string) {
-        super();
+        super(name, chainId, logoUrl);
         this.infuraUrl = infuraUrl;
-        this.name = name;
-        this.chainId = chainId;
-        this.logoUrl = logoUrl;
         this.provider = new JsonRpcProvider(this.infuraUrl);
-    }
-
-    addToken(token: IToken): void {
-        this.nativeToken = token;
     }
 
     createKeyFromSeed(seed: string): IPrivateKey {
@@ -123,11 +104,6 @@ export class EthereumChain extends AbstractChain {
 }
 
 export class EthereumToken extends AbstractToken {
-    protected name: string;
-    protected symbol: string;
-    protected precision: number;
-    protected chain: EthereumChain;
-    protected logoUrl: string;
     protected coinmarketCapId: string;
 
     constructor(
@@ -138,17 +114,12 @@ export class EthereumToken extends AbstractToken {
         logoUrl: string,
         coinmarketCapId: string
     ) {
-        super();
-        this.name = name;
-        this.symbol = symbol;
-        this.precision = precision;
-        this.logoUrl = logoUrl;
+        super(name, symbol, precision, chain, logoUrl);
         this.coinmarketCapId = coinmarketCapId;
-        this.chain = chain;
     }
 
     async getUsdPrice(): Promise<number> {
-        return await getPrice(this.coinmarketCapId, 'usd');
+        return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
@@ -156,7 +127,7 @@ export class EthereumToken extends AbstractToken {
     async getBalance(account?: IAccount): Promise<Asset> {
         const lookupAccount: IAccount =
             account ||
-            this.account ||
+            this.getAccount() ||
             (() => {
                 throw new Error('Account not found');
             })();
@@ -351,16 +322,23 @@ export class EthereumTransaction implements ITransaction {
 
 export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
-    protected name: string;
-    protected did: string;
-    protected chain: EthereumChain;
+
+    private static getDidChainName(chain: EthereumChain): string {
+        switch (chain.getChainId()) {
+            case '1':
+                return 'mainnet';
+            case '5':
+                return 'goerli';
+            default:
+                return '0x' + chain.getChainId();
+        }
+    }
 
     constructor(chain: EthereumChain, address: string, privateKey?: EthereumPrivateKey) {
-        super();
+        const did = `did:ethr:${EthereumAccount.getDidChainName(chain)}:${address}`;
+
+        super(address, did, chain);
         this.privateKey = privateKey;
-        this.name = address;
-        this.chain = chain;
-        const did = `did:ethr:${address}`; // needs to be different for different chains
 
         this.did = did;
     }
@@ -393,10 +371,6 @@ export class EthereumAccount extends AbstractAccount {
         }
 
         return this.privateKey.signTransaction(transaction);
-    }
-
-    async sendSignedTransaction(signedTransaction: string): Promise<TransactionReceipt> {
-        return this.chain.getProvider().send('eth_sendRawTransaction', [signedTransaction]);
     }
 
     async sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse> {
