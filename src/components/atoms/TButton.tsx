@@ -89,6 +89,7 @@ export function TButtonSecondaryContained(props: ButtonProps) {
     const style = {
         backgroundColor: theme.colors.backgroundGray,
     };
+
     return (
         // eslint-disable-next-line react/prop-types
         <TButton {...props} style={[props.style, style]} color={color}>

@@ -53,7 +53,7 @@ export default function MainContainer({
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [pangeaBalance, setPangeaBalance] = useState(0);
+    const [leosBalance, setLeosBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const [refreshing, setRefreshing] = React.useState(false);
@@ -96,10 +96,10 @@ export default function MainContainer({
         async function getUpdatedBalance() {
             await updateBalance();
 
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
+            const vestedLeosBalance = await vestingContract.getBalance(accountName);
 
-            if (pangeaBalance !== accountPangeaBalance) {
-                setPangeaBalance(accountPangeaBalance);
+            if (leosBalance !== vestedLeosBalance) {
+                setLeosBalance(vestedLeosBalance);
             }
         }
 
@@ -110,7 +110,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
+    }, [user, leosBalance, setLeosBalance, accountName, updateBalance]);
 
     async function setUserName() {
         try {
@@ -283,14 +283,12 @@ export default function MainContainer({
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                        <Text> {formatCurrencyValue(leosBalance) || 0} LEOS</Text>
                                                     </View>
                                                     <Text style={styles.secondaryColor}>
                                                         $
-                                                        {pangeaBalance
-                                                            ? formatCurrencyValue(
-                                                                pangeaBalance * LEOS_PUBLIC_SALE_PRICE
-                                                            )
+                                                        {leosBalance
+                                                            ? formatCurrencyValue(leosBalance * LEOS_PUBLIC_SALE_PRICE)
                                                             : 0.0}
                                                     </Text>
                                                 </View>

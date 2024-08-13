@@ -466,7 +466,9 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    // eslint-disable-next-line camelcase
                     account_name: this.getName(),
+                    // eslint-disable-next-line camelcase
                     code_as_wasm: 1,
                 }),
             });
