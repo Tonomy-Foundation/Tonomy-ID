@@ -336,7 +336,8 @@ export class EthereumTransaction implements ITransaction {
 
 export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
-    protected declare chain: EthereumChain;
+    // @ts-expect-error chain is overridden
+    protected chain: EthereumChain;
 
     private static getDidChainName(chain: EthereumChain): string {
         switch (chain.getChainId()) {
