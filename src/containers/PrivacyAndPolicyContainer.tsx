@@ -36,7 +36,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>}
+                            item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>}
                         />
                         <TList
                             bulletIcon="•"

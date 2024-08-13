@@ -52,6 +52,9 @@ type ConfigType = {
     loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
     blockExplorerUrl: string;
+    infuraKey: string;
+    etherscanApiKey: string;
+    walletConnectProjectId: string;
 };
 
 type SettingsType = {

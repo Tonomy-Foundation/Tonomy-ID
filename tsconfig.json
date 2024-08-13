@@ -7,6 +7,8 @@
     "skipDefaultLibCheck": true,
     "experimentalDecorators": true, // needed for @wharfkit/antelope
     "useUnknownInCatchVariables": false, // needed for @wharfkit/antelope
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
   "include": [
     "App.tsx",

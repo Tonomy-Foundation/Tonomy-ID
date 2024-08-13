@@ -6,6 +6,11 @@ module.exports = function (api) {
             'react-native-paper/babel',
             'transform-inline-environment-variables',
             'react-native-reanimated/plugin',
+            '@babel/transform-react-jsx-source',
+            'babel-plugin-transform-typescript-metadata',
+            ['@babel/plugin-proposal-decorators', { version: 'legacy' }],
+            ['@babel/plugin-transform-class-properties', { loose: true }],
+            ['@babel/plugin-transform-private-methods', { loose: true }],
             [
                 'babel-plugin-transform-builtin-extend',
                 {
