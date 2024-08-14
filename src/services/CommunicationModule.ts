@@ -212,11 +212,14 @@ export default function CommunicationModule() {
                         } else {
                             transaction = new EthereumTransaction(transactionData, chain);
                             navigation.navigate('CreateEthereumKey', {
-                                transaction,
-                                session: {
-                                    origin: verifyContext?.verified?.origin,
-                                    id,
-                                    topic,
+                                requestType: 'transactionRequest',
+                                transaction: {
+                                    transaction,
+                                    session: {
+                                        origin: verifyContext?.verified?.origin,
+                                        id,
+                                        topic,
+                                    },
                                 },
                             });
                         }
