@@ -57,12 +57,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             await connect();
 
-            if (get().initialized) {
+            if (get().initialized && get().ethereumAccount) {
                 debug('Already initialized');
                 return;
             }
 
-            const state: Partial<WalletState> = { ...defaultState };
+            const state = get();
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 const key = await keyStorage.findByName(keyName, chain);
 
@@ -105,6 +105,17 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 state.polygonBalance = polygonData.value.balance;
             }
 
+            if (!get().ethereumAccount && !get().sepoliaAccount && !get().polygonAccount) {
+                set({
+                    ethereumAccount: state.ethereumAccount,
+                    ethereumBalance: state.ethereumBalance,
+                    sepoliaAccount: state.sepoliaAccount,
+                    sepoliaBalance: state.sepoliaBalance,
+                    polygonAccount: state.polygonAccount,
+                    polygonBalance: state.polygonBalance,
+                });
+            }
+
             if (!get().initialized && !get().web3wallet) {
                 const web3wallet = await Web3Wallet.init({
                     core,
@@ -116,22 +127,20 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     },
                 });
 
-                state.web3wallet = web3wallet;
-                state.initialized = true;
-
-                set(state as WalletState);
+                set({
+                    initialized: true,
+                    web3wallet,
+                });
             }
         } catch (error) {
             console.error('Error initializing wallet state:', error);
             set({
-                initialized: false,
                 ethereumAccount: null,
                 ethereumBalance: { balance: '0', usdBalance: 0 },
                 sepoliaAccount: null,
                 sepoliaBalance: { balance: '0', usdBalance: 0 },
                 polygonAccount: null,
                 polygonBalance: { balance: '0', usdBalance: 0 },
-                web3wallet: null,
             });
         }
     },

@@ -303,11 +303,39 @@ export default function CommunicationModule() {
                     reason: getSdkError('UNSUPPORTED_CHAINS'),
                 });
                 return;
-            } else
-                navigation.navigate('WalletConnectLogin', {
-                    payload: proposal,
-                    platform: 'browser',
-                });
+            } else {
+                const supportedChains = {
+                    '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
+                    '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
+                    '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
+                };
+
+                let keyFound = false;
+
+                for (const chainId of chainIds) {
+                    if (supportedChains[chainId]) {
+                        const { name, chainObject } = supportedChains[chainId];
+                        const key = await keyStorage.findByName(name, chainObject);
+
+                        if (!key) {
+                            navigation.navigate('CreateEthereumKey', {
+                                requestType: 'loginRequest',
+                                payload: proposal,
+                            });
+                            return;
+                        } else {
+                            keyFound = true;
+                        }
+                    }
+                }
+
+                if (keyFound) {
+                    navigation.navigate('WalletConnectLogin', {
+                        payload: proposal,
+                        platform: 'browser',
+                    });
+                }
+            }
         }, 1000);
 
         const onSessionRequest = debounce(async (event) => {
@@ -354,11 +382,14 @@ export default function CommunicationModule() {
                     } else {
                         transaction = new EthereumTransaction(transactionData, chain);
                         navigation.navigate('CreateEthereumKey', {
-                            transaction,
-                            session: {
-                                origin: verifyContext?.verified?.origin,
-                                id,
-                                topic,
+                            requestType: 'transactionRequest',
+                            transaction: {
+                                transaction,
+                                session: {
+                                    origin: verifyContext?.verified?.origin,
+                                    id,
+                                    topic,
+                                },
                             },
                         });
                     }

@@ -200,8 +200,8 @@ export default function MainContainer({
     }
 
     useEffect(() => {
-        if (accountDetails.address) {
-            (refMessage.current as any)?.open();
+        if (accountDetails?.address) {
+            (refMessage?.current as any)?.open();
         }
     }, [accountDetails]);
 
