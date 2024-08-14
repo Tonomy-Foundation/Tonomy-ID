@@ -101,10 +101,10 @@ export default function TErrorModal(props: TErrorModalProps) {
             iconColor={theme.colors.error}
         >
             {props.children}
-            {props.error && (
+            {props?.error && (
                 <>
                     <View>
-                        <TP size={1}>{props.error.message}</TP>
+                        <TP size={1}>{props?.error?.message}</TP>
                     </View>
 
                     {props?.expected === false && (
