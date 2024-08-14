@@ -1,33 +1,48 @@
 import './mocks';
-import { EthereumAccount, EthereumPrivateKey, EthereumSepoliaChain } from '../../src/utils/chain/etherum';
-import { ethers, TransactionRequest } from 'ethers';
-import { generatePrivateKeyFromSeed } from '../../src/utils/keys';
+import {
+    ActionData,
+    AntelopeAccount,
+    AntelopeChain,
+    AntelopePrivateKey,
+    AntelopeTransaction,
+} from '../../src/utils/chain/antelope';
+import { AnyAction, PrivateKey } from '@wharfkit/antelope';
 
-describe('Ethereum sign transaction', () => {
-    //generate key and sign transaction
+describe('AntelopeTransaction', () => {
+    const jungleAccountName = 'mytest123tes';
+    const privateKey = PrivateKey.from('PVT_K1_2Yn362S23hWaDuDjLawDB1ZByF8fqsZZXFUDPTHnk6tXX44D2R');
+    const EOSJungleChain = new AntelopeChain(
+        'https://jungle4.cryptolions.io',
+        'EOS Jungle Testnet',
+        '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
+        'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true'
+    );
+
+    const SIMPLE_ASSSET_CONTRACT_NAME = 'simpleassets';
+
     it('generate private key and sign transaction', async () => {
-        const ethereumKey = await generatePrivateKeyFromSeed('test', EthereumSepoliaChain);
-        const exportPrivateKey = await ethereumKey.exportPrivateKey();
-        const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, EthereumSepoliaChain);
+        const antelopeKey = new AntelopePrivateKey(privateKey, EOSJungleChain);
+        const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, jungleAccountName, antelopeKey);
 
-        const ethereumAccount = await EthereumAccount.fromPublicKey(
-            EthereumSepoliaChain,
-            await ethereumPrivateKey.getPublicKey()
-        );
-        const transactionRequest: TransactionRequest = {
-            to: ethereumAccount.getName(),
-            from: ethereumAccount.getName(),
-            value: ethers.parseEther('0'),
-            data: '0x00',
+        const createAssetAction: ActionData = {
+            account: SIMPLE_ASSSET_CONTRACT_NAME,
+            name: 'create',
+            authorization: [{ actor: jungleAccountName, permission: 'active' }],
+            data: {
+                author: jungleAccountName,
+                category: 'mycategory',
+                owner: jungleAccountName,
+                idata: '',
+                mdata: '',
+                requireclaim: true,
+            },
         };
 
-        const signedTransaction = await ethereumPrivateKey.signTransaction(transactionRequest);
+        const transaction = AntelopeTransaction.fromActions([createAssetAction], EOSJungleChain);
+        const signedTransaction = await account.signTransaction(transaction);
 
         // Check if signedTransaction is defined and not empty
         expect(signedTransaction).toBeDefined();
-        expect(signedTransaction).not.toEqual('');
-
-        // Check if signedTransaction is a string in hexadecimal format
-        expect(signedTransaction).toMatch(/^0x[a-fA-F0-9]+$/);
+        expect(signedTransaction.id).not.toEqual('');
     }, 30000);
 });

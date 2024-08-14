@@ -86,7 +86,8 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         return new AntelopePublicKey(this.privateKey.toPublic());
     }
 
-    async signTransaction(actions: ActionData[]): Promise<SignedTransaction> {
+    async signTransaction(data: ActionData[] | AntelopeTransaction): Promise<SignedTransaction> {
+        const actions: ActionData[] = data instanceof AntelopeTransaction ? await data.getData() : data;
         // Get the ABI(s) of all contracts
         const api = await this.chain.getApiClient();
         const uniqueContracts = [...new Set(actions.map((data) => data.account))];
@@ -186,7 +187,8 @@ export const LEOS_PUBLIC_SALE_PRICE = 0.012;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
-    protected declare chain: AntelopeChain;
+    // @ts-expect-error chain overridden
+    protected chain: AntelopeChain;
 
     constructor(
         chain: AntelopeChain,
@@ -355,7 +357,7 @@ export class AntelopeTransaction implements ITransaction {
         return this.chain;
     }
 
-    static async fromActions(actions: ActionData[], chain: AntelopeChain): Promise<AntelopeTransaction> {
+    static fromActions(actions: ActionData[], chain: AntelopeChain): AntelopeTransaction {
         return new AntelopeTransaction(actions, chain);
     }
 
@@ -402,7 +404,8 @@ export class AntelopeTransaction implements ITransaction {
 
 export class AntelopeAccount extends AbstractAccount implements IAccount {
     private privateKey?: AntelopePrivateKey;
-    protected declare chain: AntelopeChain;
+    // @ts-expect-error chain overridden
+    protected chain: AntelopeChain;
 
     private static getDidChainName(chain: AntelopeChain): string | null {
         switch (chain.getName()) {
@@ -441,12 +444,12 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         return [this.getNativeToken()];
     }
 
-    async signTransaction(actions: ActionData[]): Promise<SignedTransaction> {
+    async signTransaction(data: ActionData[] | AntelopeTransaction): Promise<SignedTransaction> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }
 
-        return this.privateKey.signTransaction(actions);
+        return this.privateKey.signTransaction(data);
     }
 
     async sendTransaction(actions: ActionData[]): Promise<API.v1.PushTransactionResponse> {
