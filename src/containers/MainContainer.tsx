@@ -121,6 +121,8 @@ export default function MainContainer({
 
             setAccountName(accountName);
         } catch (e) {
+            alert('Error getting username');
+            console.log('Error getting username', e);
             errorStore.setError({ error: e, expected: false });
         }
     }
@@ -129,6 +131,7 @@ export default function MainContainer({
         try {
             await connectToDid(did);
         } catch (e) {
+            console.log('onUrlOpen', e);
             errorStore.setError({ error: e, expected: false });
         } finally {
             onClose();

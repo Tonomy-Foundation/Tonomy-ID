@@ -25,12 +25,13 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     if (props?.expected === false) {
-        console.error(props.error);
+        console.error('error modal', props.error);
         console.log(JSON.stringify(props.error, null, 2), props.expected);
         // TODO: log to Tonomy Foundation team
     }
 
     function isExpandableErrorType() {
+        console.log('isExpandableErrorType');
         return (
             props?.error instanceof HttpError ||
             props?.error instanceof CommunicationError ||
@@ -44,6 +45,7 @@ export default function TErrorModal(props: TErrorModalProps) {
 
     function ErrorDetails() {
         if (props.error instanceof HttpError) {
+            console.log('iffff');
             const error = props.error as HttpError;
 
             return (
@@ -56,6 +58,7 @@ export default function TErrorModal(props: TErrorModalProps) {
                 </View>
             );
         } else if (props.error instanceof AntelopePushTransactionError) {
+            console.log('else iff');
             const error = props.error as AntelopePushTransactionError;
             const trxError = error.error;
 
@@ -70,6 +73,8 @@ export default function TErrorModal(props: TErrorModalProps) {
                 </View>
             );
         } else if (props.error instanceof CommunicationError) {
+            console.log('else iff communication');
+
             const exception = (props.error as CommunicationError).exception;
 
             return (
@@ -82,6 +87,7 @@ export default function TErrorModal(props: TErrorModalProps) {
             );
         }
 
+        console.log('other errorsss');
         throw new Error('Other error types should not be expandable');
     }
 
