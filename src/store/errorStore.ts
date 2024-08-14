@@ -24,7 +24,7 @@ const useErrorStore = create<ErrorState>((set, get) => ({
     title: undefined,
     expected: undefined,
     onClose: undefined,
-    setError: ({ error, title, expected, onClose }) => {
+    setError: ({ error, title = '', expected, onClose }) => {
         set({ error, title, expected, onClose });
     },
     unSetError: () => {

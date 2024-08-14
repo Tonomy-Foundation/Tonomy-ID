@@ -73,7 +73,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         account,
                         balance: {
                             balance: balance.toString(),
-                            usdBalance: await balance.getUsdValue(),
+                            usdBalance: (await balance.getUsdValue()) || 0,
                         },
                     };
                 }
