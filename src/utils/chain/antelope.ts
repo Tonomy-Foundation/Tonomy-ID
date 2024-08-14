@@ -123,10 +123,17 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         });
     }
 
-    async sendTransaction(actions: ActionData[]): Promise<API.v1.PushTransactionResponse> {
-        const transaction = await this.signTransaction(actions);
+    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<API.v1.PushTransactionResponse> {
+        const transaction = await this.signTransaction(data);
 
-        return await this.chain.getApiClient().v1.chain.push_transaction(transaction);
+        try {
+            // const toPrint = data instanceof AntelopeTransaction ? await data.getData() : data;
+            // console.log('sendTransaction()', JSON.stringify(toPrint, null, 2));
+            return await this.chain.getApiClient().v1.chain.push_transaction(transaction);
+        } catch (error) {
+            console.error('sendTransaction()', JSON.stringify(error, null, 2));
+            throw error;
+        }
     }
 
     toPrivateKey(): PrivateKey {
@@ -452,12 +459,12 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         return this.privateKey.signTransaction(data);
     }
 
-    async sendTransaction(actions: ActionData[]): Promise<API.v1.PushTransactionResponse> {
+    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<API.v1.PushTransactionResponse> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }
 
-        return this.privateKey.sendTransaction(actions);
+        return this.privateKey.sendTransaction(data);
     }
 
     async isContract(): Promise<boolean> {

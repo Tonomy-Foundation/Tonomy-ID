@@ -7,7 +7,7 @@ import {
     AntelopeToken,
     AntelopeTransaction,
 } from '../../src/utils/chain/antelope';
-import { PrivateKey, Transaction } from '@wharfkit/antelope';
+import { PrivateKey } from '@wharfkit/antelope';
 import { TransactionType } from '../../src/utils/chain/types';
 
 describe('AntelopeTransaction', () => {
@@ -46,7 +46,7 @@ describe('AntelopeTransaction', () => {
                 owner: jungleAccountName,
                 idata: '',
                 mdata: '',
-                requireclaim: true,
+                requireclaim: false,
             },
         };
         const actions = [createAssetAction];
@@ -75,13 +75,38 @@ describe('AntelopeTransaction', () => {
             owner: jungleAccountName,
             idata: '',
             mdata: '',
-            requireclaim: true,
+            requireclaim: false,
         });
 
         const signedTransaction = await account.signTransaction(transaction);
 
-        // Check if signedTransaction is defined and not empty
         expect(signedTransaction).toBeDefined();
-        expect(signedTransaction.id).not.toEqual('');
+        expect(signedTransaction.signatures.length).toBe(1);
+
+        const res = await account.sendTransaction(transaction);
+
+        expect(res).toBeDefined();
+        expect(res.processed.receipt.status).toBe('executed');
+        const assetId = res.processed.action_traces[0].inline_traces[1].act.data.assetid;
+
+        expect(assetId).toBeDefined();
+        expect(Number(assetId)).toBeGreaterThan(0);
+
+        // Burn the asset to clear up RAM
+        const burnAssetAction: ActionData = {
+            account: SIMPLE_ASSSET_CONTRACT_NAME,
+            name: 'burn',
+            authorization: [{ actor: jungleAccountName, permission: 'active' }],
+            data: {
+                owner: jungleAccountName,
+                assetids: [assetId],
+                memo: 'burning asset',
+            },
+        };
+
+        const res2 = await account.sendTransaction(AntelopeTransaction.fromActions([burnAssetAction], EOSJungleChain));
+
+        expect(res2).toBeDefined();
+        expect(res2.processed.receipt.status).toBe('executed');
     }, 30000);
 });
