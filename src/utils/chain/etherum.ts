@@ -227,12 +227,12 @@ export class EthereumTransaction implements ITransaction {
 
         if (isContract && this.transaction.data) {
             if (isValuable) {
-                this.type = TransactionType.both;
+                this.type = TransactionType.BOTH;
             } else {
-                this.type = TransactionType.contract;
+                this.type = TransactionType.CONTRACT;
             }
         } else {
-            this.type = TransactionType.transfer;
+            this.type = TransactionType.TRANSFER;
         }
 
         return this.type;
@@ -252,7 +252,7 @@ export class EthereumTransaction implements ITransaction {
         return new EthereumAccount(this.chain, this.transaction.to.toString());
     }
     async fetchAbi(): Promise<string> {
-        if ((await this.getType()) === TransactionType.transfer) {
+        if ((await this.getType()) === TransactionType.TRANSFER) {
             throw new Error('Not a contract call');
         }
 

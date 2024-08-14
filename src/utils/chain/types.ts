@@ -246,9 +246,9 @@ export interface IAccount {
 }
 
 export enum TransactionType {
-    'contract',
-    'transfer',
-    'both',
+    'CONTRACT' = 'CONTRACT',
+    'TRANSFER' = 'TRANSFER',
+    'BOTH' = 'BOTH',
 }
 
 export interface IOperation {

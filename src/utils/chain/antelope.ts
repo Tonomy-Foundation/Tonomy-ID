@@ -306,14 +306,14 @@ export class AntelopeAction implements IOperation {
             this.action.name.toString() === 'transfer' &&
             this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
         ) {
-            return TransactionType.transfer;
+            return TransactionType.TRANSFER;
         } else {
-            return TransactionType.contract;
+            return TransactionType.CONTRACT;
         }
     }
 
     async getTo(): Promise<AntelopeAccount> {
-        if ((await this.getType()) === TransactionType.transfer) {
+        if ((await this.getType()) === TransactionType.TRANSFER) {
             return AntelopeAccount.fromAccount(this.chain, this.action.data.to);
         } else {
             return AntelopeAccount.fromAccount(this.chain, this.action.account);
@@ -321,7 +321,7 @@ export class AntelopeAction implements IOperation {
     }
 
     async getFrom(): Promise<AntelopeAccount> {
-        if ((await this.getType()) === TransactionType.transfer) {
+        if ((await this.getType()) === TransactionType.BOTH) {
             return AntelopeAccount.fromAccount(this.chain, this.action.data.from);
         } else {
             return AntelopeAccount.fromAccount(this.chain, this.action.authorization[0].actor);
@@ -335,7 +335,7 @@ export class AntelopeAction implements IOperation {
     }
     async getValue(): Promise<Asset> {
         // TODO: need to also handle token transfers on other contracts
-        if ((await this.getType()) === TransactionType.transfer) {
+        if ((await this.getType()) === TransactionType.TRANSFER) {
             return new Asset(this.chain.getNativeToken(), this.action.data.quantity);
         } else {
             return new Asset(this.chain.getNativeToken(), BigInt(0));

@@ -7,7 +7,8 @@ import {
     AntelopeToken,
     AntelopeTransaction,
 } from '../../src/utils/chain/antelope';
-import { PrivateKey } from '@wharfkit/antelope';
+import { PrivateKey, Transaction } from '@wharfkit/antelope';
+import { TransactionType } from '../../src/utils/chain/types';
 
 describe('AntelopeTransaction', () => {
     const jungleAccountName = 'mytest123tes';
@@ -51,28 +52,22 @@ describe('AntelopeTransaction', () => {
         const actions = [createAssetAction];
         const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
 
-        // getType(): Promise<TransactionType>;
-        // getFrom(): Promise<IAccount>;
-        // getTo(): Promise<IAccount>;
-        // getValue(): Promise<IAsset>;
-        // getFunction(): Promise<string>;
-        // getArguments(): Promise<Record<string, string>>;
         expect(transaction.hasMultipleOperations()).toBeTruthy();
         expect(await transaction.getData()).toEqual(actions);
-        expect(await transaction.getType()).toThrow(
+        expect(transaction.getType()).rejects.toThrow(
             'Antelope transactions have multiple operations, call getOperations()'
         );
-        expect((await transaction.estimateTransactionFee()).toString()).toBe('0.0000 JUNGLE');
-        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0.0000 JUNGLE');
+        expect((await transaction.estimateTransactionFee()).toString()).toBe('0 JUNGLE');
+        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0 JUNGLE');
 
         const operations = await transaction.getOperations();
         const createAssetOperation = operations[0];
 
         expect(operations.length).toBe(1);
-        expect(await createAssetOperation.getType()).toBe('contract');
-        expect(await createAssetOperation.getFrom()).toEqual(jungleAccountName);
-        expect(await createAssetOperation.getTo()).toEqual(SIMPLE_ASSSET_CONTRACT_NAME);
-        expect(await createAssetOperation.getValue()).toEqual('0.0000 JUNGLE');
+        expect(await createAssetOperation.getType()).toBe(TransactionType.CONTRACT);
+        expect((await createAssetOperation.getFrom()).getName()).toEqual(jungleAccountName);
+        expect((await createAssetOperation.getTo()).getName()).toEqual(SIMPLE_ASSSET_CONTRACT_NAME);
+        expect((await createAssetOperation.getValue()).toString()).toEqual('0 JUNGLE');
         expect(await createAssetOperation.getFunction()).toEqual('create');
         expect(await createAssetOperation.getArguments()).toEqual({
             author: jungleAccountName,
