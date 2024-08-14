@@ -37,7 +37,7 @@
     "communicationUrl": "wss://communication.staging.tonomy.foundation",
     "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
     "blockExplorerUrl": "https://local.bloks.io",
-    "loggerLevel": "debug",
+    "loggerLevel": "error",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
     "tonomyIdSlug": "tonomy-id-development://",
     "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
