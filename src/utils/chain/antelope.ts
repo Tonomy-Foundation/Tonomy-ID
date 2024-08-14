@@ -286,8 +286,8 @@ const LEOSTestnetToken = new AntelopeToken(
     'ethereum'
 );
 
-PangeaMainnetChain.addToken(LEOSToken);
-PangeaTestnetChain.addToken(LEOSTestnetToken);
+PangeaMainnetChain.setNativeToken(LEOSToken);
+PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
 
 export { PangeaMainnetChain, PangeaTestnetChain, LEOSToken, LEOSTestnetToken };
 

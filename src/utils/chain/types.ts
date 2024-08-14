@@ -76,7 +76,7 @@ export abstract class AbstractChain implements IChain {
         this.chainId = chainId;
         this.logoUrl = logoUrl;
     }
-    addToken(token: IToken): void {
+    setNativeToken(token: IToken): void {
         this.nativeToken = token;
     }
     getName(): string {

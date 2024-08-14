@@ -191,9 +191,9 @@ const ETHPolygonToken = new EthereumToken(
     'polygon'
 );
 
-EthereumMainnetChain.addToken(ETHToken);
-EthereumSepoliaChain.addToken(ETHSepoliaToken);
-EthereumPolygonChain.addToken(ETHPolygonToken);
+EthereumMainnetChain.setNativeToken(ETHToken);
+EthereumSepoliaChain.setNativeToken(ETHSepoliaToken);
+EthereumPolygonChain.setNativeToken(ETHPolygonToken);
 
 export { EthereumMainnetChain, EthereumSepoliaChain, EthereumPolygonChain, ETHToken, ETHSepoliaToken, ETHPolygonToken };
 
