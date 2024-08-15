@@ -128,6 +128,8 @@ export default function RootNavigation() {
 
     const user = useUserStore();
 
+    console.log('userr', user.status);
+
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (

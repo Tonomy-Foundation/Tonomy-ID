@@ -29,7 +29,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('Home'));
+                        navigation.dispatch(StackActions.replace('SplashSecurity'));
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         navigation.dispatch(StackActions.replace('Home'));
