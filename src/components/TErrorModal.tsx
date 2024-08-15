@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TModal from './TModal';
 import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
@@ -24,14 +24,16 @@ export default function TErrorModal(props: TErrorModalProps) {
         setExpanded((expanded) => !expanded);
     }
 
-    if (props?.expected === false) {
-        console.error('error modal', props.error);
-        console.log(JSON.stringify(props.error, null, 2), props.expected);
-        // TODO: log to Tonomy Foundation team
-    }
+    useEffect(() => {
+        if (props.expected === false) {
+            console.error('Error Modal:', props.error, props?.error?.message);
+            console.log(JSON.stringify(props.error, null, 2), props.expected);
+            // Additional error handling or logging could be placed here
+        }
+    }, [props.expected, props.error]);
 
     function isExpandableErrorType() {
-        console.log('isExpandableErrorType');
+        console.log('isExpandableErrorType', props);
         return (
             props?.error instanceof HttpError ||
             props?.error instanceof CommunicationError ||
