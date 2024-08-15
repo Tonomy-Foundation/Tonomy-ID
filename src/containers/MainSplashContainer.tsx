@@ -25,6 +25,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 await initializeStatusFromStorage();
                 const status = getStatus();
 
+                console.log('MainSplashScreenContainer status: ', status);
                 await connect();
 
                 switch (status) {
@@ -52,6 +53,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
+                console.log('Error in MainSplashScreenContainer', e);
                 errorStore.setError({ title: 'Error', error: e, expected: false });
             }
         }

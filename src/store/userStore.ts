@@ -59,7 +59,10 @@ const useUserStore = create<UserState>((set, get) => ({
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
+        console.log('initializeStatusFromStorage() fucntion called');
+
         await printStorage('initializeStatusFromStorage()');
+        console.log('initializeStatusFromStorage() user', get().user);
 
         try {
             await get().user.initializeFromStorage();
