@@ -1,5 +1,5 @@
 import create from 'zustand';
-// import NetInfo from '@react-native-community/netinfo';
+import NetInfo from '@react-native-community/netinfo';
 
 export interface ErrorState {
     error?: Error;
@@ -28,13 +28,13 @@ const useErrorStore = create<ErrorState>((set, get) => ({
     setError: async ({ error, title = '', expected, onClose }) => {
         set({ error, title, expected, onClose });
 
-        // const state = await NetInfo.fetch();
+        const state = await NetInfo.fetch();
 
-        // if (state.isConnected) {
-        //     set({ error, title, expected, onClose });
-        // } else {
-        //     console.log('Network is off. Error will not be thrown.');
-        // }
+        if (state.isConnected) {
+            set({ error, title, expected, onClose });
+        } else {
+            console.log('Network is off. Error will not be thrown.');
+        }
     },
     unSetError: () => {
         set({ error: undefined, title: undefined, expected: undefined });
