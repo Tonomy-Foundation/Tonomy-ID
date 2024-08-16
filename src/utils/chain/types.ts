@@ -170,7 +170,7 @@ export abstract class AbstractAsset implements IAsset {
     }
 
     toString(): string {
-        return `${this.printValue()} ${this.token.getSymbol()}`;
+        return `${this.printValue()} ${this.token?.getSymbol() || ''}`;
     }
 }
 
