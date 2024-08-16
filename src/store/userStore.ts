@@ -62,7 +62,6 @@ const useUserStore = create<UserState>((set, get) => ({
         console.log('initializeStatusFromStorage() fucntion called');
 
         await printStorage('initializeStatusFromStorage()');
-        console.log('initializeStatusFromStorage() user', get().user);
 
         try {
             await get().user.initializeFromStorage();
@@ -88,6 +87,8 @@ async function printStorage(message: string) {
     if (settings.config.loggerLevel !== 'debug') return;
 
     const keys = await AsyncStorage.getAllKeys();
+
+    console.log('keys', keys);
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
     console.log(message, 'AsyncStorage keys and status', keys, status);

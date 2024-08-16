@@ -37,7 +37,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
-                            await initializeWalletState();
+                            // await initiarlizeWalletState();
                         } catch (e) {
                             console.log('Error in MainSplashScreenContainer: ', JSON.stringify(e));
 
@@ -54,7 +54,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                console.log('catch Error in MainSplashScreenContainer: ', JSON.stringify(e));
+                console.log('catch Error in MainSplashScreenContainer: ', e);
                 errorStore.setError({ error: e, expected: false });
             }
         }
