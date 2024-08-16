@@ -25,7 +25,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 await initializeStatusFromStorage();
                 const status = getStatus();
 
-                console.log('MainSplashScreenContainer status: ', status);
                 await connect();
 
                 switch (status) {
@@ -40,6 +39,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                             await user.getUsername();
                             await initializeWalletState();
                         } catch (e) {
+                            console.log('Error in MainSplashScreenContainer: ', JSON.stringify(e));
+
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
                                 clearState();
@@ -53,8 +54,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                console.log('Error in MainSplashScreenContainer', e);
-                errorStore.setError({ title: 'Error', error: e, expected: false });
+                console.log('catch Error in MainSplashScreenContainer: ', JSON.stringify(e));
+                errorStore.setError({ error: e, expected: false });
             }
         }
 

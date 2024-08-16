@@ -148,7 +148,13 @@ export abstract class AbstractAsset implements IAsset {
         }
     }
     getSymbol(): string {
-        return this.token.getSymbol();
+        const symbol = this.token.getSymbol();
+
+        if (symbol) {
+            return symbol;
+        }
+
+        return '';
     }
     getPrecision(): number {
         return this.token.getPrecision();
