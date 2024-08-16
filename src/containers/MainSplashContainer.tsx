@@ -11,6 +11,7 @@ import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
+import NetInfo from '@react-native-community/netinfo';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
@@ -25,6 +26,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 await initializeStatusFromStorage();
                 const status = getStatus();
 
+                console.log('status', status);
                 await connect();
 
                 switch (status) {
@@ -37,7 +39,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
-                            // await initiarlizeWalletState();
+                            await initializeWalletState();
                         } catch (e) {
                             console.log('Error in MainSplashScreenContainer: ', JSON.stringify(e));
 
@@ -54,8 +56,12 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                console.log('catch Error in MainSplashScreenContainer: ', e);
-                errorStore.setError({ error: e, expected: false });
+                const state = await NetInfo.fetch();
+
+                if (state.isConnected) {
+                    console.log('catch Error in MainSplashScreenContainer: ', e);
+                    errorStore.setError({ error: e, expected: false });
+                }
             }
         }
 
