@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.109.17",
+    "version": "0.109.18",
     "scripts": {
         "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "yarn run build:prepare && npx eas device:create",
