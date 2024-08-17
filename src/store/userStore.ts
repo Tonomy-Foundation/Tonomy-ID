@@ -14,6 +14,7 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import NetInfo from '@react-native-community/netinfo';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -49,6 +50,7 @@ const useUserStore = create<UserState>((set, get) => ({
         return status;
     },
     setStatus: (newStatus: UserStatus) => {
+        console.log('set status', newStatus);
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
@@ -65,8 +67,17 @@ const useUserStore = create<UserState>((set, get) => ({
 
         try {
             await get().user.initializeFromStorage();
+            console.log('initializeStatusFromStorage() user initialized from storage');
             get().setStatus(UserStatus.LOGGED_IN);
         } catch (e) {
+            console.log('catch error', e);
+            const netInfo = await NetInfo.fetch();
+
+            if (!netInfo.isConnected) {
+                console.log('No internet connection. Setting status to LOGGED_IN from storage despite the error.');
+                get().setStatus(UserStatus.LOGGED_IN);
+            }
+
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 useErrorStore.getState().setError({ error: e, expected: false });
