@@ -76,9 +76,7 @@ const useUserStore = create<UserState>((set, get) => ({
             if (!netInfo.isConnected) {
                 console.log('No internet connection. Setting status to LOGGED_IN from storage despite the error.');
                 get().setStatus(UserStatus.LOGGED_IN);
-            }
-
-            if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
+            } else if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 useErrorStore.getState().setError({ error: e, expected: false });
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {

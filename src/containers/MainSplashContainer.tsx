@@ -21,6 +21,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     useEffect(() => {
         async function main() {
             await sleep(800);
+            const state = await NetInfo.fetch();
 
             try {
                 await initializeStatusFromStorage();
@@ -39,7 +40,10 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
-                            await initializeWalletState();
+
+                            if (state.isConnected) {
+                                await initializeWalletState();
+                            }
                         } catch (e) {
                             console.log('Error in MainSplashScreenContainer: ', JSON.stringify(e));
 
@@ -56,8 +60,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                const state = await NetInfo.fetch();
-
                 if (state.isConnected) {
                     console.log('catch Error in MainSplashScreenContainer: ', e);
                     errorStore.setError({ error: e, expected: false });
