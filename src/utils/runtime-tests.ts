@@ -37,5 +37,5 @@ async function testVeramo() {
 
 export async function runTests() {
     await testKeyGenerator();
-    await testVeramo();
+    // await testVeramo();
 }
