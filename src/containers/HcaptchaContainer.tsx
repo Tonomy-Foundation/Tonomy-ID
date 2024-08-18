@@ -54,8 +54,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             } else if (event.nativeEvent.data === 'open') {
                 console.log('Visual challenge opened');
             } else {
-                console.log('Verified code from hCaptcha', event.nativeEvent.data);
-
                 if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
                 } else setCode(event.nativeEvent.data);

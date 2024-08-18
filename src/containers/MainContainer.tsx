@@ -126,8 +126,6 @@ export default function MainContainer({
 
             setAccountName(accountName);
         } catch (e) {
-            alert('Error getting username');
-            console.log('Error getting username', e);
             errorStore.setError({ error: e, expected: false });
         }
     }
@@ -136,7 +134,6 @@ export default function MainContainer({
         try {
             await connectToDid(did);
         } catch (e) {
-            console.log('onUrlOpen', e);
             errorStore.setError({ error: e, expected: false });
         } finally {
             onClose();
@@ -154,8 +151,6 @@ export default function MainContainer({
             }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
-                console.log('Invalid QR Code', JSON.stringify(e, null, 2));
-
                 if (e.message === 'QR schema does not match app') {
                     errorStore.setError({
                         title: 'Invalid QR Code',

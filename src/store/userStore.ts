@@ -50,7 +50,6 @@ const useUserStore = create<UserState>((set, get) => ({
         return status;
     },
     setStatus: (newStatus: UserStatus) => {
-        console.log('set status', newStatus);
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
@@ -61,20 +60,15 @@ const useUserStore = create<UserState>((set, get) => ({
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
-        console.log('initializeStatusFromStorage() fucntion called');
-
         await printStorage('initializeStatusFromStorage()');
 
         try {
             await get().user.initializeFromStorage();
-            console.log('initializeStatusFromStorage() user initialized from storage');
             get().setStatus(UserStatus.LOGGED_IN);
         } catch (e) {
-            console.log('catch error', e);
             const netInfo = await NetInfo.fetch();
 
             if (!netInfo.isConnected) {
-                console.log('No internet connection. Setting status to LOGGED_IN from storage despite the error.');
                 get().setStatus(UserStatus.LOGGED_IN);
             } else if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
@@ -97,7 +91,6 @@ async function printStorage(message: string) {
 
     const keys = await AsyncStorage.getAllKeys();
 
-    console.log('keys', keys);
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
     console.log(message, 'AsyncStorage keys and status', keys, status);
@@ -105,10 +98,8 @@ async function printStorage(message: string) {
     const secureKeys: string[] = [];
 
     for (const level of Object.keys(KeyManagerLevel)) {
-        console.log('level', level);
         const value = await SecureStore.getItemAsync(KEY_STORAGE_NAMESPACE + level);
 
-        console.log('value', value);
         if (value) secureKeys.push(KEY_STORAGE_NAMESPACE + level);
     }
 
