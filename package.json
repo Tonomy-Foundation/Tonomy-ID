@@ -3,6 +3,7 @@
     "version": "0.110.0",
     "type": "commonjs",
     "scripts": {
+        "eas-build-pre-install": "corepack enable",
         "build:prepare": "ts-node prepare.app.config.ts",
         "build:ios:create": "yarn run build:prepare && npx eas device:create",
         "build:ios": "yarn run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
