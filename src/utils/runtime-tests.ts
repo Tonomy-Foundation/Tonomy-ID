@@ -1,21 +1,41 @@
+import { DataSource } from 'typeorm';
 import { testKeyGenerator } from './keys';
-import { Resolver } from '@tonomy/did-resolver';
-import { getResolver } from '@tonomy/antelope-did-resolver';
-import crossFetch from 'cross-fetch';
+import { dbConnection, setupDatabase, veramo, veramo2 } from '@tonomy/tonomy-id-sdk';
+import { Entities, migrations } from '@veramo/data-store';
+import Debug from 'debug';
 
-async function testAntelopeDid() {
-    // @ts-expect-error did-resolver and @tonomy/did-resolver types are not compatible
-    const resolver = new Resolver({
-        ...getResolver({ fetch: crossFetch as any }),
-    });
+const debug = Debug('tonomy-id:util:runtime-tests');
 
-    const res = await resolver.resolve('did:antelope:eos:eoscanadacom');
+const dataSource = new DataSource({
+    type: 'expo',
+    driver: require('expo-sqlite'),
+    database: 'veramo.sqlite',
+    migrations: migrations,
+    migrationsRun: true,
+    logging: ['error', 'info', 'warn'],
+    entities: Entities,
+});
 
-    if (!res.didDocument) throw new Error('No DID document found');
-    if (res.didDocument.id !== 'did:antelope:eos:eoscanadacom') throw new Error('DID document id incorrect');
+async function testVeramo() {
+    debug('testVeramo() called');
+    await setupDatabase(dataSource);
+    debug('Database setup');
+    await veramo();
+    debug('veramo() called');
+    await veramo2();
+    debug('veramo2() called');
+    const entities = dbConnection.entityMetadatas;
+
+    for (const entity of entities) {
+        const repository = dbConnection.getRepository(entity.name);
+
+        await repository.clear(); // This clears all entries from the entity's table.
+    }
+
+    debug('Database cleared');
 }
 
 export async function runTests() {
     await testKeyGenerator();
-    await testAntelopeDid();
+    // await testVeramo();
 }

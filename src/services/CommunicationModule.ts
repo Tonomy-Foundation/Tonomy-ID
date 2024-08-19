@@ -5,7 +5,6 @@ import {
     CommunicationError,
     LinkAuthRequestMessage,
     LoginRequestsMessage,
-    getSettings,
     objToBase64Url,
     parseDid,
 } from '@tonomy/tonomy-id-sdk';
@@ -24,8 +23,10 @@ import {
 } from '../utils/chain/etherum';
 import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
-import { ethers, BigNumberish } from 'ethers';
 import { getSdkError } from '@walletconnect/utils';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:services:CommunicationModule');
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -71,14 +72,9 @@ export default function CommunicationModule() {
 
                 const { method, id } = parseDid(senderDid);
 
-                // did:jwk is used for the initial login request so is allowed
-                if (method !== 'jwk' && id !== parseDid(await user.getDid()).id) {
-                    if (getSettings().loggerLevel === 'debug')
-                        console.log(
-                            'LoginRequesrtsMessage sender did not match user did',
-                            senderDid,
-                            await user.getDid()
-                        );
+                // did:key is used for the initial login request so is allowed
+                if (method !== 'key' && id !== parseDid(await user.getDid()).id) {
+                    debug('LoginRequestsMessage sender did not match user did', senderDid, await user.getDid());
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -105,12 +101,7 @@ export default function CommunicationModule() {
                 const senderDid = message.getSender().split('#')[0];
 
                 if (senderDid !== (await user.getDid())) {
-                    if (getSettings().loggerLevel === 'debug')
-                        console.log(
-                            'LinkAuthRequestMessage sender did not match user did',
-                            senderDid,
-                            await user.getDid()
-                        );
+                    debug('LinkAuthRequestMessage sender did not match user did', senderDid, await user.getDid());
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -161,6 +152,108 @@ export default function CommunicationModule() {
             });
         }
     }
+
+    const handleConnect = useCallback(async () => {
+        try {
+            web3wallet?.on('session_proposal', async (proposal) => {
+                if (proposal) {
+                    navigation.navigate('WalletConnectLogin', {
+                        payload: proposal,
+                        platform: 'browser',
+                    });
+                }
+            });
+        } catch (error) {
+            console.error('session_proposal', error);
+        }
+
+        try {
+            web3wallet?.on('session_request', async (event) => {
+                const { topic, params, id, verifyContext } = event;
+                const { request, chainId } = params;
+
+                switch (request.method) {
+                    case 'eth_sendTransaction': {
+                        const transactionData = request.params[0];
+
+                        let key, chain;
+
+                        if (chainId === 'eip155:11155111') {
+                            chain = EthereumSepoliaChain;
+                            key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
+                        } else if (chainId === 'eip155:1') {
+                            chain = EthereumMainnetChain;
+                            key = await keyStorage.findByName('ethereum', chain);
+                        } else if (chainId === 'eip155:137') {
+                            chain = EthereumPolygonChain;
+                            key = await keyStorage.findByName('ethereumPolygon', chain);
+                        } else throw new Error('Unsupported chains');
+
+                        let transaction: ITransaction;
+
+                        if (key) {
+                            const exportPrivateKey = await key.exportPrivateKey();
+                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+
+                            transaction = await EthereumTransaction.fromTransaction(
+                                ethereumPrivateKey,
+                                transactionData,
+                                chain
+                            );
+                            navigation.navigate('SignTransaction', {
+                                transaction,
+                                privateKey: key,
+                                session: {
+                                    origin: verifyContext?.verified?.origin,
+                                    id,
+                                    topic,
+                                },
+                            });
+                        } else {
+                            transaction = new EthereumTransaction(transactionData, chain);
+                            navigation.navigate('CreateEthereumKey', {
+                                requestType: 'transactionRequest',
+                                transaction: {
+                                    transaction,
+                                    session: {
+                                        origin: verifyContext?.verified?.origin,
+                                        id,
+                                        topic,
+                                    },
+                                },
+                            });
+                        }
+
+                        sendWalletConnectNotificationOnBackground(
+                            'Transaction Request',
+                            'Ethereum transaction signing request'
+                        );
+                        break;
+                    }
+
+                    default: {
+                        const response = {
+                            id: id,
+                            error: getSdkError('UNSUPPORTED_METHODS'),
+                            jsonrpc: '2.0',
+                        };
+
+                        await web3wallet?.respondSessionRequest({
+                            topic,
+                            response,
+                        });
+                        return;
+                    }
+                }
+            });
+        } catch (error) {
+            errorStore.setError({ error, expected: false });
+        }
+    }, [navigation, web3wallet, errorStore]);
+
+    useEffect(() => {
+        handleConnect();
+    }, [handleConnect, web3wallet, initialized]);
 
     const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
         let timeout: ReturnType<typeof setTimeout>;
