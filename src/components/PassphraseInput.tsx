@@ -3,6 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 import theme, { commonStyles } from '../utils/theme';
 import { util } from '@tonomy/tonomy-id-sdk';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:components:PassphraseInput');
 
 interface PassphraseInputProps {
     value: string[];
@@ -19,7 +22,7 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setN
 
     async function onChangeWord(index: number, word: string) {
         setPassphrase((prev) => {
-            console.log('prev', prev, index, word);
+            debug('prev', prev, index, word);
             const newPassphrase = [...prev];
 
             newPassphrase[index] = word;

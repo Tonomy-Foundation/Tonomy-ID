@@ -279,7 +279,7 @@ export default function CommunicationModule() {
                         });
                         disconnectSession();
                     } else {
-                        console.log('Session already deleted or invalid');
+                        debug('Session already deleted or invalid');
                     }
                 }
             } catch (disconnectError) {

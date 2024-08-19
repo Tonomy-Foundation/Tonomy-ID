@@ -4506,9 +4506,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.21.0-development.6":
-  version: 0.21.0-development.6
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.21.0-development.6"
+"@tonomy/tonomy-id-sdk@npm:0.21.0-development.7":
+  version: 0.21.0-development.7
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.21.0-development.7"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4524,6 +4524,7 @@ __metadata:
     "@wharfkit/antelope": "npm:^1.0.7"
     argon2: "npm:^0.40.3"
     cross-fetch: "npm:^4.0.0"
+    csv-parse: "npm:^5.5.6"
     debug: "npm:^4.3.6"
     ethers: "npm:^6.13.1"
     ethr-did-resolver: "npm:^10.1.9"
@@ -4533,7 +4534,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/82ed7f607f22f808e8c8ea4b116ce2f3c19d41bd5c74def1ce0113cd344eee286bd46e8ef3c4c204d0c347983b3a15227ca8b64f5f0503667622be7ed46e849d
+  checksum: 10c0/a910735c22b46927b13cd4d920bb062db37e02eee1dcaa398fa05e7b3c65cbf3f12769d86877b9f1e3f186dd76a5a09eb095166b0e42f303bd60ace01b4f0b19
   languageName: node
   linkType: hard
 
@@ -8060,6 +8061,13 @@ __metadata:
   version: 3.1.3
   resolution: "csstype@npm:3.1.3"
   checksum: 10c0/80c089d6f7e0c5b2bd83cf0539ab41474198579584fa10d86d0cafe0642202343cbc119e076a0b1aece191989477081415d66c9fefbf3c957fc2fc4b7009f248
+  languageName: node
+  linkType: hard
+
+"csv-parse@npm:^5.5.6":
+  version: 5.5.6
+  resolution: "csv-parse@npm:5.5.6"
+  checksum: 10c0/b4f6e9b885e4488829356455157bd009f3fed4119c5fbaadab1a879e85f0a9a1b62cd01e6de68ff77a50f820a6261722bce1b799da1ace2e2126e0b7c8d86760
   languageName: node
   linkType: hard
 
@@ -17824,7 +17832,7 @@ __metadata:
     "@react-navigation/native": "npm:^6.0.12"
     "@react-navigation/native-stack": "npm:^6.8.0"
     "@sinonjs/text-encoding": "npm:^0.7.2"
-    "@tonomy/tonomy-id-sdk": "npm:0.21.0-development.6"
+    "@tonomy/tonomy-id-sdk": "npm:0.21.0-development.7"
     "@types/jest": "npm:^29.5.0"
     "@types/react": "npm:~18.2.14"
     "@types/react-native-base64": "npm:^0.2.0"

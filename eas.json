@@ -4,23 +4,13 @@
     },
     "build": {
         "production": {
-            "node": "22.3.0",
             "env": {
                 "EXPO_NODE_ENV": "production",
                 "DEBUG": "tonomy-console*"
             },
             "autoIncrement": true,
-            "ios": {
-                "image": "macos-ventura-13.6-xcode-15.1"
-            }
-        },
-        "development": {
-            "env": {
-                "EXPO_NODE_ENV": "development"
-            },
-            "developmentClient": true,
-            "distribution": "internal",
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "testnet": {
             "env": {
@@ -28,7 +18,8 @@
                 "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "testnet-internal": {
             "env": {
@@ -36,7 +27,8 @@
                 "DEBUG": "tonomy*"
             },
             "distribution": "internal",
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "staging": {
             "env": {
@@ -44,7 +36,18 @@
                 "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
+        },
+        "development": {
+            "env": {
+                "EXPO_NODE_ENV": "development",
+                "DEBUG": "tonomy*"
+            },
+            "developmentClient": true,
+            "distribution": "internal",
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         }
     },
     "submit": {
