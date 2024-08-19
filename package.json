@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.110.0",
+    "version": "0.111.0",
     "type": "commonjs",
     "scripts": {
         "build:prepare": "ts-node prepare.app.config.ts",
