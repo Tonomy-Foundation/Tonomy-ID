@@ -3999,7 +3999,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/bottom-tabs@npm:^6.5.0":
+"@react-navigation/bottom-tabs@npm:^6.6.1":
   version: 6.6.1
   resolution: "@react-navigation/bottom-tabs@npm:6.6.1"
   dependencies:
@@ -17827,7 +17827,7 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:1.18.2"
     "@react-native-clipboard/clipboard": "npm:^1.14.1"
     "@react-native-community/netinfo": "npm:9.3.10"
-    "@react-navigation/bottom-tabs": "npm:^6.5.0"
+    "@react-navigation/bottom-tabs": "npm:^6.6.1"
     "@react-navigation/drawer": "npm:^6.5.0"
     "@react-navigation/native": "npm:^6.0.12"
     "@react-navigation/native-stack": "npm:^6.8.0"

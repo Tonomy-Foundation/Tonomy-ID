@@ -38,6 +38,7 @@ const theme = {
         success: '#4CAF50',
         errorBackground: '#F443361A',
         backgroundGray: '#EDF2F9',
+        tabGray: "#607EAA"
     },
 };
 

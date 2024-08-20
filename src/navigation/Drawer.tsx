@@ -1,11 +1,12 @@
 import React from 'react';
 import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigation/drawer';
 import CustomDrawer from '../components/CustomDrawer';
-import MainScreen from '../screens/MainScreen';
+// import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
 import { SignClientTypes } from '@walletconnect/types';
 import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
+import BottomTabNavigator from './BottomTabNavigator';
 
 export type DrawerStackParamList = {
     UserHome: { did?: string };
@@ -31,6 +32,7 @@ export type DrawerStackParamList = {
         payload?: SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
     };
+    BottomTabs: undefined;
 };
 
 const Drawer = createDrawerNavigator<DrawerStackParamList>();
@@ -52,11 +54,12 @@ export default function DrawerNavigation() {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawer {...props} />}
-            initialRouteName="UserHome"
+            initialRouteName="BottomTabs"
             screenOptions={defaultScreenOptions}
         >
+            <Drawer.Screen name="BottomTabs" options={{ title: 'Home' }} component={BottomTabNavigator} />
             {/* change component to Main Navigation when bottom nav should be added */}
-            <Drawer.Screen name="UserHome" options={{ title: 'Home' }} component={MainScreen} />
+            {/* <Drawer.Screen name="UserHome" options={{ title: 'Home' }} component={MainScreen} /> */}
 
             <Drawer.Screen
                 name="Settings"
