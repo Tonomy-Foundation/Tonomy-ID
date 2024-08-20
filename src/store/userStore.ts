@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import create from 'zustand';
 import RNKeyManager, { KEY_STORAGE_NAMESPACE } from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
@@ -14,9 +14,6 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import Debug from 'debug';
-
-const debug = Debug('tonomy-id:store:userStore');
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -42,10 +39,8 @@ setSettings({
     accountsServiceUrl: settings.config.accountsServiceUrl,
     ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
 });
-// setFetch()
 
 const useUserStore = create<UserState>((set, get) => ({
-    // @ts-ignore PublicKey type error
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
     getStatus: () => {
@@ -92,7 +87,7 @@ async function printStorage(message: string) {
     const keys = await AsyncStorage.getAllKeys();
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
-    debug(message, 'AsyncStorage keys and status', keys, status);
+    console.log(message, 'AsyncStorage keys and status', keys, status);
 
     const secureKeys: string[] = [];
 
@@ -102,7 +97,7 @@ async function printStorage(message: string) {
         if (value) secureKeys.push(KEY_STORAGE_NAMESPACE + level);
     }
 
-    debug(message, 'SecureStore keys', secureKeys);
+    console.log(message, 'SecureStore keys', secureKeys);
 }
 
 export default useUserStore;

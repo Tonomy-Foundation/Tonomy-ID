@@ -31,6 +31,11 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
+import { APIClient } from '@wharfkit/antelope';
+import { ABICache } from '@wharfkit/abicache';
+import zlib from 'pako';
+import { SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
+import * as SecureStore from 'expo-secure-store';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -141,6 +146,36 @@ export default function MainContainer({
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
+            } else if (data.startsWith('esr:')) {
+                const client = new APIClient({ url: 'https://jungle4.greymass.com' });
+
+                // Define the options used when decoding/resolving the request
+                const options = {
+                    abiProvider: new ABICache(client),
+                    zlib,
+                };
+
+                // Decode a signing request payload
+                const signingRequest = SigningRequest.from(data, options as unknown as SigningRequestEncodingOptions);
+
+                // Utilize a built-in helper to retrieve the related ABIs from an API endpoint
+                const abis = await signingRequest.fetchAbis();
+
+                const authorization = {
+                    actor: accountName,
+                    permission: 'active',
+                };
+
+                const info = await client.v1.chain.get_info();
+                const header = info.getTransactionHeader();
+                // Resolve the transaction using the supplied data
+                const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
+
+                console.debug(
+                    'resolvedSigningRequest',
+                    resolvedSigningRequest,
+                    JSON.stringify(resolvedSigningRequest.transaction, null, 2)
+                );
             } else {
                 const did = validateQrCode(data);
 

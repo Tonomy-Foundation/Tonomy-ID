@@ -10,24 +10,12 @@ import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
-import NetInfo from '@react-native-community/netinfo';
 import { connect } from '../utils/StorageManager/setup';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
-
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener((state) => {
-            if (!state.isConnected) {
-                navigation.dispatch(StackActions.replace('Home'));
-            }
-        });
-
-        // Cleanup the event listener
-        return () => unsubscribe();
-    }, [navigation]);
 
     useEffect(() => {
         async function main() {
