@@ -92,6 +92,7 @@ async function printStorage(message: string) {
     const secureKeys: string[] = [];
 
     for (const level of Object.keys(KeyManagerLevel)) {
+        console.log(KEY_STORAGE_NAMESPACE + level);
         const value = await SecureStore.getItemAsync(KEY_STORAGE_NAMESPACE + level);
 
         if (value) secureKeys.push(KEY_STORAGE_NAMESPACE + level);

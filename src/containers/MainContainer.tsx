@@ -157,6 +157,7 @@ export default function MainContainer({
 
                 // Decode a signing request payload
                 const signingRequest = SigningRequest.from(data, options as unknown as SigningRequestEncodingOptions);
+                const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
 
                 // Utilize a built-in helper to retrieve the related ABIs from an API endpoint
                 const abis = await signingRequest.fetchAbis();
@@ -168,13 +169,16 @@ export default function MainContainer({
 
                 const info = await client.v1.chain.get_info();
                 const header = info.getTransactionHeader();
+
                 // Resolve the transaction using the supplied data
                 const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
 
-                console.debug(
+                console.log(
                     'resolvedSigningRequest',
                     resolvedSigningRequest,
-                    JSON.stringify(resolvedSigningRequest.transaction, null, 2)
+                    JSON.stringify(resolvedSigningRequest.transaction, null, 2),
+                    resolvedSigningRequest.signingDigest,
+                    resolvedSigningRequest.serializedTransaction
                 );
             } else {
                 const did = validateQrCode(data);
