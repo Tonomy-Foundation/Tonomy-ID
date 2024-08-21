@@ -15,6 +15,7 @@ import { getSdkError } from '@walletconnect/utils';
 import useWalletStore from '../store/useWalletStore';
 import AccountDetails from '../components/AccountDetails';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import { EthereumTransaction } from '../utils/chain/etherum';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -76,9 +77,9 @@ export default function SignTransactionConsentContainer({
                 setLoading(true);
                 setTransactionLoading(true);
 
-                const fromAccount = await transaction.getFrom().getName();
+                const fromAccount = (await transaction.getFrom()).getName();
 
-                const toAccount = await transaction.getTo().getName();
+                const toAccount = (await transaction.getTo()).getName();
 
                 const value = (await transaction.getValue()).toString();
 
@@ -107,7 +108,9 @@ export default function SignTransactionConsentContainer({
                 const etherFee = ethers.parseEther(fee);
 
                 const totalTransactionCost = transactionValue + etherFee;
-                const balance = await transaction.getChain().getProvider().getBalance(fromAccount);
+                const balance = (
+                    await (await transaction.getFrom()).getBalance(transaction.getChain().getNativeToken())
+                ).getAmount();
 
                 // Check if the balance is sufficient
                 if (balance < totalTransactionCost) {
@@ -173,14 +176,11 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             setTransactionLoading(true);
-            const feeData = await transaction.getChain().getProvider().getFeeData();
-
             const transactionRequest: TransactionRequest = {
                 to: transactionDetails.toAccount,
                 from: transactionDetails.fromAccount,
                 value: ethers.parseEther(parseFloat(transactionDetails.value).toFixed(18)),
-                data: await transaction.getData(),
-                gasPrice: feeData.gasPrice,
+                data: await (transaction as EthereumTransaction).getData(),
             };
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);

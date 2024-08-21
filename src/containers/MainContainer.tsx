@@ -24,18 +24,36 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
-import { APIClient } from '@wharfkit/antelope';
+import {
+    ActionType,
+    APIClient,
+    Bytes,
+    BytesType,
+    NameType,
+    PermissionLevel,
+    PrivateKey,
+    PushTransactionArgs,
+    SignedTransaction,
+    Transaction,
+} from '@wharfkit/antelope';
 import { ABICache } from '@wharfkit/abicache';
 import zlib from 'pako';
-import { SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
+import { IdentityV3, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import * as SecureStore from 'expo-secure-store';
+import {
+    ActionData,
+    AntelopeAccount,
+    AntelopePrivateKey,
+    AntelopeTransaction,
+    EOSJungleChain,
+    LEOS_PUBLIC_SALE_PRICE,
+} from '../utils/chain/antelope';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -60,7 +78,7 @@ export default function MainContainer({
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [pangeaBalance, setPangeaBalance] = useState(0);
+    const [leosBalance, setLeosBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const [refreshing, setRefreshing] = React.useState(false);
@@ -103,10 +121,10 @@ export default function MainContainer({
         async function getUpdatedBalance() {
             await updateBalance();
 
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
+            const vestedLeosBalance = await vestingContract.getBalance(accountName);
 
-            if (pangeaBalance !== accountPangeaBalance) {
-                setPangeaBalance(accountPangeaBalance);
+            if (leosBalance !== vestedLeosBalance) {
+                setLeosBalance(vestedLeosBalance);
             }
         }
 
@@ -117,7 +135,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
+    }, [user, leosBalance, setLeosBalance, accountName, updateBalance]);
 
     async function setUserName() {
         try {
@@ -175,11 +193,44 @@ export default function MainContainer({
 
                 console.log(
                     'resolvedSigningRequest',
-                    resolvedSigningRequest,
-                    JSON.stringify(resolvedSigningRequest.transaction, null, 2),
+                    JSON.stringify(resolvedSigningRequest, null, 2),
                     resolvedSigningRequest.signingDigest,
                     resolvedSigningRequest.serializedTransaction
                 );
+
+                if (privateKey) {
+                    const actions: ActionData[] = resolvedSigningRequest.transaction.actions.map((action) => ({
+                        account: action.account.toString(), // Ensure account is of type NameType
+                        name: action.name.toString(), // Ensure name is of type NameType
+                        authorization: action.authorization.map((auth) => ({
+                            actor: auth.actor.toString(),
+                            permission: auth.permission.toString(),
+                        })),
+                        data: action.data, // Ensure data is of type Bytes
+                    }));
+
+                    console.log('actions', actions);
+                    const transaction = Transaction.from({
+                        ...header,
+                        actions: actions,
+                    });
+
+                    const signDigest = transaction.signingDigest(info.chain_id.toString());
+                    const privatekeysign = PrivateKey.from(privateKey);
+                    const signatures = [privatekeysign.signDigest(signDigest)];
+                    const signed = SignedTransaction.from(
+                        {
+                            ...transaction,
+                            signatures,
+                        },
+                        { broadcast: true }
+                    );
+
+                    console.log('signed', JSON.stringify(signed, null, 2));
+
+                    // console.log('signedTransaction', JSON.stringify(signedTransaction, null, 2));
+                    // const operations = await transaction.getOperations();
+                }
             } else {
                 const did = validateQrCode(data);
 
@@ -324,12 +375,12 @@ export default function MainContainer({
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                        <Text> {formatCurrencyValue(leosBalance) || 0} LEOS</Text>
                                                     </View>
                                                     <Text style={styles.secondaryColor}>
                                                         $
-                                                        {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                        {leosBalance
+                                                            ? formatCurrencyValue(leosBalance * LEOS_PUBLIC_SALE_PRICE)
                                                             : 0.0}
                                                     </Text>
                                                 </View>
