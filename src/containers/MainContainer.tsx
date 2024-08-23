@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable camelcase */
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -9,6 +11,7 @@ import {
     ImageSourcePropType,
     ScrollView,
     RefreshControl,
+    Linking,
 } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
@@ -31,20 +34,25 @@ import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
 import {
+    ABI,
     ActionType,
     APIClient,
     Bytes,
     BytesType,
+    Name,
     NameType,
+    PackedTransaction,
     PermissionLevel,
     PrivateKey,
     PushTransactionArgs,
+    Serializer,
     SignedTransaction,
     Transaction,
+    UInt8,
 } from '@wharfkit/antelope';
 import { ABICache } from '@wharfkit/abicache';
 import zlib from 'pako';
-import { IdentityV3, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
+import { IdentityV3, ResolvedCallback, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import * as SecureStore from 'expo-secure-store';
 import {
     ActionData,
@@ -54,6 +62,7 @@ import {
     EOSJungleChain,
     LEOS_PUBLIC_SALE_PRICE,
 } from '../utils/chain/antelope';
+import SignTransactionConsentContainer from './SignTransactionConsentContainer';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -160,12 +169,46 @@ export default function MainContainer({
         }
     }
 
+    async function signAndRespond(callbackUrl) {
+        try {
+            const { payload, url } = callbackUrl;
+            let s = url;
+            const esrParams = Object.keys(payload);
+
+            esrParams.forEach((param) => {
+                s = s.replace(`{{${param}}}`, payload[param]);
+            });
+            console.log('s', s, JSON.stringify(payload));
+            const response = await fetch(s, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                console.log('response', response);
+            } else {
+                const errorData = await response.json();
+
+                console.log('errorData', errorData);
+            }
+        } catch (error) {
+            console.error('Error signing or sending the transaction:', error);
+        }
+    }
+
+    function formatCallbackUrl(url, params) {
+        return url.replace(/{{(\w+)}}/g, (_, key) => params[key] || '');
+    }
+
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('esr:')) {
-                const client = new APIClient({ url: 'https://jungle4.greymass.com' });
+                const client = new APIClient({ url: 'https://jungle4.cryptolions.io' });
 
                 // Define the options used when decoding/resolving the request
                 const options = {
@@ -175,6 +218,9 @@ export default function MainContainer({
 
                 // Decode a signing request payload
                 const signingRequest = SigningRequest.from(data, options as unknown as SigningRequestEncodingOptions);
+                const isIdentity = signingRequest.isIdentity();
+
+                console.log('isIdentity', isIdentity);
                 const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
 
                 // Utilize a built-in helper to retrieve the related ABIs from an API endpoint
@@ -191,45 +237,63 @@ export default function MainContainer({
                 // Resolve the transaction using the supplied data
                 const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
 
-                console.log(
-                    'resolvedSigningRequest',
-                    JSON.stringify(resolvedSigningRequest, null, 2),
-                    resolvedSigningRequest.signingDigest,
-                    resolvedSigningRequest.serializedTransaction
-                );
+                // const resolvedRequest = signingRequest.resolve({ actor: 'userAccountName', permission: 'active' });
 
                 if (privateKey) {
-                    const actions: ActionData[] = resolvedSigningRequest.transaction.actions.map((action) => ({
-                        account: action.account.toString(), // Ensure account is of type NameType
-                        name: action.name.toString(), // Ensure name is of type NameType
-                        authorization: action.authorization.map((auth) => ({
-                            actor: auth.actor.toString(),
-                            permission: auth.permission.toString(),
-                        })),
-                        data: action.data, // Ensure data is of type Bytes
-                    }));
+                    const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
 
-                    console.log('actions', actions);
-                    const transaction = Transaction.from({
-                        ...header,
-                        actions: actions,
-                    });
+                    const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
 
-                    const signDigest = transaction.signingDigest(info.chain_id.toString());
-                    const privatekeysign = PrivateKey.from(privateKey);
-                    const signatures = [privatekeysign.signDigest(signDigest)];
-                    const signed = SignedTransaction.from(
-                        {
-                            ...transaction,
-                            signatures,
-                        },
-                        { broadcast: true }
+                    const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
+                        (action) => ({
+                            account: action.account.toString(),
+                            name: action.name.toString(),
+                            authorization: action.authorization.map((auth) => ({
+                                actor: auth.actor.toString(),
+                                permission: auth.permission.toString(),
+                            })),
+                            data: action.data,
+                        })
                     );
+                    const actions = createAssetAction;
 
-                    console.log('signed', JSON.stringify(signed, null, 2));
+                    console.log('createAssetAction', JSON.stringify(createAssetAction));
+                    const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
 
-                    // console.log('signedTransaction', JSON.stringify(signedTransaction, null, 2));
-                    // const operations = await transaction.getOperations();
+                    console.log('account', JSON.stringify(account, null, 2));
+                    const signedTransaction = await account.signTransaction(transaction);
+                    const isIdentity = true;
+
+                    console.log('signedTransaction', JSON.stringify(signedTransaction, null, 2), isIdentity);
+
+                    if (!isIdentity) {
+                        try {
+                            const result = await client.v1.chain.send_transaction(signedTransaction);
+
+                            console.log('Transaction sent, result:', result);
+                            // await client.v1.chain.push_transaction(signedTransaction);
+                        } catch (e) {
+                            console.log('errrrr', e);
+                        }
+                    }
+
+                    const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
+
+                    if (callbackParams) {
+                        const response = await fetch(callbackParams.url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(callbackParams?.payload),
+                        });
+
+                        if (!response.ok) {
+                            console.log(`Failed to send callback: ${JSON.stringify(response)}`);
+                        }
+
+                        console.log('Callback sent successfully in the background.');
+                    }
                 }
             } else {
                 const did = validateQrCode(data);
