@@ -77,45 +77,65 @@ export default function SignTransactionConsentContainer({
                 setLoading(true);
                 setTransactionLoading(true);
 
-                const fromAccount = (await transaction.getFrom()).getName();
+                const actions = await transaction.getData();
+                let fromAccount, toAccount, value, usdValue, balance, transactionType;
 
-                const toAccount = (await transaction.getTo()).getName();
+                if (Array.isArray(actions)) {
+                    console.log('actionss', actions[0]);
+                } else {
+                    fromAccount = (await transaction.getFrom()).getName();
 
-                const value = (await transaction.getValue()).toString();
+                    toAccount = (await transaction.getTo()).getName();
 
-                const usdValue = await (await transaction.getValue()).getUsdValue();
+                    value = (await transaction.getValue()).toString();
+
+                    usdValue = await (await transaction.getValue()).getUsdValue();
+
+                    balance = (
+                        await (await transaction.getFrom()).getBalance(transaction.getChain().getNativeToken())
+                    ).getAmount();
+
+                    transactionType = await transaction.getType();
+                }
 
                 const estimateFee = await transaction.estimateTransactionFee();
 
+                console.log('estimateFee', estimateFee);
                 const usdFee = await estimateFee.getUsdValue();
+
+                console.log('usdFee', usdFee);
 
                 let fee = estimateFee?.toString();
 
+                console.log('fee', fee);
+
                 fee = parseFloat(fee).toFixed(18);
+                console.log('fee2', fee);
 
                 const estimateTotal = await transaction.estimateTransactionTotal();
+
+                console.log('estimateTotal', estimateTotal);
                 const usdTotal = await estimateTotal.getUsdValue();
 
+                console.log('usdTotal', usdTotal);
                 let total = estimateTotal?.toString();
 
-                total = parseFloat(total).toFixed(18);
+                console.log('usdTotal1', usdTotal);
 
-                const transactionType = await transaction.getType();
+                total = parseFloat(total).toFixed(18);
+                console.log('usdTotal2', usdTotal);
 
                 const functionName = '';
                 const args: Record<string, string> | null = null;
-                const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
-                const etherFee = ethers.parseEther(fee);
+                // const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
+                // const etherFee = ethers.parseEther(fee);
 
-                const totalTransactionCost = transactionValue + etherFee;
-                const balance = (
-                    await (await transaction.getFrom()).getBalance(transaction.getChain().getNativeToken())
-                ).getAmount();
+                // const totalTransactionCost = transactionValue + etherFee;
 
-                // Check if the balance is sufficient
-                if (balance < totalTransactionCost) {
-                    showBalanceError(true);
-                }
+                // // Check if the balance is sufficient
+                // if (balance < totalTransactionCost) {
+                //     showBalanceError(true);
+                // }
 
                 // if (contractTransaction) {
                 //     functionName = await transaction.getFunction();
@@ -227,6 +247,7 @@ export default function SignTransactionConsentContainer({
         }
     }
 
+    console.log('transactionDetails', transactionDetails);
     return (
         <LayoutComponent
             body={
@@ -271,12 +292,12 @@ export default function SignTransactionConsentContainer({
                                         <View style={{ flexDirection: 'row' }}>
                                             <Text>{transactionDetails?.value} </Text>
                                             <Text style={[styles.secondaryColor]}>
-                                                ($
+                                                {/* ($
                                                 {formatCurrencyValue(
                                                     Number(transactionDetails?.usdValue.toFixed(4)),
                                                     3
                                                 )}
-                                                )
+                                                ) */}
                                             </Text>
                                         </View>
                                     </View>
@@ -376,8 +397,8 @@ export default function SignTransactionConsentContainer({
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
                                             <Text style={[styles.secondaryColor]}>
-                                                ($
-                                                {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
+                                                {/* ($ */}
+                                                {/* {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)}) */}
                                             </Text>
                                         </View>
                                     </View>

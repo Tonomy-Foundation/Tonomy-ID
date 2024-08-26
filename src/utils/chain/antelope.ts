@@ -249,22 +249,30 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return this.chain;
     }
     async getUsdPrice(): Promise<number> {
-        switch (this.getChain().getName()) {
-            case 'Pangea':
-                return LEOS_PUBLIC_SALE_PRICE;
-            case 'Pangea Testnet':
-                return LEOS_PUBLIC_SALE_PRICE;
-            default:
-                throw new Error('Unsupported Antelope chain');
-        }
+        console.log('his.getChain()', this.getChain());
+        return LEOS_PUBLIC_SALE_PRICE;
+
+        // switch (this.getChain().getName()) {
+        //     case 'Pangea':
+        //         return LEOS_PUBLIC_SALE_PRICE;
+        //     case 'Pangea Testnet':
+        //         return LEOS_PUBLIC_SALE_PRICE;
+        //     case 'EOS Jungle Testnet':
+        //         return LEOS_PUBLIC_SALE_PRICE;
+        //     default:
+        //         throw new Error('Unsupported Antelope chain');
+        // }
     }
 
     getContractAccount(): IAccount {
+        console.log('contract AAccount');
         return AntelopeAccount.fromAccount(this.getChain(), 'eosio.token');
     }
 
     async getBalance(account?: IAccount): Promise<Asset> {
         const contractAccount = this.getContractAccount();
+
+        console.log('contract AAccount1', contractAccount);
 
         if (!contractAccount) throw new Error('Token has no contract account');
         const lookupAccount: IAccount =
@@ -274,6 +282,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
                 throw new Error('Account not found');
             })();
 
+        console.log('contractAccount', contractAccount, lookupAccount);
         const api = this.getChain().getApiClient();
         const assets = await api.v1.chain.get_currency_balance(
             contractAccount.getName(),
@@ -291,6 +300,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     async getUsdValue(account?: IAccount): Promise<number> {
+        console.log('getUsdValue', account);
         const balance = await this.getBalance(account);
 
         return balance.getUsdValue();
@@ -362,8 +372,9 @@ export class AntelopeAction implements IOperation {
     async getType(): Promise<TransactionType> {
         // TODO: need to also handle token transfers on other contracts
         if (
-            this.action.name.toString() === 'transfer' &&
-            this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
+            this.action.name.toString() === 'transfer'
+            //  &&
+            // this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
         ) {
             return TransactionType.TRANSFER;
         } else {
@@ -394,6 +405,8 @@ export class AntelopeAction implements IOperation {
     }
     async getValue(): Promise<Asset> {
         // TODO: need to also handle token transfers on other contracts
+        console.log('getValue', this.getType());
+
         if ((await this.getType()) === TransactionType.TRANSFER) {
             return new Asset(this.chain.getNativeToken(), this.action.data.quantity);
         } else {
@@ -448,9 +461,12 @@ export class AntelopeTransaction implements ITransaction {
         const operationAmountsPromises = (await this.getOperations()).map(async (operation) =>
             (await operation.getValue()).getAmount()
         );
+
+        console.log('operationAmountsPromises', operationAmountsPromises);
         const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
         const amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
 
+        console.log('amount', amount);
         return new Asset(this.chain.getNativeToken(), amount);
     }
     hasMultipleOperations(): boolean {

@@ -59,6 +59,7 @@ import {
     ActionData,
     AntelopeAccount,
     AntelopePrivateKey,
+    AntelopeToken,
     AntelopeTransaction,
     EOSJungleChain,
     LEOS_PUBLIC_SALE_PRICE,
@@ -186,11 +187,7 @@ export default function MainContainer({
                 // Decode a signing request payload
                 const signingRequest = SigningRequest.from(data, options as unknown as SigningRequestEncodingOptions);
                 const isIdentity = signingRequest.isIdentity();
-
-                console.log('isIdentity', isIdentity);
                 const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
-
-                // Utilize a built-in helper to retrieve the related ABIs from an API endpoint
                 const abis = await signingRequest.fetchAbis();
 
                 const authorization = {
@@ -204,16 +201,7 @@ export default function MainContainer({
                 // Resolve the transaction using the supplied data
                 const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
 
-                // const resolvedRequest = signingRequest.resolve({ actor: 'userAccountName', permission: 'active' });
-
-                if (privateKey) {
-                    const antelopeKey = new AntelopePrivateKey(
-                        PrivateKey.from('5Jb3huyDuhjCYG2c5yfCoa7UCuFKzPHyYziVw7Q8VbfURjujbeS'),
-                        EOSJungleChain
-                    );
-
-                    const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
-
+                if (!isIdentity) {
                     const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
                         (action) => ({
                             account: action.account.toString(),
@@ -227,46 +215,100 @@ export default function MainContainer({
                     );
                     const actions = createAssetAction;
 
-                    console.log('createAssetAction', JSON.stringify(createAssetAction));
                     const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
 
-                    console.log('account', JSON.stringify(transaction, null, 2));
-                    const signedTransaction = await account.signTransaction(transaction);
-                    const isIdentity = false;
+                    console.log('createAssetAction', JSON.stringify(transaction));
+                    const token = new AntelopeToken(
+                        EOSJungleChain,
+                        'JUNGLE',
+                        'JUNGLE',
+                        4,
+                        'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+                        'jungle'
+                    );
 
-                    console.log('signedTransaction', JSON.stringify(signedTransaction, null, 2), isIdentity);
+                    navigation.navigate('SignTransaction', {
+                        transaction,
+                        privateKey: new AntelopePrivateKey(
+                            PrivateKey.from('5Jb3huyDuhjCYG2c5yfCoa7UCuFKzPHyYziVw7Q8VbfURjujbeS'),
+                            EOSJungleChain
+                        ),
 
-                    if (!isIdentity) {
-                        try {
-                            const result = await client.v1.chain.send_transaction(signedTransaction);
-
-                            console.log('Transaction sent, result:', result);
-                            // await client.v1.chain.push_transaction(signedTransaction);
-                        } catch (e) {
-                            console.log('errrrr', e);
-                        }
-                    }
-
-                    const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
-
-                    console.log('callbackParams', callbackParams);
-
-                    if (callbackParams) {
-                        const response = await fetch(callbackParams.url, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(callbackParams?.payload),
-                        });
-
-                        if (!response.ok) {
-                            console.log(`Failed to send callback: ${JSON.stringify(response)}`);
-                        }
-
-                        console.log('Callback sent successfully in the background.');
-                    }
+                        session: {
+                            origin: 'https://jungle4.cryptolions.io',
+                            id: 1,
+                            topic: 'signTransaction',
+                        },
+                    });
                 }
+
+                console.log('isIdentity', isIdentity);
+
+                // Utilize a built-in helper to retrieve the related ABIs from an API endpoint
+
+                // const resolvedRequest = signingRequest.resolve({ actor: 'userAccountName', permission: 'active' });
+
+                // if (privateKey) {
+                //     const antelopeKey = new AntelopePrivateKey(
+                //         PrivateKey.from('5Jb3huyDuhjCYG2c5yfCoa7UCuFKzPHyYziVw7Q8VbfURjujbeS'),
+                //         EOSJungleChain
+                //     );
+
+                //     const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
+
+                //     const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
+                //         (action) => ({
+                //             account: action.account.toString(),
+                //             name: action.name.toString(),
+                //             authorization: action.authorization.map((auth) => ({
+                //                 actor: auth.actor.toString(),
+                //                 permission: auth.permission.toString(),
+                //             })),
+                //             data: action.data,
+                //         })
+                //     );
+                //     const actions = createAssetAction;
+
+                //     console.log('createAssetAction', JSON.stringify(createAssetAction));
+                //     const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
+
+                //     console.log('account', JSON.stringify(transaction, null, 2));
+                //     const signedTransaction = await account.signTransaction(transaction);
+                //     const isIdentity = false;
+
+                //     console.log('signedTransaction', JSON.stringify(signedTransaction, null, 2), isIdentity);
+
+                //     if (!isIdentity) {
+                //         try {
+                //             const result = await client.v1.chain.send_transaction(signedTransaction);
+
+                //             console.log('Transaction sent, result:', result);
+                //             // await client.v1.chain.push_transaction(signedTransaction);
+                //         } catch (e) {
+                //             console.log('errrrr', e);
+                //         }
+                //     }
+
+                //     const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
+
+                //     console.log('callbackParams', callbackParams);
+
+                //     if (callbackParams) {
+                //         const response = await fetch(callbackParams.url, {
+                //             method: 'POST',
+                //             headers: {
+                //                 'Content-Type': 'application/json',
+                //             },
+                //             body: JSON.stringify(callbackParams?.payload),
+                //         });
+
+                //         if (!response.ok) {
+                //             console.log(`Failed to send callback: ${JSON.stringify(response)}`);
+                //         }
+
+                //         console.log('Callback sent successfully in the background.');
+                //     }
+                // }
             } else {
                 const did = validateQrCode(data);
 
