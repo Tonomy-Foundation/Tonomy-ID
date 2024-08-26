@@ -16,6 +16,8 @@ import {
 } from './types';
 import { SignClientTypes } from '@walletconnect/types';
 import {
+    ABI,
+    ABISerializableConstructor,
     Action,
     Asset as AntelopeAsset,
     API,
@@ -29,6 +31,7 @@ import {
     PermissionLevelType,
     PrivateKey,
     PublicKey,
+    Serializer,
     SignedTransaction,
     Transaction,
 } from '@wharfkit/antelope';
@@ -90,37 +93,50 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
     async signTransaction(data: ActionData[] | AntelopeTransaction): Promise<SignedTransaction> {
         const actions: ActionData[] = data instanceof AntelopeTransaction ? await data.getData() : data;
         // Get the ABI(s) of all contracts
-        const api = await this.chain.getApiClient();
-        const uniqueContracts = [...new Set(actions.map((data) => data.account))];
-        const abiPromises = uniqueContracts.map((contract) => api.v1.chain.get_abi(contract));
-        const abiArray = await Promise.all(abiPromises);
-        const abiMap = new Map(abiArray.map((abi) => [abi.account_name, abi.abi]));
 
         // Create the action data
         const actionData: Action[] = [];
 
-        actions.forEach((data) => {
-            console.log('dataa', data);
+        // actions.forEach(async (data) => {
+        //     if (data.name.toString() === 'identity') {
+        //         const abi: ABI = Serializer.synthesize(IdentityV3 as ABISerializableConstructor);
 
-            const abi = abiMap.get(data.account.toString());
+        //         // eslint-disable-next-line camelcase
+        //         abi.actions = [{ name: 'identity', type: 'identity', ricardian_contract: '' }];
+        //         actionData.push(Action.from(data, abi));
+        //     } else {
+        //         console.log('elseeee');
+        //         const api = await this.chain.getApiClient();
+        //         const uniqueContracts = [...new Set(actions.map((data) => data.account))];
+        //         const abiPromises = uniqueContracts.map((contract) => api.v1.chain.get_abi(contract));
+        //         const abiArray = await Promise.all(abiPromises);
+        //         const abiMap = new Map(abiArray.map((abi) => [abi.account_name, abi.abi]));
+        //         const abi = abiMap.get(data.account.toString());
 
-            console.log('abi', abi);
-            console.log('dataa', IdentityV3);
+        //         actionData.push(Action.from(data, abi));
+        //     }
+        // });
 
-            // Check if the action's name is 'identity' and handle accordingly
-            if (data.name.toString() === 'identity') {
-                console.log('iff');
-                const identityData = IdentityV3.from(data); // Assuming Identity.from(data) is valid
+        for (const action of actions) {
+            if (action.name.toString() === 'identity') {
+                const abi: ABI = Serializer.synthesize(IdentityV3 as ABISerializableConstructor);
 
-                console.log('identityData', JSON.stringify(identityData, null, 2));
-                return Action.from({ ...data, data: identityData }, abi);
+                // eslint-disable-next-line camelcase
+                abi.actions = [{ name: 'identity', type: 'identity', ricardian_contract: '' }];
+                actionData.push(Action.from(action, abi));
             } else {
-                return Action.from(data, abi);
+                const api = await this.chain.getApiClient();
+                const uniqueContracts = [...new Set(actions.map((data) => data.account))];
+                const abiPromises = uniqueContracts.map((contract) => api.v1.chain.get_abi(contract));
+                const abiArray = await Promise.all(abiPromises);
+                const abiMap = new Map(abiArray.map((abi) => [abi.account_name, abi.abi]));
+                const abi = abiMap.get(action.account.toString());
+
+                actionData.push(Action.from(action, abi));
             }
+        }
 
-            actionData.push(Action.from(data, abi));
-        });
-
+        console.log('actionData', JSON.stringify(actionData, null, 2));
         // Construct the transaction
         const info = await this.chain.getChainInfo();
         const header = info.getTransactionHeader();
@@ -132,8 +148,11 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         // Create signature
         if (info.chain_id.toString() !== this.chain.getAntelopeChainId()) throw new Error('Chain ID mismatch');
         const signDigest = transaction.signingDigest(info.chain_id.toString());
+
+        console.log('signDigest', signDigest);
         const signatures = [this.privateKey.signDigest(signDigest)];
 
+        console.log('this.privateKey', this.privateKey, this.getPublicKey());
         return SignedTransaction.from({
             ...transaction,
             signatures,

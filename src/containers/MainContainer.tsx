@@ -46,6 +46,7 @@ import {
     PrivateKey,
     PushTransactionArgs,
     Serializer,
+    SignatureType,
     SignedTransaction,
     Transaction,
     UInt8,
@@ -169,40 +170,6 @@ export default function MainContainer({
         }
     }
 
-    async function signAndRespond(callbackUrl) {
-        try {
-            const { payload, url } = callbackUrl;
-            let s = url;
-            const esrParams = Object.keys(payload);
-
-            esrParams.forEach((param) => {
-                s = s.replace(`{{${param}}}`, payload[param]);
-            });
-            console.log('s', s, JSON.stringify(payload));
-            const response = await fetch(s, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (response.ok) {
-                console.log('response', response);
-            } else {
-                const errorData = await response.json();
-
-                console.log('errorData', errorData);
-            }
-        } catch (error) {
-            console.error('Error signing or sending the transaction:', error);
-        }
-    }
-
-    function formatCallbackUrl(url, params) {
-        return url.replace(/{{(\w+)}}/g, (_, key) => params[key] || '');
-    }
-
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
@@ -240,7 +207,10 @@ export default function MainContainer({
                 // const resolvedRequest = signingRequest.resolve({ actor: 'userAccountName', permission: 'active' });
 
                 if (privateKey) {
-                    const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
+                    const antelopeKey = new AntelopePrivateKey(
+                        PrivateKey.from('5Jb3huyDuhjCYG2c5yfCoa7UCuFKzPHyYziVw7Q8VbfURjujbeS'),
+                        EOSJungleChain
+                    );
 
                     const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
 
@@ -260,9 +230,9 @@ export default function MainContainer({
                     console.log('createAssetAction', JSON.stringify(createAssetAction));
                     const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
 
-                    console.log('account', JSON.stringify(account, null, 2));
+                    console.log('account', JSON.stringify(transaction, null, 2));
                     const signedTransaction = await account.signTransaction(transaction);
-                    const isIdentity = true;
+                    const isIdentity = false;
 
                     console.log('signedTransaction', JSON.stringify(signedTransaction, null, 2), isIdentity);
 
@@ -278,6 +248,8 @@ export default function MainContainer({
                     }
 
                     const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
+
+                    console.log('callbackParams', callbackParams);
 
                     if (callbackParams) {
                         const response = await fetch(callbackParams.url, {
