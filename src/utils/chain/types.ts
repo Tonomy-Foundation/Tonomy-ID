@@ -128,45 +128,24 @@ export abstract class AbstractAsset implements IAsset {
     }
 
     async getUsdValue(): Promise<number> {
-        console.log('getusd value');
         const price = await this.token.getUsdPrice();
-
-        console.log('getusd value', price);
 
         if (price) {
             // Use a higher precision for the multiplier to ensure small values are accurately represented
             const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
 
-            console.log('getusd value1', precisionMultiplier);
             const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
-
-            console.log('getusd value2', tokenPrecisionMultiplier);
 
             // Convert price to a BigInteger without losing precision
             const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
 
-            console.log('getusd value3', priceBigInt);
-
             // Adjust the amount to match the high precision multiplier
-            console.log('this.amount', this.amount);
-            let amountBigInt: bigint = this.amount;
 
-            if (typeof this.amount === 'string') {
-                const numericPart = this.amount.match(/\d+(\.\d+)?/)[0];
-                // Remove any non-numeric characters (if necessary)
-                const cleanedNumericPart = numericPart.replace(/\D/g, '');
+            const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
 
-                // Convert to BigInt
-                amountBigInt = BigInt(cleanedNumericPart);
-            }
-
-            const adjustedAmount = (BigInt(amountBigInt) * precisionMultiplier) / tokenPrecisionMultiplier;
-
-            console.log('getusd value4', adjustedAmount);
             // Calculate usdValue using BigInt for accurate arithmetic operations
             const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
 
-            console.log('getusd value5', usdValueBigInt);
             // Convert the result back to a floating-point number with controlled precision
             const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
 

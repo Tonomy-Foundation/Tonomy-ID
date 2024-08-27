@@ -116,6 +116,7 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     const sepoliaKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumSepoliaChain);
     const polygonKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumPolygonChain);
 
+    console.log('ethereumKey', ethereumKey);
     // Save the keys and seed to the storage
     await keyStorage.emplaceKey('ethereum', ethereumKey);
     await keyStorage.emplaceKey('ethereumTestnetSepolia', sepoliaKey);

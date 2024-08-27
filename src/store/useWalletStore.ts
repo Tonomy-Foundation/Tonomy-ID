@@ -56,6 +56,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
     initializeWalletState: async () => {
         try {
             await connect();
+            console.log('initialize');
 
             if (get().initialized && get().ethereumAccount) {
                 debug('Already initialized');
@@ -89,6 +90,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
                 fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
             ]);
+
+            console.log('ethereumData', ethereumData, sepoliaData, polygonData);
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
                 state.ethereumAccount = ethereumData.value.account;

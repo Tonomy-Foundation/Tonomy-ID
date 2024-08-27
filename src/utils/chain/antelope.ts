@@ -97,26 +97,6 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         // Create the action data
         const actionData: Action[] = [];
 
-        // actions.forEach(async (data) => {
-        //     if (data.name.toString() === 'identity') {
-        //         const abi: ABI = Serializer.synthesize(IdentityV3 as ABISerializableConstructor);
-
-        //         // eslint-disable-next-line camelcase
-        //         abi.actions = [{ name: 'identity', type: 'identity', ricardian_contract: '' }];
-        //         actionData.push(Action.from(data, abi));
-        //     } else {
-        //         console.log('elseeee');
-        //         const api = await this.chain.getApiClient();
-        //         const uniqueContracts = [...new Set(actions.map((data) => data.account))];
-        //         const abiPromises = uniqueContracts.map((contract) => api.v1.chain.get_abi(contract));
-        //         const abiArray = await Promise.all(abiPromises);
-        //         const abiMap = new Map(abiArray.map((abi) => [abi.account_name, abi.abi]));
-        //         const abi = abiMap.get(data.account.toString());
-
-        //         actionData.push(Action.from(data, abi));
-        //     }
-        // });
-
         for (const action of actions) {
             if (action.name.toString() === 'identity') {
                 const abi: ABI = Serializer.synthesize(IdentityV3 as ABISerializableConstructor);
@@ -136,7 +116,6 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
             }
         }
 
-        console.log('actionData', JSON.stringify(actionData, null, 2));
         // Construct the transaction
         const info = await this.chain.getChainInfo();
         const header = info.getTransactionHeader();
@@ -149,10 +128,8 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         if (info.chain_id.toString() !== this.chain.getAntelopeChainId()) throw new Error('Chain ID mismatch');
         const signDigest = transaction.signingDigest(info.chain_id.toString());
 
-        console.log('signDigest', signDigest);
         const signatures = [this.privateKey.signDigest(signDigest)];
 
-        console.log('this.privateKey', this.privateKey, this.getPublicKey());
         return SignedTransaction.from({
             ...transaction,
             signatures,
@@ -265,14 +242,11 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     getContractAccount(): IAccount {
-        console.log('contract AAccount');
         return AntelopeAccount.fromAccount(this.getChain(), 'eosio.token');
     }
 
     async getBalance(account?: IAccount): Promise<Asset> {
         const contractAccount = this.getContractAccount();
-
-        console.log('contract AAccount1', contractAccount);
 
         if (!contractAccount) throw new Error('Token has no contract account');
         const lookupAccount: IAccount =
@@ -282,7 +256,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
                 throw new Error('Account not found');
             })();
 
-        console.log('contractAccount', contractAccount, lookupAccount);
         const api = this.getChain().getApiClient();
         const assets = await api.v1.chain.get_currency_balance(
             contractAccount.getName(),
@@ -300,7 +273,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     async getUsdValue(account?: IAccount): Promise<number> {
-        console.log('getUsdValue', account);
         const balance = await this.getBalance(account);
 
         return balance.getUsdValue();
@@ -405,7 +377,6 @@ export class AntelopeAction implements IOperation {
     }
     async getValue(): Promise<Asset> {
         // TODO: need to also handle token transfers on other contracts
-        console.log('getValue', this.getType());
 
         if ((await this.getType()) === TransactionType.TRANSFER) {
             return new Asset(this.chain.getNativeToken(), this.action.data.quantity);
@@ -462,11 +433,18 @@ export class AntelopeTransaction implements ITransaction {
             (await operation.getValue()).getAmount()
         );
 
-        console.log('operationAmountsPromises', operationAmountsPromises);
         const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
-        const amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
+        let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
 
-        console.log('amount', amount);
+        if (typeof amount === 'string') {
+            const numericPart = amount.match(/\d+(\.\d+)?/)[0];
+            // Remove any non-numeric characters (if necessary)
+            const cleanedNumericPart = numericPart.replace(/\D/g, '');
+
+            // Convert to BigInt
+            amount = BigInt(cleanedNumericPart);
+        }
+
         return new Asset(this.chain.getNativeToken(), amount);
     }
     hasMultipleOperations(): boolean {

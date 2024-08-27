@@ -200,49 +200,59 @@ export default function MainContainer({
 
                 // Resolve the transaction using the supplied data
                 const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
+                const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
+                    (action) => ({
+                        account: action.account.toString(),
+                        name: action.name.toString(),
+                        authorization: action.authorization.map((auth) => ({
+                            actor: auth.actor.toString(),
+                            permission: auth.permission.toString(),
+                        })),
+                        data: action.data,
+                    })
+                );
+                const actions = createAssetAction;
+
+                const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
 
                 if (!isIdentity) {
-                    const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
-                        (action) => ({
-                            account: action.account.toString(),
-                            name: action.name.toString(),
-                            authorization: action.authorization.map((auth) => ({
-                                actor: auth.actor.toString(),
-                                permission: auth.permission.toString(),
-                            })),
-                            data: action.data,
-                        })
-                    );
-                    const actions = createAssetAction;
-
-                    const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
-
                     console.log('createAssetAction', JSON.stringify(transaction));
-                    const token = new AntelopeToken(
-                        EOSJungleChain,
-                        'JUNGLE',
-                        'JUNGLE',
-                        4,
-                        'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-                        'jungle'
-                    );
 
                     navigation.navigate('SignTransaction', {
                         transaction,
                         privateKey: new AntelopePrivateKey(
-                            PrivateKey.from('5Jb3huyDuhjCYG2c5yfCoa7UCuFKzPHyYziVw7Q8VbfURjujbeS'),
+                            PrivateKey.from('5KW9BRLinQArjWrHVyEFm76uJQ8b473eJK3vseFAoEAivq6DpsE'),
                             EOSJungleChain
                         ),
-
                         session: {
                             origin: 'https://jungle4.cryptolions.io',
                             id: 1,
                             topic: 'signTransaction',
                         },
                     });
-                }
+                } else {
+                    const antelopeKey = new AntelopePrivateKey(
+                        PrivateKey.from('5KW9BRLinQArjWrHVyEFm76uJQ8b473eJK3vseFAoEAivq6DpsE'),
+                        EOSJungleChain
+                    );
+                    const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
+                    const signedTransaction = await account.signTransaction(transaction);
+                    const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
 
-                console.log('isIdentity', isIdentity);
+                    if (callbackParams) {
+                        const response = await fetch(callbackParams.url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(callbackParams?.payload),
+                        });
+
+                        if (!response.ok) {
+                            debug(`Failed to send callback: ${JSON.stringify(response)}`);
+                        }
+                    }
+                }
 
                 // Utilize a built-in helper to retrieve the related ABIs from an API endpoint
 
