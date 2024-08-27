@@ -23,12 +23,14 @@ import {
     AbstractPrivateKey,
     IPrivateKey,
     Asset,
-    IChainSession,
     IOperation,
+    IChainSession,
 } from './types';
 import settings from '../../settings';
-import { SignClientTypes } from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getPriceCoinGecko } from './common';
+import { getSdkError } from '@walletconnect/utils';
+import { IWeb3Wallet } from '@walletconnect/web3wallet';
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -202,7 +204,6 @@ export class EthereumTransaction implements ITransaction {
     private type?: TransactionType;
     private abi?: string;
     protected chain: EthereumChain;
-    protected session: EthereumChainSession;
 
     constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
@@ -410,32 +411,57 @@ export class EthereumAccount extends AbstractAccount {
     }
 }
 
-export class EthereumChainSession implements IChainSession {
-    private payload: SignClientTypes.EventArguments['session_proposal'];
-    private chain: EthereumChain;
+export class WalletConnectSession implements IChainSession {
+    private request: SignClientTypes.EventArguments['session_proposal'];
+    private wallet: IWeb3Wallet | null;
+    private namespaces: SessionTypes.Namespaces;
+    private chainAccountList: any;
 
-    constructor(payload: SignClientTypes.EventArguments['session_proposal'], chain: EthereumChain) {
-        this.payload = payload;
-        this.chain = chain;
+    constructor(
+        request: SignClientTypes.EventArguments['session_proposal'],
+        wallet: IWeb3Wallet,
+        namespaces: SessionTypes.Namespaces,
+        chainAccountList: any[]
+    ) {
+        console.timeLog('WalletConnectSession');
+
+        this.request = request;
+        this.wallet = wallet;
+        this.namespaces = namespaces;
+        this.chainAccountList = chainAccountList;
     }
 
-    getId(): number {
-        return this.payload.id;
+    async getActiveAccounts(): any[] {
+        return this.chainAccountList;
     }
 
-    getName(): string {
-        return this.payload.params.proposer.metadata.name;
+    async createSession(): Promise<void> {
+        await this.wallet?.approveSession({
+            id: this.request.id,
+            relayProtocol: this.request.params.relays[0].protocol,
+            namespaces: this.namespaces,
+        });
     }
 
-    getUrl(): string {
-        return this.payload.params.proposer.metadata.url;
+    async disconnectSession(): Promise<void> {
+        // Logic to disconnect the WalletConnect session
+        // Example: Disconnect WalletConnect provider
     }
 
-    getIcons(): string | null {
-        if (this.payload.params.proposer.metadata.icons?.length > 0) {
-            return this.payload.params.proposer.metadata.icons[0];
-        }
+    async createTransactionRequest(request: unknown): Promise<void> {
+        // Logic to create a transaction request using WalletConnect
+        // Example: Format and send the transaction request
+    }
 
-        return null;
+    async approveRequest(request: unknown): Promise<void> {
+        // Logic to approve a WalletConnect transaction request
+        // Example: Sign and approve the transaction request
+    }
+
+    async rejectRequest(): Promise<void> {
+        await this.wallet?.rejectSession({
+            id: this.request.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
     }
 }

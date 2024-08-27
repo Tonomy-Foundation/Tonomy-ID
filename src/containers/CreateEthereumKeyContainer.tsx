@@ -116,6 +116,7 @@ export default function CreateEthereumKeyContainer({
             navigation.navigate('WalletConnectLogin', {
                 payload: route.params.payload,
                 platform: 'browser',
+                session: route.params.session,
             });
         } else if (requestType === 'transactionRequest') {
             if (session && transaction) {

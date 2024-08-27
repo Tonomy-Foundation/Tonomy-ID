@@ -314,10 +314,12 @@ export class Asset extends AbstractAsset {
 }
 
 export interface IChainSession {
-    getId(): number;
-    getName(): string;
-    getUrl(): string;
-    getIcons(): string | null;
+    createSession(): Promise<void>;
+    disconnectSession(): Promise<void>;
+    createTransactionRequest(request: unknown): Promise<void>;
+    approveRequest(request: unknown): Promise<void>;
+    rejectRequest(): Promise<void>;
+    getActiveAccounts(): any;
 }
 
 export interface ISession {
