@@ -413,18 +413,11 @@ export class EthereumAccount extends AbstractAccount {
 }
 
 export class WalletConnectSession implements IChainSession {
-    private request: SignClientTypes.EventArguments['session_proposal'];
     private wallet: IWeb3Wallet | null;
     private namespaces: SessionTypes.Namespaces;
     private chainAccountList: ChainDetail[];
 
-    constructor(
-        request: SignClientTypes.EventArguments['session_proposal'],
-        wallet: IWeb3Wallet,
-        namespaces: SessionTypes.Namespaces,
-        chainAccountList: ChainDetail[]
-    ) {
-        this.request = request;
+    constructor(wallet: IWeb3Wallet, namespaces: SessionTypes.Namespaces, chainAccountList: ChainDetail[]) {
         this.wallet = wallet;
         this.namespaces = namespaces;
         this.chainAccountList = chainAccountList;
@@ -434,11 +427,10 @@ export class WalletConnectSession implements IChainSession {
         return this.chainAccountList;
     }
 
-    async createSession(): Promise<void> {
-        console.log('Creating WalletConnect session', this.namespaces);
+    async createSession(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
         await this.wallet?.approveSession({
-            id: this.request.id,
-            relayProtocol: this.request.params.relays[0].protocol,
+            id: request.id,
+            relayProtocol: request.params.relays[0].protocol,
             namespaces: this.namespaces,
         });
     }
@@ -458,9 +450,9 @@ export class WalletConnectSession implements IChainSession {
         // Example: Sign and approve the transaction request
     }
 
-    async rejectRequest(): Promise<void> {
+    async rejectRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
         await this.wallet?.rejectSession({
-            id: this.request.id,
+            id: request.id,
             reason: getSdkError('USER_REJECTED'),
         });
     }

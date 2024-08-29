@@ -318,11 +318,11 @@ export interface ChainDetail {
     networkName: string;
 }
 export interface IChainSession {
-    createSession(): Promise<void>;
+    createSession(request: unknown): Promise<void>;
     disconnectSession(): Promise<void>;
     createTransactionRequest(request: unknown): Promise<void>;
     approveRequest(request: unknown): Promise<void>;
-    rejectRequest(): Promise<void>;
+    rejectRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<ChainDetail[]>;
 }
 

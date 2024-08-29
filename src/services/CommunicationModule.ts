@@ -191,7 +191,6 @@ export default function CommunicationModule() {
     useEffect(() => {
         const handleSessionProposal = async (proposal) => {
             try {
-                console.log('onSessionProposal');
                 const { id } = proposal;
                 const { requiredNamespaces, optionalNamespaces } = proposal.params;
                 const activeNamespaces = Object.keys(requiredNamespaces).length
@@ -202,7 +201,6 @@ export default function CommunicationModule() {
                     chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
 
                 if (unsupportedChainIds?.length > 0) {
-                    console.log('iffff');
                     errorStore.setError({
                         title: 'Unsupported Chains',
                         error: new Error(
@@ -216,7 +214,6 @@ export default function CommunicationModule() {
                     });
                     return;
                 } else {
-                    console.log('elsee');
                     const supportedChains = {
                         '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
                         '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
@@ -227,7 +224,6 @@ export default function CommunicationModule() {
                     const namespaces: SessionTypes.Namespaces = {};
                     const chainNetwork = await getChainDetail(chainIds);
 
-                    console.log('chainNetwork');
                     Object.keys(activeNamespaces).forEach((key) => {
                         const accounts: string[] = [];
 
@@ -246,10 +242,7 @@ export default function CommunicationModule() {
                             events: activeNamespaces[key].events,
                         };
                     });
-                    console.log('activeNamespaces', activeNamespaces);
-                    const session = new WalletConnectSession(proposal, web3wallet, namespaces, chainNetwork);
-
-                    console.log('session');
+                    const session = new WalletConnectSession(web3wallet, namespaces, chainNetwork);
 
                     for (const chainId of chainIds) {
                         if (supportedChains[chainId]) {

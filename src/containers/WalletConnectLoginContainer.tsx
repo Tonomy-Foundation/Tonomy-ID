@@ -7,11 +7,8 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
-import { EthereumChainSession, EthereumSepoliaChain } from '../utils/chain/etherum';
 import { Props } from '../screens/WalletConnectLoginScreen';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
-import useWalletStore from '../store/useWalletStore';
-import { getSdkError } from '@walletconnect/utils';
+import { SignClientTypes } from '@walletconnect/types';
 import useErrorStore from '../store/errorStore';
 import { IChainSession, ChainDetail } from '../utils/chain/types';
 
@@ -29,7 +26,7 @@ export default function WalletConnectLoginContainer({
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
     const errorStore = useErrorStore();
-    const [accounts, setAccounts] = useState<ChainDetail[]>([]); // Replace `string[]` with the actual type if known
+    const [accounts, setAccounts] = useState<ChainDetail[]>([]);
 
     useEffect(() => {
         const fetchActiveAccounts = async () => {
@@ -38,15 +35,15 @@ export default function WalletConnectLoginContainer({
 
                 setAccounts(activeAccounts);
             } catch (error) {
-                console.error('Failed to fetch active accounts:', error);
+                errorStore.setError({ title: 'Error', error, expected: false });
             }
         };
 
         fetchActiveAccounts();
-    }, []); // Add dependencies if needed
+    }, [session]);
 
     const onCancel = async () => {
-        await session.rejectRequest();
+        await session.rejectRequest(payload);
         navigation.navigate({
             name: 'UserHome',
             params: {},
@@ -55,13 +52,13 @@ export default function WalletConnectLoginContainer({
 
     const handleAccept = async () => {
         try {
-            await session.createSession();
+            await session.createSession(payload);
             navigation.navigate({
                 name: 'UserHome',
                 params: {},
             });
         } catch (e) {
-            await session.rejectRequest();
+            await session.rejectRequest(payload);
 
             navigation.navigate({
                 name: 'UserHome',

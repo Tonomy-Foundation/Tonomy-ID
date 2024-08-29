@@ -14,6 +14,7 @@ import {
     IPrivateKey,
     Asset,
     IChainSession,
+    ChainDetail,
 } from './types';
 import { SignClientTypes } from '@walletconnect/types';
 import {
@@ -544,14 +545,15 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
 }
 
 export class ESRSession implements IChainSession {
-    async createSession(request: unknown): Promise<void> {
-        // Logic to authenticate the user using ESR
-        // Example: Parse the ESR and establish a session
-    }
+    async createSession(request: unknown): Promise<void> {}
 
     async disconnectSession(): Promise<void> {
         // Logic to disconnect the ESR session
         // Example: Clear the session and any stored data
+    }
+
+    async getActiveAccounts(): Promise<ChainDetail[]> {
+        return [{ chainId: 'string', address: 'string', networkName: 'string' }];
     }
 
     async createTransactionRequest(request: unknown): Promise<void> {
