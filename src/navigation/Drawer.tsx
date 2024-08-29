@@ -57,7 +57,7 @@ export default function DrawerNavigation() {
             initialRouteName="BottomTabs"
             screenOptions={defaultScreenOptions}
         >
-            <Drawer.Screen name="BottomTabs" options={{ title: 'Home' }} component={BottomTabNavigator} />
+            <Drawer.Screen name="BottomTabs" options={{ headerShown: false }} component={BottomTabNavigator} />
             {/* change component to Main Navigation when bottom nav should be added */}
             {/* <Drawer.Screen name="UserHome" options={{ title: 'Home' }} component={MainScreen} /> */}
 

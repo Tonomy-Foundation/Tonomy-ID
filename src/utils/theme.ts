@@ -32,6 +32,8 @@ const theme = {
         grey4: '#F9F9F9',
         grey5: '#E4E4E4',
         grey6: '#F4F4F4',
+        grey7: '#F6F9FB',
+        grey8: '#D2DDEC',
         shadow: '#4D4D4D',
         shadowDark: '#000',
         error: '#F44336',
@@ -39,6 +41,8 @@ const theme = {
         errorBackground: '#F443361A',
         backgroundGray: '#EDF2F9',
         tabGray: '#607EAA',
+        border: '#E6ECF4',
+        blue: '#007BFF',
     },
 };
 

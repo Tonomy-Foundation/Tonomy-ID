@@ -65,7 +65,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                 </View> */}
 
                 <View style={styles.menu}>
-                    {Object.entries(props.descriptors).map(([key, value]) => (
+                    {/* {Object.entries(props.descriptors).map(([key, value]) => (
                         <TButton
                             style={styles.button}
                             key={key}
@@ -76,7 +76,16 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         >
                             {value.options.title || value.route.name}
                         </TButton>
-                    ))}
+                    ))} */}
+                    <TButton
+                        style={styles.button}
+                        onPress={() => props.navigation.getParent()?.navigate('Settings')}
+                        icon={icons['Settings']}
+                        color={theme.colors.grey2}
+                        size="huge"
+                    >
+                        {'Settings'}
+                    </TButton>
                     <TButton
                         style={styles.button}
                         onPress={async () => {

@@ -2151,6 +2151,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo-google-fonts/roboto@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@expo-google-fonts/roboto@npm:0.2.3"
+  checksum: 10c0/f2557d888f881003240b74fb015840f4c68ceef610d57f6c492b86fc8b5056d453a9bd824d95bdd258cae61d39d633ff027a182d52c7fd2850379afdee14117b
+  languageName: node
+  linkType: hard
+
 "@expo/apple-utils@npm:1.3.1":
   version: 1.3.1
   resolution: "@expo/apple-utils@npm:1.3.1"
@@ -17822,6 +17829,7 @@ __metadata:
     "@babel/plugin-proposal-decorators": "npm:^7.24.7"
     "@babel/plugin-transform-private-methods": "npm:^7.24.1"
     "@ethersproject/shims": "npm:^5.7.0"
+    "@expo-google-fonts/roboto": "npm:^0.2.3"
     "@hcaptcha/react-native-hcaptcha": "npm:1.7.2"
     "@json-rpc-tools/utils": "npm:^1.7.6"
     "@react-native-async-storage/async-storage": "npm:1.18.2"
@@ -17867,6 +17875,7 @@ __metadata:
     expo-build-properties: "npm:~0.8.3"
     expo-camera: "npm:~13.4.2"
     expo-dev-client: "npm:~2.4.8"
+    expo-font: "npm:~11.4.0"
     expo-linking: "npm:~5.0.2"
     expo-local-authentication: "npm:~13.4.1"
     expo-notifications: "npm:~0.20.1"

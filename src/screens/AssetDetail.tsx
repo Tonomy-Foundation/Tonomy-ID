@@ -1,0 +1,19 @@
+import React from 'react';
+import AssetDetailContainer from '../containers/AssetDetailContainer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AssetDetailStackParamList } from '../navigation/Assets/AssetDetails';
+
+export type AssetDetailScreenNavigationProp = NativeStackScreenProps<AssetDetailStackParamList, 'AssetDetail'>;
+
+export default function AssetDetail(props: AssetDetailScreenNavigationProp) {
+    return (
+        <AssetDetailContainer
+            symbol={props.route.params?.symbol}
+            name={props.route.params?.name}
+            address={props.route.params?.address}
+            icon={props.route.params?.icon}
+            image={props.route.params?.image}
+            navigation={props.navigation}
+        ></AssetDetailContainer>
+    );
+}

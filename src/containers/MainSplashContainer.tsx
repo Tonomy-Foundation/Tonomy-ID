@@ -12,11 +12,16 @@ import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import NetInfo from '@react-native-community/netinfo';
 import { connect } from '../utils/StorageManager/setup';
+import { useFonts } from 'expo-font';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
+
+    useFonts({
+        Roboto: require('../assets/fonts/Roboto-Regular.ttf'),
+    });
 
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener((state) => {
