@@ -7,7 +7,7 @@ import AssetsScreen from '../screens/Assets';
 import ExploreScreen from '../screens/Explore';
 import ScanScreen from '../screens/Scan';
 
-import { useAppTheme } from '../utils/theme';
+import theme, { useAppTheme } from '../utils/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CitizenshipIcon from '../assets/icons/CitizenshipIcon';
 import AssetsIcon from '../assets/icons/AssetsIcon';
@@ -34,7 +34,7 @@ const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }
                 width: 70,
                 height: 70,
                 borderRadius: 35,
-                backgroundColor: '#000000',
+                backgroundColor: theme.colors.black,
                 justifyContent: 'center',
                 alignItems: 'center',
             }}
