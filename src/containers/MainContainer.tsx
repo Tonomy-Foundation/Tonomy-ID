@@ -190,9 +190,7 @@ export default function MainContainer({
                 const isIdentity = signingRequest.isIdentity();
                 const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
                 const abis = await signingRequest.fetchAbis();
-                const name = signingRequest.data;
 
-                console.log('name', name);
                 const authorization = {
                     actor: accountName,
                     permission: 'active',
@@ -203,7 +201,6 @@ export default function MainContainer({
 
                 // Resolve the transaction using the supplied data
                 const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
-
                 const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
                     (action) => ({
                         account: action.account.toString(),
@@ -233,7 +230,7 @@ export default function MainContainer({
                     });
                 } else {
                     const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
-                    const session = new ESRSession(account, EOSJungleChain, transaction);
+                    const session = new ESRSession(account, transaction);
 
                     navigation.navigate('WalletConnectLogin', {
                         payload: resolvedSigningRequest,

@@ -548,12 +548,10 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
 export class ESRSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
-    private chain: AntelopeChain;
 
-    constructor(account: AntelopeAccount, chain: AntelopeChain, transaction: AntelopeTransaction) {
+    constructor(account: AntelopeAccount, transaction: AntelopeTransaction) {
         this.transaction = transaction;
         this.account = account;
-        this.chain = chain;
     }
 
     async createSession(request: ResolvedSigningRequest): Promise<void> {
@@ -576,7 +574,7 @@ export class ESRSession implements IChainSession {
     }
 
     async getActiveAccounts(): Promise<ChainDetail[]> {
-        console.log('this.account', this.account, this.chain.getChainId());
+        console.log('this.account', this.account, this.account.getChain());
         return [
             {
                 address: this.account.getName(),
@@ -587,7 +585,25 @@ export class ESRSession implements IChainSession {
     }
 
     async rejectRequest(request: ResolvedSigningRequest): Promise<void> {
-        //TODO
+        console.log('reject request');
+        const signedTransaction = await this.account.signTransaction(this.transaction);
+        const callbackParams = request.getCallback(signedTransaction.signatures, 0);
+
+        if (callbackParams) {
+            const response = await fetch(callbackParams.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rejected: 'Request cancelled from within Anchor.',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+            }
+        }
     }
 
     async disconnectSession(): Promise<void> {
