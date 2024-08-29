@@ -312,14 +312,18 @@ export class Asset extends AbstractAsset {
         this.amount = amount;
     }
 }
-
+export interface ChainDetail {
+    chainId: string;
+    address: string;
+    networkName: string;
+}
 export interface IChainSession {
     createSession(): Promise<void>;
     disconnectSession(): Promise<void>;
     createTransactionRequest(request: unknown): Promise<void>;
     approveRequest(request: unknown): Promise<void>;
     rejectRequest(): Promise<void>;
-    getActiveAccounts(): any;
+    getActiveAccounts(): Promise<ChainDetail[]>;
 }
 
 export interface ISession {

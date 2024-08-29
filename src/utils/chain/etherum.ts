@@ -25,6 +25,7 @@ import {
     Asset,
     IOperation,
     IChainSession,
+    ChainDetail,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -415,27 +416,26 @@ export class WalletConnectSession implements IChainSession {
     private request: SignClientTypes.EventArguments['session_proposal'];
     private wallet: IWeb3Wallet | null;
     private namespaces: SessionTypes.Namespaces;
-    private chainAccountList: any;
+    private chainAccountList: ChainDetail[];
 
     constructor(
         request: SignClientTypes.EventArguments['session_proposal'],
         wallet: IWeb3Wallet,
         namespaces: SessionTypes.Namespaces,
-        chainAccountList: any[]
+        chainAccountList: ChainDetail[]
     ) {
-        console.timeLog('WalletConnectSession');
-
         this.request = request;
         this.wallet = wallet;
         this.namespaces = namespaces;
         this.chainAccountList = chainAccountList;
     }
 
-    async getActiveAccounts(): any[] {
+    async getActiveAccounts(): Promise<ChainDetail[]> {
         return this.chainAccountList;
     }
 
     async createSession(): Promise<void> {
+        console.log('Creating WalletConnect session', this.namespaces);
         await this.wallet?.approveSession({
             id: this.request.id,
             relayProtocol: this.request.params.relays[0].protocol,

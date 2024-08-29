@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, View, Text } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
@@ -13,7 +13,7 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import useErrorStore from '../store/errorStore';
-import { IChainSession } from '../utils/chain/types';
+import { IChainSession, ChainDetail } from '../utils/chain/types';
 
 export default function WalletConnectLoginContainer({
     navigation,
@@ -29,6 +29,21 @@ export default function WalletConnectLoginContainer({
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
     const errorStore = useErrorStore();
+    const [accounts, setAccounts] = useState<ChainDetail[]>([]); // Replace `string[]` with the actual type if known
+
+    useEffect(() => {
+        const fetchActiveAccounts = async () => {
+            try {
+                const activeAccounts = await session.getActiveAccounts();
+
+                setAccounts(activeAccounts);
+            } catch (error) {
+                console.error('Failed to fetch active accounts:', error);
+            }
+        };
+
+        fetchActiveAccounts();
+    }, []); // Add dependencies if needed
 
     const onCancel = async () => {
         await session.rejectRequest();
@@ -61,18 +76,18 @@ export default function WalletConnectLoginContainer({
             body={
                 <View style={styles.container}>
                     <View style={styles.marginTop}>
-                        {/* {session.getActiveAccounts()?.map(({ networkName, currentETHAddress }, index) => (
+                        {accounts?.map(({ networkName, address }, index) => (
                             <View style={styles.networkHeading} key={index}>
                                 <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
                                 <Text style={styles.nameText}>{networkName} Network:</Text>
-                                {currentETHAddress && (
+                                {address && (
                                     <Text style={commonStyles.textAlignCenter}>
-                                        {currentETHAddress.substring(0, 9)}....
-                                        {currentETHAddress.substring(currentETHAddress.length - 8)}
+                                        {address.substring(0, 9)}....
+                                        {address.substring(address.length - 8)}
                                     </Text>
                                 )}
                             </View>
-                        ))} */}
+                        ))}
                     </View>
 
                     <View style={[styles.appDialog, styles.marginTop]}>

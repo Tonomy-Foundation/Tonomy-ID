@@ -5,7 +5,6 @@ import {
     CommunicationError,
     LinkAuthRequestMessage,
     LoginRequestsMessage,
-    getSettings,
     objToBase64Url,
     parseDid,
 } from '@tonomy/tonomy-id-sdk';
@@ -27,13 +26,16 @@ import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import { SessionTypes } from '@walletconnect/types';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:services:CommunicationModule');
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { web3wallet, disconnectSession } = useWalletStore();
+    const { initialized, web3wallet, disconnectSession } = useWalletStore();
 
     /**
      *  Login to communication microservice
@@ -72,14 +74,9 @@ export default function CommunicationModule() {
 
                 const { method, id } = parseDid(senderDid);
 
-                // did:jwk is used for the initial login request so is allowed
-                if (method !== 'jwk' && id !== parseDid(await user.getDid()).id) {
-                    if (getSettings().loggerLevel === 'debug')
-                        console.log(
-                            'LoginRequesrtsMessage sender did not match user did',
-                            senderDid,
-                            await user.getDid()
-                        );
+                // did:key is used for the initial login request so is allowed
+                if (method !== 'key' && id !== parseDid(await user.getDid()).id) {
+                    debug('LoginRequestsMessage sender did not match user did', senderDid, await user.getDid());
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -106,12 +103,7 @@ export default function CommunicationModule() {
                 const senderDid = message.getSender().split('#')[0];
 
                 if (senderDid !== (await user.getDid())) {
-                    if (getSettings().loggerLevel === 'debug')
-                        console.log(
-                            'LinkAuthRequestMessage sender did not match user did',
-                            senderDid,
-                            await user.getDid()
-                        );
+                    debug('LinkAuthRequestMessage sender did not match user did', senderDid, await user.getDid());
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -163,31 +155,22 @@ export default function CommunicationModule() {
         }
     }
 
-    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
-        let timeout: ReturnType<typeof setTimeout>;
-
-        return (...args: Parameters<T>): void => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), wait);
-        };
-    };
-
     const { ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
 
     const getChainDetail = useCallback(
         (chainIds) => {
             const chainDetails = chainIds?.map((chainId) => {
-                let currentETHAddress;
+                let address;
                 let networkName;
 
                 if (chainId === '11155111') {
-                    currentETHAddress = sepoliaAccount ? sepoliaAccount.getName() : '';
+                    address = sepoliaAccount ? sepoliaAccount.getName() : '';
                     networkName = 'Sepolia';
                 } else if (chainId === '1') {
-                    currentETHAddress = ethereumAccount ? ethereumAccount.getName() : '';
+                    address = ethereumAccount ? ethereumAccount.getName() : '';
                     networkName = 'Ethereum';
                 } else if (chainId === '137') {
-                    currentETHAddress = polygonAccount ? polygonAccount.getName() : '';
+                    address = polygonAccount ? polygonAccount.getName() : '';
                     networkName = 'Polygon';
                 } else {
                     errorStore.setError({
@@ -197,7 +180,7 @@ export default function CommunicationModule() {
                     });
                 }
 
-                return { chainId, currentETHAddress, networkName };
+                return { chainId, address, networkName };
             });
 
             return chainDetails;
@@ -205,207 +188,206 @@ export default function CommunicationModule() {
         [sepoliaAccount, ethereumAccount, polygonAccount, errorStore]
     );
 
-    // useEffect(() => {
-    //     const handleSessionDelete = debounce(async (event) => {
-    //         try {
-    //             if (event.topic) {
-    //                 const sessions = await web3wallet?.getActiveSessions();
-    //                 const sessionExists =
-    //                     Array.isArray(sessions) && sessions.some((session) => session.topic === event.topic);
-
-    //                 if (sessionExists) {
-    //                     await web3wallet?.disconnectSession({
-    //                         topic: event.topic,
-    //                         reason: getSdkError('INVALID_SESSION_SETTLE_REQUEST'),
-    //                     });
-    //                     disconnectSession();
-    //                 } else {
-    //                     console.log('Session already deleted or invalid');
-    //                 }
-    //             }
-    //         } catch (disconnectError) {
-    //             console.error('Failed to disconnect session:', disconnectError);
-    //         }
-    //     }, 1000);
-
-    //     const onSessionProposal = debounce(async (proposal) => {
-    //         console.log('onSessionProposal');
-    //         const { id } = proposal;
-    //         const { requiredNamespaces, optionalNamespaces } = proposal.params;
-    //         const activeNamespaces = Object.keys(requiredNamespaces).length ? requiredNamespaces : optionalNamespaces;
-    //         const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]);
-    //         const unsupportedChainIds =
-    //             chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
-
-    //         if (unsupportedChainIds?.length > 0) {
-    //             errorStore.setError({
-    //                 title: 'Unsupported Chains',
-    //                 error: new Error('We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'),
-    //                 expected: true,
-    //             });
-    //             await web3wallet?.rejectSession({
-    //                 id: id,
-    //                 reason: getSdkError('UNSUPPORTED_CHAINS'),
-    //             });
-    //             return;
-    //         } else {
-    //             const supportedChains = {
-    //                 '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
-    //                 '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
-    //                 '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
-    //             };
-
-    //             let keyFound = false;
-    //             const namespaces: SessionTypes.Namespaces = {};
-    //             const chainNetwork = await getChainDetail(chainIds);
-
-    //             Object.keys(activeNamespaces).forEach((key) => {
-    //                 const accounts: string[] = [];
-
-    //                 activeNamespaces[key].chains?.forEach((chain) => {
-    //                     const chainId = chain.split(':')[1];
-    //                     const chainDetail = chainNetwork?.find((detail) => detail.chainId === chainId);
-
-    //                     if (chainDetail?.currentETHAddress) {
-    //                         accounts.push(`${chain}:${chainDetail.currentETHAddress}`);
-    //                     }
-    //                 });
-    //                 namespaces[key] = {
-    //                     chains: activeNamespaces[key].chains,
-    //                     accounts,
-    //                     methods: activeNamespaces[key].methods,
-    //                     events: activeNamespaces[key].events,
-    //                 };
-    //             });
-    //             const session = new WalletConnectSession(proposal, web3wallet, namespaces, chainNetwork);
-
-    //             console.log('proposal, web3wallet, namespaces, chainNetwork', session);
-    //             navigation.navigate('WalletConnectLogin', {
-    //                 payload: proposal,
-    //                 platform: 'browser',
-    //                 session,
-    //             });
-
-    //             for (const chainId of chainIds) {
-    //                 if (supportedChains[chainId]) {
-    //                     const { name, chainObject } = supportedChains[chainId];
-    //                     const key = await keyStorage.findByName(name, chainObject);
-
-    //                     if (!key) {
-    //                         navigation.navigate('CreateEthereumKey', {
-    //                             requestType: 'loginRequest',
-    //                             payload: proposal,
-    //                             session,
-    //                         });
-    //                         return;
-    //                     } else {
-    //                         keyFound = true;
-    //                     }
-    //                 }
-    //             }
-
-    //             if (keyFound) {
-    //                 console.log('proposal, web3wallet, namespaces, chainNetwork', session);
-    //                 navigation.navigate('WalletConnectLogin', {
-    //                     payload: proposal,
-    //                     platform: 'browser',
-    //                     session,
-    //                 });
-    //             }
-    //         }
-    //     }, 1000);
-
-    //     const onSessionRequest = debounce(async (event) => {
-    //         const { topic, params, id, verifyContext } = event;
-    //         const { request, chainId } = params;
-
-    //         switch (request.method) {
-    //             case 'eth_sendTransaction': {
-    //                 const transactionData = request.params[0];
-
-    //                 let key, chain;
-
-    //                 if (chainId === 'eip155:11155111') {
-    //                     chain = EthereumSepoliaChain;
-    //                     key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-    //                 } else if (chainId === 'eip155:1') {
-    //                     chain = EthereumMainnetChain;
-    //                     key = await keyStorage.findByName('ethereum', chain);
-    //                 } else if (chainId === 'eip155:137') {
-    //                     chain = EthereumPolygonChain;
-    //                     key = await keyStorage.findByName('ethereumPolygon', chain);
-    //                 } else throw new Error('Unsupported chains');
-
-    //                 let transaction: ITransaction;
-
-    //                 if (key) {
-    //                     const exportPrivateKey = await key.exportPrivateKey();
-    //                     const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
-
-    //                     transaction = await EthereumTransaction.fromTransaction(
-    //                         ethereumPrivateKey,
-    //                         transactionData,
-    //                         chain
-    //                     );
-    //                     navigation.navigate('SignTransaction', {
-    //                         transaction,
-    //                         privateKey: key,
-    //                         session: {
-    //                             origin: verifyContext?.verified?.origin,
-    //                             id,
-    //                             topic,
-    //                         },
-    //                     });
-    //                 } else {
-    //                     transaction = new EthereumTransaction(transactionData, chain);
-    //                     navigation.navigate('CreateEthereumKey', {
-    //                         requestType: 'transactionRequest',
-    //                         transaction: {
-    //                             transaction,
-    //                             session: {
-    //                                 origin: verifyContext?.verified?.origin,
-    //                                 id,
-    //                                 topic,
-    //                             },
-    //                         },
-    //                     });
-    //                 }
-
-    //                 sendWalletConnectNotificationOnBackground(
-    //                     'Transaction Request',
-    //                     'Ethereum transaction signing request'
-    //                 );
-    //                 break;
-    //             }
-
-    //             default: {
-    //                 const response = {
-    //                     id: id,
-    //                     error: getSdkError('UNSUPPORTED_METHODS'),
-    //                     jsonrpc: '2.0',
-    //                 };
-
-    //                 await web3wallet?.respondSessionRequest({
-    //                     topic,
-    //                     response,
-    //                 });
-    //                 return;
-    //             }
-    //         }
-    //     }, 1000);
-
-    //     web3wallet?.on('session_delete', handleSessionDelete);
-    //     web3wallet?.on('session_proposal', onSessionProposal);
-    //     web3wallet?.on('session_request', onSessionRequest);
-
-    //     return () => {
-    //         web3wallet?.off('session_delete', handleSessionDelete);
-    //         web3wallet?.off('session_proposal', onSessionProposal);
-    //         web3wallet?.off('session_request', onSessionRequest);
-    //     };
-    // }, [web3wallet, disconnectSession, navigation, errorStore, getChainDetail]);
     useEffect(() => {
-        const handleSessionDelete = async (event) => {
+        const handleSessionProposal = async (proposal) => {
+            try {
+                console.log('onSessionProposal');
+                const { id } = proposal;
+                const { requiredNamespaces, optionalNamespaces } = proposal.params;
+                const activeNamespaces = Object.keys(requiredNamespaces).length
+                    ? requiredNamespaces
+                    : optionalNamespaces;
+                const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]) || ['11155111'];
+                const unsupportedChainIds =
+                    chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
+
+                if (unsupportedChainIds?.length > 0) {
+                    console.log('iffff');
+                    errorStore.setError({
+                        title: 'Unsupported Chains',
+                        error: new Error(
+                            'We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'
+                        ),
+                        expected: true,
+                    });
+                    await web3wallet?.rejectSession({
+                        id: id,
+                        reason: getSdkError('UNSUPPORTED_CHAINS'),
+                    });
+                    return;
+                } else {
+                    console.log('elsee');
+                    const supportedChains = {
+                        '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
+                        '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
+                        '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
+                    };
+
+                    let keyFound = false;
+                    const namespaces: SessionTypes.Namespaces = {};
+                    const chainNetwork = await getChainDetail(chainIds);
+
+                    console.log('chainNetwork');
+                    Object.keys(activeNamespaces).forEach((key) => {
+                        const accounts: string[] = [];
+
+                        activeNamespaces[key].chains?.forEach((chain) => {
+                            const chainId = chain.split(':')[1];
+                            const chainDetail = chainNetwork?.find((detail) => detail.chainId === chainId);
+
+                            if (chainDetail?.address) {
+                                accounts.push(`${chain}:${chainDetail.address}`);
+                            }
+                        });
+                        namespaces[key] = {
+                            chains: activeNamespaces[key].chains,
+                            accounts,
+                            methods: activeNamespaces[key].methods,
+                            events: activeNamespaces[key].events,
+                        };
+                    });
+                    console.log('activeNamespaces', activeNamespaces);
+                    const session = new WalletConnectSession(proposal, web3wallet, namespaces, chainNetwork);
+
+                    console.log('session');
+
+                    for (const chainId of chainIds) {
+                        if (supportedChains[chainId]) {
+                            const { name, chainObject } = supportedChains[chainId];
+                            const key = await keyStorage.findByName(name, chainObject);
+
+                            if (!key) {
+                                navigation.navigate('CreateEthereumKey', {
+                                    requestType: 'loginRequest',
+                                    payload: proposal,
+                                    session,
+                                });
+                                return;
+                            } else {
+                                keyFound = true;
+                            }
+                        }
+                    }
+
+                    if (keyFound) {
+                        navigation.navigate('WalletConnectLogin', {
+                            payload: proposal,
+                            platform: 'browser',
+                            session,
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('session_proposal', error);
+            }
+        };
+
+        const handleSessionRequest = async (event) => {
+            try {
+                const { topic, params, id, verifyContext } = event;
+                const { request, chainId } = params;
+
+                switch (request.method) {
+                    case 'eth_sendTransaction': {
+                        const transactionData = request.params[0];
+
+                        let key, chain;
+
+                        if (chainId === 'eip155:11155111') {
+                            chain = EthereumSepoliaChain;
+                            key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
+                        } else if (chainId === 'eip155:1') {
+                            chain = EthereumMainnetChain;
+                            key = await keyStorage.findByName('ethereum', chain);
+                        } else if (chainId === 'eip155:137') {
+                            chain = EthereumPolygonChain;
+                            key = await keyStorage.findByName('ethereumPolygon', chain);
+                        } else throw new Error('Unsupported chains');
+
+                        let transaction: ITransaction;
+
+                        if (key) {
+                            const exportPrivateKey = await key.exportPrivateKey();
+                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+
+                            transaction = await EthereumTransaction.fromTransaction(
+                                ethereumPrivateKey,
+                                transactionData,
+                                chain
+                            );
+                            navigation.navigate('SignTransaction', {
+                                transaction,
+                                privateKey: key,
+                                session: {
+                                    origin: verifyContext?.verified?.origin,
+                                    id,
+                                    topic,
+                                },
+                            });
+                        } else {
+                            transaction = new EthereumTransaction(transactionData, chain);
+                            navigation.navigate('CreateEthereumKey', {
+                                requestType: 'transactionRequest',
+                                transaction: {
+                                    transaction,
+                                    session: {
+                                        origin: verifyContext?.verified?.origin,
+                                        id,
+                                        topic,
+                                    },
+                                },
+                            });
+                        }
+
+                        sendWalletConnectNotificationOnBackground(
+                            'Transaction Request',
+                            'Ethereum transaction signing request'
+                        );
+                        break;
+                    }
+
+                    default: {
+                        const response = {
+                            id: id,
+                            error: getSdkError('UNSUPPORTED_METHODS'),
+                            jsonrpc: '2.0',
+                        };
+
+                        await web3wallet?.respondSessionRequest({
+                            topic,
+                            response,
+                        });
+                        return;
+                    }
+                }
+            } catch (error) {
+                errorStore.setError({ error, expected: false });
+            }
+        };
+
+        web3wallet?.on('session_proposal', handleSessionProposal);
+        web3wallet?.on('session_request', handleSessionRequest);
+
+        // Cleanup function
+        return () => {
+            if (web3wallet) {
+                web3wallet.off('session_proposal', handleSessionProposal);
+                web3wallet.off('session_request', handleSessionRequest);
+            }
+        };
+    }, [web3wallet, initialized, errorStore, navigation, getChainDetail]);
+
+    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
+        let timeout: ReturnType<typeof setTimeout>;
+
+        return (...args: Parameters<T>): void => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    };
+
+    useEffect(() => {
+        const handleSessionDelete = debounce(async (event) => {
             try {
                 if (event.topic) {
                     const sessions = await web3wallet?.getActiveSessions();
@@ -419,190 +401,20 @@ export default function CommunicationModule() {
                         });
                         disconnectSession();
                     } else {
-                        console.log('Session already deleted or invalid');
+                        debug('Session already deleted or invalid');
                     }
                 }
             } catch (disconnectError) {
                 console.error('Failed to disconnect session:', disconnectError);
             }
-        };
-
-        const onSessionProposal = async (proposal) => {
-            console.log('onSessionProposal');
-            const { id } = proposal;
-            const { requiredNamespaces, optionalNamespaces } = proposal.params;
-            const activeNamespaces = Object.keys(requiredNamespaces).length ? requiredNamespaces : optionalNamespaces;
-            const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]);
-            const unsupportedChainIds =
-                chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
-
-            if (unsupportedChainIds?.length > 0) {
-                errorStore.setError({
-                    title: 'Unsupported Chains',
-                    error: new Error('We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'),
-                    expected: true,
-                });
-                await web3wallet?.rejectSession({
-                    id: id,
-                    reason: getSdkError('UNSUPPORTED_CHAINS'),
-                });
-                return;
-            } else {
-                const supportedChains = {
-                    '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
-                    '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
-                    '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
-                };
-
-                let keyFound = false;
-                const namespaces: SessionTypes.Namespaces = {};
-                const chainNetwork = await getChainDetail(chainIds);
-
-                Object.keys(activeNamespaces).forEach((key) => {
-                    const accounts: string[] = [];
-
-                    activeNamespaces[key].chains?.forEach((chain) => {
-                        const chainId = chain.split(':')[1];
-                        const chainDetail = chainNetwork?.find((detail) => detail.chainId === chainId);
-
-                        if (chainDetail?.currentETHAddress) {
-                            accounts.push(`${chain}:${chainDetail.currentETHAddress}`);
-                        }
-                    });
-                    namespaces[key] = {
-                        chains: activeNamespaces[key].chains,
-                        accounts,
-                        methods: activeNamespaces[key].methods,
-                        events: activeNamespaces[key].events,
-                    };
-                });
-                const session = new WalletConnectSession(proposal, web3wallet, namespaces, chainNetwork);
-
-                console.log('proposal, web3wallet, namespaces, chainNetwork', session);
-                navigation.navigate('WalletConnectLogin', {
-                    payload: proposal,
-                    platform: 'browser',
-                    session,
-                });
-
-                for (const chainId of chainIds) {
-                    if (supportedChains[chainId]) {
-                        const { name, chainObject } = supportedChains[chainId];
-                        const key = await keyStorage.findByName(name, chainObject);
-
-                        if (!key) {
-                            navigation.navigate('CreateEthereumKey', {
-                                requestType: 'loginRequest',
-                                payload: proposal,
-                                session,
-                            });
-                            return;
-                        } else {
-                            keyFound = true;
-                        }
-                    }
-                }
-
-                if (keyFound) {
-                    console.log('proposal, web3wallet, namespaces, chainNetwork', session);
-                    navigation.navigate('WalletConnectLogin', {
-                        payload: proposal,
-                        platform: 'browser',
-                        session,
-                    });
-                }
-            }
-        };
-
-        const onSessionRequest = async (event) => {
-            const { topic, params, id, verifyContext } = event;
-            const { request, chainId } = params;
-
-            switch (request.method) {
-                case 'eth_sendTransaction': {
-                    const transactionData = request.params[0];
-
-                    let key, chain;
-
-                    if (chainId === 'eip155:11155111') {
-                        chain = EthereumSepoliaChain;
-                        key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-                    } else if (chainId === 'eip155:1') {
-                        chain = EthereumMainnetChain;
-                        key = await keyStorage.findByName('ethereum', chain);
-                    } else if (chainId === 'eip155:137') {
-                        chain = EthereumPolygonChain;
-                        key = await keyStorage.findByName('ethereumPolygon', chain);
-                    } else throw new Error('Unsupported chains');
-
-                    let transaction: ITransaction;
-
-                    if (key) {
-                        const exportPrivateKey = await key.exportPrivateKey();
-                        const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
-
-                        transaction = await EthereumTransaction.fromTransaction(
-                            ethereumPrivateKey,
-                            transactionData,
-                            chain
-                        );
-                        navigation.navigate('SignTransaction', {
-                            transaction,
-                            privateKey: key,
-                            session: {
-                                origin: verifyContext?.verified?.origin,
-                                id,
-                                topic,
-                            },
-                        });
-                    } else {
-                        transaction = new EthereumTransaction(transactionData, chain);
-                        navigation.navigate('CreateEthereumKey', {
-                            requestType: 'transactionRequest',
-                            transaction: {
-                                transaction,
-                                session: {
-                                    origin: verifyContext?.verified?.origin,
-                                    id,
-                                    topic,
-                                },
-                            },
-                        });
-                    }
-
-                    sendWalletConnectNotificationOnBackground(
-                        'Transaction Request',
-                        'Ethereum transaction signing request'
-                    );
-                    break;
-                }
-
-                default: {
-                    const response = {
-                        id: id,
-                        error: getSdkError('UNSUPPORTED_METHODS'),
-                        jsonrpc: '2.0',
-                    };
-
-                    await web3wallet?.respondSessionRequest({
-                        topic,
-                        response,
-                    });
-                    return;
-                }
-            }
-        };
+        }, 1000);
 
         web3wallet?.on('session_delete', handleSessionDelete);
-        web3wallet?.on('session_proposal', onSessionProposal);
-        web3wallet?.on('session_request', onSessionRequest);
 
         return () => {
             web3wallet?.off('session_delete', handleSessionDelete);
-            web3wallet?.off('session_proposal', onSessionProposal);
-            web3wallet?.off('session_request', onSessionRequest);
         };
-    }, [web3wallet, disconnectSession, navigation, errorStore, getChainDetail]);
+    }, [web3wallet, disconnectSession, navigation, errorStore]);
 
     return null;
 }
