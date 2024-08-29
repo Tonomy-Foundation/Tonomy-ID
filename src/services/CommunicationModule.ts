@@ -242,7 +242,7 @@ export default function CommunicationModule() {
                             events: activeNamespaces[key].events,
                         };
                     });
-                    const session = new WalletConnectSession(web3wallet, namespaces, chainNetwork);
+                    const session = new WalletConnectSession(web3wallet, chainNetwork);
 
                     for (const chainId of chainIds) {
                         if (supportedChains[chainId]) {

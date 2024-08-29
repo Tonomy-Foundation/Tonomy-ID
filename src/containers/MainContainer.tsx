@@ -62,6 +62,7 @@ import {
     AntelopeToken,
     AntelopeTransaction,
     EOSJungleChain,
+    ESRSession,
     LEOS_PUBLIC_SALE_PRICE,
 } from '../utils/chain/antelope';
 import SignTransactionConsentContainer from './SignTransactionConsentContainer';
@@ -189,7 +190,9 @@ export default function MainContainer({
                 const isIdentity = signingRequest.isIdentity();
                 const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
                 const abis = await signingRequest.fetchAbis();
+                const name = signingRequest.data;
 
+                console.log('name', name);
                 const authorization = {
                     actor: accountName,
                     permission: 'active',
@@ -200,6 +203,7 @@ export default function MainContainer({
 
                 // Resolve the transaction using the supplied data
                 const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
+
                 const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
                     (action) => ({
                         account: action.account.toString(),
@@ -213,17 +217,14 @@ export default function MainContainer({
                 );
                 const actions = createAssetAction;
 
+                const privateKeyValue = privateKey || '';
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
+                const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKeyValue), EOSJungleChain);
 
                 if (!isIdentity) {
-                    console.log('createAssetAction', JSON.stringify(transaction));
-
                     navigation.navigate('SignTransaction', {
                         transaction,
-                        privateKey: new AntelopePrivateKey(
-                            PrivateKey.from('5KW9BRLinQArjWrHVyEFm76uJQ8b473eJK3vseFAoEAivq6DpsE'),
-                            EOSJungleChain
-                        ),
+                        privateKey: antelopeKey,
                         session: {
                             origin: 'https://jungle4.cryptolions.io',
                             id: 1,
@@ -231,94 +232,15 @@ export default function MainContainer({
                         },
                     });
                 } else {
-                    const antelopeKey = new AntelopePrivateKey(
-                        PrivateKey.from('5KW9BRLinQArjWrHVyEFm76uJQ8b473eJK3vseFAoEAivq6DpsE'),
-                        EOSJungleChain
-                    );
                     const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
-                    const signedTransaction = await account.signTransaction(transaction);
-                    const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
+                    const session = new ESRSession(account, EOSJungleChain, transaction);
 
-                    if (callbackParams) {
-                        const response = await fetch(callbackParams.url, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(callbackParams?.payload),
-                        });
-
-                        if (!response.ok) {
-                            debug(`Failed to send callback: ${JSON.stringify(response)}`);
-                        }
-                    }
+                    navigation.navigate('WalletConnectLogin', {
+                        payload: resolvedSigningRequest,
+                        platform: 'browser',
+                        session,
+                    });
                 }
-
-                // Utilize a built-in helper to retrieve the related ABIs from an API endpoint
-
-                // const resolvedRequest = signingRequest.resolve({ actor: 'userAccountName', permission: 'active' });
-
-                // if (privateKey) {
-                //     const antelopeKey = new AntelopePrivateKey(
-                //         PrivateKey.from('5Jb3huyDuhjCYG2c5yfCoa7UCuFKzPHyYziVw7Q8VbfURjujbeS'),
-                //         EOSJungleChain
-                //     );
-
-                //     const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
-
-                //     const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
-                //         (action) => ({
-                //             account: action.account.toString(),
-                //             name: action.name.toString(),
-                //             authorization: action.authorization.map((auth) => ({
-                //                 actor: auth.actor.toString(),
-                //                 permission: auth.permission.toString(),
-                //             })),
-                //             data: action.data,
-                //         })
-                //     );
-                //     const actions = createAssetAction;
-
-                //     console.log('createAssetAction', JSON.stringify(createAssetAction));
-                //     const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
-
-                //     console.log('account', JSON.stringify(transaction, null, 2));
-                //     const signedTransaction = await account.signTransaction(transaction);
-                //     const isIdentity = false;
-
-                //     console.log('signedTransaction', JSON.stringify(signedTransaction, null, 2), isIdentity);
-
-                //     if (!isIdentity) {
-                //         try {
-                //             const result = await client.v1.chain.send_transaction(signedTransaction);
-
-                //             console.log('Transaction sent, result:', result);
-                //             // await client.v1.chain.push_transaction(signedTransaction);
-                //         } catch (e) {
-                //             console.log('errrrr', e);
-                //         }
-                //     }
-
-                //     const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
-
-                //     console.log('callbackParams', callbackParams);
-
-                //     if (callbackParams) {
-                //         const response = await fetch(callbackParams.url, {
-                //             method: 'POST',
-                //             headers: {
-                //                 'Content-Type': 'application/json',
-                //             },
-                //             body: JSON.stringify(callbackParams?.payload),
-                //         });
-
-                //         if (!response.ok) {
-                //             console.log(`Failed to send callback: ${JSON.stringify(response)}`);
-                //         }
-
-                //         console.log('Callback sent successfully in the background.');
-                //     }
-                // }
             } else {
                 const did = validateQrCode(data);
 

@@ -197,7 +197,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         },
                     };
                 } catch (error) {
-                    console.log('Error fetching account data:', error);
                     return null;
                 }
             };
@@ -209,25 +208,21 @@ const useWalletStore = create<WalletState>((set, get) => ({
             ]);
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
-                console.log('Ethereum data fulfilled:', ethereumData.value);
                 state.ethereumAccount = ethereumData.value.account;
                 state.ethereumBalance = ethereumData.value.balance;
             }
 
             if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
-                console.log('Sepolia data fulfilled:', sepoliaData.value);
                 state.sepoliaAccount = sepoliaData.value.account;
                 state.sepoliaBalance = sepoliaData.value.balance;
             }
 
             if (polygonData.status === 'fulfilled' && polygonData.value) {
-                console.log('Polygon data fulfilled:', polygonData.value);
                 state.polygonAccount = polygonData.value.account;
                 state.polygonBalance = polygonData.value.balance;
             }
 
             if (!get().ethereumAccount && !get().sepoliaAccount && !get().polygonAccount) {
-                console.log('Setting state with initialized accounts and balances');
                 set({
                     ethereumAccount: state.ethereumAccount,
                     ethereumBalance: state.ethereumBalance,
@@ -255,7 +250,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 });
             }
         } catch (error) {
-            console.log('Error initializing wallet state:', error);
+            debug('Error initializing wallet state:', error);
             set({
                 ethereumAccount: null,
                 ethereumBalance: { balance: '0', usdBalance: 0 },

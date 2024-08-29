@@ -38,7 +38,7 @@ import {
     Transaction,
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
-import { IdentityV3 } from '@wharfkit/signing-request';
+import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;
@@ -488,6 +488,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         account: NameType,
         privateKey: AntelopePrivateKey
     ): AntelopeAccount {
+        console.log('antelopeChain', chain);
         return new AntelopeAccount(chain, account, privateKey);
     }
 
@@ -545,15 +546,53 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
 }
 
 export class ESRSession implements IChainSession {
-    async createSession(request: unknown): Promise<void> {}
+    private transaction: AntelopeTransaction;
+    private account: AntelopeAccount;
+    private chain: AntelopeChain;
+
+    constructor(account: AntelopeAccount, chain: AntelopeChain, transaction: AntelopeTransaction) {
+        this.transaction = transaction;
+        this.account = account;
+        this.chain = chain;
+    }
+
+    async createSession(request: ResolvedSigningRequest): Promise<void> {
+        const signedTransaction = await this.account.signTransaction(this.transaction);
+        const callbackParams = request.getCallback(signedTransaction.signatures, 0);
+
+        if (callbackParams) {
+            const response = await fetch(callbackParams.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(callbackParams?.payload),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+            }
+        }
+    }
+
+    async getActiveAccounts(): Promise<ChainDetail[]> {
+        console.log('this.account', this.account, this.chain.getChainId());
+        return [
+            {
+                address: this.account.getName(),
+                chainId: '',
+                networkName: '',
+            },
+        ];
+    }
+
+    async rejectRequest(request: ResolvedSigningRequest): Promise<void> {
+        //TODO
+    }
 
     async disconnectSession(): Promise<void> {
         // Logic to disconnect the ESR session
         // Example: Clear the session and any stored data
-    }
-
-    async getActiveAccounts(): Promise<ChainDetail[]> {
-        return [{ chainId: 'string', address: 'string', networkName: 'string' }];
     }
 
     async createTransactionRequest(request: unknown): Promise<void> {
@@ -564,10 +603,5 @@ export class ESRSession implements IChainSession {
     async approveRequest(request: unknown): Promise<void> {
         // Logic to approve an ESR transaction request
         // Example: Sign the ESR transaction request and finalize it
-    }
-
-    async rejectRequest(request: unknown): Promise<void> {
-        // Logic to reject an ESR transaction request
-        // Example: Invalidate the ESR transaction request and notify the user
     }
 }

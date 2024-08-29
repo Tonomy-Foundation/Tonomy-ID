@@ -33,6 +33,7 @@ import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConse
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IChainSession, IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 const prefix = Linking.createURL('');
 
@@ -80,7 +81,7 @@ export type RouteStackParamList = {
         };
     };
     WalletConnectLogin: {
-        payload: SignClientTypes.EventArguments['session_proposal'];
+        payload: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
         platform?: 'mobile' | 'browser';
         session: IChainSession;
     };
@@ -89,7 +90,7 @@ export type RouteStackParamList = {
             transaction: ITransaction;
             session: ISession;
         };
-        payload?: SignClientTypes.EventArguments['session_proposal'];
+        payload: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
         requestType?: string;
         session?: IChainSession;
     };

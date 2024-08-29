@@ -6,6 +6,7 @@ import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
 import { SignClientTypes } from '@walletconnect/types';
 import { IChainSession, IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export type DrawerStackParamList = {
     UserHome: { did?: string };
@@ -20,7 +21,7 @@ export type DrawerStackParamList = {
         session: ISession;
     };
     WalletConnectLogin: {
-        payload: SignClientTypes.EventArguments['session_proposal'];
+        payload: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
         platform: 'mobile' | 'browser';
         session: IChainSession;
     };

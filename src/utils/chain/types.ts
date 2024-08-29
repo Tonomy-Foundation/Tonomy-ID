@@ -1,6 +1,4 @@
 import { TKeyType } from '@veramo/core';
-import { SessionTypes } from '@walletconnect/types';
-import { JsonRpcPayload, JsonRpcProvider } from 'ethers';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {

@@ -11,6 +11,7 @@ import { Props } from '../screens/WalletConnectLoginScreen';
 import { SignClientTypes } from '@walletconnect/types';
 import useErrorStore from '../store/errorStore';
 import { IChainSession, ChainDetail } from '../utils/chain/types';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export default function WalletConnectLoginContainer({
     navigation,
@@ -19,12 +20,12 @@ export default function WalletConnectLoginContainer({
     session,
 }: {
     navigation: Props['navigation'];
-    payload: SignClientTypes.EventArguments['session_proposal'];
+    payload: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
     platform: 'mobile' | 'browser';
     session: IChainSession;
 }) {
-    const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
-    const parsedUrl = new URL(url);
+    // const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
+    // const parsedUrl = new URL(url);
     const errorStore = useErrorStore();
     const [accounts, setAccounts] = useState<ChainDetail[]>([]);
 
@@ -88,10 +89,10 @@ export default function WalletConnectLoginContainer({
                     </View>
 
                     <View style={[styles.appDialog, styles.marginTop]}>
-                        <Image style={styles.appDialogImage} source={{ uri: icons[0] }} />
-                        <TH1 style={commonStyles.textAlignCenter}>{name}</TH1>
+                        {/* <Image style={styles.appDialogImage} source={{ uri: icons[0] }} />
+                        <TH1 style={commonStyles.textAlignCenter}>{name}</TH1> */}
                         <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                        <TLink to={url}>{parsedUrl.origin}</TLink>
+                        {/* <TLink to={url}>{parsedUrl.origin}</TLink> */}
                     </View>
                 </View>
             }
