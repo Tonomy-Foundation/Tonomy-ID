@@ -33,7 +33,9 @@ import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConse
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
-import Debug from 'debug';
+import { ImageSourcePropType } from 'react-native';
+import { SelectAssetStackScreen } from './Assets/SelectAssets';
+import { AssetDetailStackScreen } from './Assets/AssetDetails';
 
 const prefix = Linking.createURL('');
 
@@ -92,7 +94,28 @@ export type RouteStackParamList = {
         payload?: SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
     };
-    BottomNavigation: undefined;
+    BottomTabs: undefined;
+
+    Assets: { did?: string };
+    SelectAssetMain: {
+        screen: string;
+        params?: {
+            did?: string;
+            type: string;
+            screenTitle: string;
+        };
+    };
+    AssetDetailMain: {
+        screen: string;
+        params?: {
+            screenTitle?: string;
+            symbol: string;
+            name: string;
+            icon?: ImageSourcePropType | undefined;
+            address?: string;
+            image?: string;
+        };
+    };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -245,6 +268,18 @@ export default function RootNavigation() {
                             options={{ headerBackTitleVisible: false, title: 'Generate key' }}
                             component={CreateEthereumKeyScreen}
                             initialParams={{}}
+                        />
+
+                        <Stack.Screen
+                            name="SelectAssetMain"
+                            options={{ headerShown: false }}
+                            component={SelectAssetStackScreen}
+                        />
+
+                        <Stack.Screen
+                            name="AssetDetailMain"
+                            options={{ headerShown: false }}
+                            component={AssetDetailStackScreen}
                         />
                     </Stack.Navigator>
                 </>

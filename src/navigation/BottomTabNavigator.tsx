@@ -1,5 +1,5 @@
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React from 'react';
+import React, { useRef } from 'react';
 
 import AppsScreen from '../screens/Apps';
 import CitizenshipScreen from '../screens/Citizenship';
@@ -14,11 +14,15 @@ import AssetsIcon from '../assets/icons/AssetsIcon';
 import ScanIcon from '../assets/icons/ScanIcon';
 import ExploreIcon from '../assets/icons/ExploreIcon';
 import AppsIcon from '../assets/icons/AppsIcon';
-import MainScreen from '../screens/MainScreen';
+import { useNavigation } from '@react-navigation/native';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import MenuIcon from '../assets/icons/MenuIcon';
+
+import QRScan from '../components/QRScan';
 
 export type RouteStackParamList = {
     UserHome: { did?: string };
-    Assets: undefined;
+    Assets: { did?: string };
     Explore: undefined;
     Scan: undefined;
     Apps: undefined;
@@ -27,38 +31,75 @@ export type RouteStackParamList = {
 const Tab = createBottomTabNavigator<RouteStackParamList>();
 
 type ScanTabBarButtonProps = BottomTabBarButtonProps;
-const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }) => (
-    <TouchableOpacity style={{ top: -30, justifyContent: 'center', alignContent: 'center' }} onPress={onPress}>
-        <View
-            style={{
-                width: 70,
-                height: 70,
-                borderRadius: 35,
-                backgroundColor: theme.colors.black,
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            {children}
-        </View>
-    </TouchableOpacity>
-);
+const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }) => {
+    const refMessage = useRef(null);
+    const handleOpenQRScan = () => {
+        (refMessage?.current as any)?.open();
+    };
+    const onClose = () => {
+        (refMessage.current as any)?.close();
+    };
+    return (
+        <>
+            <QRScan onClose={onClose} refMessage={refMessage} />
+            <TouchableOpacity
+                style={{ top: -30, justifyContent: 'center', alignContent: 'center' }}
+                onPress={handleOpenQRScan}
+            >
+                <View
+                    style={{
+                        width: 70,
+                        height: 70,
+                        borderRadius: 35,
+                        backgroundColor: theme.colors.black,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    {children}
+                </View>
+            </TouchableOpacity>
+        </>
+    );
+};
+
+type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'UserHome'>;
 
 function BottomTabNavigator() {
     const theme = useAppTheme();
-
+    const navigation = useNavigation<DrawerNavigation>();
     return (
         <Tab.Navigator
+            initialRouteName="Assets"
             screenOptions={{
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.grey,
-                headerShown: false, // or true if you want headers on tabs
+                headerStyle: {
+                    borderColor: theme.colors.border,
+                    borderWidth: 1,
+                },
+                headerTitleStyle: {
+                    fontSize: 16,
+                    fontWeight: '500',
+                    color: theme.colors.text,
+                },
+                headerTitleAlign: 'center',
+                headerTintColor: theme.dark ? theme.colors.text : 'black',
+                headerLeft: () => (
+                    <TouchableOpacity
+                        style={{ paddingHorizontal: 15, paddingVertical: 10 }}
+                        onPress={() => navigation.toggleDrawer()}
+                    >
+                        <MenuIcon />
+                    </TouchableOpacity>
+                ),
             }}
         >
             <Tab.Screen
                 name="UserHome"
-                component={MainScreen}
+                component={CitizenshipScreen}
                 options={{
+                    headerTitle: 'Citizenship',
                     tabBarLabel: ({ focused }) => (
                         <Text
                             style={[styles.tabLabel, { color: !focused ? theme.colors.tabGray : theme.colors.black }]}
