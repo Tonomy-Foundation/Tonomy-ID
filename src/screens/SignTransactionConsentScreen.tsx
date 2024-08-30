@@ -10,8 +10,10 @@ export default function SignTransactionConsentScreen(props: Props) {
         <SignTransactionConsentContainer
             transaction={props.route.params.transaction}
             privateKey={props.route.params.privateKey}
-            session={props.route.params.session}
+            origin={props.route.params.origin ?? ''}
+            request={props.route.params.request || {}}
             navigation={props.navigation}
+            session={props.route.params.session}
         />
     );
 }

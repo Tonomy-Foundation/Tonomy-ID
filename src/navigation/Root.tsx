@@ -66,7 +66,9 @@ export type RouteStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        session: ISession;
+        origin?: string;
+        request?: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
+        session: IChainSession;
     };
     SignTransactionSuccess: {
         transactionDetails: {
@@ -81,7 +83,7 @@ export type RouteStackParamList = {
         };
     };
     WalletConnectLogin: {
-        payload: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
+        payload: SignClientTypes.EventArguments['session_proposal'];
         platform?: 'mobile' | 'browser';
         session: IChainSession;
     };
@@ -90,7 +92,7 @@ export type RouteStackParamList = {
             transaction: ITransaction;
             session: ISession;
         };
-        payload: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
+        payload: SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
         session?: IChainSession;
     };

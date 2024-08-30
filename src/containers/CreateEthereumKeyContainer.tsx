@@ -133,7 +133,7 @@ export default function CreateEthereumKeyContainer({
                 navigation.navigate('SignTransaction', {
                     transaction,
                     privateKey: key,
-                    session,
+                    request: route.params.payload,
                 });
             } else {
                 navigation.navigate({ name: 'UserHome', params: {} });

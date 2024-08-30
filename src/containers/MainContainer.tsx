@@ -213,7 +213,6 @@ export default function MainContainer({
                     })
                 );
                 const actions = createAssetAction;
-
                 const privateKeyValue = privateKey || '';
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
                 const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKeyValue), EOSJungleChain);
@@ -222,21 +221,35 @@ export default function MainContainer({
                     navigation.navigate('SignTransaction', {
                         transaction,
                         privateKey: antelopeKey,
-                        session: {
-                            origin: 'https://jungle4.cryptolions.io',
-                            id: 1,
-                            topic: 'signTransaction',
-                        },
+                        origin: 'https://jungle4.cryptolions.io',
+                        request: resolvedSigningRequest,
                     });
                 } else {
                     const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
-                    const session = new ESRSession(account, transaction);
+                    const signedTransaction = await antelopeKey.signTransaction(transaction);
+                    const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
 
-                    navigation.navigate('WalletConnectLogin', {
-                        payload: resolvedSigningRequest,
-                        platform: 'browser',
-                        session,
-                    });
+                    if (callbackParams) {
+                        const response = await fetch(callbackParams.url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(callbackParams?.payload),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+                        }
+                    }
+                    //TODO
+                    // const session = new ESRSession(account, transaction, antelopeKey);
+
+                    // navigation.navigate('WalletConnectLogin', {
+                    //     payload: resolvedSigningRequest,
+                    //     platform: 'browser',
+                    //     session,
+                    // });
                 }
             } else {
                 const did = validateQrCode(data);

@@ -548,29 +548,16 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
 export class ESRSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
+    private antelopeKey: AntelopePrivateKey;
 
-    constructor(account: AntelopeAccount, transaction: AntelopeTransaction) {
+    constructor(account: AntelopeAccount, transaction: AntelopeTransaction, antelopeKey: AntelopePrivateKey) {
         this.transaction = transaction;
         this.account = account;
+        this.antelopeKey = antelopeKey;
     }
 
     async createSession(request: ResolvedSigningRequest): Promise<void> {
-        const signedTransaction = await this.account.signTransaction(this.transaction);
-        const callbackParams = request.getCallback(signedTransaction.signatures, 0);
-
-        if (callbackParams) {
-            const response = await fetch(callbackParams.url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(callbackParams?.payload),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
-            }
-        }
+        //TODO
     }
 
     async getActiveAccounts(): Promise<ChainDetail[]> {
@@ -586,7 +573,7 @@ export class ESRSession implements IChainSession {
 
     async rejectRequest(request: ResolvedSigningRequest): Promise<void> {
         console.log('reject request');
-        const signedTransaction = await this.account.signTransaction(this.transaction);
+        const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
         if (callbackParams) {
@@ -611,9 +598,8 @@ export class ESRSession implements IChainSession {
         // Example: Clear the session and any stored data
     }
 
-    async createTransactionRequest(request: unknown): Promise<void> {
-        // Logic to create a transaction request using ESR
-        // Example: Generate a transaction from the ESR and prepare it for signing
+    async createTransactionRequest(transaction: ITransaction): Promise<ITransaction> {
+        return transaction;
     }
 
     async approveRequest(request: unknown): Promise<void> {

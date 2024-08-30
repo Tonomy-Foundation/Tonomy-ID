@@ -5,7 +5,7 @@ import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TH2, TH4 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import { IChainSession, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
 import { ethers, TransactionRequest } from 'ethers';
@@ -18,24 +18,23 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import { EthereumTransaction } from '../utils/chain/etherum';
 import useUserStore from '../store/userStore';
 import { IconButton } from 'react-native-paper';
+import { SignClientTypes } from '@walletconnect/types';
 
 export default function SignTransactionConsentContainer({
     navigation,
     transaction,
     privateKey,
+    origin,
+    request,
     session,
 }: {
     navigation: Props['navigation'];
     transaction: ITransaction;
     privateKey: IPrivateKey;
-    session: {
-        origin: string;
-        id: number;
-        topic: string;
-    };
+    origin: string;
+    request: SignClientTypes.EventArguments['session_proposal'];
+    session: IChainSession;
 }) {
-    const { web3wallet } = useWalletStore();
-
     const errorStore = useErrorStore();
     const [contractTransaction, setContractTransaction] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -84,6 +83,7 @@ export default function SignTransactionConsentContainer({
                 setTransactionLoading(true);
 
                 const actions = await transaction.getData();
+
                 let fromAccount, toAccount, value, usdValue, balance, transactionType;
 
                 if (Array.isArray(actions)) {
@@ -99,9 +99,10 @@ export default function SignTransactionConsentContainer({
 
                     usdValue = await (await transaction.getValue()).getUsdValue();
 
-                    balance = (
-                        await (await transaction.getFrom()).getBalance(transaction.getChain().getNativeToken())
-                    ).getAmount();
+                    // balance = (
+                    //     await (await transaction.getFrom()).getBalance(transaction.getChain().getNativeToken())
+                    // ).getAmount();
+                    balance = 0;
 
                     transactionType = await transaction.getType();
                 }
@@ -125,17 +126,17 @@ export default function SignTransactionConsentContainer({
                 const functionName = '';
                 const args: Record<string, string> | null = null;
 
-                if (value) {
-                    const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
-                    const etherFee = ethers.parseEther(fee);
+                // if (value) {
+                //     const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
+                //     const etherFee = ethers.parseEther(fee);
 
-                    const totalTransactionCost = transactionValue + etherFee;
+                //     const totalTransactionCost = transactionValue + etherFee;
 
-                    // Check if the balance is sufficient
-                    if (balance < totalTransactionCost) {
-                        showBalanceError(true);
-                    }
-                }
+                //     // Check if the balance is sufficient
+                //     if (balance < totalTransactionCost) {
+                //         showBalanceError(true);
+                //     }
+                // }
 
                 // if (contractTransaction) {
                 //     functionName = await transaction.getFunction();
@@ -175,16 +176,16 @@ export default function SignTransactionConsentContainer({
     async function onReject() {
         setTransactionLoading(true);
 
-        const response = {
-            id: session.id,
-            error: getSdkError('USER_REJECTED'),
-            jsonrpc: '2.0',
-        };
+        // const response = {
+        //     id: session.id,
+        //     error: getSdkError('USER_REJECTED'),
+        //     jsonrpc: '2.0',
+        // };
 
-        await web3wallet?.respondSessionRequest({
-            topic: session.topic,
-            response,
-        });
+        // await web3wallet?.respondSessionRequest({
+        //     topic: session.topic,
+        //     response,
+        // });
         setTransactionLoading(false);
 
         navigation.navigate({
@@ -215,19 +216,11 @@ export default function SignTransactionConsentContainer({
             //         debug(`Failed to send callback: ${JSON.stringify(response)}`);
             //     }
             // }
-            const transactionRequest: TransactionRequest = {
-                to: transactionDetails.toAccount,
-                from: transactionDetails.fromAccount,
-                value: ethers.parseEther(parseFloat(transactionDetails.value).toFixed(18)),
-                data: await (transaction as EthereumTransaction).getData(),
-            };
 
+            const transactionRequest = await session.createTransactionRequest(transaction);
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
-            const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
-
-            await web3wallet?.respondSessionRequest({ topic: session.topic, response });
-
+            await session.approveRequest(request, signedTransaction);
             navigation.navigate('SignTransactionSuccess', {
                 transactionDetails: {
                     chainId: transaction.getChain().getChainId(),
@@ -248,16 +241,16 @@ export default function SignTransactionConsentContainer({
                 error: new Error(`Error signing transaction, ${error}`),
                 expected: false,
             });
-            const response = {
-                id: session.id,
-                error: getSdkError('USER_REJECTED'),
-                jsonrpc: '2.0',
-            };
+            // const response = {
+            //     id: session.id,
+            //     error: getSdkError('USER_REJECTED'),
+            //     jsonrpc: '2.0',
+            // };
 
-            await web3wallet?.respondSessionRequest({
-                topic: session.topic,
-                response,
-            });
+            // await web3wallet?.respondSessionRequest({
+            //     topic: session.topic,
+            //     response,
+            // });
 
             navigation.navigate({
                 name: 'UserHome',
@@ -276,7 +269,7 @@ export default function SignTransactionConsentContainer({
                             source={{ uri: transaction.getChain().getNativeToken().getLogoUrl() }}
                         ></Image>
                         <View style={commonStyles.alignItemsCenter}>
-                            <Text style={styles.applinkText}>{extractHostname(session?.origin)}</Text>
+                            <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
                             <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
                         </View>
                         {!loading ? (
@@ -288,78 +281,81 @@ export default function SignTransactionConsentContainer({
                                 <Text style={styles.accountNameStyle}>
                                     {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
                                 </Text>
-                                {transactionDetails?.actions?.map((action, index) => (
-                                    <View key={index} style={{ width: '100%' }}>
-                                        <Text style={styles.actionText}>Action {index + 1}</Text>
-                                        <View style={styles.actionDialog}>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                <Text style={styles.secondaryColor}>Smart Contract:</Text>
-                                                <Text>{action.account}</Text>
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    marginTop: 10,
-                                                }}
-                                            >
-                                                <Text style={styles.secondaryColor}>Function:</Text>
-                                                <Text>{action.name}</Text>
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    marginTop: 3,
-                                                }}
-                                            >
-                                                <Text style={styles.secondaryColor}>Transaction details:</Text>
-
-                                                <TouchableOpacity onPress={() => setActionDetail(!actionDetails)}>
-                                                    {!actionDetails ? (
-                                                        <IconButton
-                                                            icon={
-                                                                Platform.OS === 'android'
-                                                                    ? 'chevron-down'
-                                                                    : 'chevron-down'
-                                                            }
-                                                            size={Platform.OS === 'android' ? 18 : 22}
-                                                        />
-                                                    ) : (
-                                                        <IconButton
-                                                            icon={
-                                                                Platform.OS === 'android' ? 'chevron-up' : 'chevron-up'
-                                                            }
-                                                            size={Platform.OS === 'android' ? 18 : 22}
-                                                        />
-                                                    )}
-                                                </TouchableOpacity>
-                                            </View>
-                                            {actionDetails && (
-                                                <View style={styles.detailSection}>
-                                                    {Object.entries(action?.data).map(([key, value], idx) => (
-                                                        <View
-                                                            key={idx}
-                                                            style={{
-                                                                flexDirection: 'row',
-                                                                justifyContent: 'space-between',
-                                                                marginBottom: 7,
-                                                            }}
-                                                        >
-                                                            <Text style={[styles.secondaryColor, { fontSize: 13 }]}>
-                                                                {key}:
-                                                            </Text>
-                                                            <Text style={{ fontSize: 13 }}>
-                                                                {value ? value.toString() : '--'}
-                                                            </Text>
-                                                        </View>
-                                                    ))}
+                                {Array.isArray(transactionDetails?.actions) &&
+                                    transactionDetails?.actions?.map((action, index) => (
+                                        <View key={index} style={{ width: '100%' }}>
+                                            <Text style={styles.actionText}>Action {index + 1}</Text>
+                                            <View style={styles.actionDialog}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                    <Text style={styles.secondaryColor}>Smart Contract:</Text>
+                                                    <Text>{action.account}</Text>
                                                 </View>
-                                            )}
+                                                <View
+                                                    style={{
+                                                        flexDirection: 'row',
+                                                        justifyContent: 'space-between',
+                                                        marginTop: 10,
+                                                    }}
+                                                >
+                                                    <Text style={styles.secondaryColor}>Function:</Text>
+                                                    <Text>{action.name}</Text>
+                                                </View>
+                                                <View
+                                                    style={{
+                                                        flexDirection: 'row',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        marginTop: 3,
+                                                    }}
+                                                >
+                                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
+
+                                                    <TouchableOpacity onPress={() => setActionDetail(!actionDetails)}>
+                                                        {!actionDetails ? (
+                                                            <IconButton
+                                                                icon={
+                                                                    Platform.OS === 'android'
+                                                                        ? 'chevron-down'
+                                                                        : 'chevron-down'
+                                                                }
+                                                                size={Platform.OS === 'android' ? 18 : 22}
+                                                            />
+                                                        ) : (
+                                                            <IconButton
+                                                                icon={
+                                                                    Platform.OS === 'android'
+                                                                        ? 'chevron-up'
+                                                                        : 'chevron-up'
+                                                                }
+                                                                size={Platform.OS === 'android' ? 18 : 22}
+                                                            />
+                                                        )}
+                                                    </TouchableOpacity>
+                                                </View>
+                                                {actionDetails && (
+                                                    <View style={styles.detailSection}>
+                                                        {Object.entries(action?.data).map(([key, value], idx) => (
+                                                            <View
+                                                                key={idx}
+                                                                style={{
+                                                                    flexDirection: 'row',
+                                                                    justifyContent: 'space-between',
+                                                                    marginBottom: 7,
+                                                                }}
+                                                            >
+                                                                <Text style={[styles.secondaryColor, { fontSize: 13 }]}>
+                                                                    {key}:
+                                                                </Text>
+                                                                <Text style={{ fontSize: 13 }}>
+                                                                    {value ? value.toString() : '--'}
+                                                                </Text>
+                                                            </View>
+                                                        ))}
+                                                    </View>
+                                                )}
+                                            </View>
                                         </View>
-                                    </View>
-                                ))}
+                                    ))}
                                 {typeof transactionDetails?.actions === 'string' && (
                                     <View style={styles.appDialog}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

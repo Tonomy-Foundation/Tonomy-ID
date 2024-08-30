@@ -417,9 +417,19 @@ export class WalletConnectSession implements IChainSession {
     private namespaces: SessionTypes.Namespaces;
     private chainAccountList: ChainDetail[];
 
-    constructor(wallet: IWeb3Wallet, namespaces: SessionTypes.Namespaces, chainAccountList: ChainDetail[]) {
+    constructor(wallet: IWeb3Wallet) {
         this.wallet = wallet;
+    }
+
+    public setNamespaces(namespaces: SessionTypes.Namespaces): void {
         this.namespaces = namespaces;
+    }
+
+    public getNamespaces(): SessionTypes.Namespaces {
+        return this.namespaces;
+    }
+
+    public setActiveAccounts(chainAccountList: ChainDetail[]): void {
         this.chainAccountList = chainAccountList;
     }
 
@@ -431,7 +441,7 @@ export class WalletConnectSession implements IChainSession {
         await this.wallet?.approveSession({
             id: request.id,
             relayProtocol: request.params.relays[0].protocol,
-            namespaces: this.namespaces,
+            namespaces: this.getNamespaces(),
         });
     }
 
@@ -440,14 +450,25 @@ export class WalletConnectSession implements IChainSession {
         // Example: Disconnect WalletConnect provider
     }
 
-    async createTransactionRequest(request: unknown): Promise<void> {
-        // Logic to create a transaction request using WalletConnect
-        // Example: Format and send the transaction request
+    async createTransactionRequest(transaction: ITransaction): Promise<TransactionRequest> {
+        const transactionRequest: TransactionRequest = {
+            to: (await transaction.getTo()).getName(),
+            from: (await transaction.getFrom()).getName(),
+            value: ethers.parseEther(parseFloat((await transaction.getValue()).toString()).toFixed(18)),
+            data: await (transaction as EthereumTransaction).getData(),
+        };
+
+        return transactionRequest;
     }
 
-    async approveRequest(request: unknown): Promise<void> {
-        // Logic to approve a WalletConnect transaction request
-        // Example: Sign and approve the transaction request
+    async approveRequest(
+        request: SignClientTypes.EventArguments['session_proposal'],
+        signedTransaction: unknown
+    ): Promise<void> {
+        console.log('request', request);
+        const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
+
+        await this.wallet?.respondSessionRequest({ topic: request.topic, response });
     }
 
     async rejectRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {

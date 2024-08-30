@@ -163,6 +163,8 @@ export default function CommunicationModule() {
                 let address;
                 let networkName;
 
+                console.log('sepoliaAccount.getName(', sepoliaAccount?.getName());
+
                 if (chainId === '11155111') {
                     address = sepoliaAccount ? sepoliaAccount.getName() : '';
                     networkName = 'Sepolia';
@@ -242,7 +244,10 @@ export default function CommunicationModule() {
                             events: activeNamespaces[key].events,
                         };
                     });
-                    const session = new WalletConnectSession(web3wallet, chainNetwork);
+                    const session = new WalletConnectSession(web3wallet);
+
+                    session.setNamespaces(namespaces);
+                    session.setActiveAccounts(chainNetwork);
 
                     for (const chainId of chainIds) {
                         if (supportedChains[chainId]) {
@@ -279,6 +284,7 @@ export default function CommunicationModule() {
             try {
                 const { topic, params, id, verifyContext } = event;
                 const { request, chainId } = params;
+                const session = new WalletConnectSession(web3wallet);
 
                 switch (request.method) {
                     case 'eth_sendTransaction': {
@@ -311,16 +317,15 @@ export default function CommunicationModule() {
                             navigation.navigate('SignTransaction', {
                                 transaction,
                                 privateKey: key,
-                                session: {
-                                    origin: verifyContext?.verified?.origin,
-                                    id,
-                                    topic,
-                                },
+                                origin: verifyContext?.verified?.origin,
+                                request: event,
+                                session,
                             });
                         } else {
                             transaction = new EthereumTransaction(transactionData, chain);
                             navigation.navigate('CreateEthereumKey', {
                                 requestType: 'transactionRequest',
+                                payload: event,
                                 transaction: {
                                     transaction,
                                     session: {
@@ -329,6 +334,7 @@ export default function CommunicationModule() {
                                         topic,
                                     },
                                 },
+                                session,
                             });
                         }
 

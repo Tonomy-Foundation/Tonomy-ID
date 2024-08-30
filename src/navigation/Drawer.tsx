@@ -18,10 +18,12 @@ export type DrawerStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        session: ISession;
+        origin?: string;
+        request?: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
+        session: IChainSession;
     };
     WalletConnectLogin: {
-        payload: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
+        payload: SignClientTypes.EventArguments['session_proposal'];
         platform: 'mobile' | 'browser';
         session: IChainSession;
     };
