@@ -7,6 +7,7 @@ import { useAppTheme } from '../utils/theme';
 import { SignClientTypes } from '@walletconnect/types';
 import { IChainSession, IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 export type DrawerStackParamList = {
     UserHome: { did?: string };
@@ -18,8 +19,8 @@ export type DrawerStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        origin?: string;
-        request?: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
+        origin: string;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
         session: IChainSession;
     };
     WalletConnectLogin: {
@@ -32,7 +33,7 @@ export type DrawerStackParamList = {
             transaction: ITransaction;
             session: ISession;
         };
-        payload?: SignClientTypes.EventArguments['session_proposal'];
+        payload?: Web3WalletTypes.SessionRequest | SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
         session?: IChainSession;
     };

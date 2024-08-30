@@ -15,6 +15,8 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import useUserStore from '../store/userStore';
 import { IconButton } from 'react-native-paper';
 import { SignClientTypes } from '@walletconnect/types';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -28,7 +30,7 @@ export default function SignTransactionConsentContainer({
     transaction: ITransaction;
     privateKey: IPrivateKey;
     origin: string;
-    request: SignClientTypes.EventArguments['session_proposal'];
+    request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
     session: IChainSession;
 }) {
     const errorStore = useErrorStore();

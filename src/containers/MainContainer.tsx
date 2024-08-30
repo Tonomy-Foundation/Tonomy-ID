@@ -11,7 +11,6 @@ import {
     ImageSourcePropType,
     ScrollView,
     RefreshControl,
-    Linking,
 } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
@@ -33,34 +32,15 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
-import {
-    ABI,
-    ActionType,
-    APIClient,
-    Bytes,
-    BytesType,
-    Name,
-    NameType,
-    PackedTransaction,
-    PermissionLevel,
-    PrivateKey,
-    PushTransactionArgs,
-    Serializer,
-    SignatureType,
-    SignedTransaction,
-    Transaction,
-    UInt8,
-} from '@wharfkit/antelope';
+import { APIClient, PrivateKey } from '@wharfkit/antelope';
 import { ABICache } from '@wharfkit/abicache';
 import zlib from 'pako';
-import { IdentityV3, ResolvedCallback, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
+import { SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import * as SecureStore from 'expo-secure-store';
 import {
     ActionData,
-    AntelopeAccount,
     AntelopeChain,
     AntelopePrivateKey,
-    AntelopeToken,
     AntelopeTransaction,
     EOSJungleChain,
     ESRSession,
@@ -68,8 +48,6 @@ import {
     PangeaMainnetChain,
     PangeaTestnetChain,
 } from '../utils/chain/antelope';
-import SignTransactionConsentContainer from './SignTransactionConsentContainer';
-import { IChain } from '../utils/chain/types';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;

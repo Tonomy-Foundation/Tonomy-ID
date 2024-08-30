@@ -163,8 +163,6 @@ export default function CommunicationModule() {
                 let address;
                 let networkName;
 
-                console.log('sepoliaAccount.getName(', sepoliaAccount?.getName());
-
                 if (chainId === '11155111') {
                     address = sepoliaAccount ? sepoliaAccount.getName() : '';
                     networkName = 'Sepolia';
@@ -193,86 +191,90 @@ export default function CommunicationModule() {
     useEffect(() => {
         const handleSessionProposal = async (proposal) => {
             try {
-                const { id } = proposal;
-                const { requiredNamespaces, optionalNamespaces } = proposal.params;
-                const activeNamespaces = Object.keys(requiredNamespaces).length
-                    ? requiredNamespaces
-                    : optionalNamespaces;
-                const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]) || ['11155111'];
-                const unsupportedChainIds =
-                    chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
+                if (web3wallet) {
+                    const { id } = proposal;
+                    const { requiredNamespaces, optionalNamespaces } = proposal.params;
+                    const activeNamespaces = Object.keys(requiredNamespaces).length
+                        ? requiredNamespaces
+                        : optionalNamespaces;
+                    const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]) || [
+                        '11155111',
+                    ];
+                    const unsupportedChainIds =
+                        chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
 
-                if (unsupportedChainIds?.length > 0) {
-                    errorStore.setError({
-                        title: 'Unsupported Chains',
-                        error: new Error(
-                            'We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'
-                        ),
-                        expected: true,
-                    });
-                    await web3wallet?.rejectSession({
-                        id: id,
-                        reason: getSdkError('UNSUPPORTED_CHAINS'),
-                    });
-                    return;
-                } else {
-                    const supportedChains = {
-                        '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
-                        '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
-                        '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
-                    };
-
-                    let keyFound = false;
-                    const namespaces: SessionTypes.Namespaces = {};
-                    const chainNetwork = await getChainDetail(chainIds);
-
-                    Object.keys(activeNamespaces).forEach((key) => {
-                        const accounts: string[] = [];
-
-                        activeNamespaces[key].chains?.forEach((chain) => {
-                            const chainId = chain.split(':')[1];
-                            const chainDetail = chainNetwork?.find((detail) => detail.chainId === chainId);
-
-                            if (chainDetail?.address) {
-                                accounts.push(`${chain}:${chainDetail.address}`);
-                            }
+                    if (unsupportedChainIds?.length > 0) {
+                        errorStore.setError({
+                            title: 'Unsupported Chains',
+                            error: new Error(
+                                'We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'
+                            ),
+                            expected: true,
                         });
-                        namespaces[key] = {
-                            chains: activeNamespaces[key].chains,
-                            accounts,
-                            methods: activeNamespaces[key].methods,
-                            events: activeNamespaces[key].events,
+                        await web3wallet?.rejectSession({
+                            id: id,
+                            reason: getSdkError('UNSUPPORTED_CHAINS'),
+                        });
+                        return;
+                    } else {
+                        const supportedChains = {
+                            '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
+                            '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
+                            '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
                         };
-                    });
-                    const session = new WalletConnectSession(web3wallet);
 
-                    session.setNamespaces(namespaces);
-                    session.setActiveAccounts(chainNetwork);
+                        let keyFound = false;
+                        const namespaces: SessionTypes.Namespaces = {};
+                        const chainNetwork = await getChainDetail(chainIds);
 
-                    for (const chainId of chainIds) {
-                        if (supportedChains[chainId]) {
-                            const { name, chainObject } = supportedChains[chainId];
-                            const key = await keyStorage.findByName(name, chainObject);
+                        Object.keys(activeNamespaces).forEach((key) => {
+                            const accounts: string[] = [];
 
-                            if (!key) {
-                                navigation.navigate('CreateEthereumKey', {
-                                    requestType: 'loginRequest',
-                                    payload: proposal,
-                                    session,
-                                });
-                                return;
-                            } else {
-                                keyFound = true;
+                            activeNamespaces[key].chains?.forEach((chain) => {
+                                const chainId = chain.split(':')[1];
+                                const chainDetail = chainNetwork?.find((detail) => detail.chainId === chainId);
+
+                                if (chainDetail?.address) {
+                                    accounts.push(`${chain}:${chainDetail.address}`);
+                                }
+                            });
+                            namespaces[key] = {
+                                chains: activeNamespaces[key].chains,
+                                accounts,
+                                methods: activeNamespaces[key].methods,
+                                events: activeNamespaces[key].events,
+                            };
+                        });
+                        const session = new WalletConnectSession(web3wallet);
+
+                        session.setNamespaces(namespaces);
+                        session.setActiveAccounts(chainNetwork);
+
+                        for (const chainId of chainIds) {
+                            if (supportedChains[chainId]) {
+                                const { name, chainObject } = supportedChains[chainId];
+                                const key = await keyStorage.findByName(name, chainObject);
+
+                                if (!key) {
+                                    navigation.navigate('CreateEthereumKey', {
+                                        requestType: 'loginRequest',
+                                        payload: proposal,
+                                        session,
+                                    });
+                                    return;
+                                } else {
+                                    keyFound = true;
+                                }
                             }
                         }
-                    }
 
-                    if (keyFound) {
-                        navigation.navigate('WalletConnectLogin', {
-                            payload: proposal,
-                            platform: 'browser',
-                            session,
-                        });
+                        if (keyFound) {
+                            navigation.navigate('WalletConnectLogin', {
+                                payload: proposal,
+                                platform: 'browser',
+                                session,
+                            });
+                        }
                     }
                 }
             } catch (error) {
@@ -282,81 +284,83 @@ export default function CommunicationModule() {
 
         const handleSessionRequest = async (event) => {
             try {
-                const { topic, params, id, verifyContext } = event;
-                const { request, chainId } = params;
-                const session = new WalletConnectSession(web3wallet);
+                if (web3wallet) {
+                    const { topic, params, id, verifyContext } = event;
+                    const { request, chainId } = params;
+                    const session = new WalletConnectSession(web3wallet);
 
-                switch (request.method) {
-                    case 'eth_sendTransaction': {
-                        const transactionData = request.params[0];
+                    switch (request.method) {
+                        case 'eth_sendTransaction': {
+                            const transactionData = request.params[0];
 
-                        let key, chain;
+                            let key, chain;
 
-                        if (chainId === 'eip155:11155111') {
-                            chain = EthereumSepoliaChain;
-                            key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-                        } else if (chainId === 'eip155:1') {
-                            chain = EthereumMainnetChain;
-                            key = await keyStorage.findByName('ethereum', chain);
-                        } else if (chainId === 'eip155:137') {
-                            chain = EthereumPolygonChain;
-                            key = await keyStorage.findByName('ethereumPolygon', chain);
-                        } else throw new Error('Unsupported chains');
+                            if (chainId === 'eip155:11155111') {
+                                chain = EthereumSepoliaChain;
+                                key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
+                            } else if (chainId === 'eip155:1') {
+                                chain = EthereumMainnetChain;
+                                key = await keyStorage.findByName('ethereum', chain);
+                            } else if (chainId === 'eip155:137') {
+                                chain = EthereumPolygonChain;
+                                key = await keyStorage.findByName('ethereumPolygon', chain);
+                            } else throw new Error('Unsupported chains');
 
-                        let transaction: ITransaction;
+                            let transaction: ITransaction;
 
-                        if (key) {
-                            const exportPrivateKey = await key.exportPrivateKey();
-                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                            if (key) {
+                                const exportPrivateKey = await key.exportPrivateKey();
+                                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
-                            transaction = await EthereumTransaction.fromTransaction(
-                                ethereumPrivateKey,
-                                transactionData,
-                                chain
-                            );
-                            navigation.navigate('SignTransaction', {
-                                transaction,
-                                privateKey: key,
-                                origin: verifyContext?.verified?.origin,
-                                request: event,
-                                session,
-                            });
-                        } else {
-                            transaction = new EthereumTransaction(transactionData, chain);
-                            navigation.navigate('CreateEthereumKey', {
-                                requestType: 'transactionRequest',
-                                payload: event,
-                                transaction: {
+                                transaction = await EthereumTransaction.fromTransaction(
+                                    ethereumPrivateKey,
+                                    transactionData,
+                                    chain
+                                );
+                                navigation.navigate('SignTransaction', {
                                     transaction,
-                                    session: {
-                                        origin: verifyContext?.verified?.origin,
-                                        id,
-                                        topic,
+                                    privateKey: key,
+                                    origin: verifyContext?.verified?.origin,
+                                    request: event,
+                                    session,
+                                });
+                            } else {
+                                transaction = new EthereumTransaction(transactionData, chain);
+                                navigation.navigate('CreateEthereumKey', {
+                                    requestType: 'transactionRequest',
+                                    payload: event,
+                                    transaction: {
+                                        transaction,
+                                        session: {
+                                            origin: verifyContext?.verified?.origin,
+                                            id,
+                                            topic,
+                                        },
                                     },
-                                },
-                                session,
-                            });
+                                    session,
+                                });
+                            }
+
+                            sendWalletConnectNotificationOnBackground(
+                                'Transaction Request',
+                                'Ethereum transaction signing request'
+                            );
+                            break;
                         }
 
-                        sendWalletConnectNotificationOnBackground(
-                            'Transaction Request',
-                            'Ethereum transaction signing request'
-                        );
-                        break;
-                    }
+                        default: {
+                            const response = {
+                                id: id,
+                                error: getSdkError('UNSUPPORTED_METHODS'),
+                                jsonrpc: '2.0',
+                            };
 
-                    default: {
-                        const response = {
-                            id: id,
-                            error: getSdkError('UNSUPPORTED_METHODS'),
-                            jsonrpc: '2.0',
-                        };
-
-                        await web3wallet?.respondSessionRequest({
-                            topic,
-                            response,
-                        });
-                        return;
+                            await web3wallet?.respondSessionRequest({
+                                topic,
+                                response,
+                            });
+                            return;
+                        }
                     }
                 }
             } catch (error) {

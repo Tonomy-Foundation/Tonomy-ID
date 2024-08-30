@@ -31,7 +31,7 @@ import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getPriceCoinGecko } from './common';
 import { getSdkError } from '@walletconnect/utils';
-import { IWeb3Wallet } from '@walletconnect/web3wallet';
+import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -468,16 +468,13 @@ export class WalletConnectSession implements IChainSession {
         return transactionRequest;
     }
 
-    async approveRequest(
-        request: SignClientTypes.EventArguments['session_proposal'],
-        signedTransaction: unknown
-    ): Promise<void> {
+    async approveRequest(request: Web3WalletTypes.SessionRequest, signedTransaction: unknown): Promise<void> {
         const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
 
         await this.wallet?.respondSessionRequest({ topic: request.topic, response });
     }
 
-    async rejectRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+    async rejectRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
         const response = {
             id: request.id,
             error: getSdkError('USER_REJECTED'),

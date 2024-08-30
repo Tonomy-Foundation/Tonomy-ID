@@ -15,7 +15,14 @@ import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { keyStorage } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
-import { EthereumMainnetChain, EthereumPolygonChain, EthereumSepoliaChain } from '../utils/chain/etherum';
+import {
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumSepoliaChain,
+    WalletConnectSession,
+} from '../utils/chain/etherum';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
+import { SignClientTypes } from '@walletconnect/types';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -30,7 +37,8 @@ export default function CreateEthereumKeyContainer({
     const { user } = useUserStore();
     const { transaction } = route.params?.transaction ?? {};
     const session = route.params?.transaction?.session;
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
+
+    const { web3wallet, initializeWalletState } = useWalletStore();
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
@@ -77,7 +85,7 @@ export default function CreateEthereumKeyContainer({
             });
 
             await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
-            await initializeWallet();
+            await initializeWalletState();
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
@@ -112,34 +120,46 @@ export default function CreateEthereumKeyContainer({
     const redirectFunc = async () => {
         const requestType = route.params?.requestType;
 
-        if (requestType === 'loginRequest' && route.params?.payload) {
-            navigation.navigate('WalletConnectLogin', {
-                payload: route.params.payload,
-                platform: 'browser',
-                session: route.params.session,
-            });
-        } else if (requestType === 'transactionRequest') {
-            if (session && transaction) {
-                const chainId = transaction?.getChain().getChainId();
-                let key;
+        if (web3wallet) {
+            const walletsession = new WalletConnectSession(web3wallet);
 
-                if (chainId === '11155111') {
-                    key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
-                } else if (chainId === '1') {
-                    key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
-                } else if (chainId === '137') {
-                    key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
-                } else throw new Error('Unsupported chain');
-                navigation.navigate('SignTransaction', {
-                    transaction,
-                    privateKey: key,
-                    request: route.params.payload,
+            if (requestType === 'loginRequest' && route.params?.payload) {
+                navigation.navigate('WalletConnectLogin', {
+                    payload: route.params.payload as SignClientTypes.EventArguments['session_proposal'],
+                    platform: 'browser',
+                    session: walletsession,
                 });
+            } else if (requestType === 'transactionRequest') {
+                if (session && transaction) {
+                    const chainId = transaction?.getChain().getChainId();
+                    let key;
+
+                    if (chainId === '11155111') {
+                        key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
+                    } else if (chainId === '1') {
+                        key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
+                    } else if (chainId === '137') {
+                        key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
+                    } else throw new Error('Unsupported chain');
+                    navigation.navigate('SignTransaction', {
+                        transaction,
+                        privateKey: key,
+                        request: route.params.payload as Web3WalletTypes.SessionRequest,
+                        session: walletsession,
+                        origin: session.origin,
+                    });
+                } else {
+                    navigation.navigate({ name: 'UserHome', params: {} });
+                }
             } else {
                 navigation.navigate({ name: 'UserHome', params: {} });
             }
         } else {
-            navigation.navigate({ name: 'UserHome', params: {} });
+            errorsStore.setError({
+                error: new Error('Wallet not found'),
+                title: 'Wallet initialzed error',
+                expected: true,
+            });
         }
     };
 

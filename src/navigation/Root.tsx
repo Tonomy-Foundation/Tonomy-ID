@@ -34,6 +34,7 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IChainSession, IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 const prefix = Linking.createURL('');
 
@@ -66,8 +67,8 @@ export type RouteStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        origin?: string;
-        request?: SignClientTypes.EventArguments['session_proposal'] | ResolvedSigningRequest;
+        origin: string;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
         session: IChainSession;
     };
     SignTransactionSuccess: {
@@ -92,7 +93,7 @@ export type RouteStackParamList = {
             transaction: ITransaction;
             session: ISession;
         };
-        payload: SignClientTypes.EventArguments['session_proposal'];
+        payload?: Web3WalletTypes.SessionRequest | SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
         session?: IChainSession;
     };

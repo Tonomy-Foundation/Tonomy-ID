@@ -439,9 +439,10 @@ export class AntelopeTransaction implements ITransaction {
         let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
 
         if (typeof amount === 'string') {
-            const numericPart = amount.match(/\d+(\.\d+)?/)[0];
+            const matchResult = (amount as string).match(/\d+(\.\d+)?/);
+            const numericPart = matchResult ? matchResult[0] : '0';
             // Remove any non-numeric characters (if necessary)
-            const cleanedNumericPart = numericPart.replace(/\D/g, '');
+            const cleanedNumericPart = numericPart.replace(/\D/g, '0');
 
             // Convert to BigInt
             amount = BigInt(cleanedNumericPart);
@@ -589,30 +590,28 @@ export class ESRSession implements IChainSession {
             });
 
             if (!response.ok) {
-                debug(`Failed to send callback: ${JSON.stringify(response)}`);
+                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
         }
     }
 
     async rejectRequest(request: ResolvedSigningRequest): Promise<void> {
         //TODO
-        const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
-        const callbackParams = request.getCallback(signedTransaction.signatures, 0);
-
-        if (callbackParams) {
-            const response = await fetch(callbackParams.url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    rejected: 'Request cancelled from within Anchor.',
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
-            }
-        }
+        // const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
+        // const callbackParams = request.getCallback(signedTransaction.signatures as any, 0);
+        // if (callbackParams) {
+        //     const response = await fetch(callbackParams.url, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             rejected: 'Request cancelled from within Anchor.',
+        //         }),
+        //     });
+        //     if (!response.ok) {
+        //         throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+        //     }
+        // }
     }
 }
