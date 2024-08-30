@@ -229,6 +229,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
     async getUsdPrice(): Promise<number> {
         console.log('his.getChain()', this.getChain());
+        //TODO check getChain is undefined coming from antelope chain PR
         return LEOS_PUBLIC_SALE_PRICE;
 
         // switch (this.getChain().getName()) {
@@ -489,7 +490,6 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         account: NameType,
         privateKey: AntelopePrivateKey
     ): AntelopeAccount {
-        console.log('antelopeChain', chain);
         return new AntelopeAccount(chain, account, privateKey);
     }
 
@@ -558,7 +558,6 @@ export class ESRSession implements IChainSession {
         //TODO
     }
     async getActiveAccounts(): Promise<ChainDetail[]> {
-        console.log('this.account', this.account, this.account.getChain());
         return [
             {
                 address: this.account.getName(),
