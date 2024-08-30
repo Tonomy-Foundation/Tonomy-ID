@@ -3,19 +3,15 @@ import { View, StyleSheet, Image, Text, ScrollView, TouchableOpacity, Platform }
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
-import { TH2, TH4 } from '../components/atoms/THeadings';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { IChainSession, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
-import { ethers, TransactionRequest } from 'ethers';
+import { ethers } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import { getSdkError } from '@walletconnect/utils';
-import useWalletStore from '../store/useWalletStore';
 import AccountDetails from '../components/AccountDetails';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import { EthereumTransaction } from '../utils/chain/etherum';
 import useUserStore from '../store/userStore';
 import { IconButton } from 'react-native-paper';
 import { SignClientTypes } from '@walletconnect/types';
@@ -99,6 +95,7 @@ export default function SignTransactionConsentContainer({
 
                     usdValue = await (await transaction.getValue()).getUsdValue();
 
+                    //TODO uncomment after fix antelope chain PR
                     // balance = (
                     //     await (await transaction.getFrom()).getBalance(transaction.getChain().getNativeToken())
                     // ).getAmount();
@@ -126,17 +123,17 @@ export default function SignTransactionConsentContainer({
                 const functionName = '';
                 const args: Record<string, string> | null = null;
 
-                // if (value) {
-                //     const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
-                //     const etherFee = ethers.parseEther(fee);
+                if (value) {
+                    const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
+                    const etherFee = ethers.parseEther(fee);
 
-                //     const totalTransactionCost = transactionValue + etherFee;
+                    const totalTransactionCost = transactionValue + etherFee;
 
-                //     // Check if the balance is sufficient
-                //     if (balance < totalTransactionCost) {
-                //         showBalanceError(true);
-                //     }
-                // }
+                    // Check if the balance is sufficient
+                    if (balance < totalTransactionCost) {
+                        showBalanceError(true);
+                    }
+                }
 
                 // if (contractTransaction) {
                 //     functionName = await transaction.getFunction();
@@ -176,16 +173,8 @@ export default function SignTransactionConsentContainer({
     async function onReject() {
         setTransactionLoading(true);
 
-        // const response = {
-        //     id: session.id,
-        //     error: getSdkError('USER_REJECTED'),
-        //     jsonrpc: '2.0',
-        // };
+        await session.rejectRequest(request);
 
-        // await web3wallet?.respondSessionRequest({
-        //     topic: session.topic,
-        //     response,
-        // });
         setTransactionLoading(false);
 
         navigation.navigate({
@@ -197,25 +186,6 @@ export default function SignTransactionConsentContainer({
     async function onAccept() {
         try {
             setTransactionLoading(true);
-            // console.log('transaction', transaction);
-            // const signedTransaction = await privateKey.sendTransaction(transaction);
-
-            // console.log('signedTransaction', signedTransaction);
-            // const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
-
-            // if (callbackParams) {
-            //     const response = await fetch(callbackParams.url, {
-            //         method: 'POST',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //         },
-            //         body: JSON.stringify(callbackParams?.payload),
-            //     });
-
-            //     if (!response.ok) {
-            //         debug(`Failed to send callback: ${JSON.stringify(response)}`);
-            //     }
-            // }
 
             const transactionRequest = await session.createTransactionRequest(transaction);
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
@@ -241,16 +211,8 @@ export default function SignTransactionConsentContainer({
                 error: new Error(`Error signing transaction, ${error}`),
                 expected: false,
             });
-            // const response = {
-            //     id: session.id,
-            //     error: getSdkError('USER_REJECTED'),
-            //     jsonrpc: '2.0',
-            // };
 
-            // await web3wallet?.respondSessionRequest({
-            //     topic: session.topic,
-            //     response,
-            // });
+            await session.rejectRequest(request);
 
             navigation.navigate({
                 name: 'UserHome',

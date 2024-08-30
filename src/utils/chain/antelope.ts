@@ -550,16 +550,12 @@ export class ESRSession implements IChainSession {
     private account: AntelopeAccount;
     private antelopeKey: AntelopePrivateKey;
 
-    constructor(account: AntelopeAccount, transaction: AntelopeTransaction, antelopeKey: AntelopePrivateKey) {
-        this.transaction = transaction;
-        this.account = account;
-        this.antelopeKey = antelopeKey;
-    }
-
     async createSession(request: ResolvedSigningRequest): Promise<void> {
         //TODO
     }
-
+    async cancelLoginRequest(request: unknown): Promise<void> {
+        //TODO
+    }
     async getActiveAccounts(): Promise<ChainDetail[]> {
         console.log('this.account', this.account, this.account.getChain());
         return [
@@ -571,8 +567,35 @@ export class ESRSession implements IChainSession {
         ];
     }
 
+    async disconnectSession(): Promise<void> {
+        // Logic to disconnect the ESR session
+        // Example: Clear the session and any stored data
+    }
+
+    async createTransactionRequest(transaction: ITransaction): Promise<ITransaction> {
+        return transaction;
+    }
+
+    async approveRequest(signingRequest: ResolvedSigningRequest, signedTransaction): Promise<void> {
+        const callbackParams = signingRequest.getCallback(signedTransaction.signatures, 0);
+
+        if (callbackParams) {
+            const response = await fetch(callbackParams.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(callbackParams?.payload),
+            });
+
+            if (!response.ok) {
+                debug(`Failed to send callback: ${JSON.stringify(response)}`);
+            }
+        }
+    }
+
     async rejectRequest(request: ResolvedSigningRequest): Promise<void> {
-        console.log('reject request');
+        //TODO
         const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
@@ -591,19 +614,5 @@ export class ESRSession implements IChainSession {
                 throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
         }
-    }
-
-    async disconnectSession(): Promise<void> {
-        // Logic to disconnect the ESR session
-        // Example: Clear the session and any stored data
-    }
-
-    async createTransactionRequest(transaction: ITransaction): Promise<ITransaction> {
-        return transaction;
-    }
-
-    async approveRequest(request: unknown): Promise<void> {
-        // Logic to approve an ESR transaction request
-        // Example: Sign the ESR transaction request and finalize it
     }
 }

@@ -317,9 +317,10 @@ export interface ChainDetail {
 }
 export interface IChainSession {
     createSession(request: unknown): Promise<void>;
+    cancelLoginRequest(request: unknown): Promise<void>;
+    approveRequest(request: unknown, transaction?: unknown): Promise<void>;
     disconnectSession(): Promise<void>;
     createTransactionRequest(request: unknown): Promise<unknown>;
-    approveRequest(request: unknown, transaction?: unknown): Promise<void>;
     rejectRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<ChainDetail[]>;
 }

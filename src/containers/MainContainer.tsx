@@ -216,6 +216,7 @@ export default function MainContainer({
                 const privateKeyValue = privateKey || '';
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
                 const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKeyValue), EOSJungleChain);
+                const session = new ESRSession();
 
                 if (!isIdentity) {
                     navigation.navigate('SignTransaction', {
@@ -223,6 +224,7 @@ export default function MainContainer({
                         privateKey: antelopeKey,
                         origin: 'https://jungle4.cryptolions.io',
                         request: resolvedSigningRequest,
+                        session,
                     });
                 } else {
                     const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);

@@ -445,6 +445,13 @@ export class WalletConnectSession implements IChainSession {
         });
     }
 
+    async cancelLoginRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet?.rejectSession({
+            id: request.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
+    }
+
     async disconnectSession(): Promise<void> {
         // Logic to disconnect the WalletConnect session
         // Example: Disconnect WalletConnect provider
@@ -465,16 +472,21 @@ export class WalletConnectSession implements IChainSession {
         request: SignClientTypes.EventArguments['session_proposal'],
         signedTransaction: unknown
     ): Promise<void> {
-        console.log('request', request);
         const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
 
         await this.wallet?.respondSessionRequest({ topic: request.topic, response });
     }
 
     async rejectRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
-        await this.wallet?.rejectSession({
+        const response = {
             id: request.id,
-            reason: getSdkError('USER_REJECTED'),
+            error: getSdkError('USER_REJECTED'),
+            jsonrpc: '2.0',
+        };
+
+        await this.wallet?.respondSessionRequest({
+            topic: request.topic,
+            response,
         });
     }
 }
