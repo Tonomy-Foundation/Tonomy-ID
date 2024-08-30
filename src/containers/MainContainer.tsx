@@ -58,14 +58,18 @@ import * as SecureStore from 'expo-secure-store';
 import {
     ActionData,
     AntelopeAccount,
+    AntelopeChain,
     AntelopePrivateKey,
     AntelopeToken,
     AntelopeTransaction,
     EOSJungleChain,
     ESRSession,
     LEOS_PUBLIC_SALE_PRICE,
+    PangeaMainnetChain,
+    PangeaTestnetChain,
 } from '../utils/chain/antelope';
 import SignTransactionConsentContainer from './SignTransactionConsentContainer';
+import { IChain } from '../utils/chain/types';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -177,7 +181,17 @@ export default function MainContainer({
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('esr:')) {
-                const client = new APIClient({ url: 'https://jungle4.cryptolions.io' });
+                let chain: AntelopeChain;
+
+                if (settings.env === 'testnet') {
+                    chain = PangeaTestnetChain;
+                } else if (settings.env === 'production') {
+                    chain = PangeaMainnetChain;
+                } else {
+                    chain = EOSJungleChain;
+                }
+
+                const client = new APIClient({ url: chain.getApiOrigin() });
 
                 // Define the options used when decoding/resolving the request
                 const options = {
@@ -222,14 +236,13 @@ export default function MainContainer({
                     navigation.navigate('SignTransaction', {
                         transaction,
                         privateKey: antelopeKey,
-                        origin: 'https://jungle4.cryptolions.io',
+                        origin: chain.getApiOrigin(),
                         request: resolvedSigningRequest,
                         session,
                     });
                 } else {
-                    const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, accountName, antelopeKey);
                     const signedTransaction = await antelopeKey.signTransaction(transaction);
-                    const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
+                    const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures as any, 0);
 
                     if (callbackParams) {
                         const response = await fetch(callbackParams.url, {

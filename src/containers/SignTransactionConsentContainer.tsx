@@ -212,12 +212,11 @@ export default function SignTransactionConsentContainer({
                 expected: false,
             });
 
-            await session.rejectRequest(request);
-
             navigation.navigate({
                 name: 'UserHome',
                 params: {},
             });
+            await session.rejectRequest(request);
         }
     }
 
