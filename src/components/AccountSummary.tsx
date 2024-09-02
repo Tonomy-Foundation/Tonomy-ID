@@ -5,7 +5,6 @@ import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { IAccount } from '../utils/chain/types';
-import NetInfo from '@react-native-community/netinfo';
 import useErrorStore from '../store/errorStore';
 
 export type AccountSummaryProps = {
@@ -34,17 +33,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
     }, [props.address]);
 
     const generateKey = async () => {
-        const state = await NetInfo.fetch();
-
-        if (state.isConnected) {
-            props.navigation.navigate('CreateEthereumKey');
-        } else {
-            errorStore.setError({
-                error: new Error('Please connect to the internet to generate a key'),
-                title: 'No internet connection',
-                expected: true,
-            });
-        }
+        props.navigation.navigate('CreateEthereumKey');
     };
 
     return (

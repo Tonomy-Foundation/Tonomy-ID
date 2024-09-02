@@ -11,7 +11,6 @@ import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
-import NetInfo from '@react-native-community/netinfo';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
@@ -21,7 +20,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     useEffect(() => {
         async function main() {
             await sleep(800);
-            const state = await NetInfo.fetch();
 
             try {
                 await initializeStatusFromStorage();
@@ -39,18 +37,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
-
-                            if (state.isConnected) {
-                                await initializeWalletState();
-                            } else {
-                                // Keep checking until the connection is established
-                                const interval = setInterval(async () => {
-                                    if (state.isConnected) {
-                                        clearInterval(interval);
-                                        await initializeWalletState();
-                                    }
-                                }, 30000);
-                            }
+                            await initializeWalletState();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
@@ -65,9 +52,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                if (state.isConnected) {
-                    errorStore.setError({ error: e, expected: false });
-                }
+                errorStore.setError({ error: e, expected: false });
             }
         }
 

@@ -30,7 +30,6 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import AccountSummary from '../components/AccountSummary';
-import NetInfo from '@react-native-community/netinfo';
 
 const vestingContract = VestingContract.Instance;
 
@@ -77,12 +76,8 @@ export default function MainContainer({
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
-            const state = await NetInfo.fetch();
-
-            if (state.isConnected) {
-                if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
-                    await initializeWalletState();
-                }
+            if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
+                await initializeWalletState();
             }
         };
 
@@ -221,13 +216,9 @@ export default function MainContainer({
     };
 
     const onRefresh = React.useCallback(async () => {
-        const state = await NetInfo.fetch();
-
-        if (state.isConnected) {
-            setRefreshing(true);
-            updateBalance();
-            setRefreshing(false);
-        }
+        setRefreshing(true);
+        updateBalance();
+        setRefreshing(false);
     }, [updateBalance]);
 
     const MainView = () => {

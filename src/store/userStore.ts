@@ -14,7 +14,6 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import NetInfo from '@react-native-community/netinfo';
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -29,6 +28,7 @@ export interface UserState {
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
     logout(reason: string): Promise<void>;
+    isUserInitialized: boolean;
 }
 
 setSettings({
@@ -44,6 +44,7 @@ setSettings({
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
+    isUserInitialized: false,
     getStatus: () => {
         const status = get().status;
 
@@ -60,17 +61,17 @@ const useUserStore = create<UserState>((set, get) => ({
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
-        await printStorage('initializeStatusFromStorage()');
+        if (get().isUserInitialized) {
+            debug('Already initialized');
+            return;
+        }
 
         try {
             await get().user.initializeFromStorage();
             get().setStatus(UserStatus.LOGGED_IN);
+            set({ isUserInitialized: true });
         } catch (e) {
-            const netInfo = await NetInfo.fetch();
-
-            if (!netInfo.isConnected) {
-                get().setStatus(UserStatus.LOGGED_IN);
-            } else if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
+            if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 useErrorStore.getState().setError({ error: e, expected: false });
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
