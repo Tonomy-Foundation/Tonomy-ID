@@ -67,7 +67,7 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     initializeStatusFromStorage: async () => {
         if (get().isUserInitialized) {
-            debug('Already initialized');
+            debug('Already initialized user');
             return;
         }
 
