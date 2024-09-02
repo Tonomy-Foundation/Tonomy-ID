@@ -9,11 +9,13 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
+      
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
 
       - name: 📦 Check it is using the latest version of the SDK
         uses: actions/setup-node@v4
         with:
-          node-version: 18.12.1
-      - run: corepack enable
+          node-version: 22.3.0
       - run: yarn install --immutable
       - run: yarn run updateSdkVersion $GITHUB_BASE_REF check

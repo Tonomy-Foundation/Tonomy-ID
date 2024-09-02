@@ -29,8 +29,10 @@ import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
+import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
 
+const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
 
 interface AccountDetails {
@@ -146,6 +148,8 @@ export default function MainContainer({
             }
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
+                debug('Invalid QR Code', JSON.stringify(e, null, 2));
+
                 if (e.message === 'QR schema does not match app') {
                     errorStore.setError({
                         title: 'Invalid QR Code',

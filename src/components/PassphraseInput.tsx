@@ -3,6 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import AutoCompletePassphraseWord from '../components/AutoCompletePassphraseWord';
 import theme, { commonStyles } from '../utils/theme';
 import { util } from '@tonomy/tonomy-id-sdk';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:components:PassphraseInput');
 
 interface PassphraseInputProps {
     value: string[];

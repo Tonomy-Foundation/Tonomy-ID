@@ -1,5 +1,5 @@
 // useWalletStore.js
-import create from 'zustand';
+import { create } from 'zustand';
 import { Core } from '@walletconnect/core';
 import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
 import { appStorage, connect, keyStorage } from '../utils/StorageManager/setup';
@@ -16,7 +16,10 @@ import {
     ETHToken,
     EthereumToken,
 } from '../utils/chain/etherum';
-import { IAccount } from '../utils/chain/types';
+import { Asset, IAccount } from '../utils/chain/types';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:store:useWalletStore');
 
 export const core = new Core({
     projectId: settings.config.walletConnectProjectId,
@@ -55,7 +58,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             await connect();
 
             if (get().initialized && get().ethereumAccount) {
-                console.log('Already initialized');
+                debug('Already initialized');
                 return;
             }
 
