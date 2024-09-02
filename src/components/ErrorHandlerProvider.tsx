@@ -25,6 +25,7 @@ export default function ErrorHandlerProvider() {
             // subscribe to errorStore changes to update the modal
             // using the `errorStore` variable does not work as changes do not force a re-render
             useErrorStore.subscribe((state) => {
+                console.error(JSON.stringify(state, null, 2));
                 errorRef.current.error = state.error;
                 errorRef.current.title = state.title;
                 errorRef.current.expected = state.expected;
