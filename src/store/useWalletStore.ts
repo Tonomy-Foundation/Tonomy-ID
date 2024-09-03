@@ -70,13 +70,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     const exportPrivateKey = await key.exportPrivateKey();
                     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
                     const account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                    const balance = await token.getBalance(account);
+                    // const balance = await token.getBalance(account);
 
                     return {
                         account,
                         balance: {
-                            balance: balance?.toString() || '0',
-                            usdBalance: (await balance.getUsdValue()) || 0,
+                            balance: '0',
+                            usdBalance: 0,
                         },
                     };
                 }

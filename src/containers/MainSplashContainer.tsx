@@ -14,7 +14,7 @@ import { connect } from '../utils/StorageManager/setup';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, getStatus, logout, isUserInitialized } = useUserStore();
+    const { user, initializeStatusFromStorage, getStatus, logout, isUserInitialized, setStatus } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
 
     useEffect(() => {
@@ -67,8 +67,11 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     const userName = await user.getUsername();
 
                     console.log('username', userName);
-                    if (userName) await initializeWalletState();
-                    else navigation.dispatch(StackActions.replace('Home'));
+                    if (userName) {
+                        await setStatus(UserStatus.LOGGED_IN);
+
+                        await initializeWalletState();
+                    } else navigation.dispatch(StackActions.replace('Home'));
                 } catch (e) {
                     console.log('e main splash', e);
 
@@ -95,6 +98,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         user,
         initializeWalletState,
         clearState,
+        setStatus,
         isUserInitialized,
     ]);
 
