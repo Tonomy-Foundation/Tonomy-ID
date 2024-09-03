@@ -468,13 +468,16 @@ export class WalletConnectSession implements IChainSession {
         return transactionRequest;
     }
 
-    async approveRequest(request: Web3WalletTypes.SessionRequest, signedTransaction: unknown): Promise<void> {
+    async approveTransactionRequest(
+        request: Web3WalletTypes.SessionRequest,
+        signedTransaction: unknown
+    ): Promise<void> {
         const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
 
         await this.wallet?.respondSessionRequest({ topic: request.topic, response });
     }
 
-    async rejectRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
+    async rejectTransactionRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
         const response = {
             id: request.id,
             error: getSdkError('USER_REJECTED'),

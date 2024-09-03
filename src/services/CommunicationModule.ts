@@ -329,14 +329,7 @@ export default function CommunicationModule() {
                                 navigation.navigate('CreateEthereumKey', {
                                     requestType: 'transactionRequest',
                                     payload: event,
-                                    transaction: {
-                                        transaction,
-                                        session: {
-                                            origin: verifyContext?.verified?.origin,
-                                            id,
-                                            topic,
-                                        },
-                                    },
+                                    transaction: transaction,
                                     session,
                                 });
                             }

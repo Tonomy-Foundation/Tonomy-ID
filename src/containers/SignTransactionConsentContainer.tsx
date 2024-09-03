@@ -175,7 +175,7 @@ export default function SignTransactionConsentContainer({
     async function onReject() {
         setTransactionLoading(true);
 
-        await session.rejectRequest(request);
+        await session.rejectTransactionRequest(request);
 
         setTransactionLoading(false);
 
@@ -192,7 +192,7 @@ export default function SignTransactionConsentContainer({
             const transactionRequest = await session.createTransactionRequest(transaction);
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
-            await session.approveRequest(request, signedTransaction);
+            await session.approveTransactionRequest(request, signedTransaction);
             navigation.navigate('SignTransactionSuccess', {
                 transactionDetails: {
                     chainId: transaction.getChain().getChainId(),
@@ -218,7 +218,7 @@ export default function SignTransactionConsentContainer({
                 name: 'UserHome',
                 params: {},
             });
-            await session.rejectRequest(request);
+            await session.rejectTransactionRequest(request);
         }
     }
 

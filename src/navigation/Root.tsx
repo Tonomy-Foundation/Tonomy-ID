@@ -32,7 +32,7 @@ import SignTransactionConsentScreen from '../screens/SignTransactionConsentScree
 import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import { IChainSession, IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
+import { IChainSession, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
@@ -89,10 +89,7 @@ export type RouteStackParamList = {
         session: IChainSession;
     };
     CreateEthereumKey?: {
-        transaction?: {
-            transaction: ITransaction;
-            session: ISession;
-        };
+        transaction?: ITransaction;
         payload?: Web3WalletTypes.SessionRequest | SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
         session?: IChainSession;

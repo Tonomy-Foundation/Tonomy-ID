@@ -576,7 +576,7 @@ export class ESRSession implements IChainSession {
         return transaction;
     }
 
-    async approveRequest(signingRequest: ResolvedSigningRequest, signedTransaction): Promise<void> {
+    async approveTransactionRequest(signingRequest: ResolvedSigningRequest, signedTransaction): Promise<void> {
         const callbackParams = signingRequest.getCallback(signedTransaction.signatures, 0);
 
         if (callbackParams) {
@@ -594,23 +594,24 @@ export class ESRSession implements IChainSession {
         }
     }
 
-    async rejectRequest(request: ResolvedSigningRequest): Promise<void> {
-        //TODO
-        // const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
-        // const callbackParams = request.getCallback(signedTransaction.signatures as any, 0);
-        // if (callbackParams) {
-        //     const response = await fetch(callbackParams.url, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({
-        //             rejected: 'Request cancelled from within Anchor.',
-        //         }),
-        //     });
-        //     if (!response.ok) {
-        //         throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
-        //     }
-        // }
+    async rejectTransactionRequest(request: ResolvedSigningRequest): Promise<void> {
+        const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
+        const callbackParams = request.getCallback(signedTransaction.signatures as any, 0);
+
+        if (callbackParams) {
+            const response = await fetch(callbackParams.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rejected: 'Request cancelled from within Anchor.',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+            }
+        }
     }
 }

@@ -35,8 +35,7 @@ export default function CreateEthereumKeyContainer({
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const { transaction } = route.params?.transaction ?? {};
-    const session = route.params?.transaction?.session;
+    const transaction = route.params?.transaction;
 
     const { web3wallet, initializeWalletState } = useWalletStore();
     const [passphrase, setPassphrase] = useState<string[]>(
@@ -45,6 +44,7 @@ export default function CreateEthereumKeyContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
+    const { verifyContext } = route.params?.payload as Web3WalletTypes.SessionRequest;
 
     async function setUserName() {
         try {
@@ -130,7 +130,7 @@ export default function CreateEthereumKeyContainer({
                     session: walletsession,
                 });
             } else if (requestType === 'transactionRequest') {
-                if (session && transaction) {
+                if (transaction) {
                     const chainId = transaction?.getChain().getChainId();
                     let key;
 
@@ -141,12 +141,13 @@ export default function CreateEthereumKeyContainer({
                     } else if (chainId === '137') {
                         key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
                     } else throw new Error('Unsupported chain');
+
                     navigation.navigate('SignTransaction', {
                         transaction,
                         privateKey: key,
                         request: route.params.payload as Web3WalletTypes.SessionRequest,
                         session: walletsession,
-                        origin: session.origin,
+                        origin: verifyContext?.verified?.origin,
                     });
                 } else {
                     navigation.navigate({ name: 'UserHome', params: {} });
