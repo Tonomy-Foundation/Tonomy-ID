@@ -287,6 +287,9 @@ export default function CommunicationModule() {
             }
         };
 
+        web3wallet?.off('session_proposal', onSessionProposal);
+        web3wallet?.off('session_request', onSessionRequest);
+
         web3wallet?.on('session_proposal', onSessionProposal);
         web3wallet?.on('session_request', onSessionRequest);
 
@@ -297,7 +300,7 @@ export default function CommunicationModule() {
     }, [navigation, web3wallet, errorStore]);
 
     useEffect(() => {
-        handleConnect();
+        if (web3wallet) handleConnect();
     }, [handleConnect, web3wallet, initialized]);
 
     const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {

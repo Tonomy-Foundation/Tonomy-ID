@@ -21,35 +21,63 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         async function main() {
             await sleep(800);
 
+            // try {
+            //     if (!isUserInitialized) await initializeStatusFromStorage();
+            //     const status = getStatus();
+
+            //     await connect();
+
+            //     switch (status) {
+            //         case UserStatus.NONE:
+            //             navigation.dispatch(StackActions.replace('SplashSecurity'));
+            //             break;
+            //         case UserStatus.NOT_LOGGED_IN:
+            //             navigation.dispatch(StackActions.replace('Home'));
+            //             break;
+            //         case UserStatus.LOGGED_IN:
+            //             try {
+            //                 await user.getUsername();
+            //                 await initializeWalletState();
+            //             } catch (e) {
+            //                 if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+            //                     logout("Invalid data in user's storage");
+            //                     clearState();
+            //                 } else {
+            //                     throw e;
+            //                 }
+            //             }
+
+            //             break;
+            //         default:
+            //             throw new Error('Unknown status: ' + status);
+            //     }
+            // } catch (e) {
+            //     console.error('main screen error', e);
+            //     errorStore.setError({ error: e, expected: false });
+            // }
+
             try {
                 if (!isUserInitialized) await initializeStatusFromStorage();
                 const status = getStatus();
 
+                console.log('main status', status);
                 await connect();
 
-                switch (status) {
-                    case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('SplashSecurity'));
-                        break;
-                    case UserStatus.NOT_LOGGED_IN:
-                        navigation.dispatch(StackActions.replace('Home'));
-                        break;
-                    case UserStatus.LOGGED_IN:
-                        try {
-                            await user.getUsername();
-                            await initializeWalletState();
-                        } catch (e) {
-                            if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
-                                logout("Invalid data in user's storage");
-                                clearState();
-                            } else {
-                                throw e;
-                            }
-                        }
+                try {
+                    const userName = await user.getUsername();
 
-                        break;
-                    default:
-                        throw new Error('Unknown status: ' + status);
+                    console.log('username', userName);
+                    if (userName) await initializeWalletState();
+                    else navigation.dispatch(StackActions.replace('Home'));
+                } catch (e) {
+                    console.log('e main splash', e);
+
+                    if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+                        await logout("Invalid data in user's storage");
+                        clearState();
+                    }
+
+                    navigation.dispatch(StackActions.replace('Home'));
                 }
             } catch (e) {
                 console.error('main screen error', e);
