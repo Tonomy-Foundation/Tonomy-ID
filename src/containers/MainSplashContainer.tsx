@@ -14,70 +14,45 @@ import { connect } from '../utils/StorageManager/setup';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, getStatus, logout, isUserInitialized, setStatus } = useUserStore();
+    const { user, initializeStatusFromStorage, getStatus, logout, isAppInitialized, setStatus } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
 
     useEffect(() => {
         async function main() {
             await sleep(800);
 
-            // try {
-            //     if (!isUserInitialized) await initializeStatusFromStorage();
-            //     const status = getStatus();
-
-            //     await connect();
-
-            //     switch (status) {
-            //         case UserStatus.NONE:
-            //             navigation.dispatch(StackActions.replace('SplashSecurity'));
-            //             break;
-            //         case UserStatus.NOT_LOGGED_IN:
-            //             navigation.dispatch(StackActions.replace('Home'));
-            //             break;
-            //         case UserStatus.LOGGED_IN:
-            //             try {
-            //                 await user.getUsername();
-            //                 await initializeWalletState();
-            //             } catch (e) {
-            //                 if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
-            //                     logout("Invalid data in user's storage");
-            //                     clearState();
-            //                 } else {
-            //                     throw e;
-            //                 }
-            //             }
-
-            //             break;
-            //         default:
-            //             throw new Error('Unknown status: ' + status);
-            //     }
-            // } catch (e) {
-            //     console.error('main screen error', e);
-            //     errorStore.setError({ error: e, expected: false });
-            // }
-
             try {
-                if (!isUserInitialized) await initializeStatusFromStorage();
+                if (!isAppInitialized) await initializeStatusFromStorage();
+                const status = await getStatus();
 
                 await connect();
 
-                try {
-                    const userName = await user.getUsername();
+                switch (status) {
+                    case UserStatus.NONE:
+                        navigation.dispatch(StackActions.replace('Home'));
+                        break;
+                    case UserStatus.NOT_LOGGED_IN:
+                        navigation.dispatch(StackActions.replace('Home'));
+                        break;
+                    case UserStatus.LOGGED_IN:
+                        try {
+                            await user.getUsername();
+                            await initializeWalletState();
+                        } catch (e) {
+                            if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+                                logout("Invalid data in user's storage");
+                                clearState();
+                            } else {
+                                throw e;
+                            }
+                        }
 
-                    if (userName) {
-                        await setStatus(UserStatus.LOGGED_IN);
-
-                        await initializeWalletState();
-                    } else navigation.dispatch(StackActions.replace('Home'));
-                } catch (e) {
-                    if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
-                        await logout("Invalid data in user's storage");
-                        clearState();
-                    }
-
-                    navigation.dispatch(StackActions.replace('Home'));
+                        break;
+                    default:
+                        throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
+                console.error('main screen error', e);
                 errorStore.setError({ error: e, expected: false });
             }
         }
@@ -93,7 +68,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         initializeWalletState,
         clearState,
         setStatus,
-        isUserInitialized,
+        isAppInitialized,
     ]);
 
     return (

@@ -29,7 +29,7 @@ export default function TErrorModal(props: TErrorModalProps) {
 
     useEffect(() => {
         if (props.expected === false) {
-            console.error('Error Modal:', props.error, props?.error?.message);
+            console.error('Error Modal:', props.error);
             debug(JSON.stringify(props.error, null, 2), props.expected);
             // Additional error handling or logging could be placed here
         }

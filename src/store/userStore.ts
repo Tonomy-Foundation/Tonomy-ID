@@ -27,11 +27,11 @@ export enum UserStatus {
 export interface UserState {
     user: IUser;
     status: UserStatus;
-    getStatus(): UserStatus;
+    getStatus(): Promise<UserStatus>;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
     logout(reason: string): Promise<void>;
-    isUserInitialized: boolean;
+    isAppInitialized: boolean;
 }
 
 setSettings({
@@ -49,14 +49,16 @@ const useUserStore = create<UserState>((set, get) => ({
     // @ts-ignore PublicKey type error
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
-    isUserInitialized: false,
-    getStatus: () => {
-        const status = get().status;
+    isAppInitialized: false,
+    getStatus: async () => {
+        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
-        return status;
+        return status as UserStatus;
     },
-    setStatus: (newStatus: UserStatus) => {
-        set({ status: newStatus });
+    setStatus: async (newStatus: UserStatus) => {
+        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+
+        set({ status: status as UserStatus });
     },
     logout: async (reason: string) => {
         await get().user.logout();
@@ -68,15 +70,15 @@ const useUserStore = create<UserState>((set, get) => ({
     initializeStatusFromStorage: async () => {
         await printStorage('initializeStatusFromStorage()');
 
-        if (get().isUserInitialized) {
-            debug('Already initialized user');
+        if (get().isAppInitialized) {
+            debug('Already initialized application');
             return;
         }
 
         try {
             await get().user.initializeFromStorage();
             get().setStatus(UserStatus.LOGGED_IN);
-            set({ isUserInitialized: true });
+            set({ isAppInitialized: true });
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
