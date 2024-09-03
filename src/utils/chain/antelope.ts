@@ -550,6 +550,12 @@ export class ESRSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
     private antelopeKey: AntelopePrivateKey;
+    private chain: AntelopeChain;
+
+    constructor(antelopeKey: AntelopePrivateKey, chain: AntelopeChain) {
+        this.antelopeKey = antelopeKey;
+        this.chain = chain;
+    }
 
     async createSession(request: ResolvedSigningRequest): Promise<void> {
         //TODO
@@ -561,8 +567,8 @@ export class ESRSession implements IChainSession {
         return [
             {
                 address: this.account.getName(),
-                chainId: '',
-                networkName: '',
+                chainId: this.chain.getAntelopeChainId(),
+                networkName: this.chain.getName(),
             },
         ];
     }

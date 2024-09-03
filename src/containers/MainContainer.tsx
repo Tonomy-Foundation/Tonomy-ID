@@ -208,7 +208,7 @@ export default function MainContainer({
                 const privateKeyValue = privateKey || '';
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
                 const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKeyValue), EOSJungleChain);
-                const session = new ESRSession();
+                const session = new ESRSession(antelopeKey, chain);
 
                 if (!isIdentity) {
                     navigation.navigate('SignTransaction', {
