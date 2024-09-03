@@ -5,7 +5,6 @@ import AppsScreen from '../screens/Apps';
 import CitizenshipScreen from '../screens/Citizenship';
 import AssetsScreen from '../screens/Assets';
 import ExploreScreen from '../screens/Explore';
-import ScanScreen from '../screens/Scan';
 
 import theme, { useAppTheme } from '../utils/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
