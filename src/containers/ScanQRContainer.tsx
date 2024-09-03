@@ -10,6 +10,7 @@ import { ScanQRScreenProps } from '../screens/ScanQRScreen';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Images } from '../assets';
 import QRScanContainer from './QRScanContainer';
+import theme from '../utils/theme';
 const debug = Debug('tonomy-id:containers:MainContainer');
 
 export type ScanQRContainerProps = {
@@ -124,7 +125,9 @@ const styles = StyleSheet.create({
     bottomInstruction: {
         marginTop: 15,
         padding: 15,
-        marginBottom: 20,
+        marginBottom: 40,
+        backgroundColor: theme.colors.grey7,
+        borderRadius: 16,
     },
     favicon: {
         width: 16,
