@@ -58,23 +58,18 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isUserInitialized) await initializeStatusFromStorage();
-                const status = getStatus();
 
-                console.log('main status', status);
                 await connect();
 
                 try {
                     const userName = await user.getUsername();
 
-                    console.log('username', userName);
                     if (userName) {
                         await setStatus(UserStatus.LOGGED_IN);
 
                         await initializeWalletState();
                     } else navigation.dispatch(StackActions.replace('Home'));
                 } catch (e) {
-                    console.log('e main splash', e);
-
                     if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                         await logout("Invalid data in user's storage");
                         clearState();
@@ -83,7 +78,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     navigation.dispatch(StackActions.replace('Home'));
                 }
             } catch (e) {
-                console.error('main screen error', e);
                 errorStore.setError({ error: e, expected: false });
             }
         }
