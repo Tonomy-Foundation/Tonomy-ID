@@ -66,6 +66,8 @@ const useUserStore = create<UserState>((set, get) => ({
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
+        await printStorage('initializeStatusFromStorage()');
+
         if (get().isUserInitialized) {
             debug('Already initialized user');
             return;

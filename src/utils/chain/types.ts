@@ -148,13 +148,7 @@ export abstract class AbstractAsset implements IAsset {
         }
     }
     getSymbol(): string {
-        const symbol = this.token.getSymbol();
-
-        if (symbol) {
-            return symbol;
-        }
-
-        return '';
+        return this.token.getSymbol();
     }
     getPrecision(): number {
         return this.token.getPrecision();
@@ -170,7 +164,7 @@ export abstract class AbstractAsset implements IAsset {
     }
 
     toString(): string {
-        return `${this.printValue()} ${this.token?.getSymbol() || ''}`;
+        return `${this.printValue()} ${this.token?.getSymbol()}`;
     }
 }
 
