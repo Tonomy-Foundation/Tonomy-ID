@@ -19,6 +19,7 @@ export type SendAssetProps = {
     address?: string;
     icon?: ImageSourcePropType | undefined;
     image?: string;
+    accountBalance: { balance: string; usdBalance: number };
 };
 const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
@@ -82,7 +83,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
             <QRScan onClose={onClose} cryptoWallet onScan={onScan} refMessage={refMessage} />
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <View style={{ flexDirection: 'column', gap: 15 }}>
+                    <View style={styles.flexCol}>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={depositeAddress}
@@ -178,6 +179,10 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'Roboto',
         color: theme.colors.tabGray,
+    },
+    flexCol: {
+        flexDirection: 'column',
+        gap: 15,
     },
 });
 export default SendAssetContainer;

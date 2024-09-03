@@ -16,6 +16,7 @@ export type ReceiveAssetProps = {
     address?: string;
     icon?: ImageSourcePropType | undefined;
     image?: string;
+    accountBalance: { balance: string; usdBalance: number };
 };
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
@@ -54,7 +55,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                         )}
                         <Text style={styles.networkTitleName}>{props.name} Network</Text>
                     </View>
-                    <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 15 }}>
+                    <View style={styles.flexCenter}>
                         <View style={{ ...styles.qrView, flexDirection: 'column' }}>
                             <QRCode value="testValue" size={200} />
                             <Text style={styles.accountName}>{props.address}</Text>
@@ -161,6 +162,11 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    flexCenter: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 15,
     },
 });
 export default ReceiveAssetContainer;

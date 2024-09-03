@@ -13,6 +13,7 @@ export type AssetDetailProps = {
     address?: string;
     icon?: ImageSourcePropType | undefined;
     image?: string;
+    accountBalance: { balance: string; usdBalance: number };
 };
 const AssetDetailContainer = (props: AssetDetailProps) => {
     return (
@@ -31,10 +32,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                             </View>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <Text style={styles.headerAssetsAmount}>0.035 ETH</Text>
-                            <Text style={styles.headerAssetUSDAmount}>$112.20 USD</Text>
+                            <Text style={styles.headerAssetsAmount}>{props.accountBalance.balance}</Text>
+                            <Text style={styles.headerAssetUSDAmount}>${props.accountBalance.usdBalance} USD</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', gap: 40, marginTop: 20 }}>
+                        <View style={styles.flexRow}>
                             <TouchableOpacity
                                 onPress={() =>
                                     props.navigation.navigate('Send', {
@@ -44,9 +45,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                         address: props.address,
                                         icon: props.icon,
                                         image: props.image,
+                                        accountBalance: props.accountBalance,
                                     })
                                 }
-                                style={{ justifyContent: 'center', alignItems: 'center', gap: 8 }}
+                                style={styles.flexCenter}
                             >
                                 <View style={styles.headerButton}>
                                     <ArrowUpIcon />
@@ -62,9 +64,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                         address: props.address,
                                         icon: props.icon,
                                         image: props.image,
+                                        accountBalance: props.accountBalance,
                                     })
                                 }
-                                style={{ justifyContent: 'center', alignItems: 'center', gap: 8 }}
+                                style={styles.flexCenter}
                             >
                                 <View style={styles.headerButton}>
                                     <ArrowDownIcon />
@@ -74,14 +77,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                         </View>
                     </View>
                     <View style={{ marginBottom: 20, justifyContent: 'center', gap: 10 }}>
-                        <TouchableOpacity
-                            style={{
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                paddingVertical: 15,
-                                paddingHorizontal: 20,
-                            }}
-                        >
+                        <TouchableOpacity style={styles.transactionHistoryButton}>
                             <Text style={styles.textButton}>View your transaction history</Text>
                         </TouchableOpacity>
                         <TButtonSecondaryContained style={commonStyles.marginBottom} size="large">
@@ -155,6 +151,22 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '400',
         fontFamily: 'Roboto',
+    },
+    transactionHistoryButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+    },
+    flexCenter: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 8,
+    },
+    flexRow: {
+        flexDirection: 'row',
+        gap: 40,
+        marginTop: 20,
     },
 });
 export default AssetDetailContainer;

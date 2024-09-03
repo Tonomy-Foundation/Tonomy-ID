@@ -18,7 +18,8 @@ import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import MenuIcon from '../assets/icons/MenuIcon';
 
-import QRScan from '../components/QRScan';
+import ScanQRScreen from '../screens/ScanQRScreen';
+import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
 
 export type RouteStackParamList = {
     UserHome: { did?: string };
@@ -26,26 +27,16 @@ export type RouteStackParamList = {
     Explore: undefined;
     Scan: undefined;
     Apps: undefined;
+    ScanQR: undefined;
 };
 
 const Tab = createBottomTabNavigator<RouteStackParamList>();
 
 type ScanTabBarButtonProps = BottomTabBarButtonProps;
 const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }) => {
-    const refMessage = useRef(null);
-    const handleOpenQRScan = () => {
-        (refMessage?.current as any)?.open();
-    };
-    const onClose = () => {
-        (refMessage.current as any)?.close();
-    };
     return (
         <>
-            <QRScan onClose={onClose} refMessage={refMessage} />
-            <TouchableOpacity
-                style={{ top: -30, justifyContent: 'center', alignContent: 'center' }}
-                onPress={handleOpenQRScan}
-            >
+            <TouchableOpacity style={{ top: -30, justifyContent: 'center', alignContent: 'center' }} onPress={onPress}>
                 <View
                     style={{
                         width: 70,
@@ -137,9 +128,18 @@ function BottomTabNavigator() {
                 }}
             />
             <Tab.Screen
-                name="Scan"
-                component={ScanScreen}
+                name="ScanQR"
+                component={ScanQRScreen}
                 options={{
+                    headerTitle: 'Scan QR',
+                    headerLeft: () => (
+                        <TouchableOpacity
+                            style={{ paddingHorizontal: 5, paddingVertical: 10 }}
+                            onPress={() => navigation.navigate('Assets', {})}
+                        >
+                            <ArrowBackIcon />
+                        </TouchableOpacity>
+                    ),
                     tabBarLabel: () => null,
                     tabBarIcon: () => <ScanIcon width={28} height={28} />,
                     tabBarButton: (props) => <ScanTabBarButton {...props} />,

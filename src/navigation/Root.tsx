@@ -34,10 +34,20 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
 import { ImageSourcePropType } from 'react-native';
-import { SelectAssetStackScreen } from './Assets/SelectAssets';
-import { AssetDetailStackScreen } from './Assets/AssetDetails';
+import { SelectAssetNavigator } from './SelectAssetNavigator';
+import { AssetDetailNavigator } from './AssetDetailNavigator';
 
 const prefix = Linking.createURL('');
+
+export interface AssetParamsScreen {
+    screenTitle?: string;
+    symbol: string;
+    name: string;
+    icon?: ImageSourcePropType | undefined;
+    address?: string;
+    image?: string;
+    accountBalance: { balance: string; usdBalance: number };
+}
 
 export type RouteStackParamList = {
     Splash: undefined;
@@ -107,14 +117,7 @@ export type RouteStackParamList = {
     };
     AssetDetailMain: {
         screen: string;
-        params?: {
-            screenTitle?: string;
-            symbol: string;
-            name: string;
-            icon?: ImageSourcePropType | undefined;
-            address?: string;
-            image?: string;
-        };
+        params?: AssetParamsScreen;
     };
 };
 
@@ -273,13 +276,13 @@ export default function RootNavigation() {
                         <Stack.Screen
                             name="SelectAssetMain"
                             options={{ headerShown: false }}
-                            component={SelectAssetStackScreen}
+                            component={SelectAssetNavigator}
                         />
 
                         <Stack.Screen
                             name="AssetDetailMain"
                             options={{ headerShown: false }}
-                            component={AssetDetailStackScreen}
+                            component={AssetDetailNavigator}
                         />
                     </Stack.Navigator>
                 </>

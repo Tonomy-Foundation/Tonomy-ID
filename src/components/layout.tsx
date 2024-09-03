@@ -7,7 +7,6 @@ type layoutProps = {
     footerHint?: JSX.Element;
     footer?: JSX.Element;
     noFooterHintLayout?: boolean;
-    footerEnd?: boolean;
 };
 
 export default function LayoutComponent(props: layoutProps) {
@@ -40,11 +39,7 @@ export default function LayoutComponent(props: layoutProps) {
                     )}
                 </>
             )}
-            {props.footer && (
-                <View style={[layoutStyles.footer, { justifyContent: props.footerEnd ? 'flex-end' : 'flex-start' }]}>
-                    {props.footer}
-                </View>
-            )}
+            {props.footer && <View style={layoutStyles.footer}>{props.footer}</View>}
         </SafeAreaView>
     );
 }

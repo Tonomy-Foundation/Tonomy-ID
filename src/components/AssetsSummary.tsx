@@ -9,7 +9,7 @@ import { IAccount } from '../utils/chain/types';
 export type AccountSummaryProps = {
     navigation: AssetsScreenNavigationProp['navigation'];
     accountBalance: { balance: string; usdBalance: number };
-    updateAccountDetail: (address: IAccount) => void;
+    updateAccountDetail: (address: IAccount, balance: { balance: string; usdBalance: number }) => void;
     address: IAccount | null;
     networkName: string;
     currency: string;
@@ -40,20 +40,14 @@ const AssetsSummary = (props: AccountSummaryProps) => {
             <TouchableOpacity
                 onPress={() => {
                     if (props.address) {
-                        props.updateAccountDetail(props.address);
+                        props.updateAccountDetail(props.address, props.accountBalance);
                     }
                 }}
                 style={styles.assetsView}
             >
                 {logoUrl && <Image source={{ uri: logoUrl }} style={[styles.favicon, { resizeMode: 'contain' }]} />}
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        flex: 1,
-                    }}
-                >
-                    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                <View style={styles.assetSummaryContent}>
+                    <View style={styles.assetName}>
                         <Text style={{ fontSize: 16 }}>{props.currency}</Text>
                         <View style={styles.assetsNetwork}>
                             <Text
@@ -64,7 +58,7 @@ const AssetsSummary = (props: AccountSummaryProps) => {
                                 {props.networkName}
                             </Text>
                         </View>
-                        {props.address?.getChain().getChainId() !== '1' && (
+                        {props.address?.getChain().getChainId() === '11155111' && (
                             <View style={styles.assetsTestnetNetwork}>
                                 <Text
                                     style={{
@@ -77,10 +71,10 @@ const AssetsSummary = (props: AccountSummaryProps) => {
                             </View>
                         )}
                     </View>
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <View style={styles.flexColEnd}>
                         {currentAddress ? (
-                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={styles.flexColEnd}>
+                                <View style={styles.assetBalance}>
                                     <Text style={{ fontSize: 16 }}>{getBalance()}</Text>
                                 </View>
                                 <Text style={styles.secondaryColor}>
@@ -91,7 +85,7 @@ const AssetsSummary = (props: AccountSummaryProps) => {
                             <View>
                                 <TouchableOpacity onPress={() => props.navigation.navigate('CreateEthereumKey')}>
                                     <Text style={{ fontSize: 16 }}>Not connected</Text>
-                                    <Text style={{ color: theme.colors.blue, fontSize: 13 }}>Generate key</Text>
+                                    <Text style={styles.generateKeyText}>Generate key</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -149,6 +143,28 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
         paddingVertical: 4,
         borderRadius: 4,
+    },
+    assetSummaryContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flex: 1,
+    },
+    assetName: {
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'center',
+    },
+    flexColEnd: {
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    assetBalance: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    generateKeyText: {
+        color: theme.colors.blue,
+        fontSize: 13,
     },
 });
 

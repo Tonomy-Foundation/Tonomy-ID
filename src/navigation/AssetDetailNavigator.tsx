@@ -1,41 +1,21 @@
-import { ImageSourcePropType, TouchableOpacity } from 'react-native';
-import AssetDetail from '../../screens/AssetDetail';
-import ReceiveScreen from '../../screens/Receive';
-import SendScreen from '../../screens/Send';
+import { TouchableOpacity } from 'react-native';
+import AssetDetail from '../screens/AssetDetail';
+import ReceiveScreen from '../screens/Receive';
+import SendScreen from '../screens/Send';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import theme from '../../utils/theme';
-import ArrowBackIcon from '../../assets/icons/ArrowBackIcon';
+import theme from '../utils/theme';
+import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
+import { AssetParamsScreen } from './Root';
 
 export type AssetDetailStackParamList = {
-    AssetDetail: {
-        screenTitle: string;
-        symbol: string;
-        name: string;
-        icon?: ImageSourcePropType | undefined;
-        address?: string;
-        image?: string;
-    };
-    Receive: {
-        screenTitle?: string;
-        symbol: string;
-        name: string;
-        icon?: ImageSourcePropType | undefined;
-        address?: string;
-        image?: string;
-    };
-    Send: {
-        screenTitle?: string;
-        symbol: string;
-        name: string;
-        icon?: ImageSourcePropType | undefined;
-        address?: string;
-        image?: string;
-    };
+    AssetDetail: AssetParamsScreen;
+    Receive: AssetParamsScreen;
+    Send: AssetParamsScreen;
 };
 
 const AssetDetailStack = createNativeStackNavigator<AssetDetailStackParamList>();
 
-export const AssetDetailStackScreen = () => {
+export const AssetDetailNavigator = () => {
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerTitleStyle: {
             fontSize: 16,

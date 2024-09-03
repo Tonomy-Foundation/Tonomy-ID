@@ -172,7 +172,7 @@ export default function AssetsContainer({
         }
     }, [accountDetails]);
 
-    const updateAccountDetail = async (account) => {
+    const updateAccountDetail = async (account, balance) => {
         if (account) {
             const accountToken = await account.getNativeToken();
             const logoUrl = accountToken.getLogoUrl();
@@ -185,7 +185,7 @@ export default function AssetsContainer({
             };
             navigation.navigate('AssetDetailMain', {
                 screen: 'AssetDetail',
-                params: { screenTitle: `${accountToken.getSymbol()}`, ...accountDetail },
+                params: { screenTitle: `${accountToken.getSymbol()}`, ...accountDetail, accountBalance: balance },
             });
         }
     };
@@ -212,7 +212,7 @@ export default function AssetsContainer({
                     >
                         <View style={styles.header}>
                             <Text style={styles.headerAssetsAmount}>$341.00</Text>
-                            <View style={{ flexDirection: 'row', gap: 40, marginTop: 20 }}>
+                            <View style={styles.sendReceiveButtons}>
                                 <TouchableOpacity
                                     onPress={() =>
                                         navigation.navigate('SelectAssetMain', {
@@ -220,7 +220,7 @@ export default function AssetsContainer({
                                             params: { did, type: 'send', screenTitle: 'Send' },
                                         })
                                     }
-                                    style={{ justifyContent: 'center', alignItems: 'center', gap: 8 }}
+                                    style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
                                         <ArrowUpIcon />
@@ -234,7 +234,7 @@ export default function AssetsContainer({
                                             params: { did, type: 'receive', screenTitle: 'Receive' },
                                         })
                                     }
-                                    style={{ justifyContent: 'center', alignItems: 'center', gap: 8 }}
+                                    style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
                                         <ArrowDownIcon />
@@ -244,7 +244,7 @@ export default function AssetsContainer({
                             </View>
                         </View>
                         <ScrollView>
-                            <View style={{ marginTop: 40, flexDirection: 'column', gap: 10 }}>
+                            <View style={styles.scrollContent}>
                                 <TouchableOpacity
                                     onPress={() => {
                                         const accountDetail = {
@@ -256,27 +256,28 @@ export default function AssetsContainer({
 
                                         navigation.navigate('AssetDetailMain', {
                                             screen: 'AssetDetail',
-                                            params: { screenTitle: `${accountDetail.symbol}`, ...accountDetail },
+                                            params: {
+                                                screenTitle: `${accountDetail.symbol}`,
+                                                accountBalance: {
+                                                    balance: `${pangeaBalance} LEOS`,
+                                                    usdBalance: Number(pangeaBalance * USD_CONVERSION),
+                                                },
+                                                ...accountDetail,
+                                            },
                                         });
                                     }}
                                     style={styles.assetsView}
                                 >
                                     <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            justifyContent: 'space-between',
-                                            flex: 1,
-                                        }}
-                                    >
-                                        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                    <View style={styles.assetContent}>
+                                        <View style={styles.flexRowCenter}>
                                             <Text style={{ fontSize: 16 }}>LEOS</Text>
                                             <View style={styles.assetsNetwork}>
                                                 <Text style={{ fontSize: 13 }}>Pangea</Text>
                                             </View>
                                         </View>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <View style={styles.flexColEnd}>
+                                            <View style={styles.flexCenter}>
                                                 <Text style={{ fontSize: 16 }}>
                                                     {formatCurrencyValue(pangeaBalance) || 0}
                                                 </Text>
@@ -447,5 +448,34 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
         paddingVertical: 4,
         borderRadius: 4,
+    },
+    sendReceiveButtons: {
+        flexDirection: 'row',
+        gap: 40,
+        marginTop: 20,
+    },
+    flexCenter: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 8,
+    },
+    scrollContent: {
+        marginTop: 40,
+        flexDirection: 'column',
+        gap: 10,
+    },
+    assetContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flex: 1,
+    },
+    flexRowCenter: {
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'center',
+    },
+    flexColEnd: {
+        flexDirection: 'column',
+        alignItems: 'flex-end',
     },
 });

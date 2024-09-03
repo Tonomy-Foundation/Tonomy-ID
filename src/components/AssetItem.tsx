@@ -57,9 +57,17 @@ const AssetItem = (props: AccountItemProps) => {
     const handleOnPress = async () => {
         const account = await getAccountDetail(props.address);
         if (props.type === 'receive') {
-            props.navigation.navigate('Receive', { screenTitle: `Receive ${props.currency}`, ...account });
+            props.navigation.navigate('Receive', {
+                screenTitle: `Receive ${props.currency}`,
+                ...account,
+                accountBalance: props.accountBalance,
+            });
         } else if (props.type === 'send') {
-            props.navigation.navigate('Send', { screenTitle: `Send ${props.currency}`, ...account });
+            props.navigation.navigate('Send', {
+                screenTitle: `Send ${props.currency}`,
+                ...account,
+                accountBalance: props.accountBalance,
+            });
         }
     };
 
@@ -67,21 +75,15 @@ const AssetItem = (props: AccountItemProps) => {
         <TouchableOpacity style={styles.assetsView} onPress={handleOnPress}>
             {props.leos && <Image source={Images.GetImage('logo1024')} style={styles.favicon} />}
             {logoUrl && <Image source={{ uri: logoUrl }} style={[styles.favicon, { resizeMode: 'contain' }]} />}
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    flex: 1,
-                }}
-            >
-                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+            <View style={styles.assetContent}>
+                <View style={styles.flexRowCenter}>
+                    <View style={styles.flexRowCenter}>
                         <Text style={{ fontSize: 16 }}>{props.currency}</Text>
                         <View style={styles.assetsNetwork}>
                             <Text style={{ fontSize: 13 }}>{props.networkName}</Text>
                         </View>
                     </View>
-                    {props.address?.getChain().getChainId() !== '1' && !props.leos && (
+                    {props.address?.getChain().getChainId() === '11155111' && !props.leos && (
                         <View style={styles.assetsTestnetNetwork}>
                             <Text
                                 style={{
@@ -94,8 +96,8 @@ const AssetItem = (props: AccountItemProps) => {
                         </View>
                     )}
                 </View>
-                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.flexColEnd}>
+                    <View style={styles.rowCenter}>
                         <Text style={{ fontSize: 16 }}>{getBalance() || 0}</Text>
                     </View>
                     <Text style={styles.secondaryColor}>
@@ -133,6 +135,24 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
         paddingVertical: 4,
         borderRadius: 4,
+    },
+    assetContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flex: 1,
+    },
+    flexRowCenter: {
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'center',
+    },
+    flexColEnd: {
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    rowCenter: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });
 

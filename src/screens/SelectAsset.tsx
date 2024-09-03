@@ -2,7 +2,7 @@ import React from 'react';
 import SelectAssetContainer from '../containers/SelectAssetContainer';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { SelectAssetsStackParamList } from '../navigation/Assets/SelectAssets';
+import { SelectAssetsStackParamList } from '../navigation/SelectAssetNavigator';
 
 export type SelectAssetScreenNavigationProp = NativeStackScreenProps<SelectAssetsStackParamList, 'SelectAsset'>;
 
