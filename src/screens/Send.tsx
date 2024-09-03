@@ -1,7 +1,7 @@
 import React from 'react';
-import SendAssetContainer from '../containers/SendContainer';
+import SendAssetContainer from '../containers/SendAssetContainer';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { SelectAssetsStackParamList } from '../navigation/Assets/SelectAssets';
+import { SelectAssetsStackParamList } from '../navigation/SelectAssetNavigator';
 
 export type SendAssetScreenNavigationProp = NativeStackScreenProps<SelectAssetsStackParamList, 'Send'>;
 
@@ -14,6 +14,7 @@ export default function Send(props: SendAssetScreenNavigationProp) {
             icon={props.route.params?.icon}
             image={props.route.params?.image}
             navigation={props.navigation}
+            accountBalance={props.route.params?.accountBalance}
         ></SendAssetContainer>
     );
 }

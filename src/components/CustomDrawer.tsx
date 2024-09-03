@@ -60,23 +60,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     return (
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView {...props} style={styles.container}>
-                {/* <View style={styles.logoContainer}>
-                    <Image source={logo1024} style={styles.logo}></Image>
-                </View> */}
-
                 <View style={styles.menu}>
-                    {/* {Object.entries(props.descriptors).map(([key, value]) => (
-                        <TButton
-                            style={styles.button}
-                            key={key}
-                            onPress={() => props.navigation.getParent()?.navigate(value.route.name)}
-                            icon={icons[value.route.name]}
-                            color={theme.colors.grey2}
-                            size="huge"
-                        >
-                            {value.options.title || value.route.name}
-                        </TButton>
-                    ))} */}
                     <TButton
                         style={styles.button}
                         onPress={() => props.navigation.getParent()?.navigate('Settings')}

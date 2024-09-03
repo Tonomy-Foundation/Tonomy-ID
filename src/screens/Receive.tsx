@@ -1,7 +1,7 @@
 import React from 'react';
-import ReceiveAssetContainer from '../containers/ReceiveContainer';
+import ReceiveAssetContainer from '../containers/ReceiveAssetContainer';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { SelectAssetsStackParamList } from '../navigation/Assets/SelectAssets';
+import { SelectAssetsStackParamList } from '../navigation/SelectAssetNavigator';
 
 export type ReceiveAssetScreenNavigationProp = NativeStackScreenProps<SelectAssetsStackParamList, 'Receive'>;
 
@@ -14,6 +14,7 @@ export default function Receive(props: ReceiveAssetScreenNavigationProp) {
             icon={props.route.params?.icon}
             image={props.route.params?.image}
             navigation={props.navigation}
+            accountBalance={props.route.params?.accountBalance}
         ></ReceiveAssetContainer>
     );
 }

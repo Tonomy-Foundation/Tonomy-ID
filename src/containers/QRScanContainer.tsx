@@ -10,7 +10,6 @@ import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
 import { Props } from '../screens/QrCodeScanScreen';
 import FlashOnIcon from '../assets/icons/FlashIcon';
-import FlashOffIcon from '../assets/icons/FlashOffIcon';
 
 export default function QRScanContainer(props: Props) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);
@@ -62,8 +61,11 @@ export default function QRScanContainer(props: Props) {
                                         Tap to Scan Again
                                     </TButtonContained>
                                 )}
-                                <TouchableOpacity style={styles.flashButton} onPress={toggleFlashLight}>
-                                    {isFlashlightOn ? <FlashOffIcon color="white" /> : <FlashOnIcon color="white" />}
+                                <TouchableOpacity
+                                    style={[styles.flashButton, isFlashlightOn && styles.flashOnButton]}
+                                    onPress={toggleFlashLight}
+                                >
+                                    <FlashOnIcon color="white" />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -119,12 +121,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     flashButton: {
-        borderColor: theme.colors.white,
-        borderWidth: 1,
-        borderRadius: 7,
-        width: 42,
-        height: 42,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        borderRadius: 42,
+        width: 48,
+        height: 48,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    flashOnButton: {
+        backgroundColor: 'rgba(255,255,255,0.5)',
     },
 });
