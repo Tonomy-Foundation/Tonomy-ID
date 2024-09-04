@@ -51,14 +51,14 @@ const useUserStore = create<UserState>((set, get) => ({
     status: UserStatus.NONE,
     isAppInitialized: false,
     getStatus: async () => {
-        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
 
         return status as UserStatus;
     },
     setStatus: async (newStatus: UserStatus) => {
-        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+        await AsyncStorage.setItem(STORAGE_NAMESPACE + 'status', newStatus);
 
-        set({ status: status as UserStatus });
+        set({ status: newStatus });
     },
     logout: async (reason: string) => {
         await get().user.logout();

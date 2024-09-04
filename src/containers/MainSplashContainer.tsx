@@ -11,10 +11,11 @@ import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, getStatus, logout, isAppInitialized, setStatus } = useUserStore();
+    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
 
     useEffect(() => {
@@ -22,20 +23,29 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             await sleep(800);
 
             try {
-                if (!isAppInitialized) await initializeStatusFromStorage();
-                const status = await getStatus();
+                if (!isAppInitialized) {
+                    console.log('ifff');
+                    await initializeStatusFromStorage();
+                }
 
                 await connect();
 
+                const status = await getStatus();
+
+                console.log('status12', status, isAppInitialized);
+
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('Home'));
+                        navigation.dispatch(StackActions.replace('SplashSecurity'));
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.LOGGED_IN:
+                        console.log('logged in');
+
                         try {
+                            console.log('getting username');
                             await user.getUsername();
                             await initializeWalletState();
                         } catch (e) {
@@ -43,6 +53,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                                 logout("Invalid data in user's storage");
                                 clearState();
                             } else {
+                                console.log('else error', e);
                                 throw e;
                             }
                         }
