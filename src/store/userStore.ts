@@ -86,7 +86,7 @@ const useUserStore = create<UserState>((set, get) => ({
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
             } else {
-                console.error(e);
+                console.error('initializeStatusFromStorage error ', e);
             }
         }
     },

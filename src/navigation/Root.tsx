@@ -33,6 +33,9 @@ import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConse
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:store:root-navigation');
 
 const prefix = Linking.createURL('');
 
@@ -128,7 +131,7 @@ export default function RootNavigation() {
 
     const user = useUserStore();
 
-    console.log('user status', user.status);
+    debug('user status', user.status);
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (

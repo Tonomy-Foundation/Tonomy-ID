@@ -24,15 +24,12 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isAppInitialized) {
-                    console.log('ifff');
                     await initializeStatusFromStorage();
                 }
 
                 await connect();
 
                 const status = await getStatus();
-
-                console.log('status12', status, isAppInitialized);
 
                 switch (status) {
                     case UserStatus.NONE:
@@ -42,10 +39,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.LOGGED_IN:
-                        console.log('logged in');
-
                         try {
-                            console.log('getting username');
                             await user.getUsername();
                             await initializeWalletState();
                         } catch (e) {
@@ -53,7 +47,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                                 logout("Invalid data in user's storage");
                                 clearState();
                             } else {
-                                console.log('else error', e);
+                                console.error('else error', e);
                                 throw e;
                             }
                         }
