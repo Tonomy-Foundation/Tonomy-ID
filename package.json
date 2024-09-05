@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.112.0",
+    "version": "0.112.4",
     "type": "commonjs",
     "scripts": {
         "eas-build-pre-install": "corepack enable",
@@ -31,13 +31,12 @@
         "@json-rpc-tools/utils": "^1.7.6",
         "@react-native-async-storage/async-storage": "1.18.2",
         "@react-native-clipboard/clipboard": "^1.14.1",
-        "@react-native-community/netinfo": "9.3.10",
         "@react-navigation/bottom-tabs": "^6.5.0",
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
         "@sinonjs/text-encoding": "^0.7.2",
-        "@tonomy/tonomy-id-sdk": "0.21.0-development.7",
+        "@tonomy/tonomy-id-sdk": "0.21.0-development.8",
         "@veramo/core": "^6.0.0",
         "@walletconnect/core": "^2.13.0",
         "@walletconnect/react-native-compat": "^2.13.0",

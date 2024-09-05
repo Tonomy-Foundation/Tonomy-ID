@@ -154,140 +154,7 @@ export default function CommunicationModule() {
     }
 
     const handleConnect = useCallback(async () => {
-        try {
-            web3wallet?.on('session_proposal', async (proposal) => {
-                if (proposal) {
-                    navigation.navigate('WalletConnectLogin', {
-                        payload: proposal,
-                        platform: 'browser',
-                    });
-                }
-            });
-        } catch (error) {
-            console.error('session_proposal', error);
-        }
-
-        try {
-            web3wallet?.on('session_request', async (event) => {
-                const { topic, params, id, verifyContext } = event;
-                const { request, chainId } = params;
-
-                switch (request.method) {
-                    case 'eth_sendTransaction': {
-                        const transactionData = request.params[0];
-
-                        let key, chain;
-
-                        if (chainId === 'eip155:11155111') {
-                            chain = EthereumSepoliaChain;
-                            key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-                        } else if (chainId === 'eip155:1') {
-                            chain = EthereumMainnetChain;
-                            key = await keyStorage.findByName('ethereum', chain);
-                        } else if (chainId === 'eip155:137') {
-                            chain = EthereumPolygonChain;
-                            key = await keyStorage.findByName('ethereumPolygon', chain);
-                        } else throw new Error('Unsupported chains');
-
-                        let transaction: ITransaction;
-
-                        if (key) {
-                            const exportPrivateKey = await key.exportPrivateKey();
-                            const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
-
-                            transaction = await EthereumTransaction.fromTransaction(
-                                ethereumPrivateKey,
-                                transactionData,
-                                chain
-                            );
-                            navigation.navigate('SignTransaction', {
-                                transaction,
-                                privateKey: key,
-                                session: {
-                                    origin: verifyContext?.verified?.origin,
-                                    id,
-                                    topic,
-                                },
-                            });
-                        } else {
-                            transaction = new EthereumTransaction(transactionData, chain);
-                            navigation.navigate('CreateEthereumKey', {
-                                requestType: 'transactionRequest',
-                                transaction: {
-                                    transaction,
-                                    session: {
-                                        origin: verifyContext?.verified?.origin,
-                                        id,
-                                        topic,
-                                    },
-                                },
-                            });
-                        }
-
-                        sendWalletConnectNotificationOnBackground(
-                            'Transaction Request',
-                            'Ethereum transaction signing request'
-                        );
-                        break;
-                    }
-
-                    default: {
-                        const response = {
-                            id: id,
-                            error: getSdkError('UNSUPPORTED_METHODS'),
-                            jsonrpc: '2.0',
-                        };
-
-                        await web3wallet?.respondSessionRequest({
-                            topic,
-                            response,
-                        });
-                        return;
-                    }
-                }
-            });
-        } catch (error) {
-            errorStore.setError({ error, expected: false });
-        }
-    }, [navigation, web3wallet, errorStore]);
-
-    useEffect(() => {
-        handleConnect();
-    }, [handleConnect, web3wallet, initialized]);
-
-    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
-        let timeout: ReturnType<typeof setTimeout>;
-
-        return (...args: Parameters<T>): void => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), wait);
-        };
-    };
-
-    useEffect(() => {
-        const handleSessionDelete = debounce(async (event) => {
-            try {
-                if (event.topic) {
-                    const sessions = await web3wallet?.getActiveSessions();
-                    const sessionExists =
-                        Array.isArray(sessions) && sessions.some((session) => session.topic === event.topic);
-
-                    if (sessionExists) {
-                        await web3wallet?.disconnectSession({
-                            topic: event.topic,
-                            reason: getSdkError('INVALID_SESSION_SETTLE_REQUEST'),
-                        });
-                        disconnectSession();
-                    } else {
-                        debug('Session already deleted or invalid');
-                    }
-                }
-            } catch (disconnectError) {
-                console.error('Failed to disconnect session:', disconnectError);
-            }
-        }, 1000);
-
-        const onSessionProposal = debounce(async (proposal) => {
+        const onSessionProposal = async (proposal) => {
             const { id } = proposal;
             const { requiredNamespaces, optionalNamespaces } = proposal.params;
             const activeNamespaces = Object.keys(requiredNamespaces).length ? requiredNamespaces : optionalNamespaces;
@@ -339,9 +206,9 @@ export default function CommunicationModule() {
                     });
                 }
             }
-        }, 1000);
+        };
 
-        const onSessionRequest = debounce(async (event) => {
+        const onSessionRequest = async (event) => {
             const { topic, params, id, verifyContext } = event;
             const { request, chainId } = params;
 
@@ -418,16 +285,60 @@ export default function CommunicationModule() {
                     return;
                 }
             }
-        }, 1000);
+        };
 
-        web3wallet?.on('session_delete', handleSessionDelete);
+        web3wallet?.off('session_proposal', onSessionProposal);
+        web3wallet?.off('session_request', onSessionRequest);
+
         web3wallet?.on('session_proposal', onSessionProposal);
         web3wallet?.on('session_request', onSessionRequest);
 
         return () => {
-            web3wallet?.off('session_delete', handleSessionDelete);
             web3wallet?.off('session_proposal', onSessionProposal);
-            web3wallet?.on('session_request', onSessionRequest);
+            web3wallet?.off('session_request', onSessionRequest);
+        };
+    }, [navigation, web3wallet, errorStore]);
+
+    useEffect(() => {
+        if (web3wallet) handleConnect();
+    }, [handleConnect, web3wallet, initialized]);
+
+    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
+        let timeout: ReturnType<typeof setTimeout>;
+
+        return (...args: Parameters<T>): void => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    };
+
+    useEffect(() => {
+        const handleSessionDelete = debounce(async (event) => {
+            try {
+                if (event.topic) {
+                    const sessions = await web3wallet?.getActiveSessions();
+                    const sessionExists =
+                        Array.isArray(sessions) && sessions.some((session) => session.topic === event.topic);
+
+                    if (sessionExists) {
+                        await web3wallet?.disconnectSession({
+                            topic: event.topic,
+                            reason: getSdkError('INVALID_SESSION_SETTLE_REQUEST'),
+                        });
+                        disconnectSession();
+                    } else {
+                        debug('Session already deleted or invalid');
+                    }
+                }
+            } catch (disconnectError) {
+                console.error('Failed to disconnect session:', disconnectError);
+            }
+        }, 1000);
+
+        web3wallet?.on('session_delete', handleSessionDelete);
+
+        return () => {
+            web3wallet?.off('session_delete', handleSessionDelete);
         };
     }, [web3wallet, disconnectSession, navigation, errorStore]);
 

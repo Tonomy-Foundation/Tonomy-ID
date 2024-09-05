@@ -75,8 +75,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     return {
                         account,
                         balance: {
-                            balance: balance.toString(),
-                            usdBalance: await balance.getUsdValue(),
+                            balance: balance?.toString() || '0',
+                            usdBalance: (await balance.getUsdValue()) || 0,
                         },
                     };
                 }
@@ -182,15 +182,15 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                 set({
                     ethereumBalance: {
-                        balance: ethereumBalance.toString(),
+                        balance: ethereumBalance?.toString() || '0',
                         usdBalance: ethereumBalance ? (await ethereumBalance.getUsdValue()) || 0 : 0,
                     },
                     sepoliaBalance: {
-                        balance: sepoliaBalance.toString(),
+                        balance: sepoliaBalance?.toString() || '0',
                         usdBalance: sepoliaBalance ? (await sepoliaBalance.getUsdValue()) || 0 : 0,
                     },
                     polygonBalance: {
-                        balance: polygonBalance.toString(),
+                        balance: polygonBalance?.toString() || '0',
                         usdBalance: polygonBalance ? (await polygonBalance.getUsdValue()) || 0 : 0,
                     },
                 });

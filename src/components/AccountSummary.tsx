@@ -5,6 +5,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { IAccount } from '../utils/chain/types';
+import useErrorStore from '../store/errorStore';
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
@@ -17,6 +18,7 @@ export type AccountSummaryProps = {
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props.address?.getName();
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    const errorStore = useErrorStore();
 
     useEffect(() => {
         const fetchLogo = async () => {
@@ -29,6 +31,11 @@ const AccountSummary = (props: AccountSummaryProps) => {
 
         fetchLogo();
     }, [props.address]);
+
+    const generateKey = async () => {
+        props.navigation.navigate('CreateEthereumKey');
+    };
+
     return (
         <>
             <TouchableOpacity
@@ -63,7 +70,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
                         {!currentAddress ? (
                             <TButton
                                 style={styles.generateKey}
-                                onPress={() => props.navigation.navigate('CreateEthereumKey')}
+                                onPress={generateKey}
                                 color={theme.colors.white}
                                 size="medium"
                             >
