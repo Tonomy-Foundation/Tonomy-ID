@@ -180,7 +180,7 @@ export default function AssetsContainer({
             const accountDetail = {
                 symbol: accountToken.getSymbol(),
                 name: capitalizeFirstLetter(account.getChain().getName()),
-                address: account?.getName() || '',
+                account,
                 ...(logoUrl && { image: logoUrl }),
             };
             navigation.navigate('AssetDetailMain', {
@@ -211,7 +211,7 @@ export default function AssetsContainer({
                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                     >
                         <View style={styles.header}>
-                            <Text style={styles.headerAssetsAmount}>$341.00</Text>
+                            <Text style={styles.headerAssetsAmount}>$0.00</Text>
                             <View style={styles.sendReceiveButtons}>
                                 <TouchableOpacity
                                     onPress={() =>
@@ -254,17 +254,17 @@ export default function AssetsContainer({
                                             icon: Images.GetImage('logo48'),
                                         };
 
-                                        navigation.navigate('AssetDetailMain', {
-                                            screen: 'AssetDetail',
-                                            params: {
-                                                screenTitle: `${accountDetail.symbol}`,
-                                                accountBalance: {
-                                                    balance: `${pangeaBalance} LEOS`,
-                                                    usdBalance: Number(pangeaBalance * USD_CONVERSION),
-                                                },
-                                                ...accountDetail,
-                                            },
-                                        });
+                                        // navigation.navigate('AssetDetailMain', {
+                                        //     screen: 'AssetDetail',
+                                        //     params: {
+                                        //         screenTitle: `${accountDetail.symbol}`,
+                                        //         accountBalance: {
+                                        //             balance: `${pangeaBalance} LEOS`,
+                                        //             usdBalance: Number(pangeaBalance * USD_CONVERSION),
+                                        //         },
+                                        //         ...accountDetail,
+                                        //     },
+                                        // });
                                     }}
                                     style={styles.assetsView}
                                 >

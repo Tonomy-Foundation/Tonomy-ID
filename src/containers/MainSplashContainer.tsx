@@ -10,13 +10,15 @@ import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
-import NetInfo from '@react-native-community/netinfo';
 import { connect } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
+    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
 
     useFonts({
@@ -24,29 +26,39 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     });
 
     useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener((state) => {
-            if (!state.isConnected) {
-                navigation.dispatch(StackActions.replace('Home'));
-            }
-        });
-
-        // Cleanup the event listener
-        return () => unsubscribe();
-    }, [navigation]);
-
-    useEffect(() => {
         async function main() {
             await sleep(800);
 
             try {
-                await initializeStatusFromStorage();
-                const status = getStatus();
+                if (!isAppInitialized) {
+                    let retryInterval = 10000; // Start with 10 seconds
+                    const maxInterval = 3600000; // Cap at 1 hour
+
+                    while (!isAppInitialized) {
+                        try {
+                            await initializeStatusFromStorage();
+                            break;
+                        } catch (error) {
+                            if (error.message === 'Network request failed') {
+                                debug('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
+                                await new Promise((resolve) => setTimeout(resolve, retryInterval));
+                                retryInterval = Math.min(retryInterval * 2, maxInterval); // Double the interval, cap at 1 hour
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 await connect();
 
+                const status = await getStatus();
+
+                setStatus(status);
+
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('Home'));
+                        navigation.dispatch(StackActions.replace('SplashSecurity'));
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         navigation.dispatch(StackActions.replace('Home'));
@@ -60,6 +72,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                                 logout("Invalid data in user's storage");
                                 clearState();
                             } else {
+                                debug('loggedin error', e);
                                 throw e;
                             }
                         }
@@ -69,6 +82,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
+                console.error('main screen error', e);
                 errorStore.setError({ error: e, expected: false });
             }
         }
@@ -83,6 +97,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         user,
         initializeWalletState,
         clearState,
+        setStatus,
+        isAppInitialized,
     ]);
 
     return (

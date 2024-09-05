@@ -4,19 +4,22 @@ import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
 import QRScan from '../components/QRScan';
-import { useEffect, useRef, useState } from 'react';
-import useWalletStore from '../store/useWalletStore';
-import { formatCurrencyValue } from '../utils/numbers';
-import { USD_CONVERSION } from '../utils/chain/etherum';
-import useUserStore from '../store/userStore';
-import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import { useRef, useState } from 'react';
+import { IAccount, ITransaction } from '../utils/chain/types';
+import { keyStorage } from '../utils/StorageManager/setup';
+import {
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumPrivateKey,
+    EthereumSepoliaChain,
+    EthereumTransaction,
+} from '../utils/chain/etherum';
 
-const vestingContract = VestingContract.Instance;
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     symbol: string;
     name: string;
-    address?: string;
+    account?: IAccount | null;
     icon?: ImageSourcePropType | undefined;
     image?: string;
     accountBalance: { balance: string; usdBalance: number };
@@ -25,9 +28,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
-    const userStore = useUserStore();
-    const user = userStore.user;
-    const [pangeaBalance, setPangeaBalance] = useState(0);
     const refMessage = useRef(null);
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
@@ -36,46 +36,61 @@ const SendAssetContainer = (props: SendAssetProps) => {
         (refMessage.current as any)?.close();
     };
 
-    const { ethereumBalance, sepoliaBalance, polygonBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
-    }));
-
-    useEffect(() => {
-        const fetchAccountname = async () => {
-            const accountName = (await user.getAccountName()).toString();
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
-            setPangeaBalance(accountPangeaBalance);
-        };
-        if (props.name === 'Pangea') {
-            fetchAccountname();
-        }
-    }, [user, props.name]);
+    const getBalance = () => {
+        return props.accountBalance.balance.replace(props.symbol, '')?.trim();
+    };
 
     const handleMaxAmount = () => {
-        if (props.name === 'Sepolia') {
-            const [balance] = sepoliaBalance.balance.split(' ');
-            onChangeAmount(balance);
-            onChangeUSDAmount(sepoliaBalance.usdBalance.toString());
-        } else if (props.name === 'Ethereum') {
-            const [balance] = ethereumBalance.balance.split(' ');
-            onChangeAmount(balance);
-            onChangeUSDAmount(ethereumBalance.usdBalance.toString());
-        } else if (props.name === 'Polygon') {
-            const [balance] = polygonBalance.balance.split(' ');
-            onChangeAmount(balance);
-            onChangeUSDAmount(polygonBalance.usdBalance.toString());
-        } else if (props.name === 'Pangea') {
-            onChangeAmount(pangeaBalance.toString());
-            onChangeUSDAmount(formatCurrencyValue(pangeaBalance * USD_CONVERSION).toString());
-        }
+        onChangeAmount(getBalance());
+        onChangeUSDAmount(props.accountBalance.usdBalance.toString());
     };
 
     const onScan = (address) => {
-        const currentAddress = `${address.substring(0, 7)}...${address.substring(address.length - 6)}`;
         onChangeAddress(address);
         onClose();
+    };
+
+    const getTransactionAmount = (currencySymbol, amount) => {
+        const conversionFactor = 10 ** 18;
+        if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
+            return amount * conversionFactor;
+        }
+        throw new Error('Unsupported currency symbol');
+    };
+
+    const handleSendTransaction = async () => {
+        if (props.symbol !== 'LEOS') {
+            const transactionData = {
+                to: depositeAddress,
+                from: props.account?.getName(),
+                value: getTransactionAmount(props.symbol, Number(amount)),
+            };
+            const chainId = props.account?.getChain().getChainId();
+            let key, chain;
+            if (chainId === '11155111') {
+                chain = EthereumSepoliaChain;
+                key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
+            } else if (chainId === '1') {
+                chain = EthereumMainnetChain;
+                key = await keyStorage.findByName('ethereum', chain);
+            } else if (chainId === '137') {
+                chain = EthereumPolygonChain;
+                key = await keyStorage.findByName('ethereumPolygon', chain);
+            } else throw new Error('Unsupported chains');
+
+            let transaction: ITransaction;
+
+            if (key) {
+                const exportPrivateKey = await key.exportPrivateKey();
+                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
+                props.navigation.navigate('SignTransaction', {
+                    transaction,
+                    privateKey: key,
+                    session: null,
+                });
+            }
+        }
     };
 
     return (
@@ -86,8 +101,9 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     <View style={styles.flexCol}>
                         <View style={styles.inputContainer}>
                             <TextInput
-                                value={depositeAddress}
+                                defaultValue={depositeAddress}
                                 style={styles.input}
+                                onChangeText={(value: string) => onChangeAddress(value)}
                                 placeholder="Enter or scan the address"
                                 placeholderTextColor={theme.colors.tabGray}
                             />
@@ -99,8 +115,9 @@ const SendAssetContainer = (props: SendAssetProps) => {
                         <View>
                             <View style={styles.inputContainer}>
                                 <TextInput
-                                    value={amount}
+                                    defaultValue={amount}
                                     style={styles.input}
+                                    onChangeText={(value: string) => onChangeAmount(value)}
                                     placeholder="Enter amount"
                                     placeholderTextColor={theme.colors.tabGray}
                                 />
@@ -113,7 +130,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     </View>
                 </ScrollView>
                 <View style={commonStyles.marginBottom}>
-                    <TButtonContained style={commonStyles.marginBottom} size="large">
+                    <TButtonContained onPress={handleSendTransaction} style={commonStyles.marginBottom} size="large">
                         Proceed
                     </TButtonContained>
                 </View>

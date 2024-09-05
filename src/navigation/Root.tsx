@@ -32,10 +32,13 @@ import SignTransactionConsentScreen from '../screens/SignTransactionConsentScree
 import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
+import { IAccount, IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
 import { ImageSourcePropType } from 'react-native';
 import { SelectAssetNavigator } from './SelectAssetNavigator';
 import { AssetDetailNavigator } from './AssetDetailNavigator';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
@@ -44,7 +47,7 @@ export interface AssetParamsScreen {
     symbol: string;
     name: string;
     icon?: ImageSourcePropType | undefined;
-    address?: string;
+    account?: IAccount | null;
     image?: string;
     accountBalance: { balance: string; usdBalance: number };
 }
@@ -144,7 +147,8 @@ export default function RootNavigation() {
             backgroundColor: theme.colors.headerFooter,
         },
         headerTitleStyle: {
-            fontSize: 24,
+            fontSize: 16,
+            fontWeight: '500',
             color: theme.colors.text,
         },
         headerTitleAlign: 'center',
@@ -156,6 +160,7 @@ export default function RootNavigation() {
 
     const user = useUserStore();
 
+    debug('user status', user.status);
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (

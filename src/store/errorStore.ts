@@ -24,8 +24,10 @@ const useErrorStore = create<ErrorState>((set, get) => ({
     title: undefined,
     expected: undefined,
     onClose: undefined,
-    setError: ({ error, title, expected, onClose }) => {
-        set({ error, title, expected, onClose });
+    setError: async ({ error, title = 'Something went wrong', expected, onClose }) => {
+        if (error.message !== 'Network request failed') {
+            set({ error, title, expected, onClose });
+        }
     },
     unSetError: () => {
         set({ error: undefined, title: undefined, expected: undefined });

@@ -41,14 +41,14 @@ const AssetItem = (props: AccountItemProps) => {
             return {
                 symbol: accountToken.getSymbol(),
                 name: capitalizeFirstLetter(account.getChain().getName()),
-                address: account?.getName() || '',
+                account: account,
                 ...(logoUrl && { image: logoUrl }),
             };
         } else {
             return {
                 symbol: props.currency,
                 name: props.networkName,
-                address: props.accountName,
+                account: props.accountName,
                 icon: Images.GetImage('logo1024'),
             };
         }

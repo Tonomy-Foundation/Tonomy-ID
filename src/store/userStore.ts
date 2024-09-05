@@ -27,10 +27,11 @@ export enum UserStatus {
 export interface UserState {
     user: IUser;
     status: UserStatus;
-    getStatus(): UserStatus;
+    getStatus(): Promise<UserStatus>;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
     logout(reason: string): Promise<void>;
+    isAppInitialized: boolean;
 }
 
 setSettings({
@@ -48,12 +49,15 @@ const useUserStore = create<UserState>((set, get) => ({
     // @ts-ignore PublicKey type error
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
-    getStatus: () => {
-        const status = get().status;
+    isAppInitialized: false,
+    getStatus: async () => {
+        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
 
-        return status;
+        return status as UserStatus;
     },
-    setStatus: (newStatus: UserStatus) => {
+    setStatus: async (newStatus: UserStatus) => {
+        await AsyncStorage.setItem(STORAGE_NAMESPACE + 'status', newStatus);
+
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
@@ -66,9 +70,15 @@ const useUserStore = create<UserState>((set, get) => ({
     initializeStatusFromStorage: async () => {
         await printStorage('initializeStatusFromStorage()');
 
+        if (get().isAppInitialized) {
+            debug('Already initialized application');
+            return;
+        }
+
         try {
             await get().user.initializeFromStorage();
             get().setStatus(UserStatus.LOGGED_IN);
+            set({ isAppInitialized: true });
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
@@ -76,7 +86,7 @@ const useUserStore = create<UserState>((set, get) => ({
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
             } else {
-                console.error(e);
+                console.error('initializeStatusFromStorage error ', e);
             }
         }
     },
@@ -90,6 +100,7 @@ async function printStorage(message: string) {
     if (settings.config.loggerLevel !== 'debug') return;
 
     const keys = await AsyncStorage.getAllKeys();
+
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
     debug(message, 'AsyncStorage keys and status', keys, status);

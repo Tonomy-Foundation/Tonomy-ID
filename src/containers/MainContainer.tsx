@@ -219,7 +219,7 @@ export default function MainContainer({
         }
     };
 
-    const onRefresh = React.useCallback(() => {
+    const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
         updateBalance();
         setRefreshing(false);
