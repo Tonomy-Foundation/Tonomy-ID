@@ -11,7 +11,6 @@ import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
@@ -24,7 +23,23 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isAppInitialized) {
-                    await initializeStatusFromStorage();
+                    let retryInterval = 10000; // Start with 10 seconds
+                    const maxInterval = 3600000; // Cap at 1 hour
+
+                    while (!isAppInitialized) {
+                        try {
+                            await initializeStatusFromStorage();
+                            break;
+                        } catch (error) {
+                            if (error.message === 'Network request failed') {
+                                console.error('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
+                                await new Promise((resolve) => setTimeout(resolve, retryInterval));
+                                retryInterval = Math.min(retryInterval * 2, maxInterval); // Double the interval, cap at 1 hour
+                            } else {
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 await connect();

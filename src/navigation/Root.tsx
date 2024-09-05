@@ -35,7 +35,7 @@ import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
 import Debug from 'debug';
 
-const debug = Debug('tonomy-id:store:root-navigation');
+const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
