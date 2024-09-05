@@ -11,6 +11,9 @@ import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
@@ -32,7 +35,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                             break;
                         } catch (error) {
                             if (error.message === 'Network request failed') {
-                                console.error('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
+                                debug('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
                                 await new Promise((resolve) => setTimeout(resolve, retryInterval));
                                 retryInterval = Math.min(retryInterval * 2, maxInterval); // Double the interval, cap at 1 hour
                             } else {
