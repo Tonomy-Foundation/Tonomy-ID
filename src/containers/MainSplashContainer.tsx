@@ -49,6 +49,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 const status = await getStatus();
 
+                setStatus(status);
+
                 switch (status) {
                     case UserStatus.NONE:
                         navigation.dispatch(StackActions.replace('SplashSecurity'));
@@ -65,7 +67,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                                 logout("Invalid data in user's storage");
                                 clearState();
                             } else {
-                                console.error('else error', e);
+                                debug('loggedin error', e);
                                 throw e;
                             }
                         }
