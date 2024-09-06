@@ -94,8 +94,6 @@ const useUserStore = create<UserState>((set, get) => ({
                 useErrorStore.getState().setError({ error: e, expected: false });
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
-            } else if (e.message === 'Network request failed') {
-                debug('Network request failed');
             } else {
                 console.error('initializeStatusFromStorage error ', e);
                 throw new Error(e);
