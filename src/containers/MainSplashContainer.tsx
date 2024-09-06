@@ -39,6 +39,10 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                             break;
                         } catch (error) {
                             if (error.message === 'Network request failed') {
+                                const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+
+                                debug('initializeStatusFromStorage network error ', status);
+                                setStatus(status as UserStatus);
                                 debug('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
                                 await new Promise((resolve) => setTimeout(resolve, retryInterval));
                                 retryInterval = Math.min(retryInterval * 2, maxInterval); // Double the interval, cap at 1 hour
@@ -86,6 +90,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             } catch (e) {
                 console.error('main screen error', e);
                 errorStore.setError({ error: e, expected: false });
+                navigation.navigate('SplashSecurity');
             }
         }
 

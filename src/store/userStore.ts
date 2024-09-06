@@ -96,6 +96,7 @@ const useUserStore = create<UserState>((set, get) => ({
                 await get().logout('Account not found');
             } else {
                 console.error('initializeStatusFromStorage error ', e);
+                throw new Error(e);
             }
         }
     },
