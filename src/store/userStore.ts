@@ -95,7 +95,10 @@ const useUserStore = create<UserState>((set, get) => ({
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
             } else if (e.message === 'Network request failed') {
+                debug('network error condition');
                 const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
+
+                debug('network error condition status', status);
 
                 get().setStatus(status as UserStatus);
 
