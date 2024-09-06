@@ -51,7 +51,7 @@ const useUserStore = create<UserState>((set, get) => ({
     status: UserStatus.NONE,
     isAppInitialized: false,
     getStatus: async () => {
-        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
+        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
         return status as UserStatus;
     },
