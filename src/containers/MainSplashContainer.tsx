@@ -50,7 +50,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 }
 
                 await connect();
-                const status = getStatus();
+                const status = await getStatus();
 
                 debug('splash screen status: ', status);
 
