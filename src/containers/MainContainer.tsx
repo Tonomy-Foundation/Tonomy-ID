@@ -31,7 +31,6 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
-import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -83,26 +82,14 @@ export default function MainContainer({
                 try {
                     await initializeWalletState();
                 } catch (error) {
-                    debug('Error during initialization:', error);
+                    if (error.message === 'Network request failed') {
+                        debug('Error during initialization:', error);
+                    }
                 }
             }
         };
 
-        const unsubscribe = NetInfo.addEventListener((state) => {
-            if (!state.isConnected) {
-                errorStore.setError({
-                    error: new Error('Please check your internet connection and try again.'),
-                    title: 'No Internet Connection',
-                    expected: false,
-                });
-            } else {
-                initializeAndFetchBalances();
-            }
-        });
-
-        return () => {
-            unsubscribe();
-        };
+        initializeAndFetchBalances();
     }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount, errorStore]);
 
     useEffect(() => {
@@ -157,17 +144,6 @@ export default function MainContainer({
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
-        const netInfo = await NetInfo.fetch();
-
-        if (!netInfo.isConnected) {
-            errorStore.setError({
-                error: new Error('Please check your internet connection and try again.'),
-                title: 'No Internet Connection',
-                expected: false,
-            });
-            return;
-        }
-
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
@@ -236,45 +212,46 @@ export default function MainContainer({
     }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
-        const netInfo = await NetInfo.fetch();
+        try {
+            if (account) {
+                const accountToken = await account.getNativeToken();
+                const logoUrl = accountToken.getLogoUrl();
 
-        if (!netInfo.isConnected) {
-            errorStore.setError({
-                error: new Error('Please check your internet connection and try again.'),
-                title: 'No Internet Connection',
-                expected: false,
-            });
-            return;
-        }
-
-        if (account) {
-            const accountToken = await account.getNativeToken();
-            const logoUrl = accountToken.getLogoUrl();
-
-            setAccountDetails({
-                symbol: accountToken.getSymbol(),
-                name: capitalizeFirstLetter(account.getChain().getName()),
-                address: account?.getName() || '',
-                ...(logoUrl && { image: logoUrl }),
-            });
+                setAccountDetails({
+                    symbol: accountToken.getSymbol(),
+                    name: capitalizeFirstLetter(account.getChain().getName()),
+                    address: account?.getName() || '',
+                    ...(logoUrl && { image: logoUrl }),
+                });
+            }
+        } catch (error) {
+            if (error.message === 'Network request failed') {
+                debug('Error during initialization:', error);
+            } else {
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
         }
     };
 
     const onRefresh = React.useCallback(async () => {
-        const netInfo = await NetInfo.fetch();
-
-        if (!netInfo.isConnected) {
-            errorStore.setError({
-                error: new Error('Please check your internet connection and try again.'),
-                title: 'No Internet Connection',
-                expected: false,
-            });
-            return;
+        try {
+            setRefreshing(true);
+            updateBalance();
+            setRefreshing(false);
+        } catch (error) {
+            if (error.message === 'Network request failed') {
+                debug('Error during initialization:', error);
+                return;
+            } else {
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
         }
-
-        setRefreshing(true);
-        updateBalance();
-        setRefreshing(false);
     }, [updateBalance, errorStore]);
 
     const MainView = () => {

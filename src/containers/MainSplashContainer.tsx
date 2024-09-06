@@ -18,11 +18,8 @@ const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, status, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } =
-        useUserStore();
+    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
-
-    debug('user status splash screen', status);
 
     useEffect(() => {
         async function main() {

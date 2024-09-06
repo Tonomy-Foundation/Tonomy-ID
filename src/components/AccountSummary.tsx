@@ -5,8 +5,6 @@ import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { IAccount } from '../utils/chain/types';
-import useErrorStore from '../store/errorStore';
-import NetInfo from '@react-native-community/netinfo';
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
@@ -19,7 +17,6 @@ export type AccountSummaryProps = {
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props.address?.getName();
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
-    const errorStore = useErrorStore();
 
     useEffect(() => {
         const fetchLogo = async () => {
@@ -34,17 +31,6 @@ const AccountSummary = (props: AccountSummaryProps) => {
     }, [props.address]);
 
     const generateKey = async () => {
-        const netInfo = await NetInfo.fetch();
-
-        if (!netInfo.isConnected) {
-            errorStore.setError({
-                error: new Error('Please check your internet connection and try again.'),
-                title: 'No Internet Connection',
-                expected: false,
-            });
-            return;
-        }
-
         props.navigation.navigate('CreateEthereumKey');
     };
 
