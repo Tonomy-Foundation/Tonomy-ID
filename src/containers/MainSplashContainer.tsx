@@ -38,11 +38,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                             await initializeStatusFromStorage();
                             break;
                         } catch (error) {
-                            if (error.message === 'Network request failed') {
-                                const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+                            debug('Error initializing app:', error);
 
-                                debug('initializeStatusFromStorage network error ', status);
-                                setStatus(status as UserStatus);
+                            if (error.message === 'Network request failed') {
                                 debug('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
                                 await new Promise((resolve) => setTimeout(resolve, retryInterval));
                                 retryInterval = Math.min(retryInterval * 2, maxInterval); // Double the interval, cap at 1 hour
