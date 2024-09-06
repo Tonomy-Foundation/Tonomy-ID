@@ -82,10 +82,13 @@ const useUserStore = create<UserState>((set, get) => ({
         }
 
         try {
+            debug('initializeStatusFromStorage() try');
             await get().user.initializeFromStorage();
             get().setStatus(UserStatus.LOGGED_IN);
             set({ isAppInitialized: true });
         } catch (e) {
+            debug('initializeStatusFromStorage() error', e);
+
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 useErrorStore.getState().setError({ error: e, expected: false });
