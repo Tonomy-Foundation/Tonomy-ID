@@ -6,19 +6,23 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { SdkError, SdkErrors, STORAGE_NAMESPACE } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
+    const { user, status, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } =
+        useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
+
+    debug('user status splash screen', status);
 
     useEffect(() => {
         async function main() {
@@ -46,19 +50,22 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 }
 
                 await connect();
-
                 const status = await getStatus();
 
-                setStatus(status);
+                debug('splash screen status: ', status);
 
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('SplashSecurity'));
+                        debug('status is NONE');
+                        navigation.navigate('SplashSecurity');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
+                        debug('status is NOT_LOGGED_IN');
                         navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.LOGGED_IN:
+                        debug('status is LOGGED_IN');
+
                         try {
                             await user.getUsername();
                             await initializeWalletState();

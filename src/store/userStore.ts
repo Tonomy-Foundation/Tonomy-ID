@@ -51,13 +51,19 @@ const useUserStore = create<UserState>((set, get) => ({
     status: UserStatus.NONE,
     isAppInitialized: false,
     getStatus: async () => {
-        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
+        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+        const userstatus = get().status;
+
+        debug('getSTatus function', status, userstatus);
+        get().setStatus(status as UserStatus);
 
         return status as UserStatus;
     },
     setStatus: async (newStatus: UserStatus) => {
-        await AsyncStorage.setItem(STORAGE_NAMESPACE + 'status', newStatus);
+        debug('set status', newStatus);
+        const storeStatus = await AsyncStorage.setItem(STORAGE_NAMESPACE + 'store.status', newStatus);
 
+        debug('store Sttatus', storeStatus);
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
@@ -76,10 +82,13 @@ const useUserStore = create<UserState>((set, get) => ({
         }
 
         try {
+            debug('initializeStatusFromStorage() try');
             await get().user.initializeFromStorage();
             get().setStatus(UserStatus.LOGGED_IN);
             set({ isAppInitialized: true });
         } catch (e) {
+            debug('initializeStatusFromStorage() error', e);
+
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 useErrorStore.getState().setError({ error: e, expected: false });
