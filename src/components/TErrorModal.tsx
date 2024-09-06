@@ -6,6 +6,9 @@ import { TButtonText } from './atoms/TButton';
 import { TP } from './atoms/THeadings';
 import { HttpError, EosioUtil, CommunicationError, AntelopePushTransactionError } from '@tonomy/tonomy-id-sdk';
 import { Modal } from 'react-native';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:components:TErrorModal');
 
 export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
     onPress: () => void;
@@ -26,7 +29,7 @@ export default function TErrorModal(props: TErrorModalProps) {
 
     if (props?.expected === false) {
         console.error(props.error);
-        console.log(JSON.stringify(props.error, null, 2), props.expected);
+        debug(JSON.stringify(props.error, null, 2), props.expected);
         // TODO: log to Tonomy Foundation team
     }
 
