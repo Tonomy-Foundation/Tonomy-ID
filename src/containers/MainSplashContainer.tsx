@@ -18,8 +18,11 @@ const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
+    const { user, status, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } =
+        useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
+
+    debug('user status splash screen', status);
 
     useEffect(() => {
         async function main() {
@@ -47,19 +50,22 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 }
 
                 await connect();
-                const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
+                const status = getStatus();
 
                 debug('splash screen status: ', status);
-                setStatus(status as UserStatus);
 
                 switch (status) {
                     case UserStatus.NONE:
+                        debug('status is NONE');
                         navigation.navigate('SplashSecurity');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
+                        debug('status is NOT_LOGGED_IN');
                         navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.LOGGED_IN:
+                        debug('status is LOGGED_IN');
+
                         try {
                             await user.getUsername();
                             await initializeWalletState();
