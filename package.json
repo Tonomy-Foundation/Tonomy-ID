@@ -124,5 +124,9 @@
         "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto"
     },
     "private": true,
-    "packageManager": "yarn@4.3.1"
+    "packageManager": "yarn@4.3.1",
+    "engines": {
+        "node": ">=20.0.0",
+        "yarn": "^4.3.1"
+    }
 }
