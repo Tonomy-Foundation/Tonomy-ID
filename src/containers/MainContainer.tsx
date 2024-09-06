@@ -84,6 +84,11 @@ export default function MainContainer({
                 } catch (error) {
                     if (error.message === 'Network request failed') {
                         debug('Error during initialization:', error);
+                    } else {
+                        errorStore.setError({
+                            error: error,
+                            expected: true,
+                        });
                     }
                 }
             }
