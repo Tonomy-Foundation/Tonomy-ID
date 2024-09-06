@@ -31,6 +31,7 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
+import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -79,12 +80,30 @@ export default function MainContainer({
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
             if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
-                await initializeWalletState();
+                try {
+                    await initializeWalletState();
+                } catch (error) {
+                    debug('Error during initialization:', error);
+                }
             }
         };
 
-        initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount]);
+        const unsubscribe = NetInfo.addEventListener((state) => {
+            if (!state.isConnected) {
+                errorStore.setError({
+                    error: new Error('Please check your internet connection and try again.'),
+                    title: 'No Internet Connection',
+                    expected: false,
+                });
+            } else {
+                initializeAndFetchBalances();
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount, errorStore]);
 
     useEffect(() => {
         setUserName();
@@ -138,6 +157,17 @@ export default function MainContainer({
     }
 
     async function onScan({ data }: BarCodeScannerResult) {
+        const netInfo = await NetInfo.fetch();
+
+        if (!netInfo.isConnected) {
+            errorStore.setError({
+                error: new Error('Please check your internet connection and try again.'),
+                title: 'No Internet Connection',
+                expected: false,
+            });
+            return;
+        }
+
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
@@ -206,6 +236,17 @@ export default function MainContainer({
     }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
+        const netInfo = await NetInfo.fetch();
+
+        if (!netInfo.isConnected) {
+            errorStore.setError({
+                error: new Error('Please check your internet connection and try again.'),
+                title: 'No Internet Connection',
+                expected: false,
+            });
+            return;
+        }
+
         if (account) {
             const accountToken = await account.getNativeToken();
             const logoUrl = accountToken.getLogoUrl();
@@ -220,10 +261,21 @@ export default function MainContainer({
     };
 
     const onRefresh = React.useCallback(async () => {
+        const netInfo = await NetInfo.fetch();
+
+        if (!netInfo.isConnected) {
+            errorStore.setError({
+                error: new Error('Please check your internet connection and try again.'),
+                title: 'No Internet Connection',
+                expected: false,
+            });
+            return;
+        }
+
         setRefreshing(true);
         updateBalance();
         setRefreshing(false);
-    }, [updateBalance]);
+    }, [updateBalance, errorStore]);
 
     const MainView = () => {
         const isFocused = useIsFocused();

@@ -4019,6 +4019,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/netinfo@npm:^11.3.2":
+  version: 11.3.2
+  resolution: "@react-native-community/netinfo@npm:11.3.2"
+  peerDependencies:
+    react-native: ">=0.59"
+  checksum: 10c0/1f54960ca49edbc226e48e7b7788e457e25d1a0770501c09f63e587873a905b80168231ebd13f4013bb34c865f5a36f26e330058c3e1be84e865c21b5aca92b6
+  languageName: node
+  linkType: hard
+
 "@react-native/assets-registry@npm:^0.72.0":
   version: 0.72.0
   resolution: "@react-native/assets-registry@npm:0.72.0"
@@ -17991,6 +18000,7 @@ __metadata:
     "@json-rpc-tools/utils": "npm:^1.7.6"
     "@react-native-async-storage/async-storage": "npm:1.18.2"
     "@react-native-clipboard/clipboard": "npm:^1.14.1"
+    "@react-native-community/netinfo": "npm:^11.3.2"
     "@react-navigation/bottom-tabs": "npm:^6.5.0"
     "@react-navigation/drawer": "npm:^6.5.0"
     "@react-navigation/native": "npm:^6.0.12"
