@@ -28,7 +28,7 @@ import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-import { capitalizeFirstLetter } from '../utils/helper';
+import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
 
@@ -80,16 +80,12 @@ export default function MainContainer({
         const initializeAndFetchBalances = async () => {
             if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
                 try {
-                    await initializeWalletState();
+                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
                 } catch (error) {
-                    if (error.message === 'Network request failed') {
-                        debug('Error during initialization:', error);
-                    } else {
-                        errorStore.setError({
-                            error: error,
-                            expected: true,
-                        });
-                    }
+                    errorStore.setError({
+                        error: error,
+                        expected: true,
+                    });
                 }
             }
         };
@@ -244,18 +240,13 @@ export default function MainContainer({
     const onRefresh = React.useCallback(async () => {
         try {
             setRefreshing(true);
-            updateBalance();
+            progressiveRetryOnNetworkError(async () => await updateBalance());
             setRefreshing(false);
         } catch (error) {
-            if (error.message === 'Network request failed') {
-                debug('Error during initialization:', error);
-                return;
-            } else {
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
+            errorStore.setError({
+                error: error,
+                expected: true,
+            });
         }
     }, [updateBalance, errorStore]);
 
