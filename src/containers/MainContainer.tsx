@@ -58,14 +58,20 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const [refreshing, setRefreshing] = React.useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
         address: '',
     });
-    const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
-        useWalletStore();
+    const {
+        web3wallet,
+        ethereumAccount,
+        refreshBalance,
+        initialized,
+        sepoliaAccount,
+        polygonAccount,
+        initializeWalletState,
+    } = useWalletStore();
 
     const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
         ethereumBalance: state.ethereumBalance,
@@ -103,12 +109,22 @@ export default function MainContainer({
 
     useEffect(() => {
         async function getUpdatedBalance() {
-            await updateBalance();
+            try {
+                progressiveRetryOnNetworkError(async () => {
+                    await updateBalance();
 
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                    const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-            if (pangeaBalance !== accountPangeaBalance) {
-                setPangeaBalance(accountPangeaBalance);
+                    if (pangeaBalance !== accountPangeaBalance) {
+                        setPangeaBalance(accountPangeaBalance);
+                    }
+                });
+            } catch (error) {
+                debug('Error updating balance:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
             }
         }
 
@@ -119,7 +135,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
+    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance, errorStore]);
 
     async function setUserName() {
         try {
@@ -214,34 +230,30 @@ export default function MainContainer({
 
     const updateAccountDetail = async (account) => {
         try {
-            if (account) {
-                const accountToken = await account.getNativeToken();
-                const logoUrl = accountToken.getLogoUrl();
+            progressiveRetryOnNetworkError(async () => {
+                if (account) {
+                    const accountToken = await account.getNativeToken();
+                    const logoUrl = accountToken.getLogoUrl();
 
-                setAccountDetails({
-                    symbol: accountToken.getSymbol(),
-                    name: capitalizeFirstLetter(account.getChain().getName()),
-                    address: account?.getName() || '',
-                    ...(logoUrl && { image: logoUrl }),
-                });
-            }
+                    setAccountDetails({
+                        symbol: accountToken.getSymbol(),
+                        name: capitalizeFirstLetter(account.getChain().getName()),
+                        address: account?.getName() || '',
+                        ...(logoUrl && { image: logoUrl }),
+                    });
+                }
+            });
         } catch (error) {
-            if (error.message === 'Network request failed') {
-                debug('Error during initialization:', error);
-            } else {
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
+            errorStore.setError({
+                error: error,
+                expected: true,
+            });
         }
     };
 
     const onRefresh = React.useCallback(async () => {
         try {
-            setRefreshing(true);
             progressiveRetryOnNetworkError(async () => await updateBalance());
-            setRefreshing(false);
         } catch (error) {
             errorStore.setError({
                 error: error,
@@ -263,7 +275,7 @@ export default function MainContainer({
                     <View style={styles.content}>
                         <ScrollView
                             contentContainerStyle={styles.scrollViewContent}
-                            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>

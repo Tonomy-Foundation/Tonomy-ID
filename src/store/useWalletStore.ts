@@ -39,6 +39,7 @@ interface WalletState {
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
     disconnectSession: () => Promise<void>;
+    refreshBalance: boolean;
 }
 const defaultState = {
     initialized: false,
@@ -49,6 +50,7 @@ const defaultState = {
     polygonAccount: null,
     polygonBalance: { balance: '0', usdBalance: 0 },
     web3wallet: null,
+    refreshBalance: false,
 };
 
 const useWalletStore = create<WalletState>((set, get) => ({
@@ -168,6 +170,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
+                set({ refreshBalance: true });
                 const balances = await Promise.allSettled([
                     ETHToken.getBalance(ethereumAccount),
                     ETHSepoliaToken.getBalance(sepoliaAccount),
@@ -194,6 +197,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         usdBalance: polygonBalance ? (await polygonBalance.getUsdValue()) || 0 : 0,
                     },
                 });
+                set({ refreshBalance: false });
             }
         } catch (error) {
             console.error('Error updating balance:', error);

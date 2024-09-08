@@ -28,10 +28,10 @@ export async function progressiveRetryOnNetworkError(fn, initialDelay = 10000, m
     while (condition) {
         try {
             await fn();
-            debug('App initialized successfully.');
+            debug('Function called successfully');
             break;
         } catch (error) {
-            debug('Error initializing app:', error);
+            debug('Error function called:', error);
 
             if (error.message === 'Network request failed') {
                 debug('Network error occurred, retrying..');
