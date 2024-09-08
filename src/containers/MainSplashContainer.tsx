@@ -6,14 +6,13 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { SdkError, SdkErrors, STORAGE_NAMESPACE } from '@tonomy/tonomy-id-sdk';
+import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import progressiveRetryOnNetworkError from '../utils/helper';
+import { progressiveRetryOnNetworkError } from '../utils/helper';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
