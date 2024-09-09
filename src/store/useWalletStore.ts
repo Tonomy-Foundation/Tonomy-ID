@@ -68,11 +68,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 const key = await keyStorage.findByName(keyName, chain);
 
-                debug('chain Name', keyName);
-
                 if (key) {
-                    debug('key exists condition called:');
-
                     const exportPrivateKey = await key.exportPrivateKey();
                     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
                     const account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
@@ -80,26 +76,17 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                     try {
                         balance = await token.getBalance(account);
-                        return {
-                            account,
-                            balance: {
-                                balance: balance.toString(),
-                                usdBalance: await balance.getUsdValue(),
-                            },
-                        };
                     } catch (e) {
                         debug('Error getting balance:', e);
-
-                        if (e.message === 'Network request failed') {
-                            return {
-                                account,
-                                balance: {
-                                    balance: '0',
-                                    usdBalance: 0,
-                                },
-                            };
-                        }
                     }
+
+                    return {
+                        account,
+                        balance: {
+                            balance: balance ? balance.toString() : '0',
+                            usdBalance: balance ? await balance.getUsdValue() : 0,
+                        },
+                    };
                 }
 
                 return null;
