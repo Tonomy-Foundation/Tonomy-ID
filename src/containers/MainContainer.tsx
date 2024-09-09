@@ -110,21 +110,24 @@ export default function MainContainer({
     useEffect(() => {
         async function getUpdatedBalance() {
             try {
-                progressiveRetryOnNetworkError(async () => {
-                    await updateBalance();
+                await updateBalance();
 
-                    const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-                    if (pangeaBalance !== accountPangeaBalance) {
-                        setPangeaBalance(accountPangeaBalance);
-                    }
-                });
+                if (pangeaBalance !== accountPangeaBalance) {
+                    setPangeaBalance(accountPangeaBalance);
+                }
             } catch (error) {
                 debug('Error updating balance:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
+
+                if (error.message === 'Network request failed') {
+                    debug('netowrk error when call updating balance:');
+                } else {
+                    errorStore.setError({
+                        error: error,
+                        expected: true,
+                    });
+                }
             }
         }
 
