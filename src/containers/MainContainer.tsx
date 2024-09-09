@@ -35,7 +35,7 @@ import AccountSummary from '../components/AccountSummary';
 import { APIClient, PrivateKey } from '@wharfkit/antelope';
 import { ABICache } from '@wharfkit/abicache';
 import zlib from 'pako';
-import { SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
+import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import * as SecureStore from 'expo-secure-store';
 import {
     ActionData,
@@ -167,17 +167,19 @@ export default function MainContainer({
                 const client = new APIClient({ url: chain.getApiOrigin() });
 
                 // Define the options used when decoding/resolving the request
-                const options = {
-                    abiProvider: new ABICache(client),
+                const options: SigningRequestEncodingOptions = {
+                    abiProvider: new ABICache(client) as unknown as AbiProvider,
                     zlib,
                 };
 
                 // Decode a signing request payload
-                const signingRequest = SigningRequest.from(data, options as unknown as SigningRequestEncodingOptions);
+                const signingRequest = SigningRequest.from(data, options);
 
                 const isIdentity = signingRequest.isIdentity();
-                // const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
+                const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
                 const abis = await signingRequest.fetchAbis();
+
+                if (!privateKey) throw new Error('No private key found');
 
                 const authorization = {
                     actor: accountName,
@@ -201,9 +203,8 @@ export default function MainContainer({
                     })
                 );
                 const actions = createAssetAction;
-                const privateKeyValue = '5Hw7gAxYHruqAtwBcVjFUHS79A2A4QmVL2ModVgdhE12NpCpLdr';
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
-                const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKeyValue), EOSJungleChain);
+                const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
                 const session = new ESRSession(antelopeKey, chain);
 
                 if (!isIdentity) {
