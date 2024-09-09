@@ -6,6 +6,8 @@ import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
 import { AppStorageRepository } from './repositories/appSettingRepository';
 import { AppStorageManager } from './repositories/appStorageManager';
+import { AssetStorageRepository } from './repositories/assetStorageRepository';
+import { AssetStorageManager } from './repositories/assetStorageManager';
 
 export const dataSource = new DataSource({
     database: 'storage',
@@ -33,6 +35,16 @@ class ConcreteAppManager extends AppStorageManager {
     }
 }
 export const appStorage = new ConcreteAppManager(appStorageRepository);
+
+// Create the asset storage repository instances
+const assetStorageRepository = new AssetStorageRepository(dataSource);
+
+class ConcreteAssetManager extends AssetStorageManager {
+    constructor(repository: AssetStorageRepository) {
+        super(repository);
+    }
+}
+export const assetStorage = new ConcreteAssetManager(assetStorageRepository);
 
 async function checkTableExists(dataSource, tableName) {
     const queryRunner = dataSource.createQueryRunner();

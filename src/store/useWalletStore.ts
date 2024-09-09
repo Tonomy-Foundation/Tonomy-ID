@@ -68,7 +68,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 const key = await keyStorage.findByName(keyName, chain);
 
+                debug('chain Name', keyName);
+
                 if (key) {
+                    debug('key exists condition called:');
+
                     const exportPrivateKey = await key.exportPrivateKey();
                     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
                     const account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
