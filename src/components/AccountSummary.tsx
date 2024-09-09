@@ -5,30 +5,55 @@ import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { IAccount } from '../utils/chain/types';
+import { progressiveRetryOnNetworkError } from '../utils/helper';
+import { assetStorage } from '../utils/StorageManager/setup';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:component:AcountSummary');
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
-    accountBalance: { balance: string; usdBalance: number };
     updateAccountDetail: (address: IAccount) => void;
     address: IAccount | null;
     networkName: string;
+    storageName?: string;
 };
 
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props.address?.getName();
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
+        balance: '0',
+        usdBalance: 0,
+    });
 
+    debug('accountBalance:', props.storageName, currentAddress, accountBalance);
     useEffect(() => {
         const fetchLogo = async () => {
-            if (props.address) {
-                const accountToken = await props.address.getNativeToken();
+            try {
+                progressiveRetryOnNetworkError(async () => {
+                    if (props.address) {
+                        const accountToken = await props.address.getNativeToken();
 
-                setLogoUrl(accountToken.getLogoUrl());
+                        setLogoUrl(accountToken.getLogoUrl());
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to fetch logo', e);
+            }
+        };
+
+        const fetchBalance = async () => {
+            if (props.storageName) {
+                const balance = await assetStorage.findBalanceByName(props.storageName);
+
+                setAccountBalance(balance);
             }
         };
 
         fetchLogo();
-    }, [props.address]);
+        fetchBalance();
+    }, [props.address, props.storageName]);
 
     const generateKey = async () => {
         props.navigation.navigate('CreateEthereumKey');
@@ -77,10 +102,10 @@ const AccountSummary = (props: AccountSummaryProps) => {
                         ) : (
                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text>{props.accountBalance.balance}</Text>
+                                    <Text>{accountBalance.balance}</Text>
                                 </View>
                                 <Text style={styles.secondaryColor}>
-                                    ${formatCurrencyValue(Number(props.accountBalance.usdBalance), 3)}
+                                    ${formatCurrencyValue(Number(accountBalance.usdBalance), 3)}
                                 </Text>
                             </View>
                         )}

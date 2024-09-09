@@ -73,10 +73,7 @@ export default function MainContainer({
         initializeWalletState,
     } = useWalletStore();
 
-    const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
+    const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
 
@@ -348,24 +345,24 @@ export default function MainContainer({
 
                                     <AccountSummary
                                         navigation={navigation}
-                                        accountBalance={ethereumBalance}
                                         address={ethereumAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Ethereum"
+                                        storageName="ethereum"
                                     />
                                     <AccountSummary
                                         navigation={navigation}
-                                        accountBalance={sepoliaBalance}
                                         address={sepoliaAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Sepolia"
+                                        storageName="ethereumTestnetSepolia"
                                     />
                                     <AccountSummary
                                         navigation={navigation}
-                                        accountBalance={polygonBalance}
                                         address={polygonAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
+                                        storageName="ethereumPolygon"
                                     />
                                 </View>
                             </ScrollView>
