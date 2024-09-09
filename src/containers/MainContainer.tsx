@@ -157,6 +157,7 @@ export default function MainContainer({
         try {
             await connectToDid(did);
         } catch (e) {
+            debug('onUrlOpen error:', e);
             errorStore.setError({ error: e, expected: false });
         } finally {
             onClose();
@@ -173,6 +174,8 @@ export default function MainContainer({
                 await connectToDid(did);
             }
         } catch (e) {
+            debug('onScan error:', e);
+
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 debug('Invalid QR Code', JSON.stringify(e, null, 2));
 
@@ -205,6 +208,8 @@ export default function MainContainer({
 
             await user.sendMessage(identifyMessage);
         } catch (e) {
+            debug('connectToDid error:', e);
+
             if (
                 e instanceof CommunicationError &&
                 e.exception?.status === 400 &&
@@ -247,6 +252,7 @@ export default function MainContainer({
                 }
             });
         } catch (error) {
+            debug('Error updating account detail:', error);
             errorStore.setError({
                 error: error,
                 expected: true,
@@ -258,6 +264,8 @@ export default function MainContainer({
         try {
             progressiveRetryOnNetworkError(async () => await updateBalance());
         } catch (error) {
+            debug('Error when refresh balance:', error);
+
             errorStore.setError({
                 error: error,
                 expected: true,
