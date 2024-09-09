@@ -354,8 +354,8 @@ export default function MainContainer({
                                         navigation={navigation}
                                         address={sepoliaAccount}
                                         updateAccountDetail={updateAccountDetail}
-                                        networkName="ethereumTestnetSepolia"
-                                        storageName="ethereumPolygon"
+                                        networkName="Sepolia"
+                                        storageName="ethereumTestnetSepolia"
                                     />
                                     <AccountSummary
                                         navigation={navigation}
