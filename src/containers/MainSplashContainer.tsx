@@ -6,23 +6,20 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/sleep';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { SdkError, SdkErrors, STORAGE_NAMESPACE } from '@tonomy/tonomy-id-sdk';
+import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { progressiveRetryOnNetworkError } from '../utils/helper';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, status, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } =
-        useUserStore();
+    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
     const { clearState, initializeWalletState } = useWalletStore();
-
-    debug('user status splash screen', status);
 
     useEffect(() => {
         async function main() {
@@ -30,24 +27,11 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isAppInitialized) {
-                    let retryInterval = 10000; // Start with 10 seconds
-                    const maxInterval = 3600000; // Cap at 1 hour
-
-                    while (!isAppInitialized) {
-                        try {
-                            await initializeStatusFromStorage();
-                            break;
-                        } catch (error) {
-                            debug('Error initializing app:', error);
-
-                            if (error.message === 'Network request failed') {
-                                debug('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
-                                await new Promise((resolve) => setTimeout(resolve, retryInterval));
-                                retryInterval = Math.min(retryInterval * 2, maxInterval); // Double the interval, cap at 1 hour
-                            } else {
-                                break;
-                            }
-                        }
+                    try {
+                        progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
+                    } catch (e) {
+                        console.error('Error initializing app:', e);
+                        errorStore.setError({ error: e, expected: false });
                     }
                 }
 

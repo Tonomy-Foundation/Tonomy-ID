@@ -16,6 +16,9 @@ import PassphraseInput from '../components/PassphraseInput';
 import { keyStorage } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
 import { EthereumMainnetChain, EthereumPolygonChain, EthereumSepoliaChain } from '../utils/chain/etherum';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -44,6 +47,7 @@ export default function CreateEthereumKeyContainer({
 
             setUsername(u.getBaseUsername());
         } catch (e) {
+            debug('setUserName()', e);
             errorsStore.setError({ error: e, expected: false });
         }
     }
@@ -85,7 +89,7 @@ export default function CreateEthereumKeyContainer({
 
             redirectFunc();
         } catch (e) {
-            console.error('onNext()', e);
+            debug('onNext() function called', e);
 
             if (e instanceof SdkError) {
                 switch (e.code) {

@@ -5,7 +5,6 @@ import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { IAccount } from '../utils/chain/types';
-import useErrorStore from '../store/errorStore';
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
@@ -18,7 +17,6 @@ export type AccountSummaryProps = {
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props.address?.getName();
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
-    const errorStore = useErrorStore();
 
     useEffect(() => {
         const fetchLogo = async () => {
