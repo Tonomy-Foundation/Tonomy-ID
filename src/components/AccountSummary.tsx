@@ -7,6 +7,9 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import { IAccount } from '../utils/chain/types';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
 import { assetStorage } from '../utils/StorageManager/setup';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:component:AcountSummary');
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
@@ -24,6 +27,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
         usdBalance: 0,
     });
 
+    debug('accountBalance:', props.storageName, currentAddress, accountBalance);
     useEffect(() => {
         const fetchLogo = async () => {
             try {

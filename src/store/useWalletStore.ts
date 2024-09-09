@@ -76,6 +76,16 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         });
                     } catch (e) {
                         debug('Error getting balance:', e);
+
+                        if (e.message === 'Network request failed') {
+                            debug('network error do nothing');
+                        } else {
+                            await assetStorage.emplaceAccountBalance(keyName, {
+                                balance: '0',
+                                usdBalance: 0,
+                            });
+                            throw e;
+                        }
                     }
 
                     return {
