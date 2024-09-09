@@ -39,6 +39,7 @@ import { SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing
 import * as SecureStore from 'expo-secure-store';
 import {
     ActionData,
+    ANTELOPE_CHAIN_ID_TO_CHAIN,
     AntelopeChain,
     AntelopePrivateKey,
     AntelopeTransaction,
@@ -159,15 +160,9 @@ export default function MainContainer({
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('esr:')) {
-                let chain: AntelopeChain;
+                const signingRequestBasic = SigningRequest.from(data, { zlib });
 
-                if (settings.env === 'testnet') {
-                    chain = PangeaTestnetChain;
-                } else if (settings.env === 'production') {
-                    chain = PangeaMainnetChain;
-                } else {
-                    chain = EOSJungleChain;
-                }
+                const chain: AntelopeChain = ANTELOPE_CHAIN_ID_TO_CHAIN[signingRequestBasic.getChainId().toString()];
 
                 const client = new APIClient({ url: chain.getApiOrigin() });
 
@@ -179,8 +174,9 @@ export default function MainContainer({
 
                 // Decode a signing request payload
                 const signingRequest = SigningRequest.from(data, options as unknown as SigningRequestEncodingOptions);
+
                 const isIdentity = signingRequest.isIdentity();
-                const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
+                // const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
                 const abis = await signingRequest.fetchAbis();
 
                 const authorization = {
@@ -205,7 +201,7 @@ export default function MainContainer({
                     })
                 );
                 const actions = createAssetAction;
-                const privateKeyValue = privateKey || '';
+                const privateKeyValue = '5Hw7gAxYHruqAtwBcVjFUHS79A2A4QmVL2ModVgdhE12NpCpLdr';
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
                 const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKeyValue), EOSJungleChain);
                 const session = new ESRSession(antelopeKey, chain);

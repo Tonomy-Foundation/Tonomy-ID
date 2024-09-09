@@ -333,7 +333,21 @@ EOSJungleChain.setNativeToken(JUNGLEToken);
 PangeaMainnetChain.setNativeToken(LEOSToken);
 PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
 
-export { PangeaMainnetChain, PangeaTestnetChain, EOSJungleChain, LEOSToken, LEOSTestnetToken, JUNGLEToken };
+const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
+
+ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
+ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
+ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
+
+export {
+    PangeaMainnetChain,
+    PangeaTestnetChain,
+    EOSJungleChain,
+    LEOSToken,
+    LEOSTestnetToken,
+    JUNGLEToken,
+    ANTELOPE_CHAIN_ID_TO_CHAIN,
+};
 
 export class AntelopeAction implements IOperation {
     private action: ActionData;
