@@ -76,17 +76,26 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                     try {
                         balance = await token.getBalance(account);
+                        return {
+                            account,
+                            balance: {
+                                balance: balance.toString(),
+                                usdBalance: await balance.getUsdValue(),
+                            },
+                        };
                     } catch (e) {
                         debug('Error getting balance:', e);
-                    }
 
-                    return {
-                        account,
-                        balance: {
-                            balance: balance ? balance.toString() : '0',
-                            usdBalance: balance ? await balance.getUsdValue() : 0,
-                        },
-                    };
+                        if (e.message === 'Network request failed') {
+                            return {
+                                account,
+                                balance: {
+                                    balance: '0',
+                                    usdBalance: 0,
+                                },
+                            };
+                        }
+                    }
                 }
 
                 return null;
