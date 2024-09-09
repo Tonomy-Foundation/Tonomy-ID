@@ -8,11 +8,12 @@ import { AppStorageRepository } from './repositories/appSettingRepository';
 import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
+import { AssetStorage } from './entities/assetStorage';
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLiteDriver,
-    entities: [KeyStorage, AppStorage],
+    entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
 });
 

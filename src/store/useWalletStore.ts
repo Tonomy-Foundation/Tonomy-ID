@@ -173,6 +173,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
 
                 if (ethereumBalance) {
+                    console.log('ethereumBalance', ethereumBalance);
                     await assetStorage.emplaceAccountBalance('ethereum', {
                         balance: ethereumBalance.toString(),
                         usdBalance: await ethereumBalance.getUsdValue(),
