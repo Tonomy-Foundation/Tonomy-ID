@@ -426,25 +426,26 @@ function getAssetFromQuantity(quantity: string, chain: AntelopeChain): Asset {
 export class AntelopeTransaction implements ITransaction {
     private actions: ActionData[];
     protected chain: AntelopeChain;
-    // protected session: EthereumChainSession;
+    protected account: AntelopeAccount;
 
-    constructor(actions: ActionData[], chain: AntelopeChain) {
+    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount) {
         this.actions = actions;
         this.chain = chain;
+        this.account = account;
     }
     getChain(): AntelopeChain {
         return this.chain;
     }
 
-    static fromActions(actions: ActionData[], chain: AntelopeChain): AntelopeTransaction {
-        return new AntelopeTransaction(actions, chain);
+    static fromActions(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount): AntelopeTransaction {
+        return new AntelopeTransaction(actions, chain, account);
     }
 
     async getType(): Promise<TransactionType> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getFrom(): Promise<AntelopeAccount> {
-        throw new Error('Antelope transactions have multiple operations, call getOperations()');
+        return this.account;
     }
     async getTo(): Promise<AntelopeAccount> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');

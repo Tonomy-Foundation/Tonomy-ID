@@ -6,6 +6,7 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import {
     ChainType,
+    IAccount,
     IAsset,
     IChainSession,
     IOperation,
@@ -43,26 +44,31 @@ export default function SignTransactionConsentContainer({
     session: IChainSession;
 }) {
     const errorStore = useErrorStore();
-    const [loading, setLoading] = useState(false);
+    // TODO need to set this properly still
     const [transactionLoading, setTransactionLoading] = useState(false);
-    const [transactionDetails, setTransactionDetails] = useState<{
-        total: IAsset | null;
-        usdTotal: number;
-    }>({
-        total: null,
-        usdTotal: 0,
-    });
-    const [toolTipVisible, setToolTipVisible] = useState(false);
     const [balanceError, showBalanceError] = useState(false);
+    const [account, setAccount] = useState<IAccount | null>(null);
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
     const chainIcon = transaction.getChain().getLogoUrl();
+    const chainType = transaction.getChain().getChainType();
     const errorsStore = useErrorStore();
     const refTopUpDetail = useRef(null);
-    const [actionDetails, setActionDetail] = useState(false);
-    const userStore = useUserStore();
-    const user = userStore.user;
 
-    const chainType = transaction.getChain().getChainType();
+    useEffect(() => {
+        async function fetchAccountName() {
+            try {
+                setAccount(await transaction.getFrom());
+            } catch (e) {
+                errorStore.setError({
+                    title: 'Error fetching account name',
+                    error: e,
+                    expected: false,
+                });
+            }
+        }
+
+        fetchAccountName();
+    }, [errorStore, transaction]);
 
     async function onReject() {
         setTransactionLoading(true);
@@ -121,19 +127,27 @@ export default function SignTransactionConsentContainer({
 
         useEffect(() => {
             async function fetchOperationDetails() {
-                const to = (await operation.getTo()).getName();
+                try {
+                    const to = (await operation.getTo()).getName();
 
-                setTo(transaction.getChain().formatShortAccountName(to));
-                const value = await operation.getValue();
+                    setTo(transaction.getChain().formatShortAccountName(to));
+                    const value = await operation.getValue();
 
-                setAmount(value.toString());
-                const usdValue = await value.getUsdValue();
+                    setAmount(value.toString());
+                    const usdValue = await value.getUsdValue();
 
-                setUsdValue(formatCurrencyValue(usdValue, 2));
+                    setUsdValue(formatCurrencyValue(usdValue, 2));
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error fetching transaction operation details',
+                        error: e,
+                        expected: false,
+                    });
+                }
             }
 
             fetchOperationDetails();
-        }, []);
+        }, [operation]);
 
         return (
             <View style={styles.appDialog}>
@@ -160,19 +174,28 @@ export default function SignTransactionConsentContainer({
     }
 
     function ContractOperationDetails({ operation }: { operation: IOperation }) {
+        const [showActionDetails, setShowActionDetails] = useState(false);
         const [details, setTransactionDetails] = useState<Record<string, string> | null>(null);
         const [functionName, setFunctionName] = useState<string | null>(null);
         const [contract, setContract] = useState<string | null>(null);
 
         useEffect(() => {
             async function fetchOperationDetails() {
-                setContract((await operation.getTo()).getName());
-                setFunctionName(await operation.getFunction());
-                setTransactionDetails(await operation.getArguments());
+                try {
+                    setContract((await operation.getTo()).getName());
+                    setFunctionName(await operation.getFunction());
+                    setTransactionDetails(await operation.getArguments());
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error fetching contract operation details',
+                        error: e,
+                        expected: false,
+                    });
+                }
             }
 
             fetchOperationDetails();
-        }, []);
+        }, [operation]);
 
         return (
             <View style={styles.actionDialog}>
@@ -200,8 +223,8 @@ export default function SignTransactionConsentContainer({
                 >
                     <Text style={styles.secondaryColor}>Transaction details:</Text>
 
-                    <TouchableOpacity onPress={() => setActionDetail(!actionDetails)}>
-                        {!actionDetails ? (
+                    <TouchableOpacity onPress={() => setShowActionDetails(!showActionDetails)}>
+                        {!showActionDetails ? (
                             <IconButton
                                 icon={Platform.OS === 'android' ? 'chevron-down' : 'chevron-down'}
                                 size={Platform.OS === 'android' ? 18 : 22}
@@ -240,13 +263,21 @@ export default function SignTransactionConsentContainer({
 
         useEffect(() => {
             async function fetchOperationType() {
-                const type = await operation.getType();
+                try {
+                    const type = await operation.getType();
 
-                setType(type);
+                    setType(type);
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error fetching operation type',
+                        error: e,
+                        expected: false,
+                    });
+                }
             }
 
             fetchOperationType();
-        }, []);
+        }, [operation]);
 
         if (type === null) {
             return <TSpinner />;
@@ -264,16 +295,24 @@ export default function SignTransactionConsentContainer({
 
         useEffect(() => {
             async function fetchOperation() {
-                if (chainType === ChainType.ANTELOPE) {
-                    const operations = await transaction.getOperations();
+                try {
+                    if (chainType === ChainType.ANTELOPE) {
+                        const operations = await transaction.getOperations();
 
-                    if (operations.length > 1) {
-                        setOperation(operations[0]);
+                        if (operations.length > 1) {
+                            setOperation(operations[0]);
+                        } else {
+                            setOperation(operations);
+                        }
                     } else {
-                        setOperation(operations);
+                        setOperation(transaction);
                     }
-                } else {
-                    setOperation(transaction);
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error fetching operations',
+                        error: e,
+                        expected: false,
+                    });
                 }
             }
 
@@ -303,46 +342,36 @@ export default function SignTransactionConsentContainer({
     }
 
     function TransactionAccount() {
-        const [accountName, setAccountName] = useState<string | null>(null);
-
-        useEffect(() => {
-            async function fetchAccountName() {
-                if (chainType === ChainType.ANTELOPE) {
-                    const username = (await user.getUsername()).getBaseUsername();
-
-                    setAccountName('@' + username);
-                } else {
-                    const account = (await transaction.getFrom()).getName();
-
-                    setAccountName(transaction.getChain().formatShortAccountName(account));
-                }
-            }
-
-            fetchAccountName();
-        }, []);
-
-        if (!accountName) {
+        if (!account) {
             return <TSpinner />;
         }
 
-        return <Text style={styles.accountNameStyle}>{accountName}</Text>;
+        const shortAccountName = transaction.getChain().formatShortAccountName(account.getName());
+
+        return <Text style={styles.accountNameStyle}>{shortAccountName}</Text>;
     }
 
     function TransactionFee() {
+        const [toolTipVisible, setToolTipVisible] = useState(false);
         const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
 
         useEffect(() => {
             async function fetchFee() {
-                console.log('TransactionFee');
-                const fee = await transaction.estimateTransactionFee();
-                const usdFee = await fee.getUsdValue();
+                try {
+                    const fee = await transaction.estimateTransactionFee();
+                    const usdFee = await fee.getUsdValue();
 
-                console.log('TransactionFee -> fee', fee, usdFee);
+                    const feeString = fee.toString(4);
+                    const usdFeeString = formatCurrencyValue(usdFee, 2);
 
-                const feeString = fee.toString(4);
-                const usdFeeString = formatCurrencyValue(usdFee, 2);
-
-                setFee({ fee: feeString, usdFee: usdFeeString });
+                    setFee({ fee: feeString, usdFee: usdFeeString });
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error fetching transaction fee',
+                        error: e,
+                        expected: false,
+                    });
+                }
             }
 
             fetchFee();
@@ -393,13 +422,31 @@ export default function SignTransactionConsentContainer({
 
         useEffect(() => {
             async function fetchTotal() {
-                const total = await transaction.estimateTransactionTotal();
-                const usdTotal = await total.getUsdValue();
+                try {
+                    const total = await transaction.estimateTransactionTotal();
+                    const usdTotal = await total.getUsdValue();
 
-                const totalString = total.toString(4);
-                const usdTotalString = formatCurrencyValue(usdTotal, 2);
+                    const totalString = total.toString(4);
+                    const usdTotalString = formatCurrencyValue(usdTotal, 2);
 
-                setTotal({ total: totalString, totalUsd: usdTotalString });
+                    setTotal({ total: totalString, totalUsd: usdTotalString });
+
+                    // const accountBalance = (
+                    //     await account.getBalance(transaction.getChain().getNativeToken())
+                    // ).getAmount();
+
+                    // if (accountBalance < total.getAmount()) {
+                    //     // TODO probably can make this cleaner with one control variable
+                    //     showBalanceError(true);
+                    //     setBalanceError(true);
+                    // }
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error fetching total',
+                        error: e,
+                        expected: false,
+                    });
+                }
             }
 
             fetchTotal();
@@ -482,18 +529,20 @@ export default function SignTransactionConsentContainer({
                             <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
                             <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
                         </View>
-                        {!loading ? <TransactionDetails /> : <TSpinner style={{ marginBottom: 12 }} />}
+                        <TransactionDetails />
                     </View>
-                    <AccountDetails
-                        refMessage={refTopUpDetail}
-                        accountDetails={{
-                            symbol: transaction.getChain().getNativeToken().getSymbol(),
-                            image: chainIcon,
-                            name: chainName,
-                            address: transactionDetails.fromAccount,
-                        }}
-                        onClose={() => (refTopUpDetail.current as any)?.close()}
-                    />
+                    {account && (
+                        <AccountDetails
+                            refMessage={refTopUpDetail}
+                            accountDetails={{
+                                symbol: transaction.getChain().getNativeToken().getSymbol(),
+                                image: chainIcon,
+                                name: chainName,
+                                address: account.getName(),
+                            }}
+                            onClose={() => (refTopUpDetail.current as any)?.close()}
+                        />
+                    )}
                 </ScrollView>
             }
             footer={

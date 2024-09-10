@@ -40,14 +40,13 @@ import * as SecureStore from 'expo-secure-store';
 import {
     ActionData,
     ANTELOPE_CHAIN_ID_TO_CHAIN,
+    AntelopeAccount,
     AntelopeChain,
     AntelopePrivateKey,
     AntelopeTransaction,
     EOSJungleChain,
     ESRSession,
     LEOS_PUBLIC_SALE_PRICE,
-    PangeaMainnetChain,
-    PangeaTestnetChain,
 } from '../utils/chain/antelope';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
@@ -203,7 +202,8 @@ export default function MainContainer({
                     })
                 );
                 const actions = createAssetAction;
-                const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
+                const account = AntelopeAccount.fromAccount(EOSJungleChain, 'jacktest2222');
+                const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain, account);
                 const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
                 const session = new ESRSession(antelopeKey, chain);
 
