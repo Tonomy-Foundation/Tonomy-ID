@@ -63,10 +63,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const key = await keyStorage.findByName(keyName, chain);
 
                 if (key) {
-                    console.log('key exists');
+                    debug('key exists');
                     const asset = await assetStorage.findAssetByName(token);
 
-                    console.log('asset', asset);
+                    debug('asset', asset);
                     let account;
 
                     if (!asset) {

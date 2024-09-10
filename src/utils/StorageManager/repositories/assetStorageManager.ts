@@ -16,7 +16,6 @@ export abstract class AssetStorageManager {
     public async createAsset(token: IToken, value: IAccount): Promise<void> {
         const name = token.getChain().getName() + '-' + token.getSymbol();
 
-        console.log('name', name);
         await this.repository.createAsset(name, value.getName(), token.getSymbol());
     }
     public async updateAccountBalance(
