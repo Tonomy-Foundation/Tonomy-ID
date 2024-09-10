@@ -1,21 +1,19 @@
 import { Repository, DataSource } from 'typeorm';
-import { IAssetStorage } from '../entities/assetStorage';
+import { AssetStorage } from '../entities/assetStorage';
 
 export class AssetStorageRepository {
-    private ormRepository: Repository<IAssetStorage>;
+    private ormRepository: Repository<AssetStorage>;
 
     constructor(dataSource: DataSource) {
-        this.ormRepository = dataSource.getRepository(IAssetStorage);
+        this.ormRepository = dataSource.getRepository(AssetStorage);
     }
 
-    public async createAsset(assetName: string, accountName: string): Promise<IAssetStorage> {
+    public async createAsset(assetName: string, accountName: string): Promise<AssetStorage> {
         const assetStorageEntity = this.ormRepository.create({
             assetName,
             accountName,
-            balance: JSON.stringify({
-                balance: '0',
-                usdBalance: 0,
-            }),
+            balance: '0',
+            usdBalance: 0,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -25,14 +23,14 @@ export class AssetStorageRepository {
         return storage;
     }
 
-    public async updateAccountBalance(key: IAssetStorage): Promise<IAssetStorage> {
+    public async updateAccountBalance(key: AssetStorage): Promise<AssetStorage> {
         const findDoc = await this.ormRepository.findOne({ where: { assetName: key.assetName, id: key.id } });
 
         if (findDoc) return await this.ormRepository.save(key);
         else throw new Error('Name not exists ');
     }
 
-    public async findAssetByName(name: string): Promise<IAssetStorage | null> {
+    public async findAssetByName(name: string): Promise<AssetStorage | null> {
         return this.ormRepository.findOne({ where: { assetName: name } });
     }
 

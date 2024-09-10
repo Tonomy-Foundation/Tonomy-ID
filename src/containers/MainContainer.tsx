@@ -28,6 +28,9 @@ import {
     EthereumMainnetChain,
     EthereumPolygonChain,
     EthereumSepoliaChain,
+    ETHPolygonToken,
+    ETHSepoliaToken,
+    ETHToken,
     USD_CONVERSION,
 } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
@@ -353,21 +356,21 @@ export default function MainContainer({
                                         address={ethereumAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Ethereum"
-                                        chain={EthereumMainnetChain}
+                                        token={ETHToken}
                                     />
                                     <AccountSummary
                                         navigation={navigation}
                                         address={sepoliaAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Sepolia"
-                                        chain={EthereumSepoliaChain}
+                                        token={ETHSepoliaToken}
                                     />
                                     <AccountSummary
                                         navigation={navigation}
                                         address={polygonAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
-                                        chain={EthereumPolygonChain}
+                                        token={ETHPolygonToken}
                                     />
                                 </View>
                             </ScrollView>

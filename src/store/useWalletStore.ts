@@ -64,7 +64,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                 if (key) {
                     debug('key exists');
-                    const asset = await assetStorage.findAssetByName(chain);
+                    const asset = await assetStorage.findAssetByName(token);
 
                     debug('asset', asset);
                     let account;
@@ -74,7 +74,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
                         account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                        await assetStorage.createAsset(chain, account);
+                        await assetStorage.createAsset(token, account);
                     } else {
                         account = new EthereumAccount(chain, asset.accountName);
                     }
@@ -82,7 +82,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     try {
                         const balance = await token.getBalance(account);
 
-                        await assetStorage.updateAccountBalance(chain, {
+                        await assetStorage.updateAccountBalance(token, {
                             balance: balance.toString(),
                             usdBalance: await balance.getUsdValue(),
                         });
@@ -92,7 +92,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         if (e.message === 'Network request failed') {
                             debug('network error do nothing');
                         } else {
-                            await assetStorage.updateAccountBalance(chain, {
+                            await assetStorage.updateAccountBalance(token, {
                                 balance: '0',
                                 usdBalance: 0,
                             });
@@ -195,21 +195,21 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
 
                 if (ethereumBalance) {
-                    await assetStorage.updateAccountBalance(EthereumMainnetChain, {
+                    await assetStorage.updateAccountBalance(ETHToken, {
                         balance: ethereumBalance.toString(),
                         usdBalance: await ethereumBalance.getUsdValue(),
                     });
                 }
 
                 if (sepoliaBalance) {
-                    await assetStorage.updateAccountBalance(EthereumSepoliaChain, {
+                    await assetStorage.updateAccountBalance(ETHSepoliaToken, {
                         balance: sepoliaBalance.toString(),
                         usdBalance: await sepoliaBalance.getUsdValue(),
                     });
                 }
 
                 if (polygonBalance) {
-                    await assetStorage.updateAccountBalance(EthereumPolygonChain, {
+                    await assetStorage.updateAccountBalance(ETHPolygonToken, {
                         balance: polygonBalance.toString(),
                         usdBalance: await polygonBalance.getUsdValue(),
                     });

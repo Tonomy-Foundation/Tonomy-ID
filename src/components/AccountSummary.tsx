@@ -4,11 +4,10 @@ import TButton from './atoms/TButton';
 import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
-import { IAccount } from '../utils/chain/types';
+import { IAccount, IToken } from '../utils/chain/types';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
 import { assetStorage } from '../utils/StorageManager/setup';
 import Debug from 'debug';
-import { EthereumChain } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:component:AcountSummary');
 
@@ -17,7 +16,7 @@ export type AccountSummaryProps = {
     updateAccountDetail: (address: IAccount) => void;
     address: IAccount | null;
     networkName: string;
-    chain: EthereumChain;
+    token: IToken;
 };
 
 const AccountSummary = (props: AccountSummaryProps) => {
@@ -46,11 +45,11 @@ const AccountSummary = (props: AccountSummaryProps) => {
         };
 
         const fetchBalance = async () => {
-            if (props.chain) {
+            if (props.token) {
                 setLoading(true);
-                const asset = await assetStorage.findAssetByName(props.chain);
+                const asset = await assetStorage.findAssetByName(props.token);
 
-                if (asset) setAccountBalance(asset.balance);
+                if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
                 else setAccountBalance({ balance: '0', usdBalance: 0 });
 
                 setLoading(false);
@@ -59,7 +58,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
 
         fetchLogo();
         fetchBalance();
-    }, [props.address, props.chain]);
+    }, [props.address, props.token]);
 
     const generateKey = async () => {
         props.navigation.navigate('CreateEthereumKey');
