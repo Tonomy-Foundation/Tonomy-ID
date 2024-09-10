@@ -65,6 +65,8 @@ export default function SignTransactionConsentContainer({
     const errorsStore = useErrorStore();
     const refTopUpDetail = useRef(null);
     const [actionDetails, setActionDetail] = useState(false);
+    const userStore = useUserStore();
+    const user = userStore.user;
 
     useEffect(() => {
         const fetchTransactionDetails = async () => {
@@ -368,6 +370,32 @@ export default function SignTransactionConsentContainer({
         }
     }
 
+    function TransactionAccount() {
+        const [accountName, setAccountName] = useState<string | null>(null);
+
+        useEffect(() => {
+            async function fetchAccountName() {
+                if (transactionDetails.chainType === ChainType.ANTELOPE) {
+                    const username = (await user.getUsername()).getBaseUsername();
+
+                    setAccountName('@' + username);
+                } else {
+                    const account = (await transaction.getFrom()).getName();
+
+                    setAccountName(transaction.getChain().formatShortAccountName(account));
+                }
+            }
+
+            fetchAccountName();
+        }, []);
+
+        if (!accountName) {
+            return <TSpinner />;
+        }
+
+        return <Text style={styles.accountNameStyle}>{accountName}</Text>;
+    }
+
     function TransactionDetails() {
         return (
             <>
@@ -375,22 +403,20 @@ export default function SignTransactionConsentContainer({
                     <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                     <Text style={styles.nameText}>{chainName} Network</Text>
                 </View>
-                {/* <Text style={styles.accountNameStyle}>
-                    {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
-                </Text> */}
+                <TransactionAccount />
                 {transactionDetails.operation && <Operations operation={transactionDetails.operation} />}
 
                 <View style={styles.appDialog}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.secondaryColor}>Gas fee:</Text>
+                            <Text style={styles.secondaryColor}>Transaction fee:</Text>
 
                             <Tooltip
                                 isVisible={toolTipVisible}
                                 content={
                                     <Text style={{ color: theme.colors.white, fontSize: 13 }}>
-                                        `This fee is paid to operators of the ${chainName} Network to process this
-                                        transaction`
+                                        This fee is paid to operators of the {chainName} Network to process this
+                                        transaction
                                     </Text>
                                 }
                                 placement="top"
