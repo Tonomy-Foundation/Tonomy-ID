@@ -68,6 +68,7 @@ export type RouteStackParamList = {
     Drawer: undefined;
     SetPassword: undefined;
     Settings: undefined;
+    Support: undefined;
     QrScanner: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
