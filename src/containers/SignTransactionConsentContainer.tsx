@@ -4,10 +4,17 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { ChainType, IChainSession, IOperation, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import {
+    ChainType,
+    IAsset,
+    IChainSession,
+    IOperation,
+    IPrivateKey,
+    ITransaction,
+    TransactionType,
+} from '../utils/chain/types';
 import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
-import { ethers } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import AccountDetails from '../components/AccountDetails';
@@ -36,27 +43,14 @@ export default function SignTransactionConsentContainer({
     session: IChainSession;
 }) {
     const errorStore = useErrorStore();
-    const [contractTransaction, setContractTransaction] = useState(true);
     const [loading, setLoading] = useState(false);
     const [transactionLoading, setTransactionLoading] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState<{
-        value: string;
-        usdValue: number;
-        fee: string;
-        usdFee: number;
-        total: string;
+        total: IAsset | null;
         usdTotal: number;
-        chainType: ChainType | null;
-        operation: IOperation | IOperation[] | null;
     }>({
-        value: '',
-        usdValue: 0,
-        fee: '',
-        usdFee: 0,
-        total: '',
+        total: null,
         usdTotal: 0,
-        chainType: null,
-        operation: null,
     });
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const [balanceError, showBalanceError] = useState(false);
@@ -68,82 +62,7 @@ export default function SignTransactionConsentContainer({
     const userStore = useUserStore();
     const user = userStore.user;
 
-    useEffect(() => {
-        const fetchTransactionDetails = async () => {
-            try {
-                setLoading(true);
-                setTransactionLoading(true);
-
-                let value, usdValue, balance, operation: IOperation | IOperation[] | null;
-
-                const chainType = transaction.getChain().getChainType();
-
-                if (chainType === ChainType.ANTELOPE) {
-                    const operations = await transaction.getOperations();
-
-                    if (operations.length > 1) {
-                        operation = operations[0];
-                    } else {
-                        operation = operations;
-                    }
-                } else {
-                    operation = transaction;
-                }
-
-                const estimateFee = await transaction.estimateTransactionFee();
-
-                const usdFee = await estimateFee.getUsdValue();
-
-                let fee = estimateFee?.toString();
-
-                fee = parseFloat(fee).toFixed(18);
-
-                const estimateTotal = await transaction.estimateTransactionTotal();
-
-                const usdTotal = await estimateTotal.getUsdValue();
-
-                let total = estimateTotal?.toString();
-
-                total = parseFloat(total).toFixed(18);
-
-                if (value) {
-                    const transactionValue = ethers.parseEther(parseFloat(value).toFixed(18));
-                    const etherFee = ethers.parseEther(fee);
-
-                    const totalTransactionCost = transactionValue + etherFee;
-
-                    // Check if the balance is sufficient
-                    if (balance < totalTransactionCost) {
-                        showBalanceError(true);
-                    }
-                }
-
-                setLoading(false);
-
-                setTransactionDetails({
-                    value,
-                    usdValue,
-                    fee,
-                    usdFee,
-                    total,
-                    usdTotal,
-                    chainType,
-                    operation,
-                });
-                setTransactionLoading(false);
-            } catch (e) {
-                if (e === 'Not a contract call') {
-                    setContractTransaction(false);
-                }
-
-                errorStore.setError({ error: e, expected: false });
-                setLoading(false);
-                setTransactionLoading(false);
-            }
-        };
-
-        fetchTransactionDetails();
-    }, []);
+    const chainType = transaction.getChain().getChainType();
 
     async function onReject() {
         setTransactionLoading(true);
@@ -201,21 +120,14 @@ export default function SignTransactionConsentContainer({
         const [usdValue, setUsdValue] = useState<string | null>(null);
 
         useEffect(() => {
-            console.log('TransferOperationDetails', JSON.stringify(operation, null, 2));
-
             async function fetchOperationDetails() {
                 const to = (await operation.getTo()).getName();
 
-                console.log('TransferOperationDetails -> to', to);
                 setTo(transaction.getChain().formatShortAccountName(to));
                 const value = await operation.getValue();
 
-                console.log('TransferOperationDetails -> value', value.toString());
-
                 setAmount(value.toString());
                 const usdValue = await value.getUsdValue();
-
-                console.log('TransferOperationDetails -> usdValue', usdValue);
 
                 setUsdValue(formatCurrencyValue(usdValue, 2));
             }
@@ -330,12 +242,10 @@ export default function SignTransactionConsentContainer({
             async function fetchOperationType() {
                 const type = await operation.getType();
 
-                console.log('type found', type);
                 setType(type);
             }
 
             fetchOperationType();
-            debug('OperationDetails -> type', type);
         }, []);
 
         if (type === null) {
@@ -349,8 +259,30 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    function Operations({ operation }: { operation: IOperation | IOperation[] }) {
-        if (Array.isArray(operation)) {
+    function Operations() {
+        const [operation, setOperation] = useState<IOperation | IOperation[] | null>(null);
+
+        useEffect(() => {
+            async function fetchOperation() {
+                if (chainType === ChainType.ANTELOPE) {
+                    const operations = await transaction.getOperations();
+
+                    if (operations.length > 1) {
+                        setOperation(operations[0]);
+                    } else {
+                        setOperation(operations);
+                    }
+                } else {
+                    setOperation(transaction);
+                }
+            }
+
+            fetchOperation();
+        }, []);
+
+        if (!operation) {
+            return <TSpinner />;
+        } else if (Array.isArray(operation)) {
             debug('Operation Array');
 
             if (operation.length > 1) {
@@ -375,7 +307,7 @@ export default function SignTransactionConsentContainer({
 
         useEffect(() => {
             async function fetchAccountName() {
-                if (transactionDetails.chainType === ChainType.ANTELOPE) {
+                if (chainType === ChainType.ANTELOPE) {
                     const username = (await user.getUsername()).getBaseUsername();
 
                     setAccountName('@' + username);
@@ -396,49 +328,85 @@ export default function SignTransactionConsentContainer({
         return <Text style={styles.accountNameStyle}>{accountName}</Text>;
     }
 
-    function TransactionDetails() {
+    function TransactionFee() {
+        const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
+
+        useEffect(() => {
+            async function fetchFee() {
+                console.log('TransactionFee');
+                const fee = await transaction.estimateTransactionFee();
+                const usdFee = await fee.getUsdValue();
+
+                console.log('TransactionFee -> fee', fee, usdFee);
+
+                const feeString = fee.toString(4);
+                const usdFeeString = formatCurrencyValue(usdFee, 2);
+
+                setFee({ fee: feeString, usdFee: usdFeeString });
+            }
+
+            fetchFee();
+        }, []);
+
         return (
-            <>
-                <View style={styles.networkHeading}>
-                    <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
-                    <Text style={styles.nameText}>{chainName} Network</Text>
-                </View>
-                <TransactionAccount />
-                {transactionDetails.operation && <Operations operation={transactionDetails.operation} />}
+            <View style={styles.appDialog}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={styles.secondaryColor}>Transaction fee:</Text>
 
-                <View style={styles.appDialog}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.secondaryColor}>Transaction fee:</Text>
-
-                            <Tooltip
-                                isVisible={toolTipVisible}
-                                content={
-                                    <Text style={{ color: theme.colors.white, fontSize: 13 }}>
-                                        This fee is paid to operators of the {chainName} Network to process this
-                                        transaction
-                                    </Text>
-                                }
-                                placement="top"
-                                onClose={() => setToolTipVisible(false)}
-                                contentStyle={{
-                                    backgroundColor: theme.colors.black,
-                                }}
-                            >
-                                <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                                    <Text style={styles.secondaryColor}>(?)</Text>
-                                </TouchableOpacity>
-                            </Tooltip>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
-                            <Text style={[styles.secondaryColor]}>
-                                ($
-                                {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
-                            </Text>
-                        </View>
+                        <Tooltip
+                            isVisible={toolTipVisible}
+                            content={
+                                <Text style={{ color: theme.colors.white, fontSize: 13 }}>
+                                    This fee is paid to operators of the {chainName} Network to process this transaction
+                                </Text>
+                            }
+                            placement="top"
+                            onClose={() => setToolTipVisible(false)}
+                            contentStyle={{
+                                backgroundColor: theme.colors.black,
+                            }}
+                        >
+                            <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                                <Text style={styles.secondaryColor}>(?)</Text>
+                            </TouchableOpacity>
+                        </Tooltip>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {fee ? (
+                            <>
+                                <Text>{fee.fee}</Text>
+                                <Text style={[styles.secondaryColor]}>${fee.usdFee}</Text>
+                            </>
+                        ) : (
+                            <TSpinner />
+                        )}
                     </View>
                 </View>
+            </View>
+        );
+    }
+
+    function TransactionTotal() {
+        const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
+        const [balanceError, setBalanceError] = useState<boolean>(false);
+
+        useEffect(() => {
+            async function fetchTotal() {
+                const total = await transaction.estimateTransactionTotal();
+                const usdTotal = await total.getUsdValue();
+
+                const totalString = total.toString(4);
+                const usdTotalString = formatCurrencyValue(usdTotal, 2);
+
+                setTotal({ total: totalString, totalUsd: usdTotalString });
+            }
+
+            fetchTotal();
+        }, []);
+
+        return (
+            <>
                 <View
                     style={[
                         styles.totalSection,
@@ -456,11 +424,14 @@ export default function SignTransactionConsentContainer({
                     >
                         <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text>{formatCurrencyValue(Number(transactionDetails?.total), 5)}</Text>
-                            <Text style={styles.secondaryColor}>
-                                ($
-                                {formatCurrencyValue(Number(transactionDetails?.usdTotal.toFixed(4)), 3)})
-                            </Text>
+                            {total ? (
+                                <>
+                                    <Text>{total.total}</Text>
+                                    <Text style={styles.secondaryColor}>${total.totalUsd}</Text>
+                                </>
+                            ) : (
+                                <TSpinner />
+                            )}
                         </View>
                     </View>
 
@@ -479,6 +450,21 @@ export default function SignTransactionConsentContainer({
                         </TButtonContained>
                     </View>
                 )}
+            </>
+        );
+    }
+
+    function TransactionDetails() {
+        return (
+            <>
+                <View style={styles.networkHeading}>
+                    <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
+                    <Text style={styles.nameText}>{chainName} Network</Text>
+                </View>
+                <TransactionAccount />
+                <Operations />
+                <TransactionFee />
+                <TransactionTotal />
             </>
         );
     }

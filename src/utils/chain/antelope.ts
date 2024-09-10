@@ -321,16 +321,16 @@ const EOSJungleChain = new AntelopeChain(
     '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
     'https://jungle3.bloks.io/img/chains/jungle.png'
 );
-const JUNGLEToken = new AntelopeToken(
+const EOSJungleToken = new AntelopeToken(
     EOSJungleChain,
-    'JUNGLE',
-    'JUNGLE',
+    'EOS',
+    'EOS',
     4,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
     'jungle'
 );
 
-EOSJungleChain.setNativeToken(JUNGLEToken);
+EOSJungleChain.setNativeToken(EOSJungleToken);
 PangeaMainnetChain.setNativeToken(LEOSToken);
 PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
 
@@ -346,7 +346,7 @@ export {
     EOSJungleChain,
     LEOSToken,
     LEOSTestnetToken,
-    JUNGLEToken,
+    EOSJungleToken as JUNGLEToken,
     ANTELOPE_CHAIN_ID_TO_CHAIN,
 };
 

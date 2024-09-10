@@ -1,4 +1,5 @@
 import { TKeyType } from '@veramo/core';
+import { formatCurrencyValue } from '../numbers';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -110,7 +111,7 @@ export interface IAsset {
     getUsdValue(): Promise<number>;
     getSymbol(): string;
     getPrecision(): number;
-    toString(): string;
+    toString(precision?: number): string;
     /*
     gt(other: IAsset): boolean;
     gte(other: IAsset): boolean;
@@ -169,18 +170,18 @@ export abstract class AbstractAsset implements IAsset {
     getPrecision(): number {
         return this.token.getPrecision();
     }
-    printValue(): string {
+    printValue(precision?: number): string {
         const amountNumber = Number(this.amount);
         const precisionNumber = Number(10 ** this.token.getPrecision());
 
         // Perform the division
-        const value = parseFloat((amountNumber / precisionNumber).toFixed(5));
+        const value = parseFloat((amountNumber / precisionNumber).toFixed(precision ?? this.getPrecision()));
 
-        return value.toString();
+        return formatCurrencyValue(value, precision ?? this.getPrecision());
     }
 
-    toString(): string {
-        return `${this.printValue()} ${this.token.getSymbol()}`;
+    toString(precision?: number): string {
+        return `${this.printValue(precision)} ${this.token.getSymbol()}`;
     }
 }
 
