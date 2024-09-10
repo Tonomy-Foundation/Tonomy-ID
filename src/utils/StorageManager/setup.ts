@@ -86,7 +86,7 @@ async function resetAssetTableIfColumnMissing() {
             debug('Schema synchronized successfully.');
         } else {
             // Drop the AssetStorage table
-            console.log('AssetStorage table already has the assetName column.');
+            debug('AssetStorage table already has the assetName column.');
         }
     } catch (error) {
         debug('Error checking or resetting AssetStorage table:', error);

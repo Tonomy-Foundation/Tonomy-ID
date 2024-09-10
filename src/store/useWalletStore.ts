@@ -93,7 +93,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                             debug('network error do nothing');
                         } else {
                             await assetStorage.updateAccountBalance(token, {
-                                balance: '0',
+                                balance: '0 ' + token.getSymbol(),
                                 usdBalance: 0,
                             });
                             throw e;
