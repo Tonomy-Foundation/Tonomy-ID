@@ -34,6 +34,7 @@ const theme = {
         grey6: '#F4F4F4',
         grey7: '#F6F9FB',
         grey8: '#D2DDEC',
+        grey9: '#6E84A3',
         shadow: '#4D4D4D',
         shadowDark: '#000',
         error: '#F44336',

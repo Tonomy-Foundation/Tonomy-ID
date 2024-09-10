@@ -46,14 +46,9 @@ export default function SettingsNavigation() {
         );
     };
     const defaultScreenOptions: NativeStackNavigationOptions = {
-        headerShown: true,
-        headerBackTitleVisible: false,
-        headerStyle: {
-            // backgroundColor: theme.colors.,
-            backgroundColor: '#F9F9F9',
-        },
         headerTitleStyle: {
-            fontSize: 24,
+            fontSize: 16,
+            fontWeight: '500',
             color: theme.colors.text,
         },
         headerTitleAlign: 'center',
