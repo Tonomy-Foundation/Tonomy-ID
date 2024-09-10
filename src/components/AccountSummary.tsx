@@ -50,7 +50,9 @@ const AccountSummary = (props: AccountSummaryProps) => {
                 setLoading(true);
                 const asset = await assetStorage.findAssetByName(props.chain);
 
-                setAccountBalance(asset.balance);
+                if (asset) setAccountBalance(asset.balance);
+                else setAccountBalance({ balance: '0', usdBalance: 0 });
+
                 setLoading(false);
             }
         };
