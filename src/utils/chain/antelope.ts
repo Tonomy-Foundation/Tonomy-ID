@@ -303,23 +303,23 @@ const LEOSToken = new AntelopeToken(
     'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'ethereum'
+    'leos'
 );
 
 const LEOSTestnetToken = new AntelopeToken(
     PangeaTestnetChain,
-    'LEOS',
+    'TestnetLEOS',
     'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'ethereum'
+    'leos-testnet'
 );
 
 const EOSJungleChain = new AntelopeChain(
     'https://jungle4.cryptolions.io',
     'EOS Jungle Testnet',
     '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true'
+    'https://jungle3.bloks.io/img/chains/jungle.png'
 );
 const JUNGLEToken = new AntelopeToken(
     EOSJungleChain,
@@ -362,7 +362,11 @@ export class AntelopeAction implements IOperation {
     async getType(): Promise<TransactionType> {
         // TODO: need to also handle token transfers on other contracts
         if (
-            this.action.name.toString() === 'transfer'
+            this.action.name.toString() === 'transfer' &&
+            this.action.data.to &&
+            this.action.data.from &&
+            this.action.data.quantity &&
+            this.action.data.memo
             //  &&
             // this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
         ) {
@@ -397,11 +401,26 @@ export class AntelopeAction implements IOperation {
         // TODO: need to also handle token transfers on other contracts
 
         if ((await this.getType()) === TransactionType.TRANSFER) {
-            return new Asset(this.chain.getNativeToken(), this.action.data.quantity);
+            const quantity = this.action.data.quantity.toString();
+
+            return getAssetFromQuantity(quantity, this.chain);
         } else {
             return new Asset(this.chain.getNativeToken(), BigInt(0));
         }
     }
+}
+
+function getAssetFromQuantity(quantity: string, chain: AntelopeChain): Asset {
+    const name = quantity.split(' ')[1];
+    const symbol = name;
+    const precision = quantity.split(' ')[0].split('.')[1].length;
+    const logoUrl = name === 'LEOS' ? LEOSToken.getLogoUrl() : '';
+
+    const token = new AntelopeToken(chain, name, symbol, precision, logoUrl, '');
+    const amountNumber = parseFloat(quantity.split(' ')[0]);
+    const amount = BigInt(amountNumber * 10 ** precision);
+
+    return new Asset(token, amount);
 }
 
 export class AntelopeTransaction implements ITransaction {
