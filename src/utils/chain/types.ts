@@ -55,6 +55,7 @@ export abstract class AbstractPrivateKey implements IPrivateKey {
 }
 
 export interface IChain {
+    getChainType(): ChainType;
     getName(): string;
     getChainId(): string;
     getLogoUrl(): string;
@@ -63,7 +64,13 @@ export interface IChain {
     formatShortAccountName(account: string): string;
 }
 
+export enum ChainType {
+    'ETHEREUM' = 'ETHEREUM',
+    'ANTELOPE' = 'ANTELOPE',
+}
+
 export abstract class AbstractChain implements IChain {
+    protected chainType: ChainType;
     protected name: string;
     protected chainId: string;
     protected logoUrl: string;
@@ -89,6 +96,9 @@ export abstract class AbstractChain implements IChain {
     getNativeToken(): IToken {
         if (!this.nativeToken) throw new Error('Native token not set');
         return this.nativeToken;
+    }
+    getChainType(): ChainType {
+        return this.chainType;
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
@@ -266,6 +276,9 @@ export interface ITransaction extends IOperation {
     estimateTransactionTotal(): Promise<IAsset>;
     hasMultipleOperations(): boolean;
     getOperations(): Promise<IOperation[]>;
+    // Returns the chain specific transaction object
+    // Antelope = ActionData[]
+    // Ethereum = TransactionRequest
     getData(): Promise<unknown>;
 }
 

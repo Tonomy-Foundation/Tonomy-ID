@@ -4,19 +4,19 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IChainSession, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import { ChainType, IChainSession, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
-import { ethers } from 'ethers';
+import { ethers, TransactionRequest } from 'ethers';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import AccountDetails from '../components/AccountDetails';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import useUserStore from '../store/userStore';
 import { IconButton } from 'react-native-paper';
-import { SignClientTypes } from '@walletconnect/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
+import { ActionData } from '../utils/chain/antelope';
 
 export default function SignTransactionConsentContainer({
     navigation,
@@ -49,7 +49,8 @@ export default function SignTransactionConsentContainer({
         usdFee: number;
         total: string;
         usdTotal: number;
-        actions: any;
+        data: ActionData[] | TransactionRequest | null;
+        chainType: ChainType | null;
     }>({
         transactionType: null,
         fromAccount: '',
@@ -62,7 +63,8 @@ export default function SignTransactionConsentContainer({
         usdFee: 0,
         total: '',
         usdTotal: 0,
-        actions: null,
+        chainType: null,
+        data: null,
     });
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const [balanceError, showBalanceError] = useState(false);
@@ -80,21 +82,20 @@ export default function SignTransactionConsentContainer({
                 setLoading(true);
                 setTransactionLoading(true);
 
-                const actions = await transaction.getData();
+                const data = (await transaction.getData()) as ActionData[] | TransactionRequest;
 
                 let fromAccount, toAccount, value, usdValue, balance, transactionType;
 
-                if (Array.isArray(actions)) {
+                const chainType = transaction.getChain().getChainType();
+
+                if (chainType === ChainType.ANTELOPE) {
                     const accountName = (await user.getAccountName()).toString();
 
                     fromAccount = accountName;
-                } else {
+                } else if (chainType === ChainType.ETHEREUM) {
                     fromAccount = (await transaction.getFrom()).getName();
-
                     toAccount = (await transaction.getTo()).getName();
-
                     value = (await transaction.getValue()).toString();
-
                     usdValue = await (await transaction.getValue()).getUsdValue();
 
                     //TODO uncomment after fix antelope chain PR
@@ -104,6 +105,8 @@ export default function SignTransactionConsentContainer({
                     balance = 0;
 
                     transactionType = await transaction.getType();
+                } else {
+                    throw new Error('Not a supported transaction class');
                 }
 
                 const estimateFee = await transaction.estimateTransactionFee();
@@ -155,7 +158,8 @@ export default function SignTransactionConsentContainer({
                     usdFee,
                     total,
                     usdTotal,
-                    actions,
+                    data,
+                    chainType,
                 });
                 setTransactionLoading(false);
             } catch (e) {
@@ -222,136 +226,104 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    return (
-        <LayoutComponent
-            body={
-                <ScrollView>
-                    <View style={styles.container}>
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={{ uri: transaction.getChain().getNativeToken().getLogoUrl() }}
-                        ></Image>
-                        <View style={commonStyles.alignItemsCenter}>
-                            <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
-                            <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
-                        </View>
-                        {!loading ? (
-                            <>
-                                <View style={styles.networkHeading}>
-                                    <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
-                                    <Text style={styles.nameText}>{chainName} Network</Text>
+    function TransactionDetails() {
+        return (
+            <>
+                <View style={styles.networkHeading}>
+                    <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
+                    <Text style={styles.nameText}>{chainName} Network</Text>
+                </View>
+                <Text style={styles.accountNameStyle}>
+                    {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
+                </Text>
+                {Array.isArray(transactionDetails?.data) &&
+                    transactionDetails?.data?.map((action, index) => (
+                        <View key={index} style={{ width: '100%' }}>
+                            <Text style={styles.actionText}>Action {index + 1}</Text>
+                            <View style={styles.actionDialog}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.secondaryColor}>Smart Contract:</Text>
+                                    <Text>{action.account}</Text>
                                 </View>
-                                <Text style={styles.accountNameStyle}>
-                                    {transaction.getChain().formatShortAccountName(transactionDetails?.fromAccount)}
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        marginTop: 10,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>Function:</Text>
+                                    <Text>{action.name}</Text>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginTop: 3,
+                                    }}
+                                >
+                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
+
+                                    <TouchableOpacity onPress={() => setActionDetail(!actionDetails)}>
+                                        {!actionDetails ? (
+                                            <IconButton
+                                                icon={Platform.OS === 'android' ? 'chevron-down' : 'chevron-down'}
+                                                size={Platform.OS === 'android' ? 18 : 22}
+                                            />
+                                        ) : (
+                                            <IconButton
+                                                icon={Platform.OS === 'android' ? 'chevron-up' : 'chevron-up'}
+                                                size={Platform.OS === 'android' ? 18 : 22}
+                                            />
+                                        )}
+                                    </TouchableOpacity>
+                                </View>
+                                {actionDetails && (
+                                    <View style={styles.detailSection}>
+                                        {Object.entries(action?.data).map(([key, value], idx) => (
+                                            <View
+                                                key={idx}
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    marginBottom: 7,
+                                                }}
+                                            >
+                                                <Text style={[styles.secondaryColor, { fontSize: 13 }]}>{key}:</Text>
+                                                <Text style={{ fontSize: 13 }}>{value ? value.toString() : '--'}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+                    ))}
+                {typeof transactionDetails?.data === 'string' && (
+                    <View style={styles.appDialog}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={styles.secondaryColor}>Recipient:</Text>
+                            <Text>{transaction.getChain().formatShortAccountName(transactionDetails?.toAccount)}</Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                marginTop: 12,
+                            }}
+                        >
+                            <Text style={styles.secondaryColor}>Amount:</Text>
+                            <View style={{ flexDirection: 'row' }}>
+                                <Text>{transactionDetails?.value} </Text>
+                                <Text style={[styles.secondaryColor]}>
+                                    ($
+                                    {formatCurrencyValue(Number(transactionDetails?.usdValue.toFixed(4)), 3)})
                                 </Text>
-                                {Array.isArray(transactionDetails?.actions) &&
-                                    transactionDetails?.actions?.map((action, index) => (
-                                        <View key={index} style={{ width: '100%' }}>
-                                            <Text style={styles.actionText}>Action {index + 1}</Text>
-                                            <View style={styles.actionDialog}>
-                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                    <Text style={styles.secondaryColor}>Smart Contract:</Text>
-                                                    <Text>{action.account}</Text>
-                                                </View>
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'row',
-                                                        justifyContent: 'space-between',
-                                                        marginTop: 10,
-                                                    }}
-                                                >
-                                                    <Text style={styles.secondaryColor}>Function:</Text>
-                                                    <Text>{action.name}</Text>
-                                                </View>
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'row',
-                                                        justifyContent: 'space-between',
-                                                        alignItems: 'center',
-                                                        marginTop: 3,
-                                                    }}
-                                                >
-                                                    <Text style={styles.secondaryColor}>Transaction details:</Text>
+                            </View>
+                        </View>
 
-                                                    <TouchableOpacity onPress={() => setActionDetail(!actionDetails)}>
-                                                        {!actionDetails ? (
-                                                            <IconButton
-                                                                icon={
-                                                                    Platform.OS === 'android'
-                                                                        ? 'chevron-down'
-                                                                        : 'chevron-down'
-                                                                }
-                                                                size={Platform.OS === 'android' ? 18 : 22}
-                                                            />
-                                                        ) : (
-                                                            <IconButton
-                                                                icon={
-                                                                    Platform.OS === 'android'
-                                                                        ? 'chevron-up'
-                                                                        : 'chevron-up'
-                                                                }
-                                                                size={Platform.OS === 'android' ? 18 : 22}
-                                                            />
-                                                        )}
-                                                    </TouchableOpacity>
-                                                </View>
-                                                {actionDetails && (
-                                                    <View style={styles.detailSection}>
-                                                        {Object.entries(action?.data).map(([key, value], idx) => (
-                                                            <View
-                                                                key={idx}
-                                                                style={{
-                                                                    flexDirection: 'row',
-                                                                    justifyContent: 'space-between',
-                                                                    marginBottom: 7,
-                                                                }}
-                                                            >
-                                                                <Text style={[styles.secondaryColor, { fontSize: 13 }]}>
-                                                                    {key}:
-                                                                </Text>
-                                                                <Text style={{ fontSize: 13 }}>
-                                                                    {value ? value.toString() : '--'}
-                                                                </Text>
-                                                            </View>
-                                                        ))}
-                                                    </View>
-                                                )}
-                                            </View>
-                                        </View>
-                                    ))}
-                                {typeof transactionDetails?.actions === 'string' && (
-                                    <View style={styles.appDialog}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <Text style={styles.secondaryColor}>Recipient:</Text>
-                                            <Text>
-                                                {transaction
-                                                    .getChain()
-                                                    .formatShortAccountName(transactionDetails?.toAccount)}
-                                            </Text>
-                                        </View>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                marginTop: 12,
-                                            }}
-                                        >
-                                            <Text style={styles.secondaryColor}>Amount:</Text>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text>{transactionDetails?.value} </Text>
-                                                <Text style={[styles.secondaryColor]}>
-                                                    ($
-                                                    {formatCurrencyValue(
-                                                        Number(transactionDetails?.usdValue.toFixed(4)),
-                                                        3
-                                                    )}
-                                                    )
-                                                </Text>
-                                            </View>
-                                        </View>
-
-                                        {/* {contractTransaction && (
+                        {/* {contractTransaction && (
                             <>
                                 <View
                                     style={{
@@ -417,100 +389,100 @@ export default function SignTransactionConsentContainer({
                                 </TouchableOpacity>
                             </View>
                         )} */}
-                                    </View>
-                                )}
+                    </View>
+                )}
 
-                                <View style={styles.appDialog}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text style={styles.secondaryColor}>Gas fee:</Text>
+                <View style={styles.appDialog}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={styles.secondaryColor}>Gas fee:</Text>
 
-                                            <Tooltip
-                                                isVisible={toolTipVisible}
-                                                content={
-                                                    <Text style={{ color: theme.colors.white, fontSize: 13 }}>
-                                                        This fee is paid to operators of the Ethereum Network to process
-                                                        this transaction
-                                                    </Text>
-                                                }
-                                                placement="top"
-                                                onClose={() => setToolTipVisible(false)}
-                                                contentStyle={{
-                                                    backgroundColor: theme.colors.black,
-                                                }}
-                                            >
-                                                <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                                                    <Text style={styles.secondaryColor}>(?)</Text>
-                                                </TouchableOpacity>
-                                            </Tooltip>
-                                        </View>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
-                                            <Text style={[styles.secondaryColor]}>
-                                                ($
-                                                {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </View>
-                                <View
-                                    style={[
-                                        styles.totalSection,
-                                        {
-                                            backgroundColor: balanceError
-                                                ? theme.colors.errorBackground
-                                                : theme.colors.info,
-                                        },
-                                    ]}
-                                >
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text>{formatCurrencyValue(Number(transactionDetails?.total), 5)}</Text>
-                                            <Text style={styles.secondaryColor}>
-                                                ($
-                                                {formatCurrencyValue(
-                                                    Number(transactionDetails?.usdTotal.toFixed(4)),
-                                                    3
-                                                )}
-                                                )
-                                            </Text>
-                                        </View>
-                                    </View>
+                            <Tooltip
+                                isVisible={toolTipVisible}
+                                content={
+                                    <Text style={{ color: theme.colors.white, fontSize: 13 }}>
+                                        This fee is paid to operators of the Ethereum Network to process this
+                                        transaction
+                                    </Text>
+                                }
+                                placement="top"
+                                onClose={() => setToolTipVisible(false)}
+                                contentStyle={{
+                                    backgroundColor: theme.colors.black,
+                                }}
+                            >
+                                <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                                    <Text style={styles.secondaryColor}>(?)</Text>
+                                </TouchableOpacity>
+                            </Tooltip>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text>{formatCurrencyValue(Number(transactionDetails?.fee), 5)}</Text>
+                            <Text style={[styles.secondaryColor]}>
+                                ($
+                                {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+                <View
+                    style={[
+                        styles.totalSection,
+                        {
+                            backgroundColor: balanceError ? theme.colors.errorBackground : theme.colors.info,
+                        },
+                    ]}
+                >
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text>{formatCurrencyValue(Number(transactionDetails?.total), 5)}</Text>
+                            <Text style={styles.secondaryColor}>
+                                ($
+                                {formatCurrencyValue(Number(transactionDetails?.usdTotal.toFixed(4)), 3)})
+                            </Text>
+                        </View>
+                    </View>
 
-                                    {balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
-                                </View>
-                                {balanceError && (
-                                    <View style={{ width: '100%', marginTop: 10 }}>
-                                        <TButtonContained
-                                            onPress={() => {
-                                                (refTopUpDetail.current as any)?.open(); // Open the AccountDetails component here
-                                            }}
-                                            style={commonStyles.marginBottom}
-                                            size="medium"
-                                        >
-                                            Top Up
-                                        </TButtonContained>
-                                    </View>
-                                )}
-                            </>
-                        ) : (
-                            <TSpinner style={{ marginBottom: 12 }} />
-                        )}
-                        {/* <RBSheet ref={refMessage} openDuration={150} closeDuration={100} height={600}>
-            <View style={styles.rawTransactionDrawer}>
-                <Text style={styles.drawerHead}>Show raw transaction!</Text>
-                <Text style={styles.drawerParagragh}>
-                    {`contract VendingMachine { // Declare state variables of the contract address public owner; mapping (address => uint) public cupcakeBalances; // When 'VendingMachine' contract is deployed: // 1. set the deploying address as the owner of the contract // 2. set the deployed smart contract's cupcake balance to 100 constructor() { owner = msg.sender; cupcakeBalances[address(this)] = 100; } // Allow the owner to increase the smart contract's cupcake balance function refill(uint amount) public { require(msg.sender == owner, "Only the owner can refill."); cupcakeBalances[address(this)] += amount; } // Allow anyone to purchase cupcakes function purchase(uint amount) public payable { require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake"); require(cupcakeBalances[address(this)] >= amount, "Not enough cupcakes in stock to complete this purchase"); cupcakeBalances[address(this)] -= amount; cupcakeBalances[msg.sender] += amount; } }`}
-                </Text>
-            </View>
-        </RBSheet> */}
+                    {balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
+                </View>
+                {balanceError && (
+                    <View style={{ width: '100%', marginTop: 10 }}>
+                        <TButtonContained
+                            onPress={() => {
+                                (refTopUpDetail.current as any)?.open(); // Open the AccountDetails component here
+                            }}
+                            style={commonStyles.marginBottom}
+                            size="medium"
+                        >
+                            Top Up
+                        </TButtonContained>
+                    </View>
+                )}
+            </>
+        );
+    }
+
+    return (
+        <LayoutComponent
+            body={
+                <ScrollView>
+                    <View style={styles.container}>
+                        <Image
+                            style={[styles.logo, commonStyles.marginBottom]}
+                            source={{ uri: transaction.getChain().getNativeToken().getLogoUrl() }}
+                        ></Image>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
+                            <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
+                        </View>
+                        {!loading ? <TransactionDetails /> : <TSpinner style={{ marginBottom: 12 }} />}
                     </View>
                     <AccountDetails
                         refMessage={refTopUpDetail}

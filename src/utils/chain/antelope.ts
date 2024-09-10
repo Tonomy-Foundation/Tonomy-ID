@@ -15,6 +15,7 @@ import {
     Asset,
     IChainSession,
     ChainDetail,
+    ChainType,
 } from './types';
 import { SignClientTypes } from '@walletconnect/types';
 import {
@@ -157,6 +158,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 }
 
 export class AntelopeChain extends AbstractChain {
+    protected chainType = ChainType.ANTELOPE;
     protected antelopeChainId: string;
     protected apiOrigin: string;
     private apiClient: APIClient;
@@ -228,7 +230,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return this.chain;
     }
     async getUsdPrice(): Promise<number> {
-        console.log('his.getChain()', this.getChain());
         //TODO check getChain is undefined coming from antelope chain PR
         return LEOS_PUBLIC_SALE_PRICE;
 
@@ -405,7 +406,6 @@ export class AntelopeAction implements IOperation {
 
 export class AntelopeTransaction implements ITransaction {
     private actions: ActionData[];
-    private type?: TransactionType;
     protected chain: AntelopeChain;
     // protected session: EthereumChainSession;
 
@@ -472,7 +472,6 @@ export class AntelopeTransaction implements ITransaction {
         return this.actions.map((action) => new AntelopeAction(action, this.chain));
     }
 }
-
 export class AntelopeAccount extends AbstractAccount implements IAccount {
     private privateKey?: AntelopePrivateKey;
     // @ts-expect-error chain overridden

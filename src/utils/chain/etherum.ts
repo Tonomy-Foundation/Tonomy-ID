@@ -26,6 +26,7 @@ import {
     IOperation,
     IChainSession,
     ChainDetail,
+    ChainType,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -78,6 +79,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
 }
 
 export class EthereumChain extends AbstractChain {
+    protected chainType = ChainType.ETHEREUM;
     // See https://chainlist.org/ for Chain IDs
     protected infuraUrl: string;
     private provider: JsonRpcProvider;
@@ -321,8 +323,8 @@ export class EthereumTransaction implements ITransaction {
         return new Asset(this.chain.getNativeToken(), amount);
     }
 
-    async getData(): Promise<string> {
-        return this.transaction.data || '';
+    async getData(): Promise<TransactionRequest> {
+        return this.transaction;
     }
 
     hasMultipleOperations(): boolean {
@@ -335,7 +337,6 @@ export class EthereumTransaction implements ITransaction {
         );
     }
 }
-
 export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
     // @ts-expect-error chain is overridden
