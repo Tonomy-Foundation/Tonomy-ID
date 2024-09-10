@@ -24,15 +24,7 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumSepoliaChain,
-    ETHPolygonToken,
-    ETHSepoliaToken,
-    ETHToken,
-    USD_CONVERSION,
-} from '../utils/chain/etherum';
+import { ETHPolygonToken, ETHSepoliaToken, ETHToken, USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
