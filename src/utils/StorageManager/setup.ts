@@ -106,6 +106,26 @@ export async function connect() {
     const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
     const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
 
+    //TODO Remove this before move to production
+    if (assetTableExists) {
+        const queryRunner = dataSource.createQueryRunner();
+
+        await queryRunner.query(`DROP TABLE IF EXISTS "AssetStorage"`);
+        await queryRunner.query(`
+            CREATE TABLE "AssetStorage" (
+                "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "assetName" varchar NOT NULL,
+                "accountName" varchar NOT NULL,
+                "balance" varchar NOT NULL,
+                "usdBalance" integer NOT NULL,
+                "createdAt" datetime NOT NULL,
+                "updatedAt" datetime NOT NULL,
+                CONSTRAINT "UQ_assetName" UNIQUE ("assetName")
+            )
+        `);
+        await queryRunner.release();
+    }
+
     // If the tables don't exist, synchronize the schema
     if (!appTableExists || !keyTableExists || !assetTableExists) {
         await dataSource.synchronize();
@@ -113,8 +133,3 @@ export async function connect() {
 
     return dataSource;
 }
-
-// Call resetAssetTable to drop the AssetRecordStorage table and synchronize schema
-resetAssetTableIfColumnMissing().catch((error) => {
-    console.error('Error in resetAssetTable:', error);
-});
