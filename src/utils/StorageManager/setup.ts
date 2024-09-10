@@ -55,6 +55,30 @@ async function checkTableExists(dataSource, tableName) {
     return result.length > 0;
 }
 
+async function resetAssetTable() {
+    const queryRunner = dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+
+    try {
+        // Drop the AssetRecordStorage table
+        await queryRunner.query('DROP TABLE IF EXISTS "AssetStorage"');
+        console.log('AssetStorage table dropped successfully.');
+
+        // Synchronize the schema
+        if (!dataSource.isInitialized) {
+            await dataSource.initialize();
+        }
+
+        await dataSource.synchronize();
+        console.log('Schema synchronized successfully.');
+    } catch (error) {
+        console.error('Error resetting AssetStorage table:', error);
+    } finally {
+        await queryRunner.release();
+    }
+}
+
 //initialize the data source
 export async function connect() {
     if (!dataSource.isInitialized) {
@@ -73,3 +97,8 @@ export async function connect() {
 
     return dataSource;
 }
+
+// Call resetAssetTable to drop the AssetRecordStorage table and synchronize schema
+resetAssetTable().catch((error) => {
+    console.error('Error in resetAssetTable:', error);
+});

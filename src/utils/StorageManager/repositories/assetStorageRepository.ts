@@ -8,11 +8,11 @@ export class AssetStorageRepository {
         this.ormRepository = dataSource.getRepository(AssetStorage);
     }
 
-    public async createAsset(assetName: string, accountName: string): Promise<AssetStorage> {
+    public async createAsset(assetName: string, accountName: string, symbol: string): Promise<AssetStorage> {
         const assetStorageEntity = this.ormRepository.create({
             assetName,
             accountName,
-            balance: '0',
+            balance: '0 ' + symbol,
             usdBalance: 0,
             createdAt: new Date(),
             updatedAt: new Date(),

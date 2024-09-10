@@ -24,7 +24,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
-        balance: '0',
+        balance: '0 ' + props.token.getSymbol(),
         usdBalance: 0,
     });
 
