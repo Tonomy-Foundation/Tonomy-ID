@@ -14,7 +14,7 @@ export abstract class AssetStorageManager {
         this.repository = repository;
     }
     public async createAsset(token: IToken, value: IAccount): Promise<void> {
-        const name = token.getSymbol();
+        const name = token.getChain().getName() + '-' + token.getSymbol();
 
         await this.repository.createAsset(name, value.getName());
     }
@@ -25,7 +25,7 @@ export abstract class AssetStorageManager {
             usdBalance: number;
         }
     ): Promise<void> {
-        const name = token.getSymbol();
+        const name = token.getChain().getName() + '-' + token.getSymbol();
         const existingAsset = await this.repository.findAssetByName(name);
 
         if (existingAsset) {
@@ -39,7 +39,7 @@ export abstract class AssetStorageManager {
     }
 
     public async findAssetByName(token: IToken): Promise<AccountStorage | null> {
-        const name = token.getSymbol();
+        const name = token.getChain().getName() + '-' + token.getSymbol();
         const existingAsset = await this.repository.findAssetByName(name);
 
         if (existingAsset) {
