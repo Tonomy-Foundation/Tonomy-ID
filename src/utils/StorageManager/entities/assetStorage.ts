@@ -1,9 +1,9 @@
 /* eslint-disable indent */
 import { Entity, Unique, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
-@Entity('AssetStorage')
-@Unique(['name'])
-export class AssetStorage {
+@Entity('AssetsStorage')
+@Unique(['assetName'])
+export class AssetsStorage {
     @PrimaryGeneratedColumn()
     id!: number;
 
@@ -12,10 +12,13 @@ export class AssetStorage {
         type: 'varchar',
     })
     @Index()
-    name!: string;
+    assetName!: string;
 
     @Column({ type: 'varchar' })
-    value!: string;
+    accountName!: string;
+
+    @Column({ type: 'varchar' })
+    balance!: string;
 
     @Column({ type: 'datetime' })
     createdAt!: Date;

@@ -8,12 +8,12 @@ import { AppStorageRepository } from './repositories/appSettingRepository';
 import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
-import { AssetStorage } from './entities/assetStorage';
+import { AssetsStorage } from './entities/assetStorage';
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLiteDriver,
-    entities: [KeyStorage, AppStorage, AssetStorage],
+    entities: [KeyStorage, AppStorage, AssetsStorage],
     type: 'expo',
 });
 
@@ -64,7 +64,7 @@ export async function connect() {
     // Get the repositories
     const appTableExists = await checkTableExists(dataSource, 'AppStorage');
     const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
-    const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
+    const assetTableExists = await checkTableExists(dataSource, 'AssetsStorage');
 
     // If the tables don't exist, synchronize the schema
     if (!appTableExists || !keyTableExists || !assetTableExists) {

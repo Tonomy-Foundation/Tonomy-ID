@@ -63,20 +63,20 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const key = await keyStorage.findByName(keyName, chain);
 
                 if (key) {
-                    let account = await assetStorage.findAccountByName(keyName + ' account');
+                    let account = await assetStorage.findAccountByName(chain);
 
                     if (!account) {
                         const exportPrivateKey = await key.exportPrivateKey();
                         const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
                         account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                        await assetStorage.emplaceAccountName(keyName + ' account', account);
+                        await assetStorage.emplaceAccountName(chain, account);
                     }
 
                     try {
                         const balance = await token.getBalance(account);
 
-                        await assetStorage.emplaceAccountBalance(keyName, {
+                        await assetStorage.emplaceAccountBalance(chain, {
                             balance: balance.toString(),
                             usdBalance: await balance.getUsdValue(),
                         });
@@ -86,7 +86,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         if (e.message === 'Network request failed') {
                             debug('network error do nothing');
                         } else {
-                            await assetStorage.emplaceAccountBalance(keyName, {
+                            await assetStorage.emplaceAccountBalance(chain, {
                                 balance: '0',
                                 usdBalance: 0,
                             });
@@ -189,21 +189,21 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
 
                 if (ethereumBalance) {
-                    await assetStorage.emplaceAccountBalance('ethereum', {
+                    await assetStorage.emplaceAccountBalance(EthereumMainnetChain, {
                         balance: ethereumBalance.toString(),
                         usdBalance: await ethereumBalance.getUsdValue(),
                     });
                 }
 
                 if (sepoliaBalance) {
-                    await assetStorage.emplaceAccountBalance('ethereumTestnetSepolia', {
+                    await assetStorage.emplaceAccountBalance(EthereumSepoliaChain, {
                         balance: sepoliaBalance.toString(),
                         usdBalance: await sepoliaBalance.getUsdValue(),
                     });
                 }
 
                 if (polygonBalance) {
-                    await assetStorage.emplaceAccountBalance('ethereumPolygon', {
+                    await assetStorage.emplaceAccountBalance(EthereumPolygonChain, {
                         balance: polygonBalance.toString(),
                         usdBalance: await polygonBalance.getUsdValue(),
                     });

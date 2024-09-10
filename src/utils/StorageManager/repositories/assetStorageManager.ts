@@ -1,10 +1,4 @@
-import {
-    EthereumAccount,
-    EthereumChain,
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumSepoliaChain,
-} from '../../chain/etherum';
+import { EthereumAccount, EthereumChain } from '../../chain/etherum';
 import { IAccount } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
 
@@ -20,23 +14,25 @@ export abstract class AssetStorageManager {
         this.repository = repository;
     }
 
-    public async emplaceAccountBalance(name: string, accountBalance: Balance): Promise<void> {
-        const existingAccount = await this.repository.findBalanceByName(name);
+    public async emplaceAccountBalance(chain: EthereumChain, accountBalance: Balance): Promise<void> {
+        const name = chain.getNativeToken().getSymbol();
+        const existingAsset = await this.repository.findAssetByName(name);
 
-        if (existingAccount) {
-            existingAccount.value = JSON.stringify(accountBalance);
-            existingAccount.updatedAt = new Date();
-            await this.repository.updateAccountBalance(existingAccount);
+        if (existingAsset) {
+            existingAsset.balance = JSON.stringify(accountBalance);
+            existingAsset.updatedAt = new Date();
+            await this.repository.updateAccountBalance(existingAsset);
         } else {
             await this.repository.storeAccountBalance(name, JSON.stringify(accountBalance));
         }
     }
 
-    public async findBalanceByName(name: string): Promise<Balance> {
-        const balance = await this.repository.findBalanceByName(name);
+    public async findBalanceByName(chain: EthereumChain): Promise<Balance> {
+        const name = chain.getNativeToken().getSymbol();
+        const existingAsset = await this.repository.findAssetByName(name);
 
-        if (balance) {
-            return JSON.parse(balance.value);
+        if (existingAsset) {
+            return JSON.parse(existingAsset.balance);
         } else return { balance: '0', usdBalance: 0 };
     }
 
@@ -44,28 +40,29 @@ export abstract class AssetStorageManager {
         await this.repository.deleteAll();
     }
 
-    public async emplaceAccountName(name: string, value: IAccount): Promise<void> {
-        const existingAccount = await this.repository.findAccountByName(name);
+    public async emplaceAccountName(chain: EthereumChain, value: IAccount): Promise<void> {
+        const name = chain.getNativeToken().getSymbol();
 
-        if (existingAccount) {
-            existingAccount.value = value.getName();
-            existingAccount.updatedAt = new Date();
-            await this.repository.updateAccountName(existingAccount);
+        console.log('namee', name);
+        const existingAsset = await this.repository.findAssetByName(name);
+
+        console.log('namee existingAsset', existingAsset);
+
+        if (existingAsset) {
+            existingAsset.accountName = value.getName();
+            existingAsset.updatedAt = new Date();
+            await this.repository.updateAccountName(existingAsset);
         } else {
             await this.repository.storeAccountName(name, value.getName());
         }
     }
 
-    public async findAccountByName(name: string): Promise<IAccount | null> {
-        const account = await this.repository.findAccountByName(name);
-        let chain;
+    public async findAccountByName(chain: EthereumChain): Promise<IAccount | null> {
+        const name = chain.getNativeToken().getSymbol();
+        const asset = await this.repository.findAssetByName(name);
 
-        if (name === 'ethereum account') chain = EthereumMainnetChain;
-        else if (name === 'ethereumTestnetSepolia account') chain = EthereumSepoliaChain;
-        else if (name === 'ethereumPolygon account') chain = EthereumPolygonChain;
-
-        if (account) {
-            return new EthereumAccount(chain, account.value);
+        if (asset) {
+            return new EthereumAccount(chain, asset.accountName);
         } else return null;
     }
 }

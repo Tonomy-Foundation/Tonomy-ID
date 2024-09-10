@@ -8,6 +8,7 @@ import { IAccount } from '../utils/chain/types';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
 import { assetStorage } from '../utils/StorageManager/setup';
 import Debug from 'debug';
+import { EthereumChain } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:component:AcountSummary');
 
@@ -16,7 +17,7 @@ export type AccountSummaryProps = {
     updateAccountDetail: (address: IAccount) => void;
     address: IAccount | null;
     networkName: string;
-    storageName?: string;
+    chain: EthereumChain;
 };
 
 const AccountSummary = (props: AccountSummaryProps) => {
@@ -28,7 +29,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
         usdBalance: 0,
     });
 
-    debug('accountBalance:', props.storageName, currentAddress, accountBalance);
+    debug('accountBalance:', currentAddress, accountBalance);
     useEffect(() => {
         const fetchLogo = async () => {
             try {
@@ -45,9 +46,9 @@ const AccountSummary = (props: AccountSummaryProps) => {
         };
 
         const fetchBalance = async () => {
-            if (props.storageName) {
+            if (props.chain) {
                 setLoading(true);
-                const balance = await assetStorage.findBalanceByName(props.storageName);
+                const balance = await assetStorage.findBalanceByName(props.chain);
 
                 setAccountBalance(balance);
                 setLoading(false);
@@ -56,7 +57,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
 
         fetchLogo();
         fetchBalance();
-    }, [props.address, props.storageName]);
+    }, [props.address, props.chain]);
 
     const generateKey = async () => {
         props.navigation.navigate('CreateEthereumKey');
