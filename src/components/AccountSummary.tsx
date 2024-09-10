@@ -48,9 +48,9 @@ const AccountSummary = (props: AccountSummaryProps) => {
         const fetchBalance = async () => {
             if (props.chain) {
                 setLoading(true);
-                const balance = await assetStorage.findBalanceByName(props.chain);
+                const asset = await assetStorage.findAssetByName(props.chain);
 
-                setAccountBalance(balance);
+                setAccountBalance(asset.balance);
                 setLoading(false);
             }
         };

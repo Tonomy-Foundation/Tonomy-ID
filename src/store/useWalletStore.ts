@@ -63,14 +63,20 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const key = await keyStorage.findByName(keyName, chain);
 
                 if (key) {
-                    let account = await assetStorage.findAccountByName(chain);
+                    debug('key exists');
+                    const asset = await assetStorage.findAssetByName(chain);
 
-                    if (!account) {
+                    debug('asset', asset);
+                    let account;
+
+                    if (!asset) {
                         const exportPrivateKey = await key.exportPrivateKey();
                         const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
                         account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                        await assetStorage.emplaceAccountName(chain, account);
+                        await assetStorage.createAsset(chain, account);
+                    } else {
+                        account = new EthereumAccount(chain, asset.accountName);
                     }
 
                     try {

@@ -8,12 +8,12 @@ import { AppStorageRepository } from './repositories/appSettingRepository';
 import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
-import { AssetsStorage } from './entities/assetStorage';
+import { IAssetStorage } from './entities/assetStorage';
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLiteDriver,
-    entities: [KeyStorage, AppStorage, AssetsStorage],
+    entities: [KeyStorage, AppStorage, IAssetStorage],
     type: 'expo',
 });
 
@@ -51,6 +51,7 @@ async function checkTableExists(dataSource, tableName) {
     const queryRunner = dataSource.createQueryRunner();
     const result = await queryRunner.query(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName]);
 
+    console.log('result', result);
     await queryRunner.release();
     return result.length > 0;
 }
@@ -64,7 +65,7 @@ export async function connect() {
     // Get the repositories
     const appTableExists = await checkTableExists(dataSource, 'AppStorage');
     const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
-    const assetTableExists = await checkTableExists(dataSource, 'AssetsStorage');
+    const assetTableExists = await checkTableExists(dataSource, 'IAssetStorage');
 
     // If the tables don't exist, synchronize the schema
     if (!appTableExists || !keyTableExists || !assetTableExists) {
