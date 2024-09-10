@@ -23,7 +23,7 @@ export abstract class AssetStorageManager {
 
         await this.repository.createAsset(name, value.getName());
     }
-    public async emplaceAccountBalance(chain: EthereumChain, accountBalance: Balance): Promise<void> {
+    public async updateAccountBalance(chain: EthereumChain, accountBalance: Balance): Promise<void> {
         const name = chain.getNativeToken().getSymbol();
         const existingAsset = await this.repository.findAssetByName(name);
 

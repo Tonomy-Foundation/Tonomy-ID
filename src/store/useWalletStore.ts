@@ -82,7 +82,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     try {
                         const balance = await token.getBalance(account);
 
-                        await assetStorage.emplaceAccountBalance(chain, {
+                        await assetStorage.updateAccountBalance(chain, {
                             balance: balance.toString(),
                             usdBalance: await balance.getUsdValue(),
                         });
@@ -92,7 +92,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         if (e.message === 'Network request failed') {
                             debug('network error do nothing');
                         } else {
-                            await assetStorage.emplaceAccountBalance(chain, {
+                            await assetStorage.updateAccountBalance(chain, {
                                 balance: '0',
                                 usdBalance: 0,
                             });
@@ -195,21 +195,21 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
 
                 if (ethereumBalance) {
-                    await assetStorage.emplaceAccountBalance(EthereumMainnetChain, {
+                    await assetStorage.updateAccountBalance(EthereumMainnetChain, {
                         balance: ethereumBalance.toString(),
                         usdBalance: await ethereumBalance.getUsdValue(),
                     });
                 }
 
                 if (sepoliaBalance) {
-                    await assetStorage.emplaceAccountBalance(EthereumSepoliaChain, {
+                    await assetStorage.updateAccountBalance(EthereumSepoliaChain, {
                         balance: sepoliaBalance.toString(),
                         usdBalance: await sepoliaBalance.getUsdValue(),
                     });
                 }
 
                 if (polygonBalance) {
-                    await assetStorage.emplaceAccountBalance(EthereumPolygonChain, {
+                    await assetStorage.updateAccountBalance(EthereumPolygonChain, {
                         balance: polygonBalance.toString(),
                         usdBalance: await polygonBalance.getUsdValue(),
                     });
