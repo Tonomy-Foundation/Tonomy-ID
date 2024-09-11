@@ -58,6 +58,51 @@ async function checkTableExists(dataSource, tableName) {
     return result.length > 0;
 }
 
+async function checkColumnExists(dataSource, tableName, columnName) {
+    const queryRunner = dataSource.createQueryRunner();
+    const result = await queryRunner.query(`PRAGMA table_info(${tableName})`);
+
+    await queryRunner.release();
+    return result.some((column) => column.name === columnName);
+}
+
+async function updateAssetStorageTable() {
+    const queryRunner = dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+
+    try {
+        const columnExists = await checkColumnExists(dataSource, 'AssetStorage', 'assetName');
+
+        if (!columnExists) {
+            // Drop the AssetStorage table
+            await queryRunner.query(`DROP TABLE IF EXISTS "AssetStorage"`);
+            debug('AssetStorage table dropped successfully.');
+
+            // Create a new table with the updated schema
+            await queryRunner.query(`
+                CREATE TABLE "AssetStorage" (
+                    "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    "assetName" varchar NOT NULL,
+                    "accountName" varchar NOT NULL,
+                    "balance" varchar NOT NULL,
+                    "usdBalance" integer NOT NULL,
+                    "createdAt" datetime NOT NULL,
+                    "updatedAt" datetime NOT NULL,
+                    CONSTRAINT "UQ_assetName" UNIQUE ("assetName")
+                )
+            `);
+            debug('AssetStorage table created successfully.');
+        } else {
+            debug('AssetStorage table already has the assetName column.');
+        }
+    } catch (error) {
+        console.error('Error updating AssetStorage table:', error);
+    } finally {
+        await queryRunner.release();
+    }
+}
+
 //initialize the data source
 export async function connect() {
     if (!dataSource.isInitialized) {
@@ -71,22 +116,7 @@ export async function connect() {
 
     //TODO Remove this before move to production
     if (assetTableExists) {
-        const queryRunner = dataSource.createQueryRunner();
-
-        await queryRunner.query(`DROP TABLE IF EXISTS "AssetStorage"`);
-        await queryRunner.query(`
-            CREATE TABLE "AssetStorage" (
-                "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-                "assetName" varchar NOT NULL,
-                "accountName" varchar NOT NULL,
-                "balance" varchar NOT NULL,
-                "usdBalance" integer NOT NULL,
-                "createdAt" datetime NOT NULL,
-                "updatedAt" datetime NOT NULL,
-                CONSTRAINT "UQ_assetName" UNIQUE ("assetName")
-            )
-        `);
-        await queryRunner.release();
+        await updateAssetStorageTable();
     }
 
     // If the tables don't exist, synchronize the schema

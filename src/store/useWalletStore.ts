@@ -51,8 +51,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
         try {
-            await connect();
-
             if (get().initialized && get().ethereumAccount) {
                 debug('Already initialized');
                 return;
