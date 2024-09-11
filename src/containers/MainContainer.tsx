@@ -92,10 +92,11 @@ export default function MainContainer({
 
                 try {
                     await initializeWalletAccount();
-                    alert(`initializeAndFetchBalances try, ${(ethereumAccount?.getName(), accountExists)}`);
+                    alert(`initializeAndFetchBalances try, ${ethereumAccount?.getName()}, ${accountExists}`);
 
                     setWalletAccountExists(true);
                 } catch (error) {
+                    alert(`initializeAndFetchBalances error, ${error}`);
                     debug('Error initializing wallet account:', error);
                     errorStore.setError({
                         error: error,

@@ -103,6 +103,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
     initializeWalletAccount: async () => {
         debug('initializeWalletAccount');
+        alert('initializeWalletAccount');
         await connect();
 
         const state = get();
@@ -111,7 +112,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const key = await keyStorage.findByName(keyName, chain);
 
             if (key) {
-                debug('key exists');
+                alert('key exists');
                 const asset = await assetStorage.findAssetByName(token);
 
                 let account;
@@ -132,6 +133,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     account = new EthereumAccount(chain, asset.accountName);
                 }
 
+                alert(`account ${account}`);
                 return {
                     account,
                 };
@@ -160,11 +162,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
         }
 
         if (!get().accountExists) {
-            debug(
-                'iff account not exists set statet',
-                state.ethereumAccount,
-                state.sepoliaAccount,
-                state.polygonAccount
+            alert(
+                `iff account not exists set statet',
+                ${state.ethereumAccount},
+                ${state.sepoliaAccount},
+                ${state.polygonAccount}`
             );
             set({
                 ethereumAccount: state.ethereumAccount,
@@ -176,6 +178,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
 
     clearState: async () => {
+        alert('clearState');
+
         try {
             await keyStorage.deleteAll();
             await appStorage.deleteAll();
@@ -196,7 +200,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
-            debug('updateBalance', ethereumAccount);
+            alert(` updateBalance', ${ethereumAccount}`);
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
                 set({ refreshBalance: true });
