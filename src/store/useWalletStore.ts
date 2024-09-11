@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { Core } from '@walletconnect/core';
 import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
-import { appStorage, connect, keyStorage } from '../utils/StorageManager/setup';
+import { appStorage, assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
 import settings from '../settings';
 import {
     EthereumAccount,
@@ -30,25 +30,21 @@ interface WalletState {
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
     ethereumAccount: IAccount | null;
-    ethereumBalance: { balance: string; usdBalance: number };
     sepoliaAccount: IAccount | null;
-    sepoliaBalance: { balance: string; usdBalance: number };
     polygonAccount: IAccount | null;
-    polygonBalance: { balance: string; usdBalance: number };
     initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
     disconnectSession: () => Promise<void>;
+    refreshBalance: boolean;
 }
 const defaultState = {
     initialized: false,
     ethereumAccount: null,
-    ethereumBalance: { balance: '0', usdBalance: 0 },
     sepoliaAccount: null,
-    sepoliaBalance: { balance: '0', usdBalance: 0 },
     polygonAccount: null,
-    polygonBalance: { balance: '0', usdBalance: 0 },
     web3wallet: null,
+    refreshBalance: false,
 };
 
 const useWalletStore = create<WalletState>((set, get) => ({
@@ -70,14 +66,30 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     const exportPrivateKey = await key.exportPrivateKey();
                     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
                     const account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                    const balance = await token.getBalance(account);
+
+                    try {
+                        const balance = await token.getBalance(account);
+
+                        await assetStorage.emplaceAccountBalance(keyName, {
+                            balance: balance.toString(),
+                            usdBalance: await balance.getUsdValue(),
+                        });
+                    } catch (e) {
+                        debug('Error getting balance:', e);
+
+                        if (e.message === 'Network request failed') {
+                            debug('network error do nothing');
+                        } else {
+                            await assetStorage.emplaceAccountBalance(keyName, {
+                                balance: '0',
+                                usdBalance: 0,
+                            });
+                            throw e;
+                        }
+                    }
 
                     return {
                         account,
-                        balance: {
-                            balance: balance?.toString() || '0',
-                            usdBalance: (await balance.getUsdValue()) || 0,
-                        },
                     };
                 }
 
@@ -92,27 +104,21 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
                 state.ethereumAccount = ethereumData.value.account;
-                state.ethereumBalance = ethereumData.value.balance;
             }
 
             if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
                 state.sepoliaAccount = sepoliaData.value.account;
-                state.sepoliaBalance = sepoliaData.value.balance;
             }
 
             if (polygonData.status === 'fulfilled' && polygonData.value) {
                 state.polygonAccount = polygonData.value.account;
-                state.polygonBalance = polygonData.value.balance;
             }
 
             if (!get().ethereumAccount && !get().sepoliaAccount && !get().polygonAccount) {
                 set({
                     ethereumAccount: state.ethereumAccount,
-                    ethereumBalance: state.ethereumBalance,
                     sepoliaAccount: state.sepoliaAccount,
-                    sepoliaBalance: state.sepoliaBalance,
                     polygonAccount: state.polygonAccount,
-                    polygonBalance: state.polygonBalance,
                 });
             }
 
@@ -136,11 +142,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
             console.error('Error initializing wallet state:', error);
             set({
                 ethereumAccount: null,
-                ethereumBalance: { balance: '0', usdBalance: 0 },
                 sepoliaAccount: null,
-                sepoliaBalance: { balance: '0', usdBalance: 0 },
                 polygonAccount: null,
-                polygonBalance: { balance: '0', usdBalance: 0 },
             });
         }
     },
@@ -149,15 +152,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             await keyStorage.deleteAll();
             await appStorage.deleteAll();
+            await assetStorage.deleteAll();
             set({
                 initialized: false,
                 web3wallet: null,
                 ethereumAccount: null,
-                ethereumBalance: { balance: '0', usdBalance: 0 },
                 sepoliaAccount: null,
-                sepoliaBalance: { balance: '0', usdBalance: 0 },
                 polygonAccount: null,
-                polygonBalance: { balance: '0', usdBalance: 0 },
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
@@ -168,6 +169,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
+                set({ refreshBalance: true });
                 const balances = await Promise.allSettled([
                     ETHToken.getBalance(ethereumAccount),
                     ETHSepoliaToken.getBalance(sepoliaAccount),
@@ -180,20 +182,28 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const sepoliaBalance = sepoliaResult.status === 'fulfilled' ? sepoliaResult.value : 0;
                 const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
 
-                set({
-                    ethereumBalance: {
-                        balance: ethereumBalance?.toString() || '0',
-                        usdBalance: ethereumBalance ? (await ethereumBalance.getUsdValue()) || 0 : 0,
-                    },
-                    sepoliaBalance: {
-                        balance: sepoliaBalance?.toString() || '0',
-                        usdBalance: sepoliaBalance ? (await sepoliaBalance.getUsdValue()) || 0 : 0,
-                    },
-                    polygonBalance: {
-                        balance: polygonBalance?.toString() || '0',
-                        usdBalance: polygonBalance ? (await polygonBalance.getUsdValue()) || 0 : 0,
-                    },
-                });
+                if (ethereumBalance) {
+                    await assetStorage.emplaceAccountBalance('ethereum', {
+                        balance: ethereumBalance.toString(),
+                        usdBalance: await ethereumBalance.getUsdValue(),
+                    });
+                }
+
+                if (sepoliaBalance) {
+                    await assetStorage.emplaceAccountBalance('ethereumTestnetSepolia', {
+                        balance: sepoliaBalance.toString(),
+                        usdBalance: await sepoliaBalance.getUsdValue(),
+                    });
+                }
+
+                if (polygonBalance) {
+                    await assetStorage.emplaceAccountBalance('ethereumPolygon', {
+                        balance: polygonBalance.toString(),
+                        usdBalance: await polygonBalance.getUsdValue(),
+                    });
+                }
+
+                set({ refreshBalance: false });
             }
         } catch (error) {
             console.error('Error updating balance:', error);

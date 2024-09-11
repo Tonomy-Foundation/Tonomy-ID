@@ -5,34 +5,58 @@ import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/Assets';
 import { IAccount } from '../utils/chain/types';
+import Debug from 'debug';
+import { progressiveRetryOnNetworkError } from '../utils/helper';
+import { assetStorage } from '../utils/StorageManager/setup';
 
+const debug = Debug('tonomy-id:component:AcountSummary');
 export type AccountSummaryProps = {
     navigation: AssetsScreenNavigationProp['navigation'];
-    accountBalance: { balance: string; usdBalance: number };
+    //accountBalance: { balance: string; usdBalance: number };
     updateAccountDetail: (address: IAccount, balance: { balance: string; usdBalance: number }) => void;
     address: IAccount | null;
     networkName: string;
     currency: string;
+    storageName?: string;
 };
 
 const AssetsSummary = (props: AccountSummaryProps) => {
     const currentAddress = props.address?.getName();
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
+    const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
+        balance: '0',
+        usdBalance: 0,
+    });
+    debug('accountBalance:', props.storageName, currentAddress, accountBalance);
     useEffect(() => {
         const fetchLogo = async () => {
-            if (props.address) {
-                const accountToken = await props.address.getNativeToken();
+            try {
+                progressiveRetryOnNetworkError(async () => {
+                    if (props.address) {
+                        const accountToken = await props.address.getNativeToken();
 
-                setLogoUrl(accountToken.getLogoUrl());
+                        setLogoUrl(accountToken.getLogoUrl());
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to fetch logo', e);
+            }
+        };
+
+        const fetchBalance = async () => {
+            if (props.storageName) {
+                const balance = await assetStorage.findBalanceByName(props.storageName);
+
+                setAccountBalance(balance);
             }
         };
 
         fetchLogo();
-    }, [props.address]);
+        fetchBalance();
+    }, [props.address, props.storageName]);
 
     const getBalance = () => {
-        return props.accountBalance.balance.replace(props.currency, '')?.trim();
+        return accountBalance.balance.replace(props.currency, '')?.trim();
     };
 
     return (
@@ -40,7 +64,7 @@ const AssetsSummary = (props: AccountSummaryProps) => {
             <TouchableOpacity
                 onPress={() => {
                     if (props.address) {
-                        props.updateAccountDetail(props.address, props.accountBalance);
+                        props.updateAccountDetail(props.address, accountBalance);
                     }
                 }}
                 style={styles.assetsView}
@@ -78,7 +102,7 @@ const AssetsSummary = (props: AccountSummaryProps) => {
                                     <Text style={{ fontSize: 16 }}>{getBalance()}</Text>
                                 </View>
                                 <Text style={styles.secondaryColor}>
-                                    ${formatCurrencyValue(Number(props.accountBalance.usdBalance), 3)}
+                                    ${formatCurrencyValue(Number(accountBalance.usdBalance), 3)}
                                 </Text>
                             </View>
                         ) : (

@@ -6,11 +6,14 @@ import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
 import { AppStorageRepository } from './repositories/appSettingRepository';
 import { AppStorageManager } from './repositories/appStorageManager';
+import { AssetStorageRepository } from './repositories/assetStorageRepository';
+import { AssetStorageManager } from './repositories/assetStorageManager';
+import { AssetStorage } from './entities/assetStorage';
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLiteDriver,
-    entities: [KeyStorage, AppStorage],
+    entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
 });
 
@@ -34,6 +37,16 @@ class ConcreteAppManager extends AppStorageManager {
 }
 export const appStorage = new ConcreteAppManager(appStorageRepository);
 
+// Create the asset storage repository instances
+const assetStorageRepository = new AssetStorageRepository(dataSource);
+
+class ConcreteAssetManager extends AssetStorageManager {
+    constructor(repository: AssetStorageRepository) {
+        super(repository);
+    }
+}
+export const assetStorage = new ConcreteAssetManager(assetStorageRepository);
+
 async function checkTableExists(dataSource, tableName) {
     const queryRunner = dataSource.createQueryRunner();
     const result = await queryRunner.query(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName]);
@@ -51,9 +64,10 @@ export async function connect() {
     // Get the repositories
     const appTableExists = await checkTableExists(dataSource, 'AppStorage');
     const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
+    const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
 
     // If the tables don't exist, synchronize the schema
-    if (!appTableExists || !keyTableExists) {
+    if (!appTableExists || !keyTableExists || !assetTableExists) {
         await dataSource.synchronize();
     }
 

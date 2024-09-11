@@ -4,12 +4,14 @@ import theme from '../utils/theme';
 
 import { formatCurrencyValue } from '../utils/numbers';
 import { USD_CONVERSION } from '../utils/chain/etherum';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useUserStore from '../store/userStore';
 import useWalletStore from '../store/useWalletStore';
 import { CommunicationError, IdentifyMessage, VestingContract } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import AssetItem from '../components/AssetItem';
+import { useFocusEffect } from '@react-navigation/native';
+import { appStorage } from '../utils/StorageManager/setup';
 
 const vestingContract = VestingContract.Instance;
 
@@ -34,12 +36,22 @@ const SelectAssetContainer = ({
     const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
         useWalletStore();
 
-    const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
+    const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
+
+    const [developerMode, setDeveloperMode] = useState(true);
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchSettings = async () => {
+                const settings = await appStorage.findSettingByName('developerMode');
+                const developerMode = settings?.value === 'true' ? true : false;
+                setDeveloperMode(developerMode);
+            };
+            fetchSettings();
+        }, [])
+    );
 
     useEffect(() => {
         async function getUpdatedBalance() {
@@ -130,10 +142,6 @@ const SelectAssetContainer = ({
                             networkName="Pangea"
                             currency="LEOS"
                             leos
-                            accountBalance={{
-                                balance: pangeaBalance.toString(),
-                                usdBalance: formatCurrencyValue(Number(pangeaBalance) * USD_CONVERSION),
-                            }}
                             address={null}
                             accountName={accountName}
                         />
@@ -142,19 +150,19 @@ const SelectAssetContainer = ({
                                 type={type}
                                 navigation={navigation}
                                 address={ethereumAccount}
-                                accountBalance={ethereumBalance}
                                 networkName="Ethereum"
                                 currency="ETH"
+                                storageName="ethereum"
                             />
                         )}
-                        {sepoliaAccount && (
+                        {sepoliaAccount && developerMode && (
                             <AssetItem
                                 type={type}
                                 navigation={navigation}
                                 address={sepoliaAccount}
-                                accountBalance={sepoliaBalance}
                                 networkName="Sepolia"
                                 currency="SepoliaETH"
+                                storageName="ethereumTestnetSepolia"
                             />
                         )}
                         {sepoliaAccount && (
@@ -162,9 +170,9 @@ const SelectAssetContainer = ({
                                 type={type}
                                 navigation={navigation}
                                 address={polygonAccount}
-                                accountBalance={polygonBalance}
                                 networkName="Polygon"
                                 currency="MATIC"
+                                storageName="ethereumPolygon"
                             />
                         )}
                     </View>

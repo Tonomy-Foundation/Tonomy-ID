@@ -1,37 +1,75 @@
-import { Image, ImageSourcePropType, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import theme from '../utils/theme';
 import { formatCurrencyValue } from '../utils/numbers';
 import { useEffect, useState } from 'react';
 import { Images } from '../assets';
 import { IAccount } from '../utils/chain/types';
-import { capitalizeFirstLetter } from '../utils/helper';
+import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
-
+import Debug from 'debug';
+import { assetStorage } from '../utils/StorageManager/setup';
+import useUserStore from '../store/userStore';
+import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import { USD_CONVERSION } from '../utils/chain/etherum';
+const debug = Debug('tonomy-id:component:AcountSummary');
+const vestingContract = VestingContract.Instance;
 export type AccountItemProps = {
     navigation: SelectAssetScreenNavigationProp['navigation'];
-    accountBalance: { balance: string; usdBalance: number | string };
     address: IAccount | null;
     networkName: string;
     currency: string;
     leos?: boolean;
     accountName?: string;
     type: string;
+    storageName?: string;
 };
 const AssetItem = (props: AccountItemProps) => {
+    const currentAddress = props.address?.getName();
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
+        balance: '0',
+        usdBalance: 0,
+    });
+    debug('accountBalance:', props.storageName, currentAddress, accountBalance);
+
+    const userStore = useUserStore();
+    const user = userStore.user;
 
     useEffect(() => {
         const fetchLogo = async () => {
-            if (props.address && !props.leos) {
-                const accountToken = await props.address.getNativeToken();
-                setLogoUrl(accountToken.getLogoUrl());
+            try {
+                progressiveRetryOnNetworkError(async () => {
+                    if (props.address) {
+                        const accountToken = await props.address.getNativeToken();
+
+                        setLogoUrl(accountToken.getLogoUrl());
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to fetch logo', e);
             }
         };
+
+        const fetchBalance = async () => {
+            if (props.currency !== 'LEOS' && props.storageName) {
+                const balance = await assetStorage.findBalanceByName(props.storageName);
+                setAccountBalance(balance);
+            } else {
+                const accountName = (await user.getAccountName()).toString();
+                const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                setAccountBalance({
+                    balance: accountPangeaBalance.toString(),
+                    usdBalance: accountPangeaBalance * USD_CONVERSION,
+                });
+            }
+        };
+
         fetchLogo();
-    }, [props.address, props.leos]);
+        fetchBalance();
+    }, [props.address, props.storageName, props.currency, user]);
 
     const getBalance = () => {
-        return props.accountBalance.balance.replace(props.currency, '')?.trim();
+        return accountBalance.balance.replace(props.currency, '')?.trim();
     };
 
     const getAccountDetail = async (account) => {
@@ -60,13 +98,13 @@ const AssetItem = (props: AccountItemProps) => {
             props.navigation.navigate('Receive', {
                 screenTitle: `Receive ${props.currency}`,
                 ...account,
-                accountBalance: props.accountBalance,
+                accountBalance: accountBalance,
             });
         } else if (props.type === 'send') {
             props.navigation.navigate('Send', {
                 screenTitle: `Send ${props.currency}`,
                 ...account,
-                accountBalance: props.accountBalance,
+                accountBalance: accountBalance,
             });
         }
     };
@@ -101,7 +139,7 @@ const AssetItem = (props: AccountItemProps) => {
                         <Text style={{ fontSize: 16 }}>{getBalance() || 0}</Text>
                     </View>
                     <Text style={styles.secondaryColor}>
-                        ${formatCurrencyValue(Number(props.accountBalance.usdBalance), 3)}
+                        ${formatCurrencyValue(Number(accountBalance.usdBalance), 3)}
                     </Text>
                 </View>
             </View>

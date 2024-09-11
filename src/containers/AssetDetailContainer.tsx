@@ -5,12 +5,13 @@ import theme, { commonStyles } from '../utils/theme';
 import ArrowUpIcon from '../assets/icons/ArrowUpIcon';
 import ArrowDownIcon from '../assets/icons/ArrowDownIcon';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
+import { IAccount } from '../utils/chain/types';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
     symbol: string;
     name: string;
-    address?: string;
+    account?: IAccount | null;
     icon?: ImageSourcePropType | undefined;
     image?: string;
     accountBalance: { balance: string; usdBalance: number };
@@ -33,7 +34,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                         </View>
                         <View style={{ alignItems: 'center' }}>
                             <Text style={styles.headerAssetsAmount}>{props.accountBalance.balance}</Text>
-                            <Text style={styles.headerAssetUSDAmount}>${props.accountBalance.usdBalance} USD</Text>
+                            <Text style={styles.headerAssetUSDAmount}>
+                                ${props.accountBalance.usdBalance > 0 ? props.accountBalance.usdBalance?.toFixed(5) : 0}{' '}
+                                USD
+                            </Text>
                         </View>
                         <View style={styles.flexRow}>
                             <TouchableOpacity
@@ -42,7 +46,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                         screenTitle: `Send ${props.symbol}`,
                                         symbol: props.symbol,
                                         name: props.name,
-                                        address: props.address,
+                                        account: props.account,
                                         icon: props.icon,
                                         image: props.image,
                                         accountBalance: props.accountBalance,
@@ -61,7 +65,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                         screenTitle: `Receive ${props.symbol}`,
                                         symbol: props.symbol,
                                         name: props.name,
-                                        address: props.address,
+                                        account: props.account,
                                         icon: props.icon,
                                         image: props.image,
                                         accountBalance: props.accountBalance,

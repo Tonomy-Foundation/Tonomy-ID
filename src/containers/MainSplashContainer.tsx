@@ -13,6 +13,7 @@ import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
 import Debug from 'debug';
+import { progressiveRetryOnNetworkError } from '../utils/helper';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
@@ -31,39 +32,31 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isAppInitialized) {
-                    let retryInterval = 10000; // Start with 10 seconds
-                    const maxInterval = 3600000; // Cap at 1 hour
-
-                    while (!isAppInitialized) {
-                        try {
-                            await initializeStatusFromStorage();
-                            break;
-                        } catch (error) {
-                            if (error.message === 'Network request failed') {
-                                debug('Network error occurred, retrying in', retryInterval / 1000, 'seconds');
-                                await new Promise((resolve) => setTimeout(resolve, retryInterval));
-                                retryInterval = Math.min(retryInterval * 2, maxInterval); // Double the interval, cap at 1 hour
-                            } else {
-                                break;
-                            }
-                        }
+                    try {
+                        progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
+                    } catch (e) {
+                        console.error('Error initializing app:', e);
+                        errorStore.setError({ error: e, expected: false });
                     }
                 }
 
                 await connect();
-
                 const status = await getStatus();
 
-                setStatus(status);
+                debug('splash screen status: ', status);
 
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('SplashSecurity'));
+                        debug('status is NONE');
+                        navigation.navigate('SplashSecurity');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
+                        debug('status is NOT_LOGGED_IN');
                         navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.LOGGED_IN:
+                        debug('status is LOGGED_IN');
+
                         try {
                             await user.getUsername();
                             await initializeWalletState();
@@ -84,6 +77,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             } catch (e) {
                 console.error('main screen error', e);
                 errorStore.setError({ error: e, expected: false });
+                navigation.navigate('SplashSecurity');
             }
         }
 

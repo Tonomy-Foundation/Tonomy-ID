@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Props } from '../screens/SettingsScreen';
 import useUserStore from '../store/userStore';
@@ -20,9 +20,21 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
-    const [isSwitchOn, setIsSwitchOn] = React.useState(true);
+    const [developerMode, setDeveloperMode] = React.useState(true);
 
-    const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+    const onToggleSwitch = async () => {
+        setDeveloperMode(!developerMode);
+        await appStorage.setAppSetting('developerMode', !developerMode ? 'true' : 'false');
+    };
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            const settings = await appStorage.findSettingByName('developerMode');
+            const developerMode = settings?.value === 'true' ? true : false;
+            setDeveloperMode(developerMode);
+        };
+        fetchSettings();
+    }, []);
 
     return (
         <ScrollView style={styles.container}>
@@ -53,7 +65,7 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                         </View>
                         <Switch
                             style={{ flexShrink: 0 }}
-                            value={isSwitchOn}
+                            value={developerMode}
                             onValueChange={onToggleSwitch}
                             color={theme.colors.success}
                         />

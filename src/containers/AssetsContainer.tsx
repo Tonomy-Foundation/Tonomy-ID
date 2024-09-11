@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -16,7 +16,7 @@ import useUserStore from '../store/userStore';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import TSpinner from '../components/atoms/TSpinner';
 
 import theme from '../utils/theme';
@@ -27,11 +27,12 @@ import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { AssetsScreenNavigationProp } from '../screens/Assets';
 import useWalletStore from '../store/useWalletStore';
-import { capitalizeFirstLetter } from '../utils/helper';
+import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
 import ArrowUpIcon from '../assets/icons/ArrowUpIcon';
 import ArrowDownIcon from '../assets/icons/ArrowDownIcon';
 import AssetsSummary from '../components/AssetsSummary';
+import { appStorage } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -65,27 +66,43 @@ export default function AssetsContainer({
         name: '',
         address: '',
     });
+    const [developerMode, setDeveloperMode] = React.useState(true);
     const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
         useWalletStore();
 
-    const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
+    const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchSettings = async () => {
+                const settings = await appStorage.findSettingByName('developerMode');
+                const developerMode = settings?.value === 'true' ? true : false;
+                setDeveloperMode(developerMode);
+            };
+            fetchSettings();
+        }, [])
+    );
 
     const refMessage = useRef(null);
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
             if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
-                await initializeWalletState();
+                try {
+                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                } catch (error) {
+                    errorStore.setError({
+                        error: error,
+                        expected: true,
+                    });
+                }
             }
         };
 
         initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount]);
+    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount, errorStore]);
 
     useEffect(() => {
         setUserName();
@@ -183,6 +200,7 @@ export default function AssetsContainer({
                 account,
                 ...(logoUrl && { image: logoUrl }),
             };
+
             navigation.navigate('AssetDetailMain', {
                 screen: 'AssetDetail',
                 params: { screenTitle: `${accountToken.getSymbol()}`, ...accountDetail, accountBalance: balance },
@@ -294,27 +312,29 @@ export default function AssetsContainer({
 
                                 <AssetsSummary
                                     navigation={navigation}
-                                    accountBalance={ethereumBalance}
                                     address={ethereumAccount}
                                     updateAccountDetail={updateAccountDetail}
                                     networkName="Ethereum"
                                     currency="ETH"
+                                    storageName="ethereum"
                                 />
+                                {developerMode && (
+                                    <AssetsSummary
+                                        navigation={navigation}
+                                        address={sepoliaAccount}
+                                        updateAccountDetail={updateAccountDetail}
+                                        networkName="Sepolia"
+                                        currency="SepoliaETH"
+                                        storageName="ethereumTestnetSepolia"
+                                    />
+                                )}
                                 <AssetsSummary
                                     navigation={navigation}
-                                    accountBalance={sepoliaBalance}
-                                    address={sepoliaAccount}
-                                    updateAccountDetail={updateAccountDetail}
-                                    networkName="Sepolia"
-                                    currency="SepoliaETH"
-                                />
-                                <AssetsSummary
-                                    navigation={navigation}
-                                    accountBalance={polygonBalance}
                                     address={polygonAccount}
                                     updateAccountDetail={updateAccountDetail}
                                     networkName="Polygon"
                                     currency="MATIC"
+                                    storageName="ethereumPolygon"
                                 />
                             </View>
                         </ScrollView>

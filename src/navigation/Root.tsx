@@ -159,12 +159,11 @@ export default function RootNavigation() {
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
-    const user = useUserStore();
+    const { status } = useUserStore();
 
-    debug('user status', user.status);
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
+            {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                     <Stack.Screen

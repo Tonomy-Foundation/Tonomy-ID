@@ -28,7 +28,7 @@ import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-import { capitalizeFirstLetter } from '../utils/helper';
+import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
 
@@ -58,19 +58,22 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const [refreshing, setRefreshing] = React.useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
         address: '',
     });
-    const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
-        useWalletStore();
+    const {
+        web3wallet,
+        ethereumAccount,
+        refreshBalance,
+        initialized,
+        sepoliaAccount,
+        polygonAccount,
+        initializeWalletState,
+    } = useWalletStore();
 
-    const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
+    const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
 
@@ -79,12 +82,19 @@ export default function MainContainer({
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
             if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
-                await initializeWalletState();
+                try {
+                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                } catch (error) {
+                    errorStore.setError({
+                        error: error,
+                        expected: true,
+                    });
+                }
             }
         };
 
         initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount]);
+    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount, errorStore]);
 
     useEffect(() => {
         setUserName();
@@ -96,12 +106,25 @@ export default function MainContainer({
 
     useEffect(() => {
         async function getUpdatedBalance() {
-            await updateBalance();
+            try {
+                await updateBalance();
 
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-            if (pangeaBalance !== accountPangeaBalance) {
-                setPangeaBalance(accountPangeaBalance);
+                if (pangeaBalance !== accountPangeaBalance) {
+                    setPangeaBalance(accountPangeaBalance);
+                }
+            } catch (error) {
+                debug('Error updating balance:', error);
+
+                if (error.message === 'Network request failed') {
+                    debug('netowrk error when call updating balance:');
+                } else {
+                    errorStore.setError({
+                        error: error,
+                        expected: true,
+                    });
+                }
             }
         }
 
@@ -112,7 +135,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
+    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance, errorStore]);
 
     async function setUserName() {
         try {
@@ -131,6 +154,7 @@ export default function MainContainer({
         try {
             await connectToDid(did);
         } catch (e) {
+            debug('onUrlOpen error:', e);
             errorStore.setError({ error: e, expected: false });
         } finally {
             onClose();
@@ -147,6 +171,8 @@ export default function MainContainer({
                 await connectToDid(did);
             }
         } catch (e) {
+            debug('onScan error:', e);
+
             if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 debug('Invalid QR Code', JSON.stringify(e, null, 2));
 
@@ -179,6 +205,8 @@ export default function MainContainer({
 
             await user.sendMessage(identifyMessage);
         } catch (e) {
+            debug('connectToDid error:', e);
+
             if (
                 e instanceof CommunicationError &&
                 e.exception?.status === 400 &&
@@ -206,24 +234,41 @@ export default function MainContainer({
     }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
-        if (account) {
-            const accountToken = await account.getNativeToken();
-            const logoUrl = accountToken.getLogoUrl();
+        try {
+            progressiveRetryOnNetworkError(async () => {
+                if (account) {
+                    const accountToken = await account.getNativeToken();
+                    const logoUrl = accountToken.getLogoUrl();
 
-            setAccountDetails({
-                symbol: accountToken.getSymbol(),
-                name: capitalizeFirstLetter(account.getChain().getName()),
-                address: account?.getName() || '',
-                ...(logoUrl && { image: logoUrl }),
+                    setAccountDetails({
+                        symbol: accountToken.getSymbol(),
+                        name: capitalizeFirstLetter(account.getChain().getName()),
+                        address: account?.getName() || '',
+                        ...(logoUrl && { image: logoUrl }),
+                    });
+                }
+            });
+        } catch (error) {
+            debug('Error updating account detail:', error);
+            errorStore.setError({
+                error: error,
+                expected: true,
             });
         }
     };
 
     const onRefresh = React.useCallback(async () => {
-        setRefreshing(true);
-        updateBalance();
-        setRefreshing(false);
-    }, [updateBalance]);
+        try {
+            progressiveRetryOnNetworkError(async () => await updateBalance());
+        } catch (error) {
+            debug('Error when refresh balance:', error);
+
+            errorStore.setError({
+                error: error,
+                expected: true,
+            });
+        }
+    }, [updateBalance, errorStore]);
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -238,7 +283,7 @@ export default function MainContainer({
                     <View style={styles.content}>
                         <ScrollView
                             contentContainerStyle={styles.scrollViewContent}
-                            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>
@@ -300,24 +345,24 @@ export default function MainContainer({
 
                                     <AccountSummary
                                         navigation={navigation}
-                                        accountBalance={ethereumBalance}
                                         address={ethereumAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Ethereum"
+                                        storageName="ethereum"
                                     />
                                     <AccountSummary
                                         navigation={navigation}
-                                        accountBalance={sepoliaBalance}
                                         address={sepoliaAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Sepolia"
+                                        storageName="ethereumTestnetSepolia"
                                     />
                                     <AccountSummary
                                         navigation={navigation}
-                                        accountBalance={polygonBalance}
                                         address={polygonAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
+                                        storageName="ethereumPolygon"
                                     />
                                 </View>
                             </ScrollView>
