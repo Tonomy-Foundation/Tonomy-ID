@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import TButton from './atoms/TButton';
 import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
-import { IAccount } from '../utils/chain/types';
+import { IAccount, IToken } from '../utils/chain/types';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
 import { assetStorage } from '../utils/StorageManager/setup';
 import Debug from 'debug';
@@ -16,18 +16,19 @@ export type AccountSummaryProps = {
     updateAccountDetail: (address: IAccount) => void;
     address: IAccount | null;
     networkName: string;
-    storageName?: string;
+    token: IToken;
 };
 
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props.address?.getName();
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
-        balance: '0',
+        balance: '0 ' + props.token.getSymbol(),
         usdBalance: 0,
     });
 
-    debug('accountBalance:', props.storageName, currentAddress, accountBalance);
+    debug('accountBalance:', currentAddress, accountBalance);
     useEffect(() => {
         const fetchLogo = async () => {
             try {
@@ -44,16 +45,20 @@ const AccountSummary = (props: AccountSummaryProps) => {
         };
 
         const fetchBalance = async () => {
-            if (props.storageName) {
-                const balance = await assetStorage.findBalanceByName(props.storageName);
+            if (props.token) {
+                setLoading(true);
+                const asset = await assetStorage.findAssetByName(props.token);
 
-                setAccountBalance(balance);
+                if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
+                else setAccountBalance({ balance: '0', usdBalance: 0 });
+
+                setLoading(false);
             }
         };
 
         fetchLogo();
         fetchBalance();
-    }, [props.address, props.storageName]);
+    }, [props.address, props.token]);
 
     const generateKey = async () => {
         props.navigation.navigate('CreateEthereumKey');
@@ -101,12 +106,18 @@ const AccountSummary = (props: AccountSummaryProps) => {
                             </TButton>
                         ) : (
                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text>{accountBalance.balance}</Text>
-                                </View>
-                                <Text style={styles.secondaryColor}>
-                                    ${formatCurrencyValue(Number(accountBalance.usdBalance), 3)}
-                                </Text>
+                                {loading ? (
+                                    <ActivityIndicator size="small" />
+                                ) : (
+                                    <>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text>{accountBalance.balance}</Text>
+                                        </View>
+                                        <Text style={styles.secondaryColor}>
+                                            ${formatCurrencyValue(Number(accountBalance.usdBalance), 3)}
+                                        </Text>
+                                    </>
+                                )}
                             </View>
                         )}
                     </View>

@@ -9,6 +9,9 @@ import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:StorageManage:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
@@ -65,6 +68,26 @@ export async function connect() {
     const appTableExists = await checkTableExists(dataSource, 'AppStorage');
     const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
     const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
+
+    //TODO Remove this before move to production
+    if (assetTableExists) {
+        const queryRunner = dataSource.createQueryRunner();
+
+        await queryRunner.query(`DROP TABLE IF EXISTS "AssetStorage"`);
+        await queryRunner.query(`
+            CREATE TABLE "AssetStorage" (
+                "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "assetName" varchar NOT NULL,
+                "accountName" varchar NOT NULL,
+                "balance" varchar NOT NULL,
+                "usdBalance" integer NOT NULL,
+                "createdAt" datetime NOT NULL,
+                "updatedAt" datetime NOT NULL,
+                CONSTRAINT "UQ_assetName" UNIQUE ("assetName")
+            )
+        `);
+        await queryRunner.release();
+    }
 
     // If the tables don't exist, synchronize the schema
     if (!appTableExists || !keyTableExists || !assetTableExists) {

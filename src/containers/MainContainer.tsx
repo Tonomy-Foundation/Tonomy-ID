@@ -24,7 +24,7 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { USD_CONVERSION } from '../utils/chain/etherum';
+import { ETHPolygonToken, ETHSepoliaToken, ETHToken, USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
@@ -348,21 +348,21 @@ export default function MainContainer({
                                         address={ethereumAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Ethereum"
-                                        storageName="ethereum"
+                                        token={ETHToken}
                                     />
                                     <AccountSummary
                                         navigation={navigation}
                                         address={sepoliaAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Sepolia"
-                                        storageName="ethereumTestnetSepolia"
+                                        token={ETHSepoliaToken}
                                     />
                                     <AccountSummary
                                         navigation={navigation}
                                         address={polygonAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
-                                        storageName="ethereumPolygon"
+                                        token={ETHPolygonToken}
                                     />
                                 </View>
                             </ScrollView>
