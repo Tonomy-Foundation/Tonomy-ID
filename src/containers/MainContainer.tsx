@@ -83,6 +83,7 @@ export default function MainContainer({
         const initializeAndFetchBalances = async () => {
             if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
                 try {
+                    debug('initializeAndFetchBalances', initialized);
                     progressiveRetryOnNetworkError(async () => await initializeWalletState());
                 } catch (error) {
                     errorStore.setError({
@@ -269,6 +270,8 @@ export default function MainContainer({
             });
         }
     }, [updateBalance, errorStore]);
+
+    debug('main container', ethereumAccount);
 
     const MainView = () => {
         const isFocused = useIsFocused();

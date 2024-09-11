@@ -58,10 +58,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
             const state = get();
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
-                debug('fetchAccountData', chain, token, keyName);
+                debug('fetchAccountData', keyName);
                 const key = await keyStorage.findByName(keyName, chain);
-
-                debug('key', key);
 
                 if (key) {
                     debug('key exists');
@@ -105,12 +103,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                 return null;
             };
-
             const [ethereumData, sepoliaData, polygonData] = await Promise.allSettled([
                 fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
                 fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
                 fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
             ]);
+
+            debug('fetchAccountData', ethereumData);
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
                 state.ethereumAccount = ethereumData.value.account;
@@ -125,6 +124,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
 
             if (!get().ethereumAccount && !get().sepoliaAccount && !get().polygonAccount) {
+                debug(
+                    'iff account not exists set statet',
+                    state.ethereumAccount,
+                    state.sepoliaAccount,
+                    state.polygonAccount
+                );
                 set({
                     ethereumAccount: state.ethereumAccount,
                     sepoliaAccount: state.sepoliaAccount,
@@ -133,20 +138,30 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
 
             if (!get().initialized && !get().web3wallet) {
-                const web3wallet = await Web3Wallet.init({
-                    core,
-                    metadata: {
-                        name: settings.config.appName,
-                        description: settings.config.ecosystemName,
-                        url: 'https://walletconnect.com/',
-                        icons: [settings.config.images.logo48],
-                    },
-                });
+                debug('initialize wallet condition');
 
-                set({
-                    initialized: true,
-                    web3wallet,
-                });
+                try {
+                    const web3wallet = await Web3Wallet.init({
+                        core,
+                        metadata: {
+                            name: settings.config.appName,
+                            description: settings.config.ecosystemName,
+                            url: 'https://walletconnect.com/',
+                            icons: [settings.config.images.logo48],
+                        },
+                    });
+
+                    set({
+                        initialized: true,
+                        web3wallet,
+                    });
+                } catch (e) {
+                    if (e.message === 'Network request failed') {
+                        debug('network error when initializing wallet');
+                    } else {
+                        throw e;
+                    }
+                }
             }
         } catch (error) {
             console.error('Error initializing wallet state:', error);

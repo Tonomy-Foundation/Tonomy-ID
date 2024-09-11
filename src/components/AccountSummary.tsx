@@ -28,7 +28,6 @@ const AccountSummary = (props: AccountSummaryProps) => {
         usdBalance: 0,
     });
 
-    debug('accountBalance:', currentAddress, accountBalance);
     useEffect(() => {
         const fetchLogo = async () => {
             try {
@@ -50,7 +49,6 @@ const AccountSummary = (props: AccountSummaryProps) => {
                 const asset = await assetStorage.findAssetByName(props.token);
 
                 if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
-                else setAccountBalance({ balance: '0', usdBalance: 0 });
 
                 setLoading(false);
             }
