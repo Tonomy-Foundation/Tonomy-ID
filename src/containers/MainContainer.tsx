@@ -265,6 +265,7 @@ export default function MainContainer({
 
     const updateAccountDetail = async (account) => {
         alert(`updateAccountDetail ${account}`);
+
         try {
             if (account) {
                 const accountToken = await account.getNativeToken();
@@ -278,9 +279,10 @@ export default function MainContainer({
                 });
             }
         } catch (error) {
-            if(error.message === 'Network request failed') { {
+            if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
             }
+
             debug('Error updating account detail:', error);
             errorStore.setError({
                 error: error,

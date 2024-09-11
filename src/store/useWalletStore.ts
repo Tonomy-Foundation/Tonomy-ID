@@ -193,8 +193,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
         }
     },
     updateBalance: async () => {
-        throw new Error('Network request failed');
-
         try {
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
