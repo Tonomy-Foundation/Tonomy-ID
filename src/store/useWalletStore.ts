@@ -37,8 +37,8 @@ interface WalletState {
     updateBalance: () => Promise<void>;
     disconnectSession: () => Promise<void>;
     refreshBalance: boolean;
+    initializeWalletAccount: () => Promise<void>;
     accountExists: boolean;
-    initializeWalletAccounts: () => Promise<void>;
 }
 const defaultState = {
     initialized: false,
@@ -101,7 +101,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
         }
     },
 
-    initializeWalletAccounts: async () => {
+    initializeWalletAccount: async () => {
+        debug('initializeWalletAccount');
         await connect();
 
         const state = get();
@@ -158,7 +159,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             state.polygonAccount = polygonData.value.account;
         }
 
-        if (!get().ethereumAccount && !get().sepoliaAccount && !get().polygonAccount) {
+        if (!get().accountExists) {
             debug(
                 'iff account not exists set statet',
                 state.ethereumAccount,
@@ -185,12 +186,15 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 ethereumAccount: null,
                 sepoliaAccount: null,
                 polygonAccount: null,
+                accountExists: false,
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
         }
     },
     updateBalance: async () => {
+        throw new Error('Network request failed');
+
         try {
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
