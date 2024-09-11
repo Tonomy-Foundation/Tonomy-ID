@@ -91,6 +91,9 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                         if (e.message === 'Network request failed') {
                             debug('network error do nothing');
+                            return {
+                                account,
+                            };
                         } else {
                             throw e;
                         }
