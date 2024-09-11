@@ -103,7 +103,7 @@ export class EthereumChain extends AbstractChain {
         return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
     }
 
-    public getProvider(): JsonRpcProvider {
+    getProvider(): JsonRpcProvider {
         return this.provider;
     }
 }
@@ -421,15 +421,15 @@ export class WalletConnectSession implements IChainSession {
         this.wallet = wallet;
     }
 
-    public setNamespaces(namespaces: SessionTypes.Namespaces): void {
+    setNamespaces(namespaces: SessionTypes.Namespaces): void {
         this.namespaces = namespaces;
     }
 
-    public getNamespaces(): SessionTypes.Namespaces {
+    getNamespaces(): SessionTypes.Namespaces {
         return this.namespaces;
     }
 
-    public setActiveAccounts(accounts: EthereumAccount[]): void {
+    setActiveAccounts(accounts: EthereumAccount[]): void {
         this.accounts = accounts;
     }
 
@@ -457,12 +457,12 @@ export class WalletConnectSession implements IChainSession {
         // Example: Disconnect WalletConnect provider
     }
 
-    async createTransactionRequest(transaction: ITransaction): Promise<TransactionRequest> {
+    async createTransactionRequest(transaction: EthereumTransaction): Promise<TransactionRequest> {
         const transactionRequest: TransactionRequest = {
             to: (await transaction.getTo()).getName(),
             from: (await transaction.getFrom()).getName(),
             value: ethers.parseEther(parseFloat((await transaction.getValue()).toString()).toFixed(18)),
-            data: await (transaction as EthereumTransaction).getData(),
+            data: await transaction.getData().toString(),
         };
 
         return transactionRequest;

@@ -50,7 +50,7 @@ describe('AntelopeTransaction', () => {
             },
         };
         const actions = [createAssetAction];
-        const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
+        const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain, account);
 
         expect(transaction.hasMultipleOperations()).toBeTruthy();
         expect(await transaction.getData()).toEqual(actions);
@@ -104,7 +104,9 @@ describe('AntelopeTransaction', () => {
             },
         };
 
-        const res2 = await account.sendTransaction(AntelopeTransaction.fromActions([burnAssetAction], EOSJungleChain));
+        const res2 = await account.sendTransaction(
+            AntelopeTransaction.fromActions([burnAssetAction], EOSJungleChain, account)
+        );
 
         expect(res2).toBeDefined();
         expect(res2.processed.receipt.status).toBe('executed');
