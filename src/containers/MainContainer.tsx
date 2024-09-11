@@ -81,9 +81,11 @@ export default function MainContainer({
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
-            if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
+            debug('initializeAndFetchBalances', initialized, ethereumAccount?.getName());
+
+            if (!initialized) {
                 try {
-                    debug('initializeAndFetchBalances', initialized);
+                    debug('initializeAndFetchBalances if condition called');
                     progressiveRetryOnNetworkError(async () => await initializeWalletState());
                 } catch (error) {
                     errorStore.setError({
@@ -95,7 +97,7 @@ export default function MainContainer({
         };
 
         initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount, errorStore]);
+    }, [initializeWalletState, initialized, ethereumAccount, errorStore]);
 
     useEffect(() => {
         setUserName();
@@ -263,7 +265,6 @@ export default function MainContainer({
             progressiveRetryOnNetworkError(async () => await updateBalance());
         } catch (error) {
             debug('Error when refresh balance:', error);
-
             errorStore.setError({
                 error: error,
                 expected: true,
@@ -271,7 +272,7 @@ export default function MainContainer({
         }
     }, [updateBalance, errorStore]);
 
-    debug('main container', ethereumAccount);
+    debug('main container account display', ethereumAccount?.getName(), initialized);
 
     const MainView = () => {
         const isFocused = useIsFocused();

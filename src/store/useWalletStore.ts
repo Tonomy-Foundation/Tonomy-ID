@@ -65,10 +65,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     debug('key exists');
                     const asset = await assetStorage.findAssetByName(token);
 
-                    debug('asset', asset);
                     let account;
 
                     if (!asset) {
+                        debug('if asset not found', asset);
+
                         const exportPrivateKey = await key.exportPrivateKey();
                         const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
@@ -77,6 +78,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                         await assetStorage.createAsset(abstractAsset, account);
                     } else {
+                        debug('else account', asset);
+
                         account = new EthereumAccount(chain, asset.accountName);
                     }
 
@@ -96,15 +99,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
             debug('fetchAccountData', ethereumData);
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
-                const account = ethereumData.value.account;
-
-                state.ethereumAccount = account;
+                state.ethereumAccount = ethereumData.value.account;
             }
 
             if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
-                const account = sepoliaData.value.account;
-
-                state.sepoliaAccount = account;
+                state.sepoliaAccount = sepoliaData.value.account;
             }
 
             if (polygonData.status === 'fulfilled' && polygonData.value) {

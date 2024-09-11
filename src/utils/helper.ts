@@ -28,14 +28,11 @@ export async function progressiveRetryOnNetworkError(fn, initialDelay = 10000, m
     while (condition) {
         try {
             await fn();
-            debug('Function called successfully');
             break;
         } catch (error) {
             debug('Error function called:', error);
 
             if (error.message === 'Network request failed') {
-                debug('Network error occurred, retrying..');
-
                 await new Promise((resolve) => setTimeout(resolve, delay));
                 delay = Math.min(delay * 2, maxDelay); // Double the interval, cap at 1 hour
             } else {
