@@ -324,11 +324,7 @@ export class Asset extends AbstractAsset {
         this.amount = amount;
     }
 }
-export interface ChainDetail {
-    chainId: string;
-    address: string;
-    networkName: string;
-}
+
 export interface IChainSession {
     createSession(request: unknown): Promise<void>;
     cancelLoginRequest(request: unknown): Promise<void>;
@@ -336,5 +332,5 @@ export interface IChainSession {
     createTransactionRequest(request: unknown): Promise<unknown>;
     approveTransactionRequest(request: unknown, transaction?: unknown): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
-    getActiveAccounts(): Promise<ChainDetail[]>;
+    getActiveAccounts(): Promise<IAccount[]>;
 }

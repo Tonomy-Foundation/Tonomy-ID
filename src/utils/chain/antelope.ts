@@ -14,10 +14,8 @@ import {
     IPrivateKey,
     Asset,
     IChainSession,
-    ChainDetail,
     ChainType,
 } from './types';
-import { SignClientTypes } from '@walletconnect/types';
 import {
     ABI,
     ABISerializableConstructor,
@@ -596,14 +594,8 @@ export class ESRSession implements IChainSession {
     async cancelLoginRequest(request: unknown): Promise<void> {
         //TODO
     }
-    async getActiveAccounts(): Promise<ChainDetail[]> {
-        return [
-            {
-                address: this.account.getName(),
-                chainId: this.chain.getAntelopeChainId(),
-                networkName: this.chain.getName(),
-            },
-        ];
+    async getActiveAccounts(): Promise<AntelopeAccount[]> {
+        return [this.account];
     }
 
     async disconnectSession(): Promise<void> {

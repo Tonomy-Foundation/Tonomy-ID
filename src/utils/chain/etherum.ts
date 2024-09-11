@@ -25,7 +25,6 @@ import {
     Asset,
     IOperation,
     IChainSession,
-    ChainDetail,
     ChainType,
 } from './types';
 import settings from '../../settings';
@@ -416,7 +415,7 @@ export class EthereumAccount extends AbstractAccount {
 export class WalletConnectSession implements IChainSession {
     private wallet: IWeb3Wallet | null;
     private namespaces: SessionTypes.Namespaces;
-    private chainAccountList: ChainDetail[];
+    private accounts: EthereumAccount[];
 
     constructor(wallet: IWeb3Wallet) {
         this.wallet = wallet;
@@ -430,12 +429,12 @@ export class WalletConnectSession implements IChainSession {
         return this.namespaces;
     }
 
-    public setActiveAccounts(chainAccountList: ChainDetail[]): void {
-        this.chainAccountList = chainAccountList;
+    public setActiveAccounts(accounts: EthereumAccount[]): void {
+        this.accounts = accounts;
     }
 
-    async getActiveAccounts(): Promise<ChainDetail[]> {
-        return this.chainAccountList;
+    async getActiveAccounts(): Promise<EthereumAccount[]> {
+        return this.accounts;
     }
 
     async createSession(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {

@@ -10,7 +10,7 @@ import settings from '../settings';
 import { Props } from '../screens/WalletConnectLoginScreen';
 import { SignClientTypes } from '@walletconnect/types';
 import useErrorStore from '../store/errorStore';
-import { IChainSession, ChainDetail } from '../utils/chain/types';
+import { IChainSession, IAccount } from '../utils/chain/types';
 
 export default function WalletConnectLoginContainer({
     navigation,
@@ -26,7 +26,7 @@ export default function WalletConnectLoginContainer({
     const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
     const parsedUrl = new URL(url);
     const errorStore = useErrorStore();
-    const [accounts, setAccounts] = useState<ChainDetail[]>([]);
+    const [accounts, setAccounts] = useState<IAccount[]>([]);
 
     useEffect(() => {
         const fetchActiveAccounts = async () => {
@@ -73,18 +73,23 @@ export default function WalletConnectLoginContainer({
             body={
                 <View style={styles.container}>
                     <View style={styles.marginTop}>
-                        {accounts?.map(({ networkName, address }, index) => (
-                            <View style={styles.networkHeading} key={index}>
-                                <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
-                                <Text style={styles.nameText}>{networkName} Network:</Text>
-                                {address && (
-                                    <Text style={commonStyles.textAlignCenter}>
-                                        {address.substring(0, 9)}....
-                                        {address.substring(address.length - 8)}
-                                    </Text>
-                                )}
-                            </View>
-                        ))}
+                        {accounts?.map((account, index) => {
+                            const chain = account.getChain();
+                            const chainName = chain.getName();
+                            const accountName = account.getName();
+
+                            return (
+                                <View style={styles.networkHeading} key={index}>
+                                    <Image source={require('../assets/icons/eth-img.png')} style={styles.imageStyle} />
+                                    <Text style={styles.nameText}>{chainName} Network:</Text>
+                                    {accountName && (
+                                        <Text style={commonStyles.textAlignCenter}>
+                                            {chain.formatShortAccountName(accountName)}
+                                        </Text>
+                                    )}
+                                </View>
+                            );
+                        })}
                     </View>
 
                     <View style={[styles.appDialog, styles.marginTop]}>

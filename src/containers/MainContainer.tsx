@@ -159,10 +159,47 @@ export default function MainContainer({
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('esr:')) {
+                // // eslint-disable-next-line no-inner-declarations
+                // async function createMockSigningRequest() {
+                //     return await SigningRequest.create(
+                //         {
+                //             action: {
+                //                 account: 'eosio.token',
+                //                 name: 'transfer',
+                //                 authorization: [
+                //                     {
+                //                         actor: 'jacktest2222',
+                //                         permission: 'active',
+                //                     },
+                //                 ],
+                //                 data: {
+                //                     from: 'jacktest2222',
+                //                     to: 'hippopotamus',
+                //                     quantity: '1.0000 EOS',
+                //                     memo: '',
+                //                 },
+                //             },
+                //             callback: 'https://tonomy.io',
+                //             chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
+                //         },
+                //         {
+                //             abiProvider: new ABICache(
+                //                 new APIClient({
+                //                     url: 'https://jungle4.cryptolions.io',
+                //                 })
+                //             ) as unknown as AbiProvider,
+                //             zlib,
+                //         }
+                //     );
+                // }
+
+                // const request = await createMockSigningRequest();
+                // const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
                 const signingRequestBasic = SigningRequest.from(data, { zlib });
 
                 const chain: AntelopeChain = ANTELOPE_CHAIN_ID_TO_CHAIN[signingRequestBasic.getChainId().toString()];
 
+                if (!chain) throw new Error('This chain is not supported');
                 const client = new APIClient({ url: chain.getApiOrigin() });
 
                 // Define the options used when decoding/resolving the request
@@ -176,6 +213,7 @@ export default function MainContainer({
 
                 const isIdentity = signingRequest.isIdentity();
                 const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
+                // const privateKey = '5Hw7gAxYHruqAtwBcVjFUHS79A2A4QmVL2ModVgdhE12NpCpLdr';
                 const abis = await signingRequest.fetchAbis();
 
                 if (!privateKey) throw new Error('No private key found');
@@ -190,18 +228,16 @@ export default function MainContainer({
 
                 // Resolve the transaction using the supplied data
                 const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
-                const createAssetAction: ActionData[] = resolvedSigningRequest.resolvedTransaction.actions.map(
-                    (action) => ({
-                        account: action.account.toString(),
-                        name: action.name.toString(),
-                        authorization: action.authorization.map((auth) => ({
-                            actor: auth.actor.toString(),
-                            permission: auth.permission.toString(),
-                        })),
-                        data: action.data,
-                    })
-                );
-                const actions = createAssetAction;
+                const actions = resolvedSigningRequest.resolvedTransaction.actions.map((action) => ({
+                    account: action.account.toString(),
+                    name: action.name.toString(),
+                    authorization: action.authorization.map((auth) => ({
+                        actor: auth.actor.toString(),
+                        permission: auth.permission.toString(),
+                    })),
+                    data: action.data,
+                }));
+
                 const account = AntelopeAccount.fromAccount(EOSJungleChain, 'jacktest2222');
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain, account);
                 const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
@@ -216,7 +252,7 @@ export default function MainContainer({
                         session,
                     });
                 } else {
-                    // feature not supported yet
+                    debug('Identity request not supported yet');
                     return;
                     // const signedTransaction = await antelopeKey.signTransaction(transaction);
                     // const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures as any, 0);

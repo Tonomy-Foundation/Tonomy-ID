@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import RNKeyManager, { KEY_STORAGE_NAMESPACE } from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
 import settings from '../settings';
