@@ -51,6 +51,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
         try {
+            await connect();
+
             if (get().initialized && get().ethereumAccount) {
                 debug('Already initialized');
                 return;
@@ -152,11 +154,16 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
         } catch (error) {
             console.error('Error initializing wallet state:', error);
-            set({
-                ethereumAccount: null,
-                sepoliaAccount: null,
-                polygonAccount: null,
-            });
+
+            if (error.message === 'Network request failed') {
+                debug('network error when initializing wallet');
+            } else {
+                set({
+                    ethereumAccount: null,
+                    sepoliaAccount: null,
+                    polygonAccount: null,
+                });
+            }
         }
     },
 
@@ -179,6 +186,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         try {
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
+
+            debug('updateBalance', ethereumAccount);
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
                 set({ refreshBalance: true });

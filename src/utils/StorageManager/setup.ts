@@ -9,9 +9,6 @@ import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
-import Debug from 'debug';
-
-const debug = Debug('tonomy-id:utils:StorageManage:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
@@ -77,7 +74,6 @@ async function updateAssetStorageTable() {
         if (!columnExists) {
             // Drop the AssetStorage table
             await queryRunner.query(`DROP TABLE IF EXISTS "AssetStorage"`);
-            debug('AssetStorage table dropped successfully.');
 
             // Create a new table with the updated schema
             await queryRunner.query(`
@@ -92,9 +88,6 @@ async function updateAssetStorageTable() {
                     CONSTRAINT "UQ_assetName" UNIQUE ("assetName")
                 )
             `);
-            debug('AssetStorage table created successfully.');
-        } else {
-            debug('AssetStorage table already has the assetName column.');
         }
     } catch (error) {
         console.error('Error updating AssetStorage table:', error);
