@@ -307,6 +307,7 @@ export default function MainContainer({
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
                                     <TouchableOpacity
                                         onPress={() => {
+                                            debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
                                             setAccountDetails({
                                                 symbol: 'LEOS',
                                                 name: 'Pangea',
