@@ -67,10 +67,12 @@ export default function MainContainer({
         web3wallet,
         ethereumAccount,
         refreshBalance,
-        initialized,
+        accountExists,
         sepoliaAccount,
         polygonAccount,
+        initialized,
         initializeWalletState,
+        initializeWalletAccounts,
     } = useWalletStore();
 
     const { updateBalance } = useWalletStore((state) => ({
@@ -81,13 +83,27 @@ export default function MainContainer({
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
-            debug('initializeAndFetchBalances', initialized, ethereumAccount?.getName());
+            debug('initializeAndFetchBalances');
+
+            if (!accountExists) {
+                try {
+                    debug('accountExists if condition called');
+                    await initializeWalletAccounts();
+                } catch (error) {
+                    debug('Error initializing wallet state:', error);
+                    errorStore.setError({
+                        error: error,
+                        expected: true,
+                    });
+                }
+            }
 
             if (!initialized) {
                 try {
-                    debug('initializeAndFetchBalances if condition called');
+                    debug('initialized if condition called');
                     progressiveRetryOnNetworkError(async () => await initializeWalletState());
                 } catch (error) {
+                    debug('Error initializing wallet state:', error);
                     errorStore.setError({
                         error: error,
                         expected: true,
@@ -97,7 +113,9 @@ export default function MainContainer({
         };
 
         initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, ethereumAccount, errorStore]);
+    }, [initializeWalletAccounts, accountExists, errorStore, initialized, initializeWalletState]);
+
+    debug('main container status check', accountExists, initialized);
 
     useEffect(() => {
         setUserName();
