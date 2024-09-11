@@ -150,6 +150,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
         debug('fetchAccountData', ethereumData);
 
         if (ethereumData.status === 'fulfilled' && ethereumData.value) {
+            alert(`"if fullfileee ${ethereumData.value.account}`);
             state.ethereumAccount = ethereumData.value.account;
         }
 
