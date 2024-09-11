@@ -1,4 +1,4 @@
-import { Asset, IAccount, IToken } from '../../chain/types';
+import { Asset, IAccount, IAsset, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
 
 interface AccountStorage {
@@ -13,18 +13,20 @@ export abstract class AssetStorageManager {
     constructor(repository: AssetStorageRepository) {
         this.repository = repository;
     }
-    public async createAsset(token: IToken, value: IAccount): Promise<void> {
-        const name = token.getChain().getName() + '-' + token.getSymbol();
+    public async createAsset(asset: IAsset, value: IAccount): Promise<void> {
+        const token = asset.getToken();
+        const symbol = token.getSymbol();
+        const name = token.getChain().getName() + '-' + symbol;
 
-        await this.repository.createAsset(name, value.getName(), token.getSymbol());
+        await this.repository.createAsset(name, value.getName(), symbol);
     }
-    public async updateAccountBalance(token: IToken, accountBalance: Asset): Promise<void> {
-        const name = token.getChain().getName() + '-' + token.getSymbol();
+    public async updateAccountBalance(asset: IAsset): Promise<void> {
+        const name = asset.getToken().getChain().getName() + '-' + asset.getToken().getSymbol();
         const existingAsset = await this.repository.findAssetByName(name);
 
         if (existingAsset) {
-            const balance = accountBalance.toString();
-            const usdBalance = await accountBalance.getUsdValue();
+            const balance = asset.toString();
+            const usdBalance = await asset.getUsdValue();
 
             existingAsset.balance = balance;
             existingAsset.usdBalance = usdBalance;

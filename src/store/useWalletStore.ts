@@ -74,7 +74,9 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
                         account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                        await assetStorage.createAsset(token, account);
+                        const abstractAsset = new Asset(token, BigInt(0));
+
+                        await assetStorage.createAsset(abstractAsset, account);
                     } else {
                         account = new EthereumAccount(chain, asset.accountName);
                     }
@@ -82,7 +84,9 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     try {
                         const balance = await token.getBalance(account);
 
-                        await assetStorage.updateAccountBalance(token, balance);
+                        debug('balance assetType', balance.toString());
+
+                        await assetStorage.updateAccountBalance(balance);
                     } catch (e) {
                         debug('Error getting balance:', e);
 
@@ -188,15 +192,15 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
 
                 if (ethereumBalance) {
-                    await assetStorage.updateAccountBalance(ETHToken, ethereumBalance);
+                    await assetStorage.updateAccountBalance(ethereumBalance);
                 }
 
                 if (sepoliaBalance) {
-                    await assetStorage.updateAccountBalance(ETHSepoliaToken, sepoliaBalance);
+                    await assetStorage.updateAccountBalance(sepoliaBalance);
                 }
 
                 if (polygonBalance) {
-                    await assetStorage.updateAccountBalance(ETHPolygonToken, polygonBalance);
+                    await assetStorage.updateAccountBalance(polygonBalance);
                 }
 
                 set({ refreshBalance: false });
