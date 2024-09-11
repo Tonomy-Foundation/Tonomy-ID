@@ -53,50 +53,38 @@ const defaultState = {
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
-        try {
-            if (get().initialized) {
-                debug('Already initialized');
-                return;
-            }
+        if (get().initialized) {
+            debug('Already initialized');
+            return;
+        }
 
-            if (!get().initialized && !get().web3wallet) {
-                debug('initialize wallet condition');
+        if (!get().initialized && !get().web3wallet) {
+            debug('initialize wallet condition');
 
-                try {
-                    const web3wallet = await Web3Wallet.init({
-                        core,
-                        metadata: {
-                            name: settings.config.appName,
-                            description: settings.config.ecosystemName,
-                            url: 'https://walletconnect.com/',
-                            icons: [settings.config.images.logo48],
-                        },
-                    });
-
-                    debug('web3wallet', web3wallet);
-                    set({
-                        initialized: true,
-                        web3wallet,
-                    });
-                } catch (e) {
-                    if (e.message === 'Network request failed') {
-                        debug('network error when initializing wallet');
-                    } else {
-                        throw e;
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error initializing wallet state:', error);
-
-            if (error.message === 'Network request failed') {
-                debug('network error when initializing wallet');
-            } else {
-                set({
-                    ethereumAccount: null,
-                    sepoliaAccount: null,
-                    polygonAccount: null,
+            try {
+                const web3wallet = await Web3Wallet.init({
+                    core,
+                    metadata: {
+                        name: settings.config.appName,
+                        description: settings.config.ecosystemName,
+                        url: 'https://walletconnect.com/',
+                        icons: [settings.config.images.logo48],
+                    },
                 });
+
+                debug('web3wallet', web3wallet);
+                set({
+                    initialized: true,
+                    web3wallet,
+                });
+            } catch (e) {
+                debug("error wallet initialization'", e);
+
+                if (e.message === 'Network request failed') {
+                    debug('network error when initializing wallet');
+                } else {
+                    throw e;
+                }
             }
         }
     },
