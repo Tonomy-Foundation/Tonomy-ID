@@ -80,25 +80,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         account = new EthereumAccount(chain, asset.accountName);
                     }
 
-                    try {
-                        const balance = await token.getBalance(account);
-
-                        debug('balance assetType', balance.toString());
-
-                        await assetStorage.updateAccountBalance(balance);
-                    } catch (e) {
-                        debug('Error getting balance:', e);
-
-                        if (e.message === 'Network request failed') {
-                            debug('network error do nothing');
-                            return {
-                                account,
-                            };
-                        } else {
-                            throw e;
-                        }
-                    }
-
                     return {
                         account,
                     };
@@ -115,11 +96,15 @@ const useWalletStore = create<WalletState>((set, get) => ({
             debug('fetchAccountData', ethereumData);
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
-                state.ethereumAccount = ethereumData.value.account;
+                const account = ethereumData.value.account;
+
+                state.ethereumAccount = account;
             }
 
             if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
-                state.sepoliaAccount = sepoliaData.value.account;
+                const account = sepoliaData.value.account;
+
+                state.sepoliaAccount = account;
             }
 
             if (polygonData.status === 'fulfilled' && polygonData.value) {
