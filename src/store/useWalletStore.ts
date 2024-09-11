@@ -103,7 +103,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
     initializeWalletAccount: async () => {
         debug('initializeWalletAccount');
-        alert('initializeWalletAccount');
         await connect();
 
         const state = get();
@@ -112,14 +111,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const key = await keyStorage.findByName(keyName, chain);
 
             if (key) {
-                alert('key exists');
+                debug('key exists');
                 const asset = await assetStorage.findAssetByName(token);
 
                 let account;
 
                 if (!asset) {
-                    debug('if asset not found', asset);
-
                     const exportPrivateKey = await key.exportPrivateKey();
                     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
@@ -128,12 +125,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                     await assetStorage.createAsset(abstractAsset, account);
                 } else {
-                    debug('else account', asset);
-
                     account = new EthereumAccount(chain, asset.accountName);
                 }
 
-                alert(`account ${account}`);
+                debug(`account ${account}`);
                 return {
                     account,
                 };
@@ -150,7 +145,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
         debug('fetchAccountData', ethereumData);
 
         if (ethereumData.status === 'fulfilled' && ethereumData.value) {
-            alert(`"if fullfileee ${ethereumData.value.account}`);
             state.ethereumAccount = ethereumData.value.account;
         }
 
@@ -162,8 +156,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
             state.polygonAccount = polygonData.value.account;
         }
 
+        debug('fetchAccountData', get().accountExists, state.accountExists, state.ethereumAccount);
+
         if (!get().accountExists) {
-            alert(
+            debug(
                 `iff account not exists set statet',
                 ${state.ethereumAccount},
                 ${state.sepoliaAccount},
@@ -179,7 +175,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
 
     clearState: async () => {
-        alert('clearState');
+        debug('clearState');
 
         try {
             await keyStorage.deleteAll();
@@ -201,7 +197,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
-            alert(` updateBalance', ${ethereumAccount}`);
+            debug(` updateBalance', ${ethereumAccount}`);
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
                 set({ refreshBalance: true });

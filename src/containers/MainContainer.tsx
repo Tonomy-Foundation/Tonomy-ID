@@ -85,40 +85,24 @@ export default function MainContainer({
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
             debug('initializeAndFetchBalances', accountExists);
-            alert(`initializeAndFetchBalances ${accountExists}`);
 
-            if (!accountExists) {
-                alert(`initializeAndFetchBalances if`);
-
-                try {
+            try {
+                if (!accountExists) {
                     await initializeWalletAccount();
-                    alert(`initializeAndFetchBalances try, ${ethereumAccount?.getName()}, ${accountExists}`);
-
                     setWalletAccountExists(true);
-                } catch (error) {
-                    alert(`initializeAndFetchBalances error, ${error}`);
-                    debug('Error initializing wallet account:', error);
-                    errorStore.setError({
-                        error: error,
-                        expected: true,
-                    });
+                    debug(`initializeAndFetchBalances try, ${ethereumAccount?.getName()}, ${accountExists}`);
                 }
-            }
 
-            if (!initialized) {
-                try {
+                if (!initialized) {
                     debug('initialized if condition called');
-                    progressiveRetryOnNetworkError(async () => {
-                        await initializeWalletState();
-                    });
-                } catch (error) {
-                    alert(`initialize error, ${error}`);
-                    debug('Error initializing wallet state:', error);
-                    errorStore.setError({
-                        error: error,
-                        expected: true,
-                    });
+                    await initializeWalletState();
                 }
+            } catch (error) {
+                debug('Error initializing wallet account:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
             }
         };
 
@@ -133,7 +117,7 @@ export default function MainContainer({
         if (did) {
             onUrlOpen(did);
         }
-    }, []);
+    }, [did, setUserName]);
 
     useEffect(() => {
         async function getUpdatedBalance() {
@@ -265,7 +249,7 @@ export default function MainContainer({
     }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
-        alert(`updateAccountDetail ${account}`);
+        debug(`updateAccountDetail ${account}`);
 
         try {
             if (account) {
