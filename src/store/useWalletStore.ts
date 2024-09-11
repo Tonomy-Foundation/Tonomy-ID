@@ -82,20 +82,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     try {
                         const balance = await token.getBalance(account);
 
-                        await assetStorage.updateAccountBalance(token, {
-                            balance: balance.toString(),
-                            usdBalance: await balance.getUsdValue(),
-                        });
+                        await assetStorage.updateAccountBalance(token, balance);
                     } catch (e) {
                         debug('Error getting balance:', e);
 
                         if (e.message === 'Network request failed') {
                             debug('network error do nothing');
                         } else {
-                            await assetStorage.updateAccountBalance(token, {
-                                balance: '0 ' + token.getSymbol(),
-                                usdBalance: 0,
-                            });
                             throw e;
                         }
                     }
@@ -195,24 +188,15 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
 
                 if (ethereumBalance) {
-                    await assetStorage.updateAccountBalance(ETHToken, {
-                        balance: ethereumBalance.toString(),
-                        usdBalance: await ethereumBalance.getUsdValue(),
-                    });
+                    await assetStorage.updateAccountBalance(ETHToken, ethereumBalance);
                 }
 
                 if (sepoliaBalance) {
-                    await assetStorage.updateAccountBalance(ETHSepoliaToken, {
-                        balance: sepoliaBalance.toString(),
-                        usdBalance: await sepoliaBalance.getUsdValue(),
-                    });
+                    await assetStorage.updateAccountBalance(ETHSepoliaToken, sepoliaBalance);
                 }
 
                 if (polygonBalance) {
-                    await assetStorage.updateAccountBalance(ETHPolygonToken, {
-                        balance: polygonBalance.toString(),
-                        usdBalance: await polygonBalance.getUsdValue(),
-                    });
+                    await assetStorage.updateAccountBalance(ETHPolygonToken, polygonBalance);
                 }
 
                 set({ refreshBalance: false });

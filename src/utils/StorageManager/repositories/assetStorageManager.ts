@@ -1,4 +1,4 @@
-import { IAccount, IToken } from '../../chain/types';
+import { Asset, IAccount, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
 
 interface AccountStorage {
@@ -18,19 +18,16 @@ export abstract class AssetStorageManager {
 
         await this.repository.createAsset(name, value.getName(), token.getSymbol());
     }
-    public async updateAccountBalance(
-        token: IToken,
-        accountBalance: {
-            balance: string;
-            usdBalance: number;
-        }
-    ): Promise<void> {
+    public async updateAccountBalance(token: IToken, accountBalance: Asset): Promise<void> {
         const name = token.getChain().getName() + '-' + token.getSymbol();
         const existingAsset = await this.repository.findAssetByName(name);
 
         if (existingAsset) {
-            existingAsset.balance = accountBalance.balance;
-            existingAsset.usdBalance = accountBalance.usdBalance;
+            const balance = accountBalance.toString();
+            const usdBalance = await accountBalance.getUsdValue();
+
+            existingAsset.balance = balance;
+            existingAsset.usdBalance = usdBalance;
             existingAsset.updatedAt = new Date();
             await this.repository.updateAccountBalance(existingAsset);
         } else {

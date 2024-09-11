@@ -58,43 +58,6 @@ async function checkTableExists(dataSource, tableName) {
     return result.length > 0;
 }
 
-async function checkColumnExists(dataSource, tableName, columnName) {
-    const queryRunner = dataSource.createQueryRunner();
-    const result = await queryRunner.query(`PRAGMA table_info(${tableName})`);
-
-    await queryRunner.release();
-    return result.some((column) => column.name === columnName);
-}
-
-async function resetAssetTableIfColumnMissing() {
-    const queryRunner = dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-
-    try {
-        const columnExists = await checkColumnExists(dataSource, 'AssetStorage', 'assetName');
-
-        if (!columnExists) {
-            await queryRunner.query('DROP TABLE IF EXISTS "AssetStorage"');
-            debug('AssetStorage table dropped successfully.');
-
-            if (!dataSource.isInitialized) {
-                await dataSource.initialize();
-            }
-
-            await dataSource.synchronize();
-            debug('Schema synchronized successfully.');
-        } else {
-            // Drop the AssetStorage table
-            debug('AssetStorage table already has the assetName column.');
-        }
-    } catch (error) {
-        debug('Error checking or resetting AssetStorage table:', error);
-    } finally {
-        await queryRunner.release();
-    }
-}
-
 //initialize the data source
 export async function connect() {
     if (!dataSource.isInitialized) {
