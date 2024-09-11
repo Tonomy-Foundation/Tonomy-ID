@@ -85,10 +85,16 @@ export default function MainContainer({
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
             debug('initializeAndFetchBalances', accountExists);
+            alert(`initializeAndFetchBalances ${accountExists}`);
 
             if (!accountExists) {
+                alert(`initializeAndFetchBalances if`);
+
                 try {
                     await initializeWalletAccount();
+                    alert(`initializeAndFetchBalances try, ${(ethereumAccount?.getName(), accountExists)}`);
+
+                    setWalletAccountExists(true);
                 } catch (error) {
                     debug('Error initializing wallet account:', error);
                     errorStore.setError({
@@ -105,6 +111,7 @@ export default function MainContainer({
                         await initializeWalletState();
                     });
                 } catch (error) {
+                    alert(`initialize error, ${error}`);
                     debug('Error initializing wallet state:', error);
                     errorStore.setError({
                         error: error,
@@ -115,9 +122,9 @@ export default function MainContainer({
         };
 
         initializeAndFetchBalances();
-    }, [errorStore, initialized, initializeWalletState, initializeWalletAccount, accountExists]);
+    }, [errorStore, initialized, initializeWalletState, initializeWalletAccount, accountExists, ethereumAccount]);
 
-    debug('main container status check', initialized, accountExists);
+    debug('main container status check', initialized, accountExists, walletAccountExists);
 
     useEffect(() => {
         setUserName();
@@ -257,21 +264,23 @@ export default function MainContainer({
     }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
+        alert(`updateAccountDetail ${account}`);
         try {
-            progressiveRetryOnNetworkError(async () => {
-                if (account) {
-                    const accountToken = await account.getNativeToken();
-                    const logoUrl = accountToken.getLogoUrl();
+            if (account) {
+                const accountToken = await account.getNativeToken();
+                const logoUrl = accountToken.getLogoUrl();
 
-                    setAccountDetails({
-                        symbol: accountToken.getSymbol(),
-                        name: capitalizeFirstLetter(account.getChain().getName()),
-                        address: account?.getName() || '',
-                        ...(logoUrl && { image: logoUrl }),
-                    });
-                }
-            });
+                setAccountDetails({
+                    symbol: accountToken.getSymbol(),
+                    name: capitalizeFirstLetter(account.getChain().getName()),
+                    address: account?.getName() || '',
+                    ...(logoUrl && { image: logoUrl }),
+                });
+            }
         } catch (error) {
+            if(error.message === 'Network request failed') { {
+                debug('Error updating account detail network error:');
+            }
             debug('Error updating account detail:', error);
             errorStore.setError({
                 error: error,
