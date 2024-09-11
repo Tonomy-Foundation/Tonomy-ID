@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Image, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
@@ -20,7 +20,6 @@ import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import AccountDetails from '../components/AccountDetails';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import useUserStore from '../store/userStore';
 import { IconButton } from 'react-native-paper';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
@@ -44,8 +43,7 @@ export default function SignTransactionConsentContainer({
     session: IChainSession;
 }) {
     const errorStore = useErrorStore();
-    // TODO need to set this properly still
-    const [transactionLoading, setTransactionLoading] = useState(false);
+    const [transactionLoading, setTransactionLoading] = useState(true);
     const [balanceError, showBalanceError] = useState(false);
     const [account, setAccount] = useState<IAccount | null>(null);
     const chainName = capitalizeFirstLetter(transaction.getChain().getName());
@@ -53,6 +51,8 @@ export default function SignTransactionConsentContainer({
     const chainType = transaction.getChain().getChainType();
     const errorsStore = useErrorStore();
     const refTopUpDetail = useRef(null);
+
+    const handleCompleteTransaction = useCallback(() => setTransactionLoading(false), []);
 
     useEffect(() => {
         async function fetchAccountName() {
@@ -120,7 +120,7 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    function TransferOperationDetails({ operation }: { operation: IOperation }) {
+    function TransferOperationDetails({ operation, onComplete }: { operation: IOperation; onComplete: () => void }) {
         const [to, setTo] = useState<string | null>(null);
         const [amount, setAmount] = useState<string | null>(null);
         const [usdValue, setUsdValue] = useState<string | null>(null);
@@ -137,6 +137,7 @@ export default function SignTransactionConsentContainer({
                     const usdValue = await value.getUsdValue();
 
                     setUsdValue(formatCurrencyValue(usdValue, 2));
+                    onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching transaction operation details',
@@ -147,7 +148,7 @@ export default function SignTransactionConsentContainer({
             }
 
             fetchOperationDetails();
-        }, [operation]);
+        }, [operation, onComplete]);
 
         return (
             <View style={styles.appDialog}>
@@ -173,7 +174,7 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function ContractOperationDetails({ operation }: { operation: IOperation }) {
+    function ContractOperationDetails({ operation, onComplete }: { operation: IOperation; onComplete: () => void }) {
         const [showActionDetails, setShowActionDetails] = useState(false);
         const [details, setTransactionDetails] = useState<Record<string, string> | null>(null);
         const [functionName, setFunctionName] = useState<string | null>(null);
@@ -185,6 +186,7 @@ export default function SignTransactionConsentContainer({
                     setContract((await operation.getTo()).getName());
                     setFunctionName(await operation.getFunction());
                     setTransactionDetails(await operation.getArguments());
+                    onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching contract operation details',
@@ -195,7 +197,7 @@ export default function SignTransactionConsentContainer({
             }
 
             fetchOperationDetails();
-        }, [operation]);
+        }, [operation, onComplete]);
 
         return (
             <View style={styles.actionDialog}>
@@ -258,15 +260,17 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function OperationDetails({ operation }: { operation: IOperation }) {
+    function OperationDetails({ operation, onComplete }: { operation: IOperation; onComplete: () => void }) {
         const [type, setType] = useState<TransactionType | null>(null);
+
+        const handleComplete = useCallback(() => {
+            onComplete();
+        }, [onComplete]);
 
         useEffect(() => {
             async function fetchOperationType() {
                 try {
-                    const type = await operation.getType();
-
-                    setType(type);
+                    setType(await operation.getType());
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching operation type',
@@ -277,21 +281,48 @@ export default function SignTransactionConsentContainer({
             }
 
             fetchOperationType();
-        }, [operation]);
+        }, [operation, type]);
 
         if (type === null) {
             return <TSpinner />;
         } else if (type === TransactionType.TRANSFER) {
-            return <TransferOperationDetails operation={operation} />;
+            return <TransferOperationDetails operation={operation} onComplete={handleComplete} />;
         } else if (type === TransactionType.CONTRACT) {
-            return <ContractOperationDetails operation={operation} />;
+            return <ContractOperationDetails operation={operation} onComplete={handleComplete} />;
         } else {
             throw new Error('TransactionType.BOTH operation not supported yet');
         }
     }
 
-    function Operations() {
+    function Operations({ onComplete }: { onComplete: () => void }) {
         const [operation, setOperation] = useState<IOperation | IOperation[] | null>(null);
+        const [, setOperationsComplete] = useState<boolean[]>([false]);
+
+        const setComplete = useCallback(
+            (index: number) => {
+                try {
+                    setOperationsComplete((prev) => {
+                        const newComplete = [...prev];
+
+                        newComplete[index] = true;
+
+                        if (newComplete.every((complete) => complete)) {
+                            onComplete();
+                        }
+
+                        return newComplete;
+                    });
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error setting complete',
+                        error: e,
+                        expected: false,
+                    });
+                }
+            },
+            [onComplete]
+        );
+        const setCompleteFirst = useCallback(() => setComplete(0), [setComplete]);
 
         useEffect(() => {
             async function fetchOperation() {
@@ -300,6 +331,12 @@ export default function SignTransactionConsentContainer({
                         const operations = await transaction.getOperations();
 
                         if (operations.length > 1) {
+                            throw new Error('Multiple operations not supported yet');
+                            // TODO:
+                            // <OperationDetails operation={operation} onComplete={() => setComplete(index)} />
+                            // causes an error because onComplete must be provided a const function created with useCallback()
+                            // Otherwise it will be re-created on every render and the useEffect will not be able to detect the change
+                            setOperationsComplete(new Array(operations.length).fill(false));
                             setOperation(operations[0]);
                         } else {
                             setOperation(operations);
@@ -317,27 +354,23 @@ export default function SignTransactionConsentContainer({
             }
 
             fetchOperation();
-        }, []);
+        }, [setComplete]);
 
         if (!operation) {
             return <TSpinner />;
         } else if (Array.isArray(operation)) {
-            debug('Operation Array');
-
             if (operation.length > 1) {
                 return operation.map((operation, index) => (
                     <View key={index} style={{ width: '100%' }}>
                         <Text style={styles.actionText}>Action {index + 1}</Text>
-                        <OperationDetails operation={operation} />
+                        <OperationDetails operation={operation} onComplete={() => setComplete(index)} />
                     </View>
                 ));
             } else {
-                console.log('Operation Array with one');
-                return <OperationDetails operation={operation[0]} />;
+                return <OperationDetails operation={operation[0]} onComplete={setCompleteFirst} />;
             }
         } else {
-            debug('Single Operation');
-            return <OperationDetails operation={operation} />;
+            return <OperationDetails operation={operation} onComplete={setCompleteFirst} />;
         }
     }
 
@@ -351,7 +384,7 @@ export default function SignTransactionConsentContainer({
         return <Text style={styles.accountNameStyle}>{shortAccountName}</Text>;
     }
 
-    function TransactionFee() {
+    function TransactionFee({ onComplete }: { onComplete: () => void }) {
         const [toolTipVisible, setToolTipVisible] = useState(false);
         const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
 
@@ -365,6 +398,7 @@ export default function SignTransactionConsentContainer({
                     const usdFeeString = formatCurrencyValue(usdFee, 2);
 
                     setFee({ fee: feeString, usdFee: usdFeeString });
+                    onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching transaction fee',
@@ -375,7 +409,7 @@ export default function SignTransactionConsentContainer({
             }
 
             fetchFee();
-        }, []);
+        }, [onComplete]);
 
         return (
             <View style={styles.appDialog}>
@@ -416,7 +450,7 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function TransactionTotal() {
+    function TransactionTotal({ onComplete }: { onComplete: () => void }) {
         const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
         const [balanceError, setBalanceError] = useState<boolean>(false);
 
@@ -431,6 +465,7 @@ export default function SignTransactionConsentContainer({
 
                     setTotal({ total: totalString, totalUsd: usdTotalString });
 
+                    // TODO: uncomment after fixing Antelope issue
                     // const accountBalance = (
                     //     await account.getBalance(transaction.getChain().getNativeToken())
                     // ).getAmount();
@@ -440,6 +475,7 @@ export default function SignTransactionConsentContainer({
                     //     showBalanceError(true);
                     //     setBalanceError(true);
                     // }
+                    onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching total',
@@ -450,7 +486,7 @@ export default function SignTransactionConsentContainer({
             }
 
             fetchTotal();
-        }, []);
+        }, [onComplete]);
 
         return (
             <>
@@ -501,7 +537,37 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function TransactionDetails() {
+    function TransactionDetails({ onComplete }: { onComplete: () => void }) {
+        const [, setCompletedComponents] = useState<boolean[]>([false, false, false]);
+
+        const setCompleted = useCallback(
+            (index: number) => {
+                try {
+                    setCompletedComponents((prev) => {
+                        const newComplete = [...prev];
+
+                        newComplete[index] = true;
+
+                        if (newComplete.every((complete) => complete)) {
+                            onComplete();
+                        }
+
+                        return newComplete;
+                    });
+                } catch (e) {
+                    errorStore.setError({
+                        title: 'Error setting complete',
+                        error: e,
+                        expected: false,
+                    });
+                }
+            },
+            [onComplete]
+        );
+        const setCompleteOperations = useCallback(() => setCompleted(0), [setCompleted]);
+        const setCompleteFee = useCallback(() => setCompleted(1), [setCompleted]);
+        const setCompleteTotal = useCallback(() => setCompleted(2), [setCompleted]);
+
         return (
             <>
                 <View style={styles.networkHeading}>
@@ -509,9 +575,9 @@ export default function SignTransactionConsentContainer({
                     <Text style={styles.nameText}>{chainName} Network</Text>
                 </View>
                 <TransactionAccount />
-                <Operations />
-                <TransactionFee />
-                <TransactionTotal />
+                <Operations onComplete={setCompleteOperations} />
+                <TransactionFee onComplete={setCompleteFee} />
+                <TransactionTotal onComplete={setCompleteTotal} />
             </>
         );
     }
@@ -529,7 +595,7 @@ export default function SignTransactionConsentContainer({
                             <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
                             <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
                         </View>
-                        <TransactionDetails />
+                        <TransactionDetails onComplete={handleCompleteTransaction} />
                     </View>
                     {account && (
                         <AccountDetails
