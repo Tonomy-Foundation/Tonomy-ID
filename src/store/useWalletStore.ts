@@ -101,26 +101,35 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                 if (key) {
                     debug('key exists');
-                    const asset = await assetStorage.findAssetByName(token);
 
-                    let account;
+                    try {
+                        const asset = await assetStorage.findAssetByName(token);
 
-                    if (!asset) {
-                        const exportPrivateKey = await key.exportPrivateKey();
-                        const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                        debug('   asset', asset);
+                        // let account;
 
-                        account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                        const abstractAsset = new Asset(token, BigInt(0));
+                        // if (!asset) {
+                        //     const exportPrivateKey = await key.exportPrivateKey();
+                        //     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
-                        await assetStorage.createAsset(abstractAsset, account);
-                    } else {
-                        account = new EthereumAccount(chain, asset.accountName);
+                        //     account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
+                        //     const abstractAsset = new Asset(token, BigInt(0));
+
+                        //     await assetStorage.createAsset(abstractAsset, account);
+                        // } else {
+                        //     account = new EthereumAccount(chain, asset.accountName);
+                        // }
+
+                        return {
+                            account: new EthereumAccount(chain, '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'),
+                        };
+                    } catch (error) {
+                        if (error.message === 'Network request failed') {
+                            debug('network error when calling fetch account data');
+                        } else {
+                            debug('error when calling fetch account data', JSON.stringify(error, null, 2));
+                        }
                     }
-
-                    debug(`account ${account}`);
-                    return {
-                        account,
-                    };
                 }
 
                 return null;
