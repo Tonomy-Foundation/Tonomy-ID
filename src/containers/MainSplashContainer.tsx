@@ -10,7 +10,7 @@ import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
-import { connect } from '../utils/StorageManager/setup';
+import { appStorage, connect } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
@@ -24,6 +24,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
     useFonts({
         Roboto: require('../assets/fonts/Roboto-Regular.ttf'),
+        Poppins: require('../assets/fonts/Poppins-Bold.ttf'),
     });
 
     useEffect(() => {
@@ -45,14 +46,21 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 debug('splash screen status: ', status);
 
+                const onboarding = await appStorage.findSettingByName('onboarding');
+                const haveOnboarding = onboarding?.value === 'false' ? false : true;
+
                 switch (status) {
                     case UserStatus.NONE:
                         debug('status is NONE');
-                        navigation.navigate('SplashSecurity');
+                        navigation.navigate('Onboarding');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         debug('status is NOT_LOGGED_IN');
-                        navigation.dispatch(StackActions.replace('Home'));
+                        if (haveOnboarding) {
+                            navigation.navigate('Onboarding');
+                        } else {
+                            navigation.dispatch(StackActions.replace('Home'));
+                        }
                         break;
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');

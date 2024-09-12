@@ -37,6 +37,7 @@ import { ImageSourcePropType } from 'react-native';
 import { SelectAssetNavigator } from './SelectAssetNavigator';
 import { AssetDetailNavigator } from './AssetDetailNavigator';
 import Debug from 'debug';
+import OnboardingScreen from '../screens/OnboardingScreen';
 
 const debug = Debug('tonomy-id:navigation:root');
 
@@ -123,6 +124,7 @@ export type RouteStackParamList = {
         screen: string;
         params?: AssetParamsScreen;
     };
+    Onboarding: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -166,6 +168,7 @@ export default function RootNavigation() {
             {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
+                    <Stack.Screen name="Onboarding" options={noHeaderScreenOptions} component={OnboardingScreen} />
                     <Stack.Screen
                         name="SplashSecurity"
                         options={noHeaderScreenOptions}
