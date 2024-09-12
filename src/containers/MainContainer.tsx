@@ -300,7 +300,7 @@ export default function MainContainer({
             progressiveRetryOnNetworkError(async () => await updateBalance());
         } catch (error) {
             if (error.message === 'Network request failed') {
-                debug('Error updating account detail network error:');
+                console.log('Error updating account detail network error:');
             } else {
                 debug('Error when refresh balance:', error);
                 errorStore.setError({

@@ -91,9 +91,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
     initializeWalletAccount: async () => {
         debug('initializeWalletAccount');
-        await connect();
 
         try {
+            await connect();
+
             const state = get();
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 debug('fetchAccountData', keyName);
@@ -105,7 +106,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     try {
                         const asset = await assetStorage.findAssetByName(token);
 
-                        debug('   asset', asset);
+                        debug('asset', asset);
                         // let account;
 
                         // if (!asset) {
@@ -126,6 +127,9 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     } catch (error) {
                         if (error.message === 'Network request failed') {
                             debug('network error when calling fetch account data');
+                            return {
+                                account: new EthereumAccount(chain, '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'),
+                            };
                         } else {
                             debug('error when calling fetch account data', JSON.stringify(error, null, 2));
                         }

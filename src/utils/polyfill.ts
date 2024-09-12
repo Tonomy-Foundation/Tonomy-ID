@@ -12,12 +12,11 @@ if (typeof BigInt === 'undefined') {
     global.BigInt = require('big-integer');
 }
 
-// // Save the original fetch function
+// Save the original fetch function
 // const originalFetch = global.fetch;
 
 // global.fetch = async (url, options) => {
 //     await originalFetch(url, options);
-
 //     throw new Error('Network request failed');
 // };
 
@@ -27,6 +26,7 @@ if (typeof BigInt === 'undefined') {
 //     class CustomXMLHttpRequest extends OriginalXMLHttpRequest {
 //         constructor() {
 //             super();
+
 //             throw new Error('Network request failed');
 //         }
 //     }
