@@ -58,7 +58,6 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const [walletAccountExists, setWalletAccountExists] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
@@ -84,15 +83,7 @@ export default function MainContainer({
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
-            debug('initializeAndFetchBalances', accountExists);
-
             try {
-                if (!accountExists) {
-                    debug('account not exists condition');
-                    await initializeWalletAccount();
-                    debug(`initializeAndFetchBalances try, ${ethereumAccount?.getName()}, ${accountExists}`);
-                }
-
                 if (!initialized && (ethereumAccount || sepoliaAccount || polygonAccount)) {
                     debug('initialized if condition called');
                     await initializeWalletState();
@@ -107,16 +98,29 @@ export default function MainContainer({
         };
 
         initializeAndFetchBalances();
-    }, [
-        errorStore,
-        initialized,
-        initializeWalletState,
-        initializeWalletAccount,
-        accountExists,
-        ethereumAccount,
-        sepoliaAccount,
-        polygonAccount,
-    ]);
+    }, [errorStore, initialized, initializeWalletState, ethereumAccount, sepoliaAccount, polygonAccount]);
+
+    useEffect(() => {
+        const initializeAndFetchBalances = async () => {
+            debug('initializeAndFetchBalances', accountExists);
+
+            try {
+                if (!accountExists) {
+                    debug('account not exists condition');
+                    await initializeWalletAccount();
+                    debug(`initializeAndFetchBalances try,  ${accountExists}`);
+                }
+            } catch (error) {
+                debug('Error initializing wallet account:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
+        };
+
+        initializeAndFetchBalances();
+    }, [errorStore, initializeWalletAccount, accountExists]);
 
     useEffect(() => {
         setUserName();

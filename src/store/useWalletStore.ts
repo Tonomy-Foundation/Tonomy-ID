@@ -93,72 +93,78 @@ const useWalletStore = create<WalletState>((set, get) => ({
         debug('initializeWalletAccount');
         await connect();
 
-        const state = get();
-        const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
-            debug('fetchAccountData', keyName);
-            const key = await keyStorage.findByName(keyName, chain);
+        try {
+            const state = get();
+            const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
+                debug('fetchAccountData', keyName);
+                const key = await keyStorage.findByName(keyName, chain);
 
-            if (key) {
-                debug('key exists');
-                const asset = await assetStorage.findAssetByName(token);
+                if (key) {
+                    debug('key exists');
+                    const asset = await assetStorage.findAssetByName(token);
 
-                let account;
+                    let account;
 
-                if (!asset) {
-                    const exportPrivateKey = await key.exportPrivateKey();
-                    const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                    if (!asset) {
+                        const exportPrivateKey = await key.exportPrivateKey();
+                        const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
-                    account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                    const abstractAsset = new Asset(token, BigInt(0));
+                        account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
+                        const abstractAsset = new Asset(token, BigInt(0));
 
-                    await assetStorage.createAsset(abstractAsset, account);
-                } else {
-                    account = new EthereumAccount(chain, asset.accountName);
+                        await assetStorage.createAsset(abstractAsset, account);
+                    } else {
+                        account = new EthereumAccount(chain, asset.accountName);
+                    }
+
+                    debug(`account ${account}`);
+                    return {
+                        account,
+                    };
                 }
 
-                debug(`account ${account}`);
-                return {
-                    account,
-                };
+                return null;
+            };
+            const [ethereumData, sepoliaData, polygonData] = await Promise.allSettled([
+                fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
+                fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
+                fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
+            ]);
+
+            debug('fetchAccountData', ethereumData);
+
+            if (ethereumData.status === 'fulfilled' && ethereumData.value) {
+                state.ethereumAccount = ethereumData.value.account;
             }
 
-            return null;
-        };
-        const [ethereumData, sepoliaData, polygonData] = await Promise.allSettled([
-            fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
-            fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
-            fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
-        ]);
+            if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
+                state.sepoliaAccount = sepoliaData.value.account;
+            }
 
-        debug('fetchAccountData', ethereumData);
+            if (polygonData.status === 'fulfilled' && polygonData.value) {
+                state.polygonAccount = polygonData.value.account;
+            }
 
-        if (ethereumData.status === 'fulfilled' && ethereumData.value) {
-            state.ethereumAccount = ethereumData.value.account;
-        }
+            debug('fetchAccountData', get().accountExists, state.accountExists, state.ethereumAccount);
 
-        if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
-            state.sepoliaAccount = sepoliaData.value.account;
-        }
-
-        if (polygonData.status === 'fulfilled' && polygonData.value) {
-            state.polygonAccount = polygonData.value.account;
-        }
-
-        debug('fetchAccountData', get().accountExists, state.accountExists, state.ethereumAccount);
-
-        if (!get().accountExists) {
-            debug(
-                `iff account not exists set statet',
+            if (!get().accountExists) {
+                debug(
+                    `iff account not exists set statet',
                 ${state.ethereumAccount},
                 ${state.sepoliaAccount},
                 ${state.polygonAccount}`
-            );
-            set({
-                ethereumAccount: state.ethereumAccount,
-                sepoliaAccount: state.sepoliaAccount,
-                polygonAccount: state.polygonAccount,
-                accountExists: true,
-            });
+                );
+                set({
+                    ethereumAccount: state.ethereumAccount,
+                    sepoliaAccount: state.sepoliaAccount,
+                    polygonAccount: state.polygonAccount,
+                    accountExists: true,
+                });
+            }
+        } catch (error) {
+            if (error.message === 'Network request failed') {
+                debug('network error when initializing wallet account');
+            }
         }
     },
 
@@ -188,7 +194,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
             debug(` updateBalance', ${ethereumAccount}`);
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
-                set({ refreshBalance: true });
                 const balances = await Promise.allSettled([
                     ETHToken.getBalance(ethereumAccount),
                     ETHSepoliaToken.getBalance(sepoliaAccount),
@@ -212,8 +217,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 if (polygonBalance) {
                     await assetStorage.updateAccountBalance(polygonBalance);
                 }
-
-                set({ refreshBalance: false });
             }
         } catch (error) {
             console.error('Error updating balance:', error);

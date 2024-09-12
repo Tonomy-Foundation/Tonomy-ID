@@ -89,6 +89,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         clearState,
         setStatus,
         isAppInitialized,
+        initializeWalletAccount,
     ]);
 
     return (
