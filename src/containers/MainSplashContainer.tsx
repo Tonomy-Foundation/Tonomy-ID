@@ -19,7 +19,7 @@ const debug = Debug('tonomy-id:container:mainSplashScreen');
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState, initializeWalletState } = useWalletStore();
+    const { clearState, initializeWalletState, initializeWalletAccount } = useWalletStore();
 
     useEffect(() => {
         async function main() {
@@ -55,6 +55,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         try {
                             await user.getUsername();
                             await initializeWalletState();
+                            await initializeWalletAccount();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");

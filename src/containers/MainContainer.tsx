@@ -88,12 +88,12 @@ export default function MainContainer({
 
             try {
                 if (!accountExists) {
+                    debug('account not exists condition');
                     await initializeWalletAccount();
-                    setWalletAccountExists(true);
                     debug(`initializeAndFetchBalances try, ${ethereumAccount?.getName()}, ${accountExists}`);
                 }
 
-                if (!initialized) {
+                if (!initialized && (ethereumAccount || sepoliaAccount || polygonAccount)) {
                     debug('initialized if condition called');
                     await initializeWalletState();
                 }
@@ -107,9 +107,16 @@ export default function MainContainer({
         };
 
         initializeAndFetchBalances();
-    }, [errorStore, initialized, initializeWalletState, initializeWalletAccount, accountExists, ethereumAccount]);
-
-    debug('main container status check', initialized, accountExists, walletAccountExists);
+    }, [
+        errorStore,
+        initialized,
+        initializeWalletState,
+        initializeWalletAccount,
+        accountExists,
+        ethereumAccount,
+        sepoliaAccount,
+        polygonAccount,
+    ]);
 
     useEffect(() => {
         setUserName();
@@ -266,13 +273,13 @@ export default function MainContainer({
         } catch (error) {
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
+            } else {
+                debug('Error updating account detail:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
             }
-
-            debug('Error updating account detail:', error);
-            errorStore.setError({
-                error: error,
-                expected: true,
-            });
         }
     };
 
@@ -280,15 +287,17 @@ export default function MainContainer({
         try {
             progressiveRetryOnNetworkError(async () => await updateBalance());
         } catch (error) {
-            debug('Error when refresh balance:', error);
-            errorStore.setError({
-                error: error,
-                expected: true,
-            });
+            if (error.message === 'Network request failed') {
+                debug('Error updating account detail network error:');
+            } else {
+                debug('Error when refresh balance:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
         }
     }, [updateBalance, errorStore]);
-
-    debug('main container account display', ethereumAccount?.getName(), initialized);
 
     const MainView = () => {
         const isFocused = useIsFocused();
