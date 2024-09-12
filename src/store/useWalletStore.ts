@@ -36,7 +36,6 @@ interface WalletState {
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
     disconnectSession: () => Promise<void>;
-    refreshBalance: boolean;
     initializeWalletAccount: () => Promise<void>;
     accountExists: boolean;
 }
@@ -46,7 +45,6 @@ const defaultState = {
     sepoliaAccount: null,
     polygonAccount: null,
     web3wallet: null,
-    refreshBalance: false,
     accountExists: false,
 };
 
@@ -106,7 +104,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     try {
                         const asset = await assetStorage.findAssetByName(token);
 
-                        console.log('asset', asset);
+                        debug('asset', asset);
                         // let account;
 
                         // if (!asset) {
@@ -127,53 +125,71 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     } catch (error) {
                         if (error.message === 'Network request failed') {
                             debug('network error when calling fetch account data');
-                            return {
-                                account: new EthereumAccount(chain, '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'),
-                            };
+                           
                         } else {
                             debug('error when calling fetch account data', JSON.stringify(error, null, 2));
                         }
+                        return null;
                     }
                 }
 
                 return null;
             };
-            const [ethereumData, sepoliaData, polygonData] = await Promise.allSettled([
-                fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
-                fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
-                fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
-            ]);
+           
+            const ethereumData = await fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum');
 
-            debug('fetchAccountData', ethereumData);
 
-            if (ethereumData.status === 'fulfilled' && ethereumData.value) {
-                state.ethereumAccount = ethereumData.value.account;
-            }
-
-            if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
-                state.sepoliaAccount = sepoliaData.value.account;
-            }
-
-            if (polygonData.status === 'fulfilled' && polygonData.value) {
-                state.polygonAccount = polygonData.value.account;
-            }
-
-            debug('fetchAccountData', get().accountExists, state.accountExists, state.ethereumAccount);
-
-            if (!get().accountExists) {
-                debug(
-                    `iff account not exists set statet',
-                ${state.ethereumAccount},
-                ${state.sepoliaAccount},
-                ${state.polygonAccount}`
-                );
+            debug('ethereumData', ethereumData);
+            if(ethereumData) {
                 set({
-                    ethereumAccount: state.ethereumAccount,
-                    sepoliaAccount: state.sepoliaAccount,
-                    polygonAccount: state.polygonAccount,
+                    ethereumAccount: ethereumData.account,
+                    // sepoliaAccount: state.sepoliaAccount,
+                    // polygonAccount: state.polygonAccount,
                     accountExists: true,
                 });
             }
+
+            //ethereumData, polygonData
+             const [ sepoliaData] = await Promise.allSettled([
+                // fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
+                fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
+                // fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
+            ]);
+
+            // if (ethereumData.status === 'fulfilled' && ethereumData.value) {
+            //     state.ethereumAccount = ethereumData.value.account;
+            // }
+            let sepoliaAccount: IAccount | null = null;
+            if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
+                sepoliaAccount = sepoliaData.value.account;
+            } else if (sepoliaData.status === 'rejected') {
+                debug('sepoliaData promise rejected', sepoliaData.reason);
+            } else {
+                debug('sepoliaData promise not fulfilled');
+            }
+            if(sepoliaAccount) {
+                debug('sepoliaAccount', sepoliaAccount);
+            }
+
+            // if (polygonData.status === 'fulfilled' && polygonData.value) {
+            //     state.polygonAccount = polygonData.value.account;
+            // }
+
+
+            // if (!get().accountExists) {
+            //     debug(
+            //         `iff account not exists set statet',
+            //     ${state.ethereumAccount},
+            //     ${state.sepoliaAccount},
+            //     ${state.polygonAccount}`
+            //     );
+            //     set({
+            //         ethereumAccount: state.ethereumAccount,
+            //         sepoliaAccount: state.sepoliaAccount,
+            //         polygonAccount: state.polygonAccount,
+            //         accountExists: true,
+            //     });
+            // }
         } catch (error) {
             if (error.message === 'Network request failed') {
                 debug('network error when initializing wallet account');

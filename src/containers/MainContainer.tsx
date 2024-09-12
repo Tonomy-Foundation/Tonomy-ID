@@ -58,6 +58,7 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
+    const [refreshBalance, setRefreshBalance] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
@@ -66,7 +67,6 @@ export default function MainContainer({
     const {
         web3wallet,
         ethereumAccount,
-        refreshBalance,
         sepoliaAccount,
         polygonAccount,
         initialized,
@@ -297,7 +297,10 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            progressiveRetryOnNetworkError(async () => await updateBalance());
+            setRefreshBalance(true)
+            await updateBalance();
+            setRefreshBalance(false)
+
         } catch (error) {
             if (error.message === 'Network request failed') {
                 console.log('Error updating account detail network error:');
