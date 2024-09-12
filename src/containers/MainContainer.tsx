@@ -1,5 +1,5 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -122,13 +122,75 @@ export default function MainContainer({
         initializeAndFetchBalances();
     }, [errorStore, initializeWalletAccount, accountExists]);
 
+    const connectToDid = useCallback(
+        async (did: string) => {
+            try {
+                // Connect to the browser using their did:jwk
+                const issuer = await user.getIssuer();
+                const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+
+                await user.sendMessage(identifyMessage);
+            } catch (e) {
+                debug('connectToDid error:', e);
+
+                if (
+                    e instanceof CommunicationError &&
+                    e.exception?.status === 400 &&
+                    e.exception.message.startsWith('Recipient not connected')
+                ) {
+                    errorStore.setError({
+                        title: 'Problem connecting',
+                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                        expected: true,
+                    });
+                } else {
+                    throw e;
+                }
+            }
+        },
+        [user, errorStore]
+    );
+
+    const onClose = useCallback(async () => {
+        setQrOpened(false);
+    }, []);
+
+    const onUrlOpen = useCallback(
+        async (did) => {
+            try {
+                await connectToDid(did);
+            } catch (e) {
+                debug('onUrlOpen error:', e);
+                if (e.message === 'Network request failed') {
+                    debug('network error when connectToDid called');
+                } else errorStore.setError({ error: e, expected: false });
+            } finally {
+                onClose();
+            }
+        },
+        [errorStore, connectToDid, onClose]
+    );
+
+    const setUserName = useCallback(async () => {
+        try {
+            const u = await user.getUsername();
+
+            setUsername(u.getBaseUsername());
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }, [user, errorStore]);
+
     useEffect(() => {
         setUserName();
 
         if (did) {
             onUrlOpen(did);
         }
-    }, [did, setUserName]);
+    }, [did, setUserName, onUrlOpen]);
 
     useEffect(() => {
         async function getUpdatedBalance() {
@@ -162,30 +224,6 @@ export default function MainContainer({
 
         return () => clearInterval(interval);
     }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance, errorStore]);
-
-    async function setUserName() {
-        try {
-            const u = await user.getUsername();
-
-            setUsername(u.getBaseUsername());
-            const accountName = (await user.getAccountName()).toString();
-
-            setAccountName(accountName);
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-        }
-    }
-
-    async function onUrlOpen(did: string) {
-        try {
-            await connectToDid(did);
-        } catch (e) {
-            debug('onUrlOpen error:', e);
-            errorStore.setError({ error: e, expected: false });
-        } finally {
-            onClose();
-        }
-    }
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -221,36 +259,6 @@ export default function MainContainer({
         } finally {
             onClose();
         }
-    }
-
-    async function connectToDid(did: string) {
-        try {
-            // Connect to the browser using their did:jwk
-            const issuer = await user.getIssuer();
-            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
-
-            await user.sendMessage(identifyMessage);
-        } catch (e) {
-            debug('connectToDid error:', e);
-
-            if (
-                e instanceof CommunicationError &&
-                e.exception?.status === 400 &&
-                e.exception.message.startsWith('Recipient not connected')
-            ) {
-                errorStore.setError({
-                    title: 'Problem connecting',
-                    error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-                    expected: true,
-                });
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    function onClose() {
-        setQrOpened(false);
     }
 
     useEffect(() => {
