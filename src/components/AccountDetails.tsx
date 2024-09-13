@@ -27,7 +27,6 @@ export type AccountDetailsProps = {
 };
 
 const AccountDetails = (props: AccountDetailsProps) => {
-    debug('accountDetails:', props.accountDetails);
     const [showPopover, setShowPopover] = useState(false);
     const accountData = {
         ...props.accountDetails,

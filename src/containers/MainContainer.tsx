@@ -131,8 +131,6 @@ export default function MainContainer({
 
                 await user.sendMessage(identifyMessage);
             } catch (e) {
-                debug('connectToDid error:', e);
-
                 if (
                     e instanceof CommunicationError &&
                     e.exception?.status === 400 &&
@@ -144,7 +142,10 @@ export default function MainContainer({
                         expected: true,
                     });
                 } else {
-                    throw e;
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                    });
                 }
             }
         },
@@ -317,6 +318,8 @@ export default function MainContainer({
         }
     }, [updateBalance, errorStore]);
 
+    debug('ethereumAccount: ', ethereumAccount);
+
     const MainView = () => {
         const isFocused = useIsFocused();
 
@@ -413,14 +416,14 @@ export default function MainContainer({
                                     />
                                 </View>
                             </ScrollView>
-                            {/* <AccountDetails
+                            <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                                 }}
-                            /> */}
+                            />
                         </ScrollView>
                     </View>
                 )}
