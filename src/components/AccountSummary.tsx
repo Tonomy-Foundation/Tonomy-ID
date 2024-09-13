@@ -20,11 +20,12 @@ export type AccountSummaryProps = {
 };
 
 const AccountSummary = (props: AccountSummaryProps) => {
-    const currentAddress = props.address?.getName();
+    const currentAddress = props?.address ? props.address.getName() : null;
+    debug('currentAddress', currentAddress);
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
-        balance: '0 ' + props.token.getSymbol(),
+        balance: '0 ' + props?.token?.getSymbol() || '',
         usdBalance: 0,
     });
 
@@ -35,7 +36,9 @@ const AccountSummary = (props: AccountSummaryProps) => {
                     if (props.address) {
                         const accountToken = await props.address.getNativeToken();
 
-                        setLogoUrl(accountToken.getLogoUrl());
+                        if (accountToken && accountToken.getLogoUrl) {
+                            setLogoUrl(accountToken.getLogoUrl());
+                        }
                     }
                 });
             } catch (e) {
@@ -59,14 +62,16 @@ const AccountSummary = (props: AccountSummaryProps) => {
     }, [props.address, props.token]);
 
     const generateKey = async () => {
-        props.navigation.navigate('CreateEthereumKey');
+        if (props.navigation) {
+            props.navigation.navigate('CreateEthereumKey');
+        }
     };
 
     return (
         <>
             <TouchableOpacity
                 onPress={() => {
-                    if (props.address) {
+                    if (props?.address) {
                         props.updateAccountDetail(props.address);
                     }
                 }}
