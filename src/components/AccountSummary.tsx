@@ -21,45 +21,46 @@ export type AccountSummaryProps = {
 
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props?.address ? props.address.getName() : null;
+
     debug('currentAddress', currentAddress);
-    const [logoUrl, setLogoUrl] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
-        balance: '0 ' + props?.token?.getSymbol() || '',
-        usdBalance: 0,
-    });
+    // const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    // const [loading, setLoading] = useState<boolean>(false);
+    // const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
+    //     balance: '0 ' + props?.token?.getSymbol() || '',
+    //     usdBalance: 0,
+    // });
 
-    useEffect(() => {
-        const fetchLogo = async () => {
-            try {
-                progressiveRetryOnNetworkError(async () => {
-                    if (props.address) {
-                        const accountToken = await props.address.getNativeToken();
+    // useEffect(() => {
+    //     const fetchLogo = async () => {
+    //         try {
+    //             progressiveRetryOnNetworkError(async () => {
+    //                 if (props.address) {
+    //                     const accountToken = await props.address.getNativeToken();
 
-                        if (accountToken && accountToken.getLogoUrl) {
-                            setLogoUrl(accountToken.getLogoUrl());
-                        }
-                    }
-                });
-            } catch (e) {
-                console.error('Failed to fetch logo', e);
-            }
-        };
+    //                     if (accountToken && accountToken.getLogoUrl) {
+    //                         setLogoUrl(accountToken.getLogoUrl());
+    //                     }
+    //                 }
+    //             });
+    //         } catch (e) {
+    //             console.error('Failed to fetch logo', e);
+    //         }
+    //     };
 
-        // const fetchBalance = async () => {
-        //     if (props.token) {
-        //         setLoading(true);
-        //         const asset = await assetStorage.findAssetByName(props.token);
+    //     // const fetchBalance = async () => {
+    //     //     if (props.token) {
+    //     //         setLoading(true);
+    //     //         const asset = await assetStorage.findAssetByName(props.token);
 
-        //         if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
+    //     //         if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
 
-        //         setLoading(false);
-        //     }
-        // };
+    //     //         setLoading(false);
+    //     //     }
+    //     // };
 
-        fetchLogo();
-        // fetchBalance();
-    }, [props.address, props.token]);
+    //     fetchLogo();
+    //     // fetchBalance();
+    // }, [props.address, props.token]);
 
     const generateKey = async () => {
         if (props.navigation) {
@@ -80,25 +81,26 @@ const AccountSummary = (props: AccountSummaryProps) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                {logoUrl && (
+                                {/* {logoUrl && (
                                     <Image
                                         source={{ uri: logoUrl }}
                                         style={[styles.favicon, { resizeMode: 'contain' }]}
                                     />
-                                )}
+                                )} */}
                                 <Text style={styles.networkTitle}>{props.networkName} Network:</Text>
                             </View>
                             {currentAddress ? (
                                 <Text>
-                                    {currentAddress.substring(0, 7)}....
-                                    {currentAddress.substring(currentAddress.length - 6)}
+                                    {currentAddress}
+                                    {/* {currentAddress.substring(0, 7)}....
+                                    {currentAddress.substring(currentAddress.length - 6)} */}
                                 </Text>
                             ) : (
                                 <Text>Not connected</Text>
                             )}
                         </View>
 
-                        {!currentAddress ? (
+                        {/* {!currentAddress ? (
                             <TButton
                                 style={styles.generateKey}
                                 onPress={generateKey}
@@ -122,7 +124,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
                                     </>
                                 )}
                             </View>
-                        )}
+                        )} */}
                     </View>
                 </View>
             </TouchableOpacity>
