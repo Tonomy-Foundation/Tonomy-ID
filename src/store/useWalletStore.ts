@@ -92,84 +92,92 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
         try {
             await connect();
+            set({
+                ethereumAccount: new EthereumAccount(
+                    EthereumMainnetChain,
+                    '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'
+                ),
+                sepoliaAccount: new EthereumAccount(EthereumSepoliaChain, '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'),
+                polygonAccount: new EthereumAccount(EthereumPolygonChain, '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'),
+                accountExists: true,
+            });
+            // const state = get();
+            // const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
+            //     debug('fetchAccountData', keyName);
+            //     const key = await keyStorage.findByName(keyName, chain);
 
-            const state = get();
-            const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
-                debug('fetchAccountData', keyName);
-                const key = await keyStorage.findByName(keyName, chain);
+            //     if (key) {
+            //         debug('key exists', key);
 
-                if (key) {
-                    debug('key exists', key);
+            //         try {
+            //             const asset = await assetStorage.findAssetByName(token);
 
-                    try {
-                        const asset = await assetStorage.findAssetByName(token);
+            //             debug('asset', asset);
+            //             // let account;
 
-                        debug('asset', asset);
-                        // let account;
+            //             // if (!asset) {
+            //             //     const exportPrivateKey = await key.exportPrivateKey();
+            //             //     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
-                        // if (!asset) {
-                        //     const exportPrivateKey = await key.exportPrivateKey();
-                        //     const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+            //             //     account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
+            //             //     const abstractAsset = new Asset(token, BigInt(0));
 
-                        //     account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                        //     const abstractAsset = new Asset(token, BigInt(0));
+            //             //     await assetStorage.createAsset(abstractAsset, account);
+            //             // } else {
+            //             //     account = new EthereumAccount(chain, asset.accountName);
+            //             // }
 
-                        //     await assetStorage.createAsset(abstractAsset, account);
-                        // } else {
-                        //     account = new EthereumAccount(chain, asset.accountName);
-                        // }
-
-                        return {
-                            account: new EthereumAccount(chain, '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'),
-                        };
-                    } catch (error) {
-                        if (error.message === 'Network request failed') {
-                            debug('network error when calling fetch account data');
+            //             return {
+            //                 account: new EthereumAccount(chain, '0x989EF35990Eb70564A8551BcA45B354d28B69e8F'),
+            //             };
+            //         } catch (error) {
+            //             if (error.message === 'Network request failed') {
+            //                 debug('network error when calling fetch account data');
                            
-                        } else {
-                            debug('error when calling fetch account data', JSON.stringify(error, null, 2));
-                        }
-                        return null;
-                    }
-                }
+            //             } else {
+            //                 debug('error when calling fetch account data', JSON.stringify(error, null, 2));
+            //             }
+            //             return null;
+            //         }
+            //     }
 
-                return null;
-            };
+            //     return null;
+            // };
            
-            const ethereumData = await fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum');
+            // const ethereumData = await fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum');
 
 
-            debug('ethereumData', ethereumData);
-            if(ethereumData) {
-                set({
-                    ethereumAccount: ethereumData.account,
-                    // sepoliaAccount: state.sepoliaAccount,
-                    // polygonAccount: state.polygonAccount,
-                    accountExists: true,
-                });
-            }
-
-            //ethereumData, polygonData
-             const [ sepoliaData] = await Promise.allSettled([
-                // fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
-                fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
-                // fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
-            ]);
-
-            // if (ethereumData.status === 'fulfilled' && ethereumData.value) {
-            //     state.ethereumAccount = ethereumData.value.account;
+            // debug('ethereumData', ethereumData);
+            // if(ethereumData) {
+            //     set({
+            //         ethereumAccount: ethereumData.account,
+            //         // sepoliaAccount: state.sepoliaAccount,
+            //         // polygonAccount: state.polygonAccount,
+            //         accountExists: true,
+            //     });
             // }
-            let sepoliaAccount: IAccount | null = null;
-            if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
-                sepoliaAccount = sepoliaData.value.account;
-            } else if (sepoliaData.status === 'rejected') {
-                debug('sepoliaData promise rejected', sepoliaData.reason);
-            } else {
-                debug('sepoliaData promise not fulfilled');
-            }
-            if(sepoliaAccount) {
-                debug('sepoliaAccount', sepoliaAccount);
-            }
+
+            // //ethereumData, polygonData
+            //  const [ sepoliaData] = await Promise.allSettled([
+            //     // fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
+            //     fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
+            //     // fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
+            // ]);
+
+            // // if (ethereumData.status === 'fulfilled' && ethereumData.value) {
+            // //     state.ethereumAccount = ethereumData.value.account;
+            // // }
+            // let sepoliaAccount: IAccount | null = null;
+            // if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
+            //     sepoliaAccount = sepoliaData.value.account;
+            // } else if (sepoliaData.status === 'rejected') {
+            //     debug('sepoliaData promise rejected', sepoliaData.reason);
+            // } else {
+            //     debug('sepoliaData promise not fulfilled');
+            // }
+            // if(sepoliaAccount) {
+            //     debug('sepoliaAccount', sepoliaAccount);
+            // }
 
             // if (polygonData.status === 'fulfilled' && polygonData.value) {
             //     state.polygonAccount = polygonData.value.account;
