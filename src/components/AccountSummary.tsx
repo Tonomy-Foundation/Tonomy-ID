@@ -8,8 +8,6 @@ import { IAccount, IToken } from '../utils/chain/types';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
 import { assetStorage } from '../utils/StorageManager/setup';
 import Debug from 'debug';
-import { EthereumAccount } from '../utils/chain/etherum';
-import useWalletStore from '../store/useWalletStore';
 
 const debug = Debug('tonomy-id:component:AcountSummary');
 
@@ -21,59 +19,58 @@ export type AccountSummaryProps = {
     token: IToken;
 };
 
-const AccountSummary = () => {
-    // const currentAddress = props?.address ? props.address.getName() : null;
-    const { ethereumAccount } = useWalletStore();
-    // debug('currentAddress', currentAddress);
-    // const [logoUrl, setLogoUrl] = useState<string | null>(null);
-    // const [loading, setLoading] = useState<boolean>(false);
-    // const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
-    //     balance: '0 ' + props?.token?.getSymbol() || '',
-    //     usdBalance: 0,
-    // });
+const AccountSummary = (props: AccountSummaryProps) => {
+    const currentAddress = props?.address ? props.address.getName() : null;
 
-    // useEffect(() => {
-    //     const fetchLogo = async () => {
-    //         try {
-    //             progressiveRetryOnNetworkError(async () => {
-    //                 if (props.address) {
-    //                     const accountToken = await props.address.getNativeToken();
+    debug('currentAddress', currentAddress);
+    const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
+        balance: '0 ' + props?.token?.getSymbol() || '',
+        usdBalance: 0,
+    });
 
-    //                     if (accountToken && accountToken.getLogoUrl) {
-    //                         setLogoUrl(accountToken.getLogoUrl());
-    //                     }
-    //                 }
-    //             });
-    //         } catch (e) {
-    //             console.error('Failed to fetch logo', e);
-    //         }
-    //     };
+    useEffect(() => {
+        const fetchLogo = async () => {
+            try {
+                progressiveRetryOnNetworkError(async () => {
+                    if (props.address) {
+                        const accountToken = await props.address.getNativeToken();
 
-    //     // const fetchBalance = async () => {
-    //     //     if (props.token) {
-    //     //         setLoading(true);
-    //     //         const asset = await assetStorage.findAssetByName(props.token);
+                        if (accountToken && accountToken.getLogoUrl) {
+                            setLogoUrl(accountToken.getLogoUrl());
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to fetch logo', e);
+            }
+        };
 
-    //     //         if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
+        const fetchBalance = async () => {
+            if (props.token) {
+                setLoading(true);
+                const asset = await assetStorage.findAssetByName(props.token);
 
-    //     //         setLoading(false);
-    //     //     }
-    //     // };
+                if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
 
-    //     fetchLogo();
-    //     // fetchBalance();
-    // }, [props.address, props.token]);
+                setLoading(false);
+            }
+        };
 
-    // const generateKey = async () => {
-    //     if (props.navigation) {
-    //         props.navigation.navigate('CreateEthereumKey');
-    //     }
-    // };
+        fetchLogo();
+        fetchBalance();
+    }, [props.address, props.token]);
+
+    const generateKey = async () => {
+        if (props.navigation) {
+            props.navigation.navigate('CreateEthereumKey');
+        }
+    };
 
     return (
         <>
-            <Text>{ethereumAccount ? ethereumAccount.getName() : '----'}</Text>
-            {/* <TouchableOpacity
+            <TouchableOpacity
                 onPress={() => {
                     if (props?.address) {
                         props.updateAccountDetail(props.address);
@@ -129,7 +126,7 @@ const AccountSummary = () => {
                         )}
                     </View>
                 </View>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
         </>
     );
 };

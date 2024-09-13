@@ -92,7 +92,9 @@ export default function CreateEthereumKeyContainer({
         } catch (e) {
             debug('onNext() function called', e);
 
-            if (e instanceof SdkError) {
+            if (e.message === 'Network request failed') {
+                errorsStore.setError({ error: new Error('Please check your internet connection'), expected: true });
+            } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.PasswordInvalid:
                     case SdkErrors.PasswordFormatInvalid:

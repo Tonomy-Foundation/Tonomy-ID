@@ -115,7 +115,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             setAccountUrl(url);
         } catch (e) {
-            if (e instanceof SdkError) {
+            if (e.message === 'Network request failed') {
+                errorStore.setError({ error: new Error('Please check your internet connection'), expected: true });
+                setLoading(false);
+                return;
+            } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:
                         setShowUsernameErrorModal(true);

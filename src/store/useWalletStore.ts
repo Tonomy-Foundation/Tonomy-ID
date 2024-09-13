@@ -91,21 +91,88 @@ const useWalletStore = create<WalletState>((set, get) => ({
         debug('initializeWalletAccount');
 
         try {
-            set({
-                ethereumAccount: new EthereumAccount(
-                    EthereumMainnetChain,
-                    '0xae7dcf022C7e0eAE9E59516774307138FE372d4C'
-                ),
-            });
-            return;
+            const state = get();
+            const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
+                debug('fetchAccountData', chain, token, keyName);
+                const key = await keyStorage.findByName(keyName, chain);
+
+                debug('key', key);
+
+                if (key) {
+                    debug('key exists');
+                    const asset = await assetStorage.findAssetByName(token);
+
+                    debug('asset', asset);
+                    let account;
+
+                    if (!asset) {
+                        const exportPrivateKey = await key.exportPrivateKey();
+                        const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+
+                        account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
+                        const abstractAsset = new Asset(token, BigInt(0));
+
+                        await assetStorage.createAsset(abstractAsset, account);
+                    } else {
+                        account = new EthereumAccount(chain, asset.accountName);
+                    }
+
+                    try {
+                        const balance = await token.getBalance(account);
+
+                        debug('balance assetType', balance.toString());
+
+                        await assetStorage.updateAccountBalance(balance);
+                    } catch (e) {
+                        debug('Error getting balance:', e);
+
+                        if (e.message === 'Network request failed') {
+                            debug('network error do nothing');
+                        }
+
+                        return null;
+                    }
+
+                    return {
+                        account,
+                    };
+                }
+
+                return null;
+            };
+
+            const [ethereumData, sepoliaData, polygonData] = await Promise.allSettled([
+                fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
+                fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
+                fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
+            ]);
+
+            if (ethereumData.status === 'fulfilled' && ethereumData.value) {
+                state.ethereumAccount = ethereumData.value.account;
+            }
+
+            if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
+                state.sepoliaAccount = sepoliaData.value.account;
+            }
+
+            if (polygonData.status === 'fulfilled' && polygonData.value) {
+                state.polygonAccount = polygonData.value.account;
+            }
+
+            if (!state.accountExists) {
+                set({
+                    ethereumAccount: state.ethereumAccount,
+                    sepoliaAccount: state.sepoliaAccount,
+                    polygonAccount: state.polygonAccount,
+                    accountExists: true,
+                });
+            }
         } catch (error) {
             debug('error when initializing wallet account', error);
 
             if (error.message === 'Network request failed') {
                 debug('network error when initializing wallet account');
-            }
-
-            throw error;
+            } else throw error;
         }
     },
 

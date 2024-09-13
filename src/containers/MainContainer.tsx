@@ -28,9 +28,9 @@ import { ETHPolygonToken, ETHSepoliaToken, ETHToken, USD_CONVERSION } from '../u
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-// import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
+import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
-// import AccountSummary from '../components/AccountSummary';
+import AccountSummary from '../components/AccountSummary';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -81,46 +81,46 @@ export default function MainContainer({
 
     const refMessage = useRef(null);
 
-    // useEffect(() => {
-    //     const initializeAndFetchBalances = async () => {
-    //         try {
-    //             if (!initialized && (ethereumAccount || sepoliaAccount || polygonAccount)) {
-    //                 debug('initialized if condition called');
-    //                 await initializeWalletState();
-    //             }
-    //         } catch (error) {
-    //             debug('Error initializing wallet account:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     };
+    useEffect(() => {
+        const initializeWeb3Wallet = async () => {
+            try {
+                if (!initialized && (ethereumAccount || sepoliaAccount || polygonAccount)) {
+                    debug('initialized if condition called');
+                    await initializeWalletState();
+                }
+            } catch (error) {
+                debug('Error initializing wallet account:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
+        };
 
-    //     initializeAndFetchBalances();
-    // }, [errorStore, initialized, initializeWalletState, ethereumAccount, sepoliaAccount, polygonAccount]);
+        initializeWeb3Wallet();
+    }, [errorStore, initialized, initializeWalletState, ethereumAccount, sepoliaAccount, polygonAccount]);
 
-    // useEffect(() => {
-    //     const fetchAccounts = async () => {
-    //         debug('initializeAndFetchBalances', accountExists);
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            debug('initializeAndFetchBalances', accountExists);
 
-    //         try {
-    //             if (!accountExists) {
-    //                 debug('account not exists condition');
-    //                 await initializeWalletAccount();
-    //                 debug(`initializeAndFetchBalances try,  ${accountExists}`);
-    //             }
-    //         } catch (error) {
-    //             debug('Error initializing wallet account:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     };
+            try {
+                if (!accountExists) {
+                    debug('account not exists condition');
+                    await initializeWalletAccount();
+                    debug(`initializeAndFetchBalances try,  ${accountExists}`);
+                }
+            } catch (error) {
+                debug('Error initializing wallet account:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
+        };
 
-    //     fetchAccounts();
-    // }, [errorStore, initializeWalletAccount, accountExists]);
+        fetchAccounts();
+    }, [errorStore, initializeWalletAccount, accountExists]);
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -265,11 +265,11 @@ export default function MainContainer({
         }
     }
 
-    // useEffect(() => {
-    //     if (accountDetails?.address) {
-    //         (refMessage?.current as any)?.open();
-    //     }
-    // }, [accountDetails]);
+    useEffect(() => {
+        if (accountDetails?.address) {
+            (refMessage?.current as any)?.open();
+        }
+    }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
         debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
@@ -356,13 +356,13 @@ export default function MainContainer({
                                     <TouchableOpacity
                                         onPress={() => {
                                             debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
-                                            // setAccountDetails({
-                                            //     symbol: 'LEOS',
-                                            //     name: 'Pangea',
-                                            //     address: accountName,
-                                            //     icon: Images.GetImage('logo48'),
-                                            // });
-                                            // (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                            setAccountDetails({
+                                                symbol: 'LEOS',
+                                                name: 'Pangea',
+                                                address: accountName,
+                                                icon: Images.GetImage('logo48'),
+                                            });
+                                            (refMessage.current as any)?.open(); // Open the AccountDetails component here
                                         }}
                                     >
                                         <View style={[styles.appDialog, { justifyContent: 'center' }]}>
@@ -391,26 +391,27 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    {/* <AccountSummary /> */}
-
-                                    {/* // navigation={navigation}
-                                        // address={ethereumAccount}
-                                        // updateAccountDetail={updateAccountDetail}
-                                        // networkName="Ethereum" // token={ETHToken} */}
-                                    {/* <AccountSummary
-                                            navigation={navigation}
-                                            address={sepoliaAccount}
-                                            updateAccountDetail={updateAccountDetail}
-                                            networkName="Sepolia"
-                                            token={ETHSepoliaToken}
-                                        />
-                                        <AccountSummary
-                                            navigation={navigation}
-                                            address={polygonAccount}
-                                            updateAccountDetail={updateAccountDetail}
-                                            networkName="Polygon"
-                                            token={ETHPolygonToken}
-                                        /> */}
+                                    <AccountSummary
+                                        navigation={navigation}
+                                        address={ethereumAccount}
+                                        updateAccountDetail={updateAccountDetail}
+                                        networkName="Ethereum"
+                                        token={ETHToken}
+                                    />
+                                    <AccountSummary
+                                        navigation={navigation}
+                                        address={sepoliaAccount}
+                                        updateAccountDetail={updateAccountDetail}
+                                        networkName="Sepolia"
+                                        token={ETHSepoliaToken}
+                                    />
+                                    <AccountSummary
+                                        navigation={navigation}
+                                        address={polygonAccount}
+                                        updateAccountDetail={updateAccountDetail}
+                                        networkName="Polygon"
+                                        token={ETHPolygonToken}
+                                    />
                                 </View>
                             </ScrollView>
                             {/* <AccountDetails
