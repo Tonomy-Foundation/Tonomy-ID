@@ -14,7 +14,7 @@ import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCod
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
-// import QrCodeScanContainer from './QrCodeScanContainer';
+import QrCodeScanContainer from './QrCodeScanContainer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
@@ -421,8 +421,7 @@ export default function MainContainer({
                         </ScrollView>
                     </View>
                 )}
-                {qrOpened && <Text>QR opened</Text>}
-                {/* <QrCodeScanContainer onScan={onScan} onClose={onClose} /> */}
+                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
             </View>
         );
     };

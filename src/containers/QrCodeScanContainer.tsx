@@ -23,7 +23,11 @@ export default function QrCodeScanContainer(props: Props) {
 
                 setHasPermission(status === 'granted');
             } catch (e) {
-                errorStore.setError({ error: e, expected: false });
+                if (e.message === 'Network request failed') {
+                    //do nothing
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
             }
         };
 
