@@ -8,33 +8,35 @@ import { IAccount, IToken } from '../utils/chain/types';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
 import { assetStorage } from '../utils/StorageManager/setup';
 import Debug from 'debug';
+import { EthereumAccount, EthereumChain } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:component:AcountSummary');
 
 export type AccountSummaryProps = {
     navigation: MainScreenNavigationProp['navigation'];
     updateAccountDetail: (address: IAccount) => void;
-    address: IAccount | null;
     networkName: string;
     token: IToken;
+    chain: EthereumChain;
 };
 
 const AccountSummary = (props: AccountSummaryProps) => {
-    const currentAddress = props?.address ? props.address.getName() : null;
-
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
+    const [account, setAccount] = useState<{ name: string | null; balance: string; usdBalance: number }>({
+        name: null,
         balance: '0 ' + props?.token?.getSymbol() || '',
         usdBalance: 0,
     });
 
+    debug(account, 'Account summary');
     useEffect(() => {
         const fetchLogo = async () => {
             try {
                 progressiveRetryOnNetworkError(async () => {
-                    if (props.address) {
-                        const accountToken = await props.address.getNativeToken();
+                    if (account.name) {
+                        const accountName = new EthereumAccount(props.chain, account.name);
+                        const accountToken = await accountName.getNativeToken();
 
                         if (accountToken && accountToken.getLogoUrl) {
                             setLogoUrl(accountToken.getLogoUrl());
@@ -42,24 +44,27 @@ const AccountSummary = (props: AccountSummaryProps) => {
                     }
                 });
             } catch (e) {
-                console.error('Failed to fetch logo', e);
+                if (e.message === 'Network Request Failed') {
+                    return;
+                } else console.error('Failed to fetch logo', e);
             }
         };
 
-        const fetchBalance = async () => {
+        const fetchAccountAndBalance = async () => {
             if (props.token) {
                 setLoading(true);
                 const asset = await assetStorage.findAssetByName(props.token);
 
-                if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
+                if (asset)
+                    setAccount({ name: asset.accountName, balance: asset.balance, usdBalance: asset.usdBalance });
 
                 setLoading(false);
             }
         };
 
         fetchLogo();
-        fetchBalance();
-    }, [props.address, props.token]);
+        fetchAccountAndBalance();
+    }, [props.chain, props.token, account.name]);
 
     const generateKey = async () => {
         if (props.navigation) {
@@ -71,8 +76,10 @@ const AccountSummary = (props: AccountSummaryProps) => {
         <>
             <TouchableOpacity
                 onPress={() => {
-                    if (props?.address) {
-                        props.updateAccountDetail(props.address);
+                    if (account.name) {
+                        const accountName = new EthereumAccount(props.chain, account.name);
+
+                        props.updateAccountDetail(accountName);
                     }
                 }}
             >
@@ -88,17 +95,17 @@ const AccountSummary = (props: AccountSummaryProps) => {
                                 )}
                                 <Text style={styles.networkTitle}>{props.networkName} Network:</Text>
                             </View>
-                            {currentAddress ? (
+                            {account.name ? (
                                 <Text>
-                                    {currentAddress.substring(0, 7)}....
-                                    {currentAddress.substring(currentAddress.length - 6)}
+                                    {account.name.substring(0, 7)}....
+                                    {account.name.substring(account.name.length - 6)}
                                 </Text>
                             ) : (
                                 <Text>Not connected</Text>
                             )}
                         </View>
 
-                        {!currentAddress ? (
+                        {!account.name ? (
                             <TButton
                                 style={styles.generateKey}
                                 onPress={generateKey}
@@ -114,10 +121,10 @@ const AccountSummary = (props: AccountSummaryProps) => {
                                 ) : (
                                     <>
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text>{accountBalance.balance}</Text>
+                                            <Text>{account.balance}</Text>
                                         </View>
                                         <Text style={styles.secondaryColor}>
-                                            ${formatCurrencyValue(Number(accountBalance.usdBalance), 3)}
+                                            ${formatCurrencyValue(Number(account.usdBalance), 3)}
                                         </Text>
                                     </>
                                 )}

@@ -93,16 +93,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             const state = get();
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
-                debug('fetchAccountData', chain, token, keyName);
                 const key = await keyStorage.findByName(keyName, chain);
 
-                debug('key', key);
-
                 if (key) {
-                    debug('key exists');
                     const asset = await assetStorage.findAssetByName(token);
 
-                    debug('asset', asset);
                     let account;
 
                     if (!asset) {

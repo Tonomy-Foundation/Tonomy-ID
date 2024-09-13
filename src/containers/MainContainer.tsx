@@ -24,7 +24,15 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { ETHPolygonToken, ETHSepoliaToken, ETHToken, USD_CONVERSION } from '../utils/chain/etherum';
+import {
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumSepoliaChain,
+    ETHPolygonToken,
+    ETHSepoliaToken,
+    ETHToken,
+    USD_CONVERSION,
+} from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
@@ -190,52 +198,52 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        if (did) {
-            onUrlOpen(did);
-        }
+        // if (did) {
+        //     onUrlOpen(did);
+        // }
     }, [setUserName, did, onUrlOpen]);
 
-    useEffect(() => {
-        async function getUpdatedBalance() {
-            try {
-                if (ethereumAccount || sepoliaAccount || polygonAccount) await updateBalance();
+    // useEffect(() => {
+    //     async function getUpdatedBalance() {
+    //         try {
+    //             if (ethereumAccount || sepoliaAccount || polygonAccount) await updateBalance();
 
-                // const accountPangeaBalance = await vestingContract.getBalance(accountName);
+    //             // const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-                // if (pangeaBalance !== accountPangeaBalance) {
-                //     setPangeaBalance(accountPangeaBalance);
-                // }
-            } catch (error) {
-                debug('Error updating balance:', error);
+    //             // if (pangeaBalance !== accountPangeaBalance) {
+    //             //     setPangeaBalance(accountPangeaBalance);
+    //             // }
+    //         } catch (error) {
+    //             debug('Error updating balance:', error);
 
-                if (error.message === 'Network request failed') {
-                    debug('netowrk error when call updating balance:');
-                } else {
-                    errorStore.setError({
-                        error: error,
-                        expected: true,
-                    });
-                }
-            }
-        }
+    //             if (error.message === 'Network request failed') {
+    //                 debug('netowrk error when call updating balance:');
+    //             } else {
+    //                 errorStore.setError({
+    //                     error: error,
+    //                     expected: true,
+    //                 });
+    //             }
+    //         }
+    //     }
 
-        getUpdatedBalance();
+    //     getUpdatedBalance();
 
-        // const interval = setInterval(() => {
-        //     getUpdatedBalance();
-        // }, 20000);
+    //     // const interval = setInterval(() => {
+    //     //     getUpdatedBalance();
+    //     // }, 20000);
 
-        // return () => clearInterval(interval);
-    }, [
-        pangeaBalance,
-        setPangeaBalance,
-        accountName,
-        errorStore,
-        updateBalance,
-        ethereumAccount,
-        sepoliaAccount,
-        polygonAccount,
-    ]);
+    //     // return () => clearInterval(interval);
+    // }, [
+    //     pangeaBalance,
+    //     setPangeaBalance,
+    //     accountName,
+    //     errorStore,
+    //     updateBalance,
+    //     ethereumAccount,
+    //     sepoliaAccount,
+    //     polygonAccount,
+    // ]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -309,23 +317,23 @@ export default function MainContainer({
         }
     };
 
-    const onRefresh = React.useCallback(async () => {
-        try {
-            setRefreshBalance(true);
-            await updateBalance();
-            setRefreshBalance(false);
-        } catch (error) {
-            if (error.message === 'Network request failed') {
-                console.log('Error updating account detail network error:');
-            } else {
-                debug('Error when refresh balance:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        }
-    }, [updateBalance, errorStore]);
+    // const onRefresh = React.useCallback(async () => {
+    //     try {
+    //         setRefreshBalance(true);
+    //         await updateBalance();
+    //         setRefreshBalance(false);
+    //     } catch (error) {
+    //         if (error.message === 'Network request failed') {
+    //             console.log('Error updating account detail network error:');
+    //         } else {
+    //             debug('Error when refresh balance:', error);
+    //             errorStore.setError({
+    //                 error: error,
+    //                 expected: true,
+    //             });
+    //         }
+    //     }
+    // }, [updateBalance, errorStore]);
 
     debug('ethereumAccount: ', ethereumAccount);
 
@@ -404,24 +412,24 @@ export default function MainContainer({
                                     </TouchableOpacity>
                                     <AccountSummary
                                         navigation={navigation}
-                                        address={ethereumAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Ethereum"
                                         token={ETHToken}
+                                        chain={EthereumMainnetChain}
                                     />
                                     <AccountSummary
                                         navigation={navigation}
-                                        address={sepoliaAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Sepolia"
                                         token={ETHSepoliaToken}
+                                        chain={EthereumSepoliaChain}
                                     />
                                     <AccountSummary
                                         navigation={navigation}
-                                        address={polygonAccount}
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
                                         token={ETHPolygonToken}
+                                        chain={EthereumPolygonChain}
                                     />
                                 </View>
                             </ScrollView>
