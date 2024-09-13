@@ -60,21 +60,29 @@ async function checkTableExists(dataSource, tableName) {
 
 //initialize the data source
 export async function connect() {
-    if (!dataSource.isInitialized) {
-        await dataSource.initialize();
+    try {
+        if (!dataSource.isInitialized) {
+            await dataSource.initialize();
+        }
+
+        // Get the repositories
+        const appTableExists = await checkTableExists(dataSource, 'AppStorage');
+        const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
+        const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
+
+        debug('assetTableExists', assetTableExists);
+
+        // If the tables don't exist, synchronize the schema
+        if (!appTableExists || !keyTableExists || !assetTableExists) {
+            await dataSource.synchronize();
+        }
+
+        return dataSource;
+    } catch (error) {
+        if (error.message === 'Network request failed') {
+            debug('Network error occurred. Retrying...');
+        } else {
+            debug('connect error', error);
+        }
     }
-
-    // Get the repositories
-    const appTableExists = await checkTableExists(dataSource, 'AppStorage');
-    const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
-    const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
-
-    debug('assetTableExists', assetTableExists);
-
-    // If the tables don't exist, synchronize the schema
-    if (!appTableExists || !keyTableExists || !assetTableExists) {
-        await dataSource.synchronize();
-    }
-
-    return dataSource;
 }
