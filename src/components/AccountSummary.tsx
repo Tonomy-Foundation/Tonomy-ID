@@ -33,23 +33,22 @@ const AccountSummary = (props: AccountSummaryProps) => {
     useEffect(() => {
         const fetchLogo = async () => {
             try {
-                // progressiveRetryOnNetworkError(async () => {
-                if (account.name) {
-                    const accountName = new EthereumAccount(props.chain, account.name);
-                    const accountToken = await accountName.getNativeToken();
+                progressiveRetryOnNetworkError(async () => {
+                    if (account.name) {
+                        const accountName = new EthereumAccount(props.chain, account.name);
+                        const accountToken = await accountName.getNativeToken();
 
-                    if (accountToken && accountToken.getLogoUrl) {
-                        setLogoUrl(accountToken.getLogoUrl());
+                        if (accountToken && accountToken.getLogoUrl) {
+                            setLogoUrl(accountToken.getLogoUrl());
+                        }
                     }
-                }
-                // })
-                // .catch((error) => {
-                //     if (error.message === 'Network request failed') {
-                //         debug('Network error when fetching logo. Retrying...', error);
-                //     } else {
-                //         debug('recursive eroor', error);
-                //     }
-                // });
+                }).catch((error) => {
+                    if (error.message === 'Network request failed') {
+                        debug('Network error when fetching logo. Retrying...', error);
+                    } else {
+                        debug('recursive eroor', error);
+                    }
+                });
             } catch (e) {
                 if (e.message === 'Network Request Failed') {
                     return;
@@ -78,8 +77,9 @@ const AccountSummary = (props: AccountSummaryProps) => {
             }
         };
 
-        fetchLogo();
         fetchAccountAndBalance();
+
+        fetchLogo();
     }, [props.chain, props.token, account.name]);
 
     const generateKey = async () => {
