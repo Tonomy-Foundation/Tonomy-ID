@@ -33,16 +33,16 @@ const AccountSummary = (props: AccountSummaryProps) => {
     useEffect(() => {
         const fetchLogo = async () => {
             try {
-                progressiveRetryOnNetworkError(async () => {
-                    if (account.name) {
-                        const accountName = new EthereumAccount(props.chain, account.name);
-                        const accountToken = await accountName.getNativeToken();
+                // progressiveRetryOnNetworkError(async () => {
+                if (account.name) {
+                    const accountName = new EthereumAccount(props.chain, account.name);
+                    const accountToken = await accountName.getNativeToken();
 
-                        if (accountToken && accountToken.getLogoUrl) {
-                            setLogoUrl(accountToken.getLogoUrl());
-                        }
+                    if (accountToken && accountToken.getLogoUrl) {
+                        setLogoUrl(accountToken.getLogoUrl());
                     }
-                });
+                }
+                // });
             } catch (e) {
                 if (e.message === 'Network Request Failed') {
                     return;
@@ -55,8 +55,17 @@ const AccountSummary = (props: AccountSummaryProps) => {
                 setLoading(true);
                 const asset = await assetStorage.findAssetByName(props.token);
 
-                if (asset)
-                    setAccount({ name: asset.accountName, balance: asset.balance, usdBalance: asset.usdBalance });
+                if (asset) {
+                    if (!account.name) {
+                        setAccount({ name: asset.accountName, balance: asset.balance, usdBalance: asset.usdBalance });
+                    } else {
+                        setAccount((prevAccount) => ({
+                            ...prevAccount,
+                            balance: asset.balance,
+                            usdBalance: asset.usdBalance,
+                        }));
+                    }
+                }
 
                 setLoading(false);
             }

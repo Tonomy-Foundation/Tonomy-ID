@@ -72,16 +72,7 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const {
-        web3wallet,
-        ethereumAccount,
-        sepoliaAccount,
-        polygonAccount,
-        initialized,
-        initializeWalletState,
-        accountExists,
-        initializeWalletAccount,
-    } = useWalletStore();
+    const { web3wallet, initialized, initializeWalletState, accountExists, initializeWalletAccount } = useWalletStore();
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
@@ -92,7 +83,7 @@ export default function MainContainer({
     useEffect(() => {
         const initializeWeb3Wallet = async () => {
             try {
-                if (!initialized && (ethereumAccount || sepoliaAccount || polygonAccount)) {
+                if (!initialized && accountExists) {
                     debug('initialized if condition called');
                     await initializeWalletState();
                 }
@@ -106,7 +97,7 @@ export default function MainContainer({
         };
 
         initializeWeb3Wallet();
-    }, [errorStore, initialized, initializeWalletState, ethereumAccount, sepoliaAccount, polygonAccount]);
+    }, [errorStore, initialized, initializeWalletState, accountExists]);
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -283,11 +274,11 @@ export default function MainContainer({
         }
     }
 
-    // useEffect(() => {
-    //     if (accountDetails?.address) {
-    //         (refMessage?.current as any)?.open();
-    //     }
-    // }, [accountDetails]);
+    useEffect(() => {
+        if (accountDetails?.address) {
+            (refMessage?.current as any)?.open();
+        }
+    }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
         debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
@@ -334,8 +325,6 @@ export default function MainContainer({
     //         }
     //     }
     // }, [updateBalance, errorStore]);
-
-    debug('ethereumAccount: ', ethereumAccount);
 
     const MainView = () => {
         const isFocused = useIsFocused();
