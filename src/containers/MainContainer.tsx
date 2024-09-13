@@ -347,7 +347,69 @@ export default function MainContainer({
                                     Scan QR Code
                                 </TButtonContained>
                             </View>
+                            <ScrollView>
+                                <View style={styles.accountsView}>
+                                    <Text style={styles.accountHead}>Connected Accounts:</Text>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
+                                            // setAccountDetails({
+                                            //     symbol: 'LEOS',
+                                            //     name: 'Pangea',
+                                            //     address: accountName,
+                                            //     icon: Images.GetImage('logo48'),
+                                            // });
+                                            // (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                        }}
+                                    >
+                                        <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Image
+                                                            source={Images.GetImage('logo48')}
+                                                            style={styles.favicon}
+                                                        />
+                                                        <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                                    </View>
+                                                    <Text>{accountName}</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                    </View>
+                                                    <Text style={styles.secondaryColor}>
+                                                        $
+                                                        {pangeaBalance
+                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                            : 0.0}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                    {/* <AccountSummary /> */}
 
+                                    {/* // navigation={navigation}
+                                    // address={ethereumAccount}
+                                    // updateAccountDetail={updateAccountDetail}
+                                    // networkName="Ethereum" // token={ETHToken} */}
+                                    {/* <AccountSummary
+                                        navigation={navigation}
+                                        address={sepoliaAccount}
+                                        updateAccountDetail={updateAccountDetail}
+                                        networkName="Sepolia"
+                                        token={ETHSepoliaToken}
+                                    />
+                                    <AccountSummary
+                                        navigation={navigation}
+                                        address={polygonAccount}
+                                        updateAccountDetail={updateAccountDetail}
+                                        networkName="Polygon"
+                                        token={ETHPolygonToken}
+                                    /> */}
+                                </View>
+                            </ScrollView>
                             {/* <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
