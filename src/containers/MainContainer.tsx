@@ -261,11 +261,11 @@ export default function MainContainer({
         }
     }
 
-    useEffect(() => {
-        if (accountDetails?.address) {
-            (refMessage?.current as any)?.open();
-        }
-    }, [accountDetails]);
+    // useEffect(() => {
+    //     if (accountDetails?.address) {
+    //         (refMessage?.current as any)?.open();
+    //     }
+    // }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
         debug(`updateAccountDetail ${account}`);
@@ -327,7 +327,7 @@ export default function MainContainer({
                     <View style={styles.content}>
                         <ScrollView
                             contentContainerStyle={styles.scrollViewContent}
-                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                            // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>

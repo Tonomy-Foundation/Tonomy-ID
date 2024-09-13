@@ -133,7 +133,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             //         } catch (error) {
             //             if (error.message === 'Network request failed') {
             //                 debug('network error when calling fetch account data');
-                           
+
             //             } else {
             //                 debug('error when calling fetch account data', JSON.stringify(error, null, 2));
             //             }
@@ -143,9 +143,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
             //     return null;
             // };
-           
-            // const ethereumData = await fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum');
 
+            // const ethereumData = await fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum');
 
             // debug('ethereumData', ethereumData);
             // if(ethereumData) {
@@ -182,7 +181,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
             // if (polygonData.status === 'fulfilled' && polygonData.value) {
             //     state.polygonAccount = polygonData.value.account;
             // }
-
 
             // if (!get().accountExists) {
             //     debug(
