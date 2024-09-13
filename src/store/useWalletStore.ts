@@ -210,8 +210,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     await assetStorage.updateAccountBalance(polygonBalance);
                 }
             }
+
+            return;
         } catch (error) {
             console.error('Error updating balance:', error);
+            throw error;
         }
     },
     disconnectSession: async () => {

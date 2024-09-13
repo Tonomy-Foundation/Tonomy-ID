@@ -198,7 +198,7 @@ export default function MainContainer({
     useEffect(() => {
         async function getUpdatedBalance() {
             try {
-                await updateBalance();
+                if (ethereumAccount || sepoliaAccount || polygonAccount) await updateBalance();
 
                 // const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
@@ -226,7 +226,17 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance]);
+    }, [
+        user,
+        pangeaBalance,
+        setPangeaBalance,
+        accountName,
+        errorStore,
+        updateBalance,
+        ethereumAccount,
+        sepoliaAccount,
+        polygonAccount,
+    ]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -393,8 +403,7 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <Text>{ethereumAccount ? ethereumAccount?.getName() : '--'}</Text>
-                                    {/* <AccountSummary
+                                    <AccountSummary
                                         navigation={navigation}
                                         address={ethereumAccount}
                                         updateAccountDetail={updateAccountDetail}
@@ -414,7 +423,7 @@ export default function MainContainer({
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
                                         token={ETHPolygonToken}
-                                    /> */}
+                                    />
                                 </View>
                             </ScrollView>
                             {/* <AccountDetails
