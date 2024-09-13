@@ -270,29 +270,29 @@ export default function MainContainer({
     const updateAccountDetail = async (account) => {
         debug(`updateAccountDetail ${account}`);
 
-        try {
-            if (account) {
-                const accountToken = await account.getNativeToken();
-                const logoUrl = accountToken.getLogoUrl();
+        // try {
+        //     if (account) {
+        //         const accountToken = await account.getNativeToken();
+        //         const logoUrl = accountToken.getLogoUrl();
 
-                setAccountDetails({
-                    symbol: accountToken.getSymbol(),
-                    name: capitalizeFirstLetter(account.getChain().getName()),
-                    address: account?.getName() || '',
-                    ...(logoUrl && { image: logoUrl }),
-                });
-            }
-        } catch (error) {
-            if (error.message === 'Network request failed') {
-                debug('Error updating account detail network error:');
-            } else {
-                debug('Error updating account detail:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        }
+        //         setAccountDetails({
+        //             symbol: accountToken.getSymbol(),
+        //             name: capitalizeFirstLetter(account.getChain().getName()),
+        //             address: account?.getName() || '',
+        //             ...(logoUrl && { image: logoUrl }),
+        //         });
+        //     }
+        // } catch (error) {
+        //     if (error.message === 'Network request failed') {
+        //         debug('Error updating account detail network error:');
+        //     } else {
+        //         debug('Error updating account detail:', error);
+        //         errorStore.setError({
+        //             error: error,
+        //             expected: true,
+        //         });
+        //     }
+        // }
     };
 
     // const onRefresh = React.useCallback(async () => {
