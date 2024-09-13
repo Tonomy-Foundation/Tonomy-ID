@@ -106,21 +106,21 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                         debug('asset', asset);
                         let account;
+                        const exportPrivateKey = await key.exportPrivateKey();
+                        const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
 
                         if (!asset) {
-                            const exportPrivateKey = await key.exportPrivateKey();
-                            const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
-
                             account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
                             const abstractAsset = new Asset(token, BigInt(0));
 
                             await assetStorage.createAsset(abstractAsset, account);
                         } else {
-                            account = new EthereumAccount(chain, asset.accountName);
+                            account = new EthereumAccount(chain, asset.accountName, privateKey);
                         }
 
+                        debug('account', account);
                         return {
-                            account: new EthereumAccount(chain, account),
+                            account,
                         };
                     } catch (error) {
                         if (error.message === 'Network request failed') {
