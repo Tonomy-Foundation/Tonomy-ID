@@ -387,15 +387,13 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
+                                    <AccountSummary />
 
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        address={ethereumAccount}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Ethereum"
-                                        token={ETHToken}
-                                    />
-                                    <AccountSummary
+                                    {/* // navigation={navigation}
+                                    // address={ethereumAccount}
+                                    // updateAccountDetail={updateAccountDetail}
+                                    // networkName="Ethereum" // token={ETHToken} */}
+                                    {/* <AccountSummary
                                         navigation={navigation}
                                         address={sepoliaAccount}
                                         updateAccountDetail={updateAccountDetail}
@@ -408,17 +406,17 @@ export default function MainContainer({
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
                                         token={ETHPolygonToken}
-                                    />
+                                    /> */}
                                 </View>
                             </ScrollView>
-                            <AccountDetails
+                            {/* <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                                 }}
-                            />
+                            /> */}
                         </ScrollView>
                     </View>
                 )}

@@ -21,7 +21,8 @@ export default function ConfirmPassphraseWordContainer({
     const { passphraseList, checkWordAtIndex, randomWordIndexes, setConfirmPassphraseWord, confirmPassphraseWords } =
         usePassphraseStore();
     const [value, setValue] = useState<string>(
-        settings.isProduction() ? confirmPassphraseWords[index] : passphraseList[randomWordIndexes[index]]
+        passphraseList[randomWordIndexes[index]]
+        // settings.isProduction() ? confirmPassphraseWords[index] : passphraseList[randomWordIndexes[index]]
     );
     const [errorMsg, setErrorMsg] = useState<string>('');
 

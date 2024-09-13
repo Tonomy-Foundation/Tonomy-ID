@@ -8,6 +8,8 @@ import { IAccount, IToken } from '../utils/chain/types';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
 import { assetStorage } from '../utils/StorageManager/setup';
 import Debug from 'debug';
+import { EthereumAccount } from '../utils/chain/etherum';
+import useWalletStore from '../store/useWalletStore';
 
 const debug = Debug('tonomy-id:component:AcountSummary');
 
@@ -19,10 +21,10 @@ export type AccountSummaryProps = {
     token: IToken;
 };
 
-const AccountSummary = (props: AccountSummaryProps) => {
-    const currentAddress = props?.address ? props.address.getName() : null;
-
-    debug('currentAddress', currentAddress);
+const AccountSummary = () => {
+    // const currentAddress = props?.address ? props.address.getName() : null;
+    const { ethereumAccount } = useWalletStore();
+    // debug('currentAddress', currentAddress);
     // const [logoUrl, setLogoUrl] = useState<string | null>(null);
     // const [loading, setLoading] = useState<boolean>(false);
     // const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
@@ -62,15 +64,16 @@ const AccountSummary = (props: AccountSummaryProps) => {
     //     // fetchBalance();
     // }, [props.address, props.token]);
 
-    const generateKey = async () => {
-        if (props.navigation) {
-            props.navigation.navigate('CreateEthereumKey');
-        }
-    };
+    // const generateKey = async () => {
+    //     if (props.navigation) {
+    //         props.navigation.navigate('CreateEthereumKey');
+    //     }
+    // };
 
     return (
         <>
-            <TouchableOpacity
+            <Text>{ethereumAccount ? ethereumAccount.getName() : '----'}</Text>
+            {/* <TouchableOpacity
                 onPress={() => {
                     if (props?.address) {
                         props.updateAccountDetail(props.address);
@@ -81,26 +84,25 @@ const AccountSummary = (props: AccountSummaryProps) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                {/* {logoUrl && (
+                                {logoUrl && (
                                     <Image
                                         source={{ uri: logoUrl }}
                                         style={[styles.favicon, { resizeMode: 'contain' }]}
                                     />
-                                )} */}
+                                )}
                                 <Text style={styles.networkTitle}>{props.networkName} Network:</Text>
                             </View>
                             {currentAddress ? (
                                 <Text>
-                                    {currentAddress}
-                                    {/* {currentAddress.substring(0, 7)}....
-                                    {currentAddress.substring(currentAddress.length - 6)} */}
+                                    {currentAddress.substring(0, 7)}....
+                                    {currentAddress.substring(currentAddress.length - 6)}
                                 </Text>
                             ) : (
                                 <Text>Not connected</Text>
                             )}
                         </View>
 
-                        {/* {!currentAddress ? (
+                        {!currentAddress ? (
                             <TButton
                                 style={styles.generateKey}
                                 onPress={generateKey}
@@ -124,10 +126,10 @@ const AccountSummary = (props: AccountSummaryProps) => {
                                     </>
                                 )}
                             </View>
-                        )} */}
+                        )}
                     </View>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </>
     );
 };
