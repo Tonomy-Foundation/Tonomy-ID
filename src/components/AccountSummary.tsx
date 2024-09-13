@@ -42,6 +42,13 @@ const AccountSummary = (props: AccountSummaryProps) => {
                         setLogoUrl(accountToken.getLogoUrl());
                     }
                 }
+                // })
+                // .catch((error) => {
+                //     if (error.message === 'Network request failed') {
+                //         debug('Network error when fetching logo. Retrying...', error);
+                //     } else {
+                //         debug('recursive eroor', error);
+                //     }
                 // });
             } catch (e) {
                 if (e.message === 'Network Request Failed') {

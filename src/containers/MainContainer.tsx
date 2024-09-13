@@ -294,6 +294,7 @@ export default function MainContainer({
                     address: account?.getName() || '',
                     ...(logoUrl && { image: logoUrl }),
                 });
+                (refMessage.current as any)?.open();
             }
         } catch (error) {
             if (error.message === 'Network request failed') {
@@ -422,14 +423,14 @@ export default function MainContainer({
                                     />
                                 </View>
                             </ScrollView>
-                            {/* <AccountDetails
+                            <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                                 }}
-                            /> */}
+                            />
                         </ScrollView>
                     </View>
                 )}
