@@ -268,7 +268,7 @@ export default function MainContainer({
     // }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
-        debug(`updateAccountDetail ${account}`);
+        debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
 
         // try {
         //     if (account) {
@@ -422,7 +422,8 @@ export default function MainContainer({
                         </ScrollView>
                     </View>
                 )}
-                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
+                {qrOpened && <Text>QR opened</Text>}
+                {/* <QrCodeScanContainer onScan={onScan} onClose={onClose} /> */}
             </View>
         );
     };

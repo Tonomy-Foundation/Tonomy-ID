@@ -43,19 +43,19 @@ const AccountSummary = (props: AccountSummaryProps) => {
             }
         };
 
-        const fetchBalance = async () => {
-            if (props.token) {
-                setLoading(true);
-                const asset = await assetStorage.findAssetByName(props.token);
+        // const fetchBalance = async () => {
+        //     if (props.token) {
+        //         setLoading(true);
+        //         const asset = await assetStorage.findAssetByName(props.token);
 
-                if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
+        //         if (asset) setAccountBalance({ balance: asset.balance, usdBalance: asset.usdBalance });
 
-                setLoading(false);
-            }
-        };
+        //         setLoading(false);
+        //     }
+        // };
 
         fetchLogo();
-        fetchBalance();
+        // fetchBalance();
     }, [props.address, props.token]);
 
     const generateKey = async () => {
