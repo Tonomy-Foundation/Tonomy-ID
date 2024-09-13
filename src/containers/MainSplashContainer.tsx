@@ -71,9 +71,13 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                console.error('main screen error', e);
-                errorStore.setError({ error: e, expected: false });
-                navigation.navigate('SplashSecurity');
+                if (e.message === 'Network request failed') {
+                    debug('Network error occurred. Retrying...');
+                } else {
+                    debug('main screen error', e);
+                    errorStore.setError({ error: e, expected: false });
+                    navigation.navigate('SplashSecurity');
+                }
             }
         }
 
