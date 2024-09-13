@@ -22,7 +22,6 @@ export type AccountSummaryProps = {
 const AccountSummary = (props: AccountSummaryProps) => {
     const currentAddress = props?.address ? props.address.getName() : null;
 
-    debug('currentAddress', currentAddress);
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [accountBalance, setAccountBalance] = useState<{ balance: string; usdBalance: number }>({
