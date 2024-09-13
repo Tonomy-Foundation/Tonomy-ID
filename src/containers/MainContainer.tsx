@@ -14,7 +14,7 @@ import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCod
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
-import QrCodeScanContainer from './QrCodeScanContainer';
+// import QrCodeScanContainer from './QrCodeScanContainer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
@@ -28,9 +28,9 @@ import { ETHPolygonToken, ETHSepoliaToken, ETHToken, USD_CONVERSION } from '../u
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
+// import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
-import AccountSummary from '../components/AccountSummary';
+// import AccountSummary from '../components/AccountSummary';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -313,6 +313,7 @@ export default function MainContainer({
     //         }
     //     }
     // }, [updateBalance, errorStore]);
+    debug('ethereumAccount', ethereumAccount);
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -352,13 +353,13 @@ export default function MainContainer({
                                     <TouchableOpacity
                                         onPress={() => {
                                             debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
-                                            setAccountDetails({
-                                                symbol: 'LEOS',
-                                                name: 'Pangea',
-                                                address: accountName,
-                                                icon: Images.GetImage('logo48'),
-                                            });
-                                            (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                            // setAccountDetails({
+                                            //     symbol: 'LEOS',
+                                            //     name: 'Pangea',
+                                            //     address: accountName,
+                                            //     icon: Images.GetImage('logo48'),
+                                            // });
+                                            // (refMessage.current as any)?.open(); // Open the AccountDetails component here
                                         }}
                                     >
                                         <View style={[styles.appDialog, { justifyContent: 'center' }]}>
@@ -387,7 +388,8 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <AccountSummary />
+                                    <Text>{ethereumAccount?.getName()}</Text>
+                                    {/* <AccountSummary /> */}
 
                                     {/* // navigation={navigation}
                                     // address={ethereumAccount}
