@@ -100,27 +100,27 @@ export default function MainContainer({
     //     initializeAndFetchBalances();
     // }, [errorStore, initialized, initializeWalletState, ethereumAccount, sepoliaAccount, polygonAccount]);
 
-    useEffect(() => {
-        const fetchAccounts = async () => {
-            debug('initializeAndFetchBalances', accountExists);
+    // useEffect(() => {
+    //     const fetchAccounts = async () => {
+    //         debug('initializeAndFetchBalances', accountExists);
 
-            try {
-                if (!accountExists) {
-                    debug('account not exists condition');
-                    await initializeWalletAccount();
-                    debug(`initializeAndFetchBalances try,  ${accountExists}`);
-                }
-            } catch (error) {
-                debug('Error initializing wallet account:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        };
+    //         try {
+    //             if (!accountExists) {
+    //                 debug('account not exists condition');
+    //                 await initializeWalletAccount();
+    //                 debug(`initializeAndFetchBalances try,  ${accountExists}`);
+    //             }
+    //         } catch (error) {
+    //             debug('Error initializing wallet account:', error);
+    //             errorStore.setError({
+    //                 error: error,
+    //                 expected: true,
+    //             });
+    //         }
+    //     };
 
-        fetchAccounts();
-    }, [errorStore, initializeWalletAccount, accountExists]);
+    //     fetchAccounts();
+    // }, [errorStore, initializeWalletAccount, accountExists]);
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -180,7 +180,9 @@ export default function MainContainer({
 
             setAccountName(accountName);
         } catch (e) {
-            errorStore.setError({ error: e, expected: false });
+            if (e.message === 'Network request failed') {
+                debug('Error getting username network error');
+            } else errorStore.setError({ error: e, expected: false });
         }
     }, [user, errorStore]);
 
@@ -237,7 +239,9 @@ export default function MainContainer({
         } catch (e) {
             debug('onScan error:', e);
 
-            if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
+            if (e.message === 'Network request failed') {
+                debug('Scan Qr Code network error');
+            } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 debug('Invalid QR Code', JSON.stringify(e, null, 2));
 
                 if (e.message === 'QR schema does not match app') {
@@ -313,7 +317,6 @@ export default function MainContainer({
     //         }
     //     }
     // }, [updateBalance, errorStore]);
-    debug('ethereumAccount', ethereumAccount);
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -347,69 +350,7 @@ export default function MainContainer({
                                     Scan QR Code
                                 </TButtonContained>
                             </View>
-                            <ScrollView>
-                                <View style={styles.accountsView}>
-                                    <Text style={styles.accountHead}>Connected Accounts:</Text>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
-                                            // setAccountDetails({
-                                            //     symbol: 'LEOS',
-                                            //     name: 'Pangea',
-                                            //     address: accountName,
-                                            //     icon: Images.GetImage('logo48'),
-                                            // });
-                                            // (refMessage.current as any)?.open(); // Open the AccountDetails component here
-                                        }}
-                                    >
-                                        <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Image
-                                                            source={Images.GetImage('logo48')}
-                                                            style={styles.favicon}
-                                                        />
-                                                        <Text style={styles.networkTitle}>Pangea Network:</Text>
-                                                    </View>
-                                                    <Text>{accountName}</Text>
-                                                </View>
-                                                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
-                                                    </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        $
-                                                        {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
-                                                            : 0.0}
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                    {/* <AccountSummary /> */}
 
-                                    {/* // navigation={navigation}
-                                    // address={ethereumAccount}
-                                    // updateAccountDetail={updateAccountDetail}
-                                    // networkName="Ethereum" // token={ETHToken} */}
-                                    {/* <AccountSummary
-                                        navigation={navigation}
-                                        address={sepoliaAccount}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Sepolia"
-                                        token={ETHSepoliaToken}
-                                    />
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        address={polygonAccount}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Polygon"
-                                        token={ETHPolygonToken}
-                                    /> */}
-                                </View>
-                            </ScrollView>
                             {/* <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}

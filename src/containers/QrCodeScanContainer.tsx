@@ -24,7 +24,7 @@ export default function QrCodeScanContainer(props: Props) {
                 setHasPermission(status === 'granted');
             } catch (e) {
                 if (e.message === 'Network request failed') {
-                    //do nothing
+                    console.log('network error when requesting camera permission');
                 } else {
                     errorStore.setError({ error: e, expected: false });
                 }

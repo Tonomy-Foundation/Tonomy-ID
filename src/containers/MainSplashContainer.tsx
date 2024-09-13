@@ -54,8 +54,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                         try {
                             await user.getUsername();
-                            await initializeWalletState();
-                            await initializeWalletAccount();
+                            // await initializeWalletState();
+                            // await initializeWalletAccount();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
