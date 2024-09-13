@@ -274,11 +274,11 @@ export default function MainContainer({
         }
     }
 
-    useEffect(() => {
-        if (accountDetails?.address) {
-            (refMessage?.current as any)?.open();
-        }
-    }, [accountDetails]);
+    // useEffect(() => {
+    //     if (accountDetails?.address) {
+    //         (refMessage?.current as any)?.open();
+    //     }
+    // }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
         debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);

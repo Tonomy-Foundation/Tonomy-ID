@@ -31,30 +31,38 @@ const AccountSummary = (props: AccountSummaryProps) => {
 
     debug(account, 'Account summary');
     useEffect(() => {
-        const fetchLogo = async () => {
-            try {
-                progressiveRetryOnNetworkError(async () => {
-                    if (account.name) {
-                        const accountName = new EthereumAccount(props.chain, account.name);
-                        const accountToken = await accountName.getNativeToken();
+        // const fetchLogo = async () => {
+        //     try {
+        //         // progressiveRetryOnNetworkError(async () => {
+        //         //     if (account.name) {
+        //         //         const accountName = new EthereumAccount(props.chain, account.name);
+        //         //         const accountToken = await accountName.getNativeToken();
 
-                        if (accountToken && accountToken.getLogoUrl) {
-                            setLogoUrl(accountToken.getLogoUrl());
-                        }
-                    }
-                }).catch((error) => {
-                    if (error.message === 'Network request failed') {
-                        debug('Network error when fetching logo. Retrying...', error);
-                    } else {
-                        debug('recursive eroor', error);
-                    }
-                });
-            } catch (e) {
-                if (e.message === 'Network Request Failed') {
-                    return;
-                } else console.error('Failed to fetch logo', e);
-            }
-        };
+        //         //         if (accountToken && accountToken.getLogoUrl) {
+        //         //             setLogoUrl(accountToken.getLogoUrl());
+        //         //         }
+        //         //     }
+        //         // }).catch((error) => {
+        //         //     if (error.message === 'Network request failed') {
+        //         //         debug('Network error when fetching logo. Retrying...', error);
+        //         //     } else {
+        //         //         debug('recursive eroor', error);
+        //         //     }
+        //         // });
+        //         if (account.name) {
+        //             const accountName = new EthereumAccount(props.chain, account.name);
+        //             const accountToken = await accountName.getNativeToken();
+
+        //             if (accountToken && accountToken.getLogoUrl) {
+        //                 setLogoUrl(accountToken.getLogoUrl());
+        //             }
+        //         }
+        //     } catch (e) {
+        //         if (e.message === 'Network Request Failed') {
+        //             return;
+        //         } else console.error('Failed to fetch logo', e);
+        //     }
+        // };
 
         const fetchAccountAndBalance = async () => {
             if (props.token) {
@@ -79,7 +87,7 @@ const AccountSummary = (props: AccountSummaryProps) => {
 
         fetchAccountAndBalance();
 
-        fetchLogo();
+        // fetchLogo();
     }, [props.chain, props.token, account.name]);
 
     const generateKey = async () => {
