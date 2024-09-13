@@ -141,9 +141,9 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 26,
-        fontWeight: '700',
+        fontWeight: 'bold',
         lineHeight: 36,
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
     },
     text: {
         fontSize: 16,

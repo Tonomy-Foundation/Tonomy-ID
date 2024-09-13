@@ -25,7 +25,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
     useFonts({
         Roboto: require('../assets/fonts/Roboto-Regular.ttf'),
-        Poppins: require('../assets/fonts/Poppins-Bold.ttf'),
+        Inter: require('../assets/fonts/Inter.ttf'),
     });
 
     useEffect(() => {
