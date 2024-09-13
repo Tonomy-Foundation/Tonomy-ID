@@ -221,13 +221,12 @@ export default function MainContainer({
 
         getUpdatedBalance();
 
-        const interval = setInterval(() => {
-            getUpdatedBalance();
-        }, 20000);
+        // const interval = setInterval(() => {
+        //     getUpdatedBalance();
+        // }, 20000);
 
-        return () => clearInterval(interval);
+        // return () => clearInterval(interval);
     }, [
-        user,
         pangeaBalance,
         setPangeaBalance,
         accountName,
