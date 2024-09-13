@@ -266,11 +266,11 @@ export default function MainContainer({
         }
     }
 
-    useEffect(() => {
-        if (accountDetails?.address) {
-            (refMessage?.current as any)?.open();
-        }
-    }, [accountDetails]);
+    // useEffect(() => {
+    //     if (accountDetails?.address) {
+    //         (refMessage?.current as any)?.open();
+    //     }
+    // }, [accountDetails]);
 
     const updateAccountDetail = async (account) => {
         debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
@@ -393,7 +393,8 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <AccountSummary
+                                    <Text>{ethereumAccount ? ethereumAccount?.getName() : '--'}</Text>
+                                    {/* <AccountSummary
                                         navigation={navigation}
                                         address={ethereumAccount}
                                         updateAccountDetail={updateAccountDetail}
@@ -413,17 +414,17 @@ export default function MainContainer({
                                         updateAccountDetail={updateAccountDetail}
                                         networkName="Polygon"
                                         token={ETHPolygonToken}
-                                    />
+                                    /> */}
                                 </View>
                             </ScrollView>
-                            <AccountDetails
+                            {/* <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                                 }}
-                            />
+                            /> */}
                         </ScrollView>
                     </View>
                 )}
