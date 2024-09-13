@@ -192,38 +192,38 @@ export default function MainContainer({
         }
     }, [did, setUserName, onUrlOpen]);
 
-    useEffect(() => {
-        async function getUpdatedBalance() {
-            try {
-                await updateBalance();
+    // useEffect(() => {
+    //     async function getUpdatedBalance() {
+    //         try {
+    //             await updateBalance();
 
-                const accountPangeaBalance = await vestingContract.getBalance(accountName);
+    //             const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-                if (pangeaBalance !== accountPangeaBalance) {
-                    setPangeaBalance(accountPangeaBalance);
-                }
-            } catch (error) {
-                debug('Error updating balance:', error);
+    //             if (pangeaBalance !== accountPangeaBalance) {
+    //                 setPangeaBalance(accountPangeaBalance);
+    //             }
+    //         } catch (error) {
+    //             debug('Error updating balance:', error);
 
-                if (error.message === 'Network request failed') {
-                    debug('netowrk error when call updating balance:');
-                } else {
-                    errorStore.setError({
-                        error: error,
-                        expected: true,
-                    });
-                }
-            }
-        }
+    //             if (error.message === 'Network request failed') {
+    //                 debug('netowrk error when call updating balance:');
+    //             } else {
+    //                 errorStore.setError({
+    //                     error: error,
+    //                     expected: true,
+    //                 });
+    //             }
+    //         }
+    //     }
 
-        getUpdatedBalance();
+    //     getUpdatedBalance();
 
-        const interval = setInterval(() => {
-            getUpdatedBalance();
-        }, 20000);
+    //     const interval = setInterval(() => {
+    //         getUpdatedBalance();
+    //     }, 20000);
 
-        return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance, errorStore]);
+    //     return () => clearInterval(interval);
+    // }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance, errorStore]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -295,24 +295,24 @@ export default function MainContainer({
         }
     };
 
-    const onRefresh = React.useCallback(async () => {
-        try {
-            setRefreshBalance(true)
-            await updateBalance();
-            setRefreshBalance(false)
+    // const onRefresh = React.useCallback(async () => {
+    //     try {
+    //         setRefreshBalance(true)
+    //         await updateBalance();
+    //         setRefreshBalance(false)
 
-        } catch (error) {
-            if (error.message === 'Network request failed') {
-                console.log('Error updating account detail network error:');
-            } else {
-                debug('Error when refresh balance:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        }
-    }, [updateBalance, errorStore]);
+    //     } catch (error) {
+    //         if (error.message === 'Network request failed') {
+    //             console.log('Error updating account detail network error:');
+    //         } else {
+    //             debug('Error when refresh balance:', error);
+    //             errorStore.setError({
+    //                 error: error,
+    //                 expected: true,
+    //             });
+    //         }
+    //     }
+    // }, [updateBalance, errorStore]);
 
     const MainView = () => {
         const isFocused = useIsFocused();
