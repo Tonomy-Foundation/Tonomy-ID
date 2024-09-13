@@ -91,6 +91,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
         debug('initializeWalletAccount');
 
         try {
+            set({
+                ethereumAccount: new EthereumAccount(
+                    EthereumMainnetChain,
+                    '0xae7dcf022C7e0eAE9E59516774307138FE372d4C'
+                ),
+            });
+            return;
             await connect();
 
             const state = get();
@@ -168,9 +175,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 });
             }
         } catch (error) {
+            debug('error when initializing wallet account', error);
+
             if (error.message === 'Network request failed') {
                 debug('network error when initializing wallet account');
             }
+
+            throw error;
         }
     },
 
