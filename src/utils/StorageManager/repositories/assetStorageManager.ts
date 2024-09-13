@@ -1,8 +1,5 @@
 import { IAccount, IAsset, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
-import Debug from 'debug';
-
-const debug = Debug('tonomy-id:storageManage:assetStorageManager');
 
 interface AccountStorage {
     accountName: string;
@@ -41,15 +38,11 @@ export abstract class AssetStorageManager {
     }
 
     public async findAssetByName(token: IToken): Promise<AccountStorage | null> {
-        debug('findAssetByName function called');
-
         const name = token.getChain().getName() + '-' + token.getSymbol();
 
-        debug('findAssetByName', name);
         const existingAsset = await this.repository.findAssetByName(name);
 
         if (existingAsset) {
-            debug('existingAsset');
             return existingAsset;
         }
 

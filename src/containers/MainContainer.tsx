@@ -200,11 +200,11 @@ export default function MainContainer({
             try {
                 await updateBalance();
 
-                const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                // const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-                if (pangeaBalance !== accountPangeaBalance) {
-                    setPangeaBalance(accountPangeaBalance);
-                }
+                // if (pangeaBalance !== accountPangeaBalance) {
+                //     setPangeaBalance(accountPangeaBalance);
+                // }
             } catch (error) {
                 debug('Error updating balance:', error);
 
@@ -333,7 +333,7 @@ export default function MainContainer({
                     <View style={styles.content}>
                         <ScrollView
                             contentContainerStyle={styles.scrollViewContent}
-                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                            // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>
