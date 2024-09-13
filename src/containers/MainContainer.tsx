@@ -189,15 +189,15 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        // if (did) {
-        //     onUrlOpen(did);
-        // }
-    }, [setUserName]);
+        if (did) {
+            onUrlOpen(did);
+        }
+    }, [setUserName, did, onUrlOpen]);
 
     useEffect(() => {
         async function getUpdatedBalance() {
             try {
-                // await updateBalance();
+                await updateBalance();
 
                 const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
@@ -225,7 +225,7 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, errorStore]);
+    }, [user, pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -274,49 +274,48 @@ export default function MainContainer({
     const updateAccountDetail = async (account) => {
         debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
 
-        // try {
-        //     if (account) {
-        //         const accountToken = await account.getNativeToken();
-        //         const logoUrl = accountToken.getLogoUrl();
+        try {
+            if (account) {
+                const accountToken = await account.getNativeToken();
+                const logoUrl = accountToken.getLogoUrl();
 
-        //         setAccountDetails({
-        //             symbol: accountToken.getSymbol(),
-        //             name: capitalizeFirstLetter(account.getChain().getName()),
-        //             address: account?.getName() || '',
-        //             ...(logoUrl && { image: logoUrl }),
-        //         });
-        //     }
-        // } catch (error) {
-        //     if (error.message === 'Network request failed') {
-        //         debug('Error updating account detail network error:');
-        //     } else {
-        //         debug('Error updating account detail:', error);
-        //         errorStore.setError({
-        //             error: error,
-        //             expected: true,
-        //         });
-        //     }
-        // }
+                setAccountDetails({
+                    symbol: accountToken.getSymbol(),
+                    name: capitalizeFirstLetter(account.getChain().getName()),
+                    address: account?.getName() || '',
+                    ...(logoUrl && { image: logoUrl }),
+                });
+            }
+        } catch (error) {
+            if (error.message === 'Network request failed') {
+                debug('Error updating account detail network error:');
+            } else {
+                debug('Error updating account detail:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
+        }
     };
 
-    // const onRefresh = React.useCallback(async () => {
-    //     try {
-    //         setRefreshBalance(true)
-    //         await updateBalance();
-    //         setRefreshBalance(false)
-
-    //     } catch (error) {
-    //         if (error.message === 'Network request failed') {
-    //             console.log('Error updating account detail network error:');
-    //         } else {
-    //             debug('Error when refresh balance:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     }
-    // }, [updateBalance, errorStore]);
+    const onRefresh = React.useCallback(async () => {
+        try {
+            setRefreshBalance(true);
+            await updateBalance();
+            setRefreshBalance(false);
+        } catch (error) {
+            if (error.message === 'Network request failed') {
+                console.log('Error updating account detail network error:');
+            } else {
+                debug('Error when refresh balance:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
+        }
+    }, [updateBalance, errorStore]);
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -331,7 +330,7 @@ export default function MainContainer({
                     <View style={styles.content}>
                         <ScrollView
                             contentContainerStyle={styles.scrollViewContent}
-                            // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>
