@@ -104,27 +104,27 @@ export default function MainContainer({
         initializeWeb3Wallet();
     }, [errorStore, initialized, initializeWalletState, accountExists]);
 
-    useEffect(() => {
-        const fetchAccounts = async () => {
-            debug('initializeAndFetchBalances', accountExists);
+    // useEffect(() => {
+    //     const fetchAccounts = async () => {
+    //         debug('initializeAndFetchBalances', accountExists);
 
-            try {
-                if (!accountExists) {
-                    debug('account not exists condition');
-                    await initializeWalletAccount();
-                    debug(`initializeAndFetchBalances try,  ${accountExists}`);
-                }
-            } catch (error) {
-                debug('Error initializing wallet account:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        };
+    //         try {
+    //             if (!accountExists) {
+    //                 debug('account not exists condition');
+    //                 await initializeWalletAccount();
+    //                 debug(`initializeAndFetchBalances try,  ${accountExists}`);
+    //             }
+    //         } catch (error) {
+    //             debug('Error initializing wallet account:', error);
+    //             errorStore.setError({
+    //                 error: error,
+    //                 expected: true,
+    //             });
+    //         }
+    //     };
 
-        fetchAccounts();
-    }, [errorStore, initializeWalletAccount, accountExists]);
+    //     fetchAccounts();
+    // }, [errorStore, initializeWalletAccount, accountExists]);
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -344,43 +344,43 @@ export default function MainContainer({
         // const [selectedAccount, setSelectedAccount] = useState(null);
 
         useEffect(() => {
-            if (accountExists) {
-                const fetchAssets = async () => {
-                    try {
-                        await connect();
+            const fetchAssets = async () => {
+                if (!accountExists) await initializeWalletAccount();
 
-                        for (const chain of chains) {
-                            const asset = await assetStorage.findAssetByName(chain.token);
+                try {
+                    await connect();
 
-                            if (asset) {
-                                setAccount((prevAccounts) => [
-                                    ...prevAccounts,
-                                    {
-                                        network: chain.name,
-                                        accountName: asset.accountName,
-                                        balance: asset.balance,
-                                        usdBalance: asset.usdBalance,
-                                    },
-                                ]);
-                            } else {
-                                setAccount((prevAccounts) => [
-                                    ...prevAccounts,
-                                    {
-                                        network: chain.name,
-                                        accountName: null,
-                                        balance: '0' + chain.token.getSymbol(),
-                                        usdBalance: 0,
-                                    },
-                                ]);
-                            }
+                    for (const chain of chains) {
+                        const asset = await assetStorage.findAssetByName(chain.token);
+
+                        if (asset) {
+                            setAccount((prevAccounts) => [
+                                ...prevAccounts,
+                                {
+                                    network: chain.name,
+                                    accountName: asset.accountName,
+                                    balance: asset.balance,
+                                    usdBalance: asset.usdBalance,
+                                },
+                            ]);
+                        } else {
+                            setAccount((prevAccounts) => [
+                                ...prevAccounts,
+                                {
+                                    network: chain.name,
+                                    accountName: null,
+                                    balance: '0' + chain.token.getSymbol(),
+                                    usdBalance: 0,
+                                },
+                            ]);
                         }
-                    } catch (error) {
-                        debug('Error fetching asset:', error);
                     }
-                };
+                } catch (error) {
+                    debug('Error fetching asset:', error);
+                }
+            };
 
-                fetchAssets();
-            }
+            fetchAssets();
         }, [setAccount]);
 
         const findAccountByChain = (chain: string) => {
