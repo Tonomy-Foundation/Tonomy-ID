@@ -80,6 +80,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 if (e.message === 'Network request failed') {
                     debug('network error when initializing wallet');
                 } else {
+                    debug('error when initializing wallet', e);
                     throw e;
                 }
             }
