@@ -63,14 +63,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                             //         errorStore.setError({ error: e, expected: false });
                             //     }
                             // }
-
-                            if (!accountExists) {
-                                try {
-                                    await progressiveRetryOnNetworkError(async () => await initializeWalletAccount());
-                                } catch (e) {
-                                    debug('Error initializing wallet accounts:', e);
-                                }
-                            }
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
