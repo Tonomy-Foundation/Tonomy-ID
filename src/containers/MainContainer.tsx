@@ -342,8 +342,8 @@ export default function MainContainer({
 
         useEffect(() => {
             const fetchAssets = async () => {
-                if (!accountExists) await initializeWalletAccount();
-                debug('AccountView', accountExists);
+                // if (!accountExists) await initializeWalletAccount();
+                // debug('AccountView', accountExists);
 
                 try {
                     setAccountLoading(true);
