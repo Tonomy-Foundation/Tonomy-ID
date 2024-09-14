@@ -19,7 +19,7 @@ const debug = Debug('tonomy-id:container:mainSplashScreen');
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState, initializeWalletState, initializeWalletAccount, initialized, accountExists } = useWalletStore();
+    const { clearState, initializeWalletState, initialized } = useWalletStore();
 
     useEffect(() => {
         async function main() {
@@ -55,7 +55,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         try {
                             await user.getUsername();
 
-                            if (!initialized && accountExists) {
+                            if (!initialized) {
                                 try {
                                     progressiveRetryOnNetworkError(async () => await initializeWalletState());
                                 } catch (e) {
@@ -100,9 +100,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         clearState,
         setStatus,
         isAppInitialized,
-        initializeWalletAccount,
         initialized,
-        accountExists,
     ]);
 
     return (
