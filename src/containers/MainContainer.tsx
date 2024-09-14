@@ -25,6 +25,7 @@ import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
 import {
+    EthereumChain,
     EthereumMainnetChain,
     EthereumPolygonChain,
     EthereumSepoliaChain,
@@ -39,6 +40,8 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
+import { IToken } from '../utils/chain/types';
+import { EthereumAccount, EthereumToken } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -58,6 +61,15 @@ export default function MainContainer({
     did?: string;
     navigation: MainScreenNavigationProp['navigation'];
 }) {
+    const chains = [
+        { token: ETHToken, chain: EthereumMainnetChain },
+        { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+        { token: ETHPolygonToken, chain: EthereumPolygonChain },
+    ];
+
+    const [accounts, setAccount] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
     const userStore = useUserStore();
     const user = userStore.user;
     const [username, setUsername] = useState('');
@@ -251,9 +263,7 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            setRefreshBalance(true);
             await updateBalance();
-            setRefreshBalance(false);
         } catch (error) {
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
@@ -273,16 +283,6 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
-    const chains = [
-        { name: 'Ethereum', token: ETHToken, chain: EthereumMainnetChain },
-        { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-        { name: 'Polygon', token: ETHPolygonToken, chain: EthereumPolygonChain },
-    ];
-
-    const [accounts, setAccount] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-    >([]);
-
     useEffect(() => {
         const fetchAssets = async () => {
             if (!accountExists) await initializeWalletAccount();
@@ -290,14 +290,14 @@ export default function MainContainer({
             try {
                 setRefreshBalance(true);
 
-                for (const chain of chains) {
-                    const asset = await assetStorage.findAssetByName(chain.token);
+                for (const chainObj of chains) {
+                    const asset = await assetStorage.findAssetByName(chainObj.token);
 
                     if (asset) {
                         setAccount((prevAccounts) => [
                             ...prevAccounts,
                             {
-                                network: chain.name,
+                                network: capitalizeFirstLetter(chainObj.chain.getName()),
                                 accountName: asset.accountName,
                                 balance: asset.balance,
                                 usdBalance: asset.usdBalance,
@@ -307,9 +307,9 @@ export default function MainContainer({
                         setAccount((prevAccounts) => [
                             ...prevAccounts,
                             {
-                                network: chain.name,
+                                network: capitalizeFirstLetter(chainObj.chain.getName()),
                                 accountName: null,
-                                balance: '0' + chain.token.getSymbol(),
+                                balance: '0' + chainObj.token.getSymbol(),
                                 usdBalance: 0,
                             },
                         ]);
@@ -318,6 +318,7 @@ export default function MainContainer({
 
                 setRefreshBalance(false);
             } catch (error) {
+                setRefreshBalance(false);
                 debug('Error fetching asset:', error);
             }
         };
@@ -334,14 +335,14 @@ export default function MainContainer({
         return { account, balance, usdBalance };
     };
 
-    const openAccountDetails = (account: any) => {
-        const accountData = findAccountByChain(account.name);
+    const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
+        const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
 
         setAccountDetails({
-            symbol: account.token.getSymbol(),
-            name: capitalizeFirstLetter(account.chain.getName()),
+            symbol: token.getSymbol(),
+            name: capitalizeFirstLetter(chain.getName()),
             address: accountData.account || '',
-            image: account.token.getLogoUrl(),
+            image: token.getLogoUrl(),
         });
         (refMessage.current as any)?.open();
     };
@@ -349,11 +350,11 @@ export default function MainContainer({
     const AccountsView = () => {
         return (
             <View>
-                {chains.map((chain, index) => {
-                    const accountData = findAccountByChain(chain.name);
+                {chains.map((chainObj, index) => {
+                    const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
 
                     return (
-                        <TouchableOpacity key={index} onPress={() => openAccountDetails(chain)}>
+                        <TouchableOpacity key={index} onPress={() => openAccountDetails(chainObj)}>
                             <View style={[styles.appDialog, { justifyContent: 'center' }]}>
                                 <View
                                     style={{
@@ -369,13 +370,15 @@ export default function MainContainer({
                                     >
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Image
-                                                source={{ uri: chain.token.getLogoUrl() }}
+                                                source={{ uri: chainObj.token.getLogoUrl() }}
                                                 style={[styles.favicon, { resizeMode: 'contain' }]}
                                             />
-                                            <Text style={styles.networkTitle}>{chain.name} Network:</Text>
+                                            <Text style={styles.networkTitle}>
+                                                {capitalizeFirstLetter(chainObj.chain.getName())} Network:
+                                            </Text>
                                         </View>
                                         {accountData.account ? (
-                                            <Text> {chain.chain.formatShortAccountName(accountData.account)}</Text>
+                                            <Text> {chainObj.chain.formatShortAccountName(accountData.account)}</Text>
                                         ) : (
                                             <Text>Not connected</Text>
                                         )}
