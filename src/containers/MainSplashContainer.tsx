@@ -19,7 +19,7 @@ const debug = Debug('tonomy-id:container:mainSplashScreen');
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState, initializeWalletState, initializeWalletAccount } = useWalletStore();
+    const { clearState, initializeWalletState, initializeWalletAccount, initialized, accountExists } = useWalletStore();
 
     useEffect(() => {
         async function main() {
@@ -54,8 +54,24 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                         try {
                             await user.getUsername();
-                            await initializeWalletState();
-                            await initializeWalletAccount();
+
+                            if (!initialized) {
+                                try {
+                                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                                } catch (e) {
+                                    console.error('Error initializing wallet:', e);
+                                    errorStore.setError({ error: e, expected: false });
+                                }
+                            }
+
+                            if (!accountExists) {
+                                try {
+                                    progressiveRetryOnNetworkError(async () => await initializeWalletAccount());
+                                } catch (e) {
+                                    console.error('Error initializing wallet accounts:', e);
+                                    errorStore.setError({ error: e, expected: false });
+                                }
+                            }
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
@@ -94,6 +110,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         setStatus,
         isAppInitialized,
         initializeWalletAccount,
+        initialized,
+        accountExists,
     ]);
 
     return (
