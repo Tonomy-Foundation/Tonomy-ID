@@ -134,24 +134,24 @@ export default function MainContainer({
         };
     }, []);
 
-    useEffect(() => {
-        const initializeWeb3Wallet = async () => {
-            try {
-                if (!initialized && isOnline) {
-                    debug('initialized if condition called');
-                    await initializeWalletState();
-                }
-            } catch (error) {
-                debug('Error initializing wallet account:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        };
+    // useEffect(() => {
+    //     const initializeWeb3Wallet = async () => {
+    //         try {
+    //             if (!initialized && isOnline) {
+    //                 debug('initialized if condition called');
+    //                 await initializeWalletState();
+    //             }
+    //         } catch (error) {
+    //             debug('Error initializing wallet account:', error);
+    //             errorStore.setError({
+    //                 error: error,
+    //                 expected: true,
+    //             });
+    //         }
+    //     };
 
-        initializeWeb3Wallet();
-    }, [errorStore, initialized, initializeWalletState, isOnline]);
+    //     initializeWeb3Wallet();
+    // }, [errorStore, initialized, initializeWalletState, isOnline]);
 
     const connectToDid = useCallback(
         async (did: string) => {
