@@ -96,13 +96,17 @@ export default function MainContainer({
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener((state) => {
             debug('Connection type', state.type);
-            setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
+            if (state.type !== 'none' && state.type !== 'unknown') {
+                setIsOnline(false);
+            } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
         });
 
         // Check initial connectivity status
         NetInfo.fetch().then((state) => {
             debug('Connection type fetch function', state.type);
-            setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
+            if (state.type !== 'none' && state.type !== 'unknown') {
+                setIsOnline(false);
+            } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
         });
 
         return () => {
@@ -227,12 +231,14 @@ export default function MainContainer({
 
         getUpdatedBalance();
 
-        const interval = setInterval(() => {
-            getUpdatedBalance();
-        }, 20000);
+        if (isOnline) {
+            const interval = setInterval(() => {
+                getUpdatedBalance();
+            }, 20000);
 
-        return () => clearInterval(interval);
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
+            return () => clearInterval(interval);
+        }
+    }, [pangeaBalance, isOnline, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -281,7 +287,7 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            await updateBalance();
+            if (isOnline) await updateBalance();
         } catch (error) {
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
@@ -293,7 +299,7 @@ export default function MainContainer({
                 });
             }
         }
-    }, [updateBalance, errorStore]);
+    }, [updateBalance, errorStore, isOnline]);
 
     useEffect(() => {
         if (accountDetails?.address) {
@@ -354,15 +360,22 @@ export default function MainContainer({
     };
 
     const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-        const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+        if (isOnline) {
+            const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
 
-        setAccountDetails({
-            symbol: token.getSymbol(),
-            name: capitalizeFirstLetter(chain.getName()),
-            address: accountData.account || '',
-            image: token.getLogoUrl(),
-        });
-        (refMessage.current as any)?.open();
+            setAccountDetails({
+                symbol: token.getSymbol(),
+                name: capitalizeFirstLetter(chain.getName()),
+                address: accountData.account || '',
+                image: token.getLogoUrl(),
+            });
+            (refMessage.current as any)?.open();
+        } else {
+            errorStore.setError({
+                error: new Error('Please check your internet connection'),
+                expected: true,
+            });
+        }
     };
 
     const AccountsView = () => {
@@ -410,6 +423,17 @@ export default function MainContainer({
                                                     style={styles.generateKey}
                                                     onPress={() => {
                                                         debug('Generate key clicked');
+
+                                                        if (isOnline) {
+                                                            navigation.navigate('CreateEthereumKey');
+                                                        } else {
+                                                            errorStore.setError({
+                                                                error: new Error(
+                                                                    'Please check your internet connection'
+                                                                ),
+                                                                expected: true,
+                                                            });
+                                                        }
                                                     }}
                                                     color={theme.colors.white}
                                                     size="medium"
