@@ -8,8 +8,10 @@ import {
     TouchableOpacity,
     ImageSourcePropType,
     ScrollView,
+    Share,
     RefreshControl,
 } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -39,6 +41,10 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import TIconButton from '../components/TIconButton';
+import QRCode from 'react-native-qrcode-svg';
+import Popover from 'react-native-popover-view';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -77,8 +83,7 @@ export default function MainContainer({
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
-
-    const refMessage = useRef(null);
+    const refRBSheet = useRef(null);
 
     useEffect(() => {
         const initializeWeb3Wallet = async () => {
@@ -280,34 +285,34 @@ export default function MainContainer({
     //     }
     // }, [accountDetails]);
 
-    const updateAccountDetail = async (account) => {
-        debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
+    // const updateAccountDetail = async (account) => {
+    //     debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
 
-        try {
-            if (account) {
-                const accountToken = await account.getNativeToken();
-                const logoUrl = accountToken.getLogoUrl();
+    //     try {
+    //         if (account) {
+    //             const accountToken = await account.getNativeToken();
+    //             const logoUrl = accountToken.getLogoUrl();
 
-                setAccountDetails({
-                    symbol: accountToken.getSymbol(),
-                    name: capitalizeFirstLetter(account.getChain().getName()),
-                    address: account?.getName() || '',
-                    ...(logoUrl && { image: logoUrl }),
-                });
-                (refMessage.current as any)?.open();
-            }
-        } catch (error) {
-            if (error.message === 'Network request failed') {
-                debug('Error updating account detail network error:');
-            } else {
-                debug('Error updating account detail:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        }
-    };
+    //             setAccountDetails({
+    //                 symbol: accountToken.getSymbol(),
+    //                 name: capitalizeFirstLetter(account.getChain().getName()),
+    //                 address: account?.getName() || '',
+    //                 ...(logoUrl && { image: logoUrl }),
+    //             });
+    //             (refMessage.current as any)?.open();
+    //         }
+    //     } catch (error) {
+    //         if (error.message === 'Network request failed') {
+    //             debug('Error updating account detail network error:');
+    //         } else {
+    //             debug('Error updating account detail:', error);
+    //             errorStore.setError({
+    //                 error: error,
+    //                 expected: true,
+    //             });
+    //         }
+    //     }
+    // };
 
     // const onRefresh = React.useCallback(async () => {
     //     try {
@@ -326,6 +331,7 @@ export default function MainContainer({
     //         }
     //     }
     // }, [updateBalance, errorStore]);
+    debug('accountExists', accountExists);
     const chains = [
         { name: 'Ethereum', token: ETHToken, chain: EthereumMainnetChain },
         { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
@@ -335,6 +341,7 @@ export default function MainContainer({
         const [accounts, setAccount] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
         >([]);
+        // const [selectedAccount, setSelectedAccount] = useState(null);
 
         useEffect(() => {
             if (accountExists) {
@@ -384,6 +391,18 @@ export default function MainContainer({
 
             return { account, balance, usdBalance };
         };
+
+        // const openAccountDetails = (chain: any) => {
+        //     const accountData = findAccountByChain(chain.name);
+
+        //     setSelectedAccount({
+        //         symbol: chain.token.getSymbol(),
+        //         icon: chain.token.getLogoUrl(),
+        //         network: chain.name,
+        //         accountName: accountData.account,
+        //     });
+        //     (refRBSheet.current as any)?.open();
+        // };
 
         return (
             <View>
@@ -440,6 +459,79 @@ export default function MainContainer({
                     );
                 })}
             </View>
+        );
+    };
+
+    const AccountDetailsView = (symbol, icon, network, accountName) => {
+        const [showPopover, setShowPopover] = useState(false);
+
+        const message = `${accountName}`;
+
+        const copyToClipboard = () => {
+            setShowPopover(true);
+            Clipboard.setString(message);
+            setTimeout(() => setShowPopover(false), 400);
+        };
+
+        const onShare = async () => {
+            try {
+                await Share.share({
+                    message: message,
+                });
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        return (
+            <RBSheet ref={refRBSheet} openDuration={150} closeDuration={100} height={560}>
+                <View style={styles.rawTransactionDrawer}>
+                    <Text style={styles.drawerHead}>Receive</Text>
+                    <TouchableOpacity onPress={() => (refRBSheet.current as any)?.close()}>
+                        <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} />
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.subHeading}>
+                    Only send {symbol} assets to this address. Other assets will be lost forever.
+                </Text>
+                <View style={styles.networkHeading}>
+                    <Image source={{ uri: icon }} style={styles.faviconIcon} />
+
+                    <Text style={styles.networkTitleName}>{network} Network</Text>
+                </View>
+                <View style={{ ...styles.qrView, flexDirection: 'column' }}>
+                    <QRCode value="testValue" size={150} />
+                    <Text style={styles.accountName}>{accountName}</Text>
+                </View>
+                <View style={styles.iconContainer}>
+                    <Popover
+                        isVisible={showPopover}
+                        popoverStyle={{ padding: 10 }}
+                        from={
+                            <TouchableOpacity style={styles.iconButton} onPress={() => copyToClipboard()}>
+                                <TIconButton
+                                    icon={'content-copy'}
+                                    color={theme.colors.lightBg}
+                                    iconColor={theme.colors.primary}
+                                    size={24}
+                                />
+                                <Text style={styles.socialText}>Copy</Text>
+                            </TouchableOpacity>
+                        }
+                    >
+                        <Text>Message Copied</Text>
+                    </Popover>
+                    <TouchableOpacity onPress={() => onShare()}>
+                        <TIconButton
+                            icon={'share-variant'}
+                            color={theme.colors.lightBg}
+                            iconColor={theme.colors.primary}
+                            size={24}
+                        />
+                        <Text style={styles.socialText}>Share</Text>
+                    </TouchableOpacity>
+                </View>
+            </RBSheet>
         );
     };
 
@@ -635,5 +727,73 @@ const styles = StyleSheet.create({
         width: '40%',
         backgroundColor: theme.colors.primary,
         borderRadius: 10,
+    },
+
+    // RBSheet style
+    rawTransactionDrawer: {
+        padding: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    drawerHead: {
+        fontSize: 20,
+        fontWeight: '600',
+        marginTop: 8,
+    },
+    subHeading: {
+        backgroundColor: theme.colors.lightBg,
+        marginHorizontal: 15,
+        padding: 10,
+        fontWeight: '400',
+        fontSize: 14,
+        lineHeight: 18,
+    },
+    networkHeading: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        justifyContent: 'center',
+    },
+    networkTitleName: {
+        color: theme.colors.primary,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    faviconIcon: {
+        width: 18,
+        height: 18,
+        marginRight: 5,
+    },
+    qrView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        justifyContent: 'center',
+        borderColor: theme.colors.grey6,
+        borderWidth: 2,
+        borderRadius: 10,
+        padding: 20,
+        marginHorizontal: 70,
+    },
+    accountName: {
+        fontSize: 14,
+        fontWeight: '700',
+        marginTop: 10,
+    },
+    iconContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    iconButton: {
+        marginHorizontal: 25,
+    },
+    socialText: {
+        fontSize: 12,
+        color: theme.colors.primary,
+        textAlign: 'center',
+        fontWeight: '500',
     },
 });
