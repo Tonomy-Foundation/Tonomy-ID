@@ -333,9 +333,9 @@ export default function MainContainer({
     // }, [updateBalance, errorStore]);
     debug('accountExists', accountExists);
     const chains = [
-        { name: 'Ethereum', token: ETHToken, chain: EthereumMainnetChain },
-        { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-        { name: 'Polygon', token: ETHPolygonToken, chain: EthereumPolygonChain },
+        { name: 'Ethereum', token: ETHToken },
+        { name: 'Sepolia', token: ETHSepoliaToken },
+        { name: 'Polygon', token: ETHPolygonToken },
     ];
     const AccountsView = () => {
         const [accounts, setAccount] = useState<
@@ -346,35 +346,53 @@ export default function MainContainer({
 
         useEffect(() => {
             const fetchAssets = async () => {
+                if (!accountExists) await initializeWalletAccount();
+                debug('AccountView', accountExists);
+
                 try {
-                    await connect();
                     setAccountLoading(true);
+                    setAccount([
+                        {
+                            network: 'Ethereum',
+                            accountName: '0x07B6F73eAFd36d3E651FeB768B9D4C05C8b36F54',
+                            balance: '0',
+                            usdBalance: 0,
+                        },
+                        {
+                            network: 'Sepolia',
+                            accountName: '0x07B6judeAFd36d3E651FeB768B9D4C05C8b36F54',
+                            balance: '0',
+                            usdBalance: 0,
+                        },
+                    ]);
+                    // for (const chain of chains) {
+                    //     debug('chain.token', chain.token);
+                    //     const asset = await assetStorage.findAssetByName(chain.token);
 
-                    for (const chain of chains) {
-                        const asset = await assetStorage.findAssetByName(chain.token);
+                    //     debug('Asset:', asset);
 
-                        if (asset) {
-                            setAccount((prevAccounts) => [
-                                ...prevAccounts,
-                                {
-                                    network: chain.name,
-                                    accountName: asset.accountName,
-                                    balance: asset.balance,
-                                    usdBalance: asset.usdBalance,
-                                },
-                            ]);
-                        } else {
-                            setAccount((prevAccounts) => [
-                                ...prevAccounts,
-                                {
-                                    network: chain.name,
-                                    accountName: null,
-                                    balance: '0' + chain.token.getSymbol(),
-                                    usdBalance: 0,
-                                },
-                            ]);
-                        }
-                    }
+                    //     if (asset) {
+                    //         setAccount((prevAccounts) => [
+                    //             ...prevAccounts,
+                    //             {
+                    //                 network: chain.name,
+                    //                 accountName: asset.accountName,
+                    //                 balance: asset.balance,
+                    //                 usdBalance: asset.usdBalance,
+                    //             },
+                    //         ]);
+                    //     } else {
+                    //         setAccount((prevAccounts) => [
+                    //             ...prevAccounts,
+                    //             {
+                    //                 network: chain.name,
+                    //                 accountName: null,
+                    //                 balance: '0' + chain.token.getSymbol(),
+                    //                 usdBalance: 0,
+                    //             },
+                    //         ]);
+                    //     }
+                    // }
 
                     setAccountLoading(false);
                 } catch (error) {
@@ -384,6 +402,7 @@ export default function MainContainer({
 
             fetchAssets();
         }, [setAccount]);
+        debug('accounts', accounts);
 
         const findAccountByChain = (chain: string) => {
             const accountExists = accounts.find((account) => account.network === chain);
