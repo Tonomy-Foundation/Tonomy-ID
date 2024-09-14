@@ -116,10 +116,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
             //                 const abstractAsset = new Asset(token, BigInt(0));
 
             //                 await assetStorage.createAsset(abstractAsset, account);
+            //                 await AsyncStorage.setItem('walletAccountExists', 'true')
             //             } else {
             //                 account = new EthereumAccount(chain, asset.accountName);
             //             }
-
+            //            await AsyncStorage.setItem('walletAccountExists', 'true')
             //             debug('account', account);
             //             return {
             //                 account,

@@ -341,15 +341,14 @@ export default function MainContainer({
         const [accounts, setAccount] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
         >([]);
+        const [accountLoading, setAccountLoading] = useState(false);
         // const [selectedAccount, setSelectedAccount] = useState(null);
 
         useEffect(() => {
             const fetchAssets = async () => {
-                if (!accountExists) await initializeWalletAccount();
-                debug('AccountView', accountExists);
-
                 try {
                     await connect();
+                    setAccountLoading(true);
 
                     for (const chain of chains) {
                         const asset = await assetStorage.findAssetByName(chain.token);
@@ -376,6 +375,8 @@ export default function MainContainer({
                             ]);
                         }
                     }
+
+                    setAccountLoading(false);
                 } catch (error) {
                     debug('Error fetching asset:', error);
                 }
@@ -407,58 +408,66 @@ export default function MainContainer({
 
         return (
             <View>
-                {chains.map((chain, index) => {
-                    const accountData = findAccountByChain(chain.name);
+                {accountLoading ? (
+                    <View>
+                        <TSpinner />
+                    </View>
+                ) : (
+                    <>
+                        {chains.map((chain, index) => {
+                            const accountData = findAccountByChain(chain.name);
 
-                    return (
-                        <TouchableOpacity key={index}>
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image
-                                                source={{ uri: chain.token.getLogoUrl() }}
-                                                style={[styles.favicon, { resizeMode: 'contain' }]}
-                                            />
-                                            <Text style={styles.networkTitle}>{chain.name} Network:</Text>
-                                        </View>
-                                        {accountData.account ? (
-                                            <Text>
-                                                {accountData.account.substring(0, 7)}....
-                                                {accountData.account.substring(accountData.account.length - 6)}
-                                            </Text>
-                                        ) : (
-                                            <Text>Not connected</Text>
-                                        )}
-                                    </View>
-                                    {!accountData.account ? (
-                                        <TButton
-                                            style={styles.generateKey}
-                                            onPress={() => {
-                                                debug('Generate key clicked');
-                                            }}
-                                            color={theme.colors.white}
-                                            size="medium"
-                                        >
-                                            Generate key
-                                        </TButton>
-                                    ) : (
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                            <>
+                            return (
+                                <TouchableOpacity key={index}>
+                                    <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Text>{accountData.balance}</Text>
+                                                    <Image
+                                                        source={{ uri: chain.token.getLogoUrl() }}
+                                                        style={[styles.favicon, { resizeMode: 'contain' }]}
+                                                    />
+                                                    <Text style={styles.networkTitle}>{chain.name} Network:</Text>
                                                 </View>
-                                                <Text style={styles.secondaryColor}>
-                                                    ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
-                                                </Text>
-                                            </>
+                                                {accountData.account ? (
+                                                    <Text>
+                                                        {accountData.account.substring(0, 7)}....
+                                                        {accountData.account.substring(accountData.account.length - 6)}
+                                                    </Text>
+                                                ) : (
+                                                    <Text>Not connected</Text>
+                                                )}
+                                            </View>
+                                            {!accountData.account ? (
+                                                <TButton
+                                                    style={styles.generateKey}
+                                                    onPress={() => {
+                                                        debug('Generate key clicked');
+                                                    }}
+                                                    color={theme.colors.white}
+                                                    size="medium"
+                                                >
+                                                    Generate key
+                                                </TButton>
+                                            ) : (
+                                                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                    <>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                            <Text>{accountData.balance}</Text>
+                                                        </View>
+                                                        <Text style={styles.secondaryColor}>
+                                                            ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
+                                                        </Text>
+                                                    </>
+                                                </View>
+                                            )}
                                         </View>
-                                    )}
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    );
-                })}
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </>
+                )}
             </View>
         );
     };
