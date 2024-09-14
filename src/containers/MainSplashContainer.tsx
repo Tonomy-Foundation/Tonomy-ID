@@ -55,14 +55,14 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         try {
                             await user.getUsername();
 
-                            if (!initialized) {
-                                try {
-                                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                                } catch (e) {
-                                    console.error('Error initializing wallet:', e);
-                                    errorStore.setError({ error: e, expected: false });
-                                }
-                            }
+                            // if (!initialized) {
+                            //     try {
+                            //         progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                            //     } catch (e) {
+                            //         console.error('Error initializing wallet:', e);
+                            //         errorStore.setError({ error: e, expected: false });
+                            //     }
+                            // }
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
