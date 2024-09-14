@@ -92,6 +92,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
         try {
             const state = get();
+
+            if (get().accountExists) {
+                debug('Account already exists');
+                return;
+            }
+
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 const key = await keyStorage.findByName(keyName, chain);
 
@@ -138,7 +144,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 state.polygonAccount = polygonData.value.account;
             }
 
-            if (!state.accountExists) {
+            if (!get().accountExists) {
                 set({
                     ethereumAccount: state.ethereumAccount,
                     sepoliaAccount: state.sepoliaAccount,
