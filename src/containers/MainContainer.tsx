@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -526,8 +527,8 @@ export default function MainContainer({
                                                                 $
                                                                 {pangeaBalance
                                                                     ? formatCurrencyValue(
-                                                                        pangeaBalance * USD_CONVERSION
-                                                                    )
+                                                                          pangeaBalance * USD_CONVERSION
+                                                                      )
                                                                     : 0.0}
                                                             </Text>
                                                         </>
