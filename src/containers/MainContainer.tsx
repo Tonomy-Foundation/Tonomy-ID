@@ -42,7 +42,7 @@ import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/
 import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -93,26 +93,47 @@ export default function MainContainer({
     const refMessage = useRef(null);
     const [isOnline, setIsOnline] = useState(false);
 
+    // useEffect(() => {
+    //     const unsubscribe = NetInfo.addEventListener((state) => {
+    //         debug('Connection type', state.type);
+    //         if (state.type !== 'none' && state.type !== 'unknown') {
+    //             setIsOnline(false);
+    //         } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
+    //     });
+
+    //     // Check initial connectivity status
+    //     NetInfo.fetch().then((state) => {
+    //         debug('Connection type fetch function', state.type);
+    //         if (state.type !== 'none' && state.type !== 'unknown') {
+    //             setIsOnline(false);
+    //         } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
+    //     });
+
+    //     return () => {
+    //         unsubscribe();
+    //     };
+    // }, []);
     useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener((state) => {
+        const handleConnectivityChange = (state: NetInfoState) => {
             debug('Connection type', state.type);
-            if (state.type !== 'none' && state.type !== 'unknown') {
-                setIsOnline(false);
-            } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
-        });
+            setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
+        };
+
+        // Set up the event listener for connectivity changes
+        const unsubscribe = NetInfo.addEventListener(handleConnectivityChange);
 
         // Check initial connectivity status
         NetInfo.fetch().then((state) => {
             debug('Connection type fetch function', state.type);
-            if (state.type !== 'none' && state.type !== 'unknown') {
-                setIsOnline(false);
-            } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
+            setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
         });
 
+        // Clean up the event listener
         return () => {
             unsubscribe();
         };
     }, []);
+
     useEffect(() => {
         const initializeWeb3Wallet = async () => {
             try {
