@@ -8,10 +8,8 @@ import {
     TouchableOpacity,
     ImageSourcePropType,
     ScrollView,
-    Share,
     RefreshControl,
 } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
@@ -40,11 +38,7 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import TIconButton from '../components/TIconButton';
-import QRCode from 'react-native-qrcode-svg';
-import Popover from 'react-native-popover-view';
+import { assetStorage } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -83,7 +77,7 @@ export default function MainContainer({
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
-    const refRBSheet = useRef(null);
+    const refMessage = useRef(null);
 
     // useEffect(() => {
     //     const initializeWeb3Wallet = async () => {
@@ -103,28 +97,6 @@ export default function MainContainer({
 
     //     initializeWeb3Wallet();
     // }, [errorStore, initialized, initializeWalletState, accountExists]);
-
-    // useEffect(() => {
-    //     const fetchAccounts = async () => {
-    //         debug('initializeAndFetchBalances', accountExists);
-
-    //         try {
-    //             if (!accountExists) {
-    //                 debug('account not exists condition');
-    //                 await initializeWalletAccount();
-    //                 debug(`initializeAndFetchBalances try,  ${accountExists}`);
-    //             }
-    //         } catch (error) {
-    //             debug('Error initializing wallet account:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     };
-
-    //     fetchAccounts();
-    // }, [errorStore, initializeWalletAccount, accountExists]);
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -194,52 +166,43 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        // if (did) {
-        //     onUrlOpen(did);
-        // }
+        if (did) {
+            onUrlOpen(did);
+        }
     }, [setUserName, did, onUrlOpen]);
 
-    // useEffect(() => {
-    //     async function getUpdatedBalance() {
-    //         try {
-    //             if (ethereumAccount || sepoliaAccount || polygonAccount) await updateBalance();
+    useEffect(() => {
+        async function getUpdatedBalance() {
+            try {
+                if (accountExists) await updateBalance();
 
-    //             // const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-    //             // if (pangeaBalance !== accountPangeaBalance) {
-    //             //     setPangeaBalance(accountPangeaBalance);
-    //             // }
-    //         } catch (error) {
-    //             debug('Error updating balance:', error);
+                if (pangeaBalance !== accountPangeaBalance) {
+                    setPangeaBalance(accountPangeaBalance);
+                }
+            } catch (error) {
+                debug('Error updating balance:', error);
 
-    //             if (error.message === 'Network request failed') {
-    //                 debug('netowrk error when call updating balance:');
-    //             } else {
-    //                 errorStore.setError({
-    //                     error: error,
-    //                     expected: true,
-    //                 });
-    //             }
-    //         }
-    //     }
+                if (error.message === 'Network request failed') {
+                    debug('network error when call updating balance:');
+                } else {
+                    errorStore.setError({
+                        error: error,
+                        expected: true,
+                    });
+                }
+            }
+        }
 
-    //     getUpdatedBalance();
+        getUpdatedBalance();
 
-    //     // const interval = setInterval(() => {
-    //     //     getUpdatedBalance();
-    //     // }, 20000);
+        const interval = setInterval(() => {
+            getUpdatedBalance();
+        }, 20000);
 
-    //     // return () => clearInterval(interval);
-    // }, [
-    //     pangeaBalance,
-    //     setPangeaBalance,
-    //     accountName,
-    //     errorStore,
-    //     updateBalance,
-    //     ethereumAccount,
-    //     sepoliaAccount,
-    //     polygonAccount,
-    // ]);
+        return () => clearInterval(interval);
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -271,6 +234,13 @@ export default function MainContainer({
                         expected: false,
                     });
                 }
+            } else if (e instanceof CommunicationError) {
+                debug('CommunicationError QR Code', JSON.stringify(e, null, 2));
+
+                errorStore.setError({
+                    error: new Error(`Check your connection`),
+                    expected: false,
+                });
             } else {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -279,59 +249,30 @@ export default function MainContainer({
         }
     }
 
-    // useEffect(() => {
-    //     if (accountDetails?.address) {
-    //         (refMessage?.current as any)?.open();
-    //     }
-    // }, [accountDetails]);
+    const onRefresh = React.useCallback(async () => {
+        try {
+            setRefreshBalance(true);
+            await updateBalance();
+            setRefreshBalance(false);
+        } catch (error) {
+            if (error.message === 'Network request failed') {
+                debug('Error updating account detail network error:');
+            } else {
+                debug('Error when refresh balance:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
+        }
+    }, [updateBalance, errorStore]);
 
-    // const updateAccountDetail = async (account) => {
-    //     debug(`updateAccountDetail ${JSON.stringify(account, null, 2)}`);
+    useEffect(() => {
+        if (accountDetails?.address) {
+            (refMessage?.current as any)?.open();
+        }
+    }, [accountDetails]);
 
-    //     try {
-    //         if (account) {
-    //             const accountToken = await account.getNativeToken();
-    //             const logoUrl = accountToken.getLogoUrl();
-
-    //             setAccountDetails({
-    //                 symbol: accountToken.getSymbol(),
-    //                 name: capitalizeFirstLetter(account.getChain().getName()),
-    //                 address: account?.getName() || '',
-    //                 ...(logoUrl && { image: logoUrl }),
-    //             });
-    //             (refMessage.current as any)?.open();
-    //         }
-    //     } catch (error) {
-    //         if (error.message === 'Network request failed') {
-    //             debug('Error updating account detail network error:');
-    //         } else {
-    //             debug('Error updating account detail:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     }
-    // };
-
-    // const onRefresh = React.useCallback(async () => {
-    //     try {
-    //         setRefreshBalance(true);
-    //         await updateBalance();
-    //         setRefreshBalance(false);
-    //     } catch (error) {
-    //         if (error.message === 'Network request failed') {
-    //             console.log('Error updating account detail network error:');
-    //         } else {
-    //             debug('Error when refresh balance:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     }
-    // }, [updateBalance, errorStore]);
-    debug('accountExists', accountExists);
     const chains = [
         { name: 'Ethereum', token: ETHToken, chain: EthereumMainnetChain },
         { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
@@ -341,8 +282,6 @@ export default function MainContainer({
         const [accounts, setAccount] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
         >([]);
-        const [accountLoading, setAccountLoading] = useState(false);
-        // const [selectedAccount, setSelectedAccount] = useState(null);
 
         useEffect(() => {
             const fetchAssets = async () => {
@@ -350,8 +289,6 @@ export default function MainContainer({
                 debug('AccountView', accountExists);
 
                 try {
-                    setAccountLoading(true);
-
                     for (const chain of chains) {
                         debug('chain.token', chain.token);
                         const asset = await assetStorage.findAssetByName(chain.token);
@@ -380,16 +317,13 @@ export default function MainContainer({
                             ]);
                         }
                     }
-
-                    setAccountLoading(false);
                 } catch (error) {
                     debug('Error fetching asset:', error);
                 }
             };
 
             fetchAssets();
-        }, [setAccount]);
-        debug('accounts', accounts);
+        }, []);
 
         const findAccountByChain = (chain: string) => {
             const accountExists = accounts.find((account) => account.network === chain);
@@ -400,154 +334,75 @@ export default function MainContainer({
             return { account, balance, usdBalance };
         };
 
-        // const openAccountDetails = (chain: any) => {
-        //     const accountData = findAccountByChain(chain.name);
+        const openAccountDetails = (account: any) => {
+            const accountData = findAccountByChain(account.name);
 
-        //     setSelectedAccount({
-        //         symbol: chain.token.getSymbol(),
-        //         icon: chain.token.getLogoUrl(),
-        //         network: chain.name,
-        //         accountName: accountData.account,
-        //     });
-        //     (refRBSheet.current as any)?.open();
-        // };
+            setAccountDetails({
+                symbol: account.token.getSymbol(),
+                name: capitalizeFirstLetter(account.chain.getName()),
+                address: accountData.account || '',
+                image: account.token.getLogoUrl(),
+            });
+            (refMessage.current as any)?.open();
+        };
 
         return (
             <View>
-                {accountLoading ? (
-                    <View>
-                        <TSpinner />
-                    </View>
-                ) : (
-                    <>
-                        {chains.map((chain, index) => {
-                            const accountData = findAccountByChain(chain.name);
+                {chains.map((chain, index) => {
+                    const accountData = findAccountByChain(chain.name);
 
-                            return (
-                                <TouchableOpacity key={index}>
-                                    <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Image
-                                                        source={{ uri: chain.token.getLogoUrl() }}
-                                                        style={[styles.favicon, { resizeMode: 'contain' }]}
-                                                    />
-                                                    <Text style={styles.networkTitle}>{chain.name} Network:</Text>
-                                                </View>
-                                                {accountData.account ? (
-                                                    <Text>
-                                                        {accountData.account.substring(0, 7)}....
-                                                        {accountData.account.substring(accountData.account.length - 6)}
-                                                    </Text>
-                                                ) : (
-                                                    <Text>Not connected</Text>
-                                                )}
-                                            </View>
-                                            {!accountData.account ? (
-                                                <TButton
-                                                    style={styles.generateKey}
-                                                    onPress={() => {
-                                                        debug('Generate key clicked');
-                                                    }}
-                                                    color={theme.colors.white}
-                                                    size="medium"
-                                                >
-                                                    Generate key
-                                                </TButton>
-                                            ) : (
-                                                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                    <>
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                            <Text>{accountData.balance}</Text>
-                                                        </View>
-                                                        <Text style={styles.secondaryColor}>
-                                                            ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
-                                                        </Text>
-                                                    </>
-                                                </View>
-                                            )}
+                    return (
+                        <TouchableOpacity key={index} onPress={() => openAccountDetails(chain)}>
+                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image
+                                                source={{ uri: chain.token.getLogoUrl() }}
+                                                style={[styles.favicon, { resizeMode: 'contain' }]}
+                                            />
+                                            <Text style={styles.networkTitle}>{chain.name} Network:</Text>
                                         </View>
+                                        {accountData.account ? (
+                                            <Text>
+                                                {accountData.account.substring(0, 7)}....
+                                                {accountData.account.substring(accountData.account.length - 6)}
+                                            </Text>
+                                        ) : (
+                                            <Text>Not connected</Text>
+                                        )}
                                     </View>
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </>
-                )}
+                                    {!accountData.account ? (
+                                        <TButton
+                                            style={styles.generateKey}
+                                            onPress={() => {
+                                                debug('Generate key clicked');
+                                            }}
+                                            color={theme.colors.white}
+                                            size="medium"
+                                        >
+                                            Generate key
+                                        </TButton>
+                                    ) : (
+                                        <>
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                <>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text>{accountData.balance}</Text>
+                                                    </View>
+                                                    <Text style={styles.secondaryColor}>
+                                                        ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
+                                                    </Text>
+                                                </>
+                                            </View>
+                                        </>
+                                    )}
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
             </View>
-        );
-    };
-
-    const AccountDetailsView = (symbol, icon, network, accountName) => {
-        const [showPopover, setShowPopover] = useState(false);
-
-        const message = `${accountName}`;
-
-        const copyToClipboard = () => {
-            setShowPopover(true);
-            Clipboard.setString(message);
-            setTimeout(() => setShowPopover(false), 400);
-        };
-
-        const onShare = async () => {
-            try {
-                await Share.share({
-                    message: message,
-                });
-            } catch (error) {
-                alert(error.message);
-            }
-        };
-
-        return (
-            <RBSheet ref={refRBSheet} openDuration={150} closeDuration={100} height={560}>
-                <View style={styles.rawTransactionDrawer}>
-                    <Text style={styles.drawerHead}>Receive</Text>
-                    <TouchableOpacity onPress={() => (refRBSheet.current as any)?.close()}>
-                        <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} />
-                    </TouchableOpacity>
-                </View>
-                <Text style={styles.subHeading}>
-                    Only send {symbol} assets to this address. Other assets will be lost forever.
-                </Text>
-                <View style={styles.networkHeading}>
-                    <Image source={{ uri: icon }} style={styles.faviconIcon} />
-
-                    <Text style={styles.networkTitleName}>{network} Network</Text>
-                </View>
-                <View style={{ ...styles.qrView, flexDirection: 'column' }}>
-                    <QRCode value="testValue" size={150} />
-                    <Text style={styles.accountName}>{accountName}</Text>
-                </View>
-                <View style={styles.iconContainer}>
-                    <Popover
-                        isVisible={showPopover}
-                        popoverStyle={{ padding: 10 }}
-                        from={
-                            <TouchableOpacity style={styles.iconButton} onPress={() => copyToClipboard()}>
-                                <TIconButton
-                                    icon={'content-copy'}
-                                    color={theme.colors.lightBg}
-                                    iconColor={theme.colors.primary}
-                                    size={24}
-                                />
-                                <Text style={styles.socialText}>Copy</Text>
-                            </TouchableOpacity>
-                        }
-                    >
-                        <Text>Message Copied</Text>
-                    </Popover>
-                    <TouchableOpacity onPress={() => onShare()}>
-                        <TIconButton
-                            icon={'share-variant'}
-                            color={theme.colors.lightBg}
-                            iconColor={theme.colors.primary}
-                            size={24}
-                        />
-                        <Text style={styles.socialText}>Share</Text>
-                    </TouchableOpacity>
-                </View>
-            </RBSheet>
         );
     };
 
@@ -589,13 +444,13 @@ export default function MainContainer({
                                     <TouchableOpacity
                                         onPress={() => {
                                             debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
-                                            // setAccountDetails({
-                                            //     symbol: 'LEOS',
-                                            //     name: 'Pangea',
-                                            //     address: accountName,
-                                            //     icon: Images.GetImage('logo48'),
-                                            // });
-                                            // (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                            setAccountDetails({
+                                                symbol: 'LEOS',
+                                                name: 'Pangea',
+                                                address: accountName,
+                                                icon: Images.GetImage('logo48'),
+                                            });
+                                            (refMessage.current as any)?.open(); // Open the AccountDetails component here
                                         }}
                                     >
                                         <View style={[styles.appDialog, { justifyContent: 'center' }]}>
@@ -627,14 +482,14 @@ export default function MainContainer({
                                     <AccountsView />
                                 </View>
                             </ScrollView>
-                            {/* <AccountDetails
+                            <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                                 }}
-                            /> */}
+                            />
                         </ScrollView>
                     </View>
                 )}
