@@ -41,7 +41,7 @@ import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/
 import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
-import { EthereumAccount, EthereumToken } from '../utils/chain/etherum';
+import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -90,25 +90,42 @@ export default function MainContainer({
         updateBalance: state.updateBalance,
     }));
     const refMessage = useRef(null);
+    const [isOnline, setIsOnline] = useState(false);
 
-    // useEffect(() => {
-    //     const initializeWeb3Wallet = async () => {
-    //         try {
-    //             if (!initialized && accountExists) {
-    //                 debug('initialized if condition called');
-    //                 await initializeWalletState();
-    //             }
-    //         } catch (error) {
-    //             debug('Error initializing wallet account:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     };
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener((state) => {
+            debug('Connection type', state.type);
+            setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
+        });
 
-    //     initializeWeb3Wallet();
-    // }, [errorStore, initialized, initializeWalletState, accountExists]);
+        // Check initial connectivity status
+        NetInfo.fetch().then((state) => {
+            debug('Connection type fetch function', state.type);
+            setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+    useEffect(() => {
+        const initializeWeb3Wallet = async () => {
+            try {
+                if (!initialized && isOnline) {
+                    debug('initialized if condition called');
+                    await initializeWalletState();
+                }
+            } catch (error) {
+                debug('Error initializing wallet account:', error);
+                errorStore.setError({
+                    error: error,
+                    expected: true,
+                });
+            }
+        };
+
+        initializeWeb3Wallet();
+    }, [errorStore, initialized, initializeWalletState, isOnline]);
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -509,8 +526,8 @@ export default function MainContainer({
                                                                 $
                                                                 {pangeaBalance
                                                                     ? formatCurrencyValue(
-                                                                          pangeaBalance * USD_CONVERSION
-                                                                      )
+                                                                        pangeaBalance * USD_CONVERSION
+                                                                    )
                                                                     : 0.0}
                                                             </Text>
                                                         </>

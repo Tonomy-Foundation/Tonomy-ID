@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
 import { StackActions } from '@react-navigation/native';
@@ -13,17 +13,13 @@ import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
-import NetInfo from '@react-native-community/netinfo';
-import useWalletInitialization from '../utils/hooks/useWalletInitialization';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState, initializeWalletState, initialized } = useWalletStore();
-
-    useWalletInitialization(initialized);
+    const { clearState } = useWalletStore();
 
     useEffect(() => {
         async function main() {
@@ -59,9 +55,11 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         try {
                             await user.getUsername();
 
-                            // if (!initialized) {
+                            // if (!initialized ) {
+                            //     console.log('initializeWalletState');
+
                             //     try {
-                            //         progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                            //         await initializeWalletState();
                             //     } catch (e) {
                             //         errorStore.setError({
                             //             error: new Error('Error initializing wallet. Check your internet connection.'),
@@ -102,11 +100,11 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         logout,
         navigation,
         user,
-        initializeWalletState,
+        // initializeWalletState,
         clearState,
         setStatus,
         isAppInitialized,
-        initialized,
+        // initialized,
     ]);
 
     return (

@@ -33,7 +33,7 @@ export default function LoginPassphraseContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
+    // const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     async function updateKeys() {
         await user.updateKeys(passphrase.join(' '));
@@ -65,7 +65,7 @@ export default function LoginPassphraseContainer({
                 setErrorMessage('');
                 await user.saveLocal();
                 await updateKeys();
-                initializeWallet();
+                // initializeWallet();
                 setStatus(UserStatus.LOGGED_IN);
             } else {
                 throw new Error('Account name not found');
