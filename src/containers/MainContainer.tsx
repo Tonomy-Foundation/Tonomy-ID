@@ -278,74 +278,76 @@ export default function MainContainer({
         { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
         { name: 'Polygon', token: ETHPolygonToken, chain: EthereumPolygonChain },
     ];
-    const AccountsView = () => {
-        const [accounts, setAccount] = useState<
-            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-        >([]);
 
-        useEffect(() => {
-            const fetchAssets = async () => {
-                if (!accountExists) await initializeWalletAccount();
-                debug('AccountView', accountExists);
+    const [accounts, setAccount] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
+    const [accountLoading, setAccountLoading] = useState(false);
 
-                try {
-                    for (const chain of chains) {
-                        debug('chain.token', chain.token);
-                        const asset = await assetStorage.findAssetByName(chain.token);
+    useEffect(() => {
+        const fetchAssets = async () => {
+            if (!accountExists) await initializeWalletAccount();
 
-                        debug('Asset:', asset);
+            try {
+                setAccountLoading(true);
 
-                        if (asset) {
-                            setAccount((prevAccounts) => [
-                                ...prevAccounts,
-                                {
-                                    network: chain.name,
-                                    accountName: asset.accountName,
-                                    balance: asset.balance,
-                                    usdBalance: asset.usdBalance,
-                                },
-                            ]);
-                        } else {
-                            setAccount((prevAccounts) => [
-                                ...prevAccounts,
-                                {
-                                    network: chain.name,
-                                    accountName: null,
-                                    balance: '0' + chain.token.getSymbol(),
-                                    usdBalance: 0,
-                                },
-                            ]);
-                        }
+                for (const chain of chains) {
+                    const asset = await assetStorage.findAssetByName(chain.token);
+
+                    if (asset) {
+                        setAccount((prevAccounts) => [
+                            ...prevAccounts,
+                            {
+                                network: chain.name,
+                                accountName: asset.accountName,
+                                balance: asset.balance,
+                                usdBalance: asset.usdBalance,
+                            },
+                        ]);
+                    } else {
+                        setAccount((prevAccounts) => [
+                            ...prevAccounts,
+                            {
+                                network: chain.name,
+                                accountName: null,
+                                balance: '0' + chain.token.getSymbol(),
+                                usdBalance: 0,
+                            },
+                        ]);
                     }
-                } catch (error) {
-                    debug('Error fetching asset:', error);
                 }
-            };
 
-            fetchAssets();
-        }, []);
-
-        const findAccountByChain = (chain: string) => {
-            const accountExists = accounts.find((account) => account.network === chain);
-            const balance = accountExists?.balance;
-            const usdBalance = accountExists?.usdBalance;
-            const account = accountExists?.accountName;
-
-            return { account, balance, usdBalance };
+                setAccountLoading(false);
+            } catch (error) {
+                debug('Error fetching asset:', error);
+            }
         };
 
-        const openAccountDetails = (account: any) => {
-            const accountData = findAccountByChain(account.name);
+        fetchAssets();
+    }, []);
 
-            setAccountDetails({
-                symbol: account.token.getSymbol(),
-                name: capitalizeFirstLetter(account.chain.getName()),
-                address: accountData.account || '',
-                image: account.token.getLogoUrl(),
-            });
-            (refMessage.current as any)?.open();
-        };
+    const findAccountByChain = (chain: string) => {
+        const accountExists = accounts.find((account) => account.network === chain);
+        const balance = accountExists?.balance;
+        const usdBalance = accountExists?.usdBalance;
+        const account = accountExists?.accountName;
 
+        return { account, balance, usdBalance };
+    };
+
+    const openAccountDetails = (account: any) => {
+        const accountData = findAccountByChain(account.name);
+
+        setAccountDetails({
+            symbol: account.token.getSymbol(),
+            name: capitalizeFirstLetter(account.chain.getName()),
+            address: accountData.account || '',
+            image: account.token.getLogoUrl(),
+        });
+        (refMessage.current as any)?.open();
+    };
+
+    const AccountsView = () => {
         return (
             <View>
                 {chains.map((chain, index) => {
@@ -354,8 +356,18 @@ export default function MainContainer({
                     return (
                         <TouchableOpacity key={index} onPress={() => openAccountDetails(chain)}>
                             <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    <View
+                                        style={{
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                        }}
+                                    >
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Image
                                                 source={{ uri: chain.token.getLogoUrl() }}
@@ -372,29 +384,46 @@ export default function MainContainer({
                                             <Text>Not connected</Text>
                                         )}
                                     </View>
-                                    {!accountData.account ? (
-                                        <TButton
-                                            style={styles.generateKey}
-                                            onPress={() => {
-                                                debug('Generate key clicked');
-                                            }}
-                                            color={theme.colors.white}
-                                            size="medium"
-                                        >
-                                            Generate key
-                                        </TButton>
+                                    {accountLoading ? (
+                                        <TSpinner />
                                     ) : (
                                         <>
-                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            {!accountData.account ? (
+                                                <TButton
+                                                    style={styles.generateKey}
+                                                    onPress={() => {
+                                                        debug('Generate key clicked');
+                                                    }}
+                                                    color={theme.colors.white}
+                                                    size="medium"
+                                                >
+                                                    Generate key
+                                                </TButton>
+                                            ) : (
                                                 <>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text>{accountData.balance}</Text>
+                                                    <View
+                                                        style={{
+                                                            flexDirection: 'column',
+                                                            alignItems: 'flex-end',
+                                                        }}
+                                                    >
+                                                        <>
+                                                            <View
+                                                                style={{
+                                                                    flexDirection: 'row',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                <Text>{accountData.balance}</Text>
+                                                            </View>
+                                                            <Text style={styles.secondaryColor}>
+                                                                $
+                                                                {formatCurrencyValue(Number(accountData.usdBalance), 3)}
+                                                            </Text>
+                                                        </>
                                                     </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
-                                                    </Text>
                                                 </>
-                                            </View>
+                                            )}
                                         </>
                                     )}
                                 </View>
@@ -419,7 +448,7 @@ export default function MainContainer({
                     <View style={styles.content}>
                         <ScrollView
                             contentContainerStyle={styles.scrollViewContent}
-                            // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>
