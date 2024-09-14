@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -67,7 +68,6 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const [refreshBalance, setRefreshBalance] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
@@ -88,14 +88,14 @@ export default function MainContainer({
     const [accounts, setAccount] = useState<
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
     >([]);
-    const [accountLoading, setAccountLoading] = useState(false);
+    const [refreshBalance, setRefreshBalance] = useState(false);
 
     useEffect(() => {
         const fetchAssets = async () => {
             if (!accountExists) await initializeWalletAccount();
 
             try {
-                setAccountLoading(true);
+                setRefreshBalance(true);
 
                 for (const chain of chains) {
                     const asset = await assetStorage.findAssetByName(chain.token);
@@ -123,7 +123,7 @@ export default function MainContainer({
                     }
                 }
 
-                setAccountLoading(false);
+                setRefreshBalance(false);
             } catch (error) {
                 debug('Error fetching asset:', error);
             }
@@ -226,6 +226,8 @@ export default function MainContainer({
     useEffect(() => {
         async function getUpdatedBalance() {
             try {
+                setRefreshBalance(true);
+
                 if (accountExists) await updateBalance();
 
                 const accountPangeaBalance = await vestingContract.getBalance(accountName);
@@ -233,8 +235,11 @@ export default function MainContainer({
                 if (pangeaBalance !== accountPangeaBalance) {
                     setPangeaBalance(accountPangeaBalance);
                 }
+
+                setRefreshBalance(false);
             } catch (error) {
                 debug('Error updating balance:', error);
+                setRefreshBalance(false);
 
                 if (error.message === 'Network request failed') {
                     debug('network error when call updating balance:');
@@ -307,6 +312,8 @@ export default function MainContainer({
             await updateBalance();
             setRefreshBalance(false);
         } catch (error) {
+            setRefreshBalance(false);
+
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
             } else {
@@ -406,21 +413,34 @@ export default function MainContainer({
                                                     <Text>{accountName}</Text>
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
-                                                    </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        $
-                                                        {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
-                                                            : 0.0}
-                                                    </Text>
+                                                    {refreshBalance ? (
+                                                        <TSpinner size={'small'} />
+                                                    ) : (
+                                                        <>
+                                                            <View
+                                                                style={{ flexDirection: 'row', alignItems: 'center' }}
+                                                            >
+                                                                <Text>
+                                                                    {' '}
+                                                                    {formatCurrencyValue(pangeaBalance) || 0} LEOS
+                                                                </Text>
+                                                            </View>
+                                                            <Text style={styles.secondaryColor}>
+                                                                $
+                                                                {pangeaBalance
+                                                                    ? formatCurrencyValue(
+                                                                        pangeaBalance * USD_CONVERSION
+                                                                    )
+                                                                    : 0.0}
+                                                            </Text>
+                                                        </>
+                                                    )}
                                                 </View>
                                             </View>
                                         </View>
                                     </TouchableOpacity>
                                     <AccountSummary
-                                        accountLoading={accountLoading}
+                                        refreshBalance={refreshBalance}
                                         chains={chains}
                                         findAccountByChain={findAccountByChain}
                                         openAccountDetails={openAccountDetails}

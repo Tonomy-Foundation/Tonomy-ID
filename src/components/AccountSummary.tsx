@@ -1,7 +1,7 @@
 import { TouchableOpacity, View, Text, StyleSheet, Image } from 'react-native';
 import { EthereumChain } from '../utils/chain/etherum';
 import { IToken } from '../utils/chain/types';
-import TSpinner from './atoms/TSpinner';
+import TSpinner from '../components/atoms/TSpinner';
 import TButton from './atoms/TButton';
 import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
@@ -17,7 +17,7 @@ interface Chain {
 
 export type AccountSummaryProps = {
     chains: Chain[];
-    accountLoading: boolean;
+    refreshBalance: boolean;
     findAccountByChain: (chainName: string) => { account: string | null; balance: string; usdBalance: number };
     openAccountDetails: (chain: Chain) => void;
 };
@@ -59,8 +59,8 @@ const AccountSummary = (props: AccountSummaryProps) => {
                                         <Text>Not connected</Text>
                                     )}
                                 </View>
-                                {props.accountLoading ? (
-                                    <TSpinner />
+                                {props.refreshBalance ? (
+                                    <TSpinner size={'small'} />
                                 ) : (
                                     <>
                                         {!accountData.account ? (
