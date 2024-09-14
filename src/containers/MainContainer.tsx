@@ -332,11 +332,7 @@ export default function MainContainer({
     //     }
     // }, [updateBalance, errorStore]);
     debug('accountExists', accountExists);
-    const chains = [
-        { name: 'Ethereum', token: ETHToken },
-        { name: 'Sepolia', token: ETHSepoliaToken },
-        { name: 'Polygon', token: ETHPolygonToken },
-    ];
+    const chains = [{ name: 'Ethereum' }, { name: 'Sepolia' }, { name: 'Polygon' }];
     const AccountsView = () => {
         const [accounts, setAccount] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
@@ -442,10 +438,10 @@ export default function MainContainer({
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    <Image
+                                                    {/* <Image
                                                         source={{ uri: chain.token.getLogoUrl() }}
                                                         style={[styles.favicon, { resizeMode: 'contain' }]}
-                                                    />
+                                                    /> */}
                                                     <Text style={styles.networkTitle}>{chain.name} Network:</Text>
                                                 </View>
                                                 {accountData.account ? (
