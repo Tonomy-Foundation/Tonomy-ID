@@ -66,7 +66,6 @@ const AccountSummary = (props: AccountSummaryProps) => {
 
         const fetchAccountAndBalance = async () => {
             if (props.token) {
-                setLoading(true);
                 const asset = await assetStorage.findAssetByName(props.token);
 
                 if (asset) {
@@ -80,8 +79,6 @@ const AccountSummary = (props: AccountSummaryProps) => {
                         }));
                     }
                 }
-
-                setLoading(false);
             }
         };
 
@@ -140,18 +137,14 @@ const AccountSummary = (props: AccountSummaryProps) => {
                             </TButton>
                         ) : (
                             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                {loading ? (
-                                    <ActivityIndicator size="small" />
-                                ) : (
-                                    <>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text>{account.balance}</Text>
-                                        </View>
-                                        <Text style={styles.secondaryColor}>
-                                            ${formatCurrencyValue(Number(account.usdBalance), 3)}
-                                        </Text>
-                                    </>
-                                )}
+                                <>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text>{account.balance}</Text>
+                                    </View>
+                                    <Text style={styles.secondaryColor}>
+                                        ${formatCurrencyValue(Number(account.usdBalance), 3)}
+                                    </Text>
+                                </>
                             </View>
                         )}
                     </View>

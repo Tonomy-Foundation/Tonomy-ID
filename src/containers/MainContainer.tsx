@@ -11,7 +11,7 @@ import {
     RefreshControl,
 } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -29,6 +29,7 @@ import {
     EthereumPolygonChain,
     EthereumSepoliaChain,
     ETHPolygonToken,
+    ETHPolygonToken2,
     ETHSepoliaToken,
     ETHToken,
     USD_CONVERSION,
@@ -39,6 +40,7 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
 import AccountSummary from '../components/AccountSummary';
+import { assetStorage } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -326,6 +328,118 @@ export default function MainContainer({
     //         }
     //     }
     // }, [updateBalance, errorStore]);
+    const chains = [
+        { name: 'Ethereum', token: ETHToken, chain: EthereumMainnetChain },
+        { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+        { name: 'Polygon', token: ETHPolygonToken, chain: EthereumPolygonChain },
+    ];
+    const AccountsView = () => {
+        const [accounts, setAccount] = useState<
+            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+        >([]);
+
+        useEffect(() => {
+            if (accountExists) {
+                const fetchAssets = async () => {
+                    try {
+                        for (const chain of chains) {
+                            const asset = await assetStorage.findAssetByName(chain.token);
+
+                            if (asset) {
+                                setAccount((prevAccounts) => [
+                                    ...prevAccounts,
+                                    {
+                                        network: chain.name,
+                                        accountName: asset.accountName,
+                                        balance: asset.balance,
+                                        usdBalance: asset.usdBalance,
+                                    },
+                                ]);
+                            } else {
+                                setAccount((prevAccounts) => [
+                                    ...prevAccounts,
+                                    {
+                                        network: chain.name,
+                                        accountName: null,
+                                        balance: '0' + chain.token.getSymbol(),
+                                        usdBalance: 0,
+                                    },
+                                ]);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error fetching asset:', error);
+                    }
+                };
+
+                fetchAssets();
+            }
+        }, [setAccount]);
+
+        const findAccountByChain = (chain: string) => {
+            const accountExists = accounts.find((account) => account.network === chain);
+            const balance = accountExists?.balance;
+            const usdBalance = accountExists?.usdBalance;
+            const account = accountExists?.accountName;
+
+            return { account, balance, usdBalance };
+        };
+
+        return (
+            <View>
+                {chains.map((chain, index) => {
+                    const accountData = findAccountByChain(chain.name);
+
+                    return (
+                        <View key={index} style={[styles.appDialog, { justifyContent: 'center' }]}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={{ uri: chain.token.getLogoUrl() }}
+                                            style={[styles.favicon, { resizeMode: 'contain' }]}
+                                        />
+                                        <Text style={styles.networkTitle}>{chain.name} Network:</Text>
+                                    </View>
+                                    {accountData.account ? (
+                                        <Text>
+                                            {accountData.account.substring(0, 7)}....
+                                            {accountData.account.substring(accountData.account.length - 6)}
+                                        </Text>
+                                    ) : (
+                                        <Text>Not connected</Text>
+                                    )}
+                                </View>
+                                {!accountData.account ? (
+                                    <TButton
+                                        style={styles.generateKey}
+                                        onPress={() => {
+                                            debug('Generate key clicked');
+                                        }}
+                                        color={theme.colors.white}
+                                        size="medium"
+                                    >
+                                        Generate key
+                                    </TButton>
+                                ) : (
+                                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                        <>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text>{accountData.balance}</Text>
+                                            </View>
+                                            <Text style={styles.secondaryColor}>
+                                                ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
+                                            </Text>
+                                        </>
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+                    );
+                })}
+            </View>
+        );
+    };
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -365,13 +479,13 @@ export default function MainContainer({
                                     <TouchableOpacity
                                         onPress={() => {
                                             debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
-                                            setAccountDetails({
-                                                symbol: 'LEOS',
-                                                name: 'Pangea',
-                                                address: accountName,
-                                                icon: Images.GetImage('logo48'),
-                                            });
-                                            (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                            // setAccountDetails({
+                                            //     symbol: 'LEOS',
+                                            //     name: 'Pangea',
+                                            //     address: accountName,
+                                            //     icon: Images.GetImage('logo48'),
+                                            // });
+                                            // (refMessage.current as any)?.open(); // Open the AccountDetails component here
                                         }}
                                     >
                                         <View style={[styles.appDialog, { justifyContent: 'center' }]}>
@@ -400,37 +514,17 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Ethereum"
-                                        token={ETHToken}
-                                        chain={EthereumMainnetChain}
-                                    />
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Sepolia"
-                                        token={ETHSepoliaToken}
-                                        chain={EthereumSepoliaChain}
-                                    />
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Polygon"
-                                        token={ETHPolygonToken}
-                                        chain={EthereumPolygonChain}
-                                    />
+                                    <AccountsView />
                                 </View>
                             </ScrollView>
-                            <AccountDetails
+                            {/* <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                                 }}
-                            />
+                            /> */}
                         </ScrollView>
                     </View>
                 )}
@@ -534,5 +628,10 @@ const styles = StyleSheet.create({
     },
     marginTop: {
         marginTop: 28,
+    },
+    generateKey: {
+        width: '40%',
+        backgroundColor: theme.colors.primary,
+        borderRadius: 10,
     },
 });
