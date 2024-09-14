@@ -633,7 +633,7 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    {/* <AccountsView /> */}
+                                    <AccountsView />
                                 </View>
                             </ScrollView>
                             {/* <AccountDetails

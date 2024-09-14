@@ -19,7 +19,7 @@ const debug = Debug('tonomy-id:container:mainSplashScreen');
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    // const { clearState, initializeWalletState, initializeWalletAccount, initialized, accountExists } = useWalletStore();
+    const { clearState, initializeWalletState, initializeWalletAccount, initialized, accountExists } = useWalletStore();
 
     useEffect(() => {
         async function main() {
@@ -64,14 +64,13 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                             //     }
                             // }
 
-                            // if (!accountExists) {
-                            //     try {
-                            //         progressiveRetryOnNetworkError(async () => await initializeWalletAccount());
-                            //     } catch (e) {
-                            //         console.error('Error initializing wallet accounts:', e);
-                            //         errorStore.setError({ error: e, expected: false });
-                            //     }
-                            // }
+                            if (!accountExists) {
+                                try {
+                                    await progressiveRetryOnNetworkError(async () => await initializeWalletAccount());
+                                } catch (e) {
+                                    debug('Error initializing wallet accounts:', e);
+                                }
+                            }
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
@@ -109,9 +108,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         // clearState,
         setStatus,
         isAppInitialized,
-        // initializeWalletAccount,
+        initializeWalletAccount,
         // initialized,
-        // accountExists,
+        accountExists,
     ]);
 
     return (
