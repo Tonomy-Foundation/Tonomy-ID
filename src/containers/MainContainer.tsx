@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -12,7 +11,7 @@ import {
     RefreshControl,
 } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -40,7 +39,6 @@ import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
-import AccountSummary from '../components/AccountSummary';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -68,6 +66,7 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
+    const [refreshBalance, setRefreshBalance] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
@@ -79,58 +78,7 @@ export default function MainContainer({
         updateBalance: state.updateBalance,
     }));
     const refMessage = useRef(null);
-    const chains = [
-        { name: 'Ethereum', token: ETHToken, chain: EthereumMainnetChain },
-        { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-        { name: 'Polygon', token: ETHPolygonToken, chain: EthereumPolygonChain },
-    ];
 
-    const [accounts, setAccount] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-    >([]);
-    const [refreshBalance, setRefreshBalance] = useState(false);
-
-    useEffect(() => {
-        const fetchAssets = async () => {
-            if (!accountExists) await initializeWalletAccount();
-
-            try {
-                setRefreshBalance(true);
-
-                for (const chain of chains) {
-                    const asset = await assetStorage.findAssetByName(chain.token);
-
-                    if (asset) {
-                        setAccount((prevAccounts) => [
-                            ...prevAccounts,
-                            {
-                                network: chain.name,
-                                accountName: asset.accountName,
-                                balance: asset.balance,
-                                usdBalance: asset.usdBalance,
-                            },
-                        ]);
-                    } else {
-                        setAccount((prevAccounts) => [
-                            ...prevAccounts,
-                            {
-                                network: chain.name,
-                                accountName: null,
-                                balance: '0' + chain.token.getSymbol(),
-                                usdBalance: 0,
-                            },
-                        ]);
-                    }
-                }
-
-                setRefreshBalance(false);
-            } catch (error) {
-                debug('Error fetching asset:', error);
-            }
-        };
-
-        fetchAssets();
-    }, []);
     // useEffect(() => {
     //     const initializeWeb3Wallet = async () => {
     //         try {
@@ -226,8 +174,6 @@ export default function MainContainer({
     useEffect(() => {
         async function getUpdatedBalance() {
             try {
-                setRefreshBalance(true);
-
                 if (accountExists) await updateBalance();
 
                 const accountPangeaBalance = await vestingContract.getBalance(accountName);
@@ -235,11 +181,8 @@ export default function MainContainer({
                 if (pangeaBalance !== accountPangeaBalance) {
                     setPangeaBalance(accountPangeaBalance);
                 }
-
-                setRefreshBalance(false);
             } catch (error) {
                 debug('Error updating balance:', error);
-                setRefreshBalance(false);
 
                 if (error.message === 'Network request failed') {
                     debug('network error when call updating balance:');
@@ -312,8 +255,6 @@ export default function MainContainer({
             await updateBalance();
             setRefreshBalance(false);
         } catch (error) {
-            setRefreshBalance(false);
-
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
             } else {
@@ -332,16 +273,68 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
+    const chains = [
+        { name: 'Ethereum', token: ETHToken, chain: EthereumMainnetChain },
+        { name: 'Sepolia', token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+        { name: 'Polygon', token: ETHPolygonToken, chain: EthereumPolygonChain },
+    ];
+
+    const [accounts, setAccount] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
+
+    useEffect(() => {
+        const fetchAssets = async () => {
+            if (!accountExists) await initializeWalletAccount();
+
+            try {
+                setRefreshBalance(true);
+
+                for (const chain of chains) {
+                    const asset = await assetStorage.findAssetByName(chain.token);
+
+                    if (asset) {
+                        setAccount((prevAccounts) => [
+                            ...prevAccounts,
+                            {
+                                network: chain.name,
+                                accountName: asset.accountName,
+                                balance: asset.balance,
+                                usdBalance: asset.usdBalance,
+                            },
+                        ]);
+                    } else {
+                        setAccount((prevAccounts) => [
+                            ...prevAccounts,
+                            {
+                                network: chain.name,
+                                accountName: null,
+                                balance: '0' + chain.token.getSymbol(),
+                                usdBalance: 0,
+                            },
+                        ]);
+                    }
+                }
+
+                setRefreshBalance(false);
+            } catch (error) {
+                debug('Error fetching asset:', error);
+            }
+        };
+
+        fetchAssets();
+    }, []);
+
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
-        const balance = accountExists?.balance || '0';
-        const usdBalance = accountExists?.usdBalance || 0;
-        const account = accountExists?.accountName || null;
+        const balance = accountExists?.balance;
+        const usdBalance = accountExists?.usdBalance;
+        const account = accountExists?.accountName;
 
         return { account, balance, usdBalance };
     };
 
-    const openAccountDetails = (account) => {
+    const openAccountDetails = (account: any) => {
         const accountData = findAccountByChain(account.name);
 
         setAccountDetails({
@@ -351,6 +344,91 @@ export default function MainContainer({
             image: account.token.getLogoUrl(),
         });
         (refMessage.current as any)?.open();
+    };
+
+    const AccountsView = () => {
+        return (
+            <View>
+                {chains.map((chain, index) => {
+                    const accountData = findAccountByChain(chain.name);
+
+                    return (
+                        <TouchableOpacity key={index} onPress={() => openAccountDetails(chain)}>
+                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    <View
+                                        style={{
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                        }}
+                                    >
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image
+                                                source={{ uri: chain.token.getLogoUrl() }}
+                                                style={[styles.favicon, { resizeMode: 'contain' }]}
+                                            />
+                                            <Text style={styles.networkTitle}>{chain.name} Network:</Text>
+                                        </View>
+                                        {accountData.account ? (
+                                            <Text> {chain.chain.formatShortAccountName(accountData.account)}</Text>
+                                        ) : (
+                                            <Text>Not connected</Text>
+                                        )}
+                                    </View>
+                                    {refreshBalance ? (
+                                        <TSpinner size="small" />
+                                    ) : (
+                                        <>
+                                            {!accountData.account ? (
+                                                <TButton
+                                                    style={styles.generateKey}
+                                                    onPress={() => {
+                                                        debug('Generate key clicked');
+                                                    }}
+                                                    color={theme.colors.white}
+                                                    size="medium"
+                                                >
+                                                    Generate key
+                                                </TButton>
+                                            ) : (
+                                                <>
+                                                    <View
+                                                        style={{
+                                                            flexDirection: 'column',
+                                                            alignItems: 'flex-end',
+                                                        }}
+                                                    >
+                                                        <>
+                                                            <View
+                                                                style={{
+                                                                    flexDirection: 'row',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                <Text>{accountData.balance}</Text>
+                                                            </View>
+                                                            <Text style={styles.secondaryColor}>
+                                                                $
+                                                                {formatCurrencyValue(Number(accountData.usdBalance), 3)}
+                                                            </Text>
+                                                        </>
+                                                    </View>
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
+        );
     };
 
     const MainView = () => {
@@ -414,14 +492,13 @@ export default function MainContainer({
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                     {refreshBalance ? (
-                                                        <TSpinner size={'small'} />
+                                                        <TSpinner size="small" />
                                                     ) : (
                                                         <>
                                                             <View
                                                                 style={{ flexDirection: 'row', alignItems: 'center' }}
                                                             >
                                                                 <Text>
-                                                                    {' '}
                                                                     {formatCurrencyValue(pangeaBalance) || 0} LEOS
                                                                 </Text>
                                                             </View>
@@ -429,8 +506,8 @@ export default function MainContainer({
                                                                 $
                                                                 {pangeaBalance
                                                                     ? formatCurrencyValue(
-                                                                        pangeaBalance * USD_CONVERSION
-                                                                    )
+                                                                          pangeaBalance * USD_CONVERSION
+                                                                      )
                                                                     : 0.0}
                                                             </Text>
                                                         </>
@@ -439,12 +516,7 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <AccountSummary
-                                        refreshBalance={refreshBalance}
-                                        chains={chains}
-                                        findAccountByChain={findAccountByChain}
-                                        openAccountDetails={openAccountDetails}
-                                    />
+                                    <AccountsView />
                                 </View>
                             </ScrollView>
                             <AccountDetails
@@ -523,6 +595,9 @@ const styles = StyleSheet.create({
         marginBottom: 4,
         fontWeight: '600',
     },
+    cards: {
+        flex: 1,
+    },
     scrollView: {
         marginRight: -20,
     },
@@ -550,8 +625,83 @@ const styles = StyleSheet.create({
         marginTop: 25,
         paddingHorizontal: 5,
     },
-
+    balanceView: {
+        marginTop: 7,
+    },
     marginTop: {
         marginTop: 28,
+    },
+    generateKey: {
+        width: '40%',
+        backgroundColor: theme.colors.primary,
+        borderRadius: 10,
+    },
+
+    // RBSheet style
+    rawTransactionDrawer: {
+        padding: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    drawerHead: {
+        fontSize: 20,
+        fontWeight: '600',
+        marginTop: 8,
+    },
+    subHeading: {
+        backgroundColor: theme.colors.lightBg,
+        marginHorizontal: 15,
+        padding: 10,
+        fontWeight: '400',
+        fontSize: 14,
+        lineHeight: 18,
+    },
+    networkHeading: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        justifyContent: 'center',
+    },
+    networkTitleName: {
+        color: theme.colors.primary,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    faviconIcon: {
+        width: 18,
+        height: 18,
+        marginRight: 5,
+    },
+    qrView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        justifyContent: 'center',
+        borderColor: theme.colors.grey6,
+        borderWidth: 2,
+        borderRadius: 10,
+        padding: 20,
+        marginHorizontal: 70,
+    },
+    accountName: {
+        fontSize: 14,
+        fontWeight: '700',
+        marginTop: 10,
+    },
+    iconContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    iconButton: {
+        marginHorizontal: 25,
+    },
+    socialText: {
+        fontSize: 12,
+        color: theme.colors.primary,
+        textAlign: 'center',
+        fontWeight: '500',
     },
 });
