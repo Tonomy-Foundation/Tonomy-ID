@@ -85,24 +85,24 @@ export default function MainContainer({
     }));
     const refRBSheet = useRef(null);
 
-    useEffect(() => {
-        const initializeWeb3Wallet = async () => {
-            try {
-                if (!initialized && accountExists) {
-                    debug('initialized if condition called');
-                    await initializeWalletState();
-                }
-            } catch (error) {
-                debug('Error initializing wallet account:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
-            }
-        };
+    // useEffect(() => {
+    //     const initializeWeb3Wallet = async () => {
+    //         try {
+    //             if (!initialized && accountExists) {
+    //                 debug('initialized if condition called');
+    //                 await initializeWalletState();
+    //             }
+    //         } catch (error) {
+    //             debug('Error initializing wallet account:', error);
+    //             errorStore.setError({
+    //                 error: error,
+    //                 expected: true,
+    //             });
+    //         }
+    //     };
 
-        initializeWeb3Wallet();
-    }, [errorStore, initialized, initializeWalletState, accountExists]);
+    //     initializeWeb3Wallet();
+    // }, [errorStore, initialized, initializeWalletState, accountExists]);
 
     // useEffect(() => {
     //     const fetchAccounts = async () => {
@@ -346,6 +346,7 @@ export default function MainContainer({
         useEffect(() => {
             const fetchAssets = async () => {
                 if (!accountExists) await initializeWalletAccount();
+                debug('AccountView', accountExists);
 
                 try {
                     await connect();
