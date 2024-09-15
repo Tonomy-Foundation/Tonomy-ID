@@ -55,7 +55,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
         const state = await NetInfo.fetch();
 
         if (!state.isConnected) {
-            throw new Error('No internet connection available. Please connect to the internet and try again.');
+            throw new Error('Network request failed');
         }
 
         if (get().initialized) {
