@@ -50,6 +50,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
     initializeWalletState: async () => {
         const state = await NetInfo.fetch();
 
+        debug('initializeWalletState ftn called', state);
+
         if (!state.isConnected) {
             throw new Error('Network request failed');
         }

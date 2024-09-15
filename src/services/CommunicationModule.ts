@@ -27,6 +27,7 @@ import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
+import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -43,11 +44,20 @@ export default function CommunicationModule() {
      */
     async function loginToService() {
         try {
+            debug('loginToService ftn called');
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-            // const subscribers = listenToMessages();
+            // const state = await NetInfo.fetch();
 
-            // setSubscribers(subscribers);
+            // debug('initializeWalletState ftn called', state);
+
+            // if (!state.isConnected) {
+            //     throw new Error('Network request failed');
+            // }
+
+            const subscribers = listenToMessages();
+
+            setSubscribers(subscribers);
 
             try {
                 await user.loginCommunication(message);
@@ -78,7 +88,7 @@ export default function CommunicationModule() {
                     );
                 } else {
                     debug('loginToService loginCommunication error else ');
-                    // errorStore.setError({ error: e, expected: false });
+                    errorStore.setError({ error: e, expected: false });
                 }
             }
         } catch (e) {
@@ -135,7 +145,7 @@ export default function CommunicationModule() {
                 } else {
                     debug('listenToMessages error else ');
 
-                    // errorStore.setError({ error: e, expected: false });
+                    errorStore.setError({ error: e, expected: false });
                 }
             }
         }, LoginRequestsMessage.getType());
@@ -163,7 +173,7 @@ export default function CommunicationModule() {
                 } else {
                     debug('linkAuthRequestSubscriber error else ');
 
-                    // errorStore.setError({ error: e, expected: false });
+                    errorStore.setError({ error: e, expected: false });
                 }
             }
         }, LinkAuthRequestMessage.getType());
@@ -184,7 +194,16 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        loginToService();
+        try {
+            loginToService();
+        } catch (error) {
+            if (error.message === 'Network request failed') {
+                debug('Network error in communication login');
+            } else {
+                debug('error in communication login', error);
+            }
+        }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
 
