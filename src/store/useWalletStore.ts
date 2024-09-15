@@ -51,8 +51,6 @@ const defaultState = {
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
-        throw new Error('error occured');
-
         if (get().initialized) {
             debug('Already initialized');
             return;
@@ -83,7 +81,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     debug('network error when initializing wallet');
                 } else {
                     debug('error when initializing wallet', e);
-                    throw e;
+                    throw new Error('Error initializing wallet, Check your internet connection');
                 }
             }
         }

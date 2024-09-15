@@ -38,7 +38,20 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 await connect();
                 const status = await getStatus();
 
-                console.log('splash screen status: ', status);
+                debug('splash screen status: ', status);
+
+                if (!initialized) {
+                    console.log('initializeWalletState');
+
+                    try {
+                        progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                    } catch (e) {
+                        errorStore.setError({
+                            error: new Error('Error initializing wallet. Check your internet connection.'),
+                            expected: false,
+                        });
+                    }
+                }
 
                 switch (status) {
                     case UserStatus.NONE:
@@ -54,16 +67,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                         try {
                             await user.getUsername();
-
-                            if (!initialized) {
-                                console.log('initializeWalletState');
-
-                                // try {
-                                //     await initializeWalletState();
-                                // } catch (e) {
-                                //     throw e;
-                                // }
-                            }
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");

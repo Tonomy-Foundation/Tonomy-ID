@@ -143,7 +143,7 @@ export default function MainContainer({
 
     //     initializeWeb3Wallet();
     // }, [errorStore, initialized, initializeWalletState, isOnline]);
-
+    debug('initialized:', initialized);
     const connectToDid = useCallback(
         async (did: string) => {
             try {
@@ -297,13 +297,8 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            setRefreshBalance(true);
-
             await updateBalance();
-            setRefreshBalance(false);
         } catch (error) {
-            setRefreshBalance(false);
-
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
             } else {
@@ -479,24 +474,84 @@ export default function MainContainer({
         }
 
         return (
-            <View>
+            <View style={styles.content}>
                 {!qrOpened && (
-                    <View style={styles.header}>
-                        <TH2>{username}</TH2>
+                    <View>
+                        <View style={styles.header}>
+                            <TH2>{username}</TH2>
 
-                        <Image
-                            source={require('../assets/animations/qr-code.gif')}
-                            style={[styles.image, styles.marginTop]}
-                        />
-                        <TButtonContained
-                            style={[styles.button, styles.marginTop]}
-                            icon="qrcode-scan"
-                            onPress={() => {
-                                setQrOpened(true);
-                            }}
+                            <Image
+                                source={require('../assets/animations/qr-code.gif')}
+                                style={[styles.image, styles.marginTop]}
+                            />
+                            <TButtonContained
+                                style={[styles.button, styles.marginTop]}
+                                icon="qrcode-scan"
+                                onPress={() => {
+                                    setQrOpened(true);
+                                }}
+                            >
+                                Scan QR Code
+                            </TButtonContained>
+                        </View>
+                        <ScrollView
+                            contentContainerStyle={styles.scrollViewContent}
+                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
-                            Scan QR Code
-                        </TButtonContained>
+                            <View style={styles.accountsView}>
+                                <Text style={styles.accountHead}>Connected Accounts:</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
+                                        setAccountDetails({
+                                            symbol: 'LEOS',
+                                            name: 'Pangea',
+                                            address: accountName,
+                                            icon: Images.GetImage('logo48'),
+                                        });
+                                        (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                    }}
+                                >
+                                    <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                                    <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                                </View>
+                                                <Text>{accountName}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                {refreshBalance ? (
+                                                    <TSpinner size="small" />
+                                                ) : (
+                                                    <>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                            <Text>{formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                        </View>
+                                                        <Text style={styles.secondaryColor}>
+                                                            $
+                                                            {pangeaBalance
+                                                                ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                                : 0.0}
+                                                        </Text>
+                                                    </>
+                                                )}
+                                            </View>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                <AccountsView />
+                            </View>
+                        </ScrollView>
+                        <AccountDetails
+                            refMessage={refMessage}
+                            accountDetails={accountDetails}
+                            onClose={() => {
+                                (refMessage.current as any)?.close();
+                                setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
+                            }}
+                        />
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={() => setQrOpened(false)} />}
@@ -516,69 +571,7 @@ export default function MainContainer({
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
-                <View style={{ flex: 1 }}>
-                    <View style={{ flexShrink: 0 }}>
-                        <MainView />
-                    </View>
-                    <ScrollView
-                        contentContainerStyle={styles.scrollViewContent}
-                        refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
-                    >
-                        <View style={styles.accountsView}>
-                            <Text style={styles.accountHead}>Connected Accounts:</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
-                                    setAccountDetails({
-                                        symbol: 'LEOS',
-                                        name: 'Pangea',
-                                        address: accountName,
-                                        icon: Images.GetImage('logo48'),
-                                    });
-                                    (refMessage.current as any)?.open(); // Open the AccountDetails component here
-                                }}
-                            >
-                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                                                <Text style={styles.networkTitle}>Pangea Network:</Text>
-                                            </View>
-                                            <Text>{accountName}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                            {refreshBalance ? (
-                                                <TSpinner size="small" />
-                                            ) : (
-                                                <>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text>{formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
-                                                    </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        $
-                                                        {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
-                                                            : 0.0}
-                                                    </Text>
-                                                </>
-                                            )}
-                                        </View>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                            <AccountsView />
-                        </View>
-                    </ScrollView>
-                    <AccountDetails
-                        refMessage={refMessage}
-                        accountDetails={accountDetails}
-                        onClose={() => {
-                            (refMessage.current as any)?.close();
-                            setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
-                        }}
-                    />
-                </View>
+                <MainView />
             )}
         </SafeAreaView>
     );
@@ -589,6 +582,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    content: {
+        flex: 1,
     },
     scrollViewContent: {
         flexGrow: 1,
