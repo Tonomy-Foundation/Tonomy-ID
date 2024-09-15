@@ -7,6 +7,7 @@ import {
     LoginRequestsMessage,
     objToBase64Url,
     parseDid,
+    SdkErrors,
 } from '@tonomy/tonomy-id-sdk';
 import { useCallback, useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
@@ -43,14 +44,18 @@ export default function CommunicationModule() {
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-            // const subscribers = listenToMessages();
+            const subscribers = listenToMessages();
 
-            // setSubscribers(subscribers);
+            setSubscribers(subscribers);
 
             try {
                 await user.loginCommunication(message);
             } catch (e) {
-                debug('loginToService loginCommunication error', e);
+                debug(
+                    'loginToService loginCommunication error',
+                    e.code,
+                    e.code === SdkErrors.CommunicationNotConnected
+                );
 
                 if (e.message === 'Network request failed') {
                     debug('Network error in communication login');
@@ -65,7 +70,10 @@ export default function CommunicationModule() {
                         e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
                     );
                 } else if (e instanceof CommunicationError) {
-                    errorStore.setError({ error: new Error('Communication Error'), expected: false });
+                    errorStore.setError({
+                        error: new Error(' Could not connect to Tonomy Communication server'),
+                        expected: false,
+                    });
                 } else {
                     errorStore.setError({ error: e, expected: false });
                 }
@@ -76,85 +84,92 @@ export default function CommunicationModule() {
             if (e.message === 'Network request failed') {
                 debug('Network error in communication login');
             } else if (e instanceof CommunicationError) {
-                errorStore.setError({ error: new Error('Communication Error'), expected: false });
+                errorStore.setError({
+                    error: new Error(' Could not connect to Tonomy Communication server'),
+                    expected: false,
+                });
             } else {
                 errorStore.setError({ error: e, expected: false });
             }
         }
     }
 
-    // function listenToMessages(): number[] {
-    //     const loginRequestSubscriber = user.subscribeMessage(async (message) => {
-    //         try {
-    //             const senderDid = message.getSender();
+    function listenToMessages(): number[] {
+        const loginRequestSubscriber = user.subscribeMessage(async (message) => {
+            try {
+                const senderDid = message.getSender();
 
-    //             const { method, id } = parseDid(senderDid);
+                const { method, id } = parseDid(senderDid);
 
-    //             // did:key is used for the initial login request so is allowed
-    //             if (method !== 'key' && id !== parseDid(await user.getDid()).id) {
-    //                 debug('LoginRequestsMessage sender did not match user did', senderDid, await user.getDid());
-    //                 // Drop message. It came from a different account and we are not interested in it here.
-    //                 // TODO: low priority: handle this case in a better way as it does present a DOS vector.
-    //                 return;
-    //             }
+                // did:key is used for the initial login request so is allowed
+                if (method !== 'key' && id !== parseDid(await user.getDid()).id) {
+                    debug('LoginRequestsMessage sender did not match user did', senderDid, await user.getDid());
+                    // Drop message. It came from a different account and we are not interested in it here.
+                    // TODO: low priority: handle this case in a better way as it does present a DOS vector.
+                    return;
+                }
 
-    //             await message.verify();
+                await message.verify();
 
-    //             const loginRequestsMessage = new LoginRequestsMessage(message);
-    //             const payload = loginRequestsMessage.getPayload();
-    //             const base64UrlPayload = objToBase64Url(payload);
+                const loginRequestsMessage = new LoginRequestsMessage(message);
+                const payload = loginRequestsMessage.getPayload();
+                const base64UrlPayload = objToBase64Url(payload);
 
-    //             navigation.navigate('SSO', {
-    //                 payload: base64UrlPayload,
-    //                 platform: 'browser',
-    //             });
-    //             sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
-    //         } catch (e) {
-    //             if (e.message === 'Network request failed') {
-    //                 debug('Network error in communication login');
-    //             } else if (e instanceof CommunicationError) {
-    //                 errorStore.setError({ error: new Error('Communication Error'), expected: false });
-    //             } else {
-    //                 errorStore.setError({ error: e, expected: false });
-    //             }
-    //         }
-    //     }, LoginRequestsMessage.getType());
+                navigation.navigate('SSO', {
+                    payload: base64UrlPayload,
+                    platform: 'browser',
+                });
+                sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
+            } catch (e) {
+                if (e.message === 'Network request failed') {
+                    debug('Network error in communication login');
+                } else if (e instanceof CommunicationError) {
+                    debug('Communication error in communication listenToMessages');
+                    errorStore.setError({
+                        error: new Error(' Could not connect to Tonomy Communication server'),
+                        expected: false,
+                    });
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            }
+        }, LoginRequestsMessage.getType());
 
-    //     const linkAuthRequestSubscriber = user.subscribeMessage(async (message) => {
-    //         try {
-    //             const senderDid = message.getSender().split('#')[0];
+        const linkAuthRequestSubscriber = user.subscribeMessage(async (message) => {
+            try {
+                const senderDid = message.getSender().split('#')[0];
 
-    //             if (senderDid !== (await user.getDid())) {
-    //                 debug('LinkAuthRequestMessage sender did not match user did', senderDid, await user.getDid());
-    //                 // Drop message. It came from a different account and we are not interested in it here.
-    //                 // TODO: low priority: handle this case in a better way as it does present a DOS vector.
-    //                 return;
-    //             }
+                if (senderDid !== (await user.getDid())) {
+                    debug('LinkAuthRequestMessage sender did not match user did', senderDid, await user.getDid());
+                    // Drop message. It came from a different account and we are not interested in it here.
+                    // TODO: low priority: handle this case in a better way as it does present a DOS vector.
+                    return;
+                }
 
-    //             await user.handleLinkAuthRequestMessage(message);
-    //         } catch (e) {
-    //             if (e.message === 'Network request failed') {
-    //                 debug('Network error in communication login');
-    //             } else {
-    //                 errorStore.setError({ error: e, expected: false });
-    //             }
-    //         }
-    //     }, LinkAuthRequestMessage.getType());
+                await user.handleLinkAuthRequestMessage(message);
+            } catch (e) {
+                if (e.message === 'Network request failed') {
+                    debug('Network error in communication login');
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            }
+        }, LinkAuthRequestMessage.getType());
 
-    //     return [loginRequestSubscriber, linkAuthRequestSubscriber];
-    // }
+        return [loginRequestSubscriber, linkAuthRequestSubscriber];
+    }
 
-    // function sendLoginNotificationOnBackground(appName: string) {
-    //     if (AppState.currentState === 'background') {
-    //         scheduleNotificationAsync({
-    //             content: {
-    //                 title: `Login Request: ${appName}`,
-    //                 body: `${appName} requesting your permission to login`,
-    //             },
-    //             trigger: null,
-    //         });
-    //     }
-    // }
+    function sendLoginNotificationOnBackground(appName: string) {
+        if (AppState.currentState === 'background') {
+            scheduleNotificationAsync({
+                content: {
+                    title: `Login Request: ${appName}`,
+                    body: `${appName} requesting your permission to login`,
+                },
+                trigger: null,
+            });
+        }
+    }
 
     useEffect(() => {
         loginToService();
