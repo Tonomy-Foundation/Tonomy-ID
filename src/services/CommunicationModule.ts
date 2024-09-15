@@ -77,6 +77,7 @@ export default function CommunicationModule() {
                         e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
                     );
                 } else {
+                    debug('loginToService loginCommunication error else ');
                     errorStore.setError({ error: e, expected: false });
                 }
             }
@@ -91,7 +92,9 @@ export default function CommunicationModule() {
                     expected: false,
                 });
             } else {
-                errorStore.setError({ error: e, expected: false });
+                debug('loginToService error else ');
+
+                // errorStore.setError({ error: e, expected: false });
             }
         }
     }
@@ -131,7 +134,9 @@ export default function CommunicationModule() {
                         expected: false,
                     });
                 } else {
-                    errorStore.setError({ error: e, expected: false });
+                    debug('listenToMessages error else ');
+
+                    // errorStore.setError({ error: e, expected: false });
                 }
             }
         }, LoginRequestsMessage.getType());
@@ -157,7 +162,9 @@ export default function CommunicationModule() {
                         expected: false,
                     });
                 } else {
-                    errorStore.setError({ error: e, expected: false });
+                    debug('linkAuthRequestSubscriber error else ');
+
+                    // errorStore.setError({ error: e, expected: false });
                 }
             }
         }, LinkAuthRequestMessage.getType());

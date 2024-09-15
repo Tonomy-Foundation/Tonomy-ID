@@ -153,9 +153,9 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        // if (did) {
-        //     onUrlOpen(did);
-        // }
+        if (did) {
+            onUrlOpen(did);
+        }
     }, [setUserName, did, onUrlOpen]);
 
     useEffect(() => {
