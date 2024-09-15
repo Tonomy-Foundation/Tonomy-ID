@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -62,12 +62,6 @@ export default function MainContainer({
     did?: string;
     navigation: MainScreenNavigationProp['navigation'];
 }) {
-    const chains = [
-        { token: ETHToken, chain: EthereumMainnetChain },
-        { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-        { token: ETHPolygonToken, chain: EthereumPolygonChain },
-    ];
-
     const userStore = useUserStore();
     const user = userStore.user;
     const [username, setUsername] = useState('');
@@ -303,8 +297,13 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
+            setRefreshBalance(true);
+
             await updateBalance();
+            setRefreshBalance(false);
         } catch (error) {
+            setRefreshBalance(false);
+
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
             } else {
@@ -323,87 +322,47 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
-    useEffect(() => {
-        const fetchAssets = async () => {
-            if (!accountExists) await initializeWalletAccount();
-
-            try {
-                setRefreshBalance(true);
-
-                for (const chainObj of chains) {
-                    const asset = await assetStorage.findAssetByName(chainObj.token);
-
-                    if (asset) {
-                        setAccount((prevAccounts) => [
-                            ...prevAccounts,
-                            {
-                                network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                accountName: asset.accountName,
-                                balance: asset.balance,
-                                usdBalance: asset.usdBalance,
-                            },
-                        ]);
-                    } else {
-                        setAccount((prevAccounts) => [
-                            ...prevAccounts,
-                            {
-                                network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                accountName: null,
-                                balance: '0' + chainObj.token.getSymbol(),
-                                usdBalance: 0,
-                            },
-                        ]);
-                    }
-                }
-
-                setRefreshBalance(false);
-            } catch (error) {
-                setRefreshBalance(false);
-                debug('Error fetching asset:', error);
-            }
-        };
-
-        fetchAssets();
-    }, []);
-
     const AccountsView = () => {
-        const [accounts, setAccount] = useState<
+        const chains = useMemo(
+            () => [
+                { token: ETHToken, chain: EthereumMainnetChain },
+                { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+                { token: ETHPolygonToken, chain: EthereumPolygonChain },
+            ],
+            []
+        );
+
+        const [accounts, setAccounts] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
         >([]);
+        const [refreshBalance, setRefreshBalance] = useState(false);
 
         useEffect(() => {
             const fetchAssets = async () => {
-                if (!accountExists) await initializeWalletAccount();
-
                 try {
                     setRefreshBalance(true);
 
-                    for (const chainObj of chains) {
-                        const asset = await assetStorage.findAssetByName(chainObj.token);
+                    const updatedAccounts = await Promise.all(
+                        chains.map(async (chainObj) => {
+                            const asset = await assetStorage.findAssetByName(chainObj.token);
 
-                        if (asset) {
-                            setAccount((prevAccounts) => [
-                                ...prevAccounts,
-                                {
-                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                    accountName: asset.accountName,
-                                    balance: asset.balance,
-                                    usdBalance: asset.usdBalance,
-                                },
-                            ]);
-                        } else {
-                            setAccount((prevAccounts) => [
-                                ...prevAccounts,
-                                {
-                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                    accountName: null,
-                                    balance: '0' + chainObj.token.getSymbol(),
-                                    usdBalance: 0,
-                                },
-                            ]);
-                        }
-                    }
+                            return asset
+                                ? {
+                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                      accountName: asset.accountName,
+                                      balance: asset.balance,
+                                      usdBalance: asset.usdBalance,
+                                  }
+                                : {
+                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                      accountName: null,
+                                      balance: '0' + chainObj.token.getSymbol(),
+                                      usdBalance: 0,
+                                  };
+                        })
+                    );
 
+                    setAccounts(updatedAccounts);
                     setRefreshBalance(false);
                 } catch (error) {
                     setRefreshBalance(false);
@@ -412,7 +371,7 @@ export default function MainContainer({
             };
 
             fetchAssets();
-        }, []);
+        }, [chains]);
 
         const findAccountByChain = (chain: string) => {
             const accountExists = accounts.find((account) => account.network === chain);
@@ -479,7 +438,6 @@ export default function MainContainer({
                                                     style={styles.generateKey}
                                                     onPress={() => {
                                                         debug('Generate key clicked');
-
                                                         navigation.navigate('CreateEthereumKey');
                                                     }}
                                                     color={theme.colors.white}
@@ -488,29 +446,19 @@ export default function MainContainer({
                                                     Generate key
                                                 </TButton>
                                             ) : (
-                                                <>
-                                                    <View
-                                                        style={{
-                                                            flexDirection: 'column',
-                                                            alignItems: 'flex-end',
-                                                        }}
-                                                    >
-                                                        <>
-                                                            <View
-                                                                style={{
-                                                                    flexDirection: 'row',
-                                                                    alignItems: 'center',
-                                                                }}
-                                                            >
-                                                                <Text>{accountData.balance}</Text>
-                                                            </View>
-                                                            <Text style={styles.secondaryColor}>
-                                                                $
-                                                                {formatCurrencyValue(Number(accountData.usdBalance), 3)}
-                                                            </Text>
-                                                        </>
+                                                <View
+                                                    style={{
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-end',
+                                                    }}
+                                                >
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text>{accountData.balance}</Text>
                                                     </View>
-                                                </>
+                                                    <Text style={styles.secondaryColor}>
+                                                        ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
+                                                    </Text>
+                                                </View>
                                             )}
                                         </>
                                     )}
@@ -531,28 +479,24 @@ export default function MainContainer({
         }
 
         return (
-            <View style={styles.content}>
+            <View>
                 {!qrOpened && (
-                    <View style={styles.content}>
-                        <ScrollView>
-                            <View style={styles.header}>
-                                <TH2>{username}</TH2>
+                    <View style={styles.header}>
+                        <TH2>{username}</TH2>
 
-                                <Image
-                                    source={require('../assets/animations/qr-code.gif')}
-                                    style={[styles.image, styles.marginTop]}
-                                />
-                                <TButtonContained
-                                    style={[styles.button, styles.marginTop]}
-                                    icon="qrcode-scan"
-                                    onPress={() => {
-                                        setQrOpened(true);
-                                    }}
-                                >
-                                    Scan QR Code
-                                </TButtonContained>
-                            </View>
-                        </ScrollView>
+                        <Image
+                            source={require('../assets/animations/qr-code.gif')}
+                            style={[styles.image, styles.marginTop]}
+                        />
+                        <TButtonContained
+                            style={[styles.button, styles.marginTop]}
+                            icon="qrcode-scan"
+                            onPress={() => {
+                                setQrOpened(true);
+                            }}
+                        >
+                            Scan QR Code
+                        </TButtonContained>
                     </View>
                 )}
                 {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={() => setQrOpened(false)} />}
@@ -572,8 +516,10 @@ export default function MainContainer({
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
-                <>
-                    <MainView />
+                <View style={{ flex: 1 }}>
+                    <View style={{ flexShrink: 0 }}>
+                        <MainView />
+                    </View>
                     <ScrollView
                         contentContainerStyle={styles.scrollViewContent}
                         refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
@@ -632,7 +578,7 @@ export default function MainContainer({
                             setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                         }}
                     />
-                </>
+                </View>
             )}
         </SafeAreaView>
     );
@@ -646,6 +592,7 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         flexGrow: 1,
+        marginTop: 20,
     },
     requestText: {
         paddingHorizontal: 30,
@@ -665,9 +612,7 @@ const styles = StyleSheet.create({
         padding: 16,
         flex: 1,
     },
-    content: {
-        flex: 1,
-    },
+
     header: {
         flexDirection: 'column',
         alignItems: 'center',
@@ -707,86 +652,17 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
     accountsView: {
-        marginTop: 25,
         paddingHorizontal: 5,
     },
     balanceView: {
         marginTop: 7,
     },
     marginTop: {
-        marginTop: 28,
+        marginTop: 10,
     },
     generateKey: {
         width: '40%',
         backgroundColor: theme.colors.primary,
         borderRadius: 10,
-    },
-
-    // RBSheet style
-    rawTransactionDrawer: {
-        padding: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-    },
-    drawerHead: {
-        fontSize: 20,
-        fontWeight: '600',
-        marginTop: 8,
-    },
-    subHeading: {
-        backgroundColor: theme.colors.lightBg,
-        marginHorizontal: 15,
-        padding: 10,
-        fontWeight: '400',
-        fontSize: 14,
-        lineHeight: 18,
-    },
-    networkHeading: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 20,
-        justifyContent: 'center',
-    },
-    networkTitleName: {
-        color: theme.colors.primary,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    faviconIcon: {
-        width: 18,
-        height: 18,
-        marginRight: 5,
-    },
-    qrView: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 20,
-        justifyContent: 'center',
-        borderColor: theme.colors.grey6,
-        borderWidth: 2,
-        borderRadius: 10,
-        padding: 20,
-        marginHorizontal: 70,
-    },
-    accountName: {
-        fontSize: 14,
-        fontWeight: '700',
-        marginTop: 10,
-    },
-    iconContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    iconButton: {
-        marginHorizontal: 25,
-    },
-    socialText: {
-        fontSize: 12,
-        color: theme.colors.primary,
-        textAlign: 'center',
-        fontWeight: '500',
     },
 });

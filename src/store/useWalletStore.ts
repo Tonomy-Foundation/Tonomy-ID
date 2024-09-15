@@ -51,6 +51,8 @@ const defaultState = {
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
+        throw new Error('error occured');
+
         if (get().initialized) {
             debug('Already initialized');
             return;
