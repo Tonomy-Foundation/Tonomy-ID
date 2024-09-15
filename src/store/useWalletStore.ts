@@ -48,11 +48,11 @@ const defaultState = {
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
-        // const state = await NetInfo.fetch();
+        const state = await NetInfo.fetch();
 
-        // if (!state.isConnected) {
-        //     throw new Error('Network request failed');
-        // }
+        if (!state.isConnected) {
+            throw new Error('Network request failed');
+        }
 
         if (get().initialized) {
             debug('Already initialized');
@@ -89,7 +89,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     (e.msg && e.msg.includes('No internet connection'))
                 ) {
                     debug('Network error when initializing wallet');
-                    throw e;
+                    throw new Error('Network request failed');
                 } else {
                     debug('error when initializing wallet', e);
                     throw new Error('Error initializing wallet, Check your internet connection');
