@@ -39,6 +39,8 @@ export default function CommunicationModule() {
     const { initialized, web3wallet, disconnectSession } = useWalletStore();
     const { isConnected } = useNetworkStatus();
 
+    debug('coomunication connection isConnected', isConnected);
+
     /**
      *  Login to communication microservice
      *  should be called on app start
