@@ -42,7 +42,6 @@ import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/
 import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
-import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -76,73 +75,13 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, initialized, initializeWalletState, accountExists, initializeWalletAccount } = useWalletStore();
+    const { web3wallet, accountExists, initializeWalletAccount } = useWalletStore();
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
     const refMessage = useRef(null);
     // const [isOnline, setIsOnline] = useState(false);
-
-    // useEffect(() => {
-    //     const unsubscribe = NetInfo.addEventListener((state) => {
-    //         debug('Connection type', state.type);
-    //         if (state.type !== 'none' && state.type !== 'unknown') {
-    //             setIsOnline(false);
-    //         } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
-    //     });
-
-    //     // Check initial connectivity status
-    //     NetInfo.fetch().then((state) => {
-    //         debug('Connection type fetch function', state.type);
-    //         if (state.type !== 'none' && state.type !== 'unknown') {
-    //             setIsOnline(false);
-    //         } else setIsOnline((state.isConnected && state.isInternetReachable) ?? false);
-    //     });
-
-    //     return () => {
-    //         unsubscribe();
-    //     };
-    // }, []);
-    // useEffect(() => {
-    //     const handleConnectivityChange = (state: NetInfoState) => {
-    //         debug('Connection type', state.type);
-    //         setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
-    //     };
-
-    //     // Set up the event listener for connectivity changes
-    //     const unsubscribe = NetInfo.addEventListener(handleConnectivityChange);
-
-    //     // Check initial connectivity status
-    //     NetInfo.fetch().then((state) => {
-    //         debug('Connection type fetch function', state.type);
-    //         setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
-    //     });
-
-    //     // Clean up the event listener
-    //     return () => {
-    //         unsubscribe();
-    //     };
-    // }, []);
-    // debug('isOnline:', isOnline);
-    // useEffect(() => {
-    //     const initializeWeb3Wallet = async () => {
-    //         try {
-    //             if (!initialized && isOnline) {
-    //                 debug('initialized if condition called');
-    //                 await initializeWalletState();
-    //             }
-    //         } catch (error) {
-    //             debug('Error initializing wallet account:', error);
-    //             errorStore.setError({
-    //                 error: error,
-    //                 expected: true,
-    //             });
-    //         }
-    //     };
-
-    //     initializeWeb3Wallet();
-    // }, [errorStore, initialized, initializeWalletState, isOnline]);
 
     const connectToDid = useCallback(
         async (did: string) => {

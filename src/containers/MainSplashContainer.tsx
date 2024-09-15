@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
 import { StackActions } from '@react-navigation/native';
@@ -41,7 +41,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 debug('splash screen status: ', status);
 
                 if (!initialized) {
-                    console.log('initializeWalletState');
+                    debug('initializeWalletState');
 
                     try {
                         progressiveRetryOnNetworkError(async () => await initializeWalletState());
