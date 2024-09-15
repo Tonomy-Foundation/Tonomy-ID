@@ -47,13 +47,13 @@ export default function CommunicationModule() {
             debug('loginToService ftn called');
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-            // const state = await NetInfo.fetch();
+            const state = await NetInfo.fetch();
 
-            // debug('initializeWalletState ftn called', state);
+            debug('initializeWalletState ftn called', state);
 
-            // if (!state.isConnected) {
-            //     throw new Error('Network request failed');
-            // }
+            if (!state.isConnected) {
+                throw new Error('Network request failed');
+            }
 
             const subscribers = listenToMessages();
 
@@ -228,6 +228,14 @@ export default function CommunicationModule() {
     }
 
     const handleConnect = useCallback(async () => {
+        const state = await NetInfo.fetch();
+
+        debug('initializeWalletState ftn called', state);
+
+        if (!state.isConnected) {
+            throw new Error('Network request failed');
+        }
+
         try {
             const onSessionProposal = async (proposal) => {
                 try {
@@ -413,6 +421,14 @@ export default function CommunicationModule() {
     useEffect(() => {
         try {
             const handleSessionDelete = debounce(async (event) => {
+                const state = await NetInfo.fetch();
+
+                debug('initializeWalletState ftn called', state);
+
+                if (!state.isConnected) {
+                    throw new Error('Network request failed');
+                }
+
                 try {
                     if (event.topic) {
                         const sessions = await web3wallet?.getActiveSessions();
