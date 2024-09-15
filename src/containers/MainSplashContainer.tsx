@@ -52,16 +52,16 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
 
-                        // if (!initialized) {
-                        //     try {
-                        //         await initializeWalletState();
-                        //     } catch (e) {
-                        //         errorStore.setError({
-                        //             error: new Error('Error initializing wallet. Check your internet connection.'),
-                        //             expected: false,
-                        //         });
-                        //     }
-                        // }
+                        if (!initialized) {
+                            try {
+                                progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                            } catch (e) {
+                                errorStore.setError({
+                                    error: new Error('Error initializing wallet. Check your internet connection.'),
+                                    expected: false,
+                                });
+                            }
+                        }
 
                         try {
                             await user.getUsername();

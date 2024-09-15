@@ -52,11 +52,11 @@ const defaultState = {
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
-        const state = await NetInfo.fetch();
+        // const state = await NetInfo.fetch();
 
-        if (!state.isConnected) {
-            throw new Error('Network request failed');
-        }
+        // if (!state.isConnected) {
+        //     throw new Error('Network request failed');
+        // }
 
         if (get().initialized) {
             debug('Already initialized');
