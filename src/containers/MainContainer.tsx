@@ -43,6 +43,7 @@ import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
+import setErrorHandlers from '../utils/exceptions';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -297,8 +298,12 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
+            setRefreshBalance(true);
             await updateBalance();
+            setRefreshBalance(false);
         } catch (error) {
+            setRefreshBalance(false);
+
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
             } else {
@@ -326,16 +331,15 @@ export default function MainContainer({
             ],
             []
         );
-
+        const [accountLoading, setAccountLoading] = useState(false);
         const [accounts, setAccounts] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
         >([]);
-        const [refreshBalance, setRefreshBalance] = useState(false);
 
         useEffect(() => {
             const fetchAssets = async () => {
                 try {
-                    setRefreshBalance(true);
+                    setAccountLoading(true);
 
                     const updatedAccounts = await Promise.all(
                         chains.map(async (chainObj) => {
@@ -358,9 +362,9 @@ export default function MainContainer({
                     );
 
                     setAccounts(updatedAccounts);
-                    setRefreshBalance(false);
+                    setAccountLoading(false);
                 } catch (error) {
-                    setRefreshBalance(false);
+                    setAccountLoading(false);
                     debug('Error fetching asset:', error);
                 }
             };
@@ -424,11 +428,11 @@ export default function MainContainer({
                                             <Text>Not connected</Text>
                                         )}
                                     </View>
-                                    {refreshBalance ? (
+                                    {accountLoading ? (
                                         <TSpinner size="small" />
                                     ) : (
                                         <>
-                                            {!accountData.account ? (
+                                            {!accountData.account && !accountLoading ? (
                                                 <TButton
                                                     style={styles.generateKey}
                                                     onPress={() => {
