@@ -92,6 +92,8 @@ export default function MainContainer({
 
                 await user.sendMessage(identifyMessage);
             } catch (e) {
+                debug('connectToDid error:', e);
+
                 if (
                     e instanceof CommunicationError &&
                     e.exception?.status === 400 &&
@@ -151,9 +153,9 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        if (did) {
-            onUrlOpen(did);
-        }
+        // if (did) {
+        //     onUrlOpen(did);
+        // }
     }, [setUserName, did, onUrlOpen]);
 
     useEffect(() => {
