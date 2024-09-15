@@ -42,6 +42,7 @@ import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/
 import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
+import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -75,7 +76,25 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, accountExists, initializeWalletAccount, initializeWalletState } = useWalletStore();
+    const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
+    const { isConnected } = useNetworkStatus();
+
+    useEffect(() => {
+        const initializeAndFetchBalances = async () => {
+            if (!initialized && isConnected) {
+                try {
+                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                } catch (error) {
+                    errorStore.setError({
+                        error: new Error('Error initializing wallet'),
+                        expected: true,
+                    });
+                }
+            }
+        };
+
+        initializeAndFetchBalances();
+    }, [initializeWalletState, initialized, isConnected, errorStore]);
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
@@ -281,7 +300,7 @@ export default function MainContainer({
         useEffect(() => {
             const fetchAssets = async () => {
                 try {
-                    if (!accountExists) await initializeWalletAccount();
+                    if (!accountExists && isConnected) await initializeWalletAccount();
                     setRefreshBalance(true);
 
                     const updatedAccounts = await Promise.all(

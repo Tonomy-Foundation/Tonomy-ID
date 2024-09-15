@@ -432,11 +432,13 @@ export default function CommunicationModule() {
                 }
             }, 1000);
 
-            web3wallet?.on('session_delete', handleSessionDelete);
+            if (isConnected) {
+                web3wallet?.on('session_delete', handleSessionDelete);
 
-            return () => {
-                web3wallet?.off('session_delete', handleSessionDelete);
-            };
+                return () => {
+                    web3wallet?.off('session_delete', handleSessionDelete);
+                };
+            }
         } catch (e) {
             if (e.message === 'Network request failed') {
                 debug('network error when listening wallet requests');
