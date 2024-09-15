@@ -43,9 +43,9 @@ export default function CommunicationModule() {
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-            const subscribers = listenToMessages();
+            // const subscribers = listenToMessages();
 
-            setSubscribers(subscribers);
+            // setSubscribers(subscribers);
 
             try {
                 await user.loginCommunication(message);
@@ -67,7 +67,13 @@ export default function CommunicationModule() {
                 }
             }
         } catch (e) {
-            errorStore.setError({ error: e, expected: false });
+            if (e.message === 'Network request failed') {
+                debug('Network error in communication login');
+            } else if (e instanceof CommunicationError) {
+                errorStore.setError({ error: new Error('Communication Error'), expected: false });
+            } else {
+                errorStore.setError({ error: e, expected: false });
+            }
         }
     }
 
@@ -100,6 +106,8 @@ export default function CommunicationModule() {
             } catch (e) {
                 if (e.message === 'Network request failed') {
                     debug('Network error in communication login');
+                } else if (e instanceof CommunicationError) {
+                    errorStore.setError({ error: new Error('Communication Error'), expected: false });
                 } else {
                     errorStore.setError({ error: e, expected: false });
                 }
