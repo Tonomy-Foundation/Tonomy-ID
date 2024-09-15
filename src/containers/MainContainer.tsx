@@ -193,10 +193,6 @@ export default function MainContainer({
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
-                else {
-                    await initializeWalletState();
-                    if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
-                }
             } else {
                 const did = validateQrCode(data);
 
