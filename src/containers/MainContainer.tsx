@@ -567,14 +567,14 @@ export default function MainContainer({
                                     <AccountsView />
                                 </View>
                             </ScrollView>
-                            <AccountDetails
+                            {/* <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
                                 }}
-                            />
+                            /> */}
                         </ScrollView>
                     </View>
                 )}
