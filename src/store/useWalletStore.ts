@@ -204,11 +204,18 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
     updateBalance: async () => {
         try {
+            const state = await NetInfo.fetch();
+
+            if (!state.isConnected) {
+                throw new Error('Network request failed');
+            }
+
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
             debug(` updateBalance', ${ethereumAccount}`);
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
+                await connect();
                 const balances = await Promise.allSettled([
                     ETHToken.getBalance(ethereumAccount),
                     ETHSepoliaToken.getBalance(sepoliaAccount),
@@ -233,8 +240,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     await assetStorage.updateAccountBalance(polygonBalance);
                 }
             }
-
-            return;
         } catch (error) {
             console.error('Error updating balance:', error);
             throw error;

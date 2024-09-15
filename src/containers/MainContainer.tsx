@@ -323,6 +323,7 @@ export default function MainContainer({
         };
 
         const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
+            debug('Account clicked');
             const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
 
             setAccountDetails({
