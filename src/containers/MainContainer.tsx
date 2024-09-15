@@ -534,10 +534,7 @@ export default function MainContainer({
             <View style={styles.content}>
                 {!qrOpened && (
                     <View style={styles.content}>
-                        <ScrollView
-                            contentContainerStyle={styles.scrollViewContent}
-                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
-                        >
+                        <ScrollView>
                             <View style={styles.header}>
                                 <TH2>{username}</TH2>
 
@@ -555,15 +552,6 @@ export default function MainContainer({
                                     Scan QR Code
                                 </TButtonContained>
                             </View>
-
-                            {/* <AccountDetails
-                                refMessage={refMessage}
-                                accountDetails={accountDetails}
-                                onClose={() => {
-                                    (refMessage.current as any)?.close();
-                                    setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
-                                }}
-                            /> */}
                         </ScrollView>
                     </View>
                 )}
@@ -586,7 +574,10 @@ export default function MainContainer({
             ) : (
                 <>
                     <MainView />
-                    <ScrollView>
+                    <ScrollView
+                        contentContainerStyle={styles.scrollViewContent}
+                        refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                    >
                         <View style={styles.accountsView}>
                             <Text style={styles.accountHead}>Connected Accounts:</Text>
                             <TouchableOpacity
@@ -633,6 +624,14 @@ export default function MainContainer({
                             <AccountsView />
                         </View>
                     </ScrollView>
+                    <AccountDetails
+                        refMessage={refMessage}
+                        accountDetails={accountDetails}
+                        onClose={() => {
+                            (refMessage.current as any)?.close();
+                            setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
+                        }}
+                    />
                 </>
             )}
         </SafeAreaView>
