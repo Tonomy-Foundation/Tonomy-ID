@@ -84,8 +84,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
             } catch (e) {
                 debug("error wallet initialization'", e);
 
-                if (e.message === 'Network request failed') {
-                    debug('network error when initializing wallet');
+                if (
+                    (e.message && e.message === 'Network request failed') ||
+                    (e.msg && e.msg.includes('No internet connection'))
+                ) {
+                    debug('Network error when initializing wallet');
+                    throw e;
                 } else {
                     debug('error when initializing wallet', e);
                     throw new Error('Error initializing wallet, Check your internet connection');

@@ -35,7 +35,10 @@ export async function progressiveRetryOnNetworkError(
             await fn(); // Try the function
             break; // If it succeeds, exit the loop
         } catch (error) {
-            if (error.message === 'Network request failed') {
+            if (
+                (error.message && error.message === 'Network request failed') ||
+                (error.msg && error.msg.includes('No internet connection'))
+            ) {
                 attempts++;
 
                 if (attempts >= maxRetries) {
