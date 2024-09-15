@@ -44,7 +44,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     debug('initializeWalletState');
 
                     try {
-                        progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                        await initializeWalletState();
                     } catch (e) {
                         errorStore.setError({
                             error: new Error('Error initializing wallet. Check your internet connection.'),

@@ -96,11 +96,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
     initializeWalletAccount: async () => {
         debug('initializeWalletAccount');
-        const state = await NetInfo.fetch();
-
-        if (!state.isConnected) {
-            return;
-        }
 
         try {
             const state = get();
@@ -189,8 +184,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
 
     clearState: async () => {
-        debug('clearState');
-
         try {
             await keyStorage.deleteAll();
             await appStorage.deleteAll();
@@ -209,12 +202,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
     updateBalance: async () => {
         try {
-            const state = await NetInfo.fetch();
-
-            if (!state.isConnected) {
-                throw new Error('Network request failed');
-            }
-
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
             debug(` updateBalance', ${ethereumAccount}`);

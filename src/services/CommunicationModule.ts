@@ -43,9 +43,9 @@ export default function CommunicationModule() {
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-            // const subscribers = listenToMessages();
+            const subscribers = listenToMessages();
 
-            // setSubscribers(subscribers);
+            setSubscribers(subscribers);
 
             try {
                 await user.loginCommunication(message);
