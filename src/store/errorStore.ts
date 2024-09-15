@@ -25,6 +25,7 @@ const useErrorStore = create<ErrorState>((set, get) => ({
     expected: undefined,
     onClose: undefined,
     setError: async ({ error, title = 'Something went wrong', expected, onClose }) => {
+        console.log('setError function called:', error);
         set({ error, title, expected, onClose });
     },
     unSetError: () => {

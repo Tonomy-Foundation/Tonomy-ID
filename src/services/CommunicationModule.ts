@@ -60,6 +60,12 @@ export default function CommunicationModule() {
 
                 if (e.message === 'Network request failed') {
                     debug('Network error in communication login');
+                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                    debug('communication not connected');
+                    errorStore.setError({
+                        error: new Error(' Could not connect to Tonomy Communication server'),
+                        expected: false,
+                    });
                 }
                 // 401 signature invalid: the keys have been rotated and the old key is no longer valid
                 // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
@@ -70,11 +76,6 @@ export default function CommunicationModule() {
                     await logout(
                         e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
                     );
-                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                    errorStore.setError({
-                        error: new Error(' Could not connect to Tonomy Communication server'),
-                        expected: false,
-                    });
                 } else {
                     errorStore.setError({ error: e, expected: false });
                 }
