@@ -70,7 +70,7 @@ export default function CommunicationModule() {
                     await logout(
                         e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
                     );
-                } else if (e instanceof SdkError && e.code === 'CommunicationNotConnected') {
+                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
                         error: new Error(' Could not connect to Tonomy Communication server'),
                         expected: false,
@@ -84,7 +84,7 @@ export default function CommunicationModule() {
 
             if (e.message === 'Network request failed') {
                 debug('Network error in communication login');
-            } else if (e instanceof SdkError && e.code === 'CommunicationNotConnected') {
+            } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                 errorStore.setError({
                     error: new Error(' Could not connect to Tonomy Communication server'),
                     expected: false,
@@ -124,7 +124,7 @@ export default function CommunicationModule() {
             } catch (e) {
                 if (e.message === 'Network request failed') {
                     debug('Network error in communication login');
-                } else if (e instanceof SdkError && e.code === 'CommunicationNotConnected') {
+                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
                         error: new Error(' Could not connect to Tonomy Communication server'),
                         expected: false,
@@ -150,7 +150,7 @@ export default function CommunicationModule() {
             } catch (e) {
                 if (e.message === 'Network request failed') {
                     debug('Network error in communication login');
-                } else if (e instanceof SdkError && e.code === 'CommunicationNotConnected') {
+                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
                         error: new Error(' Could not connect to Tonomy Communication server'),
                         expected: false,
