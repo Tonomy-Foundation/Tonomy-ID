@@ -18,7 +18,6 @@ import {
 } from '../utils/chain/etherum';
 import { Asset, IAccount } from '../utils/chain/types';
 import Debug from 'debug';
-import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
 
@@ -48,14 +47,6 @@ const defaultState = {
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
-        const state = await NetInfo.fetch();
-
-        debug('initializeWalletState ftn called', state);
-
-        if (!state.isConnected) {
-            throw new Error('Network request failed');
-        }
-
         if (get().initialized) {
             debug('Already initialized');
             return;

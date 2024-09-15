@@ -27,7 +27,7 @@ import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
-import NetInfo from '@react-native-community/netinfo';
+import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -37,6 +37,7 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
     const { initialized, web3wallet, disconnectSession } = useWalletStore();
+    const { isConnected } = useNetworkStatus();
 
     /**
      *  Login to communication microservice
@@ -47,13 +48,6 @@ export default function CommunicationModule() {
             debug('loginToService ftn called');
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-            const state = await NetInfo.fetch();
-
-            debug('initializeWalletState ftn called', state);
-
-            if (!state.isConnected) {
-                throw new Error('Network request failed');
-            }
 
             const subscribers = listenToMessages();
 
@@ -195,7 +189,7 @@ export default function CommunicationModule() {
 
     useEffect(() => {
         try {
-            loginToService();
+            if (isConnected) loginToService();
         } catch (error) {
             if (error.message === 'Network request failed') {
                 debug('Network error in communication login');
@@ -228,14 +222,6 @@ export default function CommunicationModule() {
     }
 
     const handleConnect = useCallback(async () => {
-        const state = await NetInfo.fetch();
-
-        debug('initializeWalletState ftn called', state);
-
-        if (!state.isConnected) {
-            throw new Error('Network request failed');
-        }
-
         try {
             const onSessionProposal = async (proposal) => {
                 try {
@@ -406,8 +392,8 @@ export default function CommunicationModule() {
     }, [navigation, web3wallet, errorStore]);
 
     useEffect(() => {
-        if (web3wallet) handleConnect();
-    }, [handleConnect, web3wallet, initialized]);
+        if (web3wallet && isConnected) handleConnect();
+    }, [handleConnect, web3wallet, initialized, isConnected]);
 
     const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
         let timeout: ReturnType<typeof setTimeout>;
@@ -421,11 +407,7 @@ export default function CommunicationModule() {
     useEffect(() => {
         try {
             const handleSessionDelete = debounce(async (event) => {
-                const state = await NetInfo.fetch();
-
-                debug('initializeWalletState ftn called', state);
-
-                if (!state.isConnected) {
+                if (!isConnected) {
                     throw new Error('Network request failed');
                 }
 
@@ -462,7 +444,7 @@ export default function CommunicationModule() {
                 debug('handle session delete error', e);
             }
         }
-    }, [web3wallet, disconnectSession, navigation, errorStore]);
+    }, [web3wallet, disconnectSession, navigation, errorStore, isConnected]);
 
     return null;
 }

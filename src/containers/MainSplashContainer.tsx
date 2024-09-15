@@ -13,6 +13,7 @@ import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
+import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
@@ -20,6 +21,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
     const { clearState, initialized, initializeWalletState } = useWalletStore();
+    const { isConnected } = useNetworkStatus();
 
     useEffect(() => {
         async function main() {
@@ -51,8 +53,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         break;
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
+                        debug('Splash screen isConnected', isConnected);
 
-                        if (!initialized) {
+                        if (!initialized && isConnected) {
                             try {
                                 progressiveRetryOnNetworkError(async () => await initializeWalletState());
                             } catch (e) {
@@ -103,6 +106,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         setStatus,
         isAppInitialized,
         initialized,
+        isConnected,
     ]);
 
     return (
