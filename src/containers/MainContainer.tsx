@@ -68,9 +68,6 @@ export default function MainContainer({
         { token: ETHPolygonToken, chain: EthereumPolygonChain },
     ];
 
-    const [accounts, setAccount] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-    >([]);
     const userStore = useUserStore();
     const user = userStore.user;
     const [username, setUsername] = useState('');
@@ -369,28 +366,75 @@ export default function MainContainer({
         fetchAssets();
     }, []);
 
-    const findAccountByChain = (chain: string) => {
-        const accountExists = accounts.find((account) => account.network === chain);
-        const balance = accountExists?.balance;
-        const usdBalance = accountExists?.usdBalance;
-        const account = accountExists?.accountName;
-
-        return { account, balance, usdBalance };
-    };
-
-    const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-        const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
-
-        setAccountDetails({
-            symbol: token.getSymbol(),
-            name: capitalizeFirstLetter(chain.getName()),
-            address: accountData.account || '',
-            image: token.getLogoUrl(),
-        });
-        (refMessage.current as any)?.open();
-    };
-
     const AccountsView = () => {
+        const [accounts, setAccount] = useState<
+            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+        >([]);
+
+        useEffect(() => {
+            const fetchAssets = async () => {
+                if (!accountExists) await initializeWalletAccount();
+
+                try {
+                    setRefreshBalance(true);
+
+                    for (const chainObj of chains) {
+                        const asset = await assetStorage.findAssetByName(chainObj.token);
+
+                        if (asset) {
+                            setAccount((prevAccounts) => [
+                                ...prevAccounts,
+                                {
+                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                    accountName: asset.accountName,
+                                    balance: asset.balance,
+                                    usdBalance: asset.usdBalance,
+                                },
+                            ]);
+                        } else {
+                            setAccount((prevAccounts) => [
+                                ...prevAccounts,
+                                {
+                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                    accountName: null,
+                                    balance: '0' + chainObj.token.getSymbol(),
+                                    usdBalance: 0,
+                                },
+                            ]);
+                        }
+                    }
+
+                    setRefreshBalance(false);
+                } catch (error) {
+                    setRefreshBalance(false);
+                    debug('Error fetching asset:', error);
+                }
+            };
+
+            fetchAssets();
+        }, []);
+
+        const findAccountByChain = (chain: string) => {
+            const accountExists = accounts.find((account) => account.network === chain);
+            const balance = accountExists?.balance;
+            const usdBalance = accountExists?.usdBalance;
+            const account = accountExists?.accountName;
+
+            return { account, balance, usdBalance };
+        };
+
+        const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
+            const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+
+            setAccountDetails({
+                symbol: token.getSymbol(),
+                name: capitalizeFirstLetter(chain.getName()),
+                address: accountData.account || '',
+                image: token.getLogoUrl(),
+            });
+            (refMessage.current as any)?.open();
+        };
+
         return (
             <View>
                 {chains.map((chainObj, index) => {
@@ -511,62 +555,7 @@ export default function MainContainer({
                                     Scan QR Code
                                 </TButtonContained>
                             </View>
-                            <ScrollView>
-                                <View style={styles.accountsView}>
-                                    <Text style={styles.accountHead}>Connected Accounts:</Text>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
-                                            setAccountDetails({
-                                                symbol: 'LEOS',
-                                                name: 'Pangea',
-                                                address: accountName,
-                                                icon: Images.GetImage('logo48'),
-                                            });
-                                            (refMessage.current as any)?.open(); // Open the AccountDetails component here
-                                        }}
-                                    >
-                                        <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Image
-                                                            source={Images.GetImage('logo48')}
-                                                            style={styles.favicon}
-                                                        />
-                                                        <Text style={styles.networkTitle}>Pangea Network:</Text>
-                                                    </View>
-                                                    <Text>{accountName}</Text>
-                                                </View>
-                                                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                    {refreshBalance ? (
-                                                        <TSpinner size="small" />
-                                                    ) : (
-                                                        <>
-                                                            <View
-                                                                style={{ flexDirection: 'row', alignItems: 'center' }}
-                                                            >
-                                                                <Text>
-                                                                    {formatCurrencyValue(pangeaBalance) || 0} LEOS
-                                                                </Text>
-                                                            </View>
-                                                            <Text style={styles.secondaryColor}>
-                                                                $
-                                                                {pangeaBalance
-                                                                    ? formatCurrencyValue(
-                                                                          pangeaBalance * USD_CONVERSION
-                                                                      )
-                                                                    : 0.0}
-                                                            </Text>
-                                                        </>
-                                                    )}
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <AccountsView />
-                                </View>
-                            </ScrollView>
+
                             {/* <AccountDetails
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
@@ -595,7 +584,56 @@ export default function MainContainer({
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
-                <MainView />
+                <>
+                    <MainView />
+                    <ScrollView>
+                        <View style={styles.accountsView}>
+                            <Text style={styles.accountHead}>Connected Accounts:</Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
+                                    setAccountDetails({
+                                        symbol: 'LEOS',
+                                        name: 'Pangea',
+                                        address: accountName,
+                                        icon: Images.GetImage('logo48'),
+                                    });
+                                    (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                }}
+                            >
+                                <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                                <Text style={styles.networkTitle}>Pangea Network:</Text>
+                                            </View>
+                                            <Text>{accountName}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            {refreshBalance ? (
+                                                <TSpinner size="small" />
+                                            ) : (
+                                                <>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text>{formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                    </View>
+                                                    <Text style={styles.secondaryColor}>
+                                                        $
+                                                        {pangeaBalance
+                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                            : 0.0}
+                                                    </Text>
+                                                </>
+                                            )}
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                            <AccountsView />
+                        </View>
+                    </ScrollView>
+                </>
             )}
         </SafeAreaView>
     );
