@@ -78,7 +78,7 @@ export default function CommunicationModule() {
                     );
                 } else {
                     debug('loginToService loginCommunication error else ');
-                    errorStore.setError({ error: e, expected: false });
+                    // errorStore.setError({ error: e, expected: false });
                 }
             }
         } catch (e) {
