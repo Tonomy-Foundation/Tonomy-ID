@@ -75,7 +75,7 @@ export default function MainContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, accountExists, initializeWalletAccount } = useWalletStore();
+    const { web3wallet, accountExists, initializeWalletAccount, initializeWalletState } = useWalletStore();
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
@@ -193,6 +193,10 @@ export default function MainContainer({
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
+                else {
+                    await initializeWalletState();
+                    if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
+                }
             } else {
                 const did = validateQrCode(data);
 
