@@ -30,7 +30,7 @@ export default function TErrorModal(props: TErrorModalProps) {
     useEffect(() => {
         if (props.expected === false) {
             console.error('Error Modal:', props.error);
-            debug('Error Details', JSON.stringify(props.error, null, 2), props.expected);
+            debug(JSON.stringify(props.error, null, 2), props.expected);
             // Additional error handling or logging could be placed here
         }
     }, [props.expected, props.error]);
@@ -87,13 +87,7 @@ export default function TErrorModal(props: TErrorModalProps) {
             );
         }
 
-        return (
-            <View>
-                <TP size={1}>Unknown error:</TP>
-                <Text style={styles.greyText}>{props.error?.message || 'An unknown error occurred.'}</Text>
-            </View>
-        );
-        // throw new Error('Other error types should not be expandable');
+        throw new Error('Other error types should not be expandable');
     }
 
     return (

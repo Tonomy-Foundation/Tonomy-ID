@@ -19,26 +19,6 @@ export default function ErrorHandlerProvider() {
 
     // gets the initial value of the error state
     const errorRef = useRef(useErrorStore.getState());
-    const parseError = (error: any) => {
-        let parsedError = error;
-
-        // Attempt to parse the error if it's a string
-        if (typeof error === 'string') {
-            try {
-                parsedError = JSON.parse(error);
-            } catch (e) {
-                // If parsing fails, use the original error string
-                parsedError = error;
-            }
-        }
-
-        // Handle nested error structures
-        if (parsedError && typeof parsedError === 'object' && parsedError.error) {
-            parsedError = parsedError.error;
-        }
-
-        return new Error(parsedError.message || parsedError.msg || 'Unknown error');
-    };
 
     useEffect(
         () =>
@@ -48,7 +28,7 @@ export default function ErrorHandlerProvider() {
                 console.error(JSON.stringify(state, null, 2));
 
                 if (errorRef.current.title !== 'Network request failed') {
-                    errorRef.current.error = parseError(state.error);
+                    errorRef.current.error = state.error;
                     errorRef.current.title = state.title;
                     errorRef.current.expected = state.expected;
 
