@@ -22,12 +22,7 @@ import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
 
-export const core = new Core({
-    projectId: settings.config.walletConnectProjectId,
-    relayUrl: 'wss://relay.walletconnect.com',
-});
-
-interface WalletState {
+export interface WalletState {
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
     ethereumAccount: IAccount | null;
@@ -40,6 +35,7 @@ interface WalletState {
     initializeWalletAccount: () => Promise<void>;
     accountExists: boolean;
 }
+
 const defaultState = {
     initialized: false,
     ethereumAccount: null,
@@ -67,6 +63,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
             debug('initialize wallet condition');
 
             try {
+                const core = new Core({
+                    projectId: settings.config.walletConnectProjectId,
+                    relayUrl: 'wss://relay.walletconnect.com',
+                });
                 const web3wallet = await Web3Wallet.init({
                     core,
                     metadata: {
