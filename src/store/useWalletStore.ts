@@ -99,7 +99,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
         const state = await NetInfo.fetch();
 
         if (!state.isConnected) {
-            throw new Error('Network request failed');
+            return;
         }
 
         try {
