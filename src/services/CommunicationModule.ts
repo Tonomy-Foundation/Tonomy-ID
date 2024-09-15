@@ -35,47 +35,53 @@ export default function CommunicationModule() {
     const [subscribers, setSubscribers] = useState<number[]>([]);
     const { initialized, web3wallet, disconnectSession } = useWalletStore();
 
-    // /**
-    //  *  Login to communication microservice
-    //  *  should be called on app start
-    //  */
-    // async function loginToService() {
-    //     try {
-    //         const issuer = await user.getIssuer();
-    //         const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-    //         const subscribers = listenToMessages();
+    /**
+     *  Login to communication microservice
+     *  should be called on app start
+     */
+    async function loginToService() {
+        try {
+            const issuer = await user.getIssuer();
+            const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
+            // const subscribers = listenToMessages();
 
-    //         setSubscribers(subscribers);
+            // setSubscribers(subscribers);
 
-    //         try {
-    //             await user.loginCommunication(message);
-    //         } catch (e) {
-    //             if (e.message === 'Network request failed') {
-    //                 debug('Network error in communication login');
-    //             }
-    //             // 401 signature invalid: the keys have been rotated and the old key is no longer valid
-    //             // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
-    //             else if (
-    //                 e instanceof CommunicationError &&
-    //                 (e.exception.status === 401 || e.exception.status === 404)
-    //             ) {
-    //                 await logout(
-    //                     e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
-    //                 );
-    //             } else {
-    //                 errorStore.setError({ error: e, expected: false });
-    //             }
-    //         }
-    //     } catch (e) {
-    //         if (e.message === 'Network request failed') {
-    //             debug('Network error in communication login');
-    //         } else if (e instanceof CommunicationError) {
-    //             errorStore.setError({ error: new Error('Communication Error'), expected: false });
-    //         } else {
-    //             errorStore.setError({ error: e, expected: false });
-    //         }
-    //     }
-    // }
+            try {
+                await user.loginCommunication(message);
+            } catch (e) {
+                debug('loginToService loginCommunication error', e);
+
+                if (e.message === 'Network request failed') {
+                    debug('Network error in communication login');
+                }
+                // 401 signature invalid: the keys have been rotated and the old key is no longer valid
+                // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
+                else if (
+                    e instanceof CommunicationError &&
+                    (e.exception.status === 401 || e.exception.status === 404)
+                ) {
+                    await logout(
+                        e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
+                    );
+                } else if (e instanceof CommunicationError) {
+                    errorStore.setError({ error: new Error('Communication Error'), expected: false });
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            }
+        } catch (e) {
+            debug('loginToService error', e);
+
+            if (e.message === 'Network request failed') {
+                debug('Network error in communication login');
+            } else if (e instanceof CommunicationError) {
+                errorStore.setError({ error: new Error('Communication Error'), expected: false });
+            } else {
+                errorStore.setError({ error: e, expected: false });
+            }
+        }
+    }
 
     // function listenToMessages(): number[] {
     //     const loginRequestSubscriber = user.subscribeMessage(async (message) => {
@@ -150,18 +156,18 @@ export default function CommunicationModule() {
     //     }
     // }
 
-    // useEffect(() => {
-    //     loginToService();
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [navigation, user]);
+    useEffect(() => {
+        loginToService();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigation, user]);
 
-    // useEffect(() => {
-    //     return () => {
-    //         for (const s of subscribers) {
-    //             user.unsubscribeMessage(s);
-    //         }
-    //     };
-    // }, [subscribers, user]);
+    useEffect(() => {
+        return () => {
+            for (const s of subscribers) {
+                user.unsubscribeMessage(s);
+            }
+        };
+    }, [subscribers, user]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {
