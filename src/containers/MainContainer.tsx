@@ -91,7 +91,7 @@ export default function MainContainer({
         updateBalance: state.updateBalance,
     }));
     const refMessage = useRef(null);
-    const [isOnline, setIsOnline] = useState(false);
+    // const [isOnline, setIsOnline] = useState(false);
 
     // useEffect(() => {
     //     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -113,27 +113,27 @@ export default function MainContainer({
     //         unsubscribe();
     //     };
     // }, []);
-    useEffect(() => {
-        const handleConnectivityChange = (state: NetInfoState) => {
-            debug('Connection type', state.type);
-            setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
-        };
+    // useEffect(() => {
+    //     const handleConnectivityChange = (state: NetInfoState) => {
+    //         debug('Connection type', state.type);
+    //         setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
+    //     };
 
-        // Set up the event listener for connectivity changes
-        const unsubscribe = NetInfo.addEventListener(handleConnectivityChange);
+    //     // Set up the event listener for connectivity changes
+    //     const unsubscribe = NetInfo.addEventListener(handleConnectivityChange);
 
-        // Check initial connectivity status
-        NetInfo.fetch().then((state) => {
-            debug('Connection type fetch function', state.type);
-            setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
-        });
+    //     // Check initial connectivity status
+    //     NetInfo.fetch().then((state) => {
+    //         debug('Connection type fetch function', state.type);
+    //         setIsOnline(state.isConnected && state.isInternetReachable ? true : false);
+    //     });
 
-        // Clean up the event listener
-        return () => {
-            unsubscribe();
-        };
-    }, []);
-
+    //     // Clean up the event listener
+    //     return () => {
+    //         unsubscribe();
+    //     };
+    // }, []);
+    // debug('isOnline:', isOnline);
     // useEffect(() => {
     //     const initializeWeb3Wallet = async () => {
     //         try {
@@ -252,14 +252,12 @@ export default function MainContainer({
 
         getUpdatedBalance();
 
-        if (isOnline) {
-            const interval = setInterval(() => {
-                getUpdatedBalance();
-            }, 20000);
+        const interval = setInterval(() => {
+            getUpdatedBalance();
+        }, 20000);
 
-            return () => clearInterval(interval);
-        }
-    }, [pangeaBalance, isOnline, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
+        return () => clearInterval(interval);
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -308,7 +306,7 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            if (isOnline) await updateBalance();
+            await updateBalance();
         } catch (error) {
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
@@ -320,7 +318,7 @@ export default function MainContainer({
                 });
             }
         }
-    }, [updateBalance, errorStore, isOnline]);
+    }, [updateBalance, errorStore]);
 
     useEffect(() => {
         if (accountDetails?.address) {
@@ -381,22 +379,15 @@ export default function MainContainer({
     };
 
     const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-        if (isOnline) {
-            const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+        const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
 
-            setAccountDetails({
-                symbol: token.getSymbol(),
-                name: capitalizeFirstLetter(chain.getName()),
-                address: accountData.account || '',
-                image: token.getLogoUrl(),
-            });
-            (refMessage.current as any)?.open();
-        } else {
-            errorStore.setError({
-                error: new Error('Please check your internet connection'),
-                expected: true,
-            });
-        }
+        setAccountDetails({
+            symbol: token.getSymbol(),
+            name: capitalizeFirstLetter(chain.getName()),
+            address: accountData.account || '',
+            image: token.getLogoUrl(),
+        });
+        (refMessage.current as any)?.open();
     };
 
     const AccountsView = () => {
@@ -445,16 +436,7 @@ export default function MainContainer({
                                                     onPress={() => {
                                                         debug('Generate key clicked');
 
-                                                        if (isOnline) {
-                                                            navigation.navigate('CreateEthereumKey');
-                                                        } else {
-                                                            errorStore.setError({
-                                                                error: new Error(
-                                                                    'Please check your internet connection'
-                                                                ),
-                                                                expected: true,
-                                                            });
-                                                        }
+                                                        navigation.navigate('CreateEthereumKey');
                                                     }}
                                                     color={theme.colors.white}
                                                     size="medium"
