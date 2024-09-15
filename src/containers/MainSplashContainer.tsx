@@ -40,19 +40,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 debug('splash screen status: ', status);
 
-                if (!initialized) {
-                    debug('initializeWalletState');
-
-                    try {
-                        await initializeWalletState();
-                    } catch (e) {
-                        errorStore.setError({
-                            error: new Error('Error initializing wallet. Check your internet connection.'),
-                            expected: false,
-                        });
-                    }
-                }
-
                 switch (status) {
                     case UserStatus.NONE:
                         debug('status is NONE');
@@ -64,6 +51,17 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         break;
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
+
+                        // if (!initialized) {
+                        //     try {
+                        //         await initializeWalletState();
+                        //     } catch (e) {
+                        //         errorStore.setError({
+                        //             error: new Error('Error initializing wallet. Check your internet connection.'),
+                        //             expected: false,
+                        //         });
+                        //     }
+                        // }
 
                         try {
                             await user.getUsername();
