@@ -11,36 +11,11 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         }
     };
 
-    // setJSExceptionHandler((e: Error, isFatal) => {
-    //     if (isFatal) {
-    //         errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
-    //     } else {
-    //         errorStore.setError({ error: e, title: 'Unexpected JS Error', expected: false });
-    //     }
-    // }, false);
-
     setJSExceptionHandler((e: Error, isFatal) => {
-        const errorMessage = e.message || 'Unknown error';
-        const errorStack = e.stack || 'No stack trace available';
-
-        const errorDetails = {
-            name: e.name || '',
-            message: errorMessage,
-            stack: errorStack,
-        };
-
         if (isFatal) {
-            errorStore.setError({
-                error: errorDetails,
-                title: 'Unexpected Fatal JS Error',
-                expected: false,
-            });
+            errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
-            errorStore.setError({
-                error: errorDetails,
-                title: 'Unexpected JS Error',
-                expected: false,
-            });
+            errorStore.setError({ error: e, title: 'Unexpected JS Error', expected: false });
         }
     }, false);
 

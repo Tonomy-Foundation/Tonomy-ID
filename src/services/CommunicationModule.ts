@@ -45,42 +45,42 @@ export default function CommunicationModule() {
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
-            const subscribers = listenToMessages();
+            // const subscribers = listenToMessages();
 
-            setSubscribers(subscribers);
+            // setSubscribers(subscribers);
 
-            // try {
-            //     await user.loginCommunication(message);
-            // } catch (e) {
-            //     debug(
-            //         'loginToService loginCommunication error',
-            //         e.code,
-            //         e.code === SdkErrors.CommunicationNotConnected
-            //     );
+            try {
+                await user.loginCommunication(message);
+            } catch (e) {
+                debug(
+                    'loginToService loginCommunication error',
+                    e.code,
+                    e.code === SdkErrors.CommunicationNotConnected
+                );
 
-            //     if (e.message === 'Network request failed') {
-            //         debug('Network error in communication login');
-            //     } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-            //         debug('communication not connected');
-            //         errorStore.setError({
-            //             error: new Error(' Could not connect to Tonomy Communication server'),
-            //             expected: false,
-            //         });
-            //     }
-            //     // 401 signature invalid: the keys have been rotated and the old key is no longer valid
-            //     // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
-            //     else if (
-            //         e instanceof CommunicationError &&
-            //         (e.exception.status === 401 || e.exception.status === 404)
-            //     ) {
-            //         await logout(
-            //             e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
-            //         );
-            //     } else {
-            //         debug('loginToService loginCommunication error else ');
-            //         // errorStore.setError({ error: e, expected: false });
-            //     }
-            // }
+                if (e.message === 'Network request failed') {
+                    debug('Network error in communication login');
+                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                    debug('communication not connected');
+                    errorStore.setError({
+                        error: new Error(' Could not connect to Tonomy Communication server'),
+                        expected: false,
+                    });
+                }
+                // 401 signature invalid: the keys have been rotated and the old key is no longer valid
+                // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
+                else if (
+                    e instanceof CommunicationError &&
+                    (e.exception.status === 401 || e.exception.status === 404)
+                ) {
+                    await logout(
+                        e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
+                    );
+                } else {
+                    debug('loginToService loginCommunication error else ');
+                    // errorStore.setError({ error: e, expected: false });
+                }
+            }
         } catch (e) {
             debug('loginToService error', e);
 
@@ -93,8 +93,7 @@ export default function CommunicationModule() {
                 });
             } else {
                 debug('loginToService error else ');
-
-                // errorStore.setError({ error: e, expected: false });
+                errorStore.setError({ error: e, expected: false });
             }
         }
     }
