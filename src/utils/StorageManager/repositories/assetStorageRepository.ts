@@ -31,7 +31,9 @@ export class AssetStorageRepository {
     }
 
     public async findAssetByName(name: string): Promise<AssetStorage | null> {
-        return this.ormRepository.findOne({ where: { assetName: name } });
+        const findDoc = await this.ormRepository.findOne({ where: { assetName: name } });
+
+        return findDoc;
     }
 
     public async deleteAll(): Promise<void> {

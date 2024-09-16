@@ -54,16 +54,13 @@ const useUserStore = create<UserState>((set, get) => ({
         const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
         const userstatus = get().status;
 
-        debug('getSTatus function', status, userstatus);
         get().setStatus(status as UserStatus);
 
         return status as UserStatus;
     },
     setStatus: async (newStatus: UserStatus) => {
-        debug('set status', newStatus);
         const storeStatus = await AsyncStorage.setItem(STORAGE_NAMESPACE + 'status', newStatus);
 
-        debug('store Sttatus', storeStatus);
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
@@ -87,15 +84,12 @@ const useUserStore = create<UserState>((set, get) => ({
             get().setStatus(UserStatus.LOGGED_IN);
             set({ isAppInitialized: true });
         } catch (e) {
-            debug('initializeStatusFromStorage() error', e);
-
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 useErrorStore.getState().setError({ error: e, expected: false });
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
             } else if (e.message === 'Network request failed') {
-                debug('network error condition');
                 const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
 
                 debug('network error condition status', status);

@@ -12,6 +12,7 @@ import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
+import useNetworkStatus from '../utils/networkHelper';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
@@ -25,10 +26,19 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
     const [loading, setLoading] = useState(false);
 
     const errorStore = useErrorStore();
+    const { isConnected } = useNetworkStatus();
 
     const { user } = useUserStore();
 
     async function onNext() {
+        if (!isConnected) {
+            errorStore.setError({
+                error: new Error('Please check your internet connection'),
+                expected: true,
+            });
+            return;
+        }
+
         if (username.includes(' ')) {
             setErrorMessage('Username must not contain spaces');
             return;

@@ -13,13 +13,15 @@ import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
+import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState, initializeWalletState } = useWalletStore();
+    const { clearState, initialized, initializeWalletState } = useWalletStore();
+    const { isConnected } = useNetworkStatus();
 
     useEffect(() => {
         async function main() {
@@ -52,9 +54,19 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
 
+                        if (!initialized && isConnected) {
+                            try {
+                                progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                            } catch (e) {
+                                errorStore.setError({
+                                    error: new Error('Error initializing wallet. Check your internet connection.'),
+                                    expected: false,
+                                });
+                            }
+                        }
+
                         try {
                             await user.getUsername();
-                            await initializeWalletState();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
@@ -70,9 +82,13 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                console.error('main screen error', e);
-                errorStore.setError({ error: e, expected: false });
-                navigation.navigate('SplashSecurity');
+                if (e.message === 'Network request failed') {
+                    debug('Network error occurred. Retrying...');
+                } else {
+                    debug('main screen error', e);
+                    errorStore.setError({ error: e, expected: false });
+                    navigation.navigate('SplashSecurity');
+                }
             }
         }
 
@@ -88,6 +104,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         clearState,
         setStatus,
         isAppInitialized,
+        initialized,
+        isConnected,
     ]);
 
     return (

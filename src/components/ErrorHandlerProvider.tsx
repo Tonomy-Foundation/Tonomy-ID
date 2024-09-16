@@ -20,25 +20,23 @@ export default function ErrorHandlerProvider() {
     // gets the initial value of the error state
     const errorRef = useRef(useErrorStore.getState());
 
-    useEffect(
-        () =>
-            // subscribe to errorStore changes to update the modal
-            // using the `errorStore` variable does not work as changes do not force a re-render
-            useErrorStore.subscribe((state) => {
-                console.error(JSON.stringify(state, null, 2));
+    useEffect(() => {
+        // subscribe to errorStore changes to update the modal
+        // using the `errorStore` variable does not work as changes do not force a re-render
+        const unsubscribe = useErrorStore.subscribe((state) => {
+            console.error('Error handler', JSON.stringify(state, null, 2));
 
-                if (errorRef.current.title !== 'Network request failed') {
-                    errorRef.current.error = state.error;
-                    errorRef.current.title = state.title;
-                    errorRef.current.expected = state.expected;
+            errorRef.current.error = state.error;
+            errorRef.current.title = state.title;
+            errorRef.current.expected = state.expected;
 
-                    if (state.error) {
-                        setShowModal(true);
-                    }
-                }
-            }),
-        []
-    );
+            if (state.error) {
+                setShowModal(true);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     return (
         <TErrorModal
