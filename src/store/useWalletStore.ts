@@ -64,7 +64,9 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     });
                 } catch (e) {
                     console.error('error when initializing core', JSON.stringify(e, null, 2));
-                    throw new Error('Error initializing core');
+                    if (typeof e === 'string') {
+                        throw new Error('Error initializing core');
+                    } else throw e;
                 }
 
                 const web3wallet = await Web3Wallet.init({

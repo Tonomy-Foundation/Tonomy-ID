@@ -264,10 +264,12 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            setRefreshBalance(true);
+            if (isConnected) {
+                setRefreshBalance(true);
 
-            await updateBalance();
-            setRefreshBalance(false);
+                await updateBalance();
+                setRefreshBalance(false);
+            }
         } catch (error) {
             setRefreshBalance(false);
 
@@ -302,6 +304,9 @@ export default function MainContainer({
         const [accounts, setAccounts] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
         >([]);
+
+        debug('accounts', accounts.length);
+
         const [refreshBalance, setRefreshBalance] = useState(false);
 
         useEffect(() => {
