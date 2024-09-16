@@ -39,13 +39,13 @@ export default function CommunicationModule() {
     const { initialized, web3wallet, disconnectSession } = useWalletStore();
     const { isConnected } = useNetworkStatus();
 
-    debug('coomunication connection isConnected', isConnected);
-
     /**
      *  Login to communication microservice
      *  should be called on app start
      */
     async function loginToService() {
+        debug('coomunication loginToService', isConnected);
+
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
@@ -107,6 +107,8 @@ export default function CommunicationModule() {
     }
 
     function listenToMessages(): number[] {
+        debug('coomunication listenToMessages', isConnected);
+
         const loginRequestSubscriber = user.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender();
@@ -182,6 +184,8 @@ export default function CommunicationModule() {
     }
 
     function sendLoginNotificationOnBackground(appName: string) {
+        debug('coomunication sendLoginNotificationOnBackground', isConnected);
+
         if (AppState.currentState === 'background') {
             scheduleNotificationAsync({
                 content: {
@@ -200,12 +204,14 @@ export default function CommunicationModule() {
     }, [navigation, user]);
 
     useEffect(() => {
-        return () => {
-            for (const s of subscribers) {
-                user.unsubscribeMessage(s);
-            }
-        };
-    }, [subscribers, user]);
+        if (isConnected) {
+            return () => {
+                for (const s of subscribers) {
+                    user.unsubscribeMessage(s);
+                }
+            };
+        }
+    }, [subscribers, user, isConnected]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {
@@ -220,6 +226,8 @@ export default function CommunicationModule() {
     }
 
     const handleConnect = useCallback(async () => {
+        debug('coomunication handleConnect', isConnected);
+
         try {
             const onSessionProposal = async (proposal) => {
                 try {
@@ -407,6 +415,8 @@ export default function CommunicationModule() {
     useEffect(() => {
         try {
             const handleSessionDelete = debounce(async (event) => {
+                debug('coomunication handleSessionDelete', isConnected);
+
                 try {
                     if (event.topic) {
                         const sessions = await web3wallet?.getActiveSessions();
