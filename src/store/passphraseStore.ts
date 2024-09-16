@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import settings from '../settings';
 import { util } from '@tonomy/tonomy-id-sdk';
 import { ApplicationErrors, throwError } from '../utils/errors';
@@ -37,7 +37,7 @@ function generate3PassphraseIndexes(): number[] {
 export const DEFAULT_DEV_PASSPHRASE_LIST = ['above', 'day', 'fever', 'lemon', 'piano', 'sport'];
 
 const usePassphraseStore = create<PassphraseStore>((set, get) => ({
-    passphraseList: settings.isProduction() ? util.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
+    passphraseList: DEFAULT_DEV_PASSPHRASE_LIST, //settings.isProduction() ? util.generateRandomKeywords() : DEFAULT_DEV_PASSPHRASE_LIST,
     randomWordIndexes: generate3PassphraseIndexes(),
     confirmPassphraseWords: ['', '', ''],
     getPassphrase: () => {

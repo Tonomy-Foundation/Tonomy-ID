@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 export interface ErrorState {
     error?: Error;
@@ -24,8 +24,13 @@ const useErrorStore = create<ErrorState>((set, get) => ({
     title: undefined,
     expected: undefined,
     onClose: undefined,
-    setError: ({ error, title, expected, onClose }) => {
-        set({ error, title, expected, onClose });
+    setError: async ({ error, title = 'Something went wrong', expected, onClose }) => {
+        if (typeof error === 'string') {
+            set({ error: new Error(error), title, expected, onClose });
+        } else if (!(error instanceof Error)) {
+            console.error('The provided error is not an instance of Error');
+            set({ error: new Error('Unexpected Error'), title, expected, onClose });
+        } else set({ error, title, expected, onClose });
     },
     unSetError: () => {
         set({ error: undefined, title: undefined, expected: undefined });

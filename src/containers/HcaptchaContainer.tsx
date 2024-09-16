@@ -16,6 +16,9 @@ import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
 import useWalletStore from '../store/useWalletStore';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -30,7 +33,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const user = userStore.user;
     const siteKey = settings.config.captchaSiteKey;
     const { getPassphrase, unsetPassphraseList, unsetConfirmPassphraseWord } = usePassphraseStore();
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
+    // const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
@@ -52,9 +55,9 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 setCode(event.nativeEvent.data);
                 setErrorMsg('Challenge expired or some error occured. Please try again.');
             } else if (event.nativeEvent.data === 'open') {
-                console.log('Visual challenge opened');
+                debug('Visual challenge opened');
             } else {
-                console.log('Verified code from hCaptcha', event.nativeEvent.data);
+                debug('Verified code from hCaptcha', event.nativeEvent.data);
 
                 if (settings.env === 'local') {
                     setCode('10000000-aaaa-bbbb-cccc-000000000001');
@@ -89,7 +92,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             await user.saveLocal();
             await user.updateKeys(getPassphrase());
-            initializeWallet();
+            // initializeWallet();
 
             unsetPassphraseList();
             unsetConfirmPassphraseWord();
@@ -112,7 +115,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             setAccountUrl(url);
         } catch (e) {
-            if (e instanceof SdkError) {
+            if (e.message === 'Network request failed') {
+                errorStore.setError({ error: new Error('Please check your internet connection'), expected: true });
+                setLoading(false);
+                return;
+            } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:
                         setShowUsernameErrorModal(true);

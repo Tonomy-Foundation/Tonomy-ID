@@ -33,6 +33,9 @@ import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConse
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
@@ -126,11 +129,11 @@ export default function RootNavigation() {
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
-    const user = useUserStore();
+    const { status } = useUserStore();
 
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
+            {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                     <Stack.Screen

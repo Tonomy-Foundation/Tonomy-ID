@@ -1,5 +1,6 @@
+/* eslint-disable indent */
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -11,7 +12,7 @@ import {
     RefreshControl,
 } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
@@ -24,13 +25,26 @@ import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
-import { USD_CONVERSION } from '../utils/chain/etherum';
+import {
+    EthereumChain,
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumSepoliaChain,
+    ETHPolygonToken,
+    ETHSepoliaToken,
+    ETHToken,
+    USD_CONVERSION,
+} from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-import { capitalizeFirstLetter } from '../utils/helper';
-import AccountSummary from '../components/AccountSummary';
+import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
+import Debug from 'debug';
+import { assetStorage } from '../utils/StorageManager/setup';
+import { IToken } from '../utils/chain/types';
+import useNetworkStatus from '../utils/networkHelper';
 
+const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
 
 interface AccountDetails {
@@ -56,33 +70,104 @@ export default function MainContainer({
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
-    const [refreshing, setRefreshing] = React.useState(false);
+    const [refreshBalance, setRefreshBalance] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
         address: '',
     });
-    const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
-        useWalletStore();
-
-    const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
-        updateBalance: state.updateBalance,
-    }));
-
-    const refMessage = useRef(null);
+    const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
+    const { isConnected } = useNetworkStatus();
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
-            if (!initialized && ethereumAccount && sepoliaAccount && polygonAccount) {
-                await initializeWalletState();
+            if (!initialized && isConnected) {
+                try {
+                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                } catch (error) {
+                    errorStore.setError({
+                        error: new Error('Error initializing wallet'),
+                        expected: true,
+                    });
+                }
             }
         };
 
         initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, ethereumAccount, sepoliaAccount, polygonAccount]);
+    }, [initializeWalletState, initialized, isConnected, errorStore]);
+
+    const { updateBalance } = useWalletStore((state) => ({
+        updateBalance: state.updateBalance,
+    }));
+    const refMessage = useRef(null);
+    // const [isOnline, setIsOnline] = useState(false);
+
+    const connectToDid = useCallback(
+        async (did: string) => {
+            try {
+                // Connect to the browser using their did:jwk
+                const issuer = await user.getIssuer();
+                const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+
+                await user.sendMessage(identifyMessage);
+            } catch (e) {
+                debug('connectToDid error:', e);
+
+                // if (
+                //     e instanceof CommunicationError &&
+                //     e.exception?.status === 400 &&
+                //     e.exception.message.startsWith('Recipient not connected')
+                // ) {
+                //     errorStore.setError({
+                //         title: 'Problem connecting',
+                //         error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                //         expected: true,
+                //     });
+                // } else {
+                //     errorStore.setError({
+                //         error: e,
+                //         expected: false,
+                //     });
+                // }
+            }
+        },
+        [user]
+    );
+
+    const onClose = useCallback(async () => {
+        setQrOpened(false);
+    }, []);
+
+    const onUrlOpen = useCallback(
+        async (did) => {
+            try {
+                await connectToDid(did);
+            } catch (e) {
+                debug('onUrlOpen error:', e);
+                // if (e.message === 'Network request failed') {
+                //     debug('network error when connectToDid called');
+                // } else errorStore.setError({ error: e, expected: false });
+            } finally {
+                onClose();
+            }
+        },
+        [connectToDid, onClose]
+    );
+
+    const setUserName = useCallback(async () => {
+        try {
+            const u = await user.getUsername();
+
+            setUsername(u.getBaseUsername());
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
+        } catch (e) {
+            if (e.message === 'Network request failed') {
+                debug('Error getting username network error');
+            } else errorStore.setError({ error: e, expected: false });
+        }
+    }, [user, errorStore]);
 
     useEffect(() => {
         setUserName();
@@ -90,16 +175,28 @@ export default function MainContainer({
         if (did) {
             onUrlOpen(did);
         }
-    }, []);
+    }, [setUserName, did, onUrlOpen]);
 
     useEffect(() => {
         async function getUpdatedBalance() {
-            await updateBalance();
+            try {
+                if (accountExists) await updateBalance();
 
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-            if (pangeaBalance !== accountPangeaBalance) {
-                setPangeaBalance(accountPangeaBalance);
+                if (pangeaBalance !== accountPangeaBalance) {
+                    setPangeaBalance(accountPangeaBalance);
+                }
+            } catch (error) {
+                if (error.message === 'Network request failed') {
+                    debug('network error when call updating balance:');
+                } else {
+                    errorStore.setError({
+                        error: new Error('Error updating balance'),
+                        expected: true,
+                        title: 'Error updating balance',
+                    });
+                }
             }
         }
 
@@ -110,43 +207,24 @@ export default function MainContainer({
         }, 20000);
 
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
-
-    async function setUserName() {
-        try {
-            const u = await user.getUsername();
-
-            setUsername(u.getBaseUsername());
-            const accountName = (await user.getAccountName()).toString();
-
-            setAccountName(accountName);
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-        }
-    }
-
-    async function onUrlOpen(did: string) {
-        try {
-            await connectToDid(did);
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-        } finally {
-            onClose();
-        }
-    }
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
+                if (web3wallet && isConnected) await web3wallet.core.pairing.pair({ uri: data });
             } else {
                 const did = validateQrCode(data);
 
                 await connectToDid(did);
             }
         } catch (e) {
-            if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
-                console.log('Invalid QR Code', JSON.stringify(e, null, 2));
+            debug('onScan error:', e);
+
+            if (e.message === 'Network request failed') {
+                debug('Scan Qr Code network error');
+            } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
+                debug('Invalid QR Code', JSON.stringify(e, null, 2));
 
                 if (e.message === 'QR schema does not match app') {
                     errorStore.setError({
@@ -161,6 +239,14 @@ export default function MainContainer({
                         expected: false,
                     });
                 }
+            } else if (e instanceof CommunicationError) {
+                debug('CommunicationError QR Code', JSON.stringify(e, null, 2));
+
+                errorStore.setError({
+                    error: new Error(`Check your connection`),
+                    expected: true,
+                    title: 'Communication Error',
+                });
             } else {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -169,33 +255,26 @@ export default function MainContainer({
         }
     }
 
-    async function connectToDid(did: string) {
+    const onRefresh = React.useCallback(async () => {
         try {
-            // Connect to the browser using their did:jwk
-            const issuer = await user.getIssuer();
-            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+            setRefreshBalance(true);
 
-            await user.sendMessage(identifyMessage);
-        } catch (e) {
-            if (
-                e instanceof CommunicationError &&
-                e.exception?.status === 400 &&
-                e.exception.message.startsWith('Recipient not connected')
-            ) {
+            await updateBalance();
+            setRefreshBalance(false);
+        } catch (error) {
+            setRefreshBalance(false);
+
+            if (error.message === 'Network request failed') {
+                debug('Error updating account detail network error:');
+            } else {
+                debug('Error when refresh balance:', error);
                 errorStore.setError({
-                    title: 'Problem connecting',
-                    error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                    error: error,
                     expected: true,
                 });
-            } else {
-                throw e;
             }
         }
-    }
-
-    function onClose() {
-        setQrOpened(false);
-    }
+    }, [updateBalance, errorStore]);
 
     useEffect(() => {
         if (accountDetails?.address) {
@@ -203,25 +282,154 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
-    const updateAccountDetail = async (account) => {
-        if (account) {
-            const accountToken = await account.getNativeToken();
-            const logoUrl = accountToken.getLogoUrl();
+    const AccountsView = () => {
+        const chains = useMemo(
+            () => [
+                { token: ETHToken, chain: EthereumMainnetChain },
+                { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+                { token: ETHPolygonToken, chain: EthereumPolygonChain },
+            ],
+            []
+        );
+
+        const [accounts, setAccounts] = useState<
+            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+        >([]);
+        const [refreshBalance, setRefreshBalance] = useState(false);
+
+        useEffect(() => {
+            const fetchAssets = async () => {
+                try {
+                    if (!accountExists && isConnected) await initializeWalletAccount();
+                    setRefreshBalance(true);
+
+                    const updatedAccounts = await Promise.all(
+                        chains.map(async (chainObj) => {
+                            const asset = await assetStorage.findAssetByName(chainObj.token);
+
+                            return asset
+                                ? {
+                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                      accountName: asset.accountName,
+                                      balance: asset.balance,
+                                      usdBalance: asset.usdBalance,
+                                  }
+                                : {
+                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                      accountName: null,
+                                      balance: '0' + chainObj.token.getSymbol(),
+                                      usdBalance: 0,
+                                  };
+                        })
+                    );
+
+                    setAccounts(updatedAccounts);
+                    setRefreshBalance(false);
+                } catch (error) {
+                    setRefreshBalance(false);
+                    debug('Error fetching asset:', error);
+                }
+            };
+
+            fetchAssets();
+        }, [chains]);
+
+        const findAccountByChain = (chain: string) => {
+            const accountExists = accounts.find((account) => account.network === chain);
+            const balance = accountExists?.balance;
+            const usdBalance = accountExists?.usdBalance;
+            const account = accountExists?.accountName;
+
+            return { account, balance, usdBalance };
+        };
+
+        const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
+            const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
 
             setAccountDetails({
-                symbol: accountToken.getSymbol(),
-                name: capitalizeFirstLetter(account.getChain().getName()),
-                address: account?.getName() || '',
-                ...(logoUrl && { image: logoUrl }),
+                symbol: token.getSymbol(),
+                name: capitalizeFirstLetter(chain.getName()),
+                address: accountData.account || '',
+                image: token.getLogoUrl(),
             });
-        }
-    };
+            (refMessage.current as any)?.open();
+        };
 
-    const onRefresh = React.useCallback(() => {
-        setRefreshing(true);
-        updateBalance();
-        setRefreshing(false);
-    }, [updateBalance]);
+        return (
+            <View>
+                {chains.map((chainObj, index) => {
+                    const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
+
+                    return (
+                        <TouchableOpacity key={index} onPress={() => openAccountDetails(chainObj)}>
+                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    <View
+                                        style={{
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                        }}
+                                    >
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Image
+                                                source={{ uri: chainObj.token.getLogoUrl() }}
+                                                style={[styles.favicon, { resizeMode: 'contain' }]}
+                                            />
+                                            <Text style={styles.networkTitle}>
+                                                {capitalizeFirstLetter(chainObj.chain.getName())} Network:
+                                            </Text>
+                                        </View>
+                                        {accountData.account ? (
+                                            <Text> {chainObj.chain.formatShortAccountName(accountData.account)}</Text>
+                                        ) : (
+                                            <Text>Not connected</Text>
+                                        )}
+                                    </View>
+                                    {refreshBalance ? (
+                                        <TSpinner size="small" />
+                                    ) : (
+                                        <>
+                                            {!accountData.account ? (
+                                                <TButton
+                                                    style={styles.generateKey}
+                                                    onPress={() => {
+                                                        navigation.navigate('CreateEthereumKey');
+                                                    }}
+                                                    color={theme.colors.white}
+                                                    size="medium"
+                                                >
+                                                    Generate key
+                                                </TButton>
+                                            ) : (
+                                                <View
+                                                    style={{
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-end',
+                                                    }}
+                                                >
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text>{accountData.balance}</Text>
+                                                    </View>
+                                                    <Text style={styles.secondaryColor}>
+                                                        ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
+                                                    </Text>
+                                                </View>
+                                            )}
+                                        </>
+                                    )}
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
+        );
+    };
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -231,31 +439,52 @@ export default function MainContainer({
         }
 
         return (
-            <View style={styles.content}>
+            <View>
                 {!qrOpened && (
-                    <View style={styles.content}>
-                        <ScrollView
-                            contentContainerStyle={styles.scrollViewContent}
-                            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                        >
-                            <View style={styles.header}>
-                                <TH2>{username}</TH2>
+                    <View style={styles.header}>
+                        <TH2>{username}</TH2>
 
-                                <Image
-                                    source={require('../assets/animations/qr-code.gif')}
-                                    style={[styles.image, styles.marginTop]}
-                                />
-                                <TButtonContained
-                                    style={[styles.button, styles.marginTop]}
-                                    icon="qrcode-scan"
-                                    onPress={() => {
-                                        setQrOpened(true);
-                                    }}
-                                >
-                                    Scan QR Code
-                                </TButtonContained>
+                        <Image
+                            source={require('../assets/animations/qr-code.gif')}
+                            style={[styles.image, styles.marginTop]}
+                        />
+                        <TButtonContained
+                            style={[styles.button, styles.marginTop]}
+                            icon="qrcode-scan"
+                            onPress={() => {
+                                setQrOpened(true);
+                            }}
+                        >
+                            Scan QR Code
+                        </TButtonContained>
+                    </View>
+                )}
+            </View>
+        );
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            {isLoadingView ? (
+                <View style={styles.requestView}>
+                    <Image source={require('../assets/tonomy/connecting.png')}></Image>
+                    <TP style={styles.requestText} size={1}>
+                        Linking to your web app and receiving data.
+                    </TP>
+                    <TSpinner style={{ marginBottom: 12 }} />
+                    <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
+                </View>
+            ) : (
+                <View style={{ flex: 1 }}>
+                    {!qrOpened && (
+                        <>
+                            <View style={{ flexShrink: 0 }}>
+                                <MainView />
                             </View>
-                            <ScrollView>
+                            <ScrollView
+                                contentContainerStyle={styles.scrollViewContent}
+                                refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                            >
                                 <View style={styles.accountsView}>
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
                                     <TouchableOpacity
@@ -282,72 +511,47 @@ export default function MainContainer({
                                                     <Text>{accountName}</Text>
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
-                                                    </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        $
-                                                        {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
-                                                            : 0.0}
-                                                    </Text>
+                                                    {refreshBalance ? (
+                                                        <TSpinner size="small" />
+                                                    ) : (
+                                                        <>
+                                                            <View
+                                                                style={{ flexDirection: 'row', alignItems: 'center' }}
+                                                            >
+                                                                <Text>
+                                                                    {formatCurrencyValue(pangeaBalance) || 0} LEOS
+                                                                </Text>
+                                                            </View>
+                                                            <Text style={styles.secondaryColor}>
+                                                                $
+                                                                {pangeaBalance
+                                                                    ? formatCurrencyValue(
+                                                                          pangeaBalance * USD_CONVERSION
+                                                                      )
+                                                                    : 0.0}
+                                                            </Text>
+                                                        </>
+                                                    )}
                                                 </View>
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        accountBalance={ethereumBalance}
-                                        address={ethereumAccount}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Ethereum"
-                                    />
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        accountBalance={sepoliaBalance}
-                                        address={sepoliaAccount}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Sepolia"
-                                    />
-                                    <AccountSummary
-                                        navigation={navigation}
-                                        accountBalance={polygonBalance}
-                                        address={polygonAccount}
-                                        updateAccountDetail={updateAccountDetail}
-                                        networkName="Polygon"
-                                    />
+                                    <AccountsView />
                                 </View>
                             </ScrollView>
-                            <AccountDetails
-                                refMessage={refMessage}
-                                accountDetails={accountDetails}
-                                onClose={() => {
-                                    (refMessage.current as any)?.close();
-                                    setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
-                                }}
-                            />
-                        </ScrollView>
-                    </View>
-                )}
-                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
-            </View>
-        );
-    };
+                        </>
+                    )}
+                    {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={() => setQrOpened(false)} />}
 
-    return (
-        <SafeAreaView style={styles.container}>
-            {isLoadingView ? (
-                <View style={styles.requestView}>
-                    <Image source={require('../assets/tonomy/connecting.png')}></Image>
-                    <TP style={styles.requestText} size={1}>
-                        Linking to your web app and receiving data.
-                    </TP>
-                    <TSpinner style={{ marginBottom: 12 }} />
-                    <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
+                    <AccountDetails
+                        refMessage={refMessage}
+                        accountDetails={accountDetails}
+                        onClose={() => {
+                            (refMessage.current as any)?.close();
+                            setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
+                        }}
+                    />
                 </View>
-            ) : (
-                <MainView />
             )}
         </SafeAreaView>
     );
@@ -361,6 +565,7 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         flexGrow: 1,
+        marginTop: 20,
     },
     requestText: {
         paddingHorizontal: 30,
@@ -380,9 +585,7 @@ const styles = StyleSheet.create({
         padding: 16,
         flex: 1,
     },
-    content: {
-        flex: 1,
-    },
+
     header: {
         flexDirection: 'column',
         alignItems: 'center',
@@ -422,13 +625,17 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
     accountsView: {
-        marginTop: 25,
         paddingHorizontal: 5,
     },
     balanceView: {
         marginTop: 7,
     },
     marginTop: {
-        marginTop: 28,
+        marginTop: 10,
+    },
+    generateKey: {
+        width: '40%',
+        backgroundColor: theme.colors.primary,
+        borderRadius: 10,
     },
 });

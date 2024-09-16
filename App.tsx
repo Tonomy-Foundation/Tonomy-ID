@@ -1,7 +1,10 @@
+// IMPORTANT: The following 3 packages should be imported in this order:
 import 'reflect-metadata';
-import '@walletconnect/react-native-compat';
+import './src/utils/logs';
 import './src/utils/polyfill';
-import React from 'react';
+// NOTE: The rest can be imported in any order
+import '@walletconnect/react-native-compat';
+import React, { useEffect } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import RootNavigation from './src/navigation/Root';
 import 'expo-dev-client';
@@ -12,6 +15,9 @@ import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
 import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
+import Debug from 'debug';
+
+Debug.enable(process.env.DEBUG);
 
 if (!settings.isProduction()) {
     runTests();
