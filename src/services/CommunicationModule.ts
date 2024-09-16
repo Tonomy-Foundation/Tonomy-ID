@@ -36,10 +36,8 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { initialized, web3wallet, disconnectSession } = useWalletStore();
+    const { initialized, web3wallet, disconnectSession, core } = useWalletStore();
     const { isConnected } = useNetworkStatus();
-
-    debug('coomunication connection isConnected', isConnected);
 
     /**
      *  Login to communication microservice
@@ -218,6 +216,16 @@ export default function CommunicationModule() {
             });
         }
     }
+
+    useEffect(() => {
+        core?.relayer.on('relayer_connect', () => {
+            debug('connection to the relay server is established');
+        });
+
+        core?.relayer.on('relayer_disconnect', () => {
+            debug('connection to the relay server is lost');
+        });
+    }, [core]);
 
     const handleConnect = useCallback(async () => {
         try {

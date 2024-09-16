@@ -25,6 +25,7 @@ const debug = Debug('tonomy-id:store:useWalletStore');
 export interface WalletState {
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
+    core: ICore | null;
     ethereumAccount: IAccount | null;
     sepoliaAccount: IAccount | null;
     polygonAccount: IAccount | null;
@@ -43,6 +44,7 @@ const defaultState = {
     polygonAccount: null,
     web3wallet: null,
     accountExists: false,
+    core: null,
 };
 
 const useWalletStore = create<WalletState>((set, get) => ({
@@ -64,7 +66,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     });
                 } catch (e) {
                     console.error('error when initializing core', JSON.stringify(e, null, 2));
-                    if (typeof e === 'string') {
+                    if (typeof e === 'string' || !(e instanceof Error)) {
                         throw new Error('Error initializing core');
                     } else throw e;
                 }
@@ -82,6 +84,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 set({
                     initialized: true,
                     web3wallet,
+                    core,
                 });
             } catch (e) {
                 if (
@@ -191,6 +194,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 sepoliaAccount: null,
                 polygonAccount: null,
                 accountExists: false,
+                core: null,
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
@@ -235,6 +239,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
         set({
             initialized: false,
             web3wallet: null,
+            core: null,
         });
     },
 }));

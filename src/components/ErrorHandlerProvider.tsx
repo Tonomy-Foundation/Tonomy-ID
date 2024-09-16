@@ -24,16 +24,9 @@ export default function ErrorHandlerProvider() {
         // subscribe to errorStore changes to update the modal
         // using the `errorStore` variable does not work as changes do not force a re-render
         const unsubscribe = useErrorStore.subscribe((state) => {
-            console.error('Error handler', JSON.stringify(state, null, 2));
+            console.log('Error handler', JSON.stringify(state, null, 2));
 
-            // Ensure the error is an instance of Error
-            let parsedError: any = state.error;
-
-            if (parsedError && !(parsedError instanceof Error)) {
-                parsedError = new Error(parsedError.message || parsedError.msg || 'Unexpected error occured.');
-            }
-
-            errorRef.current.error = parsedError;
+            errorRef.current.error = state.error;
             errorRef.current.title = state.title;
             errorRef.current.expected = state.expected;
 

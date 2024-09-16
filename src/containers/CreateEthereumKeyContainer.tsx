@@ -17,6 +17,7 @@ import { keyStorage } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
 import { EthereumMainnetChain, EthereumPolygonChain, EthereumSepoliaChain } from '../utils/chain/etherum';
 import Debug from 'debug';
+import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
@@ -39,6 +40,7 @@ export default function CreateEthereumKeyContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
+    const { isConnected } = useNetworkStatus();
 
     async function setUserName() {
         try {
@@ -62,6 +64,14 @@ export default function CreateEthereumKeyContainer({
 
     async function onNext() {
         setLoading(true);
+
+        if (!isConnected) {
+            errorsStore.setError({
+                error: new Error('Please check your internet connection'),
+                expected: true,
+            });
+            return;
+        }
 
         try {
             const tonomyUsername = TonomyUsername.fromUsername(
