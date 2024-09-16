@@ -80,6 +80,7 @@ export default function MainContainer({
     const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
 
+    debug('MainContainer isConnected:', isConnected);
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
             if (!initialized && isConnected) {
@@ -164,6 +165,7 @@ export default function MainContainer({
 
             setAccountName(accountName);
         } catch (e) {
+            debug('Error getting username:', e);
             if (e.message === 'Network request failed') {
                 debug('Error getting username network error');
             } else errorStore.setError({ error: e, expected: false });
@@ -173,10 +175,10 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        if (did) {
+        if (did && isConnected) {
             onUrlOpen(did);
         }
-    }, [setUserName, did, onUrlOpen]);
+    }, [setUserName, did, onUrlOpen, isConnected]);
 
     useEffect(() => {
         async function getUpdatedBalance() {
@@ -299,7 +301,7 @@ export default function MainContainer({
         useEffect(() => {
             const fetchAssets = async () => {
                 try {
-                    if (!accountExists && isConnected) await initializeWalletAccount();
+                    if (!accountExists) await initializeWalletAccount();
                     setRefreshBalance(true);
 
                     const updatedAccounts = await Promise.all(
