@@ -8,6 +8,11 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         // We need to filter this case out:
         if (error instanceof Error) {
             errorStore.setError({ error, title: 'Unhandled Promise Rejection Error', expected: false });
+        } else {
+            // Ensure the error is an instance of Error
+            const parsedError = new Error(error.message || error.msg || 'Unhandled Promise Rejection Error');
+
+            errorStore.setError({ error: parsedError, title: 'Unhandled Promise Rejection Error', expected: false });
         }
     };
 
