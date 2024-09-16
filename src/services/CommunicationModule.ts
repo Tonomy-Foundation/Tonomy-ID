@@ -77,7 +77,12 @@ export default function CommunicationModule() {
                     );
                 } else {
                     debug('loginToService loginCommunication error else ');
-                    errorStore.setError({ error: e, expected: false });
+
+                    if (e instanceof Error) {
+                        errorStore.setError({ error: e, expected: false });
+                    } else {
+                        errorStore.setError({ error: new Error(String(e)), expected: false });
+                    }
                 }
             }
         } catch (e) {
@@ -91,7 +96,12 @@ export default function CommunicationModule() {
                 });
             } else {
                 debug('loginToService error else ');
-                errorStore.setError({ error: e, expected: false });
+
+                if (e instanceof Error) {
+                    errorStore.setError({ error: e, expected: false });
+                } else {
+                    errorStore.setError({ error: new Error(String(e)), expected: false });
+                }
             }
         }
     }
@@ -132,7 +142,11 @@ export default function CommunicationModule() {
                         title: 'Something went wrong',
                     });
                 } else {
-                    errorStore.setError({ error: e, expected: false });
+                    if (e instanceof Error) {
+                        errorStore.setError({ error: e, expected: false });
+                    } else {
+                        errorStore.setError({ error: new Error(String(e)), expected: false });
+                    }
                 }
             }
         }, LoginRequestsMessage.getType());
@@ -180,7 +194,7 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        if (isConnected) loginToService();
+        loginToService();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);

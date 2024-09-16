@@ -212,7 +212,7 @@ export default function MainContainer({
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
+                if (web3wallet && isConnected) await web3wallet.core.pairing.pair({ uri: data });
             } else {
                 const did = validateQrCode(data);
 
