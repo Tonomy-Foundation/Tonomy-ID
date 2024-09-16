@@ -8,7 +8,8 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         // We need to filter this case out:
         if (error instanceof Error) {
             errorStore.setError({ error, title: 'Unhandled Promise Rejection Error', expected: false });
-        } 
+        }
+    };
 
     setJSExceptionHandler((e: Error, isFatal) => {
         if (isFatal) {

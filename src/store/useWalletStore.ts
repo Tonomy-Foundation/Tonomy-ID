@@ -54,24 +54,23 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
         if (!get().initialized && !get().web3wallet) {
             try {
-                const core = new Core({
-                    projectId: settings.config.walletConnectProjectId,
-                    relayUrl: 'wss://relay.walletconnect.com',
-                });
-                const web3wallet = await Web3Wallet.init({
-                    core,
-                    metadata: {
-                        name: settings.config.appName,
-                        description: settings.config.ecosystemName,
-                        url: 'https://walletconnect.com/',
-                        icons: [settings.config.images.logo48],
-                    },
-                });
-
-                set({
-                    initialized: true,
-                    web3wallet,
-                });
+                // const core = new Core({
+                //     projectId: settings.config.walletConnectProjectId,
+                //     relayUrl: 'wss://relay.walletconnect.com',
+                // });
+                // const web3wallet = await Web3Wallet.init({
+                //     core,
+                //     metadata: {
+                //         name: settings.config.appName,
+                //         description: settings.config.ecosystemName,
+                //         url: 'https://walletconnect.com/',
+                //         icons: [settings.config.images.logo48],
+                //     },
+                // });
+                // set({
+                //     initialized: true,
+                //     web3wallet,
+                // });
             } catch (e) {
                 if (
                     (e.message && e.message === 'Network request failed') ||
