@@ -282,59 +282,59 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
+    const chains = useMemo(
+        () => [
+            { token: ETHToken, chain: EthereumMainnetChain },
+            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+            { token: ETHPolygonToken, chain: EthereumPolygonChain },
+        ],
+        []
+    );
+
+    const [accounts, setAccounts] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
+
+    // const [refreshBalance, setRefreshBalance] = useState(false);
+    useEffect(() => {
+        const fetchAssets = async () => {
+            try {
+                if (!accountExists) await initializeWalletAccount();
+                setRefreshBalance(true);
+
+                const updatedAccounts = await Promise.all(
+                    chains.map(async (chainObj) => {
+                        await connect();
+                        const asset = await assetStorage.findAssetByName(chainObj.token);
+
+                        return asset
+                            ? {
+                                  network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                  accountName: asset.accountName,
+                                  balance: asset.balance,
+                                  usdBalance: asset.usdBalance,
+                              }
+                            : {
+                                  network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                  accountName: null,
+                                  balance: '0' + chainObj.token.getSymbol(),
+                                  usdBalance: 0,
+                              };
+                    })
+                );
+
+                setAccounts(updatedAccounts);
+                setRefreshBalance(false);
+            } catch (error) {
+                setRefreshBalance(false);
+                debug('Error fetching asset:', error);
+            }
+        };
+
+        fetchAssets();
+    }, [accountExists, initializeWalletAccount, chains]);
+
     const AccountsView = () => {
-        const chains = useMemo(
-            () => [
-                { token: ETHToken, chain: EthereumMainnetChain },
-                { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-                { token: ETHPolygonToken, chain: EthereumPolygonChain },
-            ],
-            []
-        );
-
-        const [accounts, setAccounts] = useState<
-            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-        >([]);
-
-        const [refreshBalance, setRefreshBalance] = useState(false);
-
-        useEffect(() => {
-            const fetchAssets = async () => {
-                try {
-                    if (!accountExists) await initializeWalletAccount();
-                    setRefreshBalance(true);
-
-                    const updatedAccounts = await Promise.all(
-                        chains.map(async (chainObj) => {
-                            const asset = await assetStorage.findAssetByName(chainObj.token);
-
-                            return asset
-                                ? {
-                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                      accountName: asset.accountName,
-                                      balance: asset.balance,
-                                      usdBalance: asset.usdBalance,
-                                  }
-                                : {
-                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                      accountName: null,
-                                      balance: '0' + chainObj.token.getSymbol(),
-                                      usdBalance: 0,
-                                  };
-                        })
-                    );
-
-                    setAccounts(updatedAccounts);
-                    setRefreshBalance(false);
-                } catch (error) {
-                    setRefreshBalance(false);
-                    debug('Error fetching asset:', error);
-                }
-            };
-
-            fetchAssets();
-        }, [chains]);
-
         const findAccountByChain = (chain: string) => {
             const accountExists = accounts.find((account) => account.network === chain);
             const balance = accountExists?.balance;
