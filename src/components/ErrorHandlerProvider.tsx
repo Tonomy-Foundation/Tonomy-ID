@@ -26,21 +26,19 @@ export default function ErrorHandlerProvider() {
         const unsubscribe = useErrorStore.subscribe((state) => {
             console.error('Error handler', JSON.stringify(state, null, 2));
 
-            if (errorRef.current.title !== 'Network request failed') {
-                // Ensure the error is an instance of Error
-                let parsedError: any = state.error;
+            // Ensure the error is an instance of Error
+            let parsedError: any = state.error;
 
-                if (parsedError && !(parsedError instanceof Error)) {
-                    parsedError = new Error(parsedError.message || parsedError.msg || 'Unexpected error occured.');
-                }
+            if (parsedError && !(parsedError instanceof Error)) {
+                parsedError = new Error(parsedError.message || parsedError.msg || 'Unexpected error occured.');
+            }
 
-                errorRef.current.error = parsedError;
-                errorRef.current.title = state.title;
-                errorRef.current.expected = state.expected;
+            errorRef.current.error = parsedError;
+            errorRef.current.title = state.title;
+            errorRef.current.expected = state.expected;
 
-                if (state.error) {
-                    setShowModal(true);
-                }
+            if (state.error) {
+                setShowModal(true);
             }
         });
 
