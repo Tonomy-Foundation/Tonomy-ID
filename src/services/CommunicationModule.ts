@@ -194,7 +194,7 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        loginToService();
+        if (isConnected) loginToService();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
