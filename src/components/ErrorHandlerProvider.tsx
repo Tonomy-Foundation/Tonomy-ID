@@ -26,7 +26,16 @@ export default function ErrorHandlerProvider() {
         const unsubscribe = useErrorStore.subscribe((state) => {
             console.log('Error handler', JSON.stringify(state, null, 2));
 
-            errorRef.current.error = state.error;
+            let parsedError = state.error;
+
+            if (
+                parsedError &&
+                (!(parsedError instanceof Error) || parsedError === null || typeof parsedError === 'string')
+            ) {
+                parsedError = new Error('Unknown Error');
+            }
+
+            errorRef.current.error = parsedError;
             errorRef.current.title = state.title;
             errorRef.current.expected = state.expected;
 

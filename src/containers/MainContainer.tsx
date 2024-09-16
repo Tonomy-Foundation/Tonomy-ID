@@ -193,12 +193,6 @@ export default function MainContainer({
 
                 if (error.message === 'Network request failed') {
                     debug('network error when call updating balance:');
-                } else {
-                    errorStore.setError({
-                        error: error,
-                        expected: false,
-                        title: 'Error updating balance',
-                    });
                 }
             }
         }
@@ -274,15 +268,9 @@ export default function MainContainer({
 
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
-            } else {
-                debug('Error when refresh balance:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: false,
-                });
             }
         }
-    }, [updateBalance, errorStore]);
+    }, [updateBalance, isConnected]);
 
     useEffect(() => {
         if (accountDetails?.address) {
