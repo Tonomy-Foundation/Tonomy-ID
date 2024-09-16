@@ -194,7 +194,7 @@ export default function MainContainer({
                     debug('network error when call updating balance:');
                 } else {
                     errorStore.setError({
-                        error: error,
+                        error: new Error('Error updating balance'),
                         expected: true,
                     });
                 }

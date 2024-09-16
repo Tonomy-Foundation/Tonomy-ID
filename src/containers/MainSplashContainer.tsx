@@ -21,7 +21,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
     const { clearState, initialized, initializeWalletState } = useWalletStore();
-    const { isConnected } = useNetworkStatus();
 
     useEffect(() => {
         async function main() {
@@ -53,9 +52,8 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         break;
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
-                        debug('Splash screen isConnected', isConnected);
 
-                        if (!initialized && isConnected) {
+                        if (!initialized) {
                             try {
                                 progressiveRetryOnNetworkError(async () => await initializeWalletState());
                             } catch (e) {
