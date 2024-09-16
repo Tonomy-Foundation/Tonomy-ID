@@ -4,7 +4,7 @@ import './src/utils/logs';
 import './src/utils/polyfill';
 // NOTE: The rest can be imported in any order
 import '@walletconnect/react-native-compat';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import RootNavigation from './src/navigation/Root';
 import 'expo-dev-client';

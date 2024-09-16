@@ -9,6 +9,9 @@ import { ActivityIndicator, IconButton } from 'react-native-paper';
 import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
 import { Props } from '../screens/QrCodeScanScreen';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:containers:QrCodeScanContainer');
 
 export default function QrCodeScanContainer(props: Props) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);
@@ -24,7 +27,7 @@ export default function QrCodeScanContainer(props: Props) {
                 setHasPermission(status === 'granted');
             } catch (e) {
                 if (e.message === 'Network request failed') {
-                    console.log('network error when requesting camera permission');
+                    debug('network error when requesting camera permission');
                 } else {
                     errorStore.setError({ error: e, expected: false });
                 }

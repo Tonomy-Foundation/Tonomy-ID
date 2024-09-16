@@ -18,12 +18,14 @@ import {
 } from '../utils/chain/etherum';
 import { Asset, IAccount } from '../utils/chain/types';
 import Debug from 'debug';
+import { ICore } from '@walletconnect/types';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
 
 export interface WalletState {
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
+    core: ICore | null;
     ethereumAccount: IAccount | null;
     sepoliaAccount: IAccount | null;
     polygonAccount: IAccount | null;
@@ -42,6 +44,7 @@ const defaultState = {
     polygonAccount: null,
     web3wallet: null,
     accountExists: false,
+    core: null,
 };
 
 const useWalletStore = create<WalletState>((set, get) => ({
@@ -54,10 +57,20 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
         if (!get().initialized && !get().web3wallet) {
             try {
-                const core = new Core({
-                    projectId: settings.config.walletConnectProjectId,
-                    relayUrl: 'wss://relay.walletconnect.com',
-                });
+                let core: ICore;
+
+                try {
+                    core = new Core({
+                        projectId: settings.config.walletConnectProjectId,
+                        relayUrl: 'wss://relay.walletconnect.com',
+                    });
+                } catch (e) {
+                    console.error('error when initializing core', JSON.stringify(e, null, 2));
+                    if (typeof e === 'string' || !(e instanceof Error)) {
+                        throw new Error('Error initializing core');
+                    } else throw e;
+                }
+
                 const web3wallet = await Web3Wallet.init({
                     core,
                     metadata: {
@@ -71,6 +84,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 set({
                     initialized: true,
                     web3wallet,
+                    core,
                 });
             } catch (e) {
                 if (
@@ -180,6 +194,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 sepoliaAccount: null,
                 polygonAccount: null,
                 accountExists: false,
+                core: null,
             });
         } catch (error) {
             console.error('Error clearing wallet state:', error);
@@ -224,6 +239,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
         set({
             initialized: false,
             web3wallet: null,
+            core: null,
         });
     },
 }));

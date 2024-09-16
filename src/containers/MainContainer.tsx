@@ -78,6 +78,7 @@ export default function MainContainer({
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
     const { isConnected } = useNetworkStatus();
+    const refMessage = useRef(null);
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
@@ -99,8 +100,6 @@ export default function MainContainer({
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
-    const refMessage = useRef(null);
-    // const [isOnline, setIsOnline] = useState(false);
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -194,24 +193,20 @@ export default function MainContainer({
 
                 if (error.message === 'Network request failed') {
                     debug('network error when call updating balance:');
-                } else {
-                    errorStore.setError({
-                        error: new Error('Error updating balance'),
-                        expected: true,
-                        title: 'Error updating balance',
-                    });
                 }
             }
         }
 
-        getUpdatedBalance();
-
-        const interval = setInterval(() => {
+        if (isConnected) {
             getUpdatedBalance();
-        }, 20000);
 
-        return () => clearInterval(interval);
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
+            const interval = setInterval(() => {
+                getUpdatedBalance();
+            }, 20000);
+
+            return () => clearInterval(interval);
+        }
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -227,6 +222,11 @@ export default function MainContainer({
 
             if (e.message === 'Network request failed') {
                 debug('Scan Qr Code network error');
+                errorStore.setError({
+                    title: 'Network Error',
+                    error: new Error('Check your connection, and try again.'),
+                    expected: true,
+                });
             } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 debug('Invalid QR Code', JSON.stringify(e, null, 2));
 
@@ -245,10 +245,9 @@ export default function MainContainer({
                 }
             } else if (e instanceof CommunicationError) {
                 debug('CommunicationError QR Code', JSON.stringify(e, null, 2));
-
                 errorStore.setError({
-                    error: new Error(`Check your connection`),
-                    expected: true,
+                    error: e,
+                    expected: false,
                     title: 'Communication Error',
                 });
             } else {
@@ -261,24 +260,19 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            setRefreshBalance(true);
-
-            await updateBalance();
-            setRefreshBalance(false);
+            if (isConnected) {
+                setRefreshBalance(true);
+                await updateBalance();
+                setRefreshBalance(false);
+            }
         } catch (error) {
             setRefreshBalance(false);
 
             if (error.message === 'Network request failed') {
                 debug('Error updating account detail network error:');
-            } else {
-                debug('Error when refresh balance:', error);
-                errorStore.setError({
-                    error: error,
-                    expected: true,
-                });
             }
         }
-    }, [updateBalance, errorStore]);
+    }, [updateBalance, isConnected]);
 
     useEffect(() => {
         if (accountDetails?.address) {
@@ -299,6 +293,7 @@ export default function MainContainer({
         const [accounts, setAccounts] = useState<
             { network: string; accountName: string | null; balance: string; usdBalance: number }[]
         >([]);
+
         const [refreshBalance, setRefreshBalance] = useState(false);
 
         useEffect(() => {

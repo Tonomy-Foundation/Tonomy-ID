@@ -12,26 +12,34 @@ if (typeof BigInt === 'undefined') {
     global.BigInt = require('big-integer');
 }
 
-// Save the original fetch function
-// const originalFetch = global.fetch;
+/**
+ * Mocks no internet connection by overriding fetch and XMLHttpRequest.
+ * Call this function to simulate a network failure.
+ */
+function mockNoInternet() {
+    // Save the original fetch function
+    const originalFetch = global.fetch;
 
-// global.fetch = async (url, options) => {
-//     await originalFetch(url, options);
-//     throw new Error('Network request failed');
-// };
+    global.fetch = async (url, options) => {
+        await originalFetch(url, options);
+        throw new Error('Network request failed');
+    };
 
-// if (global.XMLHttpRequest) {
-//     const OriginalXMLHttpRequest = global.XMLHttpRequest;
+    if (global.XMLHttpRequest) {
+        const OriginalXMLHttpRequest = global.XMLHttpRequest;
 
-//     class CustomXMLHttpRequest extends OriginalXMLHttpRequest {
-//         constructor() {
-//             super();
+        class CustomXMLHttpRequest extends OriginalXMLHttpRequest {
+            constructor() {
+                super();
+                throw new Error('Network request failed');
+            }
+        }
 
-//             throw new Error('Network request failed');
-//         }
-//     }
+        global.XMLHttpRequest = CustomXMLHttpRequest;
+    } else {
+        console.warn('XMLHttpRequest is not available in this environment');
+    }
+}
 
-//     global.XMLHttpRequest = CustomXMLHttpRequest;
-// } else {
-//     console.warn('XMLHttpRequest is not available in this environment');
-// }
+// To simulate no internet connection, call mockNoInternet();
+// mockNoInternet();
