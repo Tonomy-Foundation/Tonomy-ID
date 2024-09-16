@@ -24,30 +24,22 @@ export const capitalizeFirstLetter = (string) => {
 export async function progressiveRetryOnNetworkError(
     fn: () => Promise<void>,
     initialDelay = 10000,
-    maxDelay = 3600000,
-    maxRetries = 10
+    maxDelay = 3600000
 ) {
+    let condition = true;
     let delay = initialDelay;
-    let attempts = 0;
 
-    while (attempts < maxRetries) {
+    while (condition) {
         try {
             await fn(); // Try the function
+            condition = false;
             break; // If it succeeds, exit the loop
         } catch (error) {
             if (
                 (error.message && error.message === 'Network request failed') ||
                 (error.msg && error.msg.includes('No internet connection'))
             ) {
-                attempts++;
-
-                if (attempts >= maxRetries) {
-                    debug('Max retries reached. Stopping retry.');
-                    // Instead of throwing, just log the error and return gracefully
-                    return;
-                }
-
-                debug(`Retrying in ${delay / 1000} seconds... (Attempt ${attempts} of ${maxRetries})`);
+                debug(`Retrying in ${delay / 1000} seconds...`);
                 await new Promise((resolve) => setTimeout(resolve, delay));
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {

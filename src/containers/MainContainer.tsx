@@ -78,6 +78,7 @@ export default function MainContainer({
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
     const { isConnected } = useNetworkStatus();
+    const refMessage = useRef(null);
 
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
@@ -99,8 +100,6 @@ export default function MainContainer({
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
-    const refMessage = useRef(null);
-    // const [isOnline, setIsOnline] = useState(false);
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -196,8 +195,8 @@ export default function MainContainer({
                     debug('network error when call updating balance:');
                 } else {
                     errorStore.setError({
-                        error: new Error('Error updating balance'),
-                        expected: true,
+                        error: error,
+                        expected: false,
                         title: 'Error updating balance',
                     });
                 }
@@ -227,6 +226,11 @@ export default function MainContainer({
 
             if (e.message === 'Network request failed') {
                 debug('Scan Qr Code network error');
+                errorStore.setError({
+                    title: 'Network Error',
+                    error: new Error('Check your connection, and try again.'),
+                    expected: true,
+                });
             } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 debug('Invalid QR Code', JSON.stringify(e, null, 2));
 
@@ -245,10 +249,9 @@ export default function MainContainer({
                 }
             } else if (e instanceof CommunicationError) {
                 debug('CommunicationError QR Code', JSON.stringify(e, null, 2));
-
                 errorStore.setError({
-                    error: new Error(`Check your connection`),
-                    expected: true,
+                    error: e,
+                    expected: false,
                     title: 'Communication Error',
                 });
             } else {
@@ -274,7 +277,7 @@ export default function MainContainer({
                 debug('Error when refresh balance:', error);
                 errorStore.setError({
                     error: error,
-                    expected: true,
+                    expected: false,
                 });
             }
         }
