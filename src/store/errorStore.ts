@@ -25,8 +25,10 @@ const useErrorStore = create<ErrorState>((set, get) => ({
     expected: undefined,
     onClose: undefined,
     setError: async ({ error, title = 'Something went wrong', expected, onClose }) => {
-        console.log('setError function called:', error);
-        set({ error, title, expected, onClose });
+        if (!(error instanceof Error)) {
+            console.error('The provided error is not an instance of Error');
+            set({ error: new Error('Unexpected Error'), title, expected, onClose });
+        } else set({ error, title, expected, onClose });
     },
     unSetError: () => {
         set({ error: undefined, title: undefined, expected: undefined });
