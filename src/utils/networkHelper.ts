@@ -11,7 +11,16 @@ const useNetworkStatus = () => {
         // Subscribe to network state updates
         const unsubscribe = NetInfo.addEventListener((state) => {
             if (!state.isConnected) {
-                core?.relayer.transportClose();
+                if (core) {
+                    console.log('iff');
+                    core.relayer.transportClose();
+                    core.events.removeAllListeners();
+                    core.events.removeAllListeners();
+                    core.relayer.events.removeAllListeners();
+                    core.relayer.provider.events.removeAllListeners();
+                    core.relayer.subscriber.events.removeAllListeners();
+                    core.relayer.provider.connection.events.removeAllListeners();
+                }
             }
 
             setIsConnected(state.isConnected);
