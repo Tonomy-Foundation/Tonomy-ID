@@ -40,6 +40,7 @@ export default function CommunicationModule() {
     const { isConnected } = useNetworkStatus();
 
     debug('CommunicationModule isConnected', isConnected);
+    if (!isConnected) return null;
 
     /**
      *  Login to communication microservice
