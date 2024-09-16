@@ -18,6 +18,7 @@ import {
 } from '../utils/chain/etherum';
 import { Asset, IAccount } from '../utils/chain/types';
 import Debug from 'debug';
+import { ICore } from '@walletconnect/types';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
 
@@ -54,23 +55,32 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
         if (!get().initialized && !get().web3wallet) {
             try {
-                // const core = new Core({
-                //     projectId: settings.config.walletConnectProjectId,
-                //     relayUrl: 'wss://relay.walletconnect.com',
-                // });
-                // const web3wallet = await Web3Wallet.init({
-                //     core,
-                //     metadata: {
-                //         name: settings.config.appName,
-                //         description: settings.config.ecosystemName,
-                //         url: 'https://walletconnect.com/',
-                //         icons: [settings.config.images.logo48],
-                //     },
-                // });
-                // set({
-                //     initialized: true,
-                //     web3wallet,
-                // });
+                let core: ICore;
+
+                try {
+                    core = new Core({
+                        projectId: settings.config.walletConnectProjectId,
+                        relayUrl: 'wss://relay.walletconnect.com',
+                    });
+                } catch (e) {
+                    console.error('error when initializing core', JSON.stringify(e, null, 2));
+                    throw new Error('Error initializing core');
+                }
+
+                const web3wallet = await Web3Wallet.init({
+                    core,
+                    metadata: {
+                        name: settings.config.appName,
+                        description: settings.config.ecosystemName,
+                        url: 'https://walletconnect.com/',
+                        icons: [settings.config.images.logo48],
+                    },
+                });
+
+                set({
+                    initialized: true,
+                    web3wallet,
+                });
             } catch (e) {
                 if (
                     (e.message && e.message === 'Network request failed') ||
