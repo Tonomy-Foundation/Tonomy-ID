@@ -33,7 +33,6 @@ export default function CreateEthereumKeyContainer({
     const { user } = useUserStore();
     const { transaction } = route.params?.transaction ?? {};
     const session = route.params?.transaction?.session;
-    // const { initializeWalletState, initializeWalletAccount } = useWalletStore();
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
@@ -80,8 +79,6 @@ export default function CreateEthereumKeyContainer({
             });
 
             await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
-            // await initializeWalletAccount();
-            // await initializeWalletState();
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
