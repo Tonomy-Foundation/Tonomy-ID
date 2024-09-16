@@ -111,27 +111,27 @@ export default function MainContainer({
 
                 await user.sendMessage(identifyMessage);
             } catch (e) {
-                debug('connectToDid error:', e);
+                if (
+                    e instanceof CommunicationError &&
+                    e.exception?.status === 400 &&
+                    e.exception.message.startsWith('Recipient not connected')
+                ) {
+                    errorStore.setError({
+                        title: 'Problem connecting',
+                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                        expected: true,
+                    });
+                } else {
+                    debug('connectToDid error:', e);
 
-                // if (
-                //     e instanceof CommunicationError &&
-                //     e.exception?.status === 400 &&
-                //     e.exception.message.startsWith('Recipient not connected')
-                // ) {
-                //     errorStore.setError({
-                //         title: 'Problem connecting',
-                //         error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-                //         expected: true,
-                //     });
-                // } else {
-                //     errorStore.setError({
-                //         error: e,
-                //         expected: false,
-                //     });
-                // }
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                    });
+                }
             }
         },
-        [user]
+        [user, errorStore]
     );
 
     const onClose = useCallback(async () => {
@@ -143,15 +143,17 @@ export default function MainContainer({
             try {
                 await connectToDid(did);
             } catch (e) {
-                debug('onUrlOpen error:', e);
-                // if (e.message === 'Network request failed') {
-                //     debug('network error when connectToDid called');
-                // } else errorStore.setError({ error: e, expected: false });
+                if (e.message === 'Network request failed') {
+                    debug('network error when connectToDid called');
+                } else {
+                    debug('onUrlOpen error:', e);
+                    errorStore.setError({ error: e, expected: false });
+                }
             } finally {
                 onClose();
             }
         },
-        [connectToDid, onClose]
+        [errorStore, connectToDid, onClose]
     );
 
     const setUserName = useCallback(async () => {
@@ -188,6 +190,8 @@ export default function MainContainer({
                     setPangeaBalance(accountPangeaBalance);
                 }
             } catch (error) {
+                debug('Error updating balance:', error);
+
                 if (error.message === 'Network request failed') {
                     debug('network error when call updating balance:');
                 } else {
@@ -212,7 +216,7 @@ export default function MainContainer({
     async function onScan({ data }: BarCodeScannerResult) {
         try {
             if (data.startsWith('wc:')) {
-                if (web3wallet && isConnected) await web3wallet.core.pairing.pair({ uri: data });
+                if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else {
                 const did = validateQrCode(data);
 
