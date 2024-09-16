@@ -197,14 +197,16 @@ export default function MainContainer({
             }
         }
 
-        getUpdatedBalance();
-
-        const interval = setInterval(() => {
+        if (isConnected) {
             getUpdatedBalance();
-        }, 20000);
 
-        return () => clearInterval(interval);
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
+            const interval = setInterval(() => {
+                getUpdatedBalance();
+            }, 20000);
+
+            return () => clearInterval(interval);
+        }
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
