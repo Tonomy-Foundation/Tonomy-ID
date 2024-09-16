@@ -70,8 +70,6 @@ export async function connect() {
         const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
         const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
 
-        debug('assetTableExists', assetTableExists);
-
         // If the tables don't exist, synchronize the schema
         if (!appTableExists || !keyTableExists || !assetTableExists) {
             await dataSource.synchronize();

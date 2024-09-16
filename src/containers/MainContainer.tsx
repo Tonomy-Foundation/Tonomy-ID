@@ -113,25 +113,25 @@ export default function MainContainer({
             } catch (e) {
                 debug('connectToDid error:', e);
 
-                if (
-                    e instanceof CommunicationError &&
-                    e.exception?.status === 400 &&
-                    e.exception.message.startsWith('Recipient not connected')
-                ) {
-                    errorStore.setError({
-                        title: 'Problem connecting',
-                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-                        expected: true,
-                    });
-                } else {
-                    errorStore.setError({
-                        error: e,
-                        expected: false,
-                    });
-                }
+                // if (
+                //     e instanceof CommunicationError &&
+                //     e.exception?.status === 400 &&
+                //     e.exception.message.startsWith('Recipient not connected')
+                // ) {
+                //     errorStore.setError({
+                //         title: 'Problem connecting',
+                //         error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                //         expected: true,
+                //     });
+                // } else {
+                //     errorStore.setError({
+                //         error: e,
+                //         expected: false,
+                //     });
+                // }
             }
         },
-        [user, errorStore]
+        [user]
     );
 
     const onClose = useCallback(async () => {
@@ -144,14 +144,14 @@ export default function MainContainer({
                 await connectToDid(did);
             } catch (e) {
                 debug('onUrlOpen error:', e);
-                if (e.message === 'Network request failed') {
-                    debug('network error when connectToDid called');
-                } else errorStore.setError({ error: e, expected: false });
+                // if (e.message === 'Network request failed') {
+                //     debug('network error when connectToDid called');
+                // } else errorStore.setError({ error: e, expected: false });
             } finally {
                 onClose();
             }
         },
-        [errorStore, connectToDid, onClose]
+        [connectToDid, onClose]
     );
 
     const setUserName = useCallback(async () => {
@@ -188,14 +188,13 @@ export default function MainContainer({
                     setPangeaBalance(accountPangeaBalance);
                 }
             } catch (error) {
-                debug('Error updating balance:', error);
-
                 if (error.message === 'Network request failed') {
                     debug('network error when call updating balance:');
                 } else {
                     errorStore.setError({
                         error: new Error('Error updating balance'),
                         expected: true,
+                        title: 'Error updating balance',
                     });
                 }
             }
@@ -245,7 +244,8 @@ export default function MainContainer({
 
                 errorStore.setError({
                     error: new Error(`Check your connection`),
-                    expected: false,
+                    expected: true,
+                    title: 'Communication Error',
                 });
             } else {
                 errorStore.setError({ error: e, expected: false });
@@ -344,7 +344,6 @@ export default function MainContainer({
         };
 
         const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-            debug('Account clicked');
             const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
 
             setAccountDetails({
@@ -399,7 +398,6 @@ export default function MainContainer({
                                                 <TButton
                                                     style={styles.generateKey}
                                                     onPress={() => {
-                                                        debug('Generate key clicked');
                                                         navigation.navigate('CreateEthereumKey');
                                                     }}
                                                     color={theme.colors.white}
@@ -491,7 +489,6 @@ export default function MainContainer({
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            debug('Pangea account clicked', accountName, Images.GetImage('logo48'));
                                             setAccountDetails({
                                                 symbol: 'LEOS',
                                                 name: 'Pangea',

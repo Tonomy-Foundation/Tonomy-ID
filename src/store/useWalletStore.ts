@@ -53,8 +53,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
         }
 
         if (!get().initialized && !get().web3wallet) {
-            debug('initialize wallet condition');
-
             try {
                 const core = new Core({
                     projectId: settings.config.walletConnectProjectId,
@@ -75,13 +73,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     web3wallet,
                 });
             } catch (e) {
-                debug("error wallet initialization'", e);
-
                 if (
                     (e.message && e.message === 'Network request failed') ||
                     (e.msg && e.msg.includes('No internet connection'))
                 ) {
-                    debug('Network error when initializing wallet');
                     throw new Error('Network request failed');
                 } else {
                     debug('error when initializing wallet', e);
@@ -92,12 +87,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
 
     initializeWalletAccount: async () => {
-        debug('initializeWalletAccount');
-
         try {
             const state = get();
-
-            debug('accountStatus', state.accountExists);
 
             if (get().accountExists) {
                 debug('Account already exists');
@@ -125,7 +116,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                             account = new EthereumAccount(chain, asset.accountName);
                         }
 
-                        debug('account', account);
                         return {
                             account,
                         };
@@ -174,8 +164,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
         } catch (error) {
             if (error.message === 'Network request failed') {
                 debug('network error when initializing wallet account');
-            } else {
-                debug('error when initializing wallet account', error);
             }
         }
     },
@@ -200,8 +188,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         try {
             const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
-
-            debug(` updateBalance', ${ethereumAccount}`);
 
             if (ethereumAccount && sepoliaAccount && polygonAccount) {
                 await connect();
@@ -231,7 +217,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
         } catch (error) {
             console.error('Error updating balance:', error);
-            throw error;
+            throw new Error('Error updating balance');
         }
     },
     disconnectSession: async () => {

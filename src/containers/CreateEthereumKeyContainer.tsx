@@ -47,7 +47,6 @@ export default function CreateEthereumKeyContainer({
 
             setUsername(u.getBaseUsername());
         } catch (e) {
-            debug('setUserName()', e);
             errorsStore.setError({ error: e, expected: false });
         }
     }

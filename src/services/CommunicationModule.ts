@@ -47,7 +47,6 @@ export default function CommunicationModule() {
      */
     async function loginToService() {
         try {
-            debug('loginToService ftn called');
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
@@ -61,10 +60,10 @@ export default function CommunicationModule() {
                 if (e.message === 'Network request failed') {
                     debug('Network error in communication login');
                 } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                    debug('communication not connected');
                     errorStore.setError({
                         error: new Error(' Could not connect to Tonomy Communication server'),
-                        expected: false,
+                        title: 'Something went wrong',
+                        expected: true,
                     });
                 }
                 // 401 signature invalid: the keys have been rotated and the old key is no longer valid
@@ -87,7 +86,8 @@ export default function CommunicationModule() {
             } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                 errorStore.setError({
                     error: new Error(' Could not connect to Tonomy Communication server'),
-                    expected: false,
+                    expected: true,
+                    title: 'Something went wrong',
                 });
             } else {
                 debug('loginToService error else ');
@@ -128,7 +128,8 @@ export default function CommunicationModule() {
                 } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
                         error: new Error(' Could not connect to Tonomy Communication server'),
-                        expected: false,
+                        expected: true,
+                        title: 'Something went wrong',
                     });
                 } else {
                     errorStore.setError({ error: e, expected: false });
@@ -154,7 +155,8 @@ export default function CommunicationModule() {
                 } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
                         error: new Error(' Could not connect to Tonomy Communication server'),
-                        expected: false,
+                        expected: true,
+                        title: 'Something went wrong',
                     });
                 } else {
                     errorStore.setError({ error: e, expected: false });
@@ -367,11 +369,11 @@ export default function CommunicationModule() {
                 };
             }
         } catch (e) {
-            if (e.message === 'Network request failed') {
-                debug('network error when listening wallet requests');
-            } else {
-                debug('handle session proposal error', e);
-            }
+            errorStore.setError({
+                error: new Error('Error when listening the session requests, Please try again'),
+                expected: true,
+                title: 'Something went wrong',
+            });
         }
     }, [navigation, web3wallet, errorStore, isConnected]);
 
@@ -420,14 +422,11 @@ export default function CommunicationModule() {
                 };
             }
         } catch (e) {
-            if (e.message === 'Network request failed') {
-                debug('network error when listening wallet requests');
-            } else {
-                errorStore.setError({
-                    error: new Error('Error when listening the session delete, Please try again'),
-                    expected: true,
-                });
-            }
+            errorStore.setError({
+                error: new Error('Error when listening the session delete, Please try again'),
+                expected: true,
+                title: 'Something went wrong',
+            });
         }
     }, [web3wallet, disconnectSession, navigation, errorStore, isConnected]);
 

@@ -104,7 +104,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         setStatus,
         isAppInitialized,
         initialized,
-        isConnected,
     ]);
 
     return (
