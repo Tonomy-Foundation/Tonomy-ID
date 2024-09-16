@@ -43,6 +43,7 @@ import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
 import useNetworkStatus from '../utils/networkHelper';
+import { connect } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
