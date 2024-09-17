@@ -48,11 +48,11 @@ export default function CommunicationModule() {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
-            debug('coomunication loginToService', message);
+            debug('coomunication loginToService', JSON.stringify(message));
 
             const subscribers = listenToMessages();
 
-            debug('coomunication loginToService', subscribers);
+            debug('coomunication loginToService', JSON.stringify(subscribers));
 
             setSubscribers(subscribers);
 
@@ -226,8 +226,6 @@ export default function CommunicationModule() {
     }
 
     const handleConnect = useCallback(async () => {
-        debug('coomunication handleConnect', isConnected);
-
         try {
             const onSessionProposal = async (proposal) => {
                 try {
