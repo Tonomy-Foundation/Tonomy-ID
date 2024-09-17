@@ -349,38 +349,6 @@ export default function MainContainer({
         (refMessage.current as any)?.open();
     };
 
-    // const MainView = () => {
-    //     const isFocused = useIsFocused();
-
-    //     if (!isFocused) {
-    //         return null;
-    //     }
-
-    //     return (
-    //         <View>
-    //             {!qrOpened && (
-    //                 <View style={styles.header}>
-    //                     <TH2>{username}</TH2>
-
-    //                     <Image
-    //                         source={require('../assets/animations/qr-code.gif')}
-    //                         style={[styles.image, styles.marginTop]}
-    //                     />
-    //                     <TButtonContained
-    //                         style={[styles.button, styles.marginTop]}
-    //                         icon="qrcode-scan"
-    //                         onPress={() => {
-    //                             setQrOpened(true);
-    //                         }}
-    //                     >
-    //                         Scan QR Code
-    //                     </TButtonContained>
-    //                 </View>
-    //             )}
-    //         </View>
-    //     );
-    // };
-
     const MainView = () => {
         const isFocused = useIsFocused();
 
