@@ -126,6 +126,7 @@ export type RouteStackParamList = {
     };
     Onboarding: undefined;
     Citizenship: undefined;
+    Explore: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
