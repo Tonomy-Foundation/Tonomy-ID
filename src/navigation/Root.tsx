@@ -103,7 +103,6 @@ export default function RootNavigation() {
     const linking = {
         prefixes: [prefix],
     };
-    const { isConnected } = useNetworkStatus();
 
     // Setup styles
     const theme = useAppTheme();
@@ -132,8 +131,6 @@ export default function RootNavigation() {
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
     const { status } = useUserStore();
-
-    debug('isConnected network', isConnected);
 
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
@@ -209,7 +206,7 @@ export default function RootNavigation() {
             ) : (
                 <>
                     <NotificationModule />
-                    {isConnected && <CommunicationModule />}
+                    <CommunicationModule />
                     <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
