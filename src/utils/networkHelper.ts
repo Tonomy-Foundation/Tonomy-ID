@@ -27,7 +27,7 @@ const useNetworkStatus = () => {
                 }
             }
 
-            setIsConnected(state.isConnected);
+            setIsConnected(state.isConnected ? true : false);
         });
 
         // Cleanup the listener on unmount
