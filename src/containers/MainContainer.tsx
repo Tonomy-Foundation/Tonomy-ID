@@ -178,35 +178,35 @@ export default function MainContainer({
         }
     }, [setUserName, did, onUrlOpen]);
 
-    useEffect(() => {
-        async function getUpdatedBalance() {
-            try {
-                if (accountExists) await updateBalance();
+    // useEffect(() => {
+    //     async function getUpdatedBalance() {
+    //         try {
+    //             if (accountExists) await updateBalance();
 
-                const accountPangeaBalance = await vestingContract.getBalance(accountName);
+    //             const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-                if (pangeaBalance !== accountPangeaBalance) {
-                    setPangeaBalance(accountPangeaBalance);
-                }
-            } catch (error) {
-                debug('Error updating balance:', error);
+    //             if (pangeaBalance !== accountPangeaBalance) {
+    //                 setPangeaBalance(accountPangeaBalance);
+    //             }
+    //         } catch (error) {
+    //             debug('Error updating balance:', error);
 
-                if (error.message === 'Network request failed') {
-                    debug('network error when call updating balance:');
-                }
-            }
-        }
+    //             if (error.message === 'Network request failed') {
+    //                 debug('network error when call updating balance:');
+    //             }
+    //         }
+    //     }
 
-        if (isConnected) {
-            getUpdatedBalance();
+    //     if (isConnected) {
+    //         getUpdatedBalance();
 
-            const interval = setInterval(() => {
-                getUpdatedBalance();
-            }, 20000);
+    //         const interval = setInterval(() => {
+    //             getUpdatedBalance();
+    //         }, 20000);
 
-            return () => clearInterval(interval);
-        }
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
+    //         return () => clearInterval(interval);
+    //     }
+    // }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -258,177 +258,177 @@ export default function MainContainer({
         }
     }
 
-    const onRefresh = React.useCallback(async () => {
-        try {
-            if (isConnected) {
-                setRefreshBalance(true);
-                await updateBalance();
-                setRefreshBalance(false);
-            }
-        } catch (error) {
-            setRefreshBalance(false);
+    // const onRefresh = React.useCallback(async () => {
+    //     try {
+    //         if (isConnected) {
+    //             setRefreshBalance(true);
+    //             await updateBalance();
+    //             setRefreshBalance(false);
+    //         }
+    //     } catch (error) {
+    //         setRefreshBalance(false);
 
-            if (error.message === 'Network request failed') {
-                debug('Error updating account detail network error:');
-            }
-        }
-    }, [updateBalance, isConnected]);
+    //         if (error.message === 'Network request failed') {
+    //             debug('Error updating account detail network error:');
+    //         }
+    //     }
+    // }, [updateBalance, isConnected]);
 
-    useEffect(() => {
-        if (accountDetails?.address) {
-            (refMessage?.current as any)?.open();
-        }
-    }, [accountDetails]);
+    // useEffect(() => {
+    //     if (accountDetails?.address) {
+    //         (refMessage?.current as any)?.open();
+    //     }
+    // }, [accountDetails]);
 
-    const AccountsView = () => {
-        const chains = useMemo(
-            () => [
-                { token: ETHToken, chain: EthereumMainnetChain },
-                { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-                { token: ETHPolygonToken, chain: EthereumPolygonChain },
-            ],
-            []
-        );
+    // const AccountsView = () => {
+    //     const chains = useMemo(
+    //         () => [
+    //             { token: ETHToken, chain: EthereumMainnetChain },
+    //             { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+    //             { token: ETHPolygonToken, chain: EthereumPolygonChain },
+    //         ],
+    //         []
+    //     );
 
-        const [accounts, setAccounts] = useState<
-            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-        >([]);
+    //     const [accounts, setAccounts] = useState<
+    //         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    //     >([]);
 
-        const [refreshBalance, setRefreshBalance] = useState(false);
+    //     const [refreshBalance, setRefreshBalance] = useState(false);
 
-        useEffect(() => {
-            const fetchAssets = async () => {
-                try {
-                    if (!accountExists && isConnected) await initializeWalletAccount();
-                    setRefreshBalance(true);
+    //     useEffect(() => {
+    //         const fetchAssets = async () => {
+    //             try {
+    //                 if (!accountExists) await initializeWalletAccount();
+    //                 setRefreshBalance(true);
 
-                    const updatedAccounts = await Promise.all(
-                        chains.map(async (chainObj) => {
-                            const asset = await assetStorage.findAssetByName(chainObj.token);
+    //                 const updatedAccounts = await Promise.all(
+    //                     chains.map(async (chainObj) => {
+    //                         const asset = await assetStorage.findAssetByName(chainObj.token);
 
-                            return asset
-                                ? {
-                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                      accountName: asset.accountName,
-                                      balance: asset.balance,
-                                      usdBalance: asset.usdBalance,
-                                  }
-                                : {
-                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                      accountName: null,
-                                      balance: '0' + chainObj.token.getSymbol(),
-                                      usdBalance: 0,
-                                  };
-                        })
-                    );
+    //                         return asset
+    //                             ? {
+    //                                   network: capitalizeFirstLetter(chainObj.chain.getName()),
+    //                                   accountName: asset.accountName,
+    //                                   balance: asset.balance,
+    //                                   usdBalance: asset.usdBalance,
+    //                               }
+    //                             : {
+    //                                   network: capitalizeFirstLetter(chainObj.chain.getName()),
+    //                                   accountName: null,
+    //                                   balance: '0' + chainObj.token.getSymbol(),
+    //                                   usdBalance: 0,
+    //                               };
+    //                     })
+    //                 );
 
-                    setAccounts(updatedAccounts);
-                    setRefreshBalance(false);
-                } catch (error) {
-                    setRefreshBalance(false);
-                    debug('Error fetching asset:', error);
-                }
-            };
+    //                 setAccounts(updatedAccounts);
+    //                 setRefreshBalance(false);
+    //             } catch (error) {
+    //                 setRefreshBalance(false);
+    //                 debug('Error fetching asset:', error);
+    //             }
+    //         };
 
-            fetchAssets();
-        }, [chains]);
+    //         fetchAssets();
+    //     }, [chains]);
 
-        const findAccountByChain = (chain: string) => {
-            const accountExists = accounts.find((account) => account.network === chain);
-            const balance = accountExists?.balance;
-            const usdBalance = accountExists?.usdBalance;
-            const account = accountExists?.accountName;
+    //     const findAccountByChain = (chain: string) => {
+    //         const accountExists = accounts.find((account) => account.network === chain);
+    //         const balance = accountExists?.balance;
+    //         const usdBalance = accountExists?.usdBalance;
+    //         const account = accountExists?.accountName;
 
-            return { account, balance, usdBalance };
-        };
+    //         return { account, balance, usdBalance };
+    //     };
 
-        const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-            const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+    //     const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
+    //         const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
 
-            setAccountDetails({
-                symbol: token.getSymbol(),
-                name: capitalizeFirstLetter(chain.getName()),
-                address: accountData.account || '',
-                image: token.getLogoUrl(),
-            });
-            (refMessage.current as any)?.open();
-        };
+    //         setAccountDetails({
+    //             symbol: token.getSymbol(),
+    //             name: capitalizeFirstLetter(chain.getName()),
+    //             address: accountData.account || '',
+    //             image: token.getLogoUrl(),
+    //         });
+    //         (refMessage.current as any)?.open();
+    //     };
 
-        return (
-            <View>
-                {chains.map((chainObj, index) => {
-                    const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
+    //     return (
+    //         <View>
+    //             {chains.map((chainObj, index) => {
+    //                 const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
 
-                    return (
-                        <TouchableOpacity key={index} onPress={() => openAccountDetails(chainObj)}>
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                    }}
-                                >
-                                    <View
-                                        style={{
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-start',
-                                        }}
-                                    >
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image
-                                                source={{ uri: chainObj.token.getLogoUrl() }}
-                                                style={[styles.favicon, { resizeMode: 'contain' }]}
-                                            />
-                                            <Text style={styles.networkTitle}>
-                                                {capitalizeFirstLetter(chainObj.chain.getName())} Network:
-                                            </Text>
-                                        </View>
-                                        {accountData.account ? (
-                                            <Text> {chainObj.chain.formatShortAccountName(accountData.account)}</Text>
-                                        ) : (
-                                            <Text>Not connected</Text>
-                                        )}
-                                    </View>
-                                    {refreshBalance ? (
-                                        <TSpinner size="small" />
-                                    ) : (
-                                        <>
-                                            {!accountData.account ? (
-                                                <TButton
-                                                    style={styles.generateKey}
-                                                    onPress={() => {
-                                                        navigation.navigate('CreateEthereumKey');
-                                                    }}
-                                                    color={theme.colors.white}
-                                                    size="medium"
-                                                >
-                                                    Generate key
-                                                </TButton>
-                                            ) : (
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'column',
-                                                        alignItems: 'flex-end',
-                                                    }}
-                                                >
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text>{accountData.balance}</Text>
-                                                    </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
-                                                    </Text>
-                                                </View>
-                                            )}
-                                        </>
-                                    )}
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
-        );
-    };
+    //                 return (
+    //                     <TouchableOpacity key={index} onPress={() => openAccountDetails(chainObj)}>
+    //                         <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+    //                             <View
+    //                                 style={{
+    //                                     flexDirection: 'row',
+    //                                     justifyContent: 'space-between',
+    //                                 }}
+    //                             >
+    //                                 <View
+    //                                     style={{
+    //                                         flexDirection: 'column',
+    //                                         alignItems: 'flex-start',
+    //                                     }}
+    //                                 >
+    //                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    //                                         <Image
+    //                                             source={{ uri: chainObj.token.getLogoUrl() }}
+    //                                             style={[styles.favicon, { resizeMode: 'contain' }]}
+    //                                         />
+    //                                         <Text style={styles.networkTitle}>
+    //                                             {capitalizeFirstLetter(chainObj.chain.getName())} Network:
+    //                                         </Text>
+    //                                     </View>
+    //                                     {accountData.account ? (
+    //                                         <Text> {chainObj.chain.formatShortAccountName(accountData.account)}</Text>
+    //                                     ) : (
+    //                                         <Text>Not connected</Text>
+    //                                     )}
+    //                                 </View>
+    //                                 {refreshBalance ? (
+    //                                     <TSpinner size="small" />
+    //                                 ) : (
+    //                                     <>
+    //                                         {!accountData.account ? (
+    //                                             <TButton
+    //                                                 style={styles.generateKey}
+    //                                                 onPress={() => {
+    //                                                     navigation.navigate('CreateEthereumKey');
+    //                                                 }}
+    //                                                 color={theme.colors.white}
+    //                                                 size="medium"
+    //                                             >
+    //                                                 Generate key
+    //                                             </TButton>
+    //                                         ) : (
+    //                                             <View
+    //                                                 style={{
+    //                                                     flexDirection: 'column',
+    //                                                     alignItems: 'flex-end',
+    //                                                 }}
+    //                                             >
+    //                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    //                                                     <Text>{accountData.balance}</Text>
+    //                                                 </View>
+    //                                                 <Text style={styles.secondaryColor}>
+    //                                                     ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
+    //                                                 </Text>
+    //                                             </View>
+    //                                         )}
+    //                                     </>
+    //                                 )}
+    //                             </View>
+    //                         </View>
+    //                     </TouchableOpacity>
+    //                 );
+    //             })}
+    //         </View>
+    //     );
+    // };
 
     const MainView = () => {
         const isFocused = useIsFocused();
@@ -482,7 +482,7 @@ export default function MainContainer({
                             </View>
                             <ScrollView
                                 contentContainerStyle={styles.scrollViewContent}
-                                refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                                // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                             >
                                 <View style={styles.accountsView}>
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
@@ -535,7 +535,7 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <AccountsView />
+                                    {/* <AccountsView /> */}
                                 </View>
                             </ScrollView>
                         </>

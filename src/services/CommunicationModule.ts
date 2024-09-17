@@ -198,20 +198,18 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        if (isConnected) loginToService();
+        loginToService();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
 
     useEffect(() => {
-        if (isConnected) {
-            return () => {
-                for (const s of subscribers) {
-                    user.unsubscribeMessage(s);
-                }
-            };
-        }
-    }, [subscribers, user, isConnected]);
+        return () => {
+            for (const s of subscribers) {
+                user.unsubscribeMessage(s);
+            }
+        };
+    }, [subscribers, user]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {
