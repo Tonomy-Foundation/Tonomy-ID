@@ -299,7 +299,7 @@ export default function MainContainer({
         useEffect(() => {
             const fetchAssets = async () => {
                 try {
-                    if (!accountExists) await initializeWalletAccount();
+                    if (!accountExists && isConnected) await initializeWalletAccount();
                     setRefreshBalance(true);
                     await connect();
                     const updatedAccounts = await Promise.all(
