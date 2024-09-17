@@ -125,6 +125,7 @@ export type RouteStackParamList = {
         params?: AssetParamsScreen;
     };
     Onboarding: undefined;
+    Citizenship: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
