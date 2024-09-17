@@ -81,7 +81,6 @@ export default function MainContainer({
     const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
 
-    debug('MainContainer isConnected:', isConnected);
     useEffect(() => {
         const initializeAndFetchBalances = async () => {
             if (!initialized && isConnected) {
@@ -176,10 +175,10 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        if (did && isConnected) {
+        if (did) {
             onUrlOpen(did);
         }
-    }, [setUserName, did, onUrlOpen, isConnected]);
+    }, [setUserName, did, onUrlOpen]);
 
     useEffect(() => {
         async function getUpdatedBalance() {
@@ -200,16 +199,14 @@ export default function MainContainer({
             }
         }
 
-        if (isConnected) {
+        getUpdatedBalance();
+
+        const interval = setInterval(() => {
             getUpdatedBalance();
+        }, 20000);
 
-            const interval = setInterval(() => {
-                getUpdatedBalance();
-            }, 20000);
-
-            return () => clearInterval(interval);
-        }
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
+        return () => clearInterval(interval);
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -263,11 +260,9 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            if (isConnected) {
-                setRefreshBalance(true);
-                await updateBalance();
-                setRefreshBalance(false);
-            }
+            setRefreshBalance(true);
+            await updateBalance();
+            setRefreshBalance(false);
         } catch (error) {
             setRefreshBalance(false);
 
@@ -275,7 +270,7 @@ export default function MainContainer({
                 debug('Error updating account detail network error:');
             }
         }
-    }, [updateBalance, isConnected]);
+    }, [updateBalance]);
 
     useEffect(() => {
         if (accountDetails?.address) {
@@ -296,13 +291,12 @@ export default function MainContainer({
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
     >([]);
 
-    // const [refreshBalance, setRefreshBalance] = useState(false);
     useEffect(() => {
         const fetchAssets = async () => {
             try {
-                if (!accountExists) await initializeWalletAccount();
+                if (!accountExists && isConnected) await initializeWalletAccount();
                 setRefreshBalance(true);
-
+                await connect();
                 const updatedAccounts = await Promise.all(
                     chains.map(async (chainObj) => {
                         await connect();
@@ -333,7 +327,7 @@ export default function MainContainer({
         };
 
         fetchAssets();
-    }, [accountExists, initializeWalletAccount, chains]);
+    }, [accountExists, initializeWalletAccount, chains, isConnected]);
 
     const AccountsView = () => {
         const findAccountByChain = (chain: string) => {
