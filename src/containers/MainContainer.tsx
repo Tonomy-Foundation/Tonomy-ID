@@ -77,25 +77,25 @@ export default function MainContainer({
         address: '',
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
-    const { isConnected } = useNetworkStatus();
+    // const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
 
-    useEffect(() => {
-        const initializeAndFetchBalances = async () => {
-            if (!initialized && isConnected) {
-                try {
-                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                } catch (error) {
-                    errorStore.setError({
-                        error: new Error('Error initializing wallet'),
-                        expected: true,
-                    });
-                }
-            }
-        };
+    // useEffect(() => {
+    //     const initializeAndFetchBalances = async () => {
+    //         if (!initialized && isConnected) {
+    //             try {
+    //                 progressiveRetryOnNetworkError(async () => await initializeWalletState());
+    //             } catch (error) {
+    //                 errorStore.setError({
+    //                     error: new Error('Error initializing wallet'),
+    //                     expected: true,
+    //                 });
+    //             }
+    //         }
+    //     };
 
-        initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, isConnected, errorStore]);
+    //     initializeAndFetchBalances();
+    // }, [initializeWalletState, initialized, isConnected, errorStore]);
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
@@ -480,9 +480,9 @@ export default function MainContainer({
                             <View style={{ flexShrink: 0 }}>
                                 <MainView />
                             </View>
-                            <ScrollView
+                            {/* <ScrollView
                                 contentContainerStyle={styles.scrollViewContent}
-                                // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                                refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                             >
                                 <View style={styles.accountsView}>
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
@@ -535,9 +535,9 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    {/* <AccountsView /> */}
+                                    <AccountsView />
                                 </View>
-                            </ScrollView>
+                            </ScrollView> */}
                         </>
                     )}
                     {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={() => setQrOpened(false)} />}

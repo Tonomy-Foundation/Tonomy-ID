@@ -27,7 +27,6 @@ import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
-import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -37,15 +36,12 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
     const { initialized, web3wallet, disconnectSession } = useWalletStore();
-    const { isConnected } = useNetworkStatus();
 
     /**
      *  Login to communication microservice
      *  should be called on app start
      */
     async function loginToService() {
-        debug('coomunication loginToService', isConnected);
-
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
@@ -107,7 +103,7 @@ export default function CommunicationModule() {
     }
 
     function listenToMessages(): number[] {
-        debug('coomunication listenToMessages', isConnected);
+        debug('coomunication listenToMessages');
 
         const loginRequestSubscriber = user.subscribeMessage(async (message) => {
             try {
@@ -129,6 +125,7 @@ export default function CommunicationModule() {
                 const payload = loginRequestsMessage.getPayload();
                 const base64UrlPayload = objToBase64Url(payload);
 
+                debug('base64UrlPayload', base64UrlPayload);
                 navigation.navigate('SSO', {
                     payload: base64UrlPayload,
                     platform: 'browser',
@@ -184,7 +181,7 @@ export default function CommunicationModule() {
     }
 
     function sendLoginNotificationOnBackground(appName: string) {
-        debug('coomunication sendLoginNotificationOnBackground', isConnected);
+        debug('coomunication sendLoginNotificationOnBackground');
 
         if (AppState.currentState === 'background') {
             scheduleNotificationAsync({
@@ -224,7 +221,7 @@ export default function CommunicationModule() {
     }
 
     const handleConnect = useCallback(async () => {
-        debug('coomunication handleConnect', isConnected);
+        debug('coomunication handleConnect');
 
         try {
             const onSessionProposal = async (proposal) => {
@@ -376,18 +373,16 @@ export default function CommunicationModule() {
                 }
             };
 
-            if (isConnected) {
+            web3wallet?.off('session_proposal', onSessionProposal);
+            web3wallet?.off('session_request', onSessionRequest);
+
+            web3wallet?.on('session_proposal', onSessionProposal);
+            web3wallet?.on('session_request', onSessionRequest);
+
+            return () => {
                 web3wallet?.off('session_proposal', onSessionProposal);
                 web3wallet?.off('session_request', onSessionRequest);
-
-                web3wallet?.on('session_proposal', onSessionProposal);
-                web3wallet?.on('session_request', onSessionRequest);
-
-                return () => {
-                    web3wallet?.off('session_proposal', onSessionProposal);
-                    web3wallet?.off('session_request', onSessionRequest);
-                };
-            }
+            };
         } catch (e) {
             errorStore.setError({
                 error: new Error('Error when listening the session requests, Please try again'),
@@ -395,11 +390,11 @@ export default function CommunicationModule() {
                 title: 'Something went wrong',
             });
         }
-    }, [navigation, web3wallet, errorStore, isConnected]);
+    }, [navigation, web3wallet, errorStore]);
 
     useEffect(() => {
-        if (web3wallet && isConnected) handleConnect();
-    }, [handleConnect, web3wallet, initialized, isConnected]);
+        if (web3wallet) handleConnect();
+    }, [handleConnect, web3wallet, initialized]);
 
     const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
         let timeout: ReturnType<typeof setTimeout>;
@@ -413,7 +408,7 @@ export default function CommunicationModule() {
     useEffect(() => {
         try {
             const handleSessionDelete = debounce(async (event) => {
-                debug('coomunication handleSessionDelete', isConnected);
+                debug('coomunication handleSessionDelete');
 
                 try {
                     if (event.topic) {
@@ -436,13 +431,11 @@ export default function CommunicationModule() {
                 }
             }, 1000);
 
-            if (isConnected) {
-                web3wallet?.on('session_delete', handleSessionDelete);
+            web3wallet?.on('session_delete', handleSessionDelete);
 
-                return () => {
-                    web3wallet?.off('session_delete', handleSessionDelete);
-                };
-            }
+            return () => {
+                web3wallet?.off('session_delete', handleSessionDelete);
+            };
         } catch (e) {
             errorStore.setError({
                 error: new Error('Error when listening the session delete, Please try again'),
@@ -450,7 +443,7 @@ export default function CommunicationModule() {
                 title: 'Something went wrong',
             });
         }
-    }, [web3wallet, disconnectSession, navigation, errorStore, isConnected]);
+    }, [web3wallet, disconnectSession, navigation, errorStore]);
 
     return null;
 }
