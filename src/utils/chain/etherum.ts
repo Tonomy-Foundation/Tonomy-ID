@@ -28,7 +28,7 @@ import {
 import settings from '../../settings';
 import { SignClientTypes } from '@walletconnect/types';
 
-export const USD_CONVERSION = 0.002;
+export const USD_CONVERSION = 0.0005;
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
