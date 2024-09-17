@@ -199,19 +199,19 @@ export default function CommunicationModule() {
         }
     }
 
-    useEffect(() => {
-        loginToService();
+    // useEffect(() => {
+    //     loginToService();
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigation, user]);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [navigation, user]);
 
-    useEffect(() => {
-        return () => {
-            for (const s of subscribers) {
-                user.unsubscribeMessage(s);
-            }
-        };
-    }, [subscribers, user, isConnected]);
+    // useEffect(() => {
+    //     return () => {
+    //         for (const s of subscribers) {
+    //             user.unsubscribeMessage(s);
+    //         }
+    //     };
+    // }, [subscribers, user, isConnected]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {
