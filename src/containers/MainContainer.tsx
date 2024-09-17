@@ -81,80 +81,80 @@ export default function MainContainer({
     const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
 
-    // useEffect(() => {
-    //     const initializeAndFetchBalances = async () => {
-    //         if (!initialized && isConnected) {
-    //             try {
-    //                 progressiveRetryOnNetworkError(async () => await initializeWalletState());
-    //             } catch (error) {
-    //                 errorStore.setError({
-    //                     error: new Error('Error initializing wallet'),
-    //                     expected: true,
-    //                 });
-    //             }
-    //         }
-    //     };
+    useEffect(() => {
+        const initializeAndFetchBalances = async () => {
+            if (!initialized && isConnected) {
+                try {
+                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                } catch (error) {
+                    errorStore.setError({
+                        error: new Error('Error initializing wallet'),
+                        expected: true,
+                    });
+                }
+            }
+        };
 
-    //     initializeAndFetchBalances();
-    // }, [initializeWalletState, initialized, isConnected, errorStore]);
+        initializeAndFetchBalances();
+    }, [initializeWalletState, initialized, isConnected, errorStore]);
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
 
-    // const connectToDid = useCallback(
-    //     async (did: string) => {
-    //         try {
-    //             // Connect to the browser using their did:jwk
-    //             const issuer = await user.getIssuer();
-    //             const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+    const connectToDid = useCallback(
+        async (did: string) => {
+            try {
+                // Connect to the browser using their did:jwk
+                const issuer = await user.getIssuer();
+                const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
 
-    //             await user.sendMessage(identifyMessage);
-    //         } catch (e) {
-    //             if (
-    //                 e instanceof CommunicationError &&
-    //                 e.exception?.status === 400 &&
-    //                 e.exception.message.startsWith('Recipient not connected')
-    //             ) {
-    //                 errorStore.setError({
-    //                     title: 'Problem connecting',
-    //                     error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-    //                     expected: true,
-    //                 });
-    //             } else {
-    //                 debug('connectToDid error:', e);
+                await user.sendMessage(identifyMessage);
+            } catch (e) {
+                if (
+                    e instanceof CommunicationError &&
+                    e.exception?.status === 400 &&
+                    e.exception.message.startsWith('Recipient not connected')
+                ) {
+                    errorStore.setError({
+                        title: 'Problem connecting',
+                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                        expected: true,
+                    });
+                } else {
+                    debug('connectToDid error:', e);
 
-    //                 errorStore.setError({
-    //                     error: e,
-    //                     expected: false,
-    //                 });
-    //             }
-    //         }
-    //     },
-    //     [user, errorStore]
-    // );
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                    });
+                }
+            }
+        },
+        [user, errorStore]
+    );
 
     const onClose = useCallback(async () => {
         setQrOpened(false);
     }, []);
 
-    // const onUrlOpen = useCallback(
-    //     async (did) => {
-    //         try {
-    //             await connectToDid(did);
-    //         } catch (e) {
-    //             if (e.message === 'Network request failed') {
-    //                 debug('network error when connectToDid called');
-    //             } else {
-    //                 debug('onUrlOpen error:', e);
-    //                 errorStore.setError({ error: e, expected: false });
-    //             }
-    //         } finally {
-    //             onClose();
-    //         }
-    //     },
-    //     [errorStore, connectToDid, onClose]
-    // );
+    const onUrlOpen = useCallback(
+        async (did) => {
+            try {
+                await connectToDid(did);
+            } catch (e) {
+                if (e.message === 'Network request failed') {
+                    debug('network error when connectToDid called');
+                } else {
+                    debug('onUrlOpen error:', e);
+                    errorStore.setError({ error: e, expected: false });
+                }
+            } finally {
+                onClose();
+            }
+        },
+        [errorStore, connectToDid, onClose]
+    );
 
     const setUserName = useCallback(async () => {
         try {
@@ -174,40 +174,40 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        // if (did) {
-        //     onUrlOpen(did);
-        // }
-    }, [setUserName]);
+        if (did) {
+            onUrlOpen(did);
+        }
+    }, [setUserName, did, onUrlOpen]);
 
-    // useEffect(() => {
-    //     async function getUpdatedBalance() {
-    //         try {
-    //             if (accountExists) await updateBalance();
+    useEffect(() => {
+        async function getUpdatedBalance() {
+            try {
+                if (accountExists) await updateBalance();
 
-    //             const accountPangeaBalance = await vestingContract.getBalance(accountName);
+                const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-    //             if (pangeaBalance !== accountPangeaBalance) {
-    //                 setPangeaBalance(accountPangeaBalance);
-    //             }
-    //         } catch (error) {
-    //             debug('Error updating balance:', error);
+                if (pangeaBalance !== accountPangeaBalance) {
+                    setPangeaBalance(accountPangeaBalance);
+                }
+            } catch (error) {
+                debug('Error updating balance:', error);
 
-    //             if (error.message === 'Network request failed') {
-    //                 debug('network error when call updating balance:');
-    //             }
-    //         }
-    //     }
+                if (error.message === 'Network request failed') {
+                    debug('network error when call updating balance:');
+                }
+            }
+        }
 
-    //     if (isConnected) {
-    //         getUpdatedBalance();
+        if (isConnected) {
+            getUpdatedBalance();
 
-    //         const interval = setInterval(() => {
-    //             getUpdatedBalance();
-    //         }, 20000);
+            const interval = setInterval(() => {
+                getUpdatedBalance();
+            }, 20000);
 
-    //         return () => clearInterval(interval);
-    //     }
-    // }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
+            return () => clearInterval(interval);
+        }
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -216,7 +216,7 @@ export default function MainContainer({
             } else {
                 const did = validateQrCode(data);
 
-                // await connectToDid(did);
+                await connectToDid(did);
             }
         } catch (e) {
             debug('onScan error:', e);
@@ -259,89 +259,84 @@ export default function MainContainer({
         }
     }
 
-    // const onRefresh = React.useCallback(async () => {
-    //     try {
-    //         if (isConnected) {
-    //             setRefreshBalance(true);
-    //             await updateBalance();
-    //             setRefreshBalance(false);
-    //         }
-    //     } catch (error) {
-    //         setRefreshBalance(false);
-
-    //         if (error.message === 'Network request failed') {
-    //             debug('Error updating account detail network error:');
-    //         }
-    //     }
-    // }, [updateBalance, isConnected]);
-
-    // useEffect(() => {
-    //     if (accountDetails?.address) {
-    //         (refMessage?.current as any)?.open();
-    //     }
-    // }, [accountDetails]);
-
-    const chains = useMemo(
-        () => [
-            { token: ETHToken, chain: EthereumMainnetChain },
-            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-            { token: ETHPolygonToken, chain: EthereumPolygonChain },
-        ],
-        []
-    );
-
-    const [accounts, setAccounts] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-    >([]);
-
-    useEffect(() => {
-        const fetchAssets = async () => {
-            try {
-                if (!accountExists && isConnected) await initializeWalletAccount();
+    const onRefresh = React.useCallback(async () => {
+        try {
+            if (isConnected) {
                 setRefreshBalance(true);
-                await connect();
-
-                try {
-                    const updatedAccounts = await Promise.all(
-                        chains.map(async (chainObj) => {
-                            debug('Fetching asset for chain:', chainObj.chain.getName());
-                            const asset = await assetStorage.findAssetByName(chainObj.token);
-
-                            if (asset) {
-                                return {
-                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                    accountName: asset.accountName,
-                                    balance: asset.balance,
-                                    usdBalance: asset.usdBalance,
-                                };
-                            } else {
-                                return {
-                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                    accountName: null,
-                                    balance: '0' + chainObj.token.getSymbol(),
-                                    usdBalance: 0,
-                                };
-                            }
-                        })
-                    );
-
-                    setAccounts(updatedAccounts);
-                } catch (error) {
-                    setRefreshBalance(false);
-                    debug('Error fetching assets:', error);
-                } finally {
-                    setRefreshBalance(false);
-                }
-            } catch (error) {
+                await updateBalance();
                 setRefreshBalance(false);
-                debug('Error fetching asset:', error);
             }
-        };
+        } catch (error) {
+            setRefreshBalance(false);
 
-        fetchAssets();
-    }, [chains, accountExists, isConnected, initializeWalletAccount]);
+            if (error.message === 'Network request failed') {
+                debug('Error updating account detail network error:');
+            }
+        }
+    }, [updateBalance, isConnected]);
 
     const AccountsView = () => {
+        const chains = useMemo(
+            () => [
+                { token: ETHToken, chain: EthereumMainnetChain },
+                { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+                { token: ETHPolygonToken, chain: EthereumPolygonChain },
+            ],
+            []
+        );
+
+        const [accounts, setAccounts] = useState<
+            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+        >([]);
+        const [accountBalance, setAccountBalance] = useState(false);
+
+        useEffect(() => {
+            const fetchAssets = async () => {
+                try {
+                    if (!accountExists && isConnected) await initializeWalletAccount();
+                    setAccountBalance(true);
+                    await connect();
+
+                    try {
+                        const updatedAccounts = await Promise.all(
+                            chains.map(async (chainObj) => {
+                                debug('Fetching asset for chain:', chainObj.chain.getName());
+                                const asset = await assetStorage.findAssetByName(chainObj.token);
+
+                                if (asset) {
+                                    return {
+                                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                        accountName: asset.accountName,
+                                        balance: asset.balance,
+                                        usdBalance: asset.usdBalance,
+                                    };
+                                } else {
+                                    return {
+                                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                        accountName: null,
+                                        balance: '0' + chainObj.token.getSymbol(),
+                                        usdBalance: 0,
+                                    };
+                                }
+                            })
+                        );
+
+                        setAccounts(updatedAccounts);
+                    } catch (error) {
+                        setAccountBalance(false);
+                        debug('Error fetching assets:', error);
+                    } finally {
+                        setAccountBalance(false);
+                    }
+                } catch (error) {
+                    setAccountBalance(false);
+                    debug('Error fetching asset:', error);
+                }
+            };
+
+            fetchAssets();
+        }, [chains]);
+
         const findAccountByChain = (chain: string) => {
             const accountExists = accounts.find((account) => account.network === chain);
             const balance = accountExists?.balance;
@@ -398,7 +393,7 @@ export default function MainContainer({
                                             <Text>Not connected</Text>
                                         )}
                                     </View>
-                                    {refreshBalance ? (
+                                    {accountBalance ? (
                                         <TSpinner size="small" />
                                     ) : (
                                         <>
@@ -491,7 +486,7 @@ export default function MainContainer({
                             </View>
                             <ScrollView
                                 contentContainerStyle={styles.scrollViewContent}
-                                // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                                refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                             >
                                 <View style={styles.accountsView}>
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
