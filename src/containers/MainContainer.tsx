@@ -281,96 +281,95 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
-    const AccountsView = () => {
-        const chains = useMemo(
-            () => [
-                { token: ETHToken, chain: EthereumMainnetChain },
-                { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-                { token: ETHPolygonToken, chain: EthereumPolygonChain },
-            ],
-            []
-        );
+    const chains = useMemo(
+        () => [
+            { token: ETHToken, chain: EthereumMainnetChain },
+            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+            { token: ETHPolygonToken, chain: EthereumPolygonChain },
+        ],
+        []
+    );
 
-        const [accounts, setAccounts] = useState<
-            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-        >([]);
-        const [accountBalance, setAccountBalance] = useState(false);
+    const [accounts, setAccounts] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
 
-        useEffect(() => {
-            const fetchAssets = async () => {
-                try {
-                    if (!accountExists && isConnected) await initializeWalletAccount();
+    useEffect(() => {
+        const fetchAssets = async () => {
+            try {
+                if (!accountExists && isConnected) await initializeWalletAccount();
 
-                    setAccountBalance(true);
+                setRefreshBalance(true);
 
-                    await connect();
+                await connect();
 
-                    const updatedAccounts = await Promise.all(
-                        chains.map(async (chainObj) => {
-                            try {
-                                debug('Fetching asset for chain:', chainObj.chain.getName());
-                                const asset = await assetStorage.findAssetByName(chainObj.token);
+                const updatedAccounts = await Promise.all(
+                    chains.map(async (chainObj) => {
+                        try {
+                            debug('Fetching asset for chain:', chainObj.chain.getName());
+                            const asset = await assetStorage.findAssetByName(chainObj.token);
 
-                                if (asset) {
-                                    return {
-                                        network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                        accountName: asset.accountName,
-                                        balance: asset.balance,
-                                        usdBalance: asset.usdBalance,
-                                    };
-                                } else {
-                                    return {
-                                        network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                        accountName: null,
-                                        balance: '0' + chainObj.token.getSymbol(),
-                                        usdBalance: 0,
-                                    };
-                                }
-                            } catch (error) {
-                                debug(`Error fetching asset for chain ${chainObj.chain.getName()}:`, error);
+                            if (asset) {
+                                return {
+                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                    accountName: asset.accountName,
+                                    balance: asset.balance,
+                                    usdBalance: asset.usdBalance,
+                                };
+                            } else {
                                 return {
                                     network: capitalizeFirstLetter(chainObj.chain.getName()),
                                     accountName: null,
                                     balance: '0' + chainObj.token.getSymbol(),
                                     usdBalance: 0,
-                                }; // Return a default value in case of an error
+                                };
                             }
-                        })
-                    );
+                        } catch (error) {
+                            debug(`Error fetching asset for chain ${chainObj.chain.getName()}:`, error);
+                            return {
+                                network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                accountName: null,
+                                balance: '0' + chainObj.token.getSymbol(),
+                                usdBalance: 0,
+                            }; // Return a default value in case of an error
+                        }
+                    })
+                );
 
-                    setAccounts(updatedAccounts); // Update the account state
-                } catch (error) {
-                    setAccountBalance(false);
-                    debug('Error fetching assets:', error);
-                } finally {
-                    setAccountBalance(false); // Ensure loading state is reset
-                }
-            };
-
-            fetchAssets();
-        }, [chains]);
-
-        const findAccountByChain = (chain: string) => {
-            const accountExists = accounts.find((account) => account.network === chain);
-            const balance = accountExists?.balance;
-            const usdBalance = accountExists?.usdBalance;
-            const account = accountExists?.accountName;
-
-            return { account, balance, usdBalance };
+                setAccounts(updatedAccounts); // Update the account state
+            } catch (error) {
+                setRefreshBalance(false);
+                debug('Error fetching assets:', error);
+            } finally {
+                setRefreshBalance(false); // Ensure loading state is reset
+            }
         };
 
-        const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-            const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+        fetchAssets();
+    }, [chains, accountExists, isConnected, initializeWalletAccount]);
 
-            setAccountDetails({
-                symbol: token.getSymbol(),
-                name: capitalizeFirstLetter(chain.getName()),
-                address: accountData.account || '',
-                image: token.getLogoUrl(),
-            });
-            (refMessage.current as any)?.open();
-        };
+    const findAccountByChain = (chain: string) => {
+        const accountExists = accounts.find((account) => account.network === chain);
+        const balance = accountExists?.balance;
+        const usdBalance = accountExists?.usdBalance;
+        const account = accountExists?.accountName;
 
+        return { account, balance, usdBalance };
+    };
+
+    const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
+        const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+
+        setAccountDetails({
+            symbol: token.getSymbol(),
+            name: capitalizeFirstLetter(chain.getName()),
+            address: accountData.account || '',
+            image: token.getLogoUrl(),
+        });
+        (refMessage.current as any)?.open();
+    };
+
+    const AccountsView = () => {
         return (
             <View>
                 {chains.map((chainObj, index) => {
@@ -406,7 +405,7 @@ export default function MainContainer({
                                             <Text>Not connected</Text>
                                         )}
                                     </View>
-                                    {accountBalance ? (
+                                    {refreshBalance ? (
                                         <TSpinner size="small" />
                                     ) : (
                                         <>
