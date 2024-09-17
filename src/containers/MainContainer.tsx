@@ -176,7 +176,7 @@ export default function MainContainer({
         // if (did) {
         //     onUrlOpen(did);
         // }
-    }, [setUserName, did, onUrlOpen]);
+    }, [setUserName]);
 
     // useEffect(() => {
     //     async function getUpdatedBalance() {
@@ -215,7 +215,7 @@ export default function MainContainer({
             } else {
                 const did = validateQrCode(data);
 
-                await connectToDid(did);
+                // await connectToDid(did);
             }
         } catch (e) {
             debug('onScan error:', e);
