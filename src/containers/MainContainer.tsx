@@ -275,6 +275,12 @@ export default function MainContainer({
         }
     }, [updateBalance, isConnected]);
 
+    useEffect(() => {
+        if (accountDetails?.address) {
+            (refMessage?.current as any)?.open();
+        }
+    }, [accountDetails]);
+
     const AccountsView = () => {
         const chains = useMemo(
             () => [
@@ -294,12 +300,14 @@ export default function MainContainer({
             const fetchAssets = async () => {
                 try {
                     if (!accountExists && isConnected) await initializeWalletAccount();
+
                     setAccountBalance(true);
+
                     await connect();
 
-                    try {
-                        const updatedAccounts = await Promise.all(
-                            chains.map(async (chainObj) => {
+                    const updatedAccounts = await Promise.all(
+                        chains.map(async (chainObj) => {
+                            try {
                                 debug('Fetching asset for chain:', chainObj.chain.getName());
                                 const asset = await assetStorage.findAssetByName(chainObj.token);
 
@@ -318,19 +326,24 @@ export default function MainContainer({
                                         usdBalance: 0,
                                     };
                                 }
-                            })
-                        );
+                            } catch (error) {
+                                debug(`Error fetching asset for chain ${chainObj.chain.getName()}:`, error);
+                                return {
+                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                    accountName: null,
+                                    balance: '0' + chainObj.token.getSymbol(),
+                                    usdBalance: 0,
+                                }; // Return a default value in case of an error
+                            }
+                        })
+                    );
 
-                        setAccounts(updatedAccounts);
-                    } catch (error) {
-                        setAccountBalance(false);
-                        debug('Error fetching assets:', error);
-                    } finally {
-                        setAccountBalance(false);
-                    }
+                    setAccounts(updatedAccounts); // Update the account state
                 } catch (error) {
                     setAccountBalance(false);
-                    debug('Error fetching asset:', error);
+                    debug('Error fetching assets:', error);
+                } finally {
+                    setAccountBalance(false); // Ensure loading state is reset
                 }
             };
 
