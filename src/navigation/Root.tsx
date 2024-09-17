@@ -205,7 +205,7 @@ export default function RootNavigation() {
             ) : (
                 <>
                     <NotificationModule />
-                    <CommunicationModule />
+                    {/* <CommunicationModule /> */}
                     <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
