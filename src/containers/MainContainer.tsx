@@ -40,7 +40,7 @@ import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
 import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
 import Debug from 'debug';
-import { assetStorage } from '../utils/StorageManager/setup';
+import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
 import useNetworkStatus from '../utils/networkHelper';
 
@@ -301,7 +301,7 @@ export default function MainContainer({
                 try {
                     if (!accountExists) await initializeWalletAccount();
                     setRefreshBalance(true);
-
+                    await connect();
                     const updatedAccounts = await Promise.all(
                         chains.map(async (chainObj) => {
                             const asset = await assetStorage.findAssetByName(chainObj.token);
