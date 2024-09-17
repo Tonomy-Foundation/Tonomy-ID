@@ -37,13 +37,13 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                 <View style={{ flexDirection: 'row', gap: 16, marginTop: 8 }}>
                     <TouchableOpacity>
                         <View style={styles.webImage}>
-                            <Image source={require('../assets/images/loginwebapps.png')} />
+                            <Image source={require('../assets/images/login-webapps.png')} />
                         </View>
                         <Text style={styles.webTitle}>Login to Web4 Apps</Text>
                     </TouchableOpacity>
                     <TouchableOpacity>
                         <View style={styles.webImage}>
-                            <Image source={require('../assets/images/managecrypto.png')} />
+                            <Image source={require('../assets/images/manage-crypto.png')} />
                         </View>
                         <Text style={styles.webTitle}>Manage your Crypto</Text>
                     </TouchableOpacity>
