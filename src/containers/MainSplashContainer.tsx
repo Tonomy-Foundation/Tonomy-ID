@@ -87,7 +87,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 } else {
                     debug('main screen error', e);
                     errorStore.setError({ error: e, expected: false });
-                    navigation.dispatch(StackActions.replace('Home'));
+                    navigation.navigate('SplashSecurity');
                 }
             }
         }
