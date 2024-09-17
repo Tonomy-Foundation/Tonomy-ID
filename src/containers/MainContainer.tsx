@@ -133,9 +133,9 @@ export default function MainContainer({
     //     [user, errorStore]
     // );
 
-    // const onClose = useCallback(async () => {
-    //     setQrOpened(false);
-    // }, []);
+    const onClose = useCallback(async () => {
+        setQrOpened(false);
+    }, []);
 
     // const onUrlOpen = useCallback(
     //     async (did) => {
