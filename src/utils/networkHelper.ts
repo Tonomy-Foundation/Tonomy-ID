@@ -18,7 +18,6 @@ const useNetworkStatus = () => {
                 if (core) {
                     core.relayer.transportClose();
                     core.events.removeAllListeners();
-                    core.events.removeAllListeners();
                     core.relayer.events.removeAllListeners();
                     core.relayer.provider.events.removeAllListeners();
                     core.relayer.subscriber.events.removeAllListeners();

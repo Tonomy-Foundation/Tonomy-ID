@@ -43,6 +43,7 @@ import Debug from 'debug';
 import { assetStorage } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
 import useNetworkStatus from '../utils/networkHelper';
+import { connect } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -298,32 +299,39 @@ export default function MainContainer({
             try {
                 if (!accountExists && isConnected) await initializeWalletAccount();
                 setRefreshBalance(true);
+                await connect();
 
-                const updatedAccounts = await Promise.all(
-                    chains.map(async (chainObj) => {
-                        debug('chainObj:', chainObj);
-                        const asset = await assetStorage.findAssetByName(chainObj.token);
+                try {
+                    const updatedAccounts = await Promise.all(
+                        chains.map(async (chainObj) => {
+                            debug('Fetching asset for chain:', chainObj.chain.getName());
+                            const asset = await assetStorage.findAssetByName(chainObj.token);
 
-                        debug('chainObj asset:', asset);
+                            if (asset) {
+                                return {
+                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                    accountName: asset.accountName,
+                                    balance: asset.balance,
+                                    usdBalance: asset.usdBalance,
+                                };
+                            } else {
+                                return {
+                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                    accountName: null,
+                                    balance: '0' + chainObj.token.getSymbol(),
+                                    usdBalance: 0,
+                                };
+                            }
+                        })
+                    );
 
-                        return asset
-                            ? {
-                                  network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                  accountName: asset.accountName,
-                                  balance: asset.balance,
-                                  usdBalance: asset.usdBalance,
-                              }
-                            : {
-                                  network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                  accountName: null,
-                                  balance: '0' + chainObj.token.getSymbol(),
-                                  usdBalance: 0,
-                              };
-                    })
-                );
-
-                setAccounts(updatedAccounts);
-                setRefreshBalance(false);
+                    setAccounts(updatedAccounts);
+                } catch (error) {
+                    setRefreshBalance(false);
+                    debug('Error fetching assets:', error);
+                } finally {
+                    setRefreshBalance(false);
+                }
             } catch (error) {
                 setRefreshBalance(false);
                 debug('Error fetching asset:', error);
