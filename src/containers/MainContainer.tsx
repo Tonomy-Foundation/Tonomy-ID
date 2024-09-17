@@ -84,7 +84,7 @@ export default function MainContainer({
         const initializeAndFetchBalances = async () => {
             if (!initialized && isConnected) {
                 try {
-                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                    await initializeWalletState();
                 } catch (error) {
                     errorStore.setError({
                         error: new Error('Error initializing wallet'),
@@ -197,16 +197,14 @@ export default function MainContainer({
             }
         }
 
-        if (isConnected) {
+        getUpdatedBalance();
+
+        const interval = setInterval(() => {
             getUpdatedBalance();
+        }, 20000);
 
-            const interval = setInterval(() => {
-                getUpdatedBalance();
-            }, 20000);
-
-            return () => clearInterval(interval);
-        }
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
+        return () => clearInterval(interval);
+    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -251,6 +249,7 @@ export default function MainContainer({
                     title: 'Communication Error',
                 });
             } else {
+                onClose();
                 errorStore.setError({ error: e, expected: false });
             }
         } finally {
@@ -260,11 +259,9 @@ export default function MainContainer({
 
     const onRefresh = React.useCallback(async () => {
         try {
-            if (isConnected) {
-                setRefreshBalance(true);
-                await updateBalance();
-                setRefreshBalance(false);
-            }
+            setRefreshBalance(true);
+            await updateBalance();
+            setRefreshBalance(false);
         } catch (error) {
             setRefreshBalance(false);
 
@@ -272,7 +269,7 @@ export default function MainContainer({
                 debug('Error updating account detail network error:');
             }
         }
-    }, [updateBalance, isConnected]);
+    }, [updateBalance]);
 
     useEffect(() => {
         if (accountDetails?.address) {
@@ -360,52 +357,31 @@ export default function MainContainer({
         }
 
         return (
-            <View>
+            <View style={styles.content}>
                 {!qrOpened && (
-                    <View style={styles.header}>
-                        <TH2>{username}</TH2>
-
-                        <Image
-                            source={require('../assets/animations/qr-code.gif')}
-                            style={[styles.image, styles.marginTop]}
-                        />
-                        <TButtonContained
-                            style={[styles.button, styles.marginTop]}
-                            icon="qrcode-scan"
-                            onPress={() => {
-                                setQrOpened(true);
-                            }}
+                    <View style={styles.content}>
+                        <ScrollView
+                            contentContainerStyle={styles.scrollViewContent}
+                            refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                         >
-                            Scan QR Code
-                        </TButtonContained>
-                    </View>
-                )}
-            </View>
-        );
-    };
+                            <View style={styles.header}>
+                                <TH2>{username}</TH2>
 
-    return (
-        <SafeAreaView style={styles.container}>
-            {isLoadingView ? (
-                <View style={styles.requestView}>
-                    <Image source={require('../assets/tonomy/connecting.png')}></Image>
-                    <TP style={styles.requestText} size={1}>
-                        Linking to your web app and receiving data.
-                    </TP>
-                    <TSpinner style={{ marginBottom: 12 }} />
-                    <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
-                </View>
-            ) : (
-                <View style={{ flex: 1 }}>
-                    {!qrOpened && (
-                        <>
-                            <View style={{ flexShrink: 0 }}>
-                                <MainView />
+                                <Image
+                                    source={require('../assets/animations/qr-code.gif')}
+                                    style={[styles.image, styles.marginTop]}
+                                />
+                                <TButtonContained
+                                    style={[styles.button, styles.marginTop]}
+                                    icon="qrcode-scan"
+                                    onPress={() => {
+                                        setQrOpened(true);
+                                    }}
+                                >
+                                    Scan QR Code
+                                </TButtonContained>
                             </View>
-                            <ScrollView
-                                contentContainerStyle={styles.scrollViewContent}
-                                refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
-                            >
+                            <ScrollView>
                                 <View style={styles.accountsView}>
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
                                     <TouchableOpacity
@@ -432,32 +408,19 @@ export default function MainContainer({
                                                     <Text>{accountName}</Text>
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                    {refreshBalance ? (
-                                                        <TSpinner size="small" />
-                                                    ) : (
-                                                        <>
-                                                            <View
-                                                                style={{ flexDirection: 'row', alignItems: 'center' }}
-                                                            >
-                                                                <Text>
-                                                                    {formatCurrencyValue(pangeaBalance) || 0} LEOS
-                                                                </Text>
-                                                            </View>
-                                                            <Text style={styles.secondaryColor}>
-                                                                $
-                                                                {pangeaBalance
-                                                                    ? formatCurrencyValue(
-                                                                          pangeaBalance * USD_CONVERSION
-                                                                      )
-                                                                    : 0.0}
-                                                            </Text>
-                                                        </>
-                                                    )}
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                    </View>
+                                                    <Text style={styles.secondaryColor}>
+                                                        $
+                                                        {pangeaBalance
+                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                            : 0.0}
+                                                    </Text>
                                                 </View>
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    {/* Accounts view */}
 
                                     <View>
                                         {chains.map((chainObj, index) => {
@@ -565,19 +528,35 @@ export default function MainContainer({
                                     </View>
                                 </View>
                             </ScrollView>
-                        </>
-                    )}
-                    {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={() => setQrOpened(false)} />}
+                            <AccountDetails
+                                refMessage={refMessage}
+                                accountDetails={accountDetails}
+                                onClose={() => {
+                                    (refMessage.current as any)?.close();
+                                    setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
+                                }}
+                            />
+                        </ScrollView>
+                    </View>
+                )}
+                {qrOpened && <QrCodeScanContainer onScan={onScan} onClose={onClose} />}
+            </View>
+        );
+    };
 
-                    <AccountDetails
-                        refMessage={refMessage}
-                        accountDetails={accountDetails}
-                        onClose={() => {
-                            (refMessage.current as any)?.close();
-                            setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
-                        }}
-                    />
+    return (
+        <SafeAreaView style={styles.container}>
+            {isLoadingView ? (
+                <View style={styles.requestView}>
+                    <Image source={require('../assets/tonomy/connecting.png')}></Image>
+                    <TP style={styles.requestText} size={1}>
+                        Linking to your web app and receiving data.
+                    </TP>
+                    <TSpinner style={{ marginBottom: 12 }} />
+                    <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
+            ) : (
+                <MainView />
             )}
         </SafeAreaView>
     );
@@ -591,7 +570,9 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         flexGrow: 1,
-        marginTop: 20,
+    },
+    content: {
+        flex: 1,
     },
     requestText: {
         paddingHorizontal: 30,
@@ -652,6 +633,7 @@ const styles = StyleSheet.create({
     },
     accountsView: {
         paddingHorizontal: 5,
+        marginTop: 10,
     },
     balanceView: {
         marginTop: 7,
