@@ -54,7 +54,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
 
-                        // if (!initialized && isConnected) {
+                        // if (!initialized) {
                         //     try {
                         //         progressiveRetryOnNetworkError(async () => await initializeWalletState());
                         //     } catch (e) {
@@ -100,7 +100,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         logout,
         navigation,
         user,
-        initializeWalletState,
+        // initializeWalletState,
         clearState,
         setStatus,
         isAppInitialized,
