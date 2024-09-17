@@ -41,6 +41,7 @@ setSettings({
 });
 
 const useUserStore = create<UserState>((set, get) => ({
+    // @ts-expect-error PublicKey library compatibility
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
     getStatus: () => {
