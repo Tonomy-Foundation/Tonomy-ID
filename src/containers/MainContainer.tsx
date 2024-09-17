@@ -294,10 +294,11 @@ export default function MainContainer({
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
     >([]);
 
+    debug('Accounts:', accounts);
     useEffect(() => {
         const fetchAssets = async () => {
             try {
-                if (!accountExists && isConnected) await initializeWalletAccount();
+                if (!accountExists) await initializeWalletAccount();
 
                 setRefreshBalance(true);
 
@@ -346,7 +347,7 @@ export default function MainContainer({
         };
 
         fetchAssets();
-    }, [chains, accountExists, isConnected, initializeWalletAccount]);
+    }, [chains, accountExists, initializeWalletAccount]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
