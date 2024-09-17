@@ -80,22 +80,22 @@ export default function MainContainer({
     const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
 
-    useEffect(() => {
-        const initializeAndFetchBalances = async () => {
-            if (!initialized && isConnected) {
-                try {
-                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                } catch (error) {
-                    errorStore.setError({
-                        error: new Error('Error initializing wallet'),
-                        expected: true,
-                    });
-                }
-            }
-        };
+    // useEffect(() => {
+    //     const initializeAndFetchBalances = async () => {
+    //         if (!initialized && isConnected) {
+    //             try {
+    //                 progressiveRetryOnNetworkError(async () => await initializeWalletState());
+    //             } catch (error) {
+    //                 errorStore.setError({
+    //                     error: new Error('Error initializing wallet'),
+    //                     expected: true,
+    //                 });
+    //             }
+    //         }
+    //     };
 
-        initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, isConnected, errorStore]);
+    //     initializeAndFetchBalances();
+    // }, [initializeWalletState, initialized, isConnected, errorStore]);
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
@@ -299,7 +299,7 @@ export default function MainContainer({
         useEffect(() => {
             const fetchAssets = async () => {
                 try {
-                    if (!accountExists && isConnected) await initializeWalletAccount();
+                    if (!accountExists) await initializeWalletAccount();
                     setRefreshBalance(true);
 
                     const updatedAccounts = await Promise.all(
