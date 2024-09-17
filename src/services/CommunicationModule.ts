@@ -44,13 +44,15 @@ export default function CommunicationModule() {
      *  should be called on app start
      */
     async function loginToService() {
-        debug('coomunication loginToService', isConnected);
-
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
+            debug('coomunication loginToService', message);
+
             const subscribers = listenToMessages();
+
+            debug('coomunication loginToService', subscribers);
 
             setSubscribers(subscribers);
 

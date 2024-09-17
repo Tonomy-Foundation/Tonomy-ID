@@ -7,7 +7,7 @@ const debug = Debug('tonomy-id:utils:NetworkHelper');
 
 const useNetworkStatus = () => {
     const [isConnected, setIsConnected] = useState<boolean>(true);
-    const { core } = useWalletStore();
+    const { core, web3wallet } = useWalletStore();
 
     useEffect(() => {
         // Subscribe to network state updates
@@ -17,6 +17,7 @@ const useNetworkStatus = () => {
             if (!state.isConnected) {
                 if (core) {
                     core.relayer.transportClose();
+                    web3wallet?.core.events.removeAllListeners();
                     core.events.removeAllListeners();
                     core.events.removeAllListeners();
                     core.relayer.events.removeAllListeners();
