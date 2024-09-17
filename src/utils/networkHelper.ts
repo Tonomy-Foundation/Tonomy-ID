@@ -6,7 +6,7 @@ import Debug from 'debug';
 const debug = Debug('tonomy-id:utils:NetworkHelper');
 
 const useNetworkStatus = () => {
-    const [isConnected, setIsConnected] = useState<boolean | null>(null);
+    const [isConnected, setIsConnected] = useState<boolean>(true);
     const { core, disconnectSession } = useWalletStore();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const useNetworkStatus = () => {
                 }
             }
 
-            setIsConnected(state.isConnected);
+            setIsConnected(state.isConnected ? true : false);
         });
 
         // Cleanup the listener on unmount

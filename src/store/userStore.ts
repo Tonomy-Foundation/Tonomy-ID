@@ -51,15 +51,15 @@ const useUserStore = create<UserState>((set, get) => ({
     status: UserStatus.NONE,
     isAppInitialized: false,
     getStatus: async () => {
-        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
+        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
         const userstatus = get().status;
 
         get().setStatus(status as UserStatus);
 
-        return status as UserStatus;
+        return get().status;
     },
     setStatus: async (newStatus: UserStatus) => {
-        const storeStatus = await AsyncStorage.setItem(STORAGE_NAMESPACE + 'status', newStatus);
+        const storeStatus = await AsyncStorage.setItem(STORAGE_NAMESPACE + 'store.status', newStatus);
 
         set({ status: newStatus });
     },
@@ -90,7 +90,7 @@ const useUserStore = create<UserState>((set, get) => ({
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
             } else if (e.message === 'Network request failed') {
-                const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'status');
+                const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
                 debug('network error condition status', status);
 
