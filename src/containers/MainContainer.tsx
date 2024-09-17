@@ -280,154 +280,76 @@ export default function MainContainer({
         }
     }, [accountDetails]);
 
-    const AccountsView = () => {
-        const chains = useMemo(
-            () => [
-                { token: ETHToken, chain: EthereumMainnetChain },
-                { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-                { token: ETHPolygonToken, chain: EthereumPolygonChain },
-            ],
-            []
-        );
+    const chains = useMemo(
+        () => [
+            { token: ETHToken, chain: EthereumMainnetChain },
+            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+            { token: ETHPolygonToken, chain: EthereumPolygonChain },
+        ],
+        []
+    );
 
-        const [accounts, setAccounts] = useState<
-            { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-        >([]);
+    const [accounts, setAccounts] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
 
-        const [refreshBalance, setRefreshBalance] = useState(false);
+    useEffect(() => {
+        const fetchAssets = async () => {
+            try {
+                if (!accountExists && isConnected) await initializeWalletAccount();
+                setRefreshBalance(true);
+                await connect();
 
-        useEffect(() => {
-            const fetchAssets = async () => {
-                try {
-                    if (!accountExists && isConnected) await initializeWalletAccount();
-                    setRefreshBalance(true);
-                    await connect();
-                    const updatedAccounts = await Promise.all(
-                        chains.map(async (chainObj) => {
-                            const asset = await assetStorage.findAssetByName(chainObj.token);
+                for (const chainObj of chains) {
+                    const asset = await assetStorage.findAssetByName(chainObj.token);
 
-                            return asset
-                                ? {
-                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                      accountName: asset.accountName,
-                                      balance: asset.balance,
-                                      usdBalance: asset.usdBalance,
-                                  }
-                                : {
-                                      network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                      accountName: null,
-                                      balance: '0' + chainObj.token.getSymbol(),
-                                      usdBalance: 0,
-                                  };
-                        })
-                    );
+                    const account = asset
+                        ? {
+                              network: capitalizeFirstLetter(chainObj.chain.getName()),
+                              accountName: asset.accountName,
+                              balance: asset.balance,
+                              usdBalance: asset.usdBalance,
+                          }
+                        : {
+                              network: capitalizeFirstLetter(chainObj.chain.getName()),
+                              accountName: null,
+                              balance: '0' + chainObj.token.getSymbol(),
+                              usdBalance: 0,
+                          };
 
-                    setAccounts(updatedAccounts);
-                    setRefreshBalance(false);
-                } catch (error) {
-                    setRefreshBalance(false);
-                    debug('Error fetching asset:', error);
+                    // Use functional update to preserve the previous state
+                    setAccounts((prevAccounts) => [...prevAccounts, account]);
                 }
-            };
 
-            fetchAssets();
-        }, [chains]);
-
-        const findAccountByChain = (chain: string) => {
-            const accountExists = accounts.find((account) => account.network === chain);
-            const balance = accountExists?.balance;
-            const usdBalance = accountExists?.usdBalance;
-            const account = accountExists?.accountName;
-
-            return { account, balance, usdBalance };
+                setRefreshBalance(false);
+            } catch (error) {
+                setRefreshBalance(false);
+                debug('Error fetching asset:', error);
+            }
         };
 
-        const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-            const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+        fetchAssets();
+    }, [chains, accountExists, isConnected, initializeWalletAccount]);
 
-            setAccountDetails({
-                symbol: token.getSymbol(),
-                name: capitalizeFirstLetter(chain.getName()),
-                address: accountData.account || '',
-                image: token.getLogoUrl(),
-            });
-            (refMessage.current as any)?.open();
-        };
+    const findAccountByChain = (chain: string) => {
+        const accountExists = accounts.find((account) => account.network === chain);
+        const balance = accountExists?.balance;
+        const usdBalance = accountExists?.usdBalance;
+        const account = accountExists?.accountName;
 
-        return (
-            <View>
-                {chains.map((chainObj, index) => {
-                    const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
+        return { account, balance, usdBalance };
+    };
 
-                    return (
-                        <TouchableOpacity key={index} onPress={() => openAccountDetails(chainObj)}>
-                            <View style={[styles.appDialog, { justifyContent: 'center' }]}>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                    }}
-                                >
-                                    <View
-                                        style={{
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-start',
-                                        }}
-                                    >
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Image
-                                                source={{ uri: chainObj.token.getLogoUrl() }}
-                                                style={[styles.favicon, { resizeMode: 'contain' }]}
-                                            />
-                                            <Text style={styles.networkTitle}>
-                                                {capitalizeFirstLetter(chainObj.chain.getName())} Network:
-                                            </Text>
-                                        </View>
-                                        {accountData.account ? (
-                                            <Text> {chainObj.chain.formatShortAccountName(accountData.account)}</Text>
-                                        ) : (
-                                            <Text>Not connected</Text>
-                                        )}
-                                    </View>
-                                    {refreshBalance ? (
-                                        <TSpinner size="small" />
-                                    ) : (
-                                        <>
-                                            {!accountData.account ? (
-                                                <TButton
-                                                    style={styles.generateKey}
-                                                    onPress={() => {
-                                                        navigation.navigate('CreateEthereumKey');
-                                                    }}
-                                                    color={theme.colors.white}
-                                                    size="medium"
-                                                >
-                                                    Generate key
-                                                </TButton>
-                                            ) : (
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'column',
-                                                        alignItems: 'flex-end',
-                                                    }}
-                                                >
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text>{accountData.balance}</Text>
-                                                    </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        ${formatCurrencyValue(Number(accountData.usdBalance), 3)}
-                                                    </Text>
-                                                </View>
-                                            )}
-                                        </>
-                                    )}
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
-        );
+    const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
+        const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
+
+        setAccountDetails({
+            symbol: token.getSymbol(),
+            name: capitalizeFirstLetter(chain.getName()),
+            address: accountData.account || '',
+            image: token.getLogoUrl(),
+        });
+        (refMessage.current as any)?.open();
     };
 
     const MainView = () => {
@@ -535,7 +457,112 @@ export default function MainContainer({
                                             </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <AccountsView />
+                                    {/* Accounts view */}
+
+                                    <View>
+                                        {chains.map((chainObj, index) => {
+                                            const accountData = findAccountByChain(
+                                                capitalizeFirstLetter(chainObj.chain.getName())
+                                            );
+
+                                            return (
+                                                <TouchableOpacity
+                                                    key={index}
+                                                    onPress={() => openAccountDetails(chainObj)}
+                                                >
+                                                    <View style={[styles.appDialog, { justifyContent: 'center' }]}>
+                                                        <View
+                                                            style={{
+                                                                flexDirection: 'row',
+                                                                justifyContent: 'space-between',
+                                                            }}
+                                                        >
+                                                            <View
+                                                                style={{
+                                                                    flexDirection: 'column',
+                                                                    alignItems: 'flex-start',
+                                                                }}
+                                                            >
+                                                                <View
+                                                                    style={{
+                                                                        flexDirection: 'row',
+                                                                        alignItems: 'center',
+                                                                    }}
+                                                                >
+                                                                    <Image
+                                                                        source={{ uri: chainObj.token.getLogoUrl() }}
+                                                                        style={[
+                                                                            styles.favicon,
+                                                                            { resizeMode: 'contain' },
+                                                                        ]}
+                                                                    />
+                                                                    <Text style={styles.networkTitle}>
+                                                                        {capitalizeFirstLetter(
+                                                                            chainObj.chain.getName()
+                                                                        )}{' '}
+                                                                        Network:
+                                                                    </Text>
+                                                                </View>
+                                                                {accountData.account ? (
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {chainObj.chain.formatShortAccountName(
+                                                                            accountData.account
+                                                                        )}
+                                                                    </Text>
+                                                                ) : (
+                                                                    <Text>Not connected</Text>
+                                                                )}
+                                                            </View>
+                                                            {refreshBalance ? (
+                                                                <TSpinner size="small" />
+                                                            ) : (
+                                                                <>
+                                                                    {!accountData.account ? (
+                                                                        <TButton
+                                                                            style={styles.generateKey}
+                                                                            onPress={() => {
+                                                                                navigation.navigate(
+                                                                                    'CreateEthereumKey'
+                                                                                );
+                                                                            }}
+                                                                            color={theme.colors.white}
+                                                                            size="medium"
+                                                                        >
+                                                                            Generate key
+                                                                        </TButton>
+                                                                    ) : (
+                                                                        <View
+                                                                            style={{
+                                                                                flexDirection: 'column',
+                                                                                alignItems: 'flex-end',
+                                                                            }}
+                                                                        >
+                                                                            <View
+                                                                                style={{
+                                                                                    flexDirection: 'row',
+                                                                                    alignItems: 'center',
+                                                                                }}
+                                                                            >
+                                                                                <Text>{accountData.balance}</Text>
+                                                                            </View>
+                                                                            <Text style={styles.secondaryColor}>
+                                                                                $
+                                                                                {formatCurrencyValue(
+                                                                                    Number(accountData.usdBalance),
+                                                                                    3
+                                                                                )}
+                                                                            </Text>
+                                                                        </View>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </View>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </View>
                                 </View>
                             </ScrollView>
                         </>
