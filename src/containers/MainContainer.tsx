@@ -249,6 +249,7 @@ export default function MainContainer({
                     title: 'Communication Error',
                 });
             } else {
+                onClose();
                 errorStore.setError({ error: e, expected: false });
             }
         } finally {

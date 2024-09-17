@@ -7,7 +7,7 @@ const debug = Debug('tonomy-id:utils:NetworkHelper');
 
 const useNetworkStatus = () => {
     const [isConnected, setIsConnected] = useState<boolean>(true);
-    const { core, disconnectSession } = useWalletStore();
+    const { core } = useWalletStore();
 
     useEffect(() => {
         // Subscribe to network state updates
@@ -23,7 +23,6 @@ const useNetworkStatus = () => {
                     core.relayer.provider.events.removeAllListeners();
                     core.relayer.subscriber.events.removeAllListeners();
                     core.relayer.provider.connection.events.removeAllListeners();
-                    await disconnectSession();
                 }
             }
 
@@ -32,7 +31,7 @@ const useNetworkStatus = () => {
 
         // Cleanup the listener on unmount
         return () => unsubscribe();
-    }, []);
+    }, [core]);
 
     return { isConnected };
 };

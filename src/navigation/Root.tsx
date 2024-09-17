@@ -133,6 +133,8 @@ export default function RootNavigation() {
 
     const { status } = useUserStore();
 
+    debug('isConnected network', isConnected);
+
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
             {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
@@ -207,7 +209,7 @@ export default function RootNavigation() {
             ) : (
                 <>
                     <NotificationModule />
-                    {/* <CommunicationModule /> */}
+                    {isConnected && <CommunicationModule />}
                     <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
