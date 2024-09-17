@@ -1,9 +1,10 @@
-import { Text, View } from 'react-native';
+import React from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RouteStackParamList } from '../navigation/Root';
+import ExploreContainer from '../containers/ExploreContainer';
 
-export default function Expore() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Expore</Text>
-        </View>
-    );
+export type Props = NativeStackScreenProps<RouteStackParamList, 'Explore'>;
+
+export default function Explore(props: Props) {
+    return <ExploreContainer navigation={props.navigation}></ExploreContainer>;
 }

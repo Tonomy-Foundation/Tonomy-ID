@@ -45,6 +45,8 @@ const theme = {
         border: '#E6ECF4',
         blue: '#007BFF',
         gold: '#D9B701',
+        blue1: '#00AEED',
+        blue2: '#007BB5',
     },
 };
 
