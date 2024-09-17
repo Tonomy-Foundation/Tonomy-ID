@@ -23,7 +23,6 @@ const useNetworkStatus = () => {
                     core.relayer.provider.events.removeAllListeners();
                     core.relayer.subscriber.events.removeAllListeners();
                     core.relayer.provider.connection.events.removeAllListeners();
-                    await disconnectSession();
                 }
             }
 

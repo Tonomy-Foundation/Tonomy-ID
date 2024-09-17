@@ -34,7 +34,6 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
 import Debug from 'debug';
-import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:navigation:root');
 
