@@ -80,80 +80,80 @@ export default function MainContainer({
     const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
 
-    useEffect(() => {
-        const initializeAndFetchBalances = async () => {
-            if (!initialized && isConnected) {
-                try {
-                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                } catch (error) {
-                    errorStore.setError({
-                        error: new Error('Error initializing wallet'),
-                        expected: true,
-                    });
-                }
-            }
-        };
+    // useEffect(() => {
+    //     const initializeAndFetchBalances = async () => {
+    //         if (!initialized && isConnected) {
+    //             try {
+    //                 progressiveRetryOnNetworkError(async () => await initializeWalletState());
+    //             } catch (error) {
+    //                 errorStore.setError({
+    //                     error: new Error('Error initializing wallet'),
+    //                     expected: true,
+    //                 });
+    //             }
+    //         }
+    //     };
 
-        initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, isConnected, errorStore]);
+    //     initializeAndFetchBalances();
+    // }, [initializeWalletState, initialized, isConnected, errorStore]);
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
 
-    const connectToDid = useCallback(
-        async (did: string) => {
-            try {
-                // Connect to the browser using their did:jwk
-                const issuer = await user.getIssuer();
-                const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+    // const connectToDid = useCallback(
+    //     async (did: string) => {
+    //         try {
+    //             // Connect to the browser using their did:jwk
+    //             const issuer = await user.getIssuer();
+    //             const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
 
-                await user.sendMessage(identifyMessage);
-            } catch (e) {
-                if (
-                    e instanceof CommunicationError &&
-                    e.exception?.status === 400 &&
-                    e.exception.message.startsWith('Recipient not connected')
-                ) {
-                    errorStore.setError({
-                        title: 'Problem connecting',
-                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-                        expected: true,
-                    });
-                } else {
-                    debug('connectToDid error:', e);
+    //             await user.sendMessage(identifyMessage);
+    //         } catch (e) {
+    //             if (
+    //                 e instanceof CommunicationError &&
+    //                 e.exception?.status === 400 &&
+    //                 e.exception.message.startsWith('Recipient not connected')
+    //             ) {
+    //                 errorStore.setError({
+    //                     title: 'Problem connecting',
+    //                     error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+    //                     expected: true,
+    //                 });
+    //             } else {
+    //                 debug('connectToDid error:', e);
 
-                    errorStore.setError({
-                        error: e,
-                        expected: false,
-                    });
-                }
-            }
-        },
-        [user, errorStore]
-    );
+    //                 errorStore.setError({
+    //                     error: e,
+    //                     expected: false,
+    //                 });
+    //             }
+    //         }
+    //     },
+    //     [user, errorStore]
+    // );
 
-    const onClose = useCallback(async () => {
-        setQrOpened(false);
-    }, []);
+    // const onClose = useCallback(async () => {
+    //     setQrOpened(false);
+    // }, []);
 
-    const onUrlOpen = useCallback(
-        async (did) => {
-            try {
-                await connectToDid(did);
-            } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('network error when connectToDid called');
-                } else {
-                    debug('onUrlOpen error:', e);
-                    errorStore.setError({ error: e, expected: false });
-                }
-            } finally {
-                onClose();
-            }
-        },
-        [errorStore, connectToDid, onClose]
-    );
+    // const onUrlOpen = useCallback(
+    //     async (did) => {
+    //         try {
+    //             await connectToDid(did);
+    //         } catch (e) {
+    //             if (e.message === 'Network request failed') {
+    //                 debug('network error when connectToDid called');
+    //             } else {
+    //                 debug('onUrlOpen error:', e);
+    //                 errorStore.setError({ error: e, expected: false });
+    //             }
+    //         } finally {
+    //             onClose();
+    //         }
+    //     },
+    //     [errorStore, connectToDid, onClose]
+    // );
 
     const setUserName = useCallback(async () => {
         try {
@@ -173,40 +173,40 @@ export default function MainContainer({
     useEffect(() => {
         setUserName();
 
-        if (did) {
-            onUrlOpen(did);
-        }
+        // if (did) {
+        //     onUrlOpen(did);
+        // }
     }, [setUserName, did, onUrlOpen]);
 
-    useEffect(() => {
-        async function getUpdatedBalance() {
-            try {
-                if (accountExists) await updateBalance();
+    // useEffect(() => {
+    //     async function getUpdatedBalance() {
+    //         try {
+    //             if (accountExists) await updateBalance();
 
-                const accountPangeaBalance = await vestingContract.getBalance(accountName);
+    //             const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
-                if (pangeaBalance !== accountPangeaBalance) {
-                    setPangeaBalance(accountPangeaBalance);
-                }
-            } catch (error) {
-                debug('Error updating balance:', error);
+    //             if (pangeaBalance !== accountPangeaBalance) {
+    //                 setPangeaBalance(accountPangeaBalance);
+    //             }
+    //         } catch (error) {
+    //             debug('Error updating balance:', error);
 
-                if (error.message === 'Network request failed') {
-                    debug('network error when call updating balance:');
-                }
-            }
-        }
+    //             if (error.message === 'Network request failed') {
+    //                 debug('network error when call updating balance:');
+    //             }
+    //         }
+    //     }
 
-        if (isConnected) {
-            getUpdatedBalance();
+    //     if (isConnected) {
+    //         getUpdatedBalance();
 
-            const interval = setInterval(() => {
-                getUpdatedBalance();
-            }, 20000);
+    //         const interval = setInterval(() => {
+    //             getUpdatedBalance();
+    //         }, 20000);
 
-            return () => clearInterval(interval);
-        }
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
+    //         return () => clearInterval(interval);
+    //     }
+    // }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists, isConnected]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -258,21 +258,21 @@ export default function MainContainer({
         }
     }
 
-    const onRefresh = React.useCallback(async () => {
-        try {
-            if (isConnected) {
-                setRefreshBalance(true);
-                await updateBalance();
-                setRefreshBalance(false);
-            }
-        } catch (error) {
-            setRefreshBalance(false);
+    // const onRefresh = React.useCallback(async () => {
+    //     try {
+    //         if (isConnected) {
+    //             setRefreshBalance(true);
+    //             await updateBalance();
+    //             setRefreshBalance(false);
+    //         }
+    //     } catch (error) {
+    //         setRefreshBalance(false);
 
-            if (error.message === 'Network request failed') {
-                debug('Error updating account detail network error:');
-            }
-        }
-    }, [updateBalance, isConnected]);
+    //         if (error.message === 'Network request failed') {
+    //             debug('Error updating account detail network error:');
+    //         }
+    //     }
+    // }, [updateBalance, isConnected]);
 
     useEffect(() => {
         if (accountDetails?.address) {
@@ -482,7 +482,7 @@ export default function MainContainer({
                             </View>
                             <ScrollView
                                 contentContainerStyle={styles.scrollViewContent}
-                                refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                                // refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                             >
                                 <View style={styles.accountsView}>
                                     <Text style={styles.accountHead}>Connected Accounts:</Text>
