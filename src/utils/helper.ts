@@ -35,6 +35,8 @@ export async function progressiveRetryOnNetworkError(
             condition = false;
             break; // If it succeeds, exit the loop
         } catch (error) {
+            debug('error in progressiveRetryOnNetworkError', error, error.message);
+
             if (error.message && error.message === 'Network request failed') {
                 debug(`Retrying in ${delay / 1000} seconds...`);
                 await new Promise((resolve) => setTimeout(resolve, delay));
