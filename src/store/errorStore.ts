@@ -35,7 +35,6 @@ const useErrorStore = create<ErrorState>((set, get) => ({
         expected?: boolean;
         onClose?: () => Promise<void>;
     }) => {
-        console.error('Error store:', error);
         set({ error, title, expected, onClose });
     },
     unSetError: () => {
