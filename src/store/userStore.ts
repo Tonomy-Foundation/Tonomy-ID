@@ -53,6 +53,8 @@ const useUserStore = create<UserState>((set, get) => ({
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
+        debug('getStatus() storageStatus', storageStatus);
+
         if (storageStatus) {
             const userStatus = storageStatus as UserStatus;
 
@@ -89,6 +91,8 @@ const useUserStore = create<UserState>((set, get) => ({
             // get().setStatus(UserStatus.LOGGED_IN); // REDUNDANT: DELETE ME
             set({ isAppInitialized: true });
         } catch (e) {
+            debug('initializeStatusFromStorage() catch', e);
+
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 set({ isAppInitialized: true });

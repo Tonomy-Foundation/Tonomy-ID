@@ -286,7 +286,7 @@ export default function MainContainer({
     useEffect(() => {
         const fetchAssets = async () => {
             try {
-                if (!accountExists && isConnected) await initializeWalletAccount();
+                if (!accountExists) await initializeWalletAccount();
                 setRefreshBalance(true);
                 await connect();
 
@@ -319,7 +319,7 @@ export default function MainContainer({
         };
 
         fetchAssets();
-    }, [chains, accountExists, isConnected, initializeWalletAccount]);
+    }, [chains, accountExists, initializeWalletAccount]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
