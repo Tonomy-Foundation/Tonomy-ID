@@ -18,6 +18,7 @@ export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
     visible?: boolean;
     code?: number;
     cause?: string;
+    children?: React.ReactNode;
 };
 
 export default function TErrorModal(props: TErrorModalProps) {
@@ -99,31 +100,36 @@ export default function TErrorModal(props: TErrorModalProps) {
             title={props.title ?? 'Something went wrong'}
             iconColor={theme.colors.error}
         >
-            {props.children}
-            {props?.error && (
+            {props?.children ? (
+                <>{props.children}</>
+            ) : (
                 <>
-                    <View>
-                        <TP size={1}>{props?.error?.message}</TP>
-                    </View>
-
-                    {props?.expected === false && (
-                        <View>
-                            <Text>The Tonomy Foundation has been notified</Text>
-                        </View>
-                    )}
-
-                    {isExpandable() && (
+                    {props?.error && (
                         <>
-                            {expanded && (
+                            <View>
+                                <TP size={1}>{props?.error?.message}</TP>
+                            </View>
+
+                            {props?.expected === false && (
+                                <View>
+                                    <Text>The Tonomy Foundation has been notified</Text>
+                                </View>
+                            )}
+
+                            {isExpandable() && (
                                 <>
-                                    <ErrorDetails />
+                                    {expanded && (
+                                        <>
+                                            <ErrorDetails />
+                                        </>
+                                    )}
+                                    <View>
+                                        <TButtonText onPress={switchExpanded}>
+                                            {expanded ? 'Hide Error' : 'View Error'}
+                                        </TButtonText>
+                                    </View>
                                 </>
                             )}
-                            <View>
-                                <TButtonText onPress={switchExpanded}>
-                                    {expanded ? 'Hide Error' : 'View Error'}
-                                </TButtonText>
-                            </View>
                         </>
                     )}
                 </>
