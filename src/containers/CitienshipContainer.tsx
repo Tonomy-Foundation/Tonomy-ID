@@ -33,8 +33,8 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         <Image source={require('../assets/images/citizenship-banner.png')} />
                     </View>
                 </View>
-                <Text style={styles.digitalWorldsTitle}>Pangea is your ticket to digital worlds available now</Text>
-                <View style={{ flexDirection: 'row', gap: 16, marginTop: 8 }}>
+                <Text style={styles.subTitle}>Pangea is your ticket to digital worlds available now</Text>
+                <View style={styles.digitalWorldContent}>
                     <TouchableOpacity>
                         <View style={styles.webImage}>
                             <Image source={require('../assets/images/login-webapps.png')} />
@@ -48,8 +48,8 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         <Text style={styles.webTitle}>Manage your Crypto</Text>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.digitalWorldsTitle}>Worlds coming soon</Text>
-                <ScrollView horizontal={true} style={{ paddingBottom: 60 }}>
+                <Text style={styles.subTitle}>Worlds coming soon</Text>
+                <ScrollView horizontal={true} style={{ paddingBottom: 70 }}>
                     <View style={styles.horizontalScrollMain}>
                         <View style={styles.horizontalScroll}>
                             <View style={styles.horizontalScrollContent}>
@@ -103,13 +103,12 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 18,
     },
     scrollContent: {
         padding: 16,
     },
     title: {
-        fontSize: 23,
+        fontSize: 26,
         fontFamily: 'Inter',
         fontWeight: '700',
         lineHeight: 33.89,
@@ -144,12 +143,18 @@ const styles = StyleSheet.create({
     identityImage: {
         alignItems: 'center',
     },
-    digitalWorldsTitle: {
-        paddingTop: 18,
+    subTitle: {
+        marginTop: 30,
+        marginBottom: 10,
         fontFamily: 'Inter',
         fontWeight: '700',
         fontSize: 20,
         lineHeight: 24.2,
+    },
+    digitalWorldContent: {
+        flexDirection: 'row',
+        gap: 16,
+        marginTop: 8,
     },
     webImage: {
         borderWidth: 1,
@@ -179,7 +184,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     horizontalScrollMain: {
-        paddingEnd: 17,
+        paddingEnd: 18,
     },
     horizontalScrollContent: {
         alignSelf: 'center',
