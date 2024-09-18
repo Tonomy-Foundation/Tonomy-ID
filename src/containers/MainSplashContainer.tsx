@@ -54,16 +54,16 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
 
-                        if (!initialized && isConnected) {
-                            try {
-                                progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                            } catch (e) {
-                                errorStore.setError({
-                                    error: new Error('Error initializing wallet. Check your internet connection.'),
-                                    expected: false,
-                                });
-                            }
-                        }
+                        // if (!initialized) {
+                        //     try {
+                        //         progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                        //     } catch (e) {
+                        //         errorStore.setError({
+                        //             error: new Error('Error initializing wallet. Check your internet connection.'),
+                        //             expected: false,
+                        //         });
+                        //     }
+                        // }
 
                         try {
                             await user.getUsername();
@@ -100,12 +100,12 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         logout,
         navigation,
         user,
-        initializeWalletState,
+        // initializeWalletState,
         clearState,
         setStatus,
         isAppInitialized,
         initialized,
-        isConnected,
+        // isConnected,
     ]);
 
     return (
