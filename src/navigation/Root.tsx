@@ -39,8 +39,6 @@ import { AssetDetailNavigator } from './AssetDetailNavigator';
 import Debug from 'debug';
 import OnboardingScreen from '../screens/OnboardingScreen';
 
-const debug = Debug('tonomy-id:navigation:root');
-
 const prefix = Linking.createURL('');
 
 export interface AssetParamsScreen {

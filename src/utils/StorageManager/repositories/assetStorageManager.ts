@@ -1,6 +1,8 @@
+import { IAccount, IAsset, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
 
-interface Balance {
+interface AccountStorage {
+    accountName: string;
     balance: string;
     usdBalance: number;
 }
@@ -11,25 +13,40 @@ export abstract class AssetStorageManager {
     constructor(repository: AssetStorageRepository) {
         this.repository = repository;
     }
+    public async createAsset(asset: IAsset, value: IAccount): Promise<void> {
+        const token = asset.getToken();
+        const symbol = token.getSymbol();
+        const name = token.getChain().getName() + '-' + symbol;
 
-    public async emplaceAccountBalance(name: string, accountBalance: Balance): Promise<void> {
-        const existingAccount = await this.repository.findBalanceByName(name);
+        await this.repository.createAsset(name, value.getName(), symbol);
+    }
+    public async updateAccountBalance(asset: IAsset): Promise<void> {
+        const name = asset.getToken().getChain().getName() + '-' + asset.getToken().getSymbol();
+        const existingAsset = await this.repository.findAssetByName(name);
 
-        if (existingAccount) {
-            existingAccount.value = JSON.stringify(accountBalance);
-            existingAccount.updatedAt = new Date();
-            await this.repository.updateAccountBalance(existingAccount);
+        if (existingAsset) {
+            const balance = asset.toString();
+            const usdBalance = await asset.getUsdValue();
+
+            existingAsset.balance = balance;
+            existingAsset.usdBalance = usdBalance;
+            existingAsset.updatedAt = new Date();
+            await this.repository.updateAccountBalance(existingAsset);
         } else {
-            await this.repository.storeAccountBalance(name, JSON.stringify(accountBalance));
+            throw new Error('Asset not found');
         }
     }
 
-    public async findBalanceByName(name: string): Promise<Balance> {
-        const balance = await this.repository.findBalanceByName(name);
+    public async findAssetByName(token: IToken): Promise<AccountStorage | null> {
+        const name = token.getChain().getName() + '-' + token.getSymbol();
 
-        if (balance) {
-            return JSON.parse(balance.value);
-        } else return { balance: '0', usdBalance: 0 };
+        const existingAsset = await this.repository.findAssetByName(name);
+
+        if (existingAsset) {
+            return existingAsset;
+        }
+
+        return null;
     }
 
     public async deleteAll(): Promise<void> {

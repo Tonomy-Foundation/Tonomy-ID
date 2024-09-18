@@ -2,7 +2,7 @@
 import { Entity, Unique, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
 @Entity('AssetStorage')
-@Unique(['name'])
+@Unique(['assetName'])
 export class AssetStorage {
     @PrimaryGeneratedColumn()
     id!: number;
@@ -11,11 +11,18 @@ export class AssetStorage {
         unique: true,
         type: 'varchar',
     })
+    @Column()
     @Index()
-    name!: string;
+    assetName!: string;
 
     @Column({ type: 'varchar' })
-    value!: string;
+    accountName!: string;
+
+    @Column({ type: 'varchar' })
+    balance!: string;
+
+    @Column({ type: 'int' })
+    usdBalance!: number;
 
     @Column({ type: 'datetime' })
     createdAt!: Date;

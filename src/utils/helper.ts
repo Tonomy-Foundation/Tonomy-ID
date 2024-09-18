@@ -21,24 +21,29 @@ export const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export async function progressiveRetryOnNetworkError(fn, initialDelay = 10000, maxDelay = 3600000) {
+export async function progressiveRetryOnNetworkError(
+    fn: () => Promise<void>,
+    initialDelay = 10000,
+    maxDelay = 3600000
+) {
+    let condition = true;
     let delay = initialDelay;
-    const condition = true;
 
     while (condition) {
         try {
-            await fn();
-            debug('Function called successfully');
-            break;
+            await fn(); // Try the function
+            condition = false;
+            break; // If it succeeds, exit the loop
         } catch (error) {
-            debug('Error function called:', error);
-
-            if (error.message === 'Network request failed') {
-                debug('Network error occurred, retrying..');
-
+            if (
+                (error.message && error.message === 'Network request failed') ||
+                (error.msg && error.msg.includes('No internet connection'))
+            ) {
+                debug(`Retrying in ${delay / 1000} seconds...`);
                 await new Promise((resolve) => setTimeout(resolve, delay));
-                delay = Math.min(delay * 2, maxDelay); // Double the interval, cap at 1 hour
+                delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {
+                // Non-network error, throw it
                 debug('Non-network error occurred. Stopping retry.');
                 throw error;
             }
