@@ -1,49 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useRef } from 'react';
+import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from './TErrorModal';
 
 export default function ErrorHandlerProvider() {
     const [showModal, setShowModal] = useState(false);
-    const [errorDetails, setErrorDetails] = useState<{
-        error: Error;
-        title: string;
-        expected: boolean;
-    }>({
-        error: new Error(),
-        title: '',
-        expected: false,
-    });
 
     const errorStore = useErrorStore();
 
     async function onModalPress() {
         const onClose = errorStore.onClose;
 
-        try {
-            errorStore.unSetError();
-            if (onClose) await onClose();
-        } catch (e) {
-            console.error('Error during modal close:', e);
-            setShowModal(false);
-        } finally {
-            setShowModal(false);
-        }
+        errorStore.unSetError();
+        if (onClose) await onClose();
+        setShowModal(false);
     }
 
+    // gets the initial value of the error state
+    const errorRef = useRef(useErrorStore.getState());
+
     useEffect(() => {
-        // Subscribe to errorStore changes to update the modal
+        // subscribe to errorStore changes to update the modal
+        // using the `errorStore` variable does not work as changes do not force a re-render
         const unsubscribe = useErrorStore.subscribe((state) => {
             console.error('Error handler', JSON.stringify(state, null, 2));
 
+            errorRef.current.error = state.error;
+            errorRef.current.title = state.title;
+            errorRef.current.expected = state.expected;
+
             if (state.error) {
-                setErrorDetails({
-                    error: state.error,
-                    title: state.title || 'Something went wrong',
-                    expected: state.expected || false,
-                });
                 setShowModal(true);
-            } else {
-                setShowModal(false);
             }
         });
 
@@ -54,9 +42,9 @@ export default function ErrorHandlerProvider() {
         <TErrorModal
             visible={showModal}
             onPress={onModalPress}
-            error={errorDetails.error}
-            title={errorDetails.title}
-            expected={errorDetails.expected}
+            error={errorRef.current.error}
+            title={errorRef.current.title}
+            expected={errorRef.current.expected}
         />
     );
 }
