@@ -82,11 +82,10 @@ export default function MainContainer({
 
     useEffect(() => {
         if (!initialized) {
-            try {
-                progressiveRetryOnNetworkError(async () => await initializeWalletState());
-            } catch (error) {
-                console.error('Error initializing wallet main container:', error);
-            }
+            progressiveRetryOnNetworkError(async () => await initializeWalletState()).catch((e) => {
+                // If progressiveRetryOnNetworkError fails with a non-network error, handle it here
+                console.error('initializeWalletState:', e);
+            });
         }
     }, [initializeWalletState, initialized]);
 
