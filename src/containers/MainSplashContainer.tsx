@@ -41,52 +41,52 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                 const status = await getStatus();
 
                 debug('splash screen status: ', status);
-                throw new Error('Unknown status: ' + status);
-                // switch (status) {
-                //     case UserStatus.NONE:
-                //         debug('status is NONE');
-                //         navigation.navigate('SplashSecurity');
-                //         break;
-                //     case UserStatus.NOT_LOGGED_IN:
-                //         debug('status is NOT_LOGGED_IN');
-                //         navigation.dispatch(StackActions.replace('Home'));
-                //         break;
-                //     case UserStatus.LOGGED_IN:
-                //         debug('status is LOGGED_IN');
 
-                //         // if (!initialized) {
-                //         //     try {
-                //         //         progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                //         //     } catch (e) {
-                //         //         errorStore.setError({
-                //         //             error: new Error('Error initializing wallet. Check your internet connection.'),
-                //         //             expected: false,
-                //         //         });
-                //         //     }
-                //         // }
+                switch (status) {
+                    case UserStatus.NONE:
+                        debug('status is NONE');
+                        navigation.navigate('SplashSecurity');
+                        break;
+                    case UserStatus.NOT_LOGGED_IN:
+                        debug('status is NOT_LOGGED_IN');
+                        navigation.dispatch(StackActions.replace('Home'));
+                        break;
+                    case UserStatus.LOGGED_IN:
+                        debug('status is LOGGED_IN');
 
-                //         try {
-                //             await user.getUsername();
-                //         } catch (e) {
-                //             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
-                //                 logout("Invalid data in user's storage");
-                //                 clearState();
-                //             } else {
-                //                 debug('loggedin error', e);
-                //                 throw e;
-                //             }
-                //         }
+                        if (!initialized && isConnected) {
+                            try {
+                                progressiveRetryOnNetworkError(async () => await initializeWalletState());
+                            } catch (e) {
+                                errorStore.setError({
+                                    error: new Error('Error initializing wallet. Check your internet connection.'),
+                                    expected: false,
+                                });
+                            }
+                        }
 
-                //         break;
-                //     default:
-                //         throw new Error('Unknown status: ' + status);
-                // }
+                        try {
+                            await user.getUsername();
+                        } catch (e) {
+                            if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+                                logout("Invalid data in user's storage");
+                                clearState();
+                            } else {
+                                debug('loggedin error', e);
+                                throw e;
+                            }
+                        }
+
+                        break;
+                    default:
+                        throw new Error('Unknown status: ' + status);
+                }
             } catch (e) {
                 if (e.message === 'Network request failed') {
                     debug('Network error occurred. Retrying...');
                 } else {
                     debug('main screen error', e);
-                    // errorStore.setError({ error: e, expected: false });
+                    errorStore.setError({ error: e, expected: false });
                     navigation.navigate('SplashSecurity');
                 }
             }
@@ -100,12 +100,12 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         logout,
         navigation,
         user,
-        // initializeWalletState,
+        initializeWalletState,
         clearState,
         setStatus,
         isAppInitialized,
         initialized,
-        // isConnected,
+        isConnected,
     ]);
 
     return (
