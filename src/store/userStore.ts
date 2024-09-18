@@ -91,12 +91,12 @@ const useUserStore = create<UserState>((set, get) => ({
             // get().setStatus(UserStatus.LOGGED_IN); // REDUNDANT: DELETE ME
             set({ isAppInitialized: true });
         } catch (e) {
-            debug('initializeStatusFromStorage() catch', e);
+            debug('initializeStatusFromStorage() catch', e, typeof e);
 
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 set({ isAppInitialized: true });
-                // useErrorStore.getState().setError({ error: e, expected: false });
+                useErrorStore.getState().setError({ error: e, expected: false });
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
                 set({ isAppInitialized: true });
