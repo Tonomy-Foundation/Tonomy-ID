@@ -57,7 +57,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
 
-                        if (!initialized) {
+                        if (!initialized && isConnected) {
                             try {
                                 await initializeWalletState();
                             } catch (e) {
