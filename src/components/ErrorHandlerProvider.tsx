@@ -8,7 +8,11 @@ export default function ErrorHandlerProvider() {
         error: Error;
         title: string;
         expected: boolean;
-    }>({});
+    }>({
+        error: new Error(),
+        title: '',
+        expected: false,
+    });
 
     const errorStore = useErrorStore();
 
