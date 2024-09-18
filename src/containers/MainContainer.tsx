@@ -81,21 +81,14 @@ export default function MainContainer({
     const refMessage = useRef(null);
 
     useEffect(() => {
-        const initializeAndFetchBalances = async () => {
-            if (!initialized && isConnected) {
-                try {
-                    await initializeWalletState();
-                } catch (error) {
-                    errorStore.setError({
-                        error: new Error('Error initializing wallet'),
-                        expected: true,
-                    });
-                }
+        if (!initialized) {
+            try {
+                progressiveRetryOnNetworkError(async () => await initializeWalletState());
+            } catch (error) {
+                console.error('Error initializing wallet main container:', error);
             }
-        };
-
-        initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, isConnected, errorStore]);
+        }
+    }, [initializeWalletState, initialized]);
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,

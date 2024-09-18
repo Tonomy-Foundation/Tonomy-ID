@@ -211,7 +211,7 @@ export default function CommunicationModule() {
                 user.unsubscribeMessage(s);
             }
         };
-    }, [subscribers, user, isConnected]);
+    }, [subscribers, user]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {

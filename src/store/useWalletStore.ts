@@ -19,6 +19,7 @@ import {
 import { Asset, IAccount } from '../utils/chain/types';
 import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
+import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
 
@@ -55,6 +56,12 @@ const useWalletStore = create<WalletState>((set, get) => ({
             return;
         }
 
+        const netInfoState = await NetInfo.fetch();
+
+        if (!netInfoState.isConnected) {
+            throw new Error('Network request failed');
+        }
+
         if (!get().initialized && !get().web3wallet) {
             try {
                 let core: ICore;
@@ -66,36 +73,36 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     });
                 } catch (e) {
                     console.error('error when initializing core', JSON.stringify(e, null, 2));
-                    if (typeof e === 'string' || !(e instanceof Error)) {
+                    if (!(e instanceof Error)) {
                         throw new Error('Error initializing core');
                     } else throw e;
                 }
 
-                const web3wallet = await Web3Wallet.init({
-                    core,
-                    metadata: {
-                        name: settings.config.appName,
-                        description: settings.config.ecosystemName,
-                        url: 'https://walletconnect.com/',
-                        icons: [settings.config.images.logo48],
-                    },
-                });
+                let web3walletInstance: IWeb3Wallet;
+
+                try {
+                    web3walletInstance = await Web3Wallet.init({
+                        core,
+                        metadata: {
+                            name: settings.config.appName,
+                            description: settings.config.ecosystemName,
+                            url: 'https://walletconnect.com/',
+                            icons: [settings.config.images.logo48],
+                        },
+                    });
+                } catch (e) {
+                    console.error('error when initializing wallet', JSON.stringify(e, null, 2));
+                    if (e.msg && e.msg.includes('No internet connection')) throw new Error('Network request failed');
+                    else throw e;
+                }
 
                 set({
                     initialized: true,
-                    web3wallet,
+                    web3wallet: web3walletInstance,
                     core,
                 });
             } catch (e) {
-                if (
-                    (e.message && e.message === 'Network request failed') ||
-                    (e.msg && e.msg.includes('No internet connection'))
-                ) {
-                    throw new Error('Network request failed');
-                } else {
-                    debug('error when initializing wallet', e);
-                    throw new Error('Error initializing wallet, Check your internet connection');
-                }
+                console.error('error when initializing wallet', e);
             }
         }
     },

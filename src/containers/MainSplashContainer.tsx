@@ -13,15 +13,13 @@ import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
-import useNetworkStatus from '../utils/networkHelper';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState, initialized, initializeWalletState } = useWalletStore();
-    const { isConnected } = useNetworkStatus();
+    const { clearState } = useWalletStore();
 
     useEffect(() => {
         async function main() {
@@ -30,13 +28,10 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             try {
                 if (!isAppInitialized) {
                     try {
-                        await initializeStatusFromStorage();
+                        progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
                     } catch (e) {
-                        debug('Error initializing app:', e);
-
-                        if (e.message === 'Network request failed') {
-                            progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
-                        } else errorStore.setError({ error: e, expected: false });
+                        console.error('Error initializing app:', e);
+                        errorStore.setError({ error: e, expected: false });
                     }
                 }
 
@@ -56,22 +51,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         break;
                     case UserStatus.LOGGED_IN:
                         debug('status is LOGGED_IN');
-
-                        if (!initialized && isConnected) {
-                            try {
-                                await initializeWalletState();
-                            } catch (e) {
-                                if (e.message === 'Network request failed') {
-                                    progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                                } else {
-                                    debug('Error initializing wallet:', e);
-                                    errorStore.setError({
-                                        error: new Error('Error initializing wallet. Check your internet connection.'),
-                                        expected: false,
-                                    });
-                                }
-                            }
-                        }
 
                         try {
                             await user.getUsername();
@@ -108,12 +87,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         logout,
         navigation,
         user,
-        initializeWalletState,
         clearState,
         setStatus,
         isAppInitialized,
-        initialized,
-        isConnected,
     ]);
 
     return (

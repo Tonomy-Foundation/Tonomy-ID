@@ -32,7 +32,7 @@ const useNetworkStatus = () => {
 
         // Cleanup the listener on unmount
         return () => unsubscribe();
-    }, [core]);
+    }, [core, web3wallet]);
 
     return { isConnected };
 };

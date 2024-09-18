@@ -44,7 +44,7 @@ export async function progressiveRetryOnNetworkError(
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {
                 // Non-network error, throw it
-                debug('Non-network error occurred. Stopping retry.');
+                console.error('Non-network error occurred. Stopping retry.', error);
                 throw error;
             }
         }

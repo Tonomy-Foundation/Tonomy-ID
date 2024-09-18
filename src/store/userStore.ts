@@ -51,7 +51,19 @@ const useUserStore = create<UserState>((set, get) => ({
     status: UserStatus.NONE,
     isAppInitialized: false,
     getStatus: async () => {
-        return get().status;
+        const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+
+        if (storageStatus) {
+            const userStatus = storageStatus as UserStatus;
+
+            set({ status: userStatus });
+            return userStatus;
+        } else {
+            const stateStatus = get().status;
+
+            get().setStatus(stateStatus);
+            return stateStatus;
+        }
     },
     setStatus: async (newStatus: UserStatus) => {
         await AsyncStorage.setItem(STORAGE_NAMESPACE + 'store.status', newStatus);
@@ -60,9 +72,7 @@ const useUserStore = create<UserState>((set, get) => ({
     },
     logout: async (reason: string) => {
         await get().user.logout();
-
-        get().setStatus(UserStatus.NOT_LOGGED_IN);
-
+        if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
@@ -76,24 +86,19 @@ const useUserStore = create<UserState>((set, get) => ({
         try {
             debug('initializeStatusFromStorage() try');
             await get().user.initializeFromStorage();
-            get().setStatus(UserStatus.LOGGED_IN);
+            // get().setStatus(UserStatus.LOGGED_IN); // REDUNDANT: DELETE ME
             set({ isAppInitialized: true });
         } catch (e) {
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
+                set({ isAppInitialized: true });
                 useErrorStore.getState().setError({ error: e, expected: false });
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
-            } else if (e.message === 'Network request failed') {
-                const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
-
-                debug('network error condition status', status);
-
-                get().setStatus(UserStatus.LOGGED_IN);
-
-                throw e;
+                set({ isAppInitialized: true });
             } else {
                 console.error('initializeStatusFromStorage error ', e);
+                throw e;
             }
         }
     },
