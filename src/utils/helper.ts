@@ -35,10 +35,7 @@ export async function progressiveRetryOnNetworkError(
             condition = false;
             break; // If it succeeds, exit the loop
         } catch (error) {
-            if (
-                (error.message && error.message === 'Network request failed') ||
-                (error.msg && error.msg.includes('No internet connection'))
-            ) {
+            if (error.message && error.message === 'Network request failed') {
                 debug(`Retrying in ${delay / 1000} seconds...`);
                 await new Promise((resolve) => setTimeout(resolve, delay));
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
