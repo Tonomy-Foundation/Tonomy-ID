@@ -109,6 +109,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 return;
             }
 
+            await connect();
+
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
                 try {
                     const key = await keyStorage.findByName(keyName, chain);
