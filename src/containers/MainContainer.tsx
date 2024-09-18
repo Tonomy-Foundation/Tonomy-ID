@@ -81,6 +81,12 @@ export default function MainContainer({
     const refMessage = useRef(null);
 
     useEffect(() => {
+        if (!isConnected) {
+            debug('No network connection');
+        }
+    }, [isConnected]);
+
+    useEffect(() => {
         if (!initialized) {
             progressiveRetryOnNetworkError(async () => await initializeWalletState()).catch((e) => {
                 // If progressiveRetryOnNetworkError fails with a non-network error, handle it here
