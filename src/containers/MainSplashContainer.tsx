@@ -30,10 +30,13 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             try {
                 if (!isAppInitialized) {
                     try {
-                        progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
+                        await initializeStatusFromStorage();
                     } catch (e) {
-                        console.error('Error initializing app:', e);
-                        errorStore.setError({ error: e, expected: false });
+                        debug('Error initializing app:', e);
+
+                        if (e.message === 'Network request failed') {
+                            progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
+                        } else errorStore.setError({ error: e, expected: false });
                     }
                 }
 
