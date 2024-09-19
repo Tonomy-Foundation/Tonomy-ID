@@ -3,7 +3,7 @@ import Debug from 'debug';
 import { sleep } from './sleep';
 import { isNetworkError } from './errors';
 
-const debug = Debug('tonomy-id:utils:helper');
+const debug = Debug('tonomy-id:utils:network');
 
 export function extractHostname(url): string {
     const urlObject = new URL(url);
@@ -18,10 +18,6 @@ export function extractHostname(url): string {
 
     return urlObject.hostname;
 }
-
-export const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-};
 
 export async function progressiveRetryOnNetworkError(
     fn: () => Promise<void>,
@@ -51,3 +47,15 @@ export async function progressiveRetryOnNetworkError(
         }
     }
 }
+
+export const debounce = <T extends (...args: any[]) => any>(
+    func: T,
+    wait: number
+): ((...args: Parameters<T>) => void) => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    return (...args: Parameters<T>): void => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+};

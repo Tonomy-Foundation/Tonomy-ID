@@ -38,7 +38,8 @@ import {
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
+import { progressiveRetryOnNetworkError } from '../utils/network';
+import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
