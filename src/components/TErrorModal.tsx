@@ -28,13 +28,11 @@ export default function TErrorModal(props: TErrorModalProps) {
         setExpanded((expanded) => !expanded);
     }
 
-    useEffect(() => {
-        if (props.expected === false) {
-            console.error('Error Modal:', props.error);
-            debug(JSON.stringify(props.error, null, 2), props.expected);
-            // Additional error handling or logging could be placed here
-        }
-    }, [props.expected, props.error]);
+    if (props.expected === false) {
+        console.error('Error Modal:', props.error);
+        debug(JSON.stringify(props.error, null, 2), props.expected);
+        // Additional error handling or logging could be placed here
+    }
 
     function isExpandableErrorType() {
         return (
@@ -100,7 +98,7 @@ export default function TErrorModal(props: TErrorModalProps) {
             title={props.title ?? 'Something went wrong'}
             iconColor={theme.colors.error}
         >
-            {props.children}
+            {/* {props.children} */}
             {props?.error && (
                 <>
                     <View>
