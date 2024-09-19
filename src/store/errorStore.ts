@@ -47,7 +47,18 @@ const useErrorStore = create<ErrorState>((set, get) => ({
             return;
         }
 
-        set({ error, title, expected, onClose });
+        set((state) => {
+            if (
+                state.error?.message !== error.message ||
+                state.title !== title ||
+                state.expected !== expected ||
+                state.onClose !== onClose
+            ) {
+                return { error, title, expected, onClose };
+            }
+
+            return state; // No change, do not update state
+        });
     },
     unSetError: () => {
         debug('unSetError');
