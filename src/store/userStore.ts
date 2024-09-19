@@ -38,7 +38,6 @@ setSettings({
     blockchainUrl: settings.config.blockchainUrl,
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,
-    loggerLevel: settings.config.loggerLevel,
     tonomyIdSchema: settings.config.tonomyIdSlug,
     accountsServiceUrl: settings.config.accountsServiceUrl,
     ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
@@ -121,8 +120,6 @@ const useUserStore = create<UserState>((set, get) => ({
  * Used for debugging
  */
 async function printStorage(message: string) {
-    if (settings.config.loggerLevel !== 'debug') return;
-
     const keys = await AsyncStorage.getAllKeys();
 
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');

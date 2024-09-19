@@ -1,5 +1,6 @@
 import settings from '../settings';
 import Debug from 'debug';
+import { sleep } from './sleep';
 
 const debug = Debug('tonomy-id:utils:helper');
 
@@ -37,9 +38,9 @@ export async function progressiveRetryOnNetworkError(
         } catch (error) {
             debug('error in progressiveRetryOnNetworkError', error, typeof error);
 
-            if (error.message && error.message === 'Network request failed') {
+            if (error?.message === 'Network request failed') {
                 debug(`Retrying in ${delay / 1000} seconds...`);
-                await new Promise((resolve) => setTimeout(resolve, delay));
+                await sleep(delay);
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {
                 // Non-network error, throw it
