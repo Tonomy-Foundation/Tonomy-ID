@@ -22,6 +22,7 @@ export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
 };
 
 export default function TErrorModal(props: TErrorModalProps) {
+    debug('TErrorModal', props);
     const [expanded, setExpanded] = useState(false);
 
     function switchExpanded() {
@@ -30,7 +31,7 @@ export default function TErrorModal(props: TErrorModalProps) {
 
     if (props.expected === false) {
         console.error('Error Modal:', props.error);
-        debug(JSON.stringify(props.error, null, 2), props.expected);
+        debug('Unexpected error expansion', JSON.stringify(props.error, null, 2));
         // Additional error handling or logging could be placed here
     }
 
@@ -43,7 +44,7 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     function isExpandable() {
-        return isExpandableErrorType() || props?.code || props?.cause;
+        return isExpandableErrorType();
     }
 
     function ErrorDetails() {

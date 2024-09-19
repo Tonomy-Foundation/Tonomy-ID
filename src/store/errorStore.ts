@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:store:errorStore');
 
 export interface ErrorState {
     error?: Error;
@@ -35,9 +38,11 @@ const useErrorStore = create<ErrorState>((set, get) => ({
         expected?: boolean;
         onClose?: () => Promise<void>;
     }) => {
+        debug('setError', error);
         set({ error, title, expected, onClose });
     },
     unSetError: () => {
+        debug('unSetError');
         set({ error: undefined, title: undefined, expected: undefined, onClose: undefined });
     },
 }));
