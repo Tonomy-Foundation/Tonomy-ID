@@ -86,12 +86,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        padding: 18,
+        padding: 16,
     },
     joinCommunityDiscordImage: {
         alignSelf: 'center',
-        marginBottom: 32,
-        width: '100%',
+        marginBottom: 22,
+        width: '100%'
     },
     worldFristAutonomous: {
         borderWidth: 1,
