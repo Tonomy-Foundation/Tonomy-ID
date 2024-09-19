@@ -39,6 +39,14 @@ const useErrorStore = create<ErrorState>((set, get) => ({
         onClose?: () => Promise<void>;
     }) => {
         debug('setError', error);
+        const { error: currentError } = get();
+
+        // Guard condition: Check if the new error is the same as the current one
+        if (JSON.stringify(currentError) === JSON.stringify(error)) {
+            debug('Error already set, avoiding loop:', error.message);
+            return;
+        }
+
         set({ error, title, expected, onClose });
     },
     unSetError: () => {

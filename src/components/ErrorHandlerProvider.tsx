@@ -24,22 +24,26 @@ export default function ErrorHandlerProvider() {
     // gets the initial value of the error state
     const errorRef = useRef(useErrorStore.getState());
 
-    useEffect(
-        () =>
-            // subscribe to errorStore changes to update the modal
-            // using the `errorStore` variable does not work as changes do not force a re-render
-            useErrorStore.subscribe((state) => {
-                debug('errorStore.subscribe', state, errorRef.current);
+    useEffect(() => {
+        const unsubscribe = useErrorStore.subscribe((state) => {
+            debug('errorStore.subscribe', state, errorRef.current);
+
+            // Only update the modal if there's a change in the error state
+            if (JSON.stringify(state.error) !== JSON.stringify(errorRef.current.error)) {
                 errorRef.current.error = state.error;
                 errorRef.current.title = state.title;
                 errorRef.current.expected = state.expected;
 
                 if (state.error) {
                     setShowModal(true);
+                } else {
+                    setShowModal(false);
                 }
-            }),
-        []
-    );
+            }
+        });
+
+        return () => unsubscribe(); // Cleanup on component unmount
+    }, []);
 
     return (
         <TErrorModal
