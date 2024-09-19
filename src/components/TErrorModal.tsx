@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react/prop-types */
+import React, { useState } from 'react';
 import TModal from './TModal';
 import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
@@ -30,7 +31,7 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     if (props.expected === false) {
-        // console.error('Error Modal:', props.error);
+        console.error('Error Modal:', props.error);
         debug('Unexpected error expansion', JSON.stringify(props.error, null, 2));
         // Additional error handling or logging could be placed here
     }
