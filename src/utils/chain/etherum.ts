@@ -413,7 +413,7 @@ export class EthereumAccount extends AbstractAccount {
 
             if (code !== '0x') return true;
         } catch (error) {
-            console.error('isContract()', error);
+            console.error('EthereumAccount.isContract()', error);
         }
 
         return false;

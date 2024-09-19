@@ -1,8 +1,9 @@
 import settings from '../settings';
 import Debug from 'debug';
 import { sleep } from './sleep';
+import { isNetworkError } from './errors';
 
-const debug = Debug('tonomy-id:utils:helper');
+const debug = Debug('tonomy-id:utils:network');
 
 export function extractHostname(url): string {
     const urlObject = new URL(url);
@@ -18,10 +19,6 @@ export function extractHostname(url): string {
     return urlObject.hostname;
 }
 
-export const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
 export async function progressiveRetryOnNetworkError(
     fn: () => Promise<void>,
     initialDelay = 10000,
@@ -36,17 +33,29 @@ export async function progressiveRetryOnNetworkError(
             condition = false;
             break; // If it succeeds, exit the loop
         } catch (error) {
-            debug('error in progressiveRetryOnNetworkError', error, typeof error);
+            debug('progressiveRetryOnNetworkError()', fn.name + '()', error, typeof error);
 
-            if (error?.message === 'Network request failed') {
-                debug(`Retrying in ${delay / 1000} seconds...`);
+            if (isNetworkError(error)) {
+                debug(`Retrying ${fn.name}() in ${delay / 1000} seconds...`);
                 await sleep(delay);
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {
                 // Non-network error, throw it
-                console.error('Non-network error occurred. Stopping retry.', error);
+                console.error('progressiveRetryOnNetworkError() Non-network error occurred. Stopping retry.', error);
                 throw error;
             }
         }
     }
 }
+
+export const debounce = <T extends (...args: any[]) => any>(
+    func: T,
+    wait: number
+): ((...args: Parameters<T>) => void) => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    return (...args: Parameters<T>): void => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+};

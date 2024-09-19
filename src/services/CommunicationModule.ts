@@ -27,6 +27,8 @@ import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
+import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
+import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -46,62 +48,34 @@ export default function CommunicationModule() {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
-            debug('coomunication loginToService', message);
+            debug('loginToService() login message', message);
 
             const subscribers = listenToMessages();
 
-            debug('coomunication loginToService', subscribers);
+            debug('loginToService() subscribers', subscribers);
 
             setSubscribers(subscribers);
 
             try {
                 await user.loginCommunication(message);
             } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('Network error in communication login');
-                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                    errorStore.setError({
-                        error: new Error(' Could not connect to Tonomy Communication server'),
-                        title: 'Something went wrong',
-                        expected: true,
-                    });
-                }
-                // 401 signature invalid: the keys have been rotated and the old key is no longer valid
-                // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
-                else if (
-                    e instanceof CommunicationError &&
-                    (e.exception.status === 401 || e.exception.status === 404)
-                ) {
+                if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
                     await logout(
                         e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
                     );
                 } else {
-                    debug('loginToService loginCommunication error else ');
-
-                    if (e instanceof Error) {
-                        errorStore.setError({ error: e, expected: false });
-                    } else {
-                        errorStore.setError({ error: new Error(String(e)), expected: false });
-                    }
+                    throw e;
                 }
             }
         } catch (e) {
-            if (e.message === 'Network request failed') {
-                debug('Network error in communication login');
-            } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                errorStore.setError({
-                    error: new Error(' Could not connect to Tonomy Communication server'),
-                    expected: true,
-                    title: 'Something went wrong',
-                });
-            } else {
-                debug('loginToService error else ');
+            unsubscribeAll();
 
-                if (e instanceof Error) {
-                    errorStore.setError({ error: e, expected: false });
-                } else {
-                    errorStore.setError({ error: new Error(String(e)), expected: false });
-                }
+            if (isNetworkError(e)) {
+                throw e;
+            } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                throw new Error(NETWORK_ERROR_MESSAGE);
+            } else {
+                errorStore.setError({ error: e, expected: false });
             }
         }
     }
@@ -133,21 +107,7 @@ export default function CommunicationModule() {
                 });
                 sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
             } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('Network error in communication login');
-                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                    errorStore.setError({
-                        error: new Error(' Could not connect to Tonomy Communication server'),
-                        expected: true,
-                        title: 'Something went wrong',
-                    });
-                } else {
-                    if (e instanceof Error) {
-                        errorStore.setError({ error: e, expected: false });
-                    } else {
-                        errorStore.setError({ error: new Error(String(e)), expected: false });
-                    }
-                }
+                errorStore.setError({ error: e, expected: false });
             }
         }, LoginRequestsMessage.getType());
 
@@ -156,7 +116,11 @@ export default function CommunicationModule() {
                 const senderDid = message.getSender().split('#')[0];
 
                 if (senderDid !== (await user.getDid())) {
-                    debug('LinkAuthRequestMessage sender did not match user did', senderDid, await user.getDid());
+                    debug(
+                        'linkAuthRequestSubscriber() LinkAuthRequestMessage sender did not match user did',
+                        senderDid,
+                        await user.getDid()
+                    );
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -164,14 +128,10 @@ export default function CommunicationModule() {
 
                 await user.handleLinkAuthRequestMessage(message);
             } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('Network error in communication login');
+                if (isNetworkError(e)) {
+                    debug('linkAuthRequestSubscriber() Network error');
                 } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                    errorStore.setError({
-                        error: new Error(' Could not connect to Tonomy Communication server'),
-                        expected: true,
-                        title: 'Something went wrong',
-                    });
+                    debug('linkAuthRequestSubscriber() Network error connecting to Communication service');
                 } else {
                     errorStore.setError({ error: e, expected: false });
                 }
@@ -194,18 +154,22 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        loginToService();
+        progressiveRetryOnNetworkError(loginToService);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
 
+    const unsubscribeAll = useCallback(() => {
+        for (const s of subscribers) {
+            user.unsubscribeMessage(s);
+        }
+    }, [subscribers, user]);
+
     useEffect(() => {
         return () => {
-            for (const s of subscribers) {
-                user.unsubscribeMessage(s);
-            }
+            unsubscribeAll();
         };
-    }, [subscribers, user]);
+    }, [subscribers, user, unsubscribeAll]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {
@@ -279,8 +243,10 @@ export default function CommunicationModule() {
                         }
                     }
                 } catch (error) {
-                    if (error.message === 'Network request failed') {
-                        debug('network error when initializing wallet account');
+                    if (isNetworkError(error)) {
+                        debug('onSessionProposal() network error');
+                    } else {
+                        console.error('CommunicationModule() onSessionProposal() unexpected error', error);
                     }
                 }
             }, 1000);
@@ -364,8 +330,10 @@ export default function CommunicationModule() {
                         }
                     }
                 } catch (error) {
-                    if (error.message === 'Network request failed') {
-                        debug('network error when initializing wallet account');
+                    if (isNetworkError(error)) {
+                        debug('onSessionRequest() network error');
+                    } else {
+                        console.error('CommunicationModule() onSessionRequest() unexpected error', error);
                     }
                 }
             }, 1000);
@@ -378,18 +346,10 @@ export default function CommunicationModule() {
                 web3wallet?.off('session_request', onSessionRequest);
             };
         } catch (e) {
-            console.error('Error when listening the session requests', JSON.stringify(e, null, 2));
+            console.error('CommunicationModule() Error when setting up WalletConnect listeners', e);
+            errorStore.setError({ error: e, expected: false, title: 'Error setting up WalletConnect listeners' });
         }
     }, [errorStore, web3wallet, initialized, navigation]);
-
-    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
-        let timeout: ReturnType<typeof setTimeout>;
-
-        return (...args: Parameters<T>): void => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), wait);
-        };
-    };
 
     useEffect(() => {
         try {
@@ -410,8 +370,8 @@ export default function CommunicationModule() {
                             debug('Session already deleted or invalid');
                         }
                     }
-                } catch (disconnectError) {
-                    console.error('Failed to disconnect session:', disconnectError);
+                } catch (error) {
+                    console.error('CommunicationModule() handleSessionDelete() unexpected error', error);
                 }
             }, 1000);
 
@@ -421,7 +381,8 @@ export default function CommunicationModule() {
                 web3wallet?.off('session_delete', handleSessionDelete);
             };
         } catch (e) {
-            console.error('Error when listening the session delete event', JSON.stringify(e, null, 2));
+            console.error('CommunicationModule() Error when setting up session delete listener for WalletConnect', e);
+            errorStore.setError({ error: e, expected: false, title: 'Error setting up WalletConnect listeners' });
         }
     }, [web3wallet, disconnectSession, navigation, errorStore]);
 
