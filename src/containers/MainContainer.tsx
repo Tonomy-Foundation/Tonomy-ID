@@ -88,10 +88,7 @@ export default function MainContainer({
 
     useEffect(() => {
         if (!initialized) {
-            progressiveRetryOnNetworkError(async () => await initializeWalletState()).catch((e) => {
-                // If progressiveRetryOnNetworkError fails with a non-network error, handle it here
-                console.error('initializeWalletState:', e);
-            });
+            progressiveRetryOnNetworkError(async () => await initializeWalletState());
         }
     }, [initializeWalletState, initialized]);
 
@@ -300,17 +297,17 @@ export default function MainContainer({
 
                     const account = asset
                         ? {
-                              network: capitalizeFirstLetter(chainObj.chain.getName()),
-                              accountName: asset.accountName,
-                              balance: asset.balance,
-                              usdBalance: asset.usdBalance,
-                          }
+                            network: capitalizeFirstLetter(chainObj.chain.getName()),
+                            accountName: asset.accountName,
+                            balance: asset.balance,
+                            usdBalance: asset.usdBalance,
+                        }
                         : {
-                              network: capitalizeFirstLetter(chainObj.chain.getName()),
-                              accountName: null,
-                              balance: '0' + chainObj.token.getSymbol(),
-                              usdBalance: 0,
-                          };
+                            network: capitalizeFirstLetter(chainObj.chain.getName()),
+                            accountName: null,
+                            balance: '0' + chainObj.token.getSymbol(),
+                            usdBalance: 0,
+                        };
 
                     // Use functional update to preserve the previous state
                     setAccounts((prevAccounts) => [...prevAccounts, account]);
