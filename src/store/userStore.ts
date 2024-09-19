@@ -38,7 +38,6 @@ setSettings({
     blockchainUrl: settings.config.blockchainUrl,
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,
-    loggerLevel: settings.config.loggerLevel,
     tonomyIdSchema: settings.config.tonomyIdSlug,
     accountsServiceUrl: settings.config.accountsServiceUrl,
     ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
@@ -51,23 +50,30 @@ const useUserStore = create<UserState>((set, get) => ({
     status: UserStatus.NONE,
     isAppInitialized: false,
     getStatus: async () => {
-        const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
-        const userstatus = get().status;
+        const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
-        get().setStatus(status as UserStatus);
+        debug('getStatus() storageStatus', storageStatus);
 
-        return status as UserStatus;
+        if (storageStatus) {
+            const userStatus = storageStatus as UserStatus;
+
+            set({ status: userStatus });
+            return userStatus;
+        } else {
+            const stateStatus = get().status;
+
+            get().setStatus(stateStatus);
+            return stateStatus;
+        }
     },
     setStatus: async (newStatus: UserStatus) => {
-        const storeStatus = await AsyncStorage.setItem(STORAGE_NAMESPACE + 'store.status', newStatus);
+        await AsyncStorage.setItem(STORAGE_NAMESPACE + 'store.status', newStatus);
 
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
         await get().user.logout();
-
-        get().setStatus(UserStatus.NOT_LOGGED_IN);
-
+        if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
@@ -81,24 +87,21 @@ const useUserStore = create<UserState>((set, get) => ({
         try {
             debug('initializeStatusFromStorage() try');
             await get().user.initializeFromStorage();
-            get().setStatus(UserStatus.LOGGED_IN);
+            // get().setStatus(UserStatus.LOGGED_IN); // REDUNDANT: DELETE ME
             set({ isAppInitialized: true });
         } catch (e) {
+            debug('initializeStatusFromStorage() catch', e, typeof e);
+
             if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
+                set({ isAppInitialized: true });
                 useErrorStore.getState().setError({ error: e, expected: false });
             } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
-            } else if (e.message === 'Network request failed') {
-                const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
-
-                debug('network error condition status', status);
-
-                get().setStatus(status as UserStatus);
-
-                throw e;
+                set({ isAppInitialized: true });
             } else {
-                console.error('initializeStatusFromStorage error ', e);
+                debug('Unexpected error during initializeStatusFromStorage()', e);
+                throw e;
             }
         }
     },
@@ -109,8 +112,6 @@ const useUserStore = create<UserState>((set, get) => ({
  * Used for debugging
  */
 async function printStorage(message: string) {
-    if (settings.config.loggerLevel !== 'debug') return;
-
     const keys = await AsyncStorage.getAllKeys();
 
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');

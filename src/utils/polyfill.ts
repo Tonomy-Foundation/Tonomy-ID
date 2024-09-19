@@ -5,6 +5,7 @@
 import '@sinonjs/text-encoding';
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
+import { NETWORK_ERROR_MESSAGE } from './errors';
 
 // required for @tonomy/antelope-did-resolver update
 // https://github.com/Tonomy-Foundation/Tonomy-ID/pull/757/
@@ -22,7 +23,7 @@ function mockNoInternet() {
 
     global.fetch = async (url, options) => {
         await originalFetch(url, options);
-        throw new Error('Network request failed');
+        throw new Error(NETWORK_ERROR_MESSAGE);
     };
 
     if (global.XMLHttpRequest) {
@@ -31,7 +32,7 @@ function mockNoInternet() {
         class CustomXMLHttpRequest extends OriginalXMLHttpRequest {
             constructor() {
                 super();
-                throw new Error('Network request failed');
+                throw new Error(NETWORK_ERROR_MESSAGE);
             }
         }
 

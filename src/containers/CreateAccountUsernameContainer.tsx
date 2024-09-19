@@ -12,7 +12,7 @@ import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
-import useNetworkStatus from '../utils/networkHelper';
+import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
@@ -26,19 +26,10 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
     const [loading, setLoading] = useState(false);
 
     const errorStore = useErrorStore();
-    const { isConnected } = useNetworkStatus();
 
     const { user } = useUserStore();
 
     async function onNext() {
-        if (!isConnected) {
-            errorStore.setError({
-                error: new Error('Please check your internet connection'),
-                expected: true,
-            });
-            return;
-        }
-
         if (username.includes(' ')) {
             setErrorMessage('Username must not contain spaces');
             return;
@@ -50,20 +41,18 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
 
         try {
             await user.saveUsername(formattedUsername);
+            navigation.navigate('CreatePassphrase');
         } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
-                setLoading(false);
-                return;
+            } else if (isNetworkError(e)) {
+                setErrorMessage(NETWORK_ERROR_RESPONSE);
             } else {
                 errorStore.setError({ error: e, expected: false });
-                setLoading(false);
-                return;
             }
         }
 
         setLoading(false);
-        navigation.navigate('CreatePassphrase');
     }
 
     const onTextChange = (value) => {

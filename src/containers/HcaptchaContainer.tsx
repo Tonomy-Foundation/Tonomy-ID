@@ -15,8 +15,8 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
-import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
+import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
@@ -113,8 +113,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             setAccountUrl(url);
         } catch (e) {
-            if (e.message === 'Network request failed') {
-                errorStore.setError({ error: new Error('Please check your internet connection'), expected: true });
+            if (isNetworkError(e)) {
+                errorStore.setError(createNetworkErrorState());
                 setLoading(false);
                 return;
             } else if (e instanceof SdkError) {

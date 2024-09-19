@@ -67,7 +67,7 @@ export async function testKeyGenerator() {
 
         debug('signedTransaction:', signedTransaction);
     } catch (e) {
-        console.error(e);
+        console.error('testKeyGenerator()', e);
     }
 }
 

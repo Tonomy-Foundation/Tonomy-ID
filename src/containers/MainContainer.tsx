@@ -38,11 +38,12 @@ import {
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
 import useWalletStore from '../store/useWalletStore';
-import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/helper';
+import { progressiveRetryOnNetworkError } from '../utils/network';
+import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
-import useNetworkStatus from '../utils/networkHelper';
+import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -77,25 +78,13 @@ export default function MainContainer({
         address: '',
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
-    const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
 
     useEffect(() => {
-        const initializeAndFetchBalances = async () => {
-            if (!initialized && isConnected) {
-                try {
-                    await initializeWalletState();
-                } catch (error) {
-                    errorStore.setError({
-                        error: new Error('Error initializing wallet'),
-                        expected: true,
-                    });
-                }
-            }
-        };
-
-        initializeAndFetchBalances();
-    }, [initializeWalletState, initialized, isConnected, errorStore]);
+        if (!initialized) {
+            progressiveRetryOnNetworkError(initializeWalletState);
+        }
+    }, [initializeWalletState, initialized]);
 
     const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
@@ -142,7 +131,7 @@ export default function MainContainer({
             try {
                 await connectToDid(did);
             } catch (e) {
-                if (e.message === 'Network request failed') {
+                if (isNetworkError(e)) {
                     debug('network error when connectToDid called');
                 } else {
                     debug('onUrlOpen error:', e);
@@ -164,7 +153,7 @@ export default function MainContainer({
 
             setAccountName(accountName);
         } catch (e) {
-            if (e.message === 'Network request failed') {
+            if (isNetworkError(e)) {
                 debug('Error getting username network error');
             } else errorStore.setError({ error: e, expected: false });
         }
@@ -191,7 +180,7 @@ export default function MainContainer({
             } catch (error) {
                 debug('Error updating balance:', error);
 
-                if (error.message === 'Network request failed') {
+                if (isNetworkError(error)) {
                     debug('network error when call updating balance:');
                 }
             }
@@ -218,7 +207,7 @@ export default function MainContainer({
         } catch (e) {
             debug('onScan error:', e);
 
-            if (e.message === 'Network request failed') {
+            if (isNetworkError(e)) {
                 debug('Scan Qr Code network error');
                 errorStore.setError({
                     title: 'Network Error',
@@ -265,7 +254,7 @@ export default function MainContainer({
         } catch (error) {
             setRefreshBalance(false);
 
-            if (error.message === 'Network request failed') {
+            if (isNetworkError(error)) {
                 debug('Error updating account detail network error:');
             }
         }
@@ -293,7 +282,7 @@ export default function MainContainer({
     useEffect(() => {
         const fetchAssets = async () => {
             try {
-                if (!accountExists && isConnected) await initializeWalletAccount();
+                if (!accountExists) await initializeWalletAccount();
                 setRefreshBalance(true);
                 await connect();
 
@@ -326,7 +315,7 @@ export default function MainContainer({
         };
 
         fetchAssets();
-    }, [chains, accountExists, isConnected, initializeWalletAccount]);
+    }, [chains, accountExists, initializeWalletAccount]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
