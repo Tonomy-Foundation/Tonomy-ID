@@ -33,10 +33,10 @@ export async function progressiveRetryOnNetworkError(
             condition = false;
             break; // If it succeeds, exit the loop
         } catch (error) {
-            debug('progressiveRetryOnNetworkError()', error, typeof error);
+            debug('progressiveRetryOnNetworkError()', fn.name + '()', error, typeof error);
 
             if (isNetworkError(error)) {
-                debug(`Retrying in ${delay / 1000} seconds...`);
+                debug(`Retrying ${fn.name}() in ${delay / 1000} seconds...`);
                 await sleep(delay);
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {

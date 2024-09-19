@@ -27,7 +27,7 @@ import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
-import { isNetworkError } from '../utils/errors';
+import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
@@ -71,9 +71,9 @@ export default function CommunicationModule() {
             unsubscribeAll();
 
             if (isNetworkError(e)) {
-                debug('loginToService() Network error');
+                throw e;
             } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                debug('loginToService() Network error connecting to Communication service');
+                throw new Error(NETWORK_ERROR_MESSAGE);
             } else {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -154,7 +154,7 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        progressiveRetryOnNetworkError(() => loginToService());
+        progressiveRetryOnNetworkError(loginToService);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);

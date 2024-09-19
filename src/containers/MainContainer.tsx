@@ -82,7 +82,7 @@ export default function MainContainer({
 
     useEffect(() => {
         if (!initialized) {
-            progressiveRetryOnNetworkError(() => initializeWalletState());
+            progressiveRetryOnNetworkError(initializeWalletState);
         }
     }, [initializeWalletState, initialized]);
 
