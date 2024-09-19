@@ -28,7 +28,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isAppInitialized) {
-                    progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
+                    progressiveRetryOnNetworkError(() => initializeStatusFromStorage());
                 }
 
                 await connect();

@@ -28,6 +28,7 @@ import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 import { isNetworkError } from '../utils/errors';
+import { progressiveRetryOnNetworkError } from '../utils/network';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -47,11 +48,11 @@ export default function CommunicationModule() {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
-            debug('coomunication loginToService', message);
+            debug('loginToService() login message', message);
 
             const subscribers = listenToMessages();
 
-            debug('coomunication loginToService', subscribers);
+            debug('loginToService() subscribers', subscribers);
 
             setSubscribers(subscribers);
 
@@ -79,17 +80,13 @@ export default function CommunicationModule() {
                 }
             }
         } catch (e) {
+            unsubscribeAll();
+
             if (isNetworkError(e)) {
                 debug('Network error in communication login');
             } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
-                errorStore.setError({
-                    error: new Error(' Could not connect to Tonomy Communication server'),
-                    expected: true,
-                    title: 'Something went wrong',
-                });
+                debug('Network error connecting to Communication service');
             } else {
-                debug('loginToService error else ');
-
                 errorStore.setError({ error: e, expected: false });
             }
         }
@@ -126,7 +123,7 @@ export default function CommunicationModule() {
                     debug('Network error in communication login');
                 } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
-                        error: new Error(' Could not connect to Tonomy Communication server'),
+                        error: new Error('Could not connect to Tonomy Communication server'),
                         expected: true,
                         title: 'Something went wrong',
                     });
@@ -179,18 +176,22 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        loginToService();
+        progressiveRetryOnNetworkError(() => loginToService());
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
 
+    const unsubscribeAll = useCallback(() => {
+        for (const s of subscribers) {
+            user.unsubscribeMessage(s);
+        }
+    }, [subscribers, user]);
+
     useEffect(() => {
         return () => {
-            for (const s of subscribers) {
-                user.unsubscribeMessage(s);
-            }
+            unsubscribeAll();
         };
-    }, [subscribers, user]);
+    }, [subscribers, user, unsubscribeAll]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {
