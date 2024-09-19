@@ -31,7 +31,7 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     if (props.expected === false) {
-        console.error('Error Modal:', props.error);
+        console.error('TErrorModal() unexpected error', props.error);
         debug('Unexpected error expansion', JSON.stringify(props.error, null, 2));
         // Additional error handling or logging could be placed here
     }
@@ -133,7 +133,7 @@ export default function TErrorModal(props: TErrorModalProps) {
             </TModal>
         );
     } catch (error) {
-        console.error('Error in TErrorModal rendering:', error);
+        console.error('TErrorModal() rendering', error);
         return null;
     }
 }

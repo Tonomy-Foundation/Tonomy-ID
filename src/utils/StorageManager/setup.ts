@@ -10,6 +10,7 @@ import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
 import Debug from 'debug';
+import { isNetworkError } from '../errors';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
@@ -77,10 +78,10 @@ export async function connect() {
 
         return dataSource;
     } catch (error) {
-        if (error.message === 'Network request failed') {
+        if (isNetworkError(error)) {
             debug('Network error occurred. Retrying...');
         } else {
-            debug('connect error', error);
+            console.error('StorageManager.connect() error', error);
         }
     }
 }

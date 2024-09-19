@@ -5,7 +5,7 @@ import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:NetworkHelper');
 
-const useNetworkStatus = () => {
+export const useNetworkStatus = () => {
     const [isConnected, setIsConnected] = useState<boolean>(true);
     const { core, web3wallet } = useWalletStore();
 
@@ -36,5 +36,3 @@ const useNetworkStatus = () => {
 
     return { isConnected };
 };
-
-export default useNetworkStatus;

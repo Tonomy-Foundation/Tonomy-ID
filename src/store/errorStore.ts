@@ -33,7 +33,7 @@ const useErrorStore = create<ErrorState>((set, get) => ({
         expected,
         onClose,
     }: {
-        error: Error;
+        error: Error | unknown;
         title?: string;
         expected?: boolean;
         onClose?: () => Promise<void>;
@@ -47,14 +47,22 @@ const useErrorStore = create<ErrorState>((set, get) => ({
             return;
         }
 
+        let newError: Error;
+
+        if (!(error instanceof Error)) {
+            newError = new Error(JSON.stringify(error));
+        } else {
+            newError = error;
+        }
+
         set((state) => {
             if (
-                state.error?.message !== error.message ||
+                state.error?.message !== newError.message ||
                 state.title !== title ||
                 state.expected !== expected ||
                 state.onClose !== onClose
             ) {
-                return { error, title, expected, onClose };
+                return { error: newError, title, expected, onClose };
             }
 
             return state; // No change, do not update state

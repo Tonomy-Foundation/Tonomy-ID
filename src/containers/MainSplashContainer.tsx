@@ -13,6 +13,7 @@ import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/helper';
+import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
@@ -27,11 +28,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isAppInitialized) {
-                    progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage()).catch((e) => {
-                        // If progressiveRetryOnNetworkError fails with a non-network error, handle it here
-                        console.error('initializeStatusFromStorage:', e);
-                        errorStore.setError({ error: e, expected: false });
-                    });
+                    progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
                 }
 
                 await connect();
@@ -41,16 +38,12 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 switch (status) {
                     case UserStatus.NONE:
-                        debug('status is NONE');
                         navigation.navigate('SplashSecurity');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
-                        debug('status is NOT_LOGGED_IN');
                         navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.LOGGED_IN:
-                        debug('status is LOGGED_IN');
-
                         try {
                             await user.getUsername();
                         } catch (e) {
@@ -68,13 +61,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('Network error occurred. Retrying...');
-                } else {
-                    debug('main screen error', e);
-                    errorStore.setError({ error: e, expected: false });
-                    navigation.navigate('SplashSecurity');
-                }
+                debug('main screen error', e);
+                errorStore.setError({ error: e, expected: false });
+                navigation.navigate('SplashSecurity');
             }
         }
 

@@ -27,6 +27,7 @@ import { ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
+import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -57,9 +58,7 @@ export default function CommunicationModule() {
             try {
                 await user.loginCommunication(message);
             } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('Network error in communication login');
-                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
                         error: new Error(' Could not connect to Tonomy Communication server'),
                         title: 'Something went wrong',
@@ -76,17 +75,11 @@ export default function CommunicationModule() {
                         e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
                     );
                 } else {
-                    debug('loginToService loginCommunication error else ');
-
-                    if (e instanceof Error) {
-                        errorStore.setError({ error: e, expected: false });
-                    } else {
-                        errorStore.setError({ error: new Error(String(e)), expected: false });
-                    }
+                    throw e;
                 }
             }
         } catch (e) {
-            if (e.message === 'Network request failed') {
+            if (isNetworkError(e)) {
                 debug('Network error in communication login');
             } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                 errorStore.setError({
@@ -97,11 +90,7 @@ export default function CommunicationModule() {
             } else {
                 debug('loginToService error else ');
 
-                if (e instanceof Error) {
-                    errorStore.setError({ error: e, expected: false });
-                } else {
-                    errorStore.setError({ error: new Error(String(e)), expected: false });
-                }
+                errorStore.setError({ error: e, expected: false });
             }
         }
     }
@@ -133,7 +122,7 @@ export default function CommunicationModule() {
                 });
                 sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
             } catch (e) {
-                if (e.message === 'Network request failed') {
+                if (isNetworkError(e)) {
                     debug('Network error in communication login');
                 } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
@@ -142,11 +131,7 @@ export default function CommunicationModule() {
                         title: 'Something went wrong',
                     });
                 } else {
-                    if (e instanceof Error) {
-                        errorStore.setError({ error: e, expected: false });
-                    } else {
-                        errorStore.setError({ error: new Error(String(e)), expected: false });
-                    }
+                    errorStore.setError({ error: e, expected: false });
                 }
             }
         }, LoginRequestsMessage.getType());
@@ -164,7 +149,7 @@ export default function CommunicationModule() {
 
                 await user.handleLinkAuthRequestMessage(message);
             } catch (e) {
-                if (e.message === 'Network request failed') {
+                if (isNetworkError(e)) {
                     debug('Network error in communication login');
                 } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
                     errorStore.setError({
@@ -279,8 +264,10 @@ export default function CommunicationModule() {
                         }
                     }
                 } catch (error) {
-                    if (error.message === 'Network request failed') {
+                    if (isNetworkError(error)) {
                         debug('network error when initializing wallet account');
+                    } else {
+                        console.error('CommunicationModule() Error when handling the session proposal', error);
                     }
                 }
             }, 1000);
@@ -364,8 +351,10 @@ export default function CommunicationModule() {
                         }
                     }
                 } catch (error) {
-                    if (error.message === 'Network request failed') {
+                    if (isNetworkError(error)) {
                         debug('network error when initializing wallet account');
+                    } else {
+                        console.error('CommunicationModule() Error when handling the session request', error);
                     }
                 }
             }, 1000);
@@ -378,7 +367,7 @@ export default function CommunicationModule() {
                 web3wallet?.off('session_request', onSessionRequest);
             };
         } catch (e) {
-            console.error('Error when listening the session requests', JSON.stringify(e, null, 2));
+            console.error('CommunicationModule() Error when listening the session proposal and request events', e);
         }
     }, [errorStore, web3wallet, initialized, navigation]);
 
@@ -411,7 +400,7 @@ export default function CommunicationModule() {
                         }
                     }
                 } catch (disconnectError) {
-                    console.error('Failed to disconnect session:', disconnectError);
+                    console.error('CommunicationModule() Failed to disconnect session:', disconnectError);
                 }
             }, 1000);
 
@@ -421,7 +410,10 @@ export default function CommunicationModule() {
                 web3wallet?.off('session_delete', handleSessionDelete);
             };
         } catch (e) {
-            console.error('Error when listening the session delete event', JSON.stringify(e, null, 2));
+            console.error(
+                'CommunicationModule() Error when listening the session delete event',
+                JSON.stringify(e, null, 2)
+            );
         }
     }, [web3wallet, disconnectSession, navigation, errorStore]);
 

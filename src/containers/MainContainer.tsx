@@ -42,7 +42,7 @@ import { capitalizeFirstLetter, progressiveRetryOnNetworkError } from '../utils/
 import Debug from 'debug';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
-import useNetworkStatus from '../utils/networkHelper';
+import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -77,14 +77,7 @@ export default function MainContainer({
         address: '',
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
-    const { isConnected } = useNetworkStatus();
     const refMessage = useRef(null);
-
-    useEffect(() => {
-        if (!isConnected) {
-            debug('No network connection');
-        }
-    }, [isConnected]);
 
     useEffect(() => {
         if (!initialized) {
@@ -137,7 +130,7 @@ export default function MainContainer({
             try {
                 await connectToDid(did);
             } catch (e) {
-                if (e.message === 'Network request failed') {
+                if (isNetworkError(e)) {
                     debug('network error when connectToDid called');
                 } else {
                     debug('onUrlOpen error:', e);
@@ -159,7 +152,7 @@ export default function MainContainer({
 
             setAccountName(accountName);
         } catch (e) {
-            if (e.message === 'Network request failed') {
+            if (isNetworkError(e)) {
                 debug('Error getting username network error');
             } else errorStore.setError({ error: e, expected: false });
         }
@@ -186,7 +179,7 @@ export default function MainContainer({
             } catch (error) {
                 debug('Error updating balance:', error);
 
-                if (error.message === 'Network request failed') {
+                if (isNetworkError(error)) {
                     debug('network error when call updating balance:');
                 }
             }
@@ -213,7 +206,7 @@ export default function MainContainer({
         } catch (e) {
             debug('onScan error:', e);
 
-            if (e.message === 'Network request failed') {
+            if (isNetworkError(e)) {
                 debug('Scan Qr Code network error');
                 errorStore.setError({
                     title: 'Network Error',
@@ -260,7 +253,7 @@ export default function MainContainer({
         } catch (error) {
             setRefreshBalance(false);
 
-            if (error.message === 'Network request failed') {
+            if (isNetworkError(error)) {
                 debug('Error updating account detail network error:');
             }
         }

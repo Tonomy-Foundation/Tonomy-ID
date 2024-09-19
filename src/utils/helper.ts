@@ -1,6 +1,7 @@
 import settings from '../settings';
 import Debug from 'debug';
 import { sleep } from './sleep';
+import { isNetworkError } from './errors';
 
 const debug = Debug('tonomy-id:utils:helper');
 
@@ -36,15 +37,15 @@ export async function progressiveRetryOnNetworkError(
             condition = false;
             break; // If it succeeds, exit the loop
         } catch (error) {
-            debug('error in progressiveRetryOnNetworkError', error, typeof error);
+            debug('progressiveRetryOnNetworkError()', error, typeof error);
 
-            if (error?.message === 'Network request failed') {
+            if (isNetworkError(error)) {
                 debug(`Retrying in ${delay / 1000} seconds...`);
                 await sleep(delay);
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {
                 // Non-network error, throw it
-                console.error('Non-network error occurred. Stopping retry.', error);
+                console.error('progressiveRetryOnNetworkError() Non-network error occurred. Stopping retry.', error);
                 throw error;
             }
         }
