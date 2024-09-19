@@ -29,6 +29,8 @@ export default function ErrorHandlerProvider() {
             debug('errorStore.subscribe', state, errorRef.current);
 
             // Only update the modal if there's a change in the error state
+            if (JSON.stringify(state.error) === JSON.stringify(errorRef.current.error)) return;
+
             if (state.error !== errorRef.current.error) {
                 errorRef.current.error = state.error;
                 errorRef.current.title = state.title;
