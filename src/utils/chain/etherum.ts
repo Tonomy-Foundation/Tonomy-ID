@@ -145,7 +145,7 @@ export class EthereumToken extends AbstractToken {
         // const balanceWei = (await lookupAccount.getBalance(this.chain.getNativeToken())).getAmount();
         const balanceWei = await this.chain.getProvider().getBalance(lookupAccount.getName());
 
-        console.log('EthereumToken.getBalance() balanceWei', balanceWei);
+        console.log('getBalance() balanceWei', balanceWei, lookupAccount.getName());
         return new Asset(this, balanceWei);
     }
 
