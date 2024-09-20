@@ -22,6 +22,7 @@ import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
 
 export type RouteStackParamList = {
     UserHome: { did?: string };
+    Citizenship: undefined;
     Assets: { did?: string };
     Explore: undefined;
     Scan: undefined;
@@ -53,14 +54,14 @@ const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }
     );
 };
 
-type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'UserHome'>;
+type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'Citizenship'>;
 
 function BottomTabNavigator() {
     const theme = useAppTheme();
     const navigation = useNavigation<DrawerNavigation>();
     return (
         <Tab.Navigator
-            initialRouteName="Assets"
+            initialRouteName="Citizenship"
             screenOptions={{
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.grey,
@@ -86,7 +87,7 @@ function BottomTabNavigator() {
             }}
         >
             <Tab.Screen
-                name="UserHome"
+                name="Citizenship"
                 component={CitizenshipScreen}
                 options={{
                     headerTitle: 'Citizenship',
