@@ -44,6 +44,7 @@ const theme = {
         tabGray: '#607EAA',
         border: '#E6ECF4',
         blue: '#007BFF',
+        gold: '#D9B701',
     },
 };
 

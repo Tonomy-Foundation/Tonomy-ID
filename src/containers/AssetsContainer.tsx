@@ -271,18 +271,17 @@ export default function AssetsContainer({
                                             address: accountName,
                                             icon: Images.GetImage('logo48'),
                                         };
-
-                                        // navigation.navigate('AssetDetailMain', {
-                                        //     screen: 'AssetDetail',
-                                        //     params: {
-                                        //         screenTitle: `${accountDetail.symbol}`,
-                                        //         accountBalance: {
-                                        //             balance: `${pangeaBalance} LEOS`,
-                                        //             usdBalance: Number(pangeaBalance * USD_CONVERSION),
-                                        //         },
-                                        //         ...accountDetail,
-                                        //     },
-                                        // });
+                                        navigation.navigate('AssetDetailMain', {
+                                            screen: 'AssetDetail',
+                                            params: {
+                                                screenTitle: `${accountDetail.symbol}`,
+                                                accountBalance: {
+                                                    balance: `${pangeaBalance} LEOS`,
+                                                    usdBalance: Number(pangeaBalance * USD_CONVERSION),
+                                                },
+                                                ...accountDetail,
+                                            },
+                                        });
                                     }}
                                     style={styles.assetsView}
                                 >
