@@ -253,7 +253,6 @@ export default function MainContainer({
     const fetchCryptoAssets = useCallback(async () => {
         try {
             if (!accountExists) await initializeWalletAccount();
-            setRefreshBalance(true);
             await connect();
 
             for (const chainObj of chains) {
@@ -283,10 +282,7 @@ export default function MainContainer({
                     return [...prevAccounts];
                 });
             }
-
-            setRefreshBalance(false);
         } catch (error) {
-            setRefreshBalance(false);
             debug('fetchCryptoAssets() error', error);
         }
     }, [accountExists, initializeWalletAccount, chains]);
@@ -297,14 +293,10 @@ export default function MainContainer({
 
         try {
             debug('updateAllBalances()');
-            setRefreshBalance(true);
             await updateLeosBalance();
             await updateCryptoBalance();
             await fetchCryptoAssets();
-            setRefreshBalance(false);
         } catch (error) {
-            setRefreshBalance(false);
-
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
             } else {
@@ -315,7 +307,14 @@ export default function MainContainer({
         }
     }, [updateCryptoBalance, fetchCryptoAssets, updateLeosBalance]);
 
-    const onRefresh = useCallback(updateAllBalances, [updateAllBalances]);
+    const onRefresh = useCallback(async () => {
+        try {
+            setRefreshBalance(true);
+            await updateAllBalances();
+        } finally {
+            setRefreshBalance(false);
+        }
+    }, [updateAllBalances]);
 
     // updateAllBalances() on mount and every 20 seconds
     useEffect(() => {
