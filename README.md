@@ -91,6 +91,8 @@ This is now running in production mode connected to the staging environment.
 yarn run updateSdkVersion development
 # or
 yarn run updateSdkVersion master
+# or 
+yarn run updateSdkVersion testnet
 ```
 
 ## File structure of components
