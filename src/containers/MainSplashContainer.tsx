@@ -12,16 +12,15 @@ import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
-import { progressiveRetryOnNetworkError } from '../utils/helper';
-import useNetworkStatus from '../utils/networkHelper';
+import { progressiveRetryOnNetworkError } from '../utils/network';
+import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState, initialized, initializeWalletState } = useWalletStore();
-    const { isConnected } = useNetworkStatus();
+    const { clearState } = useWalletStore();
 
     useEffect(() => {
         async function main() {
@@ -29,12 +28,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
             try {
                 if (!isAppInitialized) {
-                    try {
-                        progressiveRetryOnNetworkError(async () => await initializeStatusFromStorage());
-                    } catch (e) {
-                        console.error('Error initializing app:', e);
-                        errorStore.setError({ error: e, expected: false });
-                    }
+                    progressiveRetryOnNetworkError(initializeStatusFromStorage);
                 }
 
                 await connect();
@@ -44,27 +38,12 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 switch (status) {
                     case UserStatus.NONE:
-                        debug('status is NONE');
                         navigation.navigate('SplashSecurity');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
-                        debug('status is NOT_LOGGED_IN');
                         navigation.dispatch(StackActions.replace('Home'));
                         break;
                     case UserStatus.LOGGED_IN:
-                        debug('status is LOGGED_IN');
-
-                        // if (!initialized) {
-                        //     try {
-                        //         progressiveRetryOnNetworkError(async () => await initializeWalletState());
-                        //     } catch (e) {
-                        //         errorStore.setError({
-                        //             error: new Error('Error initializing wallet. Check your internet connection.'),
-                        //             expected: false,
-                        //         });
-                        //     }
-                        // }
-
                         try {
                             await user.getUsername();
                         } catch (e) {
@@ -82,13 +61,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('Network error occurred. Retrying...');
-                } else {
-                    debug('main screen error', e);
-                    errorStore.setError({ error: e, expected: false });
-                    navigation.navigate('SplashSecurity');
-                }
+                debug('main screen error', e);
+                errorStore.setError({ error: e, expected: false });
+                navigation.navigate('SplashSecurity');
             }
         }
 
@@ -100,12 +75,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         logout,
         navigation,
         user,
-        // initializeWalletState,
         clearState,
         setStatus,
         isAppInitialized,
-        initialized,
-        // isConnected,
     ]);
 
     return (

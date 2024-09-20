@@ -14,10 +14,9 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { keyStorage } from '../utils/StorageManager/setup';
-import useWalletStore from '../store/useWalletStore';
 import { EthereumMainnetChain, EthereumPolygonChain, EthereumSepoliaChain } from '../utils/chain/etherum';
 import Debug from 'debug';
-import useNetworkStatus from '../utils/networkHelper';
+import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
@@ -40,7 +39,6 @@ export default function CreateEthereumKeyContainer({
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
-    const { isConnected } = useNetworkStatus();
 
     async function setUserName() {
         try {
@@ -65,14 +63,6 @@ export default function CreateEthereumKeyContainer({
     async function onNext() {
         setLoading(true);
 
-        if (!isConnected) {
-            errorsStore.setError({
-                error: new Error('Please check your internet connection'),
-                expected: true,
-            });
-            return;
-        }
-
         try {
             const tonomyUsername = TonomyUsername.fromUsername(
                 username,
@@ -96,10 +86,10 @@ export default function CreateEthereumKeyContainer({
 
             redirectFunc();
         } catch (e) {
-            debug('onNext() function called', e);
+            debug('onNext() function error', e);
 
-            if (e.message === 'Network request failed') {
-                errorsStore.setError({ error: new Error('Please check your internet connection'), expected: true });
+            if (isNetworkError(e)) {
+                errorsStore.setError(createNetworkErrorState());
             } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.PasswordInvalid:

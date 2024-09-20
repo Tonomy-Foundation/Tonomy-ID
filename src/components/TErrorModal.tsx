@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react/prop-types */
+import React, { useState } from 'react';
 import TModal from './TModal';
 import { StyleSheet, Text, View } from 'react-native';
 import theme from '../utils/theme';
@@ -18,22 +19,22 @@ export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
     visible?: boolean;
     code?: number;
     cause?: string;
+    children?: React.ReactNode;
 };
 
 export default function TErrorModal(props: TErrorModalProps) {
+    debug('TErrorModal', props);
     const [expanded, setExpanded] = useState(false);
 
     function switchExpanded() {
         setExpanded((expanded) => !expanded);
     }
 
-    useEffect(() => {
-        if (props.expected === false) {
-            console.error('Error Modal:', props.error);
-            debug(JSON.stringify(props.error, null, 2), props.expected);
-            // Additional error handling or logging could be placed here
-        }
-    }, [props.expected, props.error]);
+    if (props.expected === false) {
+        console.error('TErrorModal() unexpected error', props.error);
+        debug('Unexpected error expansion', JSON.stringify(props.error, null, 2));
+        // Additional error handling or logging could be placed here
+    }
 
     function isExpandableErrorType() {
         return (
@@ -44,7 +45,7 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     function isExpandable() {
-        return isExpandableErrorType() || props?.code || props?.cause;
+        return isExpandableErrorType();
     }
 
     function ErrorDetails() {
@@ -90,46 +91,51 @@ export default function TErrorModal(props: TErrorModalProps) {
         throw new Error('Other error types should not be expandable');
     }
 
-    return (
-        <TModal
-            visible={props.visible}
-            icon="alert-circle-outline"
-            onPress={props.onPress}
-            buttonLabel="Close"
-            title={props.title ?? 'Something went wrong'}
-            iconColor={theme.colors.error}
-        >
-            {props.children}
-            {props?.error && (
-                <>
-                    <View>
-                        <TP size={1}>{props?.error?.message}</TP>
-                    </View>
-
-                    {props?.expected === false && (
+    try {
+        return (
+            <TModal
+                visible={props.visible}
+                icon="alert-circle-outline"
+                onPress={props.onPress}
+                buttonLabel="Close"
+                title={props.title ?? 'Something went wrong'}
+                iconColor={theme.colors.error}
+            >
+                {/* {props.children} */}
+                {props?.error && (
+                    <>
                         <View>
-                            <Text>The Tonomy Foundation has been notified</Text>
+                            <TP size={1}>{props?.error?.message}</TP>
                         </View>
-                    )}
 
-                    {isExpandable() && (
-                        <>
-                            {expanded && (
-                                <>
-                                    <ErrorDetails />
-                                </>
-                            )}
+                        {props?.expected === false && (
                             <View>
-                                <TButtonText onPress={switchExpanded}>
-                                    {expanded ? 'Hide Error' : 'View Error'}
-                                </TButtonText>
+                                <Text>The Tonomy Foundation has been notified</Text>
                             </View>
-                        </>
-                    )}
-                </>
-            )}
-        </TModal>
-    );
+                        )}
+
+                        {isExpandable() && (
+                            <>
+                                {expanded && (
+                                    <>
+                                        <ErrorDetails />
+                                    </>
+                                )}
+                                <View>
+                                    <TButtonText onPress={switchExpanded}>
+                                        {expanded ? 'Hide Error' : 'View Error'}
+                                    </TButtonText>
+                                </View>
+                            </>
+                        )}
+                    </>
+                )}
+            </TModal>
+        );
+    } catch (error) {
+        console.error('TErrorModal() rendering', error);
+        return null;
+    }
 }
 
 const styles = StyleSheet.create({

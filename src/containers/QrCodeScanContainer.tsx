@@ -10,6 +10,7 @@ import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
 import { Props } from '../screens/QrCodeScanScreen';
 import Debug from 'debug';
+import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:QrCodeScanContainer');
 
@@ -26,11 +27,7 @@ export default function QrCodeScanContainer(props: Props) {
 
                 setHasPermission(status === 'granted');
             } catch (e) {
-                if (e.message === 'Network request failed') {
-                    debug('network error when requesting camera permission');
-                } else {
-                    errorStore.setError({ error: e, expected: false });
-                }
+                errorStore.setError({ error: e, expected: false });
             }
         };
 

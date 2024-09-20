@@ -12,25 +12,19 @@ import useUserStore from '../store/userStore';
 import { TError } from '../components/TError';
 import useErrorStore from '../store/errorStore';
 import { formatUsername } from '../utils/username';
-import useNetworkStatus from '../utils/networkHelper';
+import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const { user } = useUserStore();
     const errorStore = useErrorStore();
-    const { isConnected } = useNetworkStatus();
 
     useEffect(() => {
         setErrorMessage('');
     }, []);
 
     const onNext = async () => {
-        if (!isConnected) {
-            setErrorMessage('Please check your internet connection');
-            return;
-        }
-
         const formattedUsername = username.toLowerCase();
 
         try {
@@ -38,6 +32,11 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                 navigation.navigate('LoginPassphrase', { username: formattedUsername });
             else setErrorMessage('Username does not exist');
         } catch (error) {
+            if (isNetworkError(error)) {
+                setErrorMessage(NETWORK_ERROR_RESPONSE);
+                return;
+            }
+
             errorStore.setError({ error, expected: false });
         }
     };

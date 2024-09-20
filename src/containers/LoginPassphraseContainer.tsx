@@ -13,7 +13,7 @@ import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../util
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
-import useWalletStore from '../store/useWalletStore';
+import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -69,8 +69,8 @@ export default function LoginPassphraseContainer({
                 throw new Error('Account name not found');
             }
         } catch (e) {
-            if (e.message === 'Network request failed') {
-                errorsStore.setError({ error: new Error('Please check your internet connection'), expected: true });
+            if (isNetworkError(e)) {
+                errorsStore.setError(createNetworkErrorState());
             } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameNotFound:
