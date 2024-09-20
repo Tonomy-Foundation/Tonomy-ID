@@ -142,10 +142,10 @@ export class EthereumToken extends AbstractToken {
                 throw new Error('Account not found');
             })();
 
-        const balanceWei = (await lookupAccount.getBalance(this.chain.getNativeToken())).getAmount();
+        // const balanceWei = (await lookupAccount.getBalance(this.chain.getNativeToken())).getAmount();
+        const balanceWei = await this.chain.getProvider().getBalance(lookupAccount.getName());
 
-        debug('getBalance() balance', lookupAccount.getChain().getName(), balanceWei);
-
+        console.log('EthereumToken.getBalance() balanceWei', balanceWei);
         return new Asset(this, balanceWei);
     }
 

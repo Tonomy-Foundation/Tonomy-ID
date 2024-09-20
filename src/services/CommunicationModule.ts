@@ -220,9 +220,7 @@ export default function CommunicationModule() {
                         ? requiredNamespaces
                         : optionalNamespaces;
 
-                    const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]) || [
-                        '11155111',
-                    ];
+                    const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]) || [];
                     const unsupportedChainIds =
                         chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
 
@@ -255,6 +253,7 @@ export default function CommunicationModule() {
 
                             activeNamespaces[key].chains?.forEach((chain) => {
                                 const chainId = chain.split(':')[1];
+
                                 const chainDetail = chainAccounts?.find(
                                     (account) => account.getChain().getChainId() === chainId
                                 );
