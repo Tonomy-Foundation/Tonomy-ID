@@ -6,7 +6,7 @@
         "secondaryColor2": "#6E84A3",
         "tertiaryColor": "#7660E7",
         "tertiaryColor2": "#CFC8F7",
-        "text":"#474D4C",
+        "text": "#474D4C",
         "textGray": "#5B6261",
         "linkColor": "#67D7ED",
         "infoBackground": "#e1f2e2",
@@ -16,7 +16,7 @@
     "appName": "Tonomy ID Staging",
     "ecosystemName": "Tonomy Staging",
     "appSlogan": "Building Ecosystem Of Trust",
-    "images":{
+    "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
         "logo48": "./src/assets/tonomy/tonomy-logo48.png",
         "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
@@ -36,12 +36,10 @@
     "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
     "communicationUrl": "wss://communication.staging.tonomy.foundation",
     "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
-    "loggerLevel": "error",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
     "blockExplorerUrl": "https://local.bloks.io",
     "tonomyIdSlug": "tonomy-id-staging://",
     "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
-    "etherscanApiKey":"8V6DEHQ64R18FFNX2B5S345IXXNZRJVVQX",
-    "walletConnectProjectId":"650e5b61be5fadae5d817ff12daa1283"
-
+    "etherscanApiKey": "8V6DEHQ64R18FFNX2B5S345IXXNZRJVVQX",
+    "walletConnectProjectId": "650e5b61be5fadae5d817ff12daa1283"
 }

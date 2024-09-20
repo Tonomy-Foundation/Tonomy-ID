@@ -14,8 +14,11 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { keyStorage } from '../utils/StorageManager/setup';
-import useWalletStore from '../store/useWalletStore';
 import { EthereumMainnetChain, EthereumPolygonChain, EthereumSepoliaChain } from '../utils/chain/etherum';
+import Debug from 'debug';
+import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+
+const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -30,7 +33,6 @@ export default function CreateEthereumKeyContainer({
     const { user } = useUserStore();
     const { transaction } = route.params?.transaction ?? {};
     const session = route.params?.transaction?.session;
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
@@ -72,11 +74,11 @@ export default function CreateEthereumKeyContainer({
             const salt = idData.password_salt;
 
             await user.login(tonomyUsername, passphrase.join(' '), {
+                // @ts-ignore (Checksum256 type error)
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
             await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
-            await initializeWallet();
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
@@ -84,9 +86,11 @@ export default function CreateEthereumKeyContainer({
 
             redirectFunc();
         } catch (e) {
-            console.log('error', e);
+            debug('onNext() function error', e);
 
-            if (e instanceof SdkError) {
+            if (isNetworkError(e)) {
+                errorsStore.setError(createNetworkErrorState());
+            } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.PasswordInvalid:
                     case SdkErrors.PasswordFormatInvalid:

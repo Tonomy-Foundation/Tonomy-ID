@@ -27,6 +27,9 @@ import {
 } from './types';
 import settings from '../../settings';
 import { SignClientTypes } from '@walletconnect/types';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:chain:ethereum');
 
 export const USD_CONVERSION = 0.002;
 
@@ -161,7 +164,10 @@ export class EthereumToken extends AbstractToken {
                 throw new Error('Account not found');
             })();
 
+        debug('getBalance() lookupAccount', lookupAccount.getChain().getName(), lookupAccount.getName());
         const balanceWei = await this.chain.getProvider().getBalance(lookupAccount.getName() || '');
+
+        debug('getBalance() balance', lookupAccount.getChain().getName(), balanceWei);
 
         return new Asset(this, balanceWei);
     }
@@ -413,7 +419,7 @@ export class EthereumAccount extends AbstractAccount {
 
             if (code !== '0x') return true;
         } catch (error) {
-            console.log('error', error);
+            console.error('EthereumAccount.isContract()', error);
         }
 
         return false;
