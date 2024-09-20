@@ -482,49 +482,43 @@ export default function MainContainer({
                                                                     <Text>Not connected</Text>
                                                                 )}
                                                             </View>
-                                                            {refreshBalance ? (
-                                                                <TSpinner size="small" />
-                                                            ) : (
-                                                                <>
-                                                                    {!accountData.account ? (
-                                                                        <TButton
-                                                                            style={styles.generateKey}
-                                                                            onPress={() => {
-                                                                                navigation.navigate(
-                                                                                    'CreateEthereumKey'
-                                                                                );
-                                                                            }}
-                                                                            color={theme.colors.white}
-                                                                            size="medium"
-                                                                        >
-                                                                            Generate key
-                                                                        </TButton>
-                                                                    ) : (
+                                                            <>
+                                                                {!accountData.account ? (
+                                                                    <TButton
+                                                                        style={styles.generateKey}
+                                                                        onPress={() => {
+                                                                            navigation.navigate('CreateEthereumKey');
+                                                                        }}
+                                                                        color={theme.colors.white}
+                                                                        size="medium"
+                                                                    >
+                                                                        Generate key
+                                                                    </TButton>
+                                                                ) : (
+                                                                    <View
+                                                                        style={{
+                                                                            flexDirection: 'column',
+                                                                            alignItems: 'flex-end',
+                                                                        }}
+                                                                    >
                                                                         <View
                                                                             style={{
-                                                                                flexDirection: 'column',
-                                                                                alignItems: 'flex-end',
+                                                                                flexDirection: 'row',
+                                                                                alignItems: 'center',
                                                                             }}
                                                                         >
-                                                                            <View
-                                                                                style={{
-                                                                                    flexDirection: 'row',
-                                                                                    alignItems: 'center',
-                                                                                }}
-                                                                            >
-                                                                                <Text>{accountData.balance}</Text>
-                                                                            </View>
-                                                                            <Text style={styles.secondaryColor}>
-                                                                                $
-                                                                                {formatCurrencyValue(
-                                                                                    Number(accountData.usdBalance),
-                                                                                    3
-                                                                                )}
-                                                                            </Text>
+                                                                            <Text>{accountData.balance}</Text>
                                                                         </View>
-                                                                    )}
-                                                                </>
-                                                            )}
+                                                                        <Text style={styles.secondaryColor}>
+                                                                            $
+                                                                            {formatCurrencyValue(
+                                                                                Number(accountData.usdBalance),
+                                                                                3
+                                                                            )}
+                                                                        </Text>
+                                                                    </View>
+                                                                )}
+                                                            </>
                                                         </View>
                                                     </View>
                                                 </TouchableOpacity>
