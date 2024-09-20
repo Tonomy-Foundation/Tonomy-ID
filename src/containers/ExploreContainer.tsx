@@ -1,17 +1,30 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Props } from '../screens/Explore';
 import theme from '../utils/theme';
+import LearnMoreAutonomous from '../components/LearnMoreAutonomous';
+import { useRef } from 'react';
 
-export default function ExploreContainer ({ navigation }: { navigation: Props['navigation'] }) {
+export default function ExploreContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const refMessage = useRef(null);
+    const onClose = () => {
+        (refMessage.current as any)?.close();
+    };
+    const handleLearnMore = () => {
+        (refMessage?.current as any)?.open();
+    };
     return (
         <View style={styles.container}>
+            <LearnMoreAutonomous onClose={onClose} refMessage={refMessage} />
             <ScrollView style={styles.scrollContent}>
-                <Image source={require('../assets/images/join-community-discord.png')} style={styles.joinCommunityDiscordImage} />
+                <Image
+                    source={require('../assets/images/join-community-discord.png')}
+                    style={styles.joinCommunityDiscordImage}
+                />
                 <View style={styles.worldFristAutonomous}>
-                <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
+                    <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
                     <Image source={require('../assets/images/earth-globe-network-connection.png')} />
-                    <TouchableOpacity style={styles.learnMoreButton}>
+                    <TouchableOpacity style={styles.learnMoreButton} onPress={handleLearnMore}>
                         <Text style={styles.learnMoreButtonText}>Learn more</Text>
                     </TouchableOpacity>
                 </View>
@@ -27,35 +40,50 @@ export default function ExploreContainer ({ navigation }: { navigation: Props['n
                         <Text style={styles.usefullLinkButtonText}>Pitch decks</Text>
                     </TouchableOpacity>
                 </View>
-
                 <Text style={styles.usefulLink}>Our socials</Text>
                 <View style={styles.usefulLinkButtonLayout}>
-                    <TouchableOpacity style={styles.ourSocialButtonX}>
-                        <Text style={styles.ourSocialButtonText}>X</Text>
+                    <TouchableOpacity style={[styles.socialButton, { backgroundColor: theme.colors.black }]}>
+                        <Text style={styles.socialButtonText}>X</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.ourSocialButtonTelegram}>
-                        <Text style={styles.ourSocialButtonText}>Telegram</Text>
+                    <TouchableOpacity style={[styles.socialButton, { backgroundColor: '#00AEED' }]}>
+                        <Text style={styles.socialButtonText}>Telegram</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.ourSocialButtonLinkedIn}>
-                        <Text style={styles.ourSocialButtonText}>LinkedIn</Text>
+                    <TouchableOpacity style={[styles.socialButton, { backgroundColor: '#007BB5' }]}>
+                        <Text style={styles.socialButtonText}>LinkedIn</Text>
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.usefulLink}>News</Text>
-                <View style={styles.newsFrameLayout}>
-                    <Image source={require('../assets/images/pangea-news.png')} />
-                    <View>
-                        <Text style={styles.newsFrameTitle}>Pangea's LEOS Token: A MiCA-Compliant Pioneer with Exper...</Text>
-                        <Text style={styles.newsFrameNote}>The Pangea Virtual Nation and its LEOS token aim to revolutionize...</Text>
-                    </View> 
+                <View style={styles.newsFrameLayoutContainer}>
+                    <View style={styles.newsFrameLayout}>
+                        <Image source={require('../assets/images/pangea-news.png')} />
+                        <View>
+                            <Text style={styles.newsFrameTitle}>
+                                Pangea's LEOS Token: A MiCA-Compliant Pioneer with Exper...
+                            </Text>
+                            <Text style={styles.newsFrameNote}>
+                                The Pangea Virtual Nation and its LEOS token aim to revolutionize...
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={styles.newsFrameLayout}>
+                        <Image source={require('../assets/images/pangea-news.png')} />
+                        <View>
+                            <Text style={styles.newsFrameTitle}>
+                                Pangea's LEOS Token: A MiCA-Compliant Pioneer with Exper...
+                            </Text>
+                            <Text style={styles.newsFrameNote}>
+                                The Pangea Virtual Nation and its LEOS token aim to revolutionize...
+                            </Text>
+                        </View>
+                    </View>
                 </View>
             </ScrollView>
         </View>
-
     );
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
     },
     scrollContent: {
         padding: 18,
@@ -63,17 +91,18 @@ const styles = StyleSheet.create({
     joinCommunityDiscordImage: {
         alignSelf: 'center',
         marginBottom: 32,
+        width: '100%',
     },
     worldFristAutonomous: {
         borderWidth: 1,
         borderRadius: 8,
         padding: 16,
-        borderColor: theme.colors.grey8
+        borderColor: theme.colors.grey8,
     },
     worldFristAutonomousTitle: {
         fontSize: 17,
         fontWeight: '700',
-        lineHeight: 20.57
+        lineHeight: 20.57,
     },
     worldFristAutonomousNotes: {
         fontSize: 13,
@@ -91,26 +120,29 @@ const styles = StyleSheet.create({
     learnMoreButtonText: {
         textAlign: 'center',
         fontWeight: '500',
-        fontSize: 14
+        fontSize: 14,
     },
     usefulLink: {
         fontWeight: '600',
         fontSize: 16,
         marginTop: 26,
-        paddingBottom:8,
+        paddingBottom: 8,
     },
     usefulLinkButtonLayout: {
         flexDirection: 'row',
         gap: 8,
+        flexWrap: 'wrap',
     },
     usefullLinkButton: {
         borderWidth: 1,
         borderRadius: 8,
         borderColor: theme.colors.grey8,
-        paddingVertical: 15,
-        width: 109,
-        height: 56,
-        
+        paddingVertical: 18,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexGrow: 1,
+        flexBasis: 0,
     },
     usefullLinkButtonText: {
         fontWeight: '400',
@@ -118,36 +150,27 @@ const styles = StyleSheet.create({
         color: theme.colors.blue,
         textAlign: 'center',
     },
-    ourSocialButtonX:{
-        borderWidth: 1,
+    socialButton: {
+        paddingVertical: 18,
         borderRadius: 8,
-        backgroundColor:theme.colors.black,
-        paddingVertical: 15,
-        width: 109,
-        height: 56,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexGrow: 1,
+        flexBasis: 0,
     },
-    ourSocialButtonTelegram:{
-        borderRadius: 8,
-        backgroundColor:theme.colors.blue1,
-        paddingHorizontal: 16.5,
-        paddingVertical: 15,
-        width: 109,
-        height: 56,
-    },
-    ourSocialButtonLinkedIn:{
-        borderRadius: 8,
-        backgroundColor:theme.colors.blue2,
-        paddingVertical: 15,
-        width: 109,
-        height: 56,
-    },
-    ourSocialButtonText: {
-        fontWeight: '400',
+    socialButtonText: {
+        fontWeight: '600',
         fontSize: 14,
         color: theme.colors.white,
-        textAlign:'center',
+        textAlign: 'center',
     },
-    newsFrameLayout:{
+    newsFrameLayoutContainer: {
+        flexDirection: 'column',
+        gap: 15,
+        marginBottom: 70,
+    },
+    newsFrameLayout: {
         borderWidth: 1,
         borderRadius: 8,
         borderColor: theme.colors.grey8,
@@ -155,8 +178,7 @@ const styles = StyleSheet.create({
         gap: 9,
         paddingHorizontal: 16,
         paddingVertical: 16,
-        width: 343,
-        marginBottom: 32
+        width: '100%',
     },
     newsFrameTitle: {
         fontSize: 12,
@@ -164,8 +186,7 @@ const styles = StyleSheet.create({
         lineHeight: 16.41,
         letterSpacing: 0.15,
         width: 260,
-        paddingEnd:10,
-               
+        paddingEnd: 10,
     },
     newsFrameNote: {
         fontSize: 12,
@@ -173,8 +194,6 @@ const styles = StyleSheet.create({
         lineHeight: 16.41,
         letterSpacing: 0.15,
         color: theme.colors.grey9,
-        width: 260
-    }
-
-
+        width: 260,
+    },
 });
