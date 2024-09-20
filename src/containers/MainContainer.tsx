@@ -79,16 +79,29 @@ export default function MainContainer({
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
     const refMessage = useRef(null);
+    const isUpdatingBalances = useRef(false);
+    const [accounts, setAccounts] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
+    const { updateBalance: updateCryptoBalance } = useWalletStore((state) => ({
+        updateBalance: state.updateBalance,
+    }));
 
+    const chains = useMemo(
+        () => [
+            { token: ETHToken, chain: EthereumMainnetChain },
+            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+            { token: ETHPolygonToken, chain: EthereumPolygonChain },
+        ],
+        []
+    );
+
+    // initializeWalletState() on mount with progressiveRetryOnNetworkError()
     useEffect(() => {
         if (!initialized) {
             progressiveRetryOnNetworkError(initializeWalletState);
         }
     }, [initializeWalletState, initialized]);
-
-    const { updateBalance } = useWalletStore((state) => ({
-        updateBalance: state.updateBalance,
-    }));
 
     const connectToDid = useCallback(
         async (did: string) => {
@@ -110,7 +123,7 @@ export default function MainContainer({
                         expected: true,
                     });
                 } else {
-                    debug('connectToDid error:', e);
+                    debug('connectToDid() error:', e);
 
                     errorStore.setError({
                         error: e,
@@ -132,9 +145,8 @@ export default function MainContainer({
                 await connectToDid(did);
             } catch (e) {
                 if (isNetworkError(e)) {
-                    debug('network error when connectToDid called');
+                    debug('onUrlOpen() network error when connectToDid called');
                 } else {
-                    debug('onUrlOpen error:', e);
                     errorStore.setError({ error: e, expected: false });
                 }
             } finally {
@@ -154,11 +166,12 @@ export default function MainContainer({
             setAccountName(accountName);
         } catch (e) {
             if (isNetworkError(e)) {
-                debug('Error getting username network error');
+                debug('setUserName() network error');
             } else errorStore.setError({ error: e, expected: false });
         }
     }, [user, errorStore]);
 
+    // setUserName() on mount
     useEffect(() => {
         setUserName();
 
@@ -166,34 +179,6 @@ export default function MainContainer({
             onUrlOpen(did);
         }
     }, [setUserName, did, onUrlOpen]);
-
-    useEffect(() => {
-        async function getUpdatedBalance() {
-            try {
-                if (accountExists) await updateBalance();
-
-                const accountPangeaBalance = await vestingContract.getBalance(accountName);
-
-                if (pangeaBalance !== accountPangeaBalance) {
-                    setPangeaBalance(accountPangeaBalance);
-                }
-            } catch (error) {
-                debug('Error updating balance:', error);
-
-                if (isNetworkError(error)) {
-                    debug('network error when call updating balance:');
-                }
-            }
-        }
-
-        getUpdatedBalance();
-
-        const interval = setInterval(() => {
-            getUpdatedBalance();
-        }, 20000);
-
-        return () => clearInterval(interval);
-    }, [pangeaBalance, setPangeaBalance, accountName, errorStore, updateBalance, accountExists]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         try {
@@ -205,17 +190,17 @@ export default function MainContainer({
                 await connectToDid(did);
             }
         } catch (e) {
-            debug('onScan error:', e);
+            debug('onScan() error:', e);
 
             if (isNetworkError(e)) {
-                debug('Scan Qr Code network error');
+                debug('onScan() network error');
                 errorStore.setError({
                     title: 'Network Error',
                     error: new Error('Check your connection, and try again.'),
                     expected: true,
                 });
             } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
-                debug('Invalid QR Code', JSON.stringify(e, null, 2));
+                debug('onScan() Invalid QR Code', JSON.stringify(e, null, 2));
 
                 if (e.message === 'QR schema does not match app') {
                     errorStore.setError({
@@ -231,7 +216,7 @@ export default function MainContainer({
                     });
                 }
             } else if (e instanceof CommunicationError) {
-                debug('CommunicationError QR Code', JSON.stringify(e, null, 2));
+                debug('onScan() CommunicationError QR Code', JSON.stringify(e, null, 2));
                 errorStore.setError({
                     error: e,
                     expected: false,
@@ -246,76 +231,107 @@ export default function MainContainer({
         }
     }
 
-    const onRefresh = React.useCallback(async () => {
+    const updateLeosBalance = useCallback(async () => {
         try {
+            debug('updateLeosBalance() fetching LEOS balance');
+            if (accountExists) await updateCryptoBalance();
+
+            const accountPangeaBalance = await vestingContract.getBalance(accountName);
+
+            if (pangeaBalance !== accountPangeaBalance) {
+                setPangeaBalance(accountPangeaBalance);
+            }
+        } catch (error) {
+            debug('updateLeosBalance() error', error);
+
+            if (isNetworkError(error)) {
+                debug('updateLeosBalance() network error');
+            }
+        }
+    }, [accountExists, updateCryptoBalance, accountName, pangeaBalance]);
+
+    const fetchCryptoAssets = useCallback(async () => {
+        try {
+            if (!accountExists) await initializeWalletAccount();
             setRefreshBalance(true);
-            await updateBalance();
+            await connect();
+
+            for (const chainObj of chains) {
+                const asset = await assetStorage.findAssetByName(chainObj.token);
+
+                debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
+
+                const account = asset
+                    ? {
+                          network: capitalizeFirstLetter(chainObj.chain.getName()),
+                          accountName: asset.accountName,
+                          balance: asset.balance,
+                          usdBalance: asset.usdBalance,
+                      }
+                    : {
+                          network: capitalizeFirstLetter(chainObj.chain.getName()),
+                          accountName: null,
+                          balance: '0' + chainObj.token.getSymbol(),
+                          usdBalance: 0,
+                      };
+
+                setAccounts((prevAccounts) => {
+                    // find index of the account in the array
+                    const index = prevAccounts.findIndex((acc) => acc.network === account.network);
+
+                    prevAccounts[index] = account;
+                    return [...prevAccounts];
+                });
+            }
+
+            setRefreshBalance(false);
+        } catch (error) {
+            setRefreshBalance(false);
+            debug('fetchCryptoAssets() error', error);
+        }
+    }, [accountExists, initializeWalletAccount, chains]);
+
+    const updateAllBalances = useCallback(async () => {
+        if (isUpdatingBalances.current) return; // Prevent re-entry if already running
+        isUpdatingBalances.current = true;
+
+        try {
+            debug('updateAllBalances()');
+            setRefreshBalance(true);
+            await updateLeosBalance();
+            await updateCryptoBalance();
+            await fetchCryptoAssets();
             setRefreshBalance(false);
         } catch (error) {
             setRefreshBalance(false);
 
             if (isNetworkError(error)) {
-                debug('Error updating account detail network error:');
+                debug('updateAllBalances() Error updating account detail network error:');
+            } else {
+                console.error('MainContainer() updateAllBalances() error', error);
             }
+        } finally {
+            isUpdatingBalances.current = false;
         }
-    }, [updateBalance]);
+    }, [updateCryptoBalance, fetchCryptoAssets, updateLeosBalance]);
 
+    const onRefresh = useCallback(updateAllBalances, [updateAllBalances]);
+
+    // updateAllBalances() on mount and every 20 seconds
+    useEffect(() => {
+        updateAllBalances();
+
+        const interval = setInterval(updateAllBalances, 20000);
+
+        return () => clearInterval(interval);
+    }, [updateAllBalances]);
+
+    // Open the AccountDetails component when accountDetails is set
     useEffect(() => {
         if (accountDetails?.address) {
             (refMessage?.current as any)?.open();
         }
     }, [accountDetails]);
-
-    const chains = useMemo(
-        () => [
-            { token: ETHToken, chain: EthereumMainnetChain },
-            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-            { token: ETHPolygonToken, chain: EthereumPolygonChain },
-        ],
-        []
-    );
-
-    const [accounts, setAccounts] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-    >([]);
-
-    useEffect(() => {
-        const fetchAssets = async () => {
-            try {
-                if (!accountExists) await initializeWalletAccount();
-                setRefreshBalance(true);
-                await connect();
-
-                for (const chainObj of chains) {
-                    const asset = await assetStorage.findAssetByName(chainObj.token);
-
-                    const account = asset
-                        ? {
-                              network: capitalizeFirstLetter(chainObj.chain.getName()),
-                              accountName: asset.accountName,
-                              balance: asset.balance,
-                              usdBalance: asset.usdBalance,
-                          }
-                        : {
-                              network: capitalizeFirstLetter(chainObj.chain.getName()),
-                              accountName: null,
-                              balance: '0' + chainObj.token.getSymbol(),
-                              usdBalance: 0,
-                          };
-
-                    // Use functional update to preserve the previous state
-                    setAccounts((prevAccounts) => [...prevAccounts, account]);
-                }
-
-                setRefreshBalance(false);
-            } catch (error) {
-                setRefreshBalance(false);
-                debug('Error fetching asset:', error);
-            }
-        };
-
-        fetchAssets();
-    }, [chains, accountExists, initializeWalletAccount]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
