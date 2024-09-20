@@ -32,7 +32,7 @@ export type DrawerStackParamList = {
         payload?: SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
     };
-    BottomTabs: undefined;
+    BottomNavigation: undefined;
 };
 
 const Drawer = createDrawerNavigator<DrawerStackParamList>();
@@ -54,10 +54,10 @@ export default function DrawerNavigation() {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawer {...props} />}
-            initialRouteName="BottomTabs"
+            initialRouteName="BottomNavigation"
             screenOptions={defaultScreenOptions}
         >
-            <Drawer.Screen name="BottomTabs" options={{ title: 'Home' }} component={BottomTabNavigator} />
+            <Drawer.Screen name="BottomNavigation" options={{ title: 'Home' }} component={BottomTabNavigator} />
             {/* change component to Main Navigation when bottom nav should be added */}
             {/* <Drawer.Screen name="UserHome" options={{ title: 'Home' }} component={MainScreen} /> */}
 

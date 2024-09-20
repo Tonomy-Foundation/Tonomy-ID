@@ -91,7 +91,7 @@ export type RouteStackParamList = {
         payload?: SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
     };
-    BottomTabs: undefined;
+    BottomNavigation: undefined;
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -204,7 +204,7 @@ export default function RootNavigation() {
                 <>
                     <NotificationModule />
                     <CommunicationModule />
-                    <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
+                    <Stack.Navigator initialRouteName={'BottomNavigation'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
                             component={DrawerNavigation}

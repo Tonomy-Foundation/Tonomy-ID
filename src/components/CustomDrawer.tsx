@@ -12,7 +12,7 @@ import useWalletStore from '../store/useWalletStore';
 // https://callstack.github.io/react-native-paper/docs/guides/icons/
 const icons: Record<keyof DrawerStackParamList, string> = {
     UserHome: 'home',
-    BottomTabs: 'home',
+    BottomNavigation: 'home',
     Settings: 'cog',
     Help: 'help-circle',
     Logout: 'logout',
