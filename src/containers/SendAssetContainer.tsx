@@ -1,4 +1,13 @@
-import { ImageSourcePropType, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    Image,
+    ImageSourcePropType,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import { SendAssetScreenNavigationProp } from '../screens/Send';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
@@ -10,13 +19,25 @@ import { formatCurrencyValue } from '../utils/numbers';
 import { USD_CONVERSION } from '../utils/chain/etherum';
 import useUserStore from '../store/userStore';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import { IAccount, ITransaction } from '../utils/chain/types';
+import { keyStorage } from '../utils/StorageManager/setup';
+import {
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumPrivateKey,
+    EthereumSepoliaChain,
+    EthereumTransaction,
+} from '../utils/chain/etherum';
+
+import { Images } from '../assets';
+import { progressiveRetryOnNetworkError } from '../utils/network';
 
 const vestingContract = VestingContract.Instance;
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     symbol: string;
     name: string;
-    address?: string;
+    account?: string;
     icon?: ImageSourcePropType | undefined;
     image?: string;
     accountBalance: { balance: string; usdBalance: number };
@@ -29,6 +50,25 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const user = userStore.user;
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const refMessage = useRef(null);
+    const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchLogo = async () => {
+            try {
+                progressiveRetryOnNetworkError(async () => {
+                    if (props.account) {
+                        //const accountToken = await props.account.getNativeToken();
+                        setLogoUrl(null);
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to fetch logo', e);
+            }
+        };
+
+        fetchLogo();
+    }, [props.account]);
+
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
     };
@@ -36,11 +76,11 @@ const SendAssetContainer = (props: SendAssetProps) => {
         (refMessage.current as any)?.close();
     };
 
-    const { ethereumBalance, sepoliaBalance, polygonBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
-    }));
+    // const { ethereumBalance, sepoliaBalance, polygonBalance } = useWalletStore((state) => ({
+    //     ethereumBalance: state.ethereumBalance,
+    //     sepoliaBalance: state.sepoliaBalance,
+    //     polygonBalance: state.polygonBalance,
+    // }));
 
     useEffect(() => {
         const fetchAccountname = async () => {
@@ -53,24 +93,24 @@ const SendAssetContainer = (props: SendAssetProps) => {
         }
     }, [user, props.name]);
 
-    const handleMaxAmount = () => {
-        if (props.name === 'Sepolia') {
-            const [balance] = sepoliaBalance.balance.split(' ');
-            onChangeAmount(balance);
-            onChangeUSDAmount(sepoliaBalance.usdBalance.toString());
-        } else if (props.name === 'Ethereum') {
-            const [balance] = ethereumBalance.balance.split(' ');
-            onChangeAmount(balance);
-            onChangeUSDAmount(ethereumBalance.usdBalance.toString());
-        } else if (props.name === 'Polygon') {
-            const [balance] = polygonBalance.balance.split(' ');
-            onChangeAmount(balance);
-            onChangeUSDAmount(polygonBalance.usdBalance.toString());
-        } else if (props.name === 'Pangea') {
-            onChangeAmount(pangeaBalance.toString());
-            onChangeUSDAmount(formatCurrencyValue(pangeaBalance * USD_CONVERSION).toString());
-        }
-    };
+    // const handleMaxAmount = () => {
+    //     if (props.name === 'Sepolia') {
+    //         const [balance] = sepoliaBalance.balance.split(' ');
+    //         onChangeAmount(balance);
+    //         onChangeUSDAmount(sepoliaBalance.usdBalance.toString());
+    //     } else if (props.name === 'Ethereum') {
+    //         const [balance] = ethereumBalance.balance.split(' ');
+    //         onChangeAmount(balance);
+    //         onChangeUSDAmount(ethereumBalance.usdBalance.toString());
+    //     } else if (props.name === 'Polygon') {
+    //         const [balance] = polygonBalance.balance.split(' ');
+    //         onChangeAmount(balance);
+    //         onChangeUSDAmount(polygonBalance.usdBalance.toString());
+    //     } else if (props.name === 'Pangea') {
+    //         onChangeAmount(pangeaBalance.toString());
+    //         onChangeUSDAmount(formatCurrencyValue(pangeaBalance * USD_CONVERSION).toString());
+    //     }
+    // };
 
     const onScan = (address) => {
         const currentAddress = `${address.substring(0, 7)}...${address.substring(address.length - 6)}`;
@@ -96,6 +136,14 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                 <ScanIcon color={theme.colors.success} width={18} height={18} />
                             </TouchableOpacity>
                         </View>
+                        <View style={styles.networkContainer}>
+                            {logoUrl ? (
+                                <Image source={{ uri: logoUrl }} style={[styles.favicon, { resizeMode: 'contain' }]} />
+                            ) : (
+                                <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
+                            )}
+                            <Text style={styles.networkName}>{props.name} network</Text>
+                        </View>
                         <View>
                             <View style={styles.inputContainer}>
                                 <TextInput
@@ -104,9 +152,14 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                     placeholder="Enter amount"
                                     placeholderTextColor={theme.colors.tabGray}
                                 />
-                                <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
-                                    <Text style={styles.inputButtonText}>MAX</Text>
-                                </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', gap: 8 }}>
+                                    <TouchableOpacity style={styles.inputButton}>
+                                        <Text style={styles.currencyButtonText}>{props.symbol}</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.inputButton}>
+                                        <Text style={styles.inputButtonText}>MAX</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                             <Text style={styles.inputHelp}>${Number(usdAmount) || '0.00'}</Text>
                         </View>
@@ -132,6 +185,24 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         flexGrow: 1,
+    },
+    networkContainer: {
+        backgroundColor: theme.colors.grey7,
+        borderWidth: 1,
+        borderColor: theme.colors.grey8,
+        height: 48,
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 12,
+        borderRadius: 6,
+        gap: 8,
+    },
+    networkName: {
+        fontSize: 15,
+    },
+    favicon: {
+        width: 24,
+        height: 24,
     },
     appDialog: {
         borderWidth: 1,
@@ -167,6 +238,12 @@ const styles = StyleSheet.create({
         gap: 10,
         marginRight: 10,
         flexShrink: 0,
+    },
+    currencyButtonText: {
+        color: theme.colors.grey9,
+        fontSize: 15,
+        fontFamily: 'Roboto',
+        fontWeight: '500',
     },
     inputButtonText: {
         color: theme.colors.success,

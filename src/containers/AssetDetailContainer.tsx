@@ -10,7 +10,7 @@ export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
     symbol: string;
     name: string;
-    address?: string;
+    account?: string;
     icon?: ImageSourcePropType | undefined;
     image?: string;
     accountBalance: { balance: string; usdBalance: number };
@@ -35,33 +35,38 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                             <Text style={styles.headerAssetsAmount}>{props.accountBalance.balance}</Text>
                             <Text style={styles.headerAssetUSDAmount}>${props.accountBalance.usdBalance} USD</Text>
                         </View>
+                        <View style={styles.warning}>
+                            <Text>All LEOS is vested until the public sale</Text>
+                        </View>
                         <View style={styles.flexRow}>
-                            <TouchableOpacity
-                                onPress={() =>
-                                    props.navigation.navigate('Send', {
-                                        screenTitle: `Send ${props.symbol}`,
-                                        symbol: props.symbol,
-                                        name: props.name,
-                                        address: props.address,
-                                        icon: props.icon,
-                                        image: props.image,
-                                        accountBalance: props.accountBalance,
-                                    })
-                                }
-                                style={styles.flexCenter}
-                            >
-                                <View style={styles.headerButton}>
-                                    <ArrowUpIcon />
-                                </View>
-                                <Text>Send</Text>
-                            </TouchableOpacity>
+                            {props.symbol !== 'LEOS' && (
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        props.navigation.navigate('Send', {
+                                            screenTitle: `Send ${props.symbol}`,
+                                            symbol: props.symbol,
+                                            name: props.name,
+                                            account: props.account,
+                                            icon: props.icon,
+                                            image: props.image,
+                                            accountBalance: props.accountBalance,
+                                        })
+                                    }
+                                    style={styles.flexCenter}
+                                >
+                                    <View style={styles.headerButton}>
+                                        <ArrowUpIcon />
+                                    </View>
+                                    <Text>Send</Text>
+                                </TouchableOpacity>
+                            )}
                             <TouchableOpacity
                                 onPress={() =>
                                     props.navigation.navigate('Receive', {
                                         screenTitle: `Receive ${props.symbol}`,
                                         symbol: props.symbol,
                                         name: props.name,
-                                        address: props.address,
+                                        account: props.account,
                                         icon: props.icon,
                                         image: props.image,
                                         accountBalance: props.accountBalance,
@@ -97,6 +102,12 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         marginTop: 10,
+    },
+    warning: {
+        backgroundColor: theme.colors.gold,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 6,
     },
     scrollViewContent: {
         flexGrow: 1,

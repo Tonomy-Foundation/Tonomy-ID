@@ -63,11 +63,16 @@ const AssetItem = (props: AccountItemProps) => {
                 accountBalance: props.accountBalance,
             });
         } else if (props.type === 'send') {
-            props.navigation.navigate('Send', {
-                screenTitle: `Send ${props.currency}`,
-                ...account,
-                accountBalance: props.accountBalance,
-            });
+            if (props.currency === 'LEOS') {
+                alert('All LEOS is vested until the public sale');
+                return;
+            } else {
+                props.navigation.navigate('Send', {
+                    screenTitle: `Send ${props.currency}`,
+                    ...account,
+                    accountBalance: props.accountBalance,
+                });
+            }
         }
     };
 

@@ -44,7 +44,7 @@ export interface AssetParamsScreen {
     symbol: string;
     name: string;
     icon?: ImageSourcePropType | undefined;
-    address?: string;
+    account?: string;
     image?: string;
     accountBalance: { balance: string; usdBalance: number };
 }
@@ -232,7 +232,7 @@ export default function RootNavigation() {
                 <>
                     <NotificationModule />
                     <CommunicationModule />
-                    <Stack.Navigator initialRouteName={'BottomNavigation'} screenOptions={defaultScreenOptions}>
+                    <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
                             component={DrawerNavigation}
