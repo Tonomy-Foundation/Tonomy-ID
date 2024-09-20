@@ -90,8 +90,8 @@ const styles = StyleSheet.create({
     },
     joinCommunityDiscordImage: {
         alignSelf: 'center',
-        marginBottom: 22,
-        width: '100%'
+        marginBottom: 32,
+        width: '100%',
     },
     worldFristAutonomous: {
         borderWidth: 1,
