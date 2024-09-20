@@ -23,6 +23,10 @@ import {
 } from '../utils/chain/etherum';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import { SignClientTypes } from '@walletconnect/types';
+import Debug from 'debug';
+import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+
+const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -85,7 +89,6 @@ export default function CreateEthereumKeyContainer({
             });
 
             await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
-            await initializeWalletState();
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);
@@ -93,9 +96,11 @@ export default function CreateEthereumKeyContainer({
 
             redirectFunc();
         } catch (e) {
-            console.error('onNext()', e);
+            debug('onNext() function error', e);
 
-            if (e instanceof SdkError) {
+            if (isNetworkError(e)) {
+                errorsStore.setError(createNetworkErrorState());
+            } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.PasswordInvalid:
                     case SdkErrors.PasswordFormatInvalid:

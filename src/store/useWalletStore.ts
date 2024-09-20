@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { Core } from '@walletconnect/core';
 import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
-import { appStorage, connect, keyStorage } from '../utils/StorageManager/setup';
+import { appStorage, assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
 import settings from '../settings';
 import {
     EthereumAccount,
@@ -18,52 +18,114 @@ import {
 } from '../utils/chain/etherum';
 import { Asset, IAccount } from '../utils/chain/types';
 import Debug from 'debug';
+import { ICore } from '@walletconnect/types';
+import NetInfo from '@react-native-community/netinfo';
+import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
 
-export const core = new Core({
-    projectId: settings.config.walletConnectProjectId,
-    relayUrl: 'wss://relay.walletconnect.com',
-});
-
-interface WalletState {
+export interface WalletState {
     initialized: boolean;
     web3wallet: IWeb3Wallet | null;
+    core: ICore | null;
     ethereumAccount: IAccount | null;
-    ethereumBalance: { balance: string; usdBalance: number };
     sepoliaAccount: IAccount | null;
-    sepoliaBalance: { balance: string; usdBalance: number };
     polygonAccount: IAccount | null;
-    polygonBalance: { balance: string; usdBalance: number };
     initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
     disconnectSession: () => Promise<void>;
+    initializeWalletAccount: () => Promise<void>;
+    accountExists: boolean;
 }
+
 const defaultState = {
     initialized: false,
     ethereumAccount: null,
-    ethereumBalance: { balance: '0', usdBalance: 0 },
     sepoliaAccount: null,
-    sepoliaBalance: { balance: '0', usdBalance: 0 },
     polygonAccount: null,
-    polygonBalance: { balance: '0', usdBalance: 0 },
     web3wallet: null,
+    accountExists: false,
+    core: null,
 };
 
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
+<<<<<<< HEAD
 
     async initializeWalletState(): Promise<void> {
         try {
             await connect();
             debug('initialize');
+=======
+    initializeWalletState: async () => {
+        if (get().initialized) {
+            debug('initializeWalletState() Already initialized');
+            return;
+        }
+>>>>>>> development
 
-            if (get().initialized && get().ethereumAccount) {
-                debug('Already initialized');
+        const netInfoState = await NetInfo.fetch();
+
+        if (!netInfoState.isConnected) {
+            throw new Error(NETWORK_ERROR_MESSAGE);
+        }
+
+        if (!get().initialized && !get().web3wallet) {
+            try {
+                let core: ICore;
+
+                try {
+                    core = new Core({
+                        projectId: settings.config.walletConnectProjectId,
+                        relayUrl: 'wss://relay.walletconnect.com',
+                    });
+                } catch (e) {
+                    console.error('useWalletStore() error when constructing Core', e);
+                    if (!(e instanceof Error)) {
+                        throw new Error(JSON.stringify(e));
+                    } else throw e;
+                }
+
+                let web3walletInstance: IWeb3Wallet;
+
+                try {
+                    web3walletInstance = await Web3Wallet.init({
+                        core,
+                        metadata: {
+                            name: settings.config.appName,
+                            description: settings.config.ecosystemName,
+                            url: 'https://walletconnect.com/',
+                            icons: [settings.config.images.logo48],
+                        },
+                    });
+                } catch (e) {
+                    console.error('useWalletStore() error on Web3Wallet.init()', JSON.stringify(e, null, 2));
+                    if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
+                    else throw e;
+                }
+
+                set({
+                    initialized: true,
+                    web3wallet: web3walletInstance,
+                    core,
+                });
+            } catch (e) {
+                console.error('useWalletStore() initializeWalletState()', e);
+            }
+        }
+    },
+
+    initializeWalletAccount: async () => {
+        try {
+            const state = get();
+
+            if (get().accountExists) {
+                debug('initializeWalletAccount() Account already exists');
                 return;
             }
 
+<<<<<<< HEAD
             debug('Starting state initialization');
             const state = get();
 
@@ -92,6 +154,40 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         },
                     };
                 } catch (error) {
+=======
+            await connect();
+
+            const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
+                try {
+                    const key = await keyStorage.findByName(keyName, chain);
+
+                    if (key) {
+                        const asset = await assetStorage.findAssetByName(token);
+
+                        let account: EthereumAccount;
+
+                        if (!asset) {
+                            const exportPrivateKey = await key.exportPrivateKey();
+                            const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+
+                            account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
+                            const abstractAsset = new Asset(token, BigInt(0));
+
+                            await assetStorage.createAsset(abstractAsset, account);
+                        } else {
+                            account = new EthereumAccount(chain, asset.accountName);
+                        }
+
+                        return {
+                            account,
+                        };
+                    }
+
+                    return null;
+                } catch (error) {
+                    debug(`fetchAccountData() Error fetching account data for ${keyName} on ${chain}:`, error);
+                    // Return a null or custom object to indicate failure
+>>>>>>> development
                     return null;
                 }
             };
@@ -104,47 +200,32 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
                 state.ethereumAccount = ethereumData.value.account;
-                state.ethereumBalance = ethereumData.value.balance;
+            } else if (ethereumData.status === 'rejected') {
+                debug('initializeWalletAccount() Failed to fetch Ethereum account data:', ethereumData.reason);
             }
 
             if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
                 state.sepoliaAccount = sepoliaData.value.account;
-                state.sepoliaBalance = sepoliaData.value.balance;
+            } else if (sepoliaData.status === 'rejected') {
+                debug('initializeWalletAccount() Failed to fetch Sepolia account data:', sepoliaData.reason);
             }
 
             if (polygonData.status === 'fulfilled' && polygonData.value) {
                 state.polygonAccount = polygonData.value.account;
-                state.polygonBalance = polygonData.value.balance;
+            } else if (polygonData.status === 'rejected') {
+                debug('initializeWalletAccount() Failed to fetch Polygon account data:', polygonData.reason);
             }
 
-            if (!get().ethereumAccount && !get().sepoliaAccount && !get().polygonAccount) {
+            if (!get().accountExists) {
                 set({
                     ethereumAccount: state.ethereumAccount,
-                    ethereumBalance: state.ethereumBalance,
                     sepoliaAccount: state.sepoliaAccount,
-                    sepoliaBalance: state.sepoliaBalance,
                     polygonAccount: state.polygonAccount,
-                    polygonBalance: state.polygonBalance,
-                });
-            }
-
-            if (!get().initialized && !get().web3wallet) {
-                const web3wallet = await Web3Wallet.init({
-                    core,
-                    metadata: {
-                        name: settings.config.appName,
-                        description: settings.config.ecosystemName,
-                        url: 'https://walletconnect.com/',
-                        icons: [settings.config.images.logo48],
-                    },
-                });
-
-                set({
-                    initialized: true,
-                    web3wallet,
+                    accountExists: true,
                 });
             }
         } catch (error) {
+<<<<<<< HEAD
             debug('Error initializing wallet state:', error);
             set({
                 ethereumAccount: null,
@@ -154,6 +235,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 polygonAccount: null,
                 polygonBalance: { balance: '0', usdBalance: 0 },
             });
+=======
+            if (isNetworkError(error)) {
+                debug('initializeWalletAccount() network error when initializing wallet account');
+            } else {
+                throw error;
+            }
+>>>>>>> development
         }
     },
 
@@ -161,60 +249,58 @@ const useWalletStore = create<WalletState>((set, get) => ({
         try {
             await keyStorage.deleteAll();
             await appStorage.deleteAll();
+            await assetStorage.deleteAll();
             set({
                 initialized: false,
                 web3wallet: null,
                 ethereumAccount: null,
-                ethereumBalance: { balance: '0', usdBalance: 0 },
                 sepoliaAccount: null,
-                sepoliaBalance: { balance: '0', usdBalance: 0 },
                 polygonAccount: null,
-                polygonBalance: { balance: '0', usdBalance: 0 },
+                accountExists: false,
+                core: null,
             });
         } catch (error) {
-            console.error('Error clearing wallet state:', error);
+            console.error('useWalletStore() Error clearing wallet state:', error);
         }
     },
     updateBalance: async () => {
-        try {
-            const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
+        const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
-            if (ethereumAccount && sepoliaAccount && polygonAccount) {
-                const balances = await Promise.allSettled([
-                    ETHToken.getBalance(ethereumAccount),
-                    ETHSepoliaToken.getBalance(sepoliaAccount),
-                    ETHPolygonToken.getBalance(polygonAccount),
-                ]);
+        debug('updateBalance() Updating account balance');
 
-                const [ethereumResult, sepoliaResult, polygonResult] = balances;
+        if (ethereumAccount && sepoliaAccount && polygonAccount) {
+            await connect();
+            debug('updateBalance() fetching sepolia account', sepoliaAccount.getName());
+            const balances = await Promise.allSettled([
+                ETHToken.getBalance(ethereumAccount),
+                ETHSepoliaToken.getBalance(sepoliaAccount),
+                ETHPolygonToken.getBalance(polygonAccount),
+            ]);
 
-                const ethereumBalance = ethereumResult.status === 'fulfilled' ? ethereumResult.value : 0;
-                const sepoliaBalance = sepoliaResult.status === 'fulfilled' ? sepoliaResult.value : 0;
-                const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
+            const [ethereumResult, sepoliaResult, polygonResult] = balances;
 
-                set({
-                    ethereumBalance: {
-                        balance: ethereumBalance.toString(),
-                        usdBalance: ethereumBalance ? (await ethereumBalance.getUsdValue()) || 0 : 0,
-                    },
-                    sepoliaBalance: {
-                        balance: sepoliaBalance.toString(),
-                        usdBalance: sepoliaBalance ? (await sepoliaBalance.getUsdValue()) || 0 : 0,
-                    },
-                    polygonBalance: {
-                        balance: polygonBalance.toString(),
-                        usdBalance: polygonBalance ? (await polygonBalance.getUsdValue()) || 0 : 0,
-                    },
-                });
+            const ethereumBalance = ethereumResult.status === 'fulfilled' ? ethereumResult.value : 0;
+            const sepoliaBalance = sepoliaResult.status === 'fulfilled' ? sepoliaResult.value : 0;
+            const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
+
+            if (ethereumBalance) {
+                await assetStorage.updateAccountBalance(ethereumBalance);
             }
-        } catch (error) {
-            console.error('Error updating balance:', error);
+
+            if (sepoliaBalance) {
+                await assetStorage.updateAccountBalance(sepoliaBalance);
+            }
+
+            if (polygonBalance) {
+                await assetStorage.updateAccountBalance(polygonBalance);
+            }
         }
     },
     disconnectSession: async () => {
         set({
             initialized: false,
             web3wallet: null,
+            core: null,
         });
     },
 }));

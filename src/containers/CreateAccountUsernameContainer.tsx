@@ -12,6 +12,7 @@ import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
+import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
@@ -40,20 +41,18 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
 
         try {
             await user.saveUsername(formattedUsername);
+            navigation.navigate('CreatePassphrase');
         } catch (e: any) {
             if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
                 setErrorMessage('Username already exists');
-                setLoading(false);
-                return;
+            } else if (isNetworkError(e)) {
+                setErrorMessage(NETWORK_ERROR_RESPONSE);
             } else {
                 errorStore.setError({ error: e, expected: false });
-                setLoading(false);
-                return;
             }
         }
 
         setLoading(false);
-        navigation.navigate('CreatePassphrase');
     }
 
     const onTextChange = (value) => {

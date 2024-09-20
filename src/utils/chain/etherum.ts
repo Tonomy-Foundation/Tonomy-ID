@@ -32,6 +32,11 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getPriceCoinGecko } from './common';
 import { getSdkError } from '@walletconnect/utils';
 import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:chain:ethereum');
+
+export const USD_CONVERSION = 0.002;
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -138,6 +143,8 @@ export class EthereumToken extends AbstractToken {
             })();
 
         const balanceWei = (await lookupAccount.getBalance(this.chain.getNativeToken())).getAmount();
+
+        debug('getBalance() balance', lookupAccount.getChain().getName(), balanceWei);
 
         return new Asset(this, balanceWei);
     }
@@ -405,7 +412,7 @@ export class EthereumAccount extends AbstractAccount {
 
             if (code !== '0x') return true;
         } catch (error) {
-            console.error('isContract()', error);
+            console.error('EthereumAccount.isContract()', error);
         }
 
         return false;

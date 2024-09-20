@@ -7,6 +7,8 @@ import {
     LoginRequestsMessage,
     objToBase64Url,
     parseDid,
+    SdkError,
+    SdkErrors,
 } from '@tonomy/tonomy-id-sdk';
 import { useCallback, useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
@@ -28,6 +30,8 @@ import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
+import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
+import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -46,15 +50,18 @@ export default function CommunicationModule() {
         try {
             const issuer = await user.getIssuer();
             const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
+
+            debug('loginToService() login message', message);
+
             const subscribers = listenToMessages();
+
+            debug('loginToService() subscribers', subscribers);
 
             setSubscribers(subscribers);
 
             try {
                 await user.loginCommunication(message);
             } catch (e) {
-                // 401 signature invalid: the keys have been rotated and the old key is no longer valid
-                // 404 did not found: must have changed network (blockchain full reset - should only happen on local dev)
                 if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
                     await logout(
                         e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
@@ -64,7 +71,15 @@ export default function CommunicationModule() {
                 }
             }
         } catch (e) {
-            errorStore.setError({ error: e, expected: false });
+            unsubscribeAll();
+
+            if (isNetworkError(e)) {
+                throw e;
+            } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                throw new Error(NETWORK_ERROR_MESSAGE);
+            } else {
+                errorStore.setError({ error: e, expected: false });
+            }
         }
     }
 
@@ -104,7 +119,11 @@ export default function CommunicationModule() {
                 const senderDid = message.getSender().split('#')[0];
 
                 if (senderDid !== (await user.getDid())) {
-                    debug('LinkAuthRequestMessage sender did not match user did', senderDid, await user.getDid());
+                    debug(
+                        'linkAuthRequestSubscriber() LinkAuthRequestMessage sender did not match user did',
+                        senderDid,
+                        await user.getDid()
+                    );
                     // Drop message. It came from a different account and we are not interested in it here.
                     // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
@@ -112,7 +131,13 @@ export default function CommunicationModule() {
 
                 await user.handleLinkAuthRequestMessage(message);
             } catch (e) {
-                errorStore.setError({ error: e, expected: false });
+                if (isNetworkError(e)) {
+                    debug('linkAuthRequestSubscriber() Network error');
+                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                    debug('linkAuthRequestSubscriber() Network error connecting to Communication service');
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
             }
         }, LinkAuthRequestMessage.getType());
 
@@ -132,17 +157,22 @@ export default function CommunicationModule() {
     }
 
     useEffect(() => {
-        loginToService();
+        progressiveRetryOnNetworkError(loginToService);
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
 
+    const unsubscribeAll = useCallback(() => {
+        for (const s of subscribers) {
+            user.unsubscribeMessage(s);
+        }
+    }, [subscribers, user]);
+
     useEffect(() => {
         return () => {
-            for (const s of subscribers) {
-                user.unsubscribeMessage(s);
-            }
+            unsubscribeAll();
         };
-    }, [subscribers, user]);
+    }, [subscribers, user, unsubscribeAll]);
 
     function sendWalletConnectNotificationOnBackground(title: string, body: string) {
         if (AppState.currentState === 'background') {
@@ -177,7 +207,7 @@ export default function CommunicationModule() {
                 }
             });
         },
-        [sepoliaAccount, ethereumAccount, polygonAccount, errorStore]
+        [sepoliaAccount, ethereumAccount, polygonAccount]
     );
 
     useEffect(() => {

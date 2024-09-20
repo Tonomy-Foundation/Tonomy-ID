@@ -9,6 +9,10 @@ import { ActivityIndicator, IconButton } from 'react-native-paper';
 import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
 import { Props } from '../screens/QrCodeScanScreen';
+import Debug from 'debug';
+import { isNetworkError } from '../utils/errors';
+
+const debug = Debug('tonomy-id:containers:QrCodeScanContainer');
 
 export default function QrCodeScanContainer(props: Props) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);

@@ -9,6 +9,9 @@ import TIconButton from '../components/TIconButton';
 import theme from '../utils/theme';
 import { formatCurrencyValue } from '../utils/numbers';
 import { Images } from '../assets';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:container:AccountDetails');
 
 export type AccountDetailsProps = {
     accountDetails: {

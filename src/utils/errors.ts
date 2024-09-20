@@ -62,3 +62,13 @@ namespace ApplicationErrors {
 }
 
 export { ApplicationErrors };
+
+export const NETWORK_ERROR_MESSAGE = 'Network request failed';
+export function isNetworkError(error: unknown): boolean {
+    return error instanceof Error && error.message === NETWORK_ERROR_MESSAGE;
+}
+export const NETWORK_ERROR_RESPONSE = 'Please check your connection and try again.';
+export const createNetworkErrorState = (expected = true) => ({
+    error: new Error(NETWORK_ERROR_RESPONSE),
+    expected: expected ?? false,
+});

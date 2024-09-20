@@ -60,12 +60,12 @@ You NEED to follow the above `Pre-run build` steps above before you can start th
 yarn run start
 ```
 
-### Run with the Staging / Demo environment and build
+### Run with the Staging / Testnet environment and build
 
-Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
+Testing Staging / Testnet Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
-1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
-2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=demo yarn run start`
+1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.testnet.json`
+2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=testnet yarn run start`
 3. Connect via QR and bundle and load the app
 4. Scroll down >> "Open React Native dev men"
 5. Click "Settings"
@@ -75,7 +75,7 @@ Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to P
 
 This is now running in production mode connected to the staging environment.
 
-## Run Staging or Demo and see debug logs (Android only)
+## Run Staging or Testnet and see debug logs (Android only)
 
 1. Install adb on your pc (<https://dl.google.com/android/repository/platform-tools-latest-windows.zip>)
 2. Put the location of the folder inside Path env system variable or you can navigate to the folder and call adb.exe directly
@@ -91,6 +91,8 @@ This is now running in production mode connected to the staging environment.
 yarn run updateSdkVersion development
 # or
 yarn run updateSdkVersion master
+# or 
+yarn run updateSdkVersion testnet
 ```
 
 ## File structure of components

@@ -35,6 +35,7 @@ import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import { IChainSession, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
+import Debug from 'debug';
 
 const prefix = Linking.createURL('');
 
@@ -129,11 +130,11 @@ export default function RootNavigation() {
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
-    const user = useUserStore();
+    const { status } = useUserStore();
 
     return (
         <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
-            {user.status === UserStatus.NONE || user.status === UserStatus.NOT_LOGGED_IN ? (
+            {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                     <Stack.Screen

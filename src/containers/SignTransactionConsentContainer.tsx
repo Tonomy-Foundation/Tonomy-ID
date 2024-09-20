@@ -4,17 +4,9 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import {
-    ChainType,
-    IAccount,
-    IAsset,
-    IChainSession,
-    IOperation,
-    IPrivateKey,
-    ITransaction,
-    TransactionType,
-} from '../utils/chain/types';
-import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
+import { IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import { extractHostname } from '../utils/network';
+import { capitalizeFirstLetter } from '../utils/strings';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';

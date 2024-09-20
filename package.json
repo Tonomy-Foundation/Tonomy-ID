@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.112.0",
+    "version": "0.117.1",
     "type": "commonjs",
     "scripts": {
         "eas-build-pre-install": "corepack enable",
@@ -36,7 +36,7 @@
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
         "@sinonjs/text-encoding": "^0.7.2",
-        "@tonomy/tonomy-id-sdk": "0.21.0-development.7",
+        "@tonomy/tonomy-id-sdk": "0.22.0-rc.1",
         "@veramo/core": "^6.0.0",
         "@walletconnect/core": "^2.13.0",
         "@walletconnect/react-native-compat": "^2.13.0",
@@ -106,7 +106,7 @@
         "babel-plugin-transform-builtin-extend": "^1.1.2",
         "babel-plugin-transform-inline-environment-variables": "^0.4.4",
         "babel-plugin-transform-typescript-metadata": "^0.3.2",
-        "eas-cli": "^4.1.2",
+        "eas-cli": "^12.0.0",
         "eslint": "^8.25.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.2.1",
