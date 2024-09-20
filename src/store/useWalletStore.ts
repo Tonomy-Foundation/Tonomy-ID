@@ -51,19 +51,11 @@ const defaultState = {
 
 const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
-<<<<<<< HEAD
-
-    async initializeWalletState(): Promise<void> {
-        try {
-            await connect();
-            debug('initialize');
-=======
     initializeWalletState: async () => {
         if (get().initialized) {
             debug('initializeWalletState() Already initialized');
             return;
         }
->>>>>>> development
 
         const netInfoState = await NetInfo.fetch();
 
@@ -125,36 +117,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 return;
             }
 
-<<<<<<< HEAD
-            debug('Starting state initialization');
-            const state = get();
-
-            debug('Current state:', state);
-
-            const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
-                try {
-                    const key = await keyStorage.findByName(keyName, chain);
-
-                    if (!key) {
-                        return null;
-                    }
-
-                    const exportPrivateKey = await key.exportPrivateKey();
-                    const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
-                    const account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
-                    //TODO uncomment after fix the antelope chain PR
-                    // const balance = await token.getBalance(account);
-
-                    // console.log('Account data:', { account, balance });
-                    return {
-                        account,
-                        balance: {
-                            balance: '0',
-                            usdBalance: 0,
-                        },
-                    };
-                } catch (error) {
-=======
             await connect();
 
             const fetchAccountData = async (chain: EthereumChain, token: EthereumToken, keyName: string) => {
@@ -187,7 +149,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 } catch (error) {
                     debug(`fetchAccountData() Error fetching account data for ${keyName} on ${chain}:`, error);
                     // Return a null or custom object to indicate failure
->>>>>>> development
                     return null;
                 }
             };
@@ -225,23 +186,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 });
             }
         } catch (error) {
-<<<<<<< HEAD
-            debug('Error initializing wallet state:', error);
-            set({
-                ethereumAccount: null,
-                ethereumBalance: { balance: '0', usdBalance: 0 },
-                sepoliaAccount: null,
-                sepoliaBalance: { balance: '0', usdBalance: 0 },
-                polygonAccount: null,
-                polygonBalance: { balance: '0', usdBalance: 0 },
-            });
-=======
             if (isNetworkError(error)) {
                 debug('initializeWalletAccount() network error when initializing wallet account');
             } else {
                 throw error;
             }
->>>>>>> development
         }
     },
 
