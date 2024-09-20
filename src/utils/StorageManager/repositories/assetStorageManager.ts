@@ -1,5 +1,8 @@
 import { IAccount, IAsset, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:storage:assetStorageManager');
 
 interface AccountStorage {
     accountName: string;
@@ -26,6 +29,8 @@ export abstract class AssetStorageManager {
 
         if (existingAsset) {
             const balance = asset.toString();
+
+            debug(`updateAccountBalance() updating ${name} balance`, balance);
             const usdBalance = await asset.getUsdValue();
 
             existingAsset.balance = balance;

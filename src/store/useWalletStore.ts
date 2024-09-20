@@ -53,7 +53,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
     ...defaultState,
     initializeWalletState: async () => {
         if (get().initialized) {
-            debug('Already initialized');
+            debug('initializeWalletState() Already initialized');
             return;
         }
 
@@ -113,7 +113,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             const state = get();
 
             if (get().accountExists) {
-                debug('Account already exists');
+                debug('initializeWalletAccount() Account already exists');
                 return;
             }
 
@@ -147,7 +147,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                     return null;
                 } catch (error) {
-                    debug(`Error fetching account data for ${keyName} on ${chain}:`, error);
+                    debug(`fetchAccountData() Error fetching account data for ${keyName} on ${chain}:`, error);
                     // Return a null or custom object to indicate failure
                     return null;
                 }
@@ -162,19 +162,19 @@ const useWalletStore = create<WalletState>((set, get) => ({
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {
                 state.ethereumAccount = ethereumData.value.account;
             } else if (ethereumData.status === 'rejected') {
-                debug('Failed to fetch Ethereum account data:', ethereumData.reason);
+                debug('initializeWalletAccount() Failed to fetch Ethereum account data:', ethereumData.reason);
             }
 
             if (sepoliaData.status === 'fulfilled' && sepoliaData.value) {
                 state.sepoliaAccount = sepoliaData.value.account;
             } else if (sepoliaData.status === 'rejected') {
-                debug('Failed to fetch Sepolia account data:', sepoliaData.reason);
+                debug('initializeWalletAccount() Failed to fetch Sepolia account data:', sepoliaData.reason);
             }
 
             if (polygonData.status === 'fulfilled' && polygonData.value) {
                 state.polygonAccount = polygonData.value.account;
             } else if (polygonData.status === 'rejected') {
-                debug('Failed to fetch Polygon account data:', polygonData.reason);
+                debug('initializeWalletAccount() Failed to fetch Polygon account data:', polygonData.reason);
             }
 
             if (!get().accountExists) {
@@ -187,7 +187,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
         } catch (error) {
             if (isNetworkError(error)) {
-                debug('network error when initializing wallet account');
+                debug('initializeWalletAccount() network error when initializing wallet account');
             } else {
                 throw error;
             }
@@ -215,8 +215,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
+        debug('updateBalance() Updating account balance');
+
         if (ethereumAccount && sepoliaAccount && polygonAccount) {
             await connect();
+            debug('updateBalance() fetching sepolia account', sepoliaAccount.getName());
             const balances = await Promise.allSettled([
                 ETHToken.getBalance(ethereumAccount),
                 ETHSepoliaToken.getBalance(sepoliaAccount),
