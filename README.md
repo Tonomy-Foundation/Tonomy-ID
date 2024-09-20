@@ -88,7 +88,7 @@ This is now running in production mode connected to the staging environment.
 ## Update the Tonomy-ID-SDK version to the latest
 
 ```bash
-yarn run updateSdkVersion development
+yarn run updateSdkVersion testnet
 # or
 yarn run updateSdkVersion master
 ```
