@@ -2152,6 +2152,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo-google-fonts/roboto@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@expo-google-fonts/roboto@npm:0.2.3"
+  checksum: 10c0/f2557d888f881003240b74fb015840f4c68ceef610d57f6c492b86fc8b5056d453a9bd824d95bdd258cae61d39d633ff027a182d52c7fd2850379afdee14117b
+  languageName: node
+  linkType: hard
+
 "@expo/apple-utils@npm:1.8.0":
   version: 1.8.0
   resolution: "@expo/apple-utils@npm:1.8.0"
@@ -4099,7 +4106,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/bottom-tabs@npm:^6.5.0":
+"@react-navigation/bottom-tabs@npm:^6.6.1":
   version: 6.6.1
   resolution: "@react-navigation/bottom-tabs@npm:6.6.1"
   dependencies:
@@ -15607,7 +15614,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:*, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.0, prop-types@npm:^15.8.1":
+"prop-types@npm:*, prop-types@npm:^15.5.10, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.0, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -16084,6 +16091,15 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/01095ba8249cf12b18448ef1ac65e5e18422b5fa62dae400e0898fe80b30de7f07ac2677cf6ee690929c22deb8a11cc234187d92f729501a14e4034cb1f62798
+  languageName: node
+  linkType: hard
+
+"react-native-swiper@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "react-native-swiper@npm:1.6.0"
+  dependencies:
+    prop-types: "npm:^15.5.10"
+  checksum: 10c0/5cddf220f8a910b82220aafd1b17a51dd6d2cc2cab14304c133409b2198f88ff8de9cde016f2d1ca1e0f2c742500bc2db98db4b44317ad49feea9d68747b596e
   languageName: node
   linkType: hard
 
@@ -17996,12 +18012,13 @@ __metadata:
     "@babel/plugin-proposal-decorators": "npm:^7.24.7"
     "@babel/plugin-transform-private-methods": "npm:^7.24.1"
     "@ethersproject/shims": "npm:^5.7.0"
+    "@expo-google-fonts/roboto": "npm:^0.2.3"
     "@hcaptcha/react-native-hcaptcha": "npm:1.7.2"
     "@json-rpc-tools/utils": "npm:^1.7.6"
     "@react-native-async-storage/async-storage": "npm:1.18.2"
     "@react-native-clipboard/clipboard": "npm:^1.14.1"
     "@react-native-community/netinfo": "npm:9.3.10"
-    "@react-navigation/bottom-tabs": "npm:^6.5.0"
+    "@react-navigation/bottom-tabs": "npm:^6.6.1"
     "@react-navigation/drawer": "npm:^6.5.0"
     "@react-navigation/native": "npm:^6.0.12"
     "@react-navigation/native-stack": "npm:^6.8.0"
@@ -18041,6 +18058,7 @@ __metadata:
     expo-build-properties: "npm:~0.8.3"
     expo-camera: "npm:~13.4.2"
     expo-dev-client: "npm:~2.4.8"
+    expo-font: "npm:~11.4.0"
     expo-linking: "npm:~5.0.2"
     expo-local-authentication: "npm:~13.4.1"
     expo-notifications: "npm:~0.20.1"
@@ -18068,6 +18086,7 @@ __metadata:
     react-native-safe-area-context: "npm:4.6.3"
     react-native-screens: "npm:~3.22.0"
     react-native-svg: "npm:13.9.0"
+    react-native-swiper: "npm:^1.6.0"
     react-native-walkthrough-tooltip: "npm:^1.6.0"
     react-native-web: "npm:~0.19.6"
     react-native-webview: "npm:13.2.2"
