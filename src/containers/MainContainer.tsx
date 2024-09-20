@@ -417,8 +417,16 @@ export default function MainContainer({
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
 
-                    prevAccounts[index] = account;
-                    return [...prevAccounts];
+                    if (index !== -1) {
+                        // Update the existing asset
+                        const updatedAccounts = [...prevAccounts];
+
+                        updatedAccounts[index] = account;
+                        return updatedAccounts;
+                    } else {
+                        // Add the new asset
+                        return [...prevAccounts, account];
+                    }
                 });
             }
         } catch (error) {
