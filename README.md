@@ -92,7 +92,7 @@ yarn run updateSdkVersion development
 # or
 yarn run updateSdkVersion master
 # or 
-yarn run updateSdkVersion development
+yarn run updateSdkVersion testnet
 ```
 
 ## File structure of components
