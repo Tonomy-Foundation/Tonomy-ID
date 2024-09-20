@@ -1,9 +1,11 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,Linking } from 'react-native';
 import { Props } from '../screens/Apps';
 import theme from '../utils/theme';
 import LinkOpenIcon from '../assets/icons/LinkOpenIcon';
+import { openURL } from 'expo-linking';
 
 export default function AppsContainer({ navigation }: { navigation: Props['navigation'] }) {
+
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent}>
@@ -12,8 +14,8 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                     <View style={styles.pangeaApp}>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/sales-platform.png')} />
-                            <TouchableOpacity style={styles.appWebUrl}>
-                                <Text style={styles.leosSalesPlatformLink}>sales.pangea.web4.world</Text>
+                            <TouchableOpacity style={styles.appWebUrl} onPress={() => openURL('http://sales.pangea.web4.world')}>
+                                <Text style={styles.visitAppWebUrl}>sales.pangea.web4.world</Text>
                                 <LinkOpenIcon />
                             </TouchableOpacity>
                         </View>
@@ -30,8 +32,8 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                     <View style={styles.pangeaApp}>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/pangea-block-explorer.png')} />
-                            <TouchableOpacity style={styles.appWebUrl}>
-                                <Text style={styles.leosSalesPlatformLink}>demo.pangea.web4.world</Text>
+                            <TouchableOpacity style={styles.appWebUrl} onPress={() => Linking.openURL('http://demo.pangea.web4.world')}>
+                                <Text style={styles.visitAppWebUrl}>demo.pangea.web4.world</Text>
                                 <LinkOpenIcon />
                             </TouchableOpacity>
                         </View>
@@ -47,8 +49,8 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                     <View style={styles.pangeaApp}>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/pangea-block-explorer.png')} />
-                            <TouchableOpacity style={styles.appWebUrl}>
-                                <Text style={styles.leosSalesPlatformLink}>explorer.pangea.web4.world</Text>
+                            <TouchableOpacity style={styles.appWebUrl} onPress={() => Linking.openURL('http://explorer.pangea.web4.world')}>
+                                <Text style={styles.visitAppWebUrl}>explorer.pangea.web4.world</Text>
                                 <LinkOpenIcon />
                             </TouchableOpacity>
                         </View>
@@ -190,5 +192,11 @@ const styles = StyleSheet.create({
         gap: 9,
         justifyContent: 'space-between',
         paddingBottom: 12,
+    },
+    visitAppWebUrl: {
+        fontSize: 10.5,
+        fontWeight: '400',
+        lineHeight: 11.4,
+        color: theme.colors.blue,
     },
 });
