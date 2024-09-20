@@ -11,6 +11,7 @@ import {
     ImageSourcePropType,
     ScrollView,
     RefreshControl,
+    SafeAreaView,
 } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';

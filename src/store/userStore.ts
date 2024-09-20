@@ -14,6 +14,9 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:store:userStore');
 
 export enum UserStatus {
     NONE = 'NONE',
