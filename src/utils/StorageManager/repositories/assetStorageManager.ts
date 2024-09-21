@@ -30,11 +30,19 @@ export abstract class AssetStorageManager {
         if (existingAsset) {
             const balance = asset.toString();
 
-            debug(`updateAccountBalance() updating ${name} balance`, balance);
-            const usdBalance = await asset.getUsdValue();
+            debug(`updateAccountBalance() updating ${name} balance to ${balance}`);
+
+            try {
+                const usdBalance = await asset.getUsdValue();
+
+                if (usdBalance > 0 && usdBalance !== existingAsset.usdBalance) {
+                    existingAsset.usdBalance = usdBalance;
+                }
+            } catch (error) {
+                debug(`updateAccountBalance() error fetching ${name} usd balance`, error);
+            }
 
             existingAsset.balance = balance;
-            existingAsset.usdBalance = usdBalance;
             existingAsset.updatedAt = new Date();
             await this.repository.updateAccountBalance(existingAsset);
         } else {

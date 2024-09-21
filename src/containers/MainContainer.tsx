@@ -278,8 +278,16 @@ export default function MainContainer({
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
 
-                    prevAccounts[index] = account;
-                    return [...prevAccounts];
+                    if (index !== -1) {
+                        // Update the existing asset
+                        const updatedAccounts = [...prevAccounts];
+
+                        updatedAccounts[index] = account;
+                        return updatedAccounts;
+                    } else {
+                        // Add the new asset
+                        return [...prevAccounts, account];
+                    }
                 });
             }
         } catch (error) {
@@ -320,7 +328,7 @@ export default function MainContainer({
     useEffect(() => {
         updateAllBalances();
 
-        const interval = setInterval(updateAllBalances, 20000);
+        const interval = setInterval(updateAllBalances, 10000);
 
         return () => clearInterval(interval);
     }, [updateAllBalances]);
@@ -413,7 +421,7 @@ export default function MainContainer({
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text> {formatCurrencyValue(pangeaBalance) || 0} LEOS</Text>
+                                                        <Text> {formatCurrencyValue(pangeaBalance, 4) || 0} LEOS</Text>
                                                     </View>
                                                     <Text style={styles.secondaryColor}>
                                                         $
@@ -511,8 +519,7 @@ export default function MainContainer({
                                                                         <Text style={styles.secondaryColor}>
                                                                             $
                                                                             {formatCurrencyValue(
-                                                                                Number(accountData.usdBalance),
-                                                                                3
+                                                                                accountData.usdBalance ?? 0
                                                                             )}
                                                                         </Text>
                                                                     </View>
