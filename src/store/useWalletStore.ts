@@ -16,7 +16,7 @@ import {
     ETHToken,
     EthereumToken,
 } from '../utils/chain/etherum';
-import { Asset, IAccount } from '../utils/chain/types';
+import { Asset, IAccount, IToken } from '../utils/chain/types';
 import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
@@ -219,30 +219,25 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
         if (ethereumAccount && sepoliaAccount && polygonAccount) {
             await connect();
-            debug('updateBalance() fetching sepolia account', sepoliaAccount.getName());
-            const balances = await Promise.allSettled([
-                ETHToken.getBalance(ethereumAccount),
-                ETHSepoliaToken.getBalance(sepoliaAccount),
-                ETHPolygonToken.getBalance(polygonAccount),
-            ]);
+            await Promise.all(
+                [
+                    { account: ethereumAccount, token: ETHToken },
+                    { account: sepoliaAccount, token: ETHSepoliaToken },
+                    { account: polygonAccount, token: ETHPolygonToken },
+                ].map(async ({ account, token }: { account: IAccount; token: IToken }) => {
+                    debug(`updateBalance() fetching account ${account.getChain().getName()} ${account.getName()}`);
 
-            const [ethereumResult, sepoliaResult, polygonResult] = balances;
+                    try {
+                        const balance = await token.getBalance(account);
 
-            const ethereumBalance = ethereumResult.status === 'fulfilled' ? ethereumResult.value : 0;
-            const sepoliaBalance = sepoliaResult.status === 'fulfilled' ? sepoliaResult.value : 0;
-            const polygonBalance = polygonResult.status === 'fulfilled' ? polygonResult.value : 0;
-
-            if (ethereumBalance) {
-                await assetStorage.updateAccountBalance(ethereumBalance);
-            }
-
-            if (sepoliaBalance) {
-                await assetStorage.updateAccountBalance(sepoliaBalance);
-            }
-
-            if (polygonBalance) {
-                await assetStorage.updateAccountBalance(polygonBalance);
-            }
+                        if (balance) {
+                            await assetStorage.updateAccountBalance(balance);
+                        }
+                    } catch (error) {
+                        debug('updateBalance() Error updating balance:', error);
+                    }
+                })
+            );
         }
     },
     disconnectSession: async () => {
