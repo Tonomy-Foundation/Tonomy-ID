@@ -1,5 +1,0 @@
-{
-    "buildCommand": "yarn run build",
-    "installCommand": "corepack use yarn@4.3.1 && echo \"yarnPath: ${HOME}/.cache/node/corepack/v1/yarn/4.3.1/yarn.js\" >> .yarnrc.yml && yarn install --immutable",
-    "devCommand": "yarn dev"
-  }
