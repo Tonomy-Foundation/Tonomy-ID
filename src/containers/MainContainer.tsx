@@ -56,6 +56,7 @@ import {
     ESRSession,
     LEOS_PUBLIC_SALE_PRICE,
 } from '../utils/chain/antelope';
+import { LEOS_PUBLIC_SALE_PRICE } from '../utils/chain/antelope';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
 import { isNetworkError } from '../utils/errors';
@@ -467,7 +468,7 @@ export default function MainContainer({
     useEffect(() => {
         updateAllBalances();
 
-        const interval = setInterval(updateAllBalances, 20000);
+        const interval = setInterval(updateAllBalances, 10000);
 
         return () => clearInterval(interval);
     }, [updateAllBalances]);
@@ -560,7 +561,7 @@ export default function MainContainer({
                                                 </View>
                                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Text> {formatCurrencyValue(leosBalance) || 0} LEOS</Text>
+                                                        <Text> {formatCurrencyValue(pangeaBalance, 4) || 0} LEOS</Text>
                                                     </View>
                                                     <Text style={styles.secondaryColor}>
                                                         $
@@ -658,8 +659,7 @@ export default function MainContainer({
                                                                         <Text style={styles.secondaryColor}>
                                                                             $
                                                                             {formatCurrencyValue(
-                                                                                Number(accountData.usdBalance),
-                                                                                3
+                                                                                accountData.usdBalance ?? 0
                                                                             )}
                                                                         </Text>
                                                                     </View>
