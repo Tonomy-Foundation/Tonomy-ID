@@ -51,7 +51,6 @@ type ConfigType = {
     communicationUrl: string;
     accountsServiceUrl: string;
     tonomyIdSlug: string;
-    loggerLevel: 'debug' | 'error';
     captchaSiteKey: string;
     blockExplorerUrl: string;
     infuraKey: string;

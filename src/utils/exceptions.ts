@@ -1,5 +1,8 @@
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { ErrorState } from '../store/errorStore';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:exceptions');
 
 export default function setErrorHandlers(errorStore: ErrorState) {
     global.onunhandlPedrejection = function (error) {
@@ -15,6 +18,13 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         if (isFatal) {
             errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
+            // @ts-expect-error context does not exist on Error
+            if (e?.context === 'core/relayer') {
+                // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
+                debug('Ignoring WalletConnect Core Relay error', e);
+                return;
+            }
+
             errorStore.setError({ error: e, title: 'Unexpected JS Error', expected: false });
         }
     }, false);

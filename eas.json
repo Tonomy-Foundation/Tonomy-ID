@@ -35,6 +35,14 @@
             "autoIncrement": true,
             "node": "22.3.0"
         },
+        "staging-internal": {
+            "env": {
+                "EXPO_NODE_ENV": "staging",
+                "DEBUG": "tonomy*"
+            },
+            "distribution": "internal",
+            "node": "22.3.0"
+        },
         "development": {
             "env": {
                 "EXPO_NODE_ENV": "development",

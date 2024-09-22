@@ -10,38 +10,35 @@ import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import useWalletStore from '../store/useWalletStore';
-import NetInfo from '@react-native-community/netinfo';
 import { connect } from '../utils/StorageManager/setup';
+import Debug from 'debug';
+import { progressiveRetryOnNetworkError } from '../utils/network';
+import { isNetworkError } from '../utils/errors';
+
+const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
-    const { user, initializeStatusFromStorage, getStatus, logout } = useUserStore();
-    const { clearState, initializeWalletState } = useWalletStore();
-
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener((state) => {
-            if (!state.isConnected) {
-                navigation.dispatch(StackActions.replace('Home'));
-            }
-        });
-
-        // Cleanup the event listener
-        return () => unsubscribe();
-    }, [navigation]);
+    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
+    const { clearState } = useWalletStore();
 
     useEffect(() => {
         async function main() {
             await sleep(800);
 
             try {
-                await initializeStatusFromStorage();
-                const status = getStatus();
+                if (!isAppInitialized) {
+                    progressiveRetryOnNetworkError(initializeStatusFromStorage);
+                }
 
                 await connect();
+                const status = await getStatus();
+
+                debug('splash screen status: ', status);
 
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.dispatch(StackActions.replace('Home'));
+                        navigation.navigate('SplashSecurity');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         navigation.dispatch(StackActions.replace('Home'));
@@ -49,12 +46,12 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
-                            await initializeWalletState();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
                                 clearState();
                             } else {
+                                debug('loggedin error', e);
                                 throw e;
                             }
                         }
@@ -64,7 +61,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         throw new Error('Unknown status: ' + status);
                 }
             } catch (e) {
+                debug('main screen error', e);
                 errorStore.setError({ error: e, expected: false });
+                navigation.navigate('SplashSecurity');
             }
         }
 
@@ -76,8 +75,9 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         logout,
         navigation,
         user,
-        initializeWalletState,
         clearState,
+        setStatus,
+        isAppInitialized,
     ]);
 
     return (
