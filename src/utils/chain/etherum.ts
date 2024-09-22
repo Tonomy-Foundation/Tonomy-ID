@@ -33,8 +33,6 @@ import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
-export const USD_CONVERSION = 0.002;
-
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
