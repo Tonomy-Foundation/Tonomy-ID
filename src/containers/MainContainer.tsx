@@ -68,7 +68,7 @@ export default function MainContainer({
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [leosBalance, setLeosBalance] = useState(0);
+    const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
     const errorStore = useErrorStore();
     const [refreshBalance, setRefreshBalance] = useState(false);
@@ -248,7 +248,7 @@ export default function MainContainer({
                 debug('updateLeosBalance() network error');
             }
         }
-    }, [accountExists, updateCryptoBalance, accountName]);
+    }, [accountExists, updateCryptoBalance, accountName, pangeaBalance]);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
@@ -425,8 +425,8 @@ export default function MainContainer({
                                                     </View>
                                                     <Text style={styles.secondaryColor}>
                                                         $
-                                                        {leosBalance
-                                                            ? formatCurrencyValue(leosBalance * LEOS_PUBLIC_SALE_PRICE)
+                                                        {pangeaBalance
+                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
                                                             : 0.0}
                                                     </Text>
                                                 </View>
