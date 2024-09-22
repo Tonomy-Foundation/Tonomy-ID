@@ -137,7 +137,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                             await assetStorage.createAsset(abstractAsset, account);
                         } else {
-                            account = new EthereumAccount(chain, asset.accountName);
+                            account = await EthereumAccount.fromAddress(chain, asset.accountName);
                         }
 
                         return {
@@ -215,7 +215,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
-        console.log('updateBalance() Updating account balance');
+        debug('updateBalance() Updating account balance', ethereumAccount);
 
         if (ethereumAccount && sepoliaAccount && polygonAccount) {
             await connect();
@@ -225,6 +225,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     { account: sepoliaAccount, token: ETHSepoliaToken },
                     { account: polygonAccount, token: ETHPolygonToken },
                 ].map(async ({ account, token }: { account: IAccount; token: IToken }) => {
+                    console.log(account);
                     debug(`updateBalance() fetching account ${account.getChain().getName()} ${account.getName()}`);
 
                     try {
