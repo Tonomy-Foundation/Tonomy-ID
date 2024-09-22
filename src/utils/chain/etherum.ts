@@ -27,9 +27,11 @@ import {
     IOperation,
 } from './types';
 import settings from '../../settings';
-import { SignClientTypes } from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 <<<<<<< HEAD
 import { getPriceCoinGecko } from './common';
+import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import { getSdkError } from '@walletconnect/utils';
 =======
 import Debug from 'debug';
 
@@ -334,8 +336,8 @@ export class EthereumTransaction implements ITransaction {
         return new Asset(this.chain.getNativeToken(), amount);
     }
 
-    async getData(): Promise<string> {
-        return this.transaction.data || '';
+    async getData(): Promise<TransactionRequest> {
+        return this.transaction;
     }
 
     hasMultipleOperations(): boolean {
