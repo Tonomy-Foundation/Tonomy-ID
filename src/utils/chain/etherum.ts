@@ -382,7 +382,7 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     async getTokens(): Promise<IToken[]> {
-        return [this.chain.getNativeToken()];
+        return [this.getNativeToken()];
     }
 
     async signTransaction(transaction: TransactionRequest): Promise<string> {
