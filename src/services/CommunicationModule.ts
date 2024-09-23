@@ -17,15 +17,18 @@ import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
 import { keyStorage } from '../utils/StorageManager/setup';
 import {
+    EthereumAccount,
     EthereumMainnetChain,
     EthereumPolygonChain,
     EthereumPrivateKey,
     EthereumSepoliaChain,
     EthereumTransaction,
+    WalletConnectSession,
 } from '../utils/chain/etherum';
-import { ITransaction } from '../utils/chain/types';
+import { IAccount, ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
@@ -183,16 +186,41 @@ export default function CommunicationModule() {
         }
     }
 
+    const { ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
+
+    const getChainAccounts = useCallback(
+        (chainIds: string[]) => {
+            return chainIds?.map((chainId) => {
+                if (chainId === '11155111') {
+                    if (sepoliaAccount) return sepoliaAccount as EthereumAccount;
+                    else throw new Error('Sepolia account not found');
+                } else if (chainId === '1') {
+                    if (ethereumAccount) return ethereumAccount as EthereumAccount;
+                    else throw new Error('Ethereum account not found');
+                } else if (chainId === '137') {
+                    if (polygonAccount) return polygonAccount as EthereumAccount;
+                    else throw new Error('Polygon account not found');
+                } else {
+                    throw new Error(
+                        'Chain not supported. We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'
+                    );
+                }
+            });
+        },
+        [sepoliaAccount, ethereumAccount, polygonAccount]
+    );
+
     useEffect(() => {
-        try {
-            const onSessionProposal = debounce(async (proposal) => {
-                try {
+        const handleSessionProposal = async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
+            try {
+                if (web3wallet) {
                     const { id } = proposal;
                     const { requiredNamespaces, optionalNamespaces } = proposal.params;
                     const activeNamespaces = Object.keys(requiredNamespaces).length
                         ? requiredNamespaces
                         : optionalNamespaces;
-                    const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]);
+
+                    const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]) || [];
                     const unsupportedChainIds =
                         chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
 
@@ -217,6 +245,33 @@ export default function CommunicationModule() {
                         };
 
                         let keyFound = false;
+                        const namespaces: SessionTypes.Namespaces = {};
+                        const chainAccounts = await getChainAccounts(chainIds);
+
+                        Object.keys(activeNamespaces).forEach((key) => {
+                            const accounts: string[] = [];
+
+                            activeNamespaces[key].chains?.forEach((chain) => {
+                                const chainId = chain.split(':')[1];
+
+                                const chainDetail = chainAccounts?.find(
+                                    (account) => account.getChain().getChainId() === chainId
+                                );
+
+                                if (!chainDetail) throw new Error(`Account not found for chainId ${chainId}`);
+                                accounts.push(`${chain}:${chainDetail.getName()}`);
+                            });
+                            namespaces[key] = {
+                                chains: activeNamespaces[key].chains,
+                                accounts,
+                                methods: activeNamespaces[key].methods,
+                                events: activeNamespaces[key].events,
+                            };
+                        });
+                        const session = new WalletConnectSession(web3wallet);
+
+                        session.setNamespaces(namespaces);
+                        session.setActiveAccounts(chainAccounts);
 
                         for (const chainId of chainIds) {
                             if (supportedChains[chainId]) {
@@ -227,6 +282,7 @@ export default function CommunicationModule() {
                                     navigation.navigate('CreateEthereumKey', {
                                         requestType: 'loginRequest',
                                         payload: proposal,
+                                        session,
                                     });
                                     return;
                                 } else {
@@ -239,22 +295,22 @@ export default function CommunicationModule() {
                             navigation.navigate('WalletConnectLogin', {
                                 payload: proposal,
                                 platform: 'browser',
+                                session,
                             });
                         }
                     }
-                } catch (error) {
-                    if (isNetworkError(error)) {
-                        debug('onSessionProposal() network error');
-                    } else {
-                        console.error('CommunicationModule() onSessionProposal() unexpected error', error);
-                    }
                 }
-            }, 1000);
+            } catch (error) {
+                console.error('session_proposal', error);
+            }
+        };
 
-            const onSessionRequest = debounce(async (event) => {
-                try {
+        const handleSessionRequest = async (event: SignClientTypes.EventArguments['session_request']) => {
+            try {
+                if (web3wallet) {
                     const { topic, params, id, verifyContext } = event;
                     const { request, chainId } = params;
+                    const session = new WalletConnectSession(web3wallet);
 
                     switch (request.method) {
                         case 'eth_sendTransaction': {
@@ -287,24 +343,17 @@ export default function CommunicationModule() {
                                 navigation.navigate('SignTransaction', {
                                     transaction,
                                     privateKey: key,
-                                    session: {
-                                        origin: verifyContext?.verified?.origin,
-                                        id,
-                                        topic,
-                                    },
+                                    origin: verifyContext?.verified?.origin,
+                                    request: event,
+                                    session,
                                 });
                             } else {
                                 transaction = new EthereumTransaction(transactionData, chain);
                                 navigation.navigate('CreateEthereumKey', {
                                     requestType: 'transactionRequest',
-                                    transaction: {
-                                        transaction,
-                                        session: {
-                                            origin: verifyContext?.verified?.origin,
-                                            id,
-                                            topic,
-                                        },
-                                    },
+                                    payload: event,
+                                    transaction: transaction,
+                                    session,
                                 });
                             }
 
@@ -329,61 +378,61 @@ export default function CommunicationModule() {
                             return;
                         }
                     }
-                } catch (error) {
-                    if (isNetworkError(error)) {
-                        debug('onSessionRequest() network error');
-                    } else {
-                        console.error('CommunicationModule() onSessionRequest() unexpected error', error);
-                    }
                 }
-            }, 1000);
+            } catch (error) {
+                errorStore.setError({ error, expected: false });
+            }
+        };
 
-            web3wallet?.on('session_proposal', onSessionProposal);
-            web3wallet?.on('session_request', onSessionRequest);
+        web3wallet?.on('session_proposal', handleSessionProposal);
+        web3wallet?.on('session_request', handleSessionRequest);
 
-            return () => {
-                web3wallet?.off('session_proposal', onSessionProposal);
-                web3wallet?.off('session_request', onSessionRequest);
-            };
-        } catch (e) {
-            console.error('CommunicationModule() Error when setting up WalletConnect listeners', e);
-            errorStore.setError({ error: e, expected: false, title: 'Error setting up WalletConnect listeners' });
-        }
-    }, [errorStore, web3wallet, initialized, navigation]);
+        // Cleanup function
+        return () => {
+            if (web3wallet) {
+                web3wallet.off('session_proposal', handleSessionProposal);
+                web3wallet.off('session_request', handleSessionRequest);
+            }
+        };
+    }, [web3wallet, initialized, errorStore, navigation, getChainAccounts]);
+
+    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
+        let timeout: ReturnType<typeof setTimeout>;
+
+        return (...args: Parameters<T>): void => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    };
 
     useEffect(() => {
-        try {
-            const handleSessionDelete = debounce(async (event) => {
-                try {
-                    if (event.topic) {
-                        const sessions = await web3wallet?.getActiveSessions();
-                        const sessionExists =
-                            Array.isArray(sessions) && sessions.some((session) => session.topic === event.topic);
+        const handleSessionDelete = debounce(async (event) => {
+            try {
+                if (event.topic) {
+                    const sessions = await web3wallet?.getActiveSessions();
+                    const sessionExists =
+                        Array.isArray(sessions) && sessions.some((session) => session.topic === event.topic);
 
-                        if (sessionExists) {
-                            await web3wallet?.disconnectSession({
-                                topic: event.topic,
-                                reason: getSdkError('INVALID_SESSION_SETTLE_REQUEST'),
-                            });
-                            disconnectSession();
-                        } else {
-                            debug('Session already deleted or invalid');
-                        }
+                    if (sessionExists) {
+                        await web3wallet?.disconnectSession({
+                            topic: event.topic,
+                            reason: getSdkError('INVALID_SESSION_SETTLE_REQUEST'),
+                        });
+                        disconnectSession();
+                    } else {
+                        debug('Session already deleted or invalid');
                     }
-                } catch (error) {
-                    console.error('CommunicationModule() handleSessionDelete() unexpected error', error);
                 }
-            }, 1000);
+            } catch (disconnectError) {
+                console.error('Failed to disconnect session:', disconnectError);
+            }
+        }, 1000);
 
-            web3wallet?.on('session_delete', handleSessionDelete);
+        web3wallet?.on('session_delete', handleSessionDelete);
 
-            return () => {
-                web3wallet?.off('session_delete', handleSessionDelete);
-            };
-        } catch (e) {
-            console.error('CommunicationModule() Error when setting up session delete listener for WalletConnect', e);
-            errorStore.setError({ error: e, expected: false, title: 'Error setting up WalletConnect listeners' });
-        }
+        return () => {
+            web3wallet?.off('session_delete', handleSessionDelete);
+        };
     }, [web3wallet, disconnectSession, navigation, errorStore]);
 
     return null;

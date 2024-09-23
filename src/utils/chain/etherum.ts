@@ -27,8 +27,10 @@ import {
     IOperation,
 } from './types';
 import settings from '../../settings';
-import { SignClientTypes } from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getPriceCoinGecko } from './common';
+import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
@@ -208,7 +210,6 @@ export class EthereumTransaction implements ITransaction {
     private type?: TransactionType;
     private abi?: string;
     protected chain: EthereumChain;
-    protected session: EthereumChainSession;
 
     constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
@@ -325,8 +326,8 @@ export class EthereumTransaction implements ITransaction {
         return new Asset(this.chain.getNativeToken(), amount);
     }
 
-    async getData(): Promise<string> {
-        return this.transaction.data || '';
+    async getData(): Promise<TransactionRequest> {
+        return this.transaction;
     }
 
     hasMultipleOperations(): boolean {
@@ -414,32 +415,81 @@ export class EthereumAccount extends AbstractAccount {
     }
 }
 
-export class EthereumChainSession implements IChainSession {
-    private payload: SignClientTypes.EventArguments['session_proposal'];
-    private chain: EthereumChain;
+export class WalletConnectSession implements IChainSession {
+    private wallet: IWeb3Wallet | null;
+    private namespaces: SessionTypes.Namespaces;
+    private accounts: EthereumAccount[];
 
-    constructor(payload: SignClientTypes.EventArguments['session_proposal'], chain: EthereumChain) {
-        this.payload = payload;
-        this.chain = chain;
+    constructor(wallet: IWeb3Wallet) {
+        this.wallet = wallet;
     }
 
-    getId(): number {
-        return this.payload.id;
+    setNamespaces(namespaces: SessionTypes.Namespaces): void {
+        this.namespaces = namespaces;
     }
 
-    getName(): string {
-        return this.payload.params.proposer.metadata.name;
+    getNamespaces(): SessionTypes.Namespaces {
+        return this.namespaces;
     }
 
-    getUrl(): string {
-        return this.payload.params.proposer.metadata.url;
+    setActiveAccounts(accounts: EthereumAccount[]): void {
+        this.accounts = accounts;
     }
 
-    getIcons(): string | null {
-        if (this.payload.params.proposer.metadata.icons?.length > 0) {
-            return this.payload.params.proposer.metadata.icons[0];
-        }
+    async getActiveAccounts(): Promise<EthereumAccount[]> {
+        return this.accounts;
+    }
 
-        return null;
+    async createSession(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet?.approveSession({
+            id: request.id,
+            relayProtocol: request.params.relays[0].protocol,
+            namespaces: this.getNamespaces(),
+        });
+    }
+
+    async cancelLoginRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet?.rejectSession({
+            id: request.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
+    }
+
+    async disconnectSession(): Promise<void> {
+        // Logic to disconnect the WalletConnect session
+        // Example: Disconnect WalletConnect provider
+    }
+
+    async createTransactionRequest(transaction: EthereumTransaction): Promise<TransactionRequest> {
+        const transactionRequest: TransactionRequest = {
+            to: (await transaction.getTo()).getName(),
+            from: (await transaction.getFrom()).getName(),
+            value: ethers.parseEther(parseFloat((await transaction.getValue()).toString()).toFixed(18)),
+            data: await transaction.getData().toString(),
+        };
+
+        return transactionRequest;
+    }
+
+    async approveTransactionRequest(
+        request: Web3WalletTypes.SessionRequest,
+        signedTransaction: unknown
+    ): Promise<void> {
+        const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
+
+        await this.wallet?.respondSessionRequest({ topic: request.topic, response });
+    }
+
+    async rejectTransactionRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
+        const response = {
+            id: request.id,
+            error: getSdkError('USER_REJECTED'),
+            jsonrpc: '2.0',
+        };
+
+        await this.wallet?.respondSessionRequest({
+            topic: request.topic,
+            response,
+        });
     }
 }
