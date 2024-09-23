@@ -14,11 +14,10 @@ import {
     ITransaction,
     TransactionType,
 } from '../utils/chain/types';
-import { capitalizeFirstLetter, extractHostname } from '../utils/helper';
+import { capitalizeFirstLetter } from '../utils/helper';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import AccountDetails from '../components/AccountDetails';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
@@ -120,7 +119,7 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    function TransferOperationDetails({ operation, onComplete }: { operation: IOperation; onComplete: () => void }) {
+    function TransferOperationDetails({ operation, onComplete }: { operation: IOperation; onComplete?: () => void }) {
         const [to, setTo] = useState<string | null>(null);
         const [amount, setAmount] = useState<string | null>(null);
         const [usdValue, setUsdValue] = useState<string | null>(null);
@@ -137,7 +136,7 @@ export default function SignTransactionConsentContainer({
                     const usdValue = await value.getUsdValue();
 
                     setUsdValue(formatCurrencyValue(usdValue, 2));
-                    onComplete();
+                    if (onComplete) onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching transaction operation details',
@@ -174,7 +173,7 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function ContractOperationDetails({ operation, onComplete }: { operation: IOperation; onComplete: () => void }) {
+    function ContractOperationDetails({ operation, onComplete }: { operation: IOperation; onComplete?: () => void }) {
         const [showActionDetails, setShowActionDetails] = useState(false);
         const [details, setTransactionDetails] = useState<Record<string, string> | null>(null);
         const [functionName, setFunctionName] = useState<string | null>(null);
@@ -186,7 +185,7 @@ export default function SignTransactionConsentContainer({
                     setContract((await operation.getTo()).getName());
                     setFunctionName(await operation.getFunction());
                     setTransactionDetails(await operation.getArguments());
-                    onComplete();
+                    if (onComplete) onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching contract operation details',
@@ -260,11 +259,11 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function OperationDetails({ operation, onComplete }: { operation: IOperation; onComplete: () => void }) {
+    function OperationDetails({ operation, onComplete }: { operation: IOperation; onComplete?: () => void }) {
         const [type, setType] = useState<TransactionType | null>(null);
 
         const handleComplete = useCallback(() => {
-            onComplete();
+            if (onComplete) onComplete();
         }, [onComplete]);
 
         useEffect(() => {
@@ -294,7 +293,7 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    function Operations({ onComplete }: { onComplete: () => void }) {
+    function Operations({ onComplete }: { onComplete?: () => void }) {
         const [operation, setOperation] = useState<IOperation | IOperation[] | null>(null);
         const [, setOperationsComplete] = useState<boolean[]>([false]);
 
@@ -307,7 +306,7 @@ export default function SignTransactionConsentContainer({
                         newComplete[index] = true;
 
                         if (newComplete.every((complete) => complete)) {
-                            onComplete();
+                            if (onComplete) onComplete();
                         }
 
                         return newComplete;
@@ -331,7 +330,6 @@ export default function SignTransactionConsentContainer({
                         const operations = await transaction.getOperations();
 
                         if (operations.length > 1) {
-                            throw new Error('Multiple operations not supported yet');
                             // TODO:
                             // <OperationDetails operation={operation} onComplete={() => setComplete(index)} />
                             // causes an error because onComplete must be provided a const function created with useCallback()
@@ -363,7 +361,8 @@ export default function SignTransactionConsentContainer({
                 return operation.map((operation, index) => (
                     <View key={index} style={{ width: '100%' }}>
                         <Text style={styles.actionText}>Action {index + 1}</Text>
-                        <OperationDetails operation={operation} onComplete={() => setComplete(index)} />
+                        {/* TODO: fix so that it calls onComplete */}
+                        <OperationDetails operation={operation} />
                     </View>
                 ));
             } else {
@@ -384,7 +383,7 @@ export default function SignTransactionConsentContainer({
         return <Text style={styles.accountNameStyle}>{shortAccountName}</Text>;
     }
 
-    function TransactionFee({ onComplete }: { onComplete: () => void }) {
+    function TransactionFee({ onComplete }: { onComplete?: () => void }) {
         const [toolTipVisible, setToolTipVisible] = useState(false);
         const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
 
@@ -398,7 +397,7 @@ export default function SignTransactionConsentContainer({
                     const usdFeeString = formatCurrencyValue(usdFee, 2);
 
                     setFee({ fee: feeString, usdFee: usdFeeString });
-                    onComplete();
+                    if (onComplete) onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching transaction fee',
@@ -450,7 +449,7 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function TransactionTotal({ onComplete }: { onComplete: () => void }) {
+    function TransactionTotal({ onComplete }: { onComplete?: () => void }) {
         const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
         const [balanceError, setBalanceError] = useState<boolean>(false);
 
@@ -475,7 +474,7 @@ export default function SignTransactionConsentContainer({
                     //     showBalanceError(true);
                     //     setBalanceError(true);
                     // }
-                    onComplete();
+                    if (onComplete) onComplete();
                 } catch (e) {
                     errorStore.setError({
                         title: 'Error fetching total',
@@ -537,7 +536,7 @@ export default function SignTransactionConsentContainer({
         );
     }
 
-    function TransactionDetails({ onComplete }: { onComplete: () => void }) {
+    function TransactionDetails({ onComplete }: { onComplete?: () => void }) {
         const [, setCompletedComponents] = useState<boolean[]>([false, false, false]);
 
         const setCompleted = useCallback(
@@ -549,7 +548,7 @@ export default function SignTransactionConsentContainer({
                         newComplete[index] = true;
 
                         if (newComplete.every((complete) => complete)) {
-                            onComplete();
+                            if (onComplete) onComplete();
                         }
 
                         return newComplete;
