@@ -15,6 +15,7 @@ import {
     Asset,
     IChainSession,
     ChainType,
+    IAsset,
 } from './types';
 import {
     ABI,
@@ -360,9 +361,7 @@ export class AntelopeAction implements IOperation {
             this.action.name.toString() === 'transfer' &&
             this.action.data.to &&
             this.action.data.from &&
-            this.action.data.quantity &&
-            this.action.data.memo &&
-            this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
+            this.action.data.quantity
         ) {
             return TransactionType.TRANSFER;
         } else {
@@ -415,7 +414,7 @@ export class AntelopeAction implements IOperation {
     }
 }
 
-function getAssetFromQuantity(quantity: string, chain: AntelopeChain): Asset {
+function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const name = quantity.split(' ')[1];
     const symbol = name;
     const precision = quantity.split(' ')[0].split('.')[1].length;

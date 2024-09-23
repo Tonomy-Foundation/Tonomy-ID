@@ -274,7 +274,10 @@ function Operations({ operations }: { operations: OperationData[] }) {
         return (
             <>
                 {operations.map((operation, index) => (
-                    <OperationDetails key={index} operation={operation} />
+                    <View key={index} style={{ width: '100%' }}>
+                        <Text style={styles.actionText}>Action {index + 1}</Text>
+                        <OperationDetails operation={operation} />
+                    </View>
                 ))}
             </>
         );

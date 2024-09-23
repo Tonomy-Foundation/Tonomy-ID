@@ -208,22 +208,38 @@ export default function MainContainer({
                 async function createMockSigningRequest() {
                     return await SigningRequest.create(
                         {
-                            action: {
-                                account: 'eosio.token',
-                                name: 'transfer',
-                                authorization: [
-                                    {
-                                        actor: 'jacktest2222',
-                                        permission: 'active',
+                            actions: [
+                                {
+                                    account: 'eosio.token',
+                                    name: 'transfer',
+                                    authorization: [
+                                        {
+                                            actor: 'jacktest2222',
+                                            permission: 'active',
+                                        },
+                                    ],
+                                    data: {
+                                        from: 'jacktest2222',
+                                        to: 'hippopotamus',
+                                        quantity: '1.0000 EOS',
+                                        memo: '',
                                     },
-                                ],
-                                data: {
-                                    from: 'jacktest2222',
-                                    to: 'hippopotamus',
-                                    quantity: '1.0000 EOS',
-                                    memo: '',
                                 },
-                            },
+                                {
+                                    account: 'eosio.token',
+                                    name: 'close',
+                                    authorization: [
+                                        {
+                                            actor: 'jacktest2222',
+                                            permission: 'active',
+                                        },
+                                    ],
+                                    data: {
+                                        owner: 'jacktest2222',
+                                        symbol: '4,EOS',
+                                    },
+                                },
+                            ],
                             callback: 'https://tonomy.io',
                             chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
                         },
