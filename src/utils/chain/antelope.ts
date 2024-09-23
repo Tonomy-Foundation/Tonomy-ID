@@ -210,8 +210,6 @@ export const LEOS_PUBLIC_SALE_PRICE = 0.012;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
-    // @ts-expect-error chain overridden
-    // protected chain: AntelopeChain;
 
     constructor(
         chain: AntelopeChain,
@@ -226,8 +224,9 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     getChain(): AntelopeChain {
-        return this.chain;
+        return this.chain as AntelopeChain;
     }
+
     async getUsdPrice(): Promise<number> {
         switch (this.getChain().getName()) {
             case 'Pangea':
@@ -401,7 +400,7 @@ export class AntelopeAction implements IOperation {
     async getFunction(): Promise<string> {
         return this.action.name.toString();
     }
-    async getValue(): Promise<Asset> {
+    async getValue(): Promise<IAsset> {
         // TODO: need to also handle token transfers on other contracts
 
         if ((await this.getType()) === TransactionType.TRANSFER) {
