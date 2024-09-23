@@ -215,7 +215,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
-        debug('updateBalance() Updating account balance');
+        debug('updateBalance() Updating account balance', ethereumAccount);
 
         if (ethereumAccount && sepoliaAccount && polygonAccount) {
             await connect();
@@ -234,7 +234,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                             await assetStorage.updateAccountBalance(balance);
                         }
                     } catch (error) {
-                        debug('updateBalance() Error updating balance:', error);
+                        console.log('updateBalance() Error updating balance:', error);
                     }
                 })
             );

@@ -28,17 +28,12 @@ import {
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
-<<<<<<< HEAD
 import { getPriceCoinGecko } from './common';
 import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
-=======
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
-
-export const USD_CONVERSION = 0.002;
->>>>>>> development
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -143,14 +138,10 @@ export class EthereumToken extends AbstractToken {
                 throw new Error('Account not found');
             })();
 
-<<<<<<< HEAD
-        const balanceWei = (await lookupAccount.getBalance(this.chain.getNativeToken())).getAmount();
-=======
-        debug('getBalance() lookupAccount', lookupAccount.getChain().getName(), lookupAccount.getName());
-        const balanceWei = await this.chain.getProvider().getBalance(lookupAccount.getName() || '');
->>>>>>> development
+        debug('getBalance() lookupAccount', lookupAccount.getName());
+        const balanceWei = await (this.chain as EthereumChain).getProvider().getBalance(lookupAccount.getName() || '');
 
-        debug('getBalance() balance', lookupAccount.getChain().getName(), balanceWei);
+        debug('getBalance() balance', balanceWei);
 
         return new Asset(this, balanceWei);
     }
@@ -219,7 +210,6 @@ export class EthereumTransaction implements ITransaction {
     private type?: TransactionType;
     private abi?: string;
     protected chain: EthereumChain;
-    protected session: EthereumChainSession;
 
     constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
@@ -353,8 +343,6 @@ export class EthereumTransaction implements ITransaction {
 
 export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
-    // @ts-expect-error chain is overridden
-    protected chain: EthereumChain;
 
     private static getDidChainName(chain: EthereumChain): string {
         switch (chain.getChainId()) {
@@ -395,7 +383,7 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     async getTokens(): Promise<IToken[]> {
-        return [this.getNativeToken()];
+        return [this.chain.getNativeToken()];
     }
 
     async signTransaction(transaction: TransactionRequest): Promise<string> {
@@ -416,7 +404,7 @@ export class EthereumAccount extends AbstractAccount {
 
     async isContract(): Promise<boolean> {
         try {
-            const code = await this.chain.getProvider().getCode(this.name);
+            const code = await (this.chain as EthereumChain).getProvider().getCode(this.name);
 
             if (code !== '0x') return true;
         } catch (error) {
