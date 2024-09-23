@@ -416,7 +416,7 @@ export class EthereumAccount extends AbstractAccount {
 }
 
 export class WalletConnectSession implements IChainSession {
-    private wallet: IWeb3Wallet | null;
+    private wallet: IWeb3Wallet;
     private namespaces: SessionTypes.Namespaces;
     private accounts: EthereumAccount[];
 
@@ -441,30 +441,24 @@ export class WalletConnectSession implements IChainSession {
     }
 
     async createSession(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
-        await this.wallet?.approveSession({
+        await this.wallet.approveSession({
             id: request.id,
-            relayProtocol: request.params.relays[0].protocol,
             namespaces: this.getNamespaces(),
         });
     }
 
-    async cancelLoginRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
-        await this.wallet?.rejectSession({
+    async cancelSessionRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet.rejectSession({
             id: request.id,
             reason: getSdkError('USER_REJECTED'),
         });
-    }
-
-    async disconnectSession(): Promise<void> {
-        // Logic to disconnect the WalletConnect session
-        // Example: Disconnect WalletConnect provider
     }
 
     async createTransactionRequest(transaction: EthereumTransaction): Promise<TransactionRequest> {
         const transactionRequest: TransactionRequest = {
             to: (await transaction.getTo()).getName(),
             from: (await transaction.getFrom()).getName(),
-            value: ethers.parseEther(parseFloat((await transaction.getValue()).toString()).toFixed(18)),
+            value: (await transaction.getValue()).getAmount(),
             data: await transaction.getData().toString(),
         };
 
@@ -477,7 +471,7 @@ export class WalletConnectSession implements IChainSession {
     ): Promise<void> {
         const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
 
-        await this.wallet?.respondSessionRequest({ topic: request.topic, response });
+        await this.wallet.respondSessionRequest({ topic: request.topic, response });
     }
 
     async rejectTransactionRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
@@ -487,7 +481,7 @@ export class WalletConnectSession implements IChainSession {
             jsonrpc: '2.0',
         };
 
-        await this.wallet?.respondSessionRequest({
+        await this.wallet.respondSessionRequest({
             topic: request.topic,
             response,
         });

@@ -210,7 +210,7 @@ export const LEOS_PUBLIC_SALE_PRICE = 0.012;
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
     // @ts-expect-error chain overridden
-    protected chain: AntelopeChain;
+    // protected chain: AntelopeChain;
 
     constructor(
         chain: AntelopeChain,
@@ -228,19 +228,16 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return this.chain;
     }
     async getUsdPrice(): Promise<number> {
-        //TODO check getChain is undefined coming from antelope chain PR
-        return LEOS_PUBLIC_SALE_PRICE;
-
-        // switch (this.getChain().getName()) {
-        //     case 'Pangea':
-        //         return LEOS_PUBLIC_SALE_PRICE;
-        //     case 'Pangea Testnet':
-        //         return LEOS_PUBLIC_SALE_PRICE;
-        //     case 'EOS Jungle Testnet':
-        //         return LEOS_PUBLIC_SALE_PRICE;
-        //     default:
-        //         throw new Error('Unsupported Antelope chain');
-        // }
+        switch (this.getChain().getName()) {
+            case 'Pangea':
+                return LEOS_PUBLIC_SALE_PRICE;
+            case 'Pangea Testnet':
+                return LEOS_PUBLIC_SALE_PRICE;
+            case 'EOS Jungle Testnet':
+                return LEOS_PUBLIC_SALE_PRICE;
+            default:
+                throw new Error('Unsupported Antelope chain');
+        }
     }
 
     getContractAccount(): IAccount {
@@ -364,9 +361,8 @@ export class AntelopeAction implements IOperation {
             this.action.data.to &&
             this.action.data.from &&
             this.action.data.quantity &&
-            this.action.data.memo
-            //  &&
-            // this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
+            this.action.data.memo &&
+            this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
         ) {
             return TransactionType.TRANSFER;
         } else {
@@ -468,18 +464,19 @@ export class AntelopeTransaction implements ITransaction {
             (await operation.getValue()).getAmount()
         );
 
-        const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
-        let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
+        // const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
+        //     this return string
 
-        if (typeof amount === 'string') {
-            const matchResult = (amount as string).match(/\d+(\.\d+)?/);
-            const numericPart = matchResult ? matchResult[0] : '0';
-            // Remove any non-numeric characters (if necessary)
-            const cleanedNumericPart = numericPart.replace(/\D/g, '0');
+        // let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
+        // Ensure all operation amounts are BigInt
+        const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => {
+            return BigInt(a) + BigInt(b);
+        }, BigInt(0));
 
-            // Convert to BigInt
-            amount = BigInt(cleanedNumericPart);
-        }
+        const estimatedFee = BigInt((await this.estimateTransactionFee()).getAmount());
+
+        // Combine the total operation amounts with the estimated fee
+        const amount = operationAmounts + estimatedFee;
 
         return new Asset(this.chain.getNativeToken(), amount);
     }
@@ -591,19 +588,14 @@ export class ESRSession implements IChainSession {
     async createSession(request: ResolvedSigningRequest): Promise<void> {
         //TODO
     }
-    async cancelLoginRequest(request: unknown): Promise<void> {
+    async cancelSessionRequest(request: unknown): Promise<void> {
         //TODO
     }
     async getActiveAccounts(): Promise<AntelopeAccount[]> {
         return [this.account];
     }
 
-    async disconnectSession(): Promise<void> {
-        // Logic to disconnect the ESR session
-        // Example: Clear the session and any stored data
-    }
-
-    async createTransactionRequest(transaction: ITransaction): Promise<ITransaction> {
+    async createTransactionRequest(transaction: AntelopeTransaction): Promise<AntelopeTransaction> {
         return transaction;
     }
 
