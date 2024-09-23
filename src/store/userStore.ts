@@ -42,10 +42,9 @@ setSettings({
     accountsServiceUrl: settings.config.accountsServiceUrl,
     ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
 });
-// setFetch()
 
 const useUserStore = create<UserState>((set, get) => ({
-    // @ts-ignore PublicKey type error
+    // @ts-expect-error PublicKey library compatibility
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
     isAppInitialized: false,
@@ -116,17 +115,18 @@ async function printStorage(message: string) {
 
     const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
-    debug(message, 'AsyncStorage keys and status', keys, status);
+    console.log(message, 'AsyncStorage keys and status', keys, status);
 
     const secureKeys: string[] = [];
 
     for (const level of Object.keys(KeyManagerLevel)) {
+        console.log(KEY_STORAGE_NAMESPACE + level);
         const value = await SecureStore.getItemAsync(KEY_STORAGE_NAMESPACE + level);
 
         if (value) secureKeys.push(KEY_STORAGE_NAMESPACE + level);
     }
 
-    debug(message, 'SecureStore keys', secureKeys);
+    console.log(message, 'SecureStore keys', secureKeys);
 }
 
 export default useUserStore;

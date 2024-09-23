@@ -11,7 +11,6 @@ import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
 import { formatDateTime } from '../utils/date';
-import useWalletStore from '../store/useWalletStore';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,

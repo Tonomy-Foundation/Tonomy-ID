@@ -137,7 +137,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                             await assetStorage.createAsset(abstractAsset, account);
                         } else {
-                            account = await EthereumAccount.fromAddress(chain, asset.accountName);
+                            account = new EthereumAccount(chain, asset.accountName);
                         }
 
                         return {

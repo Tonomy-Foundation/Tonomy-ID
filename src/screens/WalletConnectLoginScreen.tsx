@@ -11,6 +11,7 @@ export default function WalletConnectLoginScreen(props: Props) {
             navigation={props.navigation}
             payload={props.route.params.payload}
             platform={props.route.params.platform ?? 'mobile'}
+            session={props.route.params.session}
         />
     );
 }

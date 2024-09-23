@@ -50,15 +50,15 @@ describe('AntelopeTransaction', () => {
             },
         };
         const actions = [createAssetAction];
-        const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain);
+        const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain, account);
 
         expect(transaction.hasMultipleOperations()).toBeTruthy();
         expect(await transaction.getData()).toEqual(actions);
         expect(transaction.getType()).rejects.toThrow(
             'Antelope transactions have multiple operations, call getOperations()'
         );
-        expect((await transaction.estimateTransactionFee()).toString()).toBe('0 JUNGLE');
-        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0 JUNGLE');
+        expect((await transaction.estimateTransactionFee()).toString()).toBe('0.00 JUNGLE');
+        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0.00 JUNGLE');
 
         const operations = await transaction.getOperations();
         const createAssetOperation = operations[0];
@@ -67,7 +67,7 @@ describe('AntelopeTransaction', () => {
         expect(await createAssetOperation.getType()).toBe(TransactionType.CONTRACT);
         expect((await createAssetOperation.getFrom()).getName()).toEqual(jungleAccountName);
         expect((await createAssetOperation.getTo()).getName()).toEqual(SIMPLE_ASSSET_CONTRACT_NAME);
-        expect((await createAssetOperation.getValue()).toString()).toEqual('0 JUNGLE');
+        expect((await createAssetOperation.getValue()).toString()).toEqual('0.00 JUNGLE');
         expect(await createAssetOperation.getFunction()).toEqual('create');
         expect(await createAssetOperation.getArguments()).toEqual({
             author: jungleAccountName,
@@ -104,7 +104,9 @@ describe('AntelopeTransaction', () => {
             },
         };
 
-        const res2 = await account.sendTransaction(AntelopeTransaction.fromActions([burnAssetAction], EOSJungleChain));
+        const res2 = await account.sendTransaction(
+            AntelopeTransaction.fromActions([burnAssetAction], EOSJungleChain, account)
+        );
 
         expect(res2).toBeDefined();
         expect(res2.processed.receipt.status).toBe('executed');

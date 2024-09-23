@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+/* eslint-disable camelcase */
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -10,16 +11,15 @@ import {
     ImageSourcePropType,
     ScrollView,
     RefreshControl,
+    SafeAreaView,
 } from 'react-native';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { TH2, TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 import QrCodeScanContainer from './QrCodeScanContainer';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
 import { useIsFocused } from '@react-navigation/native';
-import TSpinner from '../components/atoms/TSpinner';
 import settings from '../settings';
 import theme from '../utils/theme';
 import { Images } from '../assets';
@@ -40,7 +40,22 @@ import useWalletStore from '../store/useWalletStore';
 import { progressiveRetryOnNetworkError } from '../utils/network';
 import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
-import { LEOS_PUBLIC_SALE_PRICE } from '../utils/chain/antelope';
+import { APIClient, PrivateKey } from '@wharfkit/antelope';
+import { ABICache } from '@wharfkit/abicache';
+import zlib from 'pako';
+import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
+import * as SecureStore from 'expo-secure-store';
+import {
+    ActionData,
+    ANTELOPE_CHAIN_ID_TO_CHAIN,
+    AntelopeAccount,
+    AntelopeChain,
+    AntelopePrivateKey,
+    AntelopeTransaction,
+    EOSJungleChain,
+    ESRSession,
+    LEOS_PUBLIC_SALE_PRICE,
+} from '../utils/chain/antelope';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
 import { isNetworkError } from '../utils/errors';
@@ -184,6 +199,130 @@ export default function MainContainer({
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
+            } else if (data.startsWith('esr:')) {
+                // eslint-disable-next-line no-inner-declarations
+                async function createMockSigningRequest() {
+                    return await SigningRequest.create(
+                        {
+                            action: {
+                                account: 'eosio.token',
+                                name: 'transfer',
+                                authorization: [
+                                    {
+                                        actor: 'jacktest2222',
+                                        permission: 'active',
+                                    },
+                                ],
+                                data: {
+                                    from: 'jacktest2222',
+                                    to: 'hippopotamus',
+                                    quantity: '1.0000 EOS',
+                                    memo: '',
+                                },
+                            },
+                            callback: 'https://tonomy.io',
+                            chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
+                        },
+                        {
+                            abiProvider: new ABICache(
+                                new APIClient({
+                                    url: 'https://jungle4.cryptolions.io',
+                                })
+                            ) as unknown as AbiProvider,
+                            zlib,
+                        }
+                    );
+                }
+
+                const request = await createMockSigningRequest();
+                const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
+                // const signingRequestBasic = SigningRequest.from(data, { zlib });
+
+                const chain: AntelopeChain = ANTELOPE_CHAIN_ID_TO_CHAIN[signingRequestBasic.getChainId().toString()];
+
+                if (!chain) throw new Error('This chain is not supported');
+                const client = new APIClient({ url: chain.getApiOrigin() });
+
+                // Define the options used when decoding/resolving the request
+                const options: SigningRequestEncodingOptions = {
+                    abiProvider: new ABICache(client) as unknown as AbiProvider,
+                    zlib,
+                };
+
+                // Decode a signing request payload
+                const signingRequest = SigningRequest.from(data, options);
+
+                const isIdentity = signingRequest.isIdentity();
+                const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
+                // const privateKey = '5Hw7gAxYHruqAtwBcVjFUHS79A2A4QmVL2ModVgdhE12NpCpLdr';
+                const abis = await signingRequest.fetchAbis();
+
+                if (!privateKey) throw new Error('No private key found');
+
+                const authorization = {
+                    actor: accountName,
+                    permission: 'active',
+                };
+
+                const info = await client.v1.chain.get_info();
+                const header = info.getTransactionHeader();
+
+                // Resolve the transaction using the supplied data
+                const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
+                const actions = resolvedSigningRequest.resolvedTransaction.actions.map((action) => ({
+                    account: action.account.toString(),
+                    name: action.name.toString(),
+                    authorization: action.authorization.map((auth) => ({
+                        actor: auth.actor.toString(),
+                        permission: auth.permission.toString(),
+                    })),
+                    data: action.data,
+                }));
+
+                const account = AntelopeAccount.fromAccount(EOSJungleChain, 'jacktest2222');
+                const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain, account);
+                const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
+                const session = new ESRSession(antelopeKey, chain);
+
+                const callback = resolvedSigningRequest.request.data.callback;
+                const origin = new URL(callback).origin;
+
+                if (!isIdentity) {
+                    navigation.navigate('SignTransaction', {
+                        transaction,
+                        privateKey: antelopeKey,
+                        origin,
+                        request: resolvedSigningRequest,
+                        session,
+                    });
+                } else {
+                    debug('Identity request not supported yet');
+                    return;
+                    // const signedTransaction = await antelopeKey.signTransaction(transaction);
+                    // const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures as any, 0);
+
+                    // if (callbackParams) {
+                    //     const response = await fetch(callbackParams.url, {
+                    //         method: 'POST',
+                    //         headers: {
+                    //             'Content-Type': 'application/json',
+                    //         },
+                    //         body: JSON.stringify(callbackParams?.payload),
+                    //     });
+
+                    //     if (!response.ok) {
+                    //         throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+                    //     }
+                    // }
+                    //TODO
+                    // const session = new ESRSession(account, transaction, antelopeKey);
+
+                    // navigation.navigate('WalletConnectLogin', {
+                    //     payload: resolvedSigningRequest,
+                    //     platform: 'browser',
+                    //     session,
+                    // });
+                }
             } else {
                 const did = validateQrCode(data);
 

@@ -1,6 +1,5 @@
 import { TKeyType } from '@veramo/core';
-import { SessionTypes } from '@walletconnect/types';
-import { JsonRpcPayload, JsonRpcProvider } from 'ethers';
+import { formatCurrencyValue } from '../numbers';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -57,6 +56,7 @@ export abstract class AbstractPrivateKey implements IPrivateKey {
 }
 
 export interface IChain {
+    getChainType(): ChainType;
     getName(): string;
     getChainId(): string;
     getLogoUrl(): string;
@@ -65,7 +65,13 @@ export interface IChain {
     formatShortAccountName(account: string): string;
 }
 
+export enum ChainType {
+    'ETHEREUM' = 'ETHEREUM',
+    'ANTELOPE' = 'ANTELOPE',
+}
+
 export abstract class AbstractChain implements IChain {
+    protected chainType: ChainType;
     protected name: string;
     protected chainId: string;
     protected logoUrl: string;
@@ -92,6 +98,9 @@ export abstract class AbstractChain implements IChain {
         if (!this.nativeToken) throw new Error('Native token not set');
         return this.nativeToken;
     }
+    getChainType(): ChainType {
+        return this.chainType;
+    }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
 }
@@ -102,7 +111,7 @@ export interface IAsset {
     getUsdValue(): Promise<number>;
     getSymbol(): string;
     getPrecision(): number;
-    toString(): string;
+    toString(precision?: number): string;
     /*
     gt(other: IAsset): boolean;
     gte(other: IAsset): boolean;
@@ -133,12 +142,14 @@ export abstract class AbstractAsset implements IAsset {
         if (price) {
             // Use a higher precision for the multiplier to ensure small values are accurately represented
             const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
+
             const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
 
             // Convert price to a BigInteger without losing precision
             const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
 
             // Adjust the amount to match the high precision multiplier
+
             const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
 
             // Calculate usdValue using BigInt for accurate arithmetic operations
@@ -159,18 +170,18 @@ export abstract class AbstractAsset implements IAsset {
     getPrecision(): number {
         return this.token.getPrecision();
     }
-    printValue(): string {
+    printValue(precision?: number): string {
         const amountNumber = Number(this.amount);
         const precisionNumber = Number(10 ** this.token.getPrecision());
 
         // Perform the division
-        const value = parseFloat((amountNumber / precisionNumber).toFixed(5));
+        const value = parseFloat((amountNumber / precisionNumber).toFixed(precision ?? this.getPrecision()));
 
-        return value.toString();
+        return formatCurrencyValue(value, precision ?? this.getPrecision());
     }
 
-    toString(): string {
-        return `${this.printValue()} ${this.token.getSymbol()}`;
+    toString(precision?: number): string {
+        return `${this.printValue(precision)} ${this.token.getSymbol()}`;
     }
 }
 
@@ -266,6 +277,9 @@ export interface ITransaction extends IOperation {
     estimateTransactionTotal(): Promise<IAsset>;
     hasMultipleOperations(): boolean;
     getOperations(): Promise<IOperation[]>;
+    // Returns the chain specific transaction object
+    // Antelope = ActionData[]
+    // Ethereum = TransactionRequest
     getData(): Promise<unknown>;
 }
 
@@ -312,14 +326,11 @@ export class Asset extends AbstractAsset {
 }
 
 export interface IChainSession {
-    getId(): number;
-    getName(): string;
-    getUrl(): string;
-    getIcons(): string | null;
-}
-
-export interface ISession {
-    origin: string;
-    id: number;
-    topic: string;
+    createSession(request: unknown): Promise<void>;
+    cancelLoginRequest(request: unknown): Promise<void>;
+    disconnectSession(): Promise<void>;
+    createTransactionRequest(request: unknown): Promise<unknown>;
+    approveTransactionRequest(request: unknown, transaction?: unknown): Promise<void>;
+    rejectTransactionRequest(request: unknown): Promise<void>;
+    getActiveAccounts(): Promise<IAccount[]>;
 }

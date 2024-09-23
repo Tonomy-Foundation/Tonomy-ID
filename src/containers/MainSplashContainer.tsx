@@ -13,7 +13,6 @@ import useWalletStore from '../store/useWalletStore';
 import { connect } from '../utils/StorageManager/setup';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/network';
-import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 

@@ -13,9 +13,12 @@ import {
     AbstractPrivateKey,
     IPrivateKey,
     Asset,
+    IChainSession,
+    ChainType,
 } from './types';
-import { SignClientTypes } from '@walletconnect/types';
 import {
+    ABI,
+    ABISerializableConstructor,
     Action,
     Asset as AntelopeAsset,
     API,
@@ -29,10 +32,12 @@ import {
     PermissionLevelType,
     PrivateKey,
     PublicKey,
+    Serializer,
     SignedTransaction,
     Transaction,
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
+import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;
@@ -89,20 +94,28 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
     async signTransaction(data: ActionData[] | AntelopeTransaction): Promise<SignedTransaction> {
         const actions: ActionData[] = data instanceof AntelopeTransaction ? await data.getData() : data;
         // Get the ABI(s) of all contracts
-        const api = await this.chain.getApiClient();
-        const uniqueContracts = [...new Set(actions.map((data) => data.account))];
-        const abiPromises = uniqueContracts.map((contract) => api.v1.chain.get_abi(contract));
-        const abiArray = await Promise.all(abiPromises);
-        const abiMap = new Map(abiArray.map((abi) => [abi.account_name, abi.abi]));
 
         // Create the action data
         const actionData: Action[] = [];
 
-        actions.forEach((data) => {
-            const abi = abiMap.get(data.account.toString());
+        for (const action of actions) {
+            if (action.name.toString() === 'identity') {
+                const abi: ABI = Serializer.synthesize(IdentityV3 as ABISerializableConstructor);
 
-            actionData.push(Action.from(data, abi));
-        });
+                // eslint-disable-next-line camelcase
+                abi.actions = [{ name: 'identity', type: 'identity', ricardian_contract: '' }];
+                actionData.push(Action.from(action, abi));
+            } else {
+                const api = await this.chain.getApiClient();
+                const uniqueContracts = [...new Set(actions.map((data) => data.account))];
+                const abiPromises = uniqueContracts.map((contract) => api.v1.chain.get_abi(contract));
+                const abiArray = await Promise.all(abiPromises);
+                const abiMap = new Map(abiArray.map((abi) => [abi.account_name, abi.abi]));
+                const abi = abiMap.get(action.account.toString());
+
+                actionData.push(Action.from(action, abi));
+            }
+        }
 
         // Construct the transaction
         const info = await this.chain.getChainInfo();
@@ -115,6 +128,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         // Create signature
         if (info.chain_id.toString() !== this.chain.getAntelopeChainId()) throw new Error('Chain ID mismatch');
         const signDigest = transaction.signingDigest(info.chain_id.toString());
+
         const signatures = [this.privateKey.signDigest(signDigest)];
 
         return SignedTransaction.from({
@@ -142,6 +156,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 }
 
 export class AntelopeChain extends AbstractChain {
+    protected chainType = ChainType.ANTELOPE;
     protected antelopeChainId: string;
     protected apiOrigin: string;
     private apiClient: APIClient;
@@ -213,14 +228,19 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return this.chain;
     }
     async getUsdPrice(): Promise<number> {
-        switch (this.getChain().getName()) {
-            case 'Pangea':
-                return LEOS_PUBLIC_SALE_PRICE;
-            case 'Pangea Testnet':
-                return LEOS_PUBLIC_SALE_PRICE;
-            default:
-                throw new Error('Unsupported Antelope chain');
-        }
+        //TODO check getChain is undefined coming from antelope chain PR
+        return LEOS_PUBLIC_SALE_PRICE;
+
+        // switch (this.getChain().getName()) {
+        //     case 'Pangea':
+        //         return LEOS_PUBLIC_SALE_PRICE;
+        //     case 'Pangea Testnet':
+        //         return LEOS_PUBLIC_SALE_PRICE;
+        //     case 'EOS Jungle Testnet':
+        //         return LEOS_PUBLIC_SALE_PRICE;
+        //     default:
+        //         throw new Error('Unsupported Antelope chain');
+        // }
     }
 
     getContractAccount(): IAccount {
@@ -281,22 +301,52 @@ const LEOSToken = new AntelopeToken(
     'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'ethereum'
+    'leos'
 );
 
 const LEOSTestnetToken = new AntelopeToken(
     PangeaTestnetChain,
-    'LEOS',
+    'TestnetLEOS',
     'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'ethereum'
+    'leos-testnet'
 );
 
+const EOSJungleChain = new AntelopeChain(
+    'https://jungle4.cryptolions.io',
+    'EOS Jungle Testnet',
+    '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
+    'https://jungle3.bloks.io/img/chains/jungle.png'
+);
+const EOSJungleToken = new AntelopeToken(
+    EOSJungleChain,
+    'EOS',
+    'EOS',
+    4,
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    'jungle'
+);
+
+EOSJungleChain.setNativeToken(EOSJungleToken);
 PangeaMainnetChain.setNativeToken(LEOSToken);
 PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
 
-export { PangeaMainnetChain, PangeaTestnetChain, LEOSToken, LEOSTestnetToken };
+const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
+
+ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
+ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
+ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
+
+export {
+    PangeaMainnetChain,
+    PangeaTestnetChain,
+    EOSJungleChain,
+    LEOSToken,
+    LEOSTestnetToken,
+    EOSJungleToken as JUNGLEToken,
+    ANTELOPE_CHAIN_ID_TO_CHAIN,
+};
 
 export class AntelopeAction implements IOperation {
     private action: ActionData;
@@ -311,7 +361,12 @@ export class AntelopeAction implements IOperation {
         // TODO: need to also handle token transfers on other contracts
         if (
             this.action.name.toString() === 'transfer' &&
-            this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
+            this.action.data.to &&
+            this.action.data.from &&
+            this.action.data.quantity &&
+            this.action.data.memo
+            //  &&
+            // this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
         ) {
             return TransactionType.TRANSFER;
         } else {
@@ -342,37 +397,53 @@ export class AntelopeAction implements IOperation {
     }
     async getValue(): Promise<Asset> {
         // TODO: need to also handle token transfers on other contracts
+
         if ((await this.getType()) === TransactionType.TRANSFER) {
-            return new Asset(this.chain.getNativeToken(), this.action.data.quantity);
+            const quantity = this.action.data.quantity.toString();
+
+            return getAssetFromQuantity(quantity, this.chain);
         } else {
             return new Asset(this.chain.getNativeToken(), BigInt(0));
         }
     }
 }
 
+function getAssetFromQuantity(quantity: string, chain: AntelopeChain): Asset {
+    const name = quantity.split(' ')[1];
+    const symbol = name;
+    const precision = quantity.split(' ')[0].split('.')[1].length;
+    const logoUrl = name === 'LEOS' ? LEOSToken.getLogoUrl() : '';
+
+    const token = new AntelopeToken(chain, name, symbol, precision, logoUrl, '');
+    const amountNumber = parseFloat(quantity.split(' ')[0]);
+    const amount = BigInt(amountNumber * 10 ** precision);
+
+    return new Asset(token, amount);
+}
+
 export class AntelopeTransaction implements ITransaction {
     private actions: ActionData[];
-    private type?: TransactionType;
     protected chain: AntelopeChain;
-    // protected session: EthereumChainSession;
+    protected account: AntelopeAccount;
 
-    constructor(actions: ActionData[], chain: AntelopeChain) {
+    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount) {
         this.actions = actions;
         this.chain = chain;
+        this.account = account;
     }
     getChain(): AntelopeChain {
         return this.chain;
     }
 
-    static fromActions(actions: ActionData[], chain: AntelopeChain): AntelopeTransaction {
-        return new AntelopeTransaction(actions, chain);
+    static fromActions(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount): AntelopeTransaction {
+        return new AntelopeTransaction(actions, chain, account);
     }
 
     async getType(): Promise<TransactionType> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getFrom(): Promise<AntelopeAccount> {
-        throw new Error('Antelope transactions have multiple operations, call getOperations()');
+        return this.account;
     }
     async getTo(): Promise<AntelopeAccount> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
@@ -396,8 +467,19 @@ export class AntelopeTransaction implements ITransaction {
         const operationAmountsPromises = (await this.getOperations()).map(async (operation) =>
             (await operation.getValue()).getAmount()
         );
+
         const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
-        const amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
+        let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
+
+        if (typeof amount === 'string') {
+            const matchResult = (amount as string).match(/\d+(\.\d+)?/);
+            const numericPart = matchResult ? matchResult[0] : '0';
+            // Remove any non-numeric characters (if necessary)
+            const cleanedNumericPart = numericPart.replace(/\D/g, '0');
+
+            // Convert to BigInt
+            amount = BigInt(cleanedNumericPart);
+        }
 
         return new Asset(this.chain.getNativeToken(), amount);
     }
@@ -408,7 +490,6 @@ export class AntelopeTransaction implements ITransaction {
         return this.actions.map((action) => new AntelopeAction(action, this.chain));
     }
 }
-
 export class AntelopeAccount extends AbstractAccount implements IAccount {
     private privateKey?: AntelopePrivateKey;
     // @ts-expect-error chain overridden
@@ -493,5 +574,75 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         }
 
         return false;
+    }
+}
+
+export class ESRSession implements IChainSession {
+    private transaction: AntelopeTransaction;
+    private account: AntelopeAccount;
+    private antelopeKey: AntelopePrivateKey;
+    private chain: AntelopeChain;
+
+    constructor(antelopeKey: AntelopePrivateKey, chain: AntelopeChain) {
+        this.antelopeKey = antelopeKey;
+        this.chain = chain;
+    }
+
+    async createSession(request: ResolvedSigningRequest): Promise<void> {
+        //TODO
+    }
+    async cancelLoginRequest(request: unknown): Promise<void> {
+        //TODO
+    }
+    async getActiveAccounts(): Promise<AntelopeAccount[]> {
+        return [this.account];
+    }
+
+    async disconnectSession(): Promise<void> {
+        // Logic to disconnect the ESR session
+        // Example: Clear the session and any stored data
+    }
+
+    async createTransactionRequest(transaction: ITransaction): Promise<ITransaction> {
+        return transaction;
+    }
+
+    async approveTransactionRequest(signingRequest: ResolvedSigningRequest, signedTransaction): Promise<void> {
+        const callbackParams = signingRequest.getCallback(signedTransaction.signatures, 0);
+
+        if (callbackParams) {
+            const response = await fetch(callbackParams.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(callbackParams?.payload),
+            });
+
+            if (!response.ok) {
+                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+            }
+        }
+    }
+
+    async rejectTransactionRequest(request: ResolvedSigningRequest): Promise<void> {
+        const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
+        const callbackParams = request.getCallback(signedTransaction.signatures as any, 0);
+
+        if (callbackParams) {
+            const response = await fetch(callbackParams.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rejected: 'Request cancelled from within Anchor.',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+            }
+        }
     }
 }
