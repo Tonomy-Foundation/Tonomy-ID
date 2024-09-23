@@ -386,7 +386,18 @@ export class AntelopeAction implements IOperation {
         }
     }
     async getArguments(): Promise<Record<string, string>> {
-        return this.action.data;
+        const data = this.action.data;
+        const args: Record<string, string> = {};
+
+        for (const key in data) {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                const value = data[key];
+
+                args[key] = value.toString();
+            }
+        }
+
+        return args;
     }
     async getFunction(): Promise<string> {
         return this.action.name.toString();

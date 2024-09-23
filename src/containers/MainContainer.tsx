@@ -54,11 +54,11 @@ import {
     AntelopeTransaction,
     EOSJungleChain,
     ESRSession,
-    LEOS_PUBLIC_SALE_PRICE,
+    LEOS_SEED_ROUND_PRICE,
 } from '../utils/chain/antelope';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
-import { isNetworkError } from '../utils/errors';
+import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -196,6 +196,8 @@ export default function MainContainer({
     }, [setUserName, did, onUrlOpen]);
 
     async function onScan({ data }: BarCodeScannerResult) {
+        debug('onScan() data:', data);
+
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
@@ -250,7 +252,7 @@ export default function MainContainer({
                 };
 
                 // Decode a signing request payload
-                const signingRequest = SigningRequest.from(data, options);
+                const signingRequest = SigningRequest.from(signingRequestBasic.toString(), options);
 
                 const isIdentity = signingRequest.isIdentity();
                 const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
@@ -286,6 +288,8 @@ export default function MainContainer({
 
                 const callback = resolvedSigningRequest.request.data.callback;
                 const origin = new URL(callback).origin;
+
+                debug('onScan() transaction:', transaction);
 
                 if (!isIdentity) {
                     navigation.navigate('SignTransaction', {
@@ -335,7 +339,7 @@ export default function MainContainer({
                 debug('onScan() network error');
                 errorStore.setError({
                     title: 'Network Error',
-                    error: new Error('Check your connection, and try again.'),
+                    error: new Error(NETWORK_ERROR_RESPONSE),
                     expected: true,
                 });
             } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
@@ -565,7 +569,7 @@ export default function MainContainer({
                                                     <Text style={styles.secondaryColor}>
                                                         $
                                                         {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                            ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
                                                             : 0.0}
                                                     </Text>
                                                 </View>
