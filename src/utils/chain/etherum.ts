@@ -460,8 +460,7 @@ export class WalletConnectSession implements IChainSession {
         const transactionRequest: TransactionRequest = {
             to: (await transaction.getTo()).getName(),
             from: (await transaction.getFrom()).getName(),
-            value: ethers.parseEther(parseFloat((await transaction.getValue()).toString()).toFixed(18)),
-            data: await transaction.getData().toString(),
+            value: (await transaction.getValue()).getAmount(),
         };
 
         return transactionRequest;

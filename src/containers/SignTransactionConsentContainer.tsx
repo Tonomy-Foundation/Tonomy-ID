@@ -90,6 +90,7 @@ export default function SignTransactionConsentContainer({
             setTransactionLoading(true);
 
             const transactionRequest = await session.createTransactionRequest(transaction);
+
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
             await session.approveTransactionRequest(request, signedTransaction);
