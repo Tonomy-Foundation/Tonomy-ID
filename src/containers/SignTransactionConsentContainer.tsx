@@ -4,7 +4,7 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IChainSession, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import { IChainSession, IOperation, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
@@ -26,13 +26,6 @@ type OperationData = {
     contractName?: string;
     functionName?: string;
     args?: Record<string, string>;
-};
-
-type TransactionMetaData = {
-    chainIcon: string;
-    chainName: string;
-    symbol: string;
-    accountName: string;
 };
 
 type TransactionFeeData = {
@@ -74,6 +67,38 @@ export default function SignTransactionConsentContainer({
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
 
+    async function getOperationData(operation: IOperation) {
+        const type = await operation.getType();
+
+        if (type === TransactionType.TRANSFER) {
+            const to = chain.formatShortAccountName((await operation.getTo()).getName());
+            const value = await operation.getValue();
+
+            const amount = value.toString();
+            const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
+
+            return {
+                type,
+                to,
+                amount,
+                usdValue,
+            };
+        } else if (type === TransactionType.CONTRACT) {
+            const contractName = chain.formatShortAccountName((await operation.getTo()).getName());
+            const functionName = await operation.getFunction();
+            const args = await operation.getArguments();
+
+            return {
+                type,
+                contractName,
+                functionName,
+                args,
+            };
+        } else {
+            throw new Error('Unsupported transaction type');
+        }
+    }
+
     useEffect(() => {
         async function fetchTransactionData() {
             try {
@@ -87,42 +112,17 @@ export default function SignTransactionConsentContainer({
                 debug('fetchTransactionData() fetching operations', accountName);
 
                 // Fetch operations
-                const operations = await transaction.getOperations();
-                const syncedOperations: OperationData[] = await Promise.all(
-                    operations.map(async (operation) => {
-                        const type = await operation.getType();
+                if (transaction.hasMultipleOperations()) {
+                    const operations = await transaction.getOperations();
+                    const syncedOperations: OperationData[] = await Promise.all(operations.map(getOperationData));
 
-                        if (type === TransactionType.TRANSFER) {
-                            const to = chain.formatShortAccountName((await operation.getTo()).getName());
-                            const value = await operation.getValue();
+                    setOperations(syncedOperations);
+                } else {
+                    const syncedOperations: OperationData[] = [await getOperationData(transaction)];
 
-                            const amount = value.toString();
-                            const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
+                    setOperations(syncedOperations);
+                }
 
-                            return {
-                                type,
-                                to,
-                                amount,
-                                usdValue,
-                            };
-                        } else if (type === TransactionType.CONTRACT) {
-                            const contractName = chain.formatShortAccountName((await operation.getTo()).getName());
-                            const functionName = await operation.getFunction();
-                            const args = await operation.getArguments();
-
-                            return {
-                                type,
-                                contractName,
-                                functionName,
-                                args,
-                            };
-                        } else {
-                            throw new Error('Unsupported transaction type');
-                        }
-                    })
-                );
-
-                setOperations(syncedOperations);
                 debug('fetchTransactionData() fetching transaction fee', operations);
 
                 // Fetch transaction fee
