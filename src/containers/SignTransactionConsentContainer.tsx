@@ -177,14 +177,13 @@ export default function SignTransactionConsentContainer({
         try {
             setTransactionLoading(true);
             const transactionRequest = await session.createTransactionRequest(transaction);
+
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
             await session.approveTransactionRequest(request, signedTransaction);
             navigation.navigate('SignTransactionSuccess', {
-                transactionDetails: {
-                    chainId: chain.getChainId(),
-                    transactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
-                },
+                transaction,
+                signTransactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
             });
             setTransactionLoading(false);
         } catch (error) {

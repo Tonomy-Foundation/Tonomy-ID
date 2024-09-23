@@ -40,6 +40,8 @@ const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`
 
 const INFURA_KEY = settings.config.infuraKey;
 
+export const USD_CONVERSION = 0.002;
+
 export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
     async getAddress(): Promise<string> {
         return computeAddress(await this.toString());
@@ -459,7 +461,6 @@ export class WalletConnectSession implements IChainSession {
             to: (await transaction.getTo()).getName(),
             from: (await transaction.getFrom()).getName(),
             value: (await transaction.getValue()).getAmount(),
-            data: await transaction.getData().toString(),
         };
 
         return transactionRequest;

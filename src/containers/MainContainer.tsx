@@ -33,6 +33,7 @@ import {
     ETHPolygonToken,
     ETHSepoliaToken,
     ETHToken,
+    USD_CONVERSION,
 } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
@@ -59,6 +60,7 @@ import {
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
+import TSpinner from '../components/atoms/TSpinner';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
