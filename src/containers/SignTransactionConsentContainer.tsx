@@ -94,16 +94,8 @@ export default function SignTransactionConsentContainer({
 
             await session.approveTransactionRequest(request, signedTransaction);
             navigation.navigate('SignTransactionSuccess', {
-                transactionDetails: {
-                    chainId: transaction.getChain().getChainId(),
-                    transactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
-                    toAccount: transactionDetails.toAccount,
-                    shortAccountName: transaction.getChain().formatShortAccountName(transactionDetails?.toAccount),
-                    fee: transactionDetails.fee,
-                    usdFee: transactionDetails.usdFee,
-                    total: transactionDetails.total,
-                    usdTotal: transactionDetails.usdTotal,
-                },
+                transaction,
+                signTransactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
             });
             setTransactionLoading(false);
         } catch (error) {

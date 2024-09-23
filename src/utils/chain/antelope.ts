@@ -617,12 +617,12 @@ export class ESRSession implements IChainSession {
         }
     }
 
-    async rejectTransactionRequest(request: ResolvedSigningRequest): Promise<void> {
-        const signedTransaction = await this.antelopeKey.signTransaction(this.transaction);
-        const callbackParams = request.getCallback(signedTransaction.signatures as any, 0);
+    async rejectTransactionRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
+        const callback = resolvedSigningRequest.request.data.callback;
+        const origin = new URL(callback).origin;
 
-        if (callbackParams) {
-            const response = await fetch(callbackParams.url, {
+        if (origin) {
+            const response = await fetch(origin, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -635,6 +635,8 @@ export class ESRSession implements IChainSession {
             if (!response.ok) {
                 throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
+        } else {
+            throw new Error('No origin found in callback URL');
         }
     }
 }

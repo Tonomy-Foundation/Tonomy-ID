@@ -73,16 +73,8 @@ export type RouteStackParamList = {
         session: IChainSession;
     };
     SignTransactionSuccess: {
-        transactionDetails: {
-            chainId: string;
-            transactionHash: string;
-            toAccount: string;
-            shortAccountName: string;
-            fee: string;
-            usdFee: number;
-            total: string;
-            usdTotal: number;
-        };
+        transaction: ITransaction;
+        signTransactionHash: string;
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
