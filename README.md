@@ -8,8 +8,8 @@ Tonomy ID is a React Native application in typescript.
 
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
--   Linux debian distribution (Ubuntu 20.0.4 LTS used)
--   [Nodejs](https://nodejs.org) v18.12.1+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
+- Linux debian distribution (Ubuntu 20.0.4 LTS used)
+- [Nodejs](https://nodejs.org) v20+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
 
 ## Install
 
@@ -60,12 +60,12 @@ You NEED to follow the above `Pre-run build` steps above before you can start th
 yarn run start
 ```
 
-### Run with the Staging / Demo environment and build
+### Run with the Staging / Testnet environment and build
 
-Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
+Testing Staging / Testnet Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
-1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.demo.json`
-2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=demo yarn run start`
+1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.testnet.json`
+2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=testnet yarn run start`
 3. Connect via QR and bundle and load the app
 4. Scroll down >> "Open React Native dev men"
 5. Click "Settings"
@@ -73,10 +73,9 @@ Testing Staging / Demo Tonomy ID locally without needing to wait for deploy to P
 7. Turn OFF "JS Dev Mode"
 8. Reload
 
-
 This is now running in production mode connected to the staging environment.
 
-## Run Staging or Demo and see debug logs (Android only)
+## Run Staging or Testnet and see debug logs (Android only)
 
 1. Install adb on your pc (<https://dl.google.com/android/repository/platform-tools-latest-windows.zip>)
 2. Put the location of the folder inside Path env system variable or you can navigate to the folder and call adb.exe directly
@@ -92,6 +91,8 @@ This is now running in production mode connected to the staging environment.
 yarn run updateSdkVersion development
 # or
 yarn run updateSdkVersion master
+# or 
+yarn run updateSdkVersion testnet
 ```
 
 ## File structure of components
@@ -106,23 +107,23 @@ Set the configuration variables in the desired file in `./src/config`
 
 Values for EXPO_NODE_ENV
 
--   EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
--   EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
--   EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
--   EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
--   EXPO_NODE_ENV=testnet - uses `./src/config/config.testnet.json`
--   EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
+- EXPO_NODE_ENV=development - uses the default `./src/config/config.json`
+- EXPO_NODE_ENV=test - same as `development`. this is set when `yarn run test` is run
+- EXPO_NODE_ENV=local - same as `development`. this resolves the `@tonomy/tonomy-id-sdk` package to the local repository at `../Tonomy-ID-SDK` which is used for the `Tonomy-ID-Integration` repository when locally testing all software together.
+- EXPO_NODE_ENV=staging - uses `./src/config/config.staging.json`
+- EXPO_NODE_ENV=testnet - uses `./src/config/config.testnet.json`
+- EXPO_NODE_ENV=production - throws an error. Will be used for the production deploy.
 
 Values for EXPO_PLATFORM
 
--   EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
--   EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
+- EXPO_PLATFORM=android - tells `prepare.app.config.ts` to configure app for Android
+- EXPO_PLATFORM=ios - tells `prepare.app.config.ts` to configure app for iOS
 
 Other environment variables override the values in the config file:
 
--   BLOCKCHAIN_URL
--   SSO_WEBSITE_ORIGIN
--   VITE_COMMUNICATION_URL
+- BLOCKCHAIN_URL
+- SSO_WEBSITE_ORIGIN
+- VITE_COMMUNICATION_URL
 
 ### Linting
 
@@ -135,6 +136,10 @@ yarn run lint
 ### Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
+
+### Debugging
+
+Uses [debug](https://www.npmjs.com/package/debug) package. Use `export DEBUG="tonomy*"` to see all debug logs.
 
 ### Common errors and how to fix
 

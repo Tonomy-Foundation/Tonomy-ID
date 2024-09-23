@@ -9,14 +9,14 @@ set +e
 
 # Get the latest version of the SDK for the correct npmjs tag based on branch
 if [ "${BRANCH}" == "master" ]; then
-    VERSION=$(npm view @tonomy/tonomy-id-sdk version)
+    VERSION=$(npm view @tonomy/tonomy-id-sdk@latest version)
 elif [ "${BRANCH}" == "testnet" ]; then
     VERSION=$(npm view @tonomy/tonomy-id-sdk@testnet version)
 elif [ "${BRANCH}" == "development" ]; then
     VERSION=$(npm view @tonomy/tonomy-id-sdk@development version)
 else
     # Print help
-    echo "Usage: yarn run updateSdkVersion master|development [check]"
+    echo "Usage: yarn run updateSdkVersion master|testnet|development [check]"
     echo ""
     echo "Example: yarn run updateSdkVersion development"
     echo "Example: yarn run updateSdkVersion master check"

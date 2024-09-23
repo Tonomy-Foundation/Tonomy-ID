@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import settings from '../settings';
 import { util } from '@tonomy/tonomy-id-sdk';
 import { ApplicationErrors, throwError } from '../utils/errors';

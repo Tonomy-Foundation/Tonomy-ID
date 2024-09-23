@@ -1,40 +1,53 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from './TErrorModal';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:components:ErrorHandlerProvider');
 
 export default function ErrorHandlerProvider() {
+    debug('ErrorHandlerProvider');
     const [showModal, setShowModal] = useState(false);
 
-    const errorStore = useErrorStore();
+    const { onClose, unSetError } = useErrorStore();
 
-    async function onModalPress() {
-        const onClose = errorStore.onClose;
+    const onModalPress = useCallback(async () => {
+        const oldOnClose = onClose;
 
-        errorStore.unSetError();
-        if (onClose) await onClose();
+        unSetError();
+        if (oldOnClose) await oldOnClose();
         setShowModal(false);
-    }
+    }, [onClose, unSetError]);
 
     // gets the initial value of the error state
     const errorRef = useRef(useErrorStore.getState());
 
-    useEffect(
-        () =>
-            // subscribe to errorStore changes to update the modal
-            // using the `errorStore` variable does not work as changes do not force a re-render
-            useErrorStore.subscribe((state) => {
+    useEffect(() => {
+        const unsubscribe = useErrorStore.subscribe((state) => {
+            debug('errorStore.subscribe', state, errorRef.current);
+
+            // Only update the modal if there's a change in the error state
+            if (JSON.stringify(state.error) === JSON.stringify(errorRef.current.error)) return;
+
+            if (state.error !== errorRef.current.error) {
                 errorRef.current.error = state.error;
                 errorRef.current.title = state.title;
                 errorRef.current.expected = state.expected;
 
                 if (state.error) {
                     setShowModal(true);
+                } else {
+                    setShowModal(false);
                 }
-            }),
-        []
-    );
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
 
     return (
         <TErrorModal
