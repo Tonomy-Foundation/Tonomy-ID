@@ -225,7 +225,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     { account: sepoliaAccount, token: ETHSepoliaToken },
                     { account: polygonAccount, token: ETHPolygonToken },
                 ].map(async ({ account, token }: { account: IAccount; token: IToken }) => {
-                    console.log(account);
                     debug(`updateBalance() fetching account ${account.getChain().getName()} ${account.getName()}`);
 
                     try {
