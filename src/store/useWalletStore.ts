@@ -234,7 +234,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                             await assetStorage.updateAccountBalance(balance);
                         }
                     } catch (error) {
-                        console.log('updateBalance() Error updating balance:', error);
+                        debug('updateBalance() Error updating balance:', error);
                     }
                 })
             );
