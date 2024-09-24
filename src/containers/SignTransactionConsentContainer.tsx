@@ -195,15 +195,16 @@ export default function SignTransactionConsentContainer({
 
             await session.approveTransactionRequest(request, signedTransaction);
             navigation.navigate('SignTransactionSuccess', {
-                transaction,
-                signTransactionHash: (signedTransaction as { hash?: string })?.hash ?? '',
+                operations,
+                transactionTotalData,
+                signedTransaction,
             });
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
             errorStore.setError({
                 title: 'Signing Error',
-                error: new Error(`Error signing transaction, ${error}`),
+                error,
                 expected: false,
             });
             navigation.navigate({ name: 'UserHome', params: {} });

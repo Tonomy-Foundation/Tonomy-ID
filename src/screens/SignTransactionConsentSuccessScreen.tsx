@@ -9,7 +9,7 @@ export default function SignTransactionConsentSuccessScreen(props: Props) {
     return (
         <SignTransactionConsentSuccessContainer
             transaction={props.route.params.transaction}
-            signTransactionHash={props.route.params.signTransactionHash}
+            transactionHash={props.route.params.transactionHash}
             navigation={props.navigation}
         />
     );

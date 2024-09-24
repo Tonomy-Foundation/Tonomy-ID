@@ -74,7 +74,7 @@ export type RouteStackParamList = {
     };
     SignTransactionSuccess: {
         transaction: ITransaction;
-        signTransactionHash: string;
+        transactionHash: string;
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];

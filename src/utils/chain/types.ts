@@ -26,12 +26,37 @@ export abstract class AbstractPublicKey implements IPublicKey {
     }
 }
 
+export interface ITransactionReceipt {
+    getChain(): IChain;
+    getFee(): Promise<IAsset>;
+    getTransactionHash(): string;
+    getExplorerUrl(): string;
+    getTimestamp(): Promise<Date>;
+}
+
+export abstract class AbstractTransactionReceipt implements ITransactionReceipt {
+    protected chain: IChain;
+
+    constructor(chain: IChain) {
+        this.chain = chain;
+    }
+
+    getChain(): IChain {
+        return this.chain;
+    }
+
+    abstract getFee(): Promise<IAsset>;
+    abstract getTransactionHash(): string;
+    abstract getExplorerUrl(): string;
+    abstract getTimestamp(): Promise<Date>;
+}
+
 export interface IPrivateKey {
     getType(): Promise<TKeyType>;
     getPublicKey(): Promise<IPublicKey>;
     signTransaction(transaction: unknown): Promise<unknown>;
     exportPrivateKey(): Promise<string>;
-    sendTransaction(transaction: unknown): Promise<unknown>;
+    sendTransaction(transaction: unknown): Promise<ITransactionReceipt>;
 }
 
 export abstract class AbstractPrivateKey implements IPrivateKey {
@@ -49,10 +74,15 @@ export abstract class AbstractPrivateKey implements IPrivateKey {
 
     abstract getPublicKey(): Promise<IPublicKey>;
     abstract signTransaction(transaction: unknown): Promise<unknown>;
-    abstract sendTransaction(transaction: unknown): Promise<unknown>;
+    abstract sendTransaction(transaction: unknown): Promise<ITransactionReceipt>;
     async exportPrivateKey(): Promise<string> {
         return this.privateKeyHex;
     }
+}
+
+export interface ExplorerOptions {
+    transactionHash?: string;
+    accountName?: string;
 }
 
 export interface IChain {
@@ -63,6 +93,7 @@ export interface IChain {
     getNativeToken(): IToken;
     createKeyFromSeed(seed: string): IPrivateKey;
     formatShortAccountName(account: string): string;
+    getExplorerUrl(options?: ExplorerOptions): string;
 }
 
 export enum ChainType {
@@ -103,6 +134,7 @@ export abstract class AbstractChain implements IChain {
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
+    abstract getExplorerUrl(options?: ExplorerOptions): string;
 }
 
 export interface IAsset {

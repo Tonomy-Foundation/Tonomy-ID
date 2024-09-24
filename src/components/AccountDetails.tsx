@@ -96,7 +96,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
                     <Text style={styles.accountName}>{accountData.accountName}</Text>
                 ) : (
                     <Text style={styles.accountName}>
-                        {accountBalance.balance} ( ${formatCurrencyValue(Number(accountBalance.usdValue), 3)})
+                        {accountBalance.balance} ( ${formatCurrencyValue(accountBalance.usdValue)})
                     </Text>
                 )}
             </View>

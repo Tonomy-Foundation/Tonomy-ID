@@ -25,6 +25,9 @@ import {
     Asset,
     IChainSession,
     IOperation,
+    ExplorerOptions,
+    AbstractTransactionReceipt,
+    IAsset,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -76,20 +79,24 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
         return this.wallet.populateTransaction(transaction);
     }
 
-    async sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse> {
-        return this.wallet.sendTransaction(transaction);
+    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
+        const receipt = await this.wallet.sendTransaction(transaction);
+
+        return new EthereumTransactionReceipt(this.chain, receipt);
     }
 }
 
 export class EthereumChain extends AbstractChain {
     // See https://chainlist.org/ for Chain IDs
     protected infuraUrl: string;
+    protected explorerOrigin: string;
     private provider: JsonRpcProvider;
 
-    constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string) {
+    constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string, explorerOrigin: string) {
         super(name, chainId, logoUrl);
         this.infuraUrl = infuraUrl;
         this.provider = new JsonRpcProvider(this.infuraUrl);
+        this.explorerOrigin = explorerOrigin;
     }
 
     createKeyFromSeed(seed: string): IPrivateKey {
@@ -106,8 +113,20 @@ export class EthereumChain extends AbstractChain {
         return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
     }
 
-    public getProvider(): JsonRpcProvider {
+    getProvider(): JsonRpcProvider {
         return this.provider;
+    }
+
+    getExplorerUrl(options?: ExplorerOptions): string {
+        if (options) {
+            if (options.transactionHash) {
+                return `${this.explorerOrigin}/tx/${options.transactionHash}`;
+            } else if (options.accountName) {
+                return `${this.explorerOrigin}/address/${options.accountName}`;
+            }
+        }
+
+        return this.explorerOrigin;
     }
 }
 
@@ -159,20 +178,23 @@ const EthereumMainnetChain = new EthereumChain(
     `https://mainnet.infura.io/v3/${INFURA_KEY}`,
     'Ethereum',
     '1',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png'
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    'https://etherscan.io'
 );
 const EthereumSepoliaChain = new EthereumChain(
     `https://sepolia.infura.io/v3/${INFURA_KEY}`,
     'sepolia',
     '11155111',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png'
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    'https://sepolia.etherscan.io'
 );
 
 const EthereumPolygonChain = new EthereumChain(
     `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
     'Polygon',
     '137',
-    'https://cryptologos.cc/logos/polygon-matic-logo.png'
+    'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    'https://polygonscan.com'
 );
 
 const ETHToken = new EthereumToken(
@@ -343,6 +365,42 @@ export class EthereumTransaction implements ITransaction {
     }
 }
 
+export class EthereumTransactionReceipt extends AbstractTransactionReceipt {
+    private receipt: TransactionResponse;
+
+    constructor(chain: EthereumChain, receipt: TransactionResponse) {
+        super(chain);
+        this.receipt = receipt;
+    }
+
+    getTransactionHash(): string {
+        return this.receipt.hash;
+    }
+
+    getExplorerUrl(): string {
+        return this.chain.getExplorerUrl({ transactionHash: this.getTransactionHash() });
+    }
+
+    async getFee(): Promise<IAsset> {
+        const receipt = await this.receipt.wait();
+
+        if (!receipt) throw new Error('Failed to fetch receipt');
+        return new Asset(this.chain.getNativeToken(), receipt.fee);
+    }
+
+    async getTimestamp(): Promise<Date> {
+        const receipt = await this.receipt.wait();
+        const provider = (this.chain as EthereumChain).getProvider();
+
+        if (!receipt) throw new Error('Failed to fetch receipt');
+        const block = await provider.getBlock(receipt?.blockNumber);
+
+        if (!block) throw new Error('Failed to fetch block');
+
+        return new Date(block.timestamp * 1000);
+    }
+}
+
 export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
 
@@ -396,7 +454,7 @@ export class EthereumAccount extends AbstractAccount {
         return this.privateKey.signTransaction(transaction);
     }
 
-    async sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse> {
+    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }

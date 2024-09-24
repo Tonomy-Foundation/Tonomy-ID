@@ -16,6 +16,8 @@ import {
     IChainSession,
     ChainType,
     IAsset,
+    ExplorerOptions,
+    AbstractTransactionReceipt,
 } from './types';
 import {
     ABI,
@@ -74,6 +76,35 @@ export type ActionData = {
     authorization: PermissionLevelType[];
     data: MapObject;
 };
+
+export class AntelopeTransactionReceipt extends AbstractTransactionReceipt {
+    private receipt: API.v1.PushTransactionResponse;
+
+    constructor(chain: AntelopeChain, receipt: API.v1.PushTransactionResponse) {
+        super(chain);
+        this.receipt = receipt;
+    }
+
+    getTransactionHash(): string {
+        return this.receipt.transaction_id;
+    }
+
+    async getFee(): Promise<IAsset> {
+        return new Asset(this.getChain().getNativeToken(), 0n);
+    }
+
+    getExplorerUrl(): string {
+        return this.getChain().getExplorerUrl({ transactionHash: this.getTransactionHash() });
+    }
+
+    async getTimestamp(): Promise<Date> {
+        return new Date(this.receipt.processed.block_time);
+    }
+
+    getRawReceipt(): API.v1.PushTransactionResponse {
+        return this.receipt;
+    }
+}
 
 export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKey {
     private privateKey: PrivateKey;
@@ -138,13 +169,13 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         });
     }
 
-    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<API.v1.PushTransactionResponse> {
+    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
         const transaction = await this.signTransaction(data);
 
         try {
-            // const toPrint = data instanceof AntelopeTransaction ? await data.getData() : data;
-            // console.log('sendTransaction()', JSON.stringify(toPrint, null, 2));
-            return await this.chain.getApiClient().v1.chain.push_transaction(transaction);
+            const receipt = await this.chain.getApiClient().v1.chain.push_transaction(transaction);
+
+            return new AntelopeTransactionReceipt(this.chain, receipt);
         } catch (error) {
             console.error('sendTransaction()', JSON.stringify(error, null, 2));
             throw error;
@@ -160,14 +191,16 @@ export class AntelopeChain extends AbstractChain {
     protected chainType = ChainType.ANTELOPE;
     protected antelopeChainId: string;
     protected apiOrigin: string;
+    protected explorerOrigin: string;
     private apiClient: APIClient;
 
-    constructor(apiOrigin: string, name: string, antelopeChainId: string, logoUrl: string) {
+    constructor(apiOrigin: string, name: string, antelopeChainId: string, logoUrl: string, explorerOrigin: string) {
         const chainId = 'antelope-' + antelopeChainId;
 
         super(name, chainId, logoUrl);
         this.antelopeChainId = antelopeChainId;
         this.apiOrigin = apiOrigin;
+        this.explorerOrigin = explorerOrigin;
     }
 
     createKeyFromSeed(seed: string): AntelopePrivateKey {
@@ -201,6 +234,18 @@ export class AntelopeChain extends AbstractChain {
 
     formatShortAccountName(account: string): string {
         return account;
+    }
+
+    getExplorerUrl(options?: ExplorerOptions): string {
+        if (options) {
+            if (options.transactionHash) {
+                return `${this.explorerOrigin}/transaction/${options.transactionHash}`;
+            } else if (options.accountName) {
+                return `${this.explorerOrigin}/account/${options.accountName}`;
+            }
+        }
+
+        return this.explorerOrigin;
     }
 }
 
@@ -282,14 +327,16 @@ const PangeaMainnetChain = new AntelopeChain(
     'https://pangea.eosusa.io',
     'Pangea',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true'
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    'https://explorer.pangea.web4.world'
 );
 
 const PangeaTestnetChain = new AntelopeChain(
     'https://pangea.test.eosusa.io',
     'Pangea Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true'
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    'https://explorer.testnet.pangea.web4.world'
 );
 
 const LEOSToken = new AntelopeToken(
@@ -314,7 +361,8 @@ const EOSJungleChain = new AntelopeChain(
     'https://jungle4.cryptolions.io',
     'EOS Jungle Testnet',
     '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
-    'https://jungle3.bloks.io/img/chains/jungle.png'
+    'https://jungle3.bloks.io/img/chains/jungle.png',
+    'https://jungle3.bloks.io'
 );
 const EOSJungleToken = new AntelopeToken(
     EOSJungleChain,
@@ -546,12 +594,12 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         return this.privateKey.signTransaction(data);
     }
 
-    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<API.v1.PushTransactionResponse> {
+    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }
 
-        return this.privateKey.sendTransaction(data);
+        return await this.privateKey.sendTransaction(data);
     }
 
     async isContract(): Promise<boolean> {

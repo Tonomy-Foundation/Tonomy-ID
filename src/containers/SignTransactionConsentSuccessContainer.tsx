@@ -17,11 +17,11 @@ import useErrorStore from '../store/errorStore';
 export default function SignTransactionConsentSuccessContainer({
     navigation,
     transaction,
-    signTransactionHash,
+    transactionHash,
 }: {
     navigation: Props['navigation'];
     transaction: ITransaction;
-    signTransactionHash: string;
+    transactionHash: string;
 }) {
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
     const [recipient, setRecipient] = useState<IAccount | null>(null);
@@ -37,18 +37,7 @@ export default function SignTransactionConsentSuccessContainer({
     };
 
     const viewBlockExplorer = () => {
-        let explorerUrl;
-        const chainId = transaction.getChain().getChainId();
-
-        if (chainId.toString() === '1') {
-            explorerUrl = `https://etherscan.io/tx/${signTransactionHash}`;
-        } else if (chainId.toString() === '137') {
-            explorerUrl = `https://polygonscan.com/tx/${signTransactionHash}`;
-        } else if (chainId.toString() === '11155111') {
-            explorerUrl = `https://sepolia.etherscan.io/tx/${signTransactionHash}`;
-        } else {
-            throw new Error('Unknown network: Cannot redirect to block explorer');
-        }
+        const explorerUrl = transaction.getChain().getExplorerUrl({ transactionHash });
 
         Linking.openURL(explorerUrl);
     };
