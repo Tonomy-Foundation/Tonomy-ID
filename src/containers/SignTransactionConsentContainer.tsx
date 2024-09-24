@@ -67,91 +67,104 @@ export default function SignTransactionConsentContainer({
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
 
-    async function getOperationData(operation: IOperation) {
-        const type = await operation.getType();
+    const getOperationData = useCallback(
+        async (operation: IOperation) => {
+            const type = await operation.getType();
 
-        if (type === TransactionType.TRANSFER) {
-            const to = chain.formatShortAccountName((await operation.getTo()).getName());
-            const value = await operation.getValue();
+            if (type === TransactionType.TRANSFER) {
+                const to = chain.formatShortAccountName((await operation.getTo()).getName());
+                const value = await operation.getValue();
 
-            const amount = value.toString();
-            const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
+                const amount = value.toString();
+                const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 
-            return {
-                type,
-                to,
-                amount,
-                usdValue,
-            };
-        } else if (type === TransactionType.CONTRACT) {
-            const contractName = chain.formatShortAccountName((await operation.getTo()).getName());
-            const functionName = await operation.getFunction();
-            const args = await operation.getArguments();
+                return {
+                    type,
+                    to,
+                    amount,
+                    usdValue,
+                };
+            } else if (type === TransactionType.CONTRACT) {
+                const contractName = chain.formatShortAccountName((await operation.getTo()).getName());
+                const functionName = await operation.getFunction();
+                const args = await operation.getArguments();
 
-            return {
-                type,
-                contractName,
-                functionName,
-                args,
-            };
+                return {
+                    type,
+                    contractName,
+                    functionName,
+                    args,
+                };
+            } else {
+                throw new Error('Unsupported transaction type');
+            }
+        },
+        [chain]
+    );
+
+    const fetchAccountName = useCallback(async () => {
+        const account = await transaction.getFrom();
+        const accountName = chain.formatShortAccountName(account.getName());
+
+        setAccountName(accountName);
+        debug('fetchAccountName() done', accountName);
+    }, [transaction, chain]);
+
+    const fetchOperations = useCallback(async () => {
+        if (transaction.hasMultipleOperations()) {
+            const operations = await transaction.getOperations();
+            const syncedOperations: OperationData[] = await Promise.all(operations.map(getOperationData));
+
+            setOperations(syncedOperations);
+            debug('fetchOperations() done', syncedOperations);
         } else {
-            throw new Error('Unsupported transaction type');
+            const syncedOperations: OperationData[] = [await getOperationData(transaction)];
+
+            setOperations(syncedOperations);
+            debug('fetchOperations() done', syncedOperations);
         }
-    }
+    }, [transaction, getOperationData]);
+
+    const fetchTransactionFee = useCallback(async () => {
+        const fee = await transaction.estimateTransactionFee();
+        const usdFee = await fee.getUsdValue();
+        const transactionFee = { fee: fee.toString(4), usdFee: formatCurrencyValue(usdFee, 2) };
+
+        setTransactionFeeData(transactionFee);
+        debug('fetchTransactionFee() done', transactionFee);
+    }, [transaction]);
+
+    const fetchTransactionTotal = useCallback(async () => {
+        const total = await transaction.estimateTransactionTotal();
+        const usdTotal = await total.getUsdValue();
+        const balanceError = false;
+        // TODO: uncomment after fixing Antelope issue
+        // const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
+
+        // if (accountBalance < total.getAmount()) {
+        //     balanceError = true;
+        // }
+
+        const transactionTotal = {
+            total: total.toString(4),
+            totalUsd: formatCurrencyValue(usdTotal, 2),
+            balanceError,
+        };
+
+        setTransactionTotalData(transactionTotal);
+        debug('fetchTransactionTotal() done', transactionTotal);
+    }, [transaction]);
 
     useEffect(() => {
         async function fetchTransactionData() {
             try {
-                debug('fetchTransactionData() fetching account name');
                 setTransactionLoading(true);
-                // Fetch the account
-                const account = await transaction.getFrom();
-                const accountName = chain.formatShortAccountName(account.getName());
-
-                setAccountName(accountName);
-                debug('fetchTransactionData() fetching operations', accountName);
-
-                // Fetch operations
-                if (transaction.hasMultipleOperations()) {
-                    const operations = await transaction.getOperations();
-                    const syncedOperations: OperationData[] = await Promise.all(operations.map(getOperationData));
-
-                    setOperations(syncedOperations);
-                } else {
-                    const syncedOperations: OperationData[] = [await getOperationData(transaction)];
-
-                    setOperations(syncedOperations);
-                }
-
-                debug('fetchTransactionData() fetching transaction fee', operations);
-
-                // Fetch transaction fee
-                const fee = await transaction.estimateTransactionFee();
-                const usdFee = await fee.getUsdValue();
-                const transactionFee = { fee: fee.toString(4), usdFee: formatCurrencyValue(usdFee, 2) };
-
-                setTransactionFeeData(transactionFee);
-                debug('fetchTransactionData() fetching transaction total', transactionFee);
-
-                // Fetch total transaction cost
-                const total = await transaction.estimateTransactionTotal();
-                const usdTotal = await total.getUsdValue();
-                const balanceError = false;
-                // TODO: uncomment after fixing Antelope issue
-                // const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
-
-                // if (accountBalance < total.getAmount()) {
-                //     balanceError = true;
-                // }
-
-                const transactionTotal = {
-                    total: total.toString(4),
-                    totalUsd: formatCurrencyValue(usdTotal, 2),
-                    balanceError,
-                };
-
-                setTransactionTotalData(transactionTotal);
-                debug('fetchTransactionData() done', transactionTotal);
+                await Promise.all([
+                    fetchAccountName(),
+                    fetchOperations(),
+                    fetchTransactionFee(),
+                    fetchTransactionTotal(),
+                ]);
             } catch (error) {
                 errorStore.setError({
                     title: 'Error fetching transaction details',
@@ -164,7 +177,7 @@ export default function SignTransactionConsentContainer({
         }
 
         fetchTransactionData();
-    }, [transaction, chain, errorStore]);
+    }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
     async function onReject() {
         setTransactionLoading(true);
