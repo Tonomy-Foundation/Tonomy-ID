@@ -60,7 +60,7 @@ export default function SignTransactionConsentContainer({
     const [accountName, setAccountName] = useState<string | null>(null);
     const [transactionFeeData, setTransactionFeeData] = useState<TransactionFeeData | null>(null);
     const [transactionTotalData, setTransactionTotalData] = useState<TransactionTotalData | null>(null);
-    const topUpBalance = useRef(null);
+    const topUpBalance = useRef<{ open: () => void; close: () => void }>(null);
 
     const chain = transaction.getChain();
     const chainIcon = chain.getLogoUrl();
@@ -239,7 +239,7 @@ export default function SignTransactionConsentContainer({
                             <TransactionTotal
                                 transactionTotal={transactionTotalData}
                                 onTopUp={() => {
-                                    (topUpBalance?.current as any)?.open();
+                                    topUpBalance?.current?.open();
                                 }}
                             />
                         )}
@@ -251,9 +251,9 @@ export default function SignTransactionConsentContainer({
                                 symbol: chainSymbol,
                                 image: chainIcon,
                                 name: chainName,
-                                address: accountName,
+                                accountName,
                             }}
-                            onClose={() => (topUpBalance?.current as any)?.close()}
+                            onClose={() => topUpBalance?.current?.close()}
                         />
                     )}
                 </ScrollView>
@@ -288,7 +288,7 @@ function Operations({ operations }: { operations: OperationData[] }) {
             <>
                 {operations.map((operation, index) => (
                     <View key={index} style={{ width: '100%' }}>
-                        <Text style={styles.actionText}>Action {index + 1}</Text>
+                        <Text style={styles.actionText}>Transaction {index + 1}</Text>
                         <OperationDetails operation={operation} />
                     </View>
                 ))}
