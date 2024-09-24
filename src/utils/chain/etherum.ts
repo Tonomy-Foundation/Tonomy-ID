@@ -399,6 +399,10 @@ export class EthereumTransactionReceipt extends AbstractTransactionReceipt {
 
         return new Date(block.timestamp * 1000);
     }
+
+    getRawReceipt(): TransactionResponse {
+        return this.receipt;
+    }
 }
 
 export class EthereumAccount extends AbstractAccount {
@@ -526,8 +530,9 @@ export class WalletConnectSession implements IChainSession {
 
     async approveTransactionRequest(
         request: Web3WalletTypes.SessionRequest,
-        signedTransaction: unknown
+        receipt: EthereumTransactionReceipt
     ): Promise<void> {
+        const signedTransaction = receipt.getRawReceipt();
         const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
 
         await this.wallet.respondSessionRequest({ topic: request.topic, response });

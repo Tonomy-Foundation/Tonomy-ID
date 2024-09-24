@@ -32,6 +32,7 @@ export interface ITransactionReceipt {
     getTransactionHash(): string;
     getExplorerUrl(): string;
     getTimestamp(): Promise<Date>;
+    getRawReceipt(): unknown;
 }
 
 export abstract class AbstractTransactionReceipt implements ITransactionReceipt {
@@ -49,6 +50,7 @@ export abstract class AbstractTransactionReceipt implements ITransactionReceipt 
     abstract getTransactionHash(): string;
     abstract getExplorerUrl(): string;
     abstract getTimestamp(): Promise<Date>;
+    abstract getRawReceipt(): unknown;
 }
 
 export interface IPrivateKey {
@@ -361,7 +363,7 @@ export interface IChainSession {
     createSession(request: unknown): Promise<void>;
     cancelSessionRequest(request: unknown): Promise<void>;
     createTransactionRequest(request: ITransaction): Promise<unknown>;
-    approveTransactionRequest(request: unknown, transaction?: unknown): Promise<void>;
+    approveTransactionRequest(request: unknown, transaction: ITransactionReceipt): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;
 }

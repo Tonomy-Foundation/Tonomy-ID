@@ -41,6 +41,9 @@ import {
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:chain:antelope');
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;
@@ -79,10 +82,12 @@ export type ActionData = {
 
 export class AntelopeTransactionReceipt extends AbstractTransactionReceipt {
     private receipt: API.v1.PushTransactionResponse;
+    private transaction: SignedTransaction;
 
-    constructor(chain: AntelopeChain, receipt: API.v1.PushTransactionResponse) {
+    constructor(chain: AntelopeChain, receipt: API.v1.PushTransactionResponse, transaction: SignedTransaction) {
         super(chain);
         this.receipt = receipt;
+        this.transaction = transaction;
     }
 
     getTransactionHash(): string {
@@ -103,6 +108,10 @@ export class AntelopeTransactionReceipt extends AbstractTransactionReceipt {
 
     getRawReceipt(): API.v1.PushTransactionResponse {
         return this.receipt;
+    }
+
+    getRawTransaction(): SignedTransaction {
+        return this.transaction;
     }
 }
 
@@ -175,7 +184,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         try {
             const receipt = await this.chain.getApiClient().v1.chain.push_transaction(transaction);
 
-            return new AntelopeTransactionReceipt(this.chain, receipt);
+            return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
             console.error('sendTransaction()', JSON.stringify(error, null, 2));
             throw error;
@@ -631,7 +640,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
     }
 }
 
-export class ESRSession implements IChainSession {
+export class AntelopeSigningRequestSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
     private antelopeKey: AntelopePrivateKey;
@@ -656,8 +665,13 @@ export class ESRSession implements IChainSession {
         return transaction;
     }
 
-    async approveTransactionRequest(signingRequest: ResolvedSigningRequest, signedTransaction): Promise<void> {
-        const callbackParams = signingRequest.getCallback(signedTransaction.signatures, 0);
+    async approveTransactionRequest(
+        request: ResolvedSigningRequest,
+        receipt: AntelopeTransactionReceipt
+    ): Promise<void> {
+        const signedTransaction = receipt.getRawTransaction();
+        // @ts-expect-error signatures type mismatch
+        const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
         if (callbackParams) {
             const response = await fetch(callbackParams.url, {

@@ -47,14 +47,13 @@ import zlib from 'pako';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import * as SecureStore from 'expo-secure-store';
 import {
-    ActionData,
     ANTELOPE_CHAIN_ID_TO_CHAIN,
     AntelopeAccount,
     AntelopeChain,
     AntelopePrivateKey,
     AntelopeTransaction,
     EOSJungleChain,
-    ESRSession,
+    AntelopeSigningRequestSession,
     LEOS_SEED_ROUND_PRICE,
 } from '../utils/chain/antelope';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
@@ -225,20 +224,20 @@ export default function MainContainer({
                                         memo: '',
                                     },
                                 },
-                                {
-                                    account: 'eosio.token',
-                                    name: 'close',
-                                    authorization: [
-                                        {
-                                            actor: 'jacktest2222',
-                                            permission: 'active',
-                                        },
-                                    ],
-                                    data: {
-                                        owner: 'jacktest2222',
-                                        symbol: '4,EOS',
-                                    },
-                                },
+                                // {
+                                //     account: 'eosio.token',
+                                //     name: 'close',
+                                //     authorization: [
+                                //         {
+                                //             actor: 'jacktest2222',
+                                //             permission: 'active',
+                                //         },
+                                //     ],
+                                //     data: {
+                                //         owner: 'jacktest2222',
+                                //         symbol: '4,EOS',
+                                //     },
+                                // },
                             ],
                             callback: 'https://tonomy.io',
                             chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
@@ -254,9 +253,9 @@ export default function MainContainer({
                     );
                 }
 
-                const request = await createMockSigningRequest();
-                const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
-                // const signingRequestBasic = SigningRequest.from(data, { zlib });
+                // const request = await createMockSigningRequest();
+                // const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
+                const signingRequestBasic = SigningRequest.from(data, { zlib });
 
                 const chain: AntelopeChain = ANTELOPE_CHAIN_ID_TO_CHAIN[signingRequestBasic.getChainId().toString()];
 
@@ -302,7 +301,7 @@ export default function MainContainer({
                 const account = AntelopeAccount.fromAccount(EOSJungleChain, 'jacktest2222');
                 const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain, account);
                 const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
-                const session = new ESRSession(antelopeKey, chain);
+                const session = new AntelopeSigningRequestSession(antelopeKey, chain);
 
                 const callback = resolvedSigningRequest.request.data.callback;
                 const origin = new URL(callback).origin;

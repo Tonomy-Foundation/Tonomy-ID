@@ -174,9 +174,7 @@ export default function SignTransactionConsentContainer({
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-            const transactionRequest = await session.createTransactionRequest(transaction);
-
-            const receipt = await privateKey.sendTransaction(transactionRequest);
+            const receipt = await privateKey.sendTransaction(transaction);
 
             await session.approveTransactionRequest(request, receipt);
             navigation.navigate('SignTransactionSuccess', {
