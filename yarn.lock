@@ -2159,9 +2159,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/apple-utils@npm:1.3.1":
-  version: 1.3.1
-  resolution: "@expo/apple-utils@npm:1.3.1"
+"@expo/apple-utils@npm:1.8.0":
+  version: 1.8.0
+  resolution: "@expo/apple-utils@npm:1.8.0"
   bin:
     apple-utils: bin.js
   checksum: 10c0/17eb7da17d709bf69d1941e3201a1abb9f2e4eb6cd39d3d7bf3beaa26a41a84d768d5dd209afe3f1e41ab7e4e0dd0c2bdc6f3f19be0445174e23b389907c481c

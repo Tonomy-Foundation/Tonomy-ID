@@ -4,7 +4,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import { useEffect, useState } from 'react';
 import { Images } from '../assets';
 import { IAccount } from '../utils/chain/types';
-import { capitalizeFirstLetter } from '../utils/helper';
+import { capitalizeFirstLetter } from '../utils/strings';
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
 
 export type AccountItemProps = {
