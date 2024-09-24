@@ -36,7 +36,7 @@ import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt, Transact
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
-import { OperationData } from '../components/Transaction.tsx';
+import { OperationData } from '../components/Transaction';
 
 const prefix = Linking.createURL('');
 

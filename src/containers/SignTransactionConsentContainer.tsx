@@ -13,7 +13,7 @@ import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
-import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction.tsx';
+import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 

@@ -10,10 +10,10 @@ import { TH1 } from '../components/atoms/THeadings';
 import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
-import { formatDateTime } from '../utils/date';
-import { IAccount, ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import { ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
-import { OperationData } from '../components/Transaction.tsx';
+import { OperationData, Operations, TransactionFee } from '../components/Transaction';
+import TSpinner from '../components/atoms/TSpinner';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
@@ -27,8 +27,8 @@ export default function SignTransactionConsentSuccessContainer({
     receipt: ITransactionReceipt;
 }) {
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
-    const [recipient, setRecipient] = useState<IAccount | null>(null);
     const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
+    const [date, setDate] = useState<Date | null>(null);
 
     const errorStore = useErrorStore();
 
@@ -48,21 +48,23 @@ export default function SignTransactionConsentSuccessContainer({
     useEffect(() => {
         async function fetchTransactionDetail() {
             try {
+                const date = await receipt.getTimestamp();
+
+                setDate(date);
+
                 const total = await transaction.estimateTransactionTotal();
                 const usdTotal = await total.getUsdValue();
 
                 const totalString = total.toString(4);
-                const usdTotalString = formatCurrencyValue(usdTotal, 2);
+                const usdTotalString = formatCurrencyValue(usdTotal);
 
                 setTotal({ total: totalString, totalUsd: usdTotalString });
-                const recipient = await transaction.getTo();
 
-                setRecipient(recipient);
-                const fee = await transaction.estimateTransactionFee();
+                const fee = await receipt.getFee();
                 const usdFee = await fee.getUsdValue();
 
                 const feeString = fee.toString(4);
-                const usdFeeString = formatCurrencyValue(usdFee, 2);
+                const usdFeeString = formatCurrencyValue(usdFee);
 
                 setFee({ fee: feeString, usdFee: usdFeeString });
             } catch (e) {
@@ -75,7 +77,7 @@ export default function SignTransactionConsentSuccessContainer({
         }
 
         fetchTransactionDetail();
-    }, []);
+    }, [errorStore, receipt, transaction]);
 
     return (
         <LayoutComponent
@@ -90,26 +92,13 @@ export default function SignTransactionConsentSuccessContainer({
                                 <Text style={styles.secondaryColor}>${total?.totalUsd}</Text>
                             </Text>
                         </View>
-                        <View style={styles.appDialog}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                                <Text style={styles.secondaryColor}>Date:</Text>
-                                <Text>{formatDateTime(new Date())}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={styles.secondaryColor}>Recipient:</Text>
-                                <Text>{recipient?.getName()}</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.appDialog}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                <Text>
-                                    {fee?.fee}
-                                    <Text style={styles.secondaryColor}>${fee?.usdFee}</Text>
-                                </Text>
-                            </View>
-                        </View>
+                        {date ? (
+                            <Operations operations={operations} date={date} />
+                        ) : (
+                            <Operations operations={operations} />
+                        )}
+                        {!fee && <TSpinner />}
+                        {fee && <TransactionFee transactionFee={fee} />}
                         <TButtonSecondaryContained
                             theme="secondary"
                             style={{ width: '100%', marginTop: 25 }}
