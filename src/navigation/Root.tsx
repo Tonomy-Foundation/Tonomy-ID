@@ -38,6 +38,7 @@ import { SelectAssetNavigator } from './SelectAssetNavigator';
 import { AssetDetailNavigator } from './AssetDetailNavigator';
 import Debug from 'debug';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import AppInstructionModal from '../components/AppInstructionModal';
 
 const debug = Debug('tonomy-id:navigation:root');
 
@@ -240,6 +241,7 @@ export default function RootNavigation() {
                 <>
                     <NotificationModule />
                     <CommunicationModule />
+                    <AppInstructionModal />
                     <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
