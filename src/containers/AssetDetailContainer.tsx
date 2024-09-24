@@ -39,9 +39,11 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                 USD
                             </Text>
                         </View>
-                        <View style={styles.warning}>
-                            <Text>All LEOS is vested until the public sale</Text>
-                        </View>
+                        {props.symbol === 'LEOS' && (
+                            <View style={styles.warning}>
+                                <Text>All LEOS is vested until the public sale</Text>
+                            </View>
+                        )}
                         <View style={styles.flexRow}>
                             {props.symbol !== 'LEOS' && (
                                 <TouchableOpacity
