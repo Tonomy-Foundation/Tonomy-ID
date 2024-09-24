@@ -8,8 +8,9 @@ export type Props = NativeStackScreenProps<RouteStackParamList, 'SignTransaction
 export default function SignTransactionConsentSuccessScreen(props: Props) {
     return (
         <SignTransactionConsentSuccessContainer
+            operations={props.route.params.operations}
             transaction={props.route.params.transaction}
-            transactionHash={props.route.params.transactionHash}
+            receipt={props.route.params.receipt}
             navigation={props.navigation}
         />
     );

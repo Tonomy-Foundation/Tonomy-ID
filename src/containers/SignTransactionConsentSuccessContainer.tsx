@@ -11,17 +11,20 @@ import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
 import { formatDateTime } from '../utils/date';
-import { IAccount, ITransaction } from '../utils/chain/types';
+import { IAccount, ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
+import { OperationData } from '../components/Transaction.tsx';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
+    operations,
     transaction,
-    transactionHash,
+    receipt,
 }: {
     navigation: Props['navigation'];
+    operations: OperationData[];
     transaction: ITransaction;
-    transactionHash: string;
+    receipt: ITransactionReceipt;
 }) {
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
     const [recipient, setRecipient] = useState<IAccount | null>(null);
@@ -37,7 +40,7 @@ export default function SignTransactionConsentSuccessContainer({
     };
 
     const viewBlockExplorer = () => {
-        const explorerUrl = transaction.getChain().getExplorerUrl({ transactionHash });
+        const explorerUrl = receipt.getExplorerUrl();
 
         Linking.openURL(explorerUrl);
     };
