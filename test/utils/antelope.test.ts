@@ -75,7 +75,7 @@ describe('AntelopeTransaction', () => {
             owner: jungleAccountName,
             idata: '',
             mdata: '',
-            requireclaim: false,
+            requireclaim: 'false',
         });
 
         const signedTransaction = await account.signTransaction(transaction);
