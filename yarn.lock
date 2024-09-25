@@ -4961,13 +4961,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pako@npm:^2":
-  version: 2.0.3
-  resolution: "@types/pako@npm:2.0.3"
-  checksum: 10c0/45119ac3c4e8a77317c35493327039b74e333562f06ce038048228918d8ddfaa7958125aab960d1565b3861046022754c414dba1eecb210c44a32c415956bee2
-  languageName: node
-  linkType: hard
-
 "@types/prop-types@npm:*":
   version: 15.7.12
   resolution: "@types/prop-types@npm:15.7.12"
@@ -18145,7 +18138,6 @@ __metadata:
     "@sinonjs/text-encoding": "npm:^0.7.2"
     "@tonomy/tonomy-id-sdk": "npm:0.22.0-development.1"
     "@types/jest": "npm:^29.5.0"
-    "@types/pako": "npm:^2"
     "@types/react": "npm:~18.2.14"
     "@types/react-native-base64": "npm:^0.2.0"
     "@types/react-test-renderer": "npm:^18.0.0"

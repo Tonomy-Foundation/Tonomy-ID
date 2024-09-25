@@ -2,10 +2,10 @@ import './mocks';
 import {
     ActionData,
     AntelopeAccount,
-    AntelopeChain,
     AntelopePrivateKey,
-    AntelopeToken,
     AntelopeTransaction,
+    EOSJungleChain,
+    JUNGLEToken,
 } from '../../src/utils/chain/antelope';
 import { PrivateKey } from '@wharfkit/antelope';
 import { TransactionType } from '../../src/utils/chain/types';
@@ -13,20 +13,6 @@ import { TransactionType } from '../../src/utils/chain/types';
 describe('AntelopeTransaction', () => {
     const jungleAccountName = 'mytest123tes';
     const privateKey = PrivateKey.from('PVT_K1_2Yn362S23hWaDuDjLawDB1ZByF8fqsZZXFUDPTHnk6tXX44D2R');
-    const EOSJungleChain = new AntelopeChain(
-        'https://jungle4.cryptolions.io',
-        'EOS Jungle Testnet',
-        '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
-        'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true'
-    );
-    const JUNGLEToken = new AntelopeToken(
-        EOSJungleChain,
-        'JUNGLE',
-        'JUNGLE',
-        4,
-        'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-        'jungle'
-    );
 
     EOSJungleChain.setNativeToken(JUNGLEToken);
 
@@ -57,8 +43,8 @@ describe('AntelopeTransaction', () => {
         expect(transaction.getType()).rejects.toThrow(
             'Antelope transactions have multiple operations, call getOperations()'
         );
-        expect((await transaction.estimateTransactionFee()).toString()).toBe('0.00 JUNGLE');
-        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0.00 JUNGLE');
+        expect((await transaction.estimateTransactionFee()).toString()).toBe('0.00 EOS');
+        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0.00 EOS');
 
         const operations = await transaction.getOperations();
         const createAssetOperation = operations[0];
@@ -67,7 +53,7 @@ describe('AntelopeTransaction', () => {
         expect(await createAssetOperation.getType()).toBe(TransactionType.CONTRACT);
         expect((await createAssetOperation.getFrom()).getName()).toEqual(jungleAccountName);
         expect((await createAssetOperation.getTo()).getName()).toEqual(SIMPLE_ASSSET_CONTRACT_NAME);
-        expect((await createAssetOperation.getValue()).toString()).toEqual('0.00 JUNGLE');
+        expect((await createAssetOperation.getValue()).toString()).toEqual('0.00 EOS');
         expect(await createAssetOperation.getFunction()).toEqual('create');
         expect(await createAssetOperation.getArguments()).toEqual({
             author: jungleAccountName,
@@ -75,7 +61,7 @@ describe('AntelopeTransaction', () => {
             owner: jungleAccountName,
             idata: '',
             mdata: '',
-            requireclaim: false,
+            requireclaim: 'false',
         });
 
         const signedTransaction = await account.signTransaction(transaction);
@@ -85,9 +71,11 @@ describe('AntelopeTransaction', () => {
 
         const res = await account.sendTransaction(transaction);
 
-        expect(res).toBeDefined();
-        expect(res.processed.receipt.status).toBe('executed');
-        const assetId = res.processed.action_traces[0].inline_traces[1].act.data.assetid;
+        const receipt = res.getRawReceipt();
+
+        expect(receipt).toBeDefined();
+        expect(receipt.processed.receipt.status).toBe('executed');
+        const assetId = receipt.processed.action_traces[0].inline_traces[1].act.data.assetid;
 
         expect(assetId).toBeDefined();
         expect(Number(assetId)).toBeGreaterThan(0);
@@ -108,7 +96,9 @@ describe('AntelopeTransaction', () => {
             AntelopeTransaction.fromActions([burnAssetAction], EOSJungleChain, account)
         );
 
-        expect(res2).toBeDefined();
-        expect(res2.processed.receipt.status).toBe('executed');
+        const receipt2 = res2.getRawReceipt();
+
+        expect(receipt2).toBeDefined();
+        expect(receipt2.processed.receipt.status).toBe('executed');
     }, 30000);
 });
