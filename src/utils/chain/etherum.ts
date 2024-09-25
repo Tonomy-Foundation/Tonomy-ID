@@ -28,6 +28,7 @@ import {
     ExplorerOptions,
     AbstractTransactionReceipt,
     IAsset,
+    ChainType,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -87,6 +88,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
 }
 
 export class EthereumChain extends AbstractChain {
+    protected chainType = ChainType.ETHEREUM;
     // See https://chainlist.org/ for Chain IDs
     protected infuraUrl: string;
     protected explorerOrigin: string;
@@ -523,6 +525,7 @@ export class WalletConnectSession implements IChainSession {
             to: (await transaction.getTo()).getName(),
             from: (await transaction.getFrom()).getName(),
             value: (await transaction.getValue()).getAmount(),
+            data: (await transaction.getData()).data,
         };
 
         return transactionRequest;

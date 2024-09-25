@@ -362,7 +362,8 @@ export class Asset extends AbstractAsset {
 export interface IChainSession {
     createSession(request: unknown): Promise<void>;
     cancelSessionRequest(request: unknown): Promise<void>;
-    createTransactionRequest(request: ITransaction): Promise<unknown>;
+
+    createTransactionRequest(request: unknown): Promise<unknown>;
     approveTransactionRequest(request: unknown, transaction: ITransactionReceipt): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;

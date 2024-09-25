@@ -174,7 +174,9 @@ export default function SignTransactionConsentContainer({
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-            const receipt = await privateKey.sendTransaction(transaction);
+            const transactionRequest = await session.createTransactionRequest(transaction);
+
+            const receipt = await privateKey.sendTransaction(transactionRequest);
 
             await session.approveTransactionRequest(request, receipt);
             navigation.navigate('SignTransactionSuccess', {
@@ -336,84 +338,20 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         fontSize: 15,
     },
-    // transactionHeading: {
-    //     marginTop: 11,
-    // },
-    // appDialog: {
-    //     borderWidth: 1,
-    //     borderColor: theme.colors.grey5,
-    //     borderStyle: 'solid',
-    //     borderRadius: 7,
-    //     padding: 16,
-    //     width: '100%',
-    //     marginTop: 20,
-    // },
-    // actionDialog: {
-    //     borderWidth: 1,
-    //     borderColor: theme.colors.grey5,
-    //     borderStyle: 'solid',
-    //     borderRadius: 7,
-    //     padding: 16,
-    //     width: '100%',
-    //     marginTop: 8,
-    // },
     totalSection: {
         padding: 16,
         width: '100%',
         marginTop: 20,
         borderRadius: 7,
     },
-    // detailSection: {
-    //     backgroundColor: theme.colors.info,
-    //     padding: 10,
-    //     width: '100%',
-    //     borderRadius: 7,
-    // },
-    // padding: {
-    //     paddingHorizontal: 30,
-    // },
     secondaryColor: {
         color: theme.colors.secondary2,
         marginLeft: 4,
     },
-    // rawTransaction: {
-    //     color: theme.colors.secondary,
-    //     marginTop: 15,
-    //     width: '100%',
-    //     textAlign: 'center',
-    // },
-    // rawTransactionDrawer: {
-    //     paddingHorizontal: 15,
-    //     paddingVertical: 25,
-    // },
-    // drawerHead: {
-    //     fontSize: 20,
-    //     fontWeight: '600',
-    //     marginBottom: 20,
-    // },
-    // drawerParagragh: {
-    //     fontSize: 13,
-    // },
-    // scrollViewConditions: {
-    //     paddingHorizontal: 18,
-    //     paddingRight: 18,
-    //     paddingVertical: 0,
-    //     margin: 0,
-    // },
     balanceError: {
         textAlign: 'right',
         marginTop: 5,
         color: theme.colors.error,
         fontSize: 13,
     },
-    // popoverText: {
-    //     color: theme.colors.white,
-    //     fontSize: 11,
-    // },
-    // actionText: {
-    //     fontWeight: 'bold',
-    //     textAlign: 'left',
-    //     marginTop: 10,
-    //     marginLeft: 2,
-    // },
 });
