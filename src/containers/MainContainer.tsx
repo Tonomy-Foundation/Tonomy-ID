@@ -304,7 +304,7 @@ export default function MainContainer({
                 const callback = resolvedSigningRequest.request.data.callback;
                 const origin = new URL(callback).origin;
 
-                debug('onScan() transaction:', transaction);
+                debug('onScan() transaction:', transaction.getChain().getChainType());
 
                 if (!isIdentity) {
                     navigation.navigate('SignTransaction', {
