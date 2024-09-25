@@ -119,15 +119,16 @@ export default function SignTransactionConsentContainer({
     }, [transaction]);
 
     const fetchTransactionTotal = useCallback(async () => {
+        const account = await transaction.getFrom();
         const total = await transaction.estimateTransactionTotal();
         const usdTotal = await total.getUsdValue();
-        const balanceError = false;
-        // TODO: uncomment after fixing Antelope issue
-        // const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
+        let balanceError = false;
 
-        // if (accountBalance < total.getAmount()) {
-        //     balanceError = true;
-        // }
+        const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
+
+        if (accountBalance < total.getAmount()) {
+            balanceError = true;
+        }
 
         const transactionTotal = {
             total: total.toString(4),

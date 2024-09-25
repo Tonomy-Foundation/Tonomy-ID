@@ -298,7 +298,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return AntelopeAccount.fromAccount(this.getChain(), 'eosio.token');
     }
 
-    async getBalance(account?: IAccount): Promise<Asset> {
+    async getBalance(account?: AntelopeAccount): Promise<Asset> {
         const contractAccount = this.getContractAccount();
 
         if (!contractAccount) throw new Error('Token has no contract account');
@@ -315,7 +315,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
             lookupAccount.getName(),
             this.getSymbol()
         );
-        const asset = assets.find((asset) => asset.symbol.code.equals(this.toAntelopeSymbol()));
+        const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, BigInt(0));
         return new Asset(this, BigInt(asset.units.value));
@@ -325,7 +325,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return AntelopeAsset.Symbol.fromParts(this.getSymbol(), this.getPrecision());
     }
 
-    async getUsdValue(account?: IAccount): Promise<number> {
+    async getUsdValue(account?: AntelopeAccount): Promise<number> {
         const balance = await this.getBalance(account);
 
         return balance.getUsdValue();
