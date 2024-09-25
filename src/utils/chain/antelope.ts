@@ -711,3 +711,8 @@ export class AntelopeSigningRequestSession implements IChainSession {
         }
     }
 }
+
+export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
+    if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Chain not supported');
+    return ANTELOPE_CHAIN_ID_TO_CHAIN[chainId];
+}
