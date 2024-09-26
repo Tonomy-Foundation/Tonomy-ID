@@ -355,13 +355,14 @@ export default function AssetsContainer({
 
     const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
         const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
-
+        console.log(token.getSymbol())
         setAccountDetails({
             symbol: token.getSymbol(),
             name: capitalizeFirstLetter(chain.getName()),
             address: accountData.account || '',
             image: token.getLogoUrl(),
         });
+        
         (refMessage.current as any)?.open();
     };
 
@@ -477,6 +478,18 @@ export default function AssetsContainer({
                                             key={index}
                                             onPress={() => {
                                                 openAccountDetails(chainObj);
+
+                                                const accountDetail = {
+                                                    symbol: chainObj.token.getSymbol(),
+                                                    name: capitalizeFirstLetter(chainObj.chain.getName()),
+                                                    icon: { uri: chainObj.token.getLogoUrl() },
+                                                    ...accountData,
+                                                };
+                                                console.log(accountData)
+                                                // navigation.navigate('AssetDetailMain', {
+                                                //     screen: 'AssetDetail',
+                                                //     params: { screenTitle: `${chainObj.token.getSymbol()}`, ...accountDetail },
+                                                // });
                                             }}
                                             style={styles.assetsView}
                                         >
