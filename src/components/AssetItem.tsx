@@ -9,26 +9,18 @@ import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
 
 export type AccountItemProps = {
     navigation: SelectAssetScreenNavigationProp['navigation'];
-    accountBalance: { balance: string; usdBalance: number | string };
-    address: IAccount | null;
+    accountBalance: { balance: string; usdBalance: number };
     networkName: string;
     currency: string;
     leos?: boolean;
     accountName?: string;
     type: string;
+    icon?: ImageSourcePropType | undefined;
+    account?: string;
+    testnet?: boolean;
 };
 const AssetItem = (props: AccountItemProps) => {
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchLogo = async () => {
-            if (props.address && !props.leos) {
-                const accountToken = await props.address.getNativeToken();
-                setLogoUrl(accountToken.getLogoUrl());
-            }
-        };
-        fetchLogo();
-    }, [props.address, props.leos]);
 
     const getBalance = () => {
         return props.accountBalance.balance.replace(props.currency, '')?.trim();
@@ -55,31 +47,51 @@ const AssetItem = (props: AccountItemProps) => {
     };
 
     const handleOnPress = async () => {
-        const account = await getAccountDetail(props.address);
+        const accountDetail = {
+            symbol:props.currency,
+            name: props.networkName,
+            icon: props.icon,
+            account: props.account || "",
+            accountBalance: props.accountBalance
+        };
         if (props.type === 'receive') {
             props.navigation.navigate('Receive', {
                 screenTitle: `Receive ${props.currency}`,
-                ...account,
-                accountBalance: props.accountBalance,
+                ...accountDetail,
             });
-        } else if (props.type === 'send') {
-            if (props.currency === 'LEOS') {
-                alert('All LEOS is vested until the public sale');
-                return;
-            } else {
-                props.navigation.navigate('Send', {
-                    screenTitle: `Send ${props.currency}`,
-                    ...account,
-                    accountBalance: props.accountBalance,
-                });
-            }
+        } else if (props.type === 'send'){
+            props.navigation.navigate('Send', {
+                screenTitle: `Send ${props.currency}`,
+                ...accountDetail,
+            });
         }
+        // const account = await getAccountDetail(props.address);
+        // if (props.type === 'receive') {
+        //     props.navigation.navigate('Receive', {
+        //         screenTitle: `Receive ${props.currency}`,
+        //         ...account,
+        //         accountBalance: props.accountBalance,
+        //     });
+        // } else if (props.type === 'send') {
+        //     if (props.currency === 'LEOS') {
+        //         alert('All LEOS is vested until the public sale');
+        //         return;
+        //     } else {
+        //         props.navigation.navigate('Send', {
+        //             screenTitle: `Send ${props.currency}`,
+        //             ...account,
+        //             accountBalance: props.accountBalance,
+        //         });
+        //     }
+        // }
     };
 
     return (
         <TouchableOpacity style={styles.assetsView} onPress={handleOnPress}>
-            {props.leos && <Image source={Images.GetImage('logo1024')} style={styles.favicon} />}
-            {logoUrl && <Image source={{ uri: logoUrl }} style={[styles.favicon, { resizeMode: 'contain' }]} />}
+            <Image
+                source={props.icon || Images.GetImage('logo1024')}
+                style={[styles.favicon, { resizeMode: 'contain' }]}
+            />
             <View style={styles.assetContent}>
                 <View style={styles.flexRowCenter}>
                     <View style={styles.flexRowCenter}>
@@ -88,7 +100,7 @@ const AssetItem = (props: AccountItemProps) => {
                             <Text style={{ fontSize: 13 }}>{props.networkName}</Text>
                         </View>
                     </View>
-                    {props.address?.getChain().getChainId() === '11155111' && !props.leos && (
+                    {props?.testnet === true && !props.leos && (
                         <View style={styles.assetsTestnetNetwork}>
                             <Text
                                 style={{

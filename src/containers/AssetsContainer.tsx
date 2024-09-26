@@ -16,7 +16,7 @@ import useUserStore from '../store/userStore';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useErrorStore from '../store/errorStore';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import TSpinner from '../components/atoms/TSpinner';
 
 import theme from '../utils/theme';
@@ -44,7 +44,7 @@ import AssetsSummary from '../components/AssetsSummary';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { IToken } from '../utils/chain/types';
 import { isNetworkError } from '../utils/errors';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
+import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
 import settings from '../settings';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import { progressiveRetryOnNetworkError } from '../utils/network';
@@ -90,6 +90,19 @@ export default function AssetsContainer({
     const { updateBalance: updateCryptoBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
+
+    const [developerMode, setDeveloperMode] = React.useState(true);
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchSettings = async () => {
+                const settings = await appStorage.findSettingByName('developerMode');
+                const developerMode = settings?.value === 'true' ? true : false;
+                setDeveloperMode(developerMode);
+            };
+            fetchSettings();
+        }, [])
+    );
 
     const chains = useMemo(
         () => [
@@ -473,23 +486,27 @@ export default function AssetsContainer({
                                     const accountData = findAccountByChain(
                                         capitalizeFirstLetter(chainObj.chain.getName())
                                     );
+                                    if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
+                                        return null;
+                                    }
                                     return (
                                         <TouchableOpacity
                                             key={index}
                                             onPress={() => {
-                                                openAccountDetails(chainObj);
-
                                                 const accountDetail = {
                                                     symbol: chainObj.token.getSymbol(),
                                                     name: capitalizeFirstLetter(chainObj.chain.getName()),
                                                     icon: { uri: chainObj.token.getLogoUrl() },
-                                                    ...accountData,
+                                                    account: accountData.account || "",
+                                                    accountBalance: {
+                                                        balance: accountData.balance || "",
+                                                        usdBalance: accountData.usdBalance || 0
+                                                    }
                                                 };
-                                                console.log(accountData)
-                                                // navigation.navigate('AssetDetailMain', {
-                                                //     screen: 'AssetDetail',
-                                                //     params: { screenTitle: `${chainObj.token.getSymbol()}`, ...accountDetail },
-                                                // });
+                                                navigation.navigate('AssetDetailMain', {
+                                                    screen: 'AssetDetail',
+                                                    params: { screenTitle: `${chainObj.token.getSymbol()}`, ...accountDetail }
+                                                });
                                             }}
                                             style={styles.assetsView}
                                         >
@@ -498,13 +515,9 @@ export default function AssetsContainer({
                                                 style={[styles.favicon, { resizeMode: 'contain' }]}
                                             />
                                             <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between',
-                                                    flex: 1,
-                                                }}
+                                                style={styles.assetContent}
                                             >
-                                                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                                <View style={styles.flexRowCenter}>
                                                     <Text style={{ fontSize: 16 }}>{chainObj.token.getSymbol()}</Text>
                                                     <View style={styles.assetsNetwork}>
                                                         <Text
@@ -515,26 +528,23 @@ export default function AssetsContainer({
                                                             {capitalizeFirstLetter(chainObj.chain.getName())}
                                                         </Text>
                                                     </View>
-                                                    {chainObj.chain.getChainId() !== '1' && (
+                                                    {chainObj.chain.getChainId() === '11155111' && (
                                                         <View style={styles.assetsTestnetNetwork}>
                                                             <Text
-                                                                style={{
-                                                                    fontSize: 10,
-                                                                    color: theme.colors.white,
-                                                                }}
+                                                                style={styles.assetTestnetText}
                                                             >
                                                                 Testnet
                                                             </Text>
                                                         </View>
                                                     )}
                                                 </View>
-                                                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                <View style={styles.flexColEnd}>
                                                     {accountData.account ? (
                                                         <View
-                                                            style={{ flexDirection: 'column', alignItems: 'flex-end' }}
+                                                            style={styles.flexColEnd}
                                                         >
                                                             <View
-                                                                style={{ flexDirection: 'row', alignItems: 'center' }}
+                                                                style={styles.flexRowCenter}
                                                             >
                                                                 <Text style={{ fontSize: 16 }}>
                                                                     {accountData.balance}
@@ -553,7 +563,7 @@ export default function AssetsContainer({
                                                             >
                                                                 <Text style={{ fontSize: 16 }}>Not connected</Text>
                                                                 <Text
-                                                                    style={{ color: theme.colors.blue, fontSize: 13 }}
+                                                                    style={styles.generateKey}
                                                                 >
                                                                     Generate key
                                                                 </Text>
@@ -704,6 +714,10 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
     },
+    assetTestnetText:{
+        fontSize: 10,
+        color: theme.colors.white,
+    },
     sendReceiveButtons: {
         flexDirection: 'row',
         gap: 40,
@@ -732,5 +746,8 @@ const styles = StyleSheet.create({
     flexColEnd: {
         flexDirection: 'column',
         alignItems: 'flex-end',
+    },
+    generateKey: {
+        color: theme.colors.blue, fontSize: 13
     },
 });

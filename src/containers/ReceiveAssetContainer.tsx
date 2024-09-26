@@ -13,15 +13,14 @@ export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
     symbol: string;
     name: string;
-    address?: string;
+    account?: string;
     icon?: ImageSourcePropType | undefined;
-    image?: string;
     accountBalance: { balance: string; usdBalance: number };
 };
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
 
-    const message = `${props.address}`;
+    const message = `${props.account}`;
 
     const copyToClipboard = () => {
         setShowPopover(true);
@@ -43,22 +42,18 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.subHeading}>
-                        {props.address
+                        {props.account !== ""
                             ? `Only send ${props.symbol} assets to this address. Please make sure you are using the ${props.name} network before sending assets to this address`
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>
-                        {props.image ? (
-                            <Image source={{ uri: props.image }} style={styles.faviconIcon} />
-                        ) : (
-                            <Image source={props.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
-                        )}
+                        <Image source={props.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
                         <Text style={styles.networkTitleName}>{props.name} Network</Text>
                     </View>
                     <View style={styles.flexCenter}>
                         <View style={{ ...styles.qrView, flexDirection: 'column' }}>
                             <QRCode value="testValue" size={200} />
-                            <Text style={styles.accountName}>{props.address}</Text>
+                            <Text style={styles.accountName}>{props.account}</Text>
                         </View>
                         <View style={styles.iconContainer}>
                             <Popover

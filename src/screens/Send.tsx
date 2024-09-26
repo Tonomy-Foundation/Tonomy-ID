@@ -10,9 +10,8 @@ export default function Send(props: SendAssetScreenNavigationProp) {
         <SendAssetContainer
             symbol={props.route.params?.symbol}
             name={props.route.params?.name}
-            address={props.route.params?.address}
+            account={props.route.params?.account}
             icon={props.route.params?.icon}
-            image={props.route.params?.image}
             navigation={props.navigation}
             accountBalance={props.route.params?.accountBalance}
         ></SendAssetContainer>

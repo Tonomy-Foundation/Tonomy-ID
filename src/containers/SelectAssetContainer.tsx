@@ -3,13 +3,24 @@ import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
 import theme from '../utils/theme';
 
 import { formatCurrencyValue } from '../utils/numbers';
-import { USD_CONVERSION } from '../utils/chain/etherum';
-import { useEffect, useState } from 'react';
+import {
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumSepoliaChain,
+    ETHPolygonToken,
+    ETHSepoliaToken,
+    ETHToken,
+    USD_CONVERSION,
+} from '../utils/chain/etherum';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useUserStore from '../store/userStore';
 import useWalletStore from '../store/useWalletStore';
 import { CommunicationError, IdentifyMessage, VestingContract } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import AssetItem from '../components/AssetItem';
+import { useFocusEffect } from '@react-navigation/native';
+import { appStorage } from '../utils/StorageManager/setup';
+import { capitalizeFirstLetter } from '../utils/strings';
 
 const vestingContract = VestingContract.Instance;
 
@@ -31,15 +42,35 @@ const SelectAssetContainer = ({
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
 
-    const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
-        useWalletStore();
-
-    const { ethereumBalance, sepoliaBalance, polygonBalance, updateBalance } = useWalletStore((state) => ({
-        ethereumBalance: state.ethereumBalance,
-        sepoliaBalance: state.sepoliaBalance,
-        polygonBalance: state.polygonBalance,
+    const { updateBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
+
+    const [accounts, setAccounts] = useState<
+        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+    >([]);
+
+    const [developerMode, setDeveloperMode] = useState(true);
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchSettings = async () => {
+                const settings = await appStorage.findSettingByName('developerMode');
+                const developerMode = settings?.value === 'true' ? true : false;
+                setDeveloperMode(developerMode);
+            };
+            fetchSettings();
+        }, [])
+    );
+
+    const chains = useMemo(
+        () => [
+            { token: ETHToken, chain: EthereumMainnetChain },
+            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
+            { token: ETHPolygonToken, chain: EthereumPolygonChain },
+        ],
+        []
+    );
 
     useEffect(() => {
         async function getUpdatedBalance() {
@@ -60,6 +91,15 @@ const SelectAssetContainer = ({
 
         return () => clearInterval(interval);
     }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
+
+    const findAccountByChain = (chain: string) => {
+        const accountExists = accounts.find((account) => account.network === chain);
+        const balance = accountExists?.balance;
+        const usdBalance = accountExists?.usdBalance;
+        const account = accountExists?.accountName;
+
+        return { account, balance, usdBalance };
+    };
 
     async function setUserName() {
         try {
@@ -132,41 +172,31 @@ const SelectAssetContainer = ({
                             leos
                             accountBalance={{
                                 balance: pangeaBalance.toString(),
-                                usdBalance: formatCurrencyValue(Number(pangeaBalance) * USD_CONVERSION),
+                                usdBalance: Number(pangeaBalance) * USD_CONVERSION,
                             }}
-                            address={null}
                             accountName={accountName}
                         />
-                        {ethereumAccount && (
-                            <AssetItem
-                                type={type}
-                                navigation={navigation}
-                                address={ethereumAccount}
-                                accountBalance={ethereumBalance}
-                                networkName="Ethereum"
-                                currency="ETH"
-                            />
-                        )}
-                        {sepoliaAccount && (
-                            <AssetItem
-                                type={type}
-                                navigation={navigation}
-                                address={sepoliaAccount}
-                                accountBalance={sepoliaBalance}
-                                networkName="Sepolia"
-                                currency="SepoliaETH"
-                            />
-                        )}
-                        {sepoliaAccount && (
-                            <AssetItem
-                                type={type}
-                                navigation={navigation}
-                                address={polygonAccount}
-                                accountBalance={polygonBalance}
-                                networkName="Polygon"
-                                currency="MATIC"
-                            />
-                        )}
+                        {chains.map((chainObj, index) => {
+                            const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
+                            if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
+                                return null;
+                            }
+                            return (
+                                <AssetItem
+                                    type={type}
+                                    navigation={navigation}
+                                    accountBalance={{
+                                        balance: accountData.balance || '',
+                                        usdBalance: accountData.usdBalance || 0,
+                                    }}
+                                    testnet={chainObj.chain.getChainId() === '11155111'}
+                                    account={accountData.account || ''}
+                                    icon={{ uri: chainObj.token.getLogoUrl() }}
+                                    networkName={capitalizeFirstLetter(chainObj.chain.getName())}
+                                    currency={chainObj.token.getSymbol()}
+                                />
+                            );
+                        })}
                     </View>
                 </ScrollView>
             </View>

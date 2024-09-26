@@ -13,61 +13,24 @@ import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
 import QRScan from '../components/QRScan';
-import { useEffect, useRef, useState } from 'react';
-import useWalletStore from '../store/useWalletStore';
-import { formatCurrencyValue } from '../utils/numbers';
-import { USD_CONVERSION } from '../utils/chain/etherum';
-import useUserStore from '../store/userStore';
-import { VestingContract } from '@tonomy/tonomy-id-sdk';
-import { IAccount, ITransaction } from '../utils/chain/types';
-import { keyStorage } from '../utils/StorageManager/setup';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumPrivateKey,
-    EthereumSepoliaChain,
-    EthereumTransaction,
-} from '../utils/chain/etherum';
+import { useRef, useState } from 'react';
 
 import { Images } from '../assets';
-import { progressiveRetryOnNetworkError } from '../utils/network';
 
-const vestingContract = VestingContract.Instance;
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     symbol: string;
     name: string;
     account?: string;
     icon?: ImageSourcePropType | undefined;
-    image?: string;
     accountBalance: { balance: string; usdBalance: number };
 };
 const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
-    const userStore = useUserStore();
-    const user = userStore.user;
-    const [pangeaBalance, setPangeaBalance] = useState(0);
+
     const refMessage = useRef(null);
-    const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchLogo = async () => {
-            try {
-                progressiveRetryOnNetworkError(async () => {
-                    if (props.account) {
-                        //const accountToken = await props.account.getNativeToken();
-                        setLogoUrl(null);
-                    }
-                });
-            } catch (e) {
-                console.error('Failed to fetch logo', e);
-            }
-        };
-
-        fetchLogo();
-    }, [props.account]);
 
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
@@ -76,44 +39,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
         (refMessage.current as any)?.close();
     };
 
-    // const { ethereumBalance, sepoliaBalance, polygonBalance } = useWalletStore((state) => ({
-    //     ethereumBalance: state.ethereumBalance,
-    //     sepoliaBalance: state.sepoliaBalance,
-    //     polygonBalance: state.polygonBalance,
-    // }));
-
-    useEffect(() => {
-        const fetchAccountname = async () => {
-            const accountName = (await user.getAccountName()).toString();
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
-            setPangeaBalance(accountPangeaBalance);
-        };
-        if (props.name === 'Pangea') {
-            fetchAccountname();
-        }
-    }, [user, props.name]);
-
-    // const handleMaxAmount = () => {
-    //     if (props.name === 'Sepolia') {
-    //         const [balance] = sepoliaBalance.balance.split(' ');
-    //         onChangeAmount(balance);
-    //         onChangeUSDAmount(sepoliaBalance.usdBalance.toString());
-    //     } else if (props.name === 'Ethereum') {
-    //         const [balance] = ethereumBalance.balance.split(' ');
-    //         onChangeAmount(balance);
-    //         onChangeUSDAmount(ethereumBalance.usdBalance.toString());
-    //     } else if (props.name === 'Polygon') {
-    //         const [balance] = polygonBalance.balance.split(' ');
-    //         onChangeAmount(balance);
-    //         onChangeUSDAmount(polygonBalance.usdBalance.toString());
-    //     } else if (props.name === 'Pangea') {
-    //         onChangeAmount(pangeaBalance.toString());
-    //         onChangeUSDAmount(formatCurrencyValue(pangeaBalance * USD_CONVERSION).toString());
-    //     }
-    // };
-
     const onScan = (address) => {
-        const currentAddress = `${address.substring(0, 7)}...${address.substring(address.length - 6)}`;
+        //const currentAddress = `${address.substring(0, 7)}...${address.substring(address.length - 6)}`;
         onChangeAddress(address);
         onClose();
     };
@@ -137,11 +64,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.networkContainer}>
-                            {logoUrl ? (
-                                <Image source={{ uri: logoUrl }} style={[styles.favicon, { resizeMode: 'contain' }]} />
-                            ) : (
-                                <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
-                            )}
+                            <Image source={props.icon || Images.GetImage('logo1024')} style={styles.favicon} />
                             <Text style={styles.networkName}>{props.name} network</Text>
                         </View>
                         <View>

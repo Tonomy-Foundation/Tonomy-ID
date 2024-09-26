@@ -12,7 +12,6 @@ export type AssetDetailProps = {
     name: string;
     account?: string;
     icon?: ImageSourcePropType | undefined;
-    image?: string;
     accountBalance: { balance: string; usdBalance: number };
 };
 const AssetDetailContainer = (props: AssetDetailProps) => {
@@ -22,22 +21,20 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.header}>
                         <View style={styles.networkHeading}>
-                            {props.image ? (
-                                <Image source={{ uri: props.image }} style={styles.faviconIcon} />
-                            ) : (
-                                <Image source={props.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
-                            )}
+                            <Image source={props.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
                             <View style={styles.assetsNetwork}>
                                 <Text style={{ fontSize: 13 }}>{props.name}</Text>
                             </View>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <Text style={styles.headerAssetsAmount}>{props.accountBalance.balance}</Text>
+                            <Text style={styles.headerAssetsAmount}>{props.accountBalance.balance || `0 ${props.symbol}`}</Text>
                             <Text style={styles.headerAssetUSDAmount}>${props.accountBalance.usdBalance} USD</Text>
                         </View>
-                        <View style={styles.warning}>
-                            <Text>All LEOS is vested until the public sale</Text>
-                        </View>
+                        {props.symbol === 'LEOS' && (
+                            <View style={styles.warning}>
+                                <Text>All LEOS is vested until the public sale</Text>
+                            </View>
+                        )}
                         <View style={styles.flexRow}>
                             {props.symbol !== 'LEOS' && (
                                 <TouchableOpacity
@@ -48,7 +45,6 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                             name: props.name,
                                             account: props.account,
                                             icon: props.icon,
-                                            image: props.image,
                                             accountBalance: props.accountBalance,
                                         })
                                     }
@@ -68,7 +64,6 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                         name: props.name,
                                         account: props.account,
                                         icon: props.icon,
-                                        image: props.image,
                                         accountBalance: props.accountBalance,
                                     })
                                 }

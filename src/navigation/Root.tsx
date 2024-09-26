@@ -45,7 +45,6 @@ export interface AssetParamsScreen {
     name: string;
     icon?: ImageSourcePropType | undefined;
     account?: string;
-    image?: string;
     accountBalance: { balance: string; usdBalance: number };
 }
 
