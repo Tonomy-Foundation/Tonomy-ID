@@ -393,7 +393,7 @@ export default function AssetsContainer({
                         refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                     >
                         <View style={styles.header}>
-                            <Text style={styles.headerAssetsAmount}>$341.00</Text>
+                            <Text style={styles.headerAssetsAmount}>$0.00</Text>
                             <View style={styles.sendReceiveButtons}>
                                 <TouchableOpacity
                                     onPress={() =>
