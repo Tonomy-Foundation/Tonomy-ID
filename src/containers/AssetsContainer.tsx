@@ -276,21 +276,22 @@ export default function AssetsContainer({
                 const asset = await assetStorage.findAssetByName(chainObj.token);
 
                 debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
-
-                const account = asset
-                    ? {
-                          network: capitalizeFirstLetter(chainObj.chain.getName()),
-                          accountName: asset.accountName,
-                          balance: asset.balance,
-                          usdBalance: asset.usdBalance,
-                      }
-                    : {
-                          network: capitalizeFirstLetter(chainObj.chain.getName()),
-                          accountName: null,
-                          balance: '0' + chainObj.token.getSymbol(),
-                          usdBalance: 0,
-                      };
-
+                let account;
+                if (asset) {
+                    account = {
+                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        accountName: asset.accountName,
+                        balance: asset.balance,
+                        usdBalance: asset.usdBalance,
+                    };
+                } else {
+                    account = {
+                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        accountName: null,
+                        balance: '0' + chainObj.token.getSymbol(),
+                        usdBalance: 0,
+                    };
+                }
                 setAccounts((prevAccounts) => {
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
@@ -368,14 +369,12 @@ export default function AssetsContainer({
 
     const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
         const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
-        console.log(token.getSymbol())
         setAccountDetails({
             symbol: token.getSymbol(),
             name: capitalizeFirstLetter(chain.getName()),
             address: accountData.account || '',
             image: token.getLogoUrl(),
         });
-        
         (refMessage.current as any)?.open();
     };
 
@@ -497,15 +496,18 @@ export default function AssetsContainer({
                                                     symbol: chainObj.token.getSymbol(),
                                                     name: capitalizeFirstLetter(chainObj.chain.getName()),
                                                     icon: { uri: chainObj.token.getLogoUrl() },
-                                                    account: accountData.account || "",
+                                                    account: accountData.account || '',
                                                     accountBalance: {
-                                                        balance: accountData.balance || "",
-                                                        usdBalance: accountData.usdBalance || 0
-                                                    }
+                                                        balance: accountData.balance || '0',
+                                                        usdBalance: accountData.usdBalance || 0,
+                                                    },
                                                 };
                                                 navigation.navigate('AssetDetailMain', {
                                                     screen: 'AssetDetail',
-                                                    params: { screenTitle: `${chainObj.token.getSymbol()}`, ...accountDetail }
+                                                    params: {
+                                                        screenTitle: `${chainObj.token.getSymbol()}`,
+                                                        ...accountDetail,
+                                                    },
                                                 });
                                             }}
                                             style={styles.assetsView}
@@ -514,9 +516,7 @@ export default function AssetsContainer({
                                                 source={{ uri: chainObj.token.getLogoUrl() }}
                                                 style={[styles.favicon, { resizeMode: 'contain' }]}
                                             />
-                                            <View
-                                                style={styles.assetContent}
-                                            >
+                                            <View style={styles.assetContent}>
                                                 <View style={styles.flexRowCenter}>
                                                     <Text style={{ fontSize: 16 }}>{chainObj.token.getSymbol()}</Text>
                                                     <View style={styles.assetsNetwork}>
@@ -530,22 +530,14 @@ export default function AssetsContainer({
                                                     </View>
                                                     {chainObj.chain.getChainId() === '11155111' && (
                                                         <View style={styles.assetsTestnetNetwork}>
-                                                            <Text
-                                                                style={styles.assetTestnetText}
-                                                            >
-                                                                Testnet
-                                                            </Text>
+                                                            <Text style={styles.assetTestnetText}>Testnet</Text>
                                                         </View>
                                                     )}
                                                 </View>
                                                 <View style={styles.flexColEnd}>
                                                     {accountData.account ? (
-                                                        <View
-                                                            style={styles.flexColEnd}
-                                                        >
-                                                            <View
-                                                                style={styles.flexRowCenter}
-                                                            >
+                                                        <View style={styles.flexColEnd}>
+                                                            <View style={styles.flexRowCenter}>
                                                                 <Text style={{ fontSize: 16 }}>
                                                                     {accountData.balance}
                                                                 </Text>
@@ -562,11 +554,7 @@ export default function AssetsContainer({
                                                                 }}
                                                             >
                                                                 <Text style={{ fontSize: 16 }}>Not connected</Text>
-                                                                <Text
-                                                                    style={styles.generateKey}
-                                                                >
-                                                                    Generate key
-                                                                </Text>
+                                                                <Text style={styles.generateKey}>Generate key</Text>
                                                             </TouchableOpacity>
                                                         </View>
                                                     )}
@@ -714,7 +702,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
     },
-    assetTestnetText:{
+    assetTestnetText: {
         fontSize: 10,
         color: theme.colors.white,
     },
@@ -748,6 +736,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
     generateKey: {
-        color: theme.colors.blue, fontSize: 13
+        color: theme.colors.blue,
+        fontSize: 13,
     },
 });

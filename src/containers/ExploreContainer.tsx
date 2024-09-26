@@ -58,7 +58,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                         <Image source={require('../assets/images/pangea-news.png')} />
                         <View>
                             <Text style={styles.newsFrameTitle}>
-                                Pangea's LEOS Token: A MiCA-Compliant Pioneer with Exper...
+                                Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...
                             </Text>
                             <Text style={styles.newsFrameNote}>
                                 The Pangea Virtual Nation and its LEOS token aim to revolutionize...
@@ -69,7 +69,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                         <Image source={require('../assets/images/pangea-news.png')} />
                         <View>
                             <Text style={styles.newsFrameTitle}>
-                                Pangea's LEOS Token: A MiCA-Compliant Pioneer with Exper...
+                                Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...
                             </Text>
                             <Text style={styles.newsFrameNote}>
                                 The Pangea Virtual Nation and its LEOS token aim to revolutionize...
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     joinCommunityDiscordImage: {
         alignSelf: 'center',
         marginBottom: 22,
-        width: '100%'
+        width: '100%',
     },
     worldFristAutonomous: {
         borderWidth: 1,

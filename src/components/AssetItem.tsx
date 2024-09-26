@@ -48,42 +48,23 @@ const AssetItem = (props: AccountItemProps) => {
 
     const handleOnPress = async () => {
         const accountDetail = {
-            symbol:props.currency,
+            symbol: props.currency,
             name: props.networkName,
             icon: props.icon,
-            account: props.account || "",
-            accountBalance: props.accountBalance
+            account: props.account || '',
+            accountBalance: props.accountBalance,
         };
         if (props.type === 'receive') {
             props.navigation.navigate('Receive', {
                 screenTitle: `Receive ${props.currency}`,
                 ...accountDetail,
             });
-        } else if (props.type === 'send'){
+        } else if (props.type === 'send') {
             props.navigation.navigate('Send', {
                 screenTitle: `Send ${props.currency}`,
                 ...accountDetail,
             });
         }
-        // const account = await getAccountDetail(props.address);
-        // if (props.type === 'receive') {
-        //     props.navigation.navigate('Receive', {
-        //         screenTitle: `Receive ${props.currency}`,
-        //         ...account,
-        //         accountBalance: props.accountBalance,
-        //     });
-        // } else if (props.type === 'send') {
-        //     if (props.currency === 'LEOS') {
-        //         alert('All LEOS is vested until the public sale');
-        //         return;
-        //     } else {
-        //         props.navigation.navigate('Send', {
-        //             screenTitle: `Send ${props.currency}`,
-        //             ...account,
-        //             accountBalance: props.accountBalance,
-        //         });
-        //     }
-        // }
     };
 
     return (

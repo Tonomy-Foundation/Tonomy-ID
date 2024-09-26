@@ -30,7 +30,7 @@ const LearnMoreAutonomous = (props: QRScanProps) => {
                     <Text style={styles.darwerContent}>
                         A Virtual Nation, embodies a community governed online,where members participate in{' '}
                         <Text style={styles.drawerInnerContent}>decentralized decision-making processes, </Text>have
-                        <Text style={styles.drawerInnerContent}> digital citizenship, </Text>and engage in{' '}
+                        <Text style={styles.drawerInnerContent}> digital citizenship, </Text>and engage in{' '}
                         <Text style={styles.drawerInnerContent}>secure, borderless interactions.</Text>{' '}
                     </Text>
                     <Image

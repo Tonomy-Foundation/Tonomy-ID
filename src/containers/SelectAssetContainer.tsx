@@ -183,6 +183,7 @@ const SelectAssetContainer = ({
                             }
                             return (
                                 <AssetItem
+                                    key={index}
                                     type={type}
                                     navigation={navigation}
                                     accountBalance={{

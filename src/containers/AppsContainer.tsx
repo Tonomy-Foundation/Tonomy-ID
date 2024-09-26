@@ -1,11 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from 'react-native';
 import { Props } from '../screens/Apps';
 import theme from '../utils/theme';
 import LinkOpenIcon from '../assets/icons/LinkOpenIcon';
 import { openURL } from 'expo-linking';
 
 export default function AppsContainer({ navigation }: { navigation: Props['navigation'] }) {
-
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent}>
@@ -14,7 +13,10 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                     <View style={styles.pangeaApp}>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/sales-platform.png')} />
-                            <TouchableOpacity style={styles.appWebUrl} onPress={() => openURL('http://sales.pangea.web4.world')}>
+                            <TouchableOpacity
+                                style={styles.appWebUrl}
+                                onPress={() => openURL('http://sales.pangea.web4.world')}
+                            >
                                 <Text style={styles.visitAppWebUrl}>sales.pangea.web4.world</Text>
                                 <LinkOpenIcon />
                             </TouchableOpacity>
@@ -32,7 +34,10 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                     <View style={styles.pangeaApp}>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/pangea-block-explorer.png')} />
-                            <TouchableOpacity style={styles.appWebUrl} onPress={() => Linking.openURL('http://demo.pangea.web4.world')}>
+                            <TouchableOpacity
+                                style={styles.appWebUrl}
+                                onPress={() => Linking.openURL('http://demo.pangea.web4.world')}
+                            >
                                 <Text style={styles.visitAppWebUrl}>demo.pangea.web4.world</Text>
                                 <LinkOpenIcon />
                             </TouchableOpacity>
@@ -49,7 +54,10 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                     <View style={styles.pangeaApp}>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/pangea-block-explorer.png')} />
-                            <TouchableOpacity style={styles.appWebUrl} onPress={() => Linking.openURL('http://explorer.pangea.web4.world')}>
+                            <TouchableOpacity
+                                style={styles.appWebUrl}
+                                onPress={() => Linking.openURL('http://explorer.pangea.web4.world')}
+                            >
                                 <Text style={styles.visitAppWebUrl}>explorer.pangea.web4.world</Text>
                                 <LinkOpenIcon />
                             </TouchableOpacity>

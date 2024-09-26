@@ -42,7 +42,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.subHeading}>
-                        {props.account !== ""
+                        {props.account !== ''
                             ? `Only send ${props.symbol} assets to this address. Please make sure you are using the ${props.name} network before sending assets to this address`
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>

@@ -31,7 +31,6 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
         const fetchSettings = async () => {
             const settings = await appStorage.findSettingByName('developerMode');
             const developerMode = settings?.value === 'true' ? true : false;
-            console.log('developerMode',developerMode)
             setDeveloperMode(developerMode);
         };
         fetchSettings();
