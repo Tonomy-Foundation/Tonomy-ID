@@ -4,8 +4,8 @@ import ReceiveScreen from '../screens/Receive';
 import SendScreen from '../screens/Send';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import theme from '../utils/theme';
-import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
 import { AssetParamsScreen } from './Root';
+import { ArrowLeft } from 'iconoir-react-native';
 
 export type AssetDetailStackParamList = {
     AssetDetail: AssetParamsScreen;
@@ -36,7 +36,7 @@ export const AssetDetailNavigator = () => {
                             style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                             onPress={() => navigation.goBack()}
                         >
-                            <ArrowBackIcon />
+                            <ArrowLeft height={24} width={24} color={theme.colors.black} />
                         </TouchableOpacity>
                     ),
                 })}
@@ -52,7 +52,7 @@ export const AssetDetailNavigator = () => {
                                 style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                                 onPress={() => navigation.goBack()}
                             >
-                                <ArrowBackIcon />
+                                <ArrowLeft height={24} width={24} color={theme.colors.black} />
                             </TouchableOpacity>
                         ),
                     };
@@ -68,7 +68,7 @@ export const AssetDetailNavigator = () => {
                             style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                             onPress={() => navigation.goBack()}
                         >
-                            <ArrowBackIcon />
+                            <ArrowLeft height={24} width={24} color={theme.colors.black} />
                         </TouchableOpacity>
                     ),
                 })}

@@ -6,12 +6,7 @@ import useUserStore from '../store/userStore';
 import { useAppTheme } from '../utils/theme';
 import useWalletStore from '../store/useWalletStore';
 
-import AccountIcon from '../assets/icons/AccountIcon';
-import HomeIcon from '../assets/icons/HomeIcon';
-import SettingsIcon from '../assets/icons/SettingsIcon';
-import ArrowRight from '../assets/icons/ArrowRight';
-import SupportIcon from '../assets/icons/SupportIcon';
-import LogoutIcon from '../assets/icons/LogoutIcon';
+import { HeadsetHelp, HomeSimple, LogOut, NavArrowRight, ProfileCircle, Settings } from 'iconoir-react-native';
 
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -121,7 +116,12 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     <View style={styles.drawerHeader}>
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
-                                <AccountIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                <ProfileCircle
+                                    height={20}
+                                    width={20}
+                                    color={theme.colors.grey9}
+                                    style={styles.menuItemIcon}
+                                />
                             </View>
                             <View>
                                 <Text style={styles.drawerHeaderGreetings}>{greeting},</Text>
@@ -136,13 +136,18 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         >
                             <View style={styles.menuItem}>
                                 <View style={styles.menuItemIconContainer}>
-                                    <HomeIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                    <HomeSimple
+                                        height={20}
+                                        width={20}
+                                        color={theme.colors.grey9}
+                                        style={styles.menuItemIcon}
+                                    />
                                 </View>
                                 <View>
                                     <Text style={styles.menuItemText}>Home</Text>
                                 </View>
                             </View>
-                            <ArrowRight color={theme.colors.grey9} />
+                            <NavArrowRight width={25} height={30} color={theme.colors.grey9} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.menuItemContainer}
@@ -150,13 +155,18 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         >
                             <View style={styles.menuItem}>
                                 <View style={styles.menuItemIconContainer}>
-                                    <SettingsIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                    <Settings
+                                        height={20}
+                                        width={20}
+                                        color={theme.colors.grey9}
+                                        style={styles.menuItemIcon}
+                                    />
                                 </View>
                                 <View>
                                     <Text style={styles.menuItemText}>Settings</Text>
                                 </View>
                             </View>
-                            <ArrowRight color={theme.colors.grey9} />
+                            <NavArrowRight width={25} height={30} color={theme.colors.grey9} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -167,13 +177,18 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     >
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
-                                <SupportIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                <HeadsetHelp
+                                    height={20}
+                                    width={20}
+                                    color={theme.colors.grey9}
+                                    style={styles.menuItemIcon}
+                                />
                             </View>
                             <View>
                                 <Text style={styles.menuItemText}>Support</Text>
                             </View>
                         </View>
-                        <ArrowRight color={theme.colors.grey9} />
+                        <NavArrowRight width={25} height={30} color={theme.colors.grey9} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.menuItemContainer}
@@ -184,13 +199,13 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     >
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
-                                <LogoutIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                <LogOut height={20} width={20} color={theme.colors.grey9} style={styles.menuItemIcon} />
                             </View>
                             <View>
                                 <Text style={styles.menuItemText}>Logouts</Text>
                             </View>
                         </View>
-                        <ArrowRight color={theme.colors.grey9} />
+                        <NavArrowRight width={25} height={30} color={theme.colors.grey9} />
                     </TouchableOpacity>
                 </View>
             </DrawerContentScrollView>

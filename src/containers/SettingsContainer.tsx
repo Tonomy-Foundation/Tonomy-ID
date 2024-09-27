@@ -6,11 +6,8 @@ import TModal from '../components/TModal';
 import theme from '../utils/theme';
 import { TButtonText } from '../components/atoms/TButton';
 import { appStorage, keyStorage } from '../utils/StorageManager/setup';
-import ArrowRight from '../assets/icons/ArrowRight';
-import LogoutIcon from '../assets/icons/LogoutIcon';
-import DeleteAccountIcon from '../assets/icons/DeleteAccountIcon';
-import DeveloperModeIcon from '../assets/icons/DeveloperModeIcon';
 import { Switch } from 'react-native-paper';
+import { BinMinusIn, Code, LogOut, NavArrowRight } from 'iconoir-react-native';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { logout } = useUserStore();
@@ -54,7 +51,7 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                     >
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
-                                <DeveloperModeIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                <Code height={20} width={20} color={theme.colors.grey9} style={styles.menuItemIcon} />
                             </View>
                             <View>
                                 <Text style={styles.menuItemText}>Developer mode</Text>
@@ -88,24 +85,29 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                     >
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
-                                <LogoutIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                <LogOut height={20} width={20} color={theme.colors.grey9} style={styles.menuItemIcon} />
                             </View>
                             <View>
                                 <Text style={styles.menuItemText}>Logout</Text>
                             </View>
                         </View>
-                        <ArrowRight color={theme.colors.grey9} />
+                        <NavArrowRight width={25} height={30} color={theme.colors.grey9} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.menuItemContainer} onPress={() => setShowModal(true)}>
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
-                                <DeleteAccountIcon color={theme.colors.grey9} style={styles.menuItemIcon} />
+                                <BinMinusIn
+                                    height={20}
+                                    width={20}
+                                    color={theme.colors.grey9}
+                                    style={styles.menuItemIcon}
+                                />
                             </View>
                             <View>
                                 <Text style={styles.menuItemText}>Delete account</Text>
                             </View>
                         </View>
-                        <ArrowRight color={theme.colors.grey9} />
+                        <NavArrowRight width={25} height={30} color={theme.colors.grey9} />
                     </TouchableOpacity>
                 </View>
             </View>

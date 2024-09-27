@@ -95,9 +95,9 @@ const AssetItem = (props: AccountItemProps) => {
                     )}
                 </View>
                 <View style={styles.flexColEnd}>
-                    <View style={styles.rowCenter}>
+                    {/* <View style={styles.rowCenter}>
                         <Text style={{ fontSize: 16 }}>{getBalance() || 0}</Text>
-                    </View>
+                    </View> */}
                     <Text style={styles.secondaryColor}>
                         ${formatCurrencyValue(Number(props.accountBalance.usdBalance), 3)}
                     </Text>

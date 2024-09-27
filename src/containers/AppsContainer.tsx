@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from 'react-native';
 import { Props } from '../screens/Apps';
 import theme from '../utils/theme';
-import LinkOpenIcon from '../assets/icons/LinkOpenIcon';
 import { openURL } from 'expo-linking';
+import { OpenNewWindow } from 'iconoir-react-native';
 
 export default function AppsContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
@@ -18,7 +18,7 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                                 onPress={() => openURL('http://sales.pangea.web4.world')}
                             >
                                 <Text style={styles.visitAppWebUrl}>sales.pangea.web4.world</Text>
-                                <LinkOpenIcon />
+                                <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
                             </TouchableOpacity>
                         </View>
                         <Text style={styles.pangeaAppHead}>LEOS Sales platform</Text>
@@ -39,7 +39,7 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                                 onPress={() => Linking.openURL('http://demo.pangea.web4.world')}
                             >
                                 <Text style={styles.visitAppWebUrl}>demo.pangea.web4.world</Text>
-                                <LinkOpenIcon />
+                                <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
                             </TouchableOpacity>
                         </View>
                         <Text style={styles.pangeaAppHead}>Pangea Developers Features Demo</Text>
@@ -59,7 +59,7 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                                 onPress={() => Linking.openURL('http://explorer.pangea.web4.world')}
                             >
                                 <Text style={styles.visitAppWebUrl}>explorer.pangea.web4.world</Text>
-                                <LinkOpenIcon />
+                                <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
                             </TouchableOpacity>
                         </View>
                         <Text style={styles.pangeaAppHead}>Pangea Block Explorer</Text>

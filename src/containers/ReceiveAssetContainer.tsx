@@ -7,7 +7,7 @@ import Popover from 'react-native-popover-view';
 import { useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import CopyIcon from '../assets/icons/CopyIcon';
-import ShareIcon from '../assets/icons/ShareIcon';
+import { ShareAndroidSolid } from 'iconoir-react-native';
 
 export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
@@ -71,7 +71,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                             </Popover>
                             <TouchableOpacity onPress={() => onShare()}>
                                 <View style={styles.iconButton}>
-                                    <ShareIcon />
+                                    <ShareAndroidSolid height={24} width={24} color={theme.colors.black} />
                                 </View>
                                 <Text style={styles.socialText}>Share</Text>
                             </TouchableOpacity>

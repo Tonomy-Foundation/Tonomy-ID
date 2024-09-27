@@ -8,17 +8,13 @@ import ExploreScreen from '../screens/Explore';
 
 import theme, { useAppTheme } from '../utils/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import CitizenshipIcon from '../assets/icons/CitizenshipIcon';
-import AssetsIcon from '../assets/icons/AssetsIcon';
 import ScanIcon from '../assets/icons/ScanIcon';
-import ExploreIcon from '../assets/icons/ExploreIcon';
-import AppsIcon from '../assets/icons/AppsIcon';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import MenuIcon from '../assets/icons/MenuIcon';
 
 import ScanQRScreen from '../screens/ScanQRScreen';
-import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
+import { ArrowLeft, Community, Compass, GridPlus, Wallet } from 'iconoir-react-native';
 
 export type RouteStackParamList = {
     UserHome: { did?: string };
@@ -99,7 +95,7 @@ function BottomTabNavigator() {
                         </Text>
                     ),
                     tabBarIcon: ({ focused }) => (
-                        <CitizenshipIcon
+                        <Community
                             width={28}
                             height={28}
                             color={!focused ? theme.colors.tabGray : theme.colors.black}
@@ -119,11 +115,7 @@ function BottomTabNavigator() {
                         </Text>
                     ),
                     tabBarIcon: ({ focused }) => (
-                        <AssetsIcon
-                            width={28}
-                            height={28}
-                            color={!focused ? theme.colors.tabGray : theme.colors.black}
-                        />
+                        <Wallet width={28} height={28} color={!focused ? theme.colors.tabGray : theme.colors.black} />
                     ),
                 }}
             />
@@ -137,7 +129,7 @@ function BottomTabNavigator() {
                             style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                             onPress={() => navigation.navigate('Assets', {})}
                         >
-                            <ArrowBackIcon />
+                            <ArrowLeft height={24} width={24} color={theme.colors.black} />
                         </TouchableOpacity>
                     ),
                     tabBarLabel: () => null,
@@ -157,11 +149,7 @@ function BottomTabNavigator() {
                         </Text>
                     ),
                     tabBarIcon: ({ focused }) => (
-                        <ExploreIcon
-                            width={28}
-                            height={28}
-                            color={!focused ? theme.colors.tabGray : theme.colors.black}
-                        />
+                        <Compass width={28} height={28} color={!focused ? theme.colors.tabGray : theme.colors.black} />
                     ),
                 }}
             />
@@ -177,7 +165,7 @@ function BottomTabNavigator() {
                         </Text>
                     ),
                     tabBarIcon: ({ focused }) => (
-                        <AppsIcon width={28} height={28} color={!focused ? theme.colors.tabGray : theme.colors.black} />
+                        <GridPlus width={28} height={28} color={!focused ? theme.colors.tabGray : theme.colors.black} />
                     ),
                 }}
             />

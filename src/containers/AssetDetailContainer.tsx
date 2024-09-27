@@ -2,9 +2,8 @@ import { Image, ImageSourcePropType, ScrollView, StyleSheet, Text, TouchableOpac
 import { AssetDetailScreenNavigationProp } from '../screens/AssetDetail';
 import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
-import ArrowUpIcon from '../assets/icons/ArrowUpIcon';
-import ArrowDownIcon from '../assets/icons/ArrowDownIcon';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
+import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -51,7 +50,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowUpIcon />
+                                        <ArrowUp height={24} width={25} color={theme.colors.black} />
                                     </View>
                                     <Text>Send</Text>
                                 </TouchableOpacity>
@@ -70,7 +69,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                 style={styles.flexCenter}
                             >
                                 <View style={styles.headerButton}>
-                                    <ArrowDownIcon />
+                                    <ArrowDown height={24} width={25} color={theme.colors.black} />
                                 </View>
                                 <Text>Receive</Text>
                             </TouchableOpacity>

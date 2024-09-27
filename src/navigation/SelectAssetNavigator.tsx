@@ -4,9 +4,9 @@ import SelectAssetScreen from '../screens/SelectAsset';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { TouchableOpacity } from 'react-native';
 import theme from '../utils/theme';
-import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
 import { AssetParamsScreen } from './Root';
 import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
+import { ArrowLeft } from 'iconoir-react-native';
 
 export type SelectAssetsStackParamList = {
     SelectAsset: { did?: string; screenTitle?: string; type: string };
@@ -40,7 +40,7 @@ export const SelectAssetNavigator = () => {
                             style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                             onPress={() => navigation.goBack()}
                         >
-                            <ArrowBackIcon />
+                            <ArrowLeft height={24} width={24} color={theme.colors.black} />
                         </TouchableOpacity>
                     ),
                 })}
@@ -55,7 +55,7 @@ export const SelectAssetNavigator = () => {
                             style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                             onPress={() => navigation.goBack()}
                         >
-                            <ArrowBackIcon />
+                            <ArrowLeft height={24} width={24} color={theme.colors.black} />
                         </TouchableOpacity>
                     ),
                 })}
@@ -70,7 +70,7 @@ export const SelectAssetNavigator = () => {
                             style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                             onPress={() => navigation.goBack()}
                         >
-                            <ArrowBackIcon />
+                            <ArrowLeft height={24} width={24} color={theme.colors.black} />
                         </TouchableOpacity>
                     ),
                 })}

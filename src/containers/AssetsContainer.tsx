@@ -38,8 +38,7 @@ import { AssetsScreenNavigationProp } from '../screens/Assets';
 import useWalletStore from '../store/useWalletStore';
 //import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
-import ArrowUpIcon from '../assets/icons/ArrowUpIcon';
-import ArrowDownIcon from '../assets/icons/ArrowDownIcon';
+
 import AssetsSummary from '../components/AssetsSummary';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { IToken } from '../utils/chain/types';
@@ -48,6 +47,7 @@ import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup
 import settings from '../settings';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import { progressiveRetryOnNetworkError } from '../utils/network';
+import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -316,6 +316,10 @@ export default function AssetsContainer({
         return { account, balance, usdBalance };
     };
 
+    const formatAssetBalance = (balance) => {
+        return balance.split(' ')[0];
+    };
+
     const MainView = () => {
         const isFocused = useIsFocused();
 
@@ -343,7 +347,7 @@ export default function AssetsContainer({
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowUpIcon />
+                                        <ArrowUp height={24} width={25} color={theme.colors.black} />
                                     </View>
                                     <Text>Send</Text>
                                 </TouchableOpacity>
@@ -357,7 +361,7 @@ export default function AssetsContainer({
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowDownIcon />
+                                        <ArrowDown height={24} width={25} color={theme.colors.black} />
                                     </View>
                                     <Text>Receive</Text>
                                 </TouchableOpacity>
@@ -477,7 +481,7 @@ export default function AssetsContainer({
                                                         <View style={styles.flexColEnd}>
                                                             <View style={styles.flexRowCenter}>
                                                                 <Text style={{ fontSize: 16 }}>
-                                                                    {accountData.balance}
+                                                                    {formatAssetBalance(accountData.balance)}
                                                                 </Text>
                                                             </View>
                                                             <Text style={styles.secondaryColor}>

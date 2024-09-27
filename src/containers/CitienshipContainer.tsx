@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import theme from '../utils/theme';
 import useUserStore from '../store/userStore';
-
 export default function CitizenshipContainer({ navigation }: { navigation: Props['navigation'] }) {
     const userStore = useUserStore();
     const user = userStore.user;

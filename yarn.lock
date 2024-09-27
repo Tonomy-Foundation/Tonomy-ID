@@ -11221,6 +11221,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iconoir-react-native@npm:^7.9.0":
+  version: 7.9.0
+  resolution: "iconoir-react-native@npm:7.9.0"
+  peerDependencies:
+    react: ^16.8.6 || ^17 || ^18
+    react-native: ">=0.50.0"
+  checksum: 10c0/d6e9ca32c0d85c1a3112b08d7b1ac19e77db1c587915855fdd018ffa2b15aa8c7c3260fef1eb9d2669458d2bb6ef90546c14917b7227fc0f04a7fc9e4ec5732c
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.4.24":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -16134,16 +16144,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-svg@npm:13.9.0":
-  version: 13.9.0
-  resolution: "react-native-svg@npm:13.9.0"
+"react-native-svg@npm:^15.7.1":
+  version: 15.7.1
+  resolution: "react-native-svg@npm:15.7.1"
   dependencies:
     css-select: "npm:^5.1.0"
     css-tree: "npm:^1.1.3"
+    warn-once: "npm:0.1.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/01095ba8249cf12b18448ef1ac65e5e18422b5fa62dae400e0898fe80b30de7f07ac2677cf6ee690929c22deb8a11cc234187d92f729501a14e4034cb1f62798
+  checksum: 10c0/4aea3fa70d59c0275fda521851b82662ca895bf37649b93bf81bddce20260335d126079d189d1470c430c6f0adf2f105d3be66e372a4fe9d387f82ee7d97d47f
   languageName: node
   linkType: hard
 
@@ -18186,6 +18197,7 @@ __metadata:
     expo-sharing: "npm:~11.5.0"
     expo-sqlite: "npm:~11.3.3"
     expo-status-bar: "npm:~1.6.0"
+    iconoir-react-native: "npm:^7.9.0"
     jest: "npm:^29.5.0"
     jest-expo: "npm:^49.0.0"
     prettier: "npm:^2.7.1"
@@ -18205,7 +18217,7 @@ __metadata:
     react-native-reanimated: "npm:~3.3.0"
     react-native-safe-area-context: "npm:4.6.3"
     react-native-screens: "npm:~3.22.0"
-    react-native-svg: "npm:13.9.0"
+    react-native-svg: "npm:^15.7.1"
     react-native-swiper: "npm:^1.6.0"
     react-native-walkthrough-tooltip: "npm:^1.6.0"
     react-native-web: "npm:~0.19.6"
@@ -18602,11 +18614,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.1.3#optional!builtin<compat/typescript>":
   version: 5.6.2
-  resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=379a07"
+  resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=8c6c40"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/e6c1662e4852e22fe4bbdca471dca3e3edc74f6f1df043135c44a18a7902037023ccb0abdfb754595ca9028df8920f2f8492c00fc3cbb4309079aae8b7de71cd
+  checksum: 10c0/94eb47e130d3edd964b76da85975601dcb3604b0c848a36f63ac448d0104e93819d94c8bdf6b07c00120f2ce9c05256b8b6092d23cf5cf1c6fa911159e4d572f
   languageName: node
   linkType: hard
 
@@ -19155,7 +19167,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"warn-once@npm:^0.1.0":
+"warn-once@npm:0.1.1, warn-once@npm:^0.1.0":
   version: 0.1.1
   resolution: "warn-once@npm:0.1.1"
   checksum: 10c0/f531e7b2382124f51e6d8f97b8c865246db8ab6ff4e53257a2d274e0f02b97d7201eb35db481843dc155815e154ad7afb53b01c4d4db15fb5aa073562496aff7
