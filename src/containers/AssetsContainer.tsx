@@ -439,7 +439,7 @@ export default function AssetsContainer({
                                         const accountDetail = {
                                             symbol: 'LEOS',
                                             name: 'Pangea',
-                                            address: accountName,
+                                            account: accountName,
                                             icon: Images.GetImage('logo48'),
                                         };
 

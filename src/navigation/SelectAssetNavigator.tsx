@@ -6,11 +6,17 @@ import { TouchableOpacity } from 'react-native';
 import theme from '../utils/theme';
 import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
 import { AssetParamsScreen } from './Root';
+import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
 
 export type SelectAssetsStackParamList = {
     SelectAsset: { did?: string; screenTitle?: string; type: string };
     Receive: AssetParamsScreen;
     Send: AssetParamsScreen;
+    SignTransaction?: {
+        transaction: ITransaction;
+        privateKey: IPrivateKey;
+        session: ISession | null;
+    };
 };
 const SelectAssetStack = createNativeStackNavigator<SelectAssetsStackParamList>();
 export const SelectAssetNavigator = () => {

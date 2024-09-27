@@ -16,6 +16,10 @@ import QRScan from '../components/QRScan';
 import { useRef, useState } from 'react';
 
 import { Images } from '../assets';
+import { EthereumMainnetChain, EthereumPolygonChain, EthereumPrivateKey, EthereumSepoliaChain, EthereumTransaction } from '../utils/chain/etherum';
+import { keyStorage } from '../utils/StorageManager/setup';
+import { ITransaction } from '../utils/chain/types';
+import { ethers } from 'ethers';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -45,6 +49,58 @@ const SendAssetContainer = (props: SendAssetProps) => {
         onClose();
     };
 
+    const getBalance = () => {
+        return props.accountBalance.balance.replace(props.symbol, '')?.trim();
+    };
+
+    const handleMaxAmount = () => {
+        onChangeAmount(getBalance());
+        onChangeUSDAmount(props.accountBalance.usdBalance.toString());
+    };
+
+    const getTransactionAmount = (currencySymbol, amount) => {
+        //const conversionFactor = 10 ** 18;
+        if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
+            return ethers.parseEther(amount)
+        }
+        throw new Error('Unsupported currency symbol');
+    };
+
+    const handleSendTransaction = async () => {
+        if (props.symbol !== 'LEOS') {
+            const transactionData = {
+                to: depositeAddress,
+                from: props.account,
+                value: getTransactionAmount(props.symbol, Number(amount)),
+            };
+            console.log(transactionData)
+            let key, chain;
+            if (props.symbol === 'SepoliaETH') {
+                chain = EthereumSepoliaChain;
+                key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
+            } else if (props.symbol === 'ETH') {
+                chain = EthereumMainnetChain;
+                key = await keyStorage.findByName('ethereum', chain);
+            } else if (props.symbol === 'MATIC') {
+                chain = EthereumPolygonChain;
+                key = await keyStorage.findByName('ethereumPolygon', chain);
+            } else throw new Error('Unsupported chains');
+
+            let transaction: ITransaction;
+
+            if (key) {
+                const exportPrivateKey = await key.exportPrivateKey();
+                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
+                props.navigation.navigate('SignTransaction', {
+                    transaction,
+                    privateKey: key,
+                    session: null,
+                });
+            }
+        }
+    };
+
     return (
         <View style={styles.container}>
             <QRScan onClose={onClose} cryptoWallet onScan={onScan} refMessage={refMessage} />
@@ -70,7 +126,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                         <View>
                             <View style={styles.inputContainer}>
                                 <TextInput
-                                    value={amount}
+                                    defaultValue={amount}
                                     style={styles.input}
                                     placeholder="Enter amount"
                                     placeholderTextColor={theme.colors.tabGray}
@@ -79,7 +135,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                     <TouchableOpacity style={styles.inputButton}>
                                         <Text style={styles.currencyButtonText}>{props.symbol}</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.inputButton}>
+                                    <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
                                         <Text style={styles.inputButtonText}>MAX</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -89,7 +145,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     </View>
                 </ScrollView>
                 <View style={commonStyles.marginBottom}>
-                    <TButtonContained style={commonStyles.marginBottom} size="large">
+                    <TButtonContained style={commonStyles.marginBottom} size="large" onPress={handleSendTransaction}>
                         Proceed
                     </TButtonContained>
                 </View>

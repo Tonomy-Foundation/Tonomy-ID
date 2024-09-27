@@ -19,7 +19,6 @@ export type ReceiveAssetProps = {
 };
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
-
     const message = `${props.account}`;
 
     const copyToClipboard = () => {
