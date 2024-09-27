@@ -26,6 +26,7 @@ import {
 import { keyStorage } from '../utils/StorageManager/setup';
 import { ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
+import useErrorStore from '../store/errorStore';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -39,9 +40,9 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
-
+    const [disabled, setDisabled] = useState<boolean>(false);
     const refMessage = useRef(null);
-
+    const errorStore = useErrorStore();
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
     };
@@ -50,7 +51,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const onScan = (address) => {
-        //const currentAddress = `${address.substring(0, 7)}...${address.substring(address.length - 6)}`;
         onChangeAddress(address);
         onClose();
     };
@@ -65,21 +65,35 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const getTransactionAmount = (currencySymbol, amount) => {
-        //const conversionFactor = 10 ** 18;
         if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
-            return ethers.parseEther(amount);
+            console.log(amount);
+            return ethers.parseEther(amount.toString());
         }
         throw new Error('Unsupported currency symbol');
     };
 
     const handleSendTransaction = async () => {
         if (props.symbol !== 'LEOS') {
+            if (!depositeAddress) {
+                errorStore.setError({
+                    error: new Error('Transaction has no recipient'),
+                    expected: true,
+                });
+                return;
+            }
+            if (!amount) {
+                errorStore.setError({
+                    error: new Error('Transaction has no amount'),
+                    expected: true,
+                });
+                return;
+            }
+            setDisabled(true);
             const transactionData = {
                 to: depositeAddress,
                 from: props.account,
                 value: getTransactionAmount(props.symbol, Number(amount)),
             };
-            console.log(transactionData);
             let key, chain;
             if (props.symbol === 'SepoliaETH') {
                 chain = EthereumSepoliaChain;
@@ -98,6 +112,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 const exportPrivateKey = await key.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
                 transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
+                setDisabled(false);
                 props.navigation.navigate('SignTransaction', {
                     transaction,
                     privateKey: key,
@@ -105,6 +120,37 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 });
             }
         }
+    };
+
+    const fetchEthPrice = async (amount) => {
+        try {
+            const response = await fetch('https://pangea-sales-api-yx37y.ondigitalocean.app/crypto?symbol=ETH');
+            const data = await response.json();
+            const ethPrice = data.usd;
+            const usdAmount = Number(amount) * Number(ethPrice);
+            onChangeUSDAmount(usdAmount.toFixed(2));
+        } catch (error) {
+            console.error('Error fetching ETH price:', error);
+        }
+    };
+
+    const debounce = (func, delay) => {
+        let timeoutId;
+
+        return (...args) => {
+            clearTimeout(timeoutId);
+
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    };
+
+    const debouncedSearch = debounce(fetchEthPrice, 500);
+
+    const handleAmountChange = async (amount) => {
+        onChangeAmount(amount);
+        debouncedSearch(amount);
     };
 
     return (
@@ -119,6 +165,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                 style={styles.input}
                                 placeholder="Enter or scan the address"
                                 placeholderTextColor={theme.colors.tabGray}
+                                onChangeText={onChangeAddress}
                             />
                             <TouchableOpacity style={styles.inputButton} onPress={handleOpenQRScan}>
                                 <Text style={styles.inputButtonText}>Paste</Text>
@@ -136,6 +183,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                     style={styles.input}
                                     placeholder="Enter amount"
                                     placeholderTextColor={theme.colors.tabGray}
+                                    onChangeText={handleAmountChange}
                                 />
                                 <View style={{ flexDirection: 'row', gap: 8 }}>
                                     <TouchableOpacity style={styles.inputButton}>
@@ -151,7 +199,12 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     </View>
                 </ScrollView>
                 <View style={commonStyles.marginBottom}>
-                    <TButtonContained style={commonStyles.marginBottom} size="large" onPress={handleSendTransaction}>
+                    <TButtonContained
+                        disabled={disabled}
+                        style={commonStyles.marginBottom}
+                        size="large"
+                        onPress={handleSendTransaction}
+                    >
                         Proceed
                     </TButtonContained>
                 </View>

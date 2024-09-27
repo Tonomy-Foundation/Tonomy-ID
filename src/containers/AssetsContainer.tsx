@@ -197,57 +197,6 @@ export default function AssetsContainer({
         }
     }, [setUserName, did, onUrlOpen]);
 
-    async function onScan({ data }: BarCodeScannerResult) {
-        try {
-            if (data.startsWith('wc:')) {
-                if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
-            } else {
-                const did = validateQrCode(data);
-
-                await connectToDid(did);
-            }
-        } catch (e) {
-            debug('onScan() error:', e);
-
-            if (isNetworkError(e)) {
-                debug('onScan() network error');
-                errorStore.setError({
-                    title: 'Network Error',
-                    error: new Error('Check your connection, and try again.'),
-                    expected: true,
-                });
-            } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
-                debug('onScan() Invalid QR Code', JSON.stringify(e, null, 2));
-
-                if (e.message === 'QR schema does not match app') {
-                    errorStore.setError({
-                        title: 'Invalid QR Code',
-                        error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
-                        expected: true,
-                    });
-                } else {
-                    errorStore.setError({
-                        title: 'Invalid QR Code',
-                        error: e,
-                        expected: false,
-                    });
-                }
-            } else if (e instanceof CommunicationError) {
-                debug('onScan() CommunicationError QR Code', JSON.stringify(e, null, 2));
-                errorStore.setError({
-                    error: e,
-                    expected: false,
-                    title: 'Communication Error',
-                });
-            } else {
-                onClose();
-                errorStore.setError({ error: e, expected: false });
-            }
-        } finally {
-            onClose();
-        }
-    }
-
     const updateLeosBalance = useCallback(async () => {
         try {
             debug('updateLeosBalance() fetching LEOS balance');
@@ -365,17 +314,6 @@ export default function AssetsContainer({
         const account = accountExists?.accountName;
 
         return { account, balance, usdBalance };
-    };
-
-    const openAccountDetails = ({ token, chain }: { token: IToken; chain: EthereumChain }) => {
-        const accountData = findAccountByChain(capitalizeFirstLetter(chain.getName()));
-        setAccountDetails({
-            symbol: token.getSymbol(),
-            name: capitalizeFirstLetter(chain.getName()),
-            address: accountData.account || '',
-            image: token.getLogoUrl(),
-        });
-        (refMessage.current as any)?.open();
     };
 
     const MainView = () => {

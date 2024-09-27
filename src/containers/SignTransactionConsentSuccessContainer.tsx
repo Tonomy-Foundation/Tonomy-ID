@@ -31,7 +31,7 @@ export default function SignTransactionConsentSuccessContainer({
 }) {
     const backToHome = async () => {
         navigation.navigate({
-            name: 'UserHome',
+            name: 'Assets',
             params: {},
         });
     };

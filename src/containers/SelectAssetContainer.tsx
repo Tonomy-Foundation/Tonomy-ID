@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
 import theme from '../utils/theme';
 
@@ -12,16 +12,20 @@ import {
     ETHToken,
     USD_CONVERSION,
 } from '../utils/chain/etherum';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useUserStore from '../store/userStore';
 import useWalletStore from '../store/useWalletStore';
 import { CommunicationError, IdentifyMessage, VestingContract } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import AssetItem from '../components/AssetItem';
 import { useFocusEffect } from '@react-navigation/native';
-import { appStorage } from '../utils/StorageManager/setup';
+import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
 
+import Debug from 'debug';
+import { isNetworkError } from '../utils/errors';
+import { progressiveRetryOnNetworkError } from '../utils/network';
+const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
 
 const SelectAssetContainer = ({
@@ -42,7 +46,9 @@ const SelectAssetContainer = ({
     const [username, setUsername] = useState('');
     const [qrOpened, setQrOpened] = useState<boolean>(false);
 
-    const { updateBalance } = useWalletStore((state) => ({
+    const { accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
+    const [refreshBalance, setRefreshBalance] = useState(false);
+    const { updateBalance: updateCryptoBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
 
@@ -51,6 +57,7 @@ const SelectAssetContainer = ({
     >([]);
 
     const [developerMode, setDeveloperMode] = useState(true);
+    const isUpdatingBalances = useRef(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -72,32 +79,118 @@ const SelectAssetContainer = ({
         []
     );
 
+    // initializeWalletState() on mount with progressiveRetryOnNetworkError()
     useEffect(() => {
-        async function getUpdatedBalance() {
-            await updateBalance();
+        if (!initialized) {
+            progressiveRetryOnNetworkError(initializeWalletState);
+        }
+    }, [initializeWalletState, initialized]);
+
+    const fetchCryptoAssets = useCallback(async () => {
+        try {
+            if (!accountExists) await initializeWalletAccount();
+            await connect();
+
+            for (const chainObj of chains) {
+                const asset = await assetStorage.findAssetByName(chainObj.token);
+
+                debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
+                let account;
+                if (asset) {
+                    account = {
+                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        accountName: asset.accountName,
+                        balance: asset.balance,
+                        usdBalance: asset.usdBalance,
+                    };
+                } else {
+                    account = {
+                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        accountName: null,
+                        balance: '0' + chainObj.token.getSymbol(),
+                        usdBalance: 0,
+                    };
+                }
+                setAccounts((prevAccounts) => {
+                    // find index of the account in the array
+                    const index = prevAccounts.findIndex((acc) => acc.network === account.network);
+
+                    if (index !== -1) {
+                        // Update the existing asset
+                        const updatedAccounts = [...prevAccounts];
+
+                        updatedAccounts[index] = account;
+                        return updatedAccounts;
+                    } else {
+                        // Add the new asset
+                        return [...prevAccounts, account];
+                    }
+                });
+            }
+        } catch (error) {
+            debug('fetchCryptoAssets() error', error);
+        }
+    }, [accountExists, initializeWalletAccount, chains]);
+
+    const updateLeosBalance = useCallback(async () => {
+        try {
+            debug('updateLeosBalance() fetching LEOS balance');
+            if (accountExists) await updateCryptoBalance();
 
             const accountPangeaBalance = await vestingContract.getBalance(accountName);
 
             if (pangeaBalance !== accountPangeaBalance) {
                 setPangeaBalance(accountPangeaBalance);
             }
+        } catch (error) {
+            debug('updateLeosBalance() error', error);
+
+            if (isNetworkError(error)) {
+                debug('updateLeosBalance() network error');
+            }
         }
+    }, [accountExists, updateCryptoBalance, accountName, pangeaBalance]);
 
-        getUpdatedBalance();
+    const updateAllBalances = useCallback(async () => {
+        if (isUpdatingBalances.current) return; // Prevent re-entry if already running
+        isUpdatingBalances.current = true;
+        try {
+            debug('updateAllBalances()');
+            await updateLeosBalance();
+            await updateCryptoBalance();
+            await fetchCryptoAssets();
+        } catch (error) {
+            if (isNetworkError(error)) {
+                debug('updateAllBalances() Error updating account detail network error:');
+            } else {
+                console.error('MainContainer() updateAllBalances() error', error);
+            }
+        } finally {
+            isUpdatingBalances.current = false;
+        }
+    }, [updateCryptoBalance, fetchCryptoAssets, updateLeosBalance]);
 
-        const interval = setInterval(() => {
-            getUpdatedBalance();
-        }, 20000);
+    const onRefresh = useCallback(async () => {
+        try {
+            setRefreshBalance(true);
+            await updateAllBalances();
+        } finally {
+            setRefreshBalance(false);
+        }
+    }, [updateAllBalances]);
 
+    // updateAllBalances() on mount and every 20 seconds
+    useEffect(() => {
+        updateAllBalances();
+        const interval = setInterval(updateAllBalances, 10000);
         return () => clearInterval(interval);
-    }, [user, pangeaBalance, setPangeaBalance, accountName, updateBalance]);
+    }, [updateAllBalances]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
         const balance = accountExists?.balance;
         const usdBalance = accountExists?.usdBalance;
         const account = accountExists?.accountName;
-
         return { account, balance, usdBalance };
     };
 
@@ -122,38 +215,55 @@ const SelectAssetContainer = ({
         }
     }, []);
 
-    async function onUrlOpen(did: string) {
-        try {
-            await connectToDid(did);
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-        } finally {
-            onClose();
-        }
-    }
-    async function connectToDid(did: string) {
-        try {
-            // Connect to the browser using their did:jwk
-            const issuer = await user.getIssuer();
-            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+    const connectToDid = useCallback(
+        async (did: string) => {
+            try {
+                // Connect to the browser using their did:jwk
+                const issuer = await user.getIssuer();
+                const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
 
-            await user.sendMessage(identifyMessage);
-        } catch (e) {
-            if (
-                e instanceof CommunicationError &&
-                e.exception?.status === 400 &&
-                e.exception.message.startsWith('Recipient not connected')
-            ) {
-                errorStore.setError({
-                    title: 'Problem connecting',
-                    error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-                    expected: true,
-                });
-            } else {
-                throw e;
+                await user.sendMessage(identifyMessage);
+            } catch (e) {
+                if (
+                    e instanceof CommunicationError &&
+                    e.exception?.status === 400 &&
+                    e.exception.message.startsWith('Recipient not connected')
+                ) {
+                    errorStore.setError({
+                        title: 'Problem connecting',
+                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                        expected: true,
+                    });
+                } else {
+                    debug('connectToDid() error:', e);
+
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                    });
+                }
             }
-        }
-    }
+        },
+        [user, errorStore]
+    );
+
+    const onUrlOpen = useCallback(
+        async (did) => {
+            try {
+                await connectToDid(did);
+            } catch (e) {
+                if (isNetworkError(e)) {
+                    debug('onUrlOpen() network error when connectToDid called');
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            } finally {
+                onClose();
+            }
+        },
+        [errorStore, connectToDid, onClose]
+    );
+
     function onClose() {
         setQrOpened(false);
     }
@@ -161,7 +271,10 @@ const SelectAssetContainer = ({
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                <ScrollView
+                    contentContainerStyle={styles.scrollViewContent}
+                    refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                >
                     <Text style={styles.screenTitle}>select a currency to {type}</Text>
                     <View style={{ marginTop: 20, flexDirection: 'column', gap: 20 }}>
                         <AssetItem

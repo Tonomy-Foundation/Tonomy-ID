@@ -186,9 +186,10 @@ export default function SignTransactionConsentContainer({
 
             const signedTransaction = await privateKey.sendTransaction(transactionRequest);
 
-            const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
-
-            await web3wallet?.respondSessionRequest({ topic: session.topic, response });
+            if (session) {
+                const response = { id: session.id, result: signedTransaction, jsonrpc: '2.0' };
+                await web3wallet?.respondSessionRequest({ topic: session.topic, response });
+            }
 
             navigation.navigate('SignTransactionSuccess', {
                 transactionDetails: {
@@ -237,10 +238,12 @@ export default function SignTransactionConsentContainer({
                             style={[styles.logo, commonStyles.marginBottom]}
                             source={{ uri: transaction.getChain().getNativeToken().getLogoUrl() }}
                         ></Image>
-                        <View style={commonStyles.alignItemsCenter}>
-                            <TH2 style={styles.applinkText}>{extractHostname(session?.origin)}</TH2>
-                            <TH2 style={{ marginLeft: 10 }}>wants you to send coins</TH2>
-                        </View>
+                        {session && (
+                            <View style={commonStyles.alignItemsCenter}>
+                                <TH2 style={styles.applinkText}>{extractHostname(session?.origin)}</TH2>
+                                <TH2 style={{ marginLeft: 10 }}>wants you to send coins</TH2>
+                            </View>
+                        )}
                         {!loading ? (
                             <>
                                 <View style={styles.networkHeading}>
