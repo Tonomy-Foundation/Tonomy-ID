@@ -16,7 +16,13 @@ import QRScan from '../components/QRScan';
 import { useRef, useState } from 'react';
 
 import { Images } from '../assets';
-import { EthereumMainnetChain, EthereumPolygonChain, EthereumPrivateKey, EthereumSepoliaChain, EthereumTransaction } from '../utils/chain/etherum';
+import {
+    EthereumMainnetChain,
+    EthereumPolygonChain,
+    EthereumPrivateKey,
+    EthereumSepoliaChain,
+    EthereumTransaction,
+} from '../utils/chain/etherum';
 import { keyStorage } from '../utils/StorageManager/setup';
 import { ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
@@ -61,7 +67,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const getTransactionAmount = (currencySymbol, amount) => {
         //const conversionFactor = 10 ** 18;
         if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
-            return ethers.parseEther(amount)
+            return ethers.parseEther(amount);
         }
         throw new Error('Unsupported currency symbol');
     };
@@ -73,7 +79,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 from: props.account,
                 value: getTransactionAmount(props.symbol, Number(amount)),
             };
-            console.log(transactionData)
+            console.log(transactionData);
             let key, chain;
             if (props.symbol === 'SepoliaETH') {
                 chain = EthereumSepoliaChain;

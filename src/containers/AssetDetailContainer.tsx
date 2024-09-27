@@ -27,9 +27,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                             </View>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <Text
-                                style={styles.headerAssetsAmount}
-                            >{`${props.accountBalance.balance}`}</Text>
+                            <Text style={styles.headerAssetsAmount}>{`${props.accountBalance.balance}`}</Text>
                             <Text style={styles.headerAssetUSDAmount}>${props.accountBalance.usdBalance} USD</Text>
                         </View>
                         {props.symbol === 'LEOS' && (
