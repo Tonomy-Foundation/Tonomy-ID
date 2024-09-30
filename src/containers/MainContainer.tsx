@@ -258,7 +258,6 @@ export default function MainContainer({
 
                 const chain: AntelopeChain = getChainFromAntelopeChainId(signingRequestBasic.getChainId().toString());
 
-                if (!chain) throw new Error('This chain is not supported');
                 const client = new APIClient({ url: chain.getApiOrigin() });
 
                 // Define the options used when decoding/resolving the request
