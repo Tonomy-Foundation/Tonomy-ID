@@ -334,6 +334,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
 }
 
 const PangeaMainnetChain = new AntelopeChain(
+    // 'https://blockchain-api.pangea.web4.world',
     'https://pangea.eosusa.io',
     'Pangea',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
@@ -342,7 +343,8 @@ const PangeaMainnetChain = new AntelopeChain(
 );
 
 const PangeaTestnetChain = new AntelopeChain(
-    'https://pangea.test.eosusa.io',
+    // 'https://blockchain-api-testnet.pangea.web4.world',
+    'https://test.pangea.eosusa.io',
     'Pangea Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
