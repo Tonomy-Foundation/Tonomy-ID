@@ -42,6 +42,7 @@ import {
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
+import { createUrl, getQueryParam } from '../strings';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -670,19 +671,34 @@ export class AntelopeSigningRequestSession implements IChainSession {
         receipt: AntelopeTransactionReceipt
     ): Promise<void> {
         const signedTransaction = receipt.getRawTransaction();
+        const trxId = receipt.getTransactionHash();
         // @ts-expect-error signatures type mismatch
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
         if (callbackParams) {
-            const response = await fetch(callbackParams.url, {
+            const uid = getQueryParam(callbackParams.url, 'uid');
+
+            const bodyObject = callbackParams.payload;
+
+            bodyObject.tx = trxId;
+            // eslint-disable-next-line camelcase
+            bodyObject.tx_id = trxId;
+            bodyObject.uid = uid;
+
+            const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
+
+            debug('approveTransactionRequest() callback', newCallback, bodyObject);
+            const response = await fetch(newCallback, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(callbackParams?.payload),
+                body: JSON.stringify(bodyObject),
             });
 
-            if (!response.ok) {
+            debug('approveTransactionRequest() response status', response.status);
+
+            if (!response.ok || response.status !== 200) {
                 console.error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
         }
@@ -713,6 +729,6 @@ export class AntelopeSigningRequestSession implements IChainSession {
 }
 
 export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
-    if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Chain not supported');
+    if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Antelope chain not supported');
     return ANTELOPE_CHAIN_ID_TO_CHAIN[chainId];
 }
