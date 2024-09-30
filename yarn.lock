@@ -4019,12 +4019,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/netinfo@npm:9.3.10":
-  version: 9.3.10
-  resolution: "@react-native-community/netinfo@npm:9.3.10"
+"@react-native-community/netinfo@npm:^11.4.1":
+  version: 11.4.1
+  resolution: "@react-native-community/netinfo@npm:11.4.1"
   peerDependencies:
     react-native: ">=0.59"
-  checksum: 10c0/4c6e35664eca317f096b99c255d46db066a929c3b20dac712420c1d72f0a81fcbf001b05208191645d66e9953a5749d32da07d73236e0e1dada28dbe7e52d80e
+  checksum: 10c0/118ba6d495bd14c2dab3d228a0c1857620a293ae8592d170d70eaf88a6ac6a4e35c7f84527975a9054e36891a9694aacc8ec053326b5f05961459ed08a70dd35
   languageName: node
   linkType: hard
 
@@ -4606,9 +4606,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.22.0-rc.1":
-  version: 0.22.0-rc.1
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.22.0-rc.1"
+"@tonomy/tonomy-id-sdk@npm:0.22.0-development.1":
+  version: 0.22.0-development.1
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.22.0-development.1"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4634,7 +4634,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/e2dce105a3808b8a6ebe6209f4b01886f5c8531db2a48bd26c09eab591efc90b604bff2b5954a19ed73b0bf70f469f016300c9ba54e6506358f198f256181d0e
+  checksum: 10c0/c8c5b939569514f59ecfccef7bdf55eaeb58c478196b5bf546eb599c7945d5367c12e8d3f5aebf680d539647d8fdad010cfd66a1e8e5acbf36882d59ac5d8cf6
   languageName: node
   linkType: hard
 
@@ -5766,7 +5766,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wharfkit/antelope@npm:^1.0.7, @wharfkit/antelope@npm:^1.0.8":
+"@wharfkit/abicache@npm:^1.2.0, @wharfkit/abicache@npm:^1.2.1, @wharfkit/abicache@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "@wharfkit/abicache@npm:1.2.2"
+  dependencies:
+    "@wharfkit/antelope": "npm:^1.0.2"
+    "@wharfkit/signing-request": "npm:^3.1.0"
+    pako: "npm:^2.0.4"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/596e42974413fa802e623896233cf1ad76c689ff8953e9a8ecc8ca5a92e73de79332d19a173a5174316c7ebffad644fdd015ce07b164231f0db591f49a41777f
+  languageName: node
+  linkType: hard
+
+"@wharfkit/account@npm:^1.0.0":
+  version: 1.2.0
+  resolution: "@wharfkit/account@npm:1.2.0"
+  dependencies:
+    "@wharfkit/antelope": "npm:^1.0.7"
+    "@wharfkit/common": "npm:^1.2.0"
+    "@wharfkit/contract": "npm:^1.0.0"
+    "@wharfkit/resources": "npm:^1.2.3"
+    "@wharfkit/token": "npm:^1.1.2"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/c2422221d243dbd905f0ab68f6db76a891201a31d617040a2509e12ed74e14178c7f81e33cbe92b9ba32d97f47caedbd4a4725130ff776bd3b90582789ec0d9e
+  languageName: node
+  linkType: hard
+
+"@wharfkit/antelope@npm:^1.0.0, @wharfkit/antelope@npm:^1.0.11, @wharfkit/antelope@npm:^1.0.12, @wharfkit/antelope@npm:^1.0.2, @wharfkit/antelope@npm:^1.0.4":
+  version: 1.0.12
+  resolution: "@wharfkit/antelope@npm:1.0.12"
+  dependencies:
+    bn.js: "npm:^4.11.9"
+    brorand: "npm:^1.1.0"
+    elliptic: "npm:^6.5.4"
+    hash.js: "npm:^1.0.0"
+    pako: "npm:^2.1.0"
+    tslib: "npm:^2.0.3"
+  checksum: 10c0/272fd8c7848bb3f78c7cea1f38fa898a574d32a8e14edfc04d5b27249d0d191883ea116341ce8cc09027e0574ee93ae4494cec8925d724f0c33775e79e11624d
+  languageName: node
+  linkType: hard
+
+"@wharfkit/antelope@npm:^1.0.7":
   version: 1.0.11
   resolution: "@wharfkit/antelope@npm:1.0.11"
   dependencies:
@@ -5777,6 +5817,89 @@ __metadata:
     pako: "npm:^2.1.0"
     tslib: "npm:^2.0.3"
   checksum: 10c0/fefb31da3378b3e12dfa998816c1b8d94d566f4f7a616cfa4cc7e2b4c22a635b4a0537a112312d58b9e00386679d3c413caabaee6753026e64b2b52d0414a474
+  languageName: node
+  linkType: hard
+
+"@wharfkit/common@npm:^1.2.0":
+  version: 1.2.4
+  resolution: "@wharfkit/common@npm:1.2.4"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  peerDependencies:
+    "@wharfkit/antelope": ^1.0.0
+  checksum: 10c0/ace843933e71d6096094d932301944c28ba6fb7e4d03bac989a19d9983cec5c33e15034f8940eb13e4996834345347b38add280c8f46eb3bd47f41e2c5dfa898
+  languageName: node
+  linkType: hard
+
+"@wharfkit/contract@npm:^1.0.0, @wharfkit/contract@npm:^1.1.4":
+  version: 1.1.5
+  resolution: "@wharfkit/contract@npm:1.1.5"
+  dependencies:
+    "@wharfkit/abicache": "npm:^1.2.0"
+    "@wharfkit/antelope": "npm:^1.0.4"
+    "@wharfkit/signing-request": "npm:^3.1.0"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/bdf2361ebc5f6bdf9909006d24be4d2981c0314dc1cd2a55e2fc8491be48bbce1a58a5afb145d6299afa88aee8c9dd9961028972fdae52a7000c7f4ef7f75e4c
+  languageName: node
+  linkType: hard
+
+"@wharfkit/resources@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@wharfkit/resources@npm:1.2.3"
+  dependencies:
+    "@wharfkit/antelope": "npm:^1.0.0"
+    bn.js: "npm:^4.11.9"
+    js-big-decimal: "npm:^2.0.7"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/46dfaa0ce5153bd9d0cd43cce34737dfe203edacada03e9f26a8df3a4e70f98f442032639bbcbe863cfc001ff4be43b28be038758bcf433557c562176ddbeaf6
+  languageName: node
+  linkType: hard
+
+"@wharfkit/session@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@wharfkit/session@npm:1.4.0"
+  dependencies:
+    "@wharfkit/abicache": "npm:^1.2.1"
+    "@wharfkit/account": "npm:^1.0.0"
+    "@wharfkit/antelope": "npm:^1.0.11"
+    "@wharfkit/common": "npm:^1.2.0"
+    "@wharfkit/signing-request": "npm:^3.1.0"
+    pako: "npm:^2.0.4"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/c7ae72b03f6519ee8f6a5f852f1456e49ebbf78fce87222170c3f156391705fcd285c4a1f44a30cd721612a1349684c67742b0685953c4d48353e7b7591f63d1
+  languageName: node
+  linkType: hard
+
+"@wharfkit/signing-request@npm:^3.1.0, @wharfkit/signing-request@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@wharfkit/signing-request@npm:3.2.0"
+  dependencies:
+    "@wharfkit/antelope": "npm:^1.0.7"
+    tslib: "npm:^2.0.3"
+  checksum: 10c0/4c1212060a8cba57d4e0c227eec1cb7b582a4df934af54abe00aa024a49e00ed7d7cb9827c00c949a763ef059b0d203e5e8c4fe4ddb25f942562eccdd5569892
+  languageName: node
+  linkType: hard
+
+"@wharfkit/token@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@wharfkit/token@npm:1.1.2"
+  dependencies:
+    "@wharfkit/antelope": "npm:^1.0.4"
+    "@wharfkit/contract": "npm:^1.1.4"
+    bn.js: "npm:^4.11.9"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/52f3edaf5af5bcee0d938c701b5d7ae257373b0680bebf1617bdb1d79eabfe6b5cdbfb0b9fbb03eff5414bf1bb844161ef01dc465b79a81b487bc4c7cd735850
+  languageName: node
+  linkType: hard
+
+"@wharfkit/wallet-plugin-privatekey@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@wharfkit/wallet-plugin-privatekey@npm:1.1.0"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  peerDependencies:
+    "@wharfkit/session": ^1.1.0
+  checksum: 10c0/4b023bc7de3ce0bc9a96a8bd6efe617deb38364c84bc2abfa90d7a5da5b68254cb3116d112d1d3cb4e05e0c7699d4e3ad85e0e015eac464774267e71c64f2272
   languageName: node
   linkType: hard
 
@@ -12671,6 +12794,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-big-decimal@npm:^2.0.7":
+  version: 2.1.0
+  resolution: "js-big-decimal@npm:2.1.0"
+  checksum: 10c0/1e15674b2740d71d7b02ee4d0b16aa5b3b4c5ef24592e347b97149a6d5ccd9351787b0c59595efe6192014e160d2d41c54a287b06be11ee4e67756dc80035ac7
+  languageName: node
+  linkType: hard
+
 "js-sha3@npm:0.8.0":
   version: 0.8.0
   resolution: "js-sha3@npm:0.8.0"
@@ -15079,7 +15209,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pako@npm:^2.1.0":
+"pako@npm:^2.0.4, pako@npm:^2.1.0":
   version: 2.1.0
   resolution: "pako@npm:2.1.0"
   checksum: 10c0/8e8646581410654b50eb22a5dfd71159cae98145bd5086c9a7a816ec0370b5f72b4648d08674624b3870a521e6a3daffd6c2f7bc00fdefc7063c9d8232ff5116
@@ -18000,13 +18130,13 @@ __metadata:
     "@json-rpc-tools/utils": "npm:^1.7.6"
     "@react-native-async-storage/async-storage": "npm:1.18.2"
     "@react-native-clipboard/clipboard": "npm:^1.14.1"
-    "@react-native-community/netinfo": "npm:9.3.10"
+    "@react-native-community/netinfo": "npm:^11.4.1"
     "@react-navigation/bottom-tabs": "npm:^6.5.0"
     "@react-navigation/drawer": "npm:^6.5.0"
     "@react-navigation/native": "npm:^6.0.12"
     "@react-navigation/native-stack": "npm:^6.8.0"
     "@sinonjs/text-encoding": "npm:^0.7.2"
-    "@tonomy/tonomy-id-sdk": "npm:0.22.0-rc.1"
+    "@tonomy/tonomy-id-sdk": "npm:0.22.0-development.1"
     "@types/jest": "npm:^29.5.0"
     "@types/react": "npm:~18.2.14"
     "@types/react-native-base64": "npm:^0.2.0"
@@ -18018,7 +18148,11 @@ __metadata:
     "@walletconnect/react-native-compat": "npm:^2.13.0"
     "@walletconnect/utils": "npm:^2.13.0"
     "@walletconnect/web3wallet": "npm:^1.12.0"
-    "@wharfkit/antelope": "npm:^1.0.8"
+    "@wharfkit/abicache": "npm:^1.2.2"
+    "@wharfkit/antelope": "npm:^1.0.12"
+    "@wharfkit/session": "npm:^1.4.0"
+    "@wharfkit/signing-request": "npm:^3.2.0"
+    "@wharfkit/wallet-plugin-privatekey": "npm:^1.1.0"
     argon2: "npm:^0.40.3"
     babel-plugin-rewrite-require: "npm:^1.14.5"
     babel-plugin-transform-builtin-extend: "npm:^1.1.2"
@@ -18050,6 +18184,7 @@ __metadata:
     expo-status-bar: "npm:~1.6.0"
     jest: "npm:^29.5.0"
     jest-expo: "npm:^49.0.0"
+    pako: "npm:^2.1.0"
     prettier: "npm:^2.7.1"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"

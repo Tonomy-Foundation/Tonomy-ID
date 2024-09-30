@@ -18,7 +18,7 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     env:
-      EXPO_NODE_ENV: staging
+      EXPO_NODE_ENV: testnet
       EXPO_PLATFORM: android
       NODE_VERSION: 22.3.0
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -79,7 +79,7 @@ jobs:
       - name: Archive Android APK as artifact
         # Do not run this step if the action is being run locally (using nektos/act)
         if: ${{ github.actor != 'nektos/act' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "TonomyID-Android-${{env.EXPO_NODE_ENV}}"
           path: "./Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk"
