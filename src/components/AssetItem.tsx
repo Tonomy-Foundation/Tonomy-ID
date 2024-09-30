@@ -20,53 +20,20 @@ export type AccountItemProps = {
     testnet?: boolean;
 };
 const AssetItem = (props: AccountItemProps) => {
-    const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-    const getBalance = () => {
-        return props.accountBalance.balance.replace(props.currency, '')?.trim();
-    };
-
-    const getAccountDetail = async (account) => {
-        if (account && !props.leos) {
-            const accountToken = await account.getNativeToken();
-            const logoUrl = accountToken.getLogoUrl();
-            return {
-                symbol: accountToken.getSymbol(),
-                name: capitalizeFirstLetter(account.getChain().getName()),
-                address: account?.getName() || '',
-                ...(logoUrl && { image: logoUrl }),
-            };
-        } else {
-            return {
-                symbol: props.currency,
-                name: props.networkName,
-                address: props.accountName,
-                icon: Images.GetImage('logo1024'),
-            };
-        }
-    };
-
     const handleOnPress = async () => {
-        const accountDetail = {
-            symbol: props.currency,
-            name: props.networkName,
-            icon: props.icon,
-            account: props.account || '',
-            accountBalance: props.accountBalance,
-        };
+        console.log(props.networkName);
         if (props.type === 'receive') {
             props.navigation.navigate('Receive', {
                 screenTitle: `Receive ${props.currency}`,
-                ...accountDetail,
+                network: props.networkName,
             });
         } else if (props.type === 'send') {
             props.navigation.navigate('Send', {
                 screenTitle: `Send ${props.currency}`,
-                ...accountDetail,
+                network: props.networkName,
             });
         }
     };
-
     return (
         <TouchableOpacity style={styles.assetsView} onPress={handleOnPress}>
             <Image

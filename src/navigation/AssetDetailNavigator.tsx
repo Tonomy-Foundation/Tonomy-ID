@@ -4,13 +4,13 @@ import ReceiveScreen from '../screens/Receive';
 import SendScreen from '../screens/Send';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import theme from '../utils/theme';
-import { AssetParamsScreen } from './Root';
+import { AssetsParamsScreen } from './Root';
 import { ArrowLeft } from 'iconoir-react-native';
 
 export type AssetDetailStackParamList = {
-    AssetDetail: AssetParamsScreen;
-    Receive: AssetParamsScreen;
-    Send: AssetParamsScreen;
+    AssetDetail: AssetsParamsScreen;
+    Receive: AssetsParamsScreen;
+    Send: AssetsParamsScreen;
 };
 
 const AssetDetailStack = createNativeStackNavigator<AssetDetailStackParamList>();

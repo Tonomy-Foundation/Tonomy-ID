@@ -12,8 +12,7 @@ const AppInstructionModal = () => {
     const [showOnboarding, setShowOnboarding] = useState(false);
     useEffect(() => {
         const fetchSettings = async () => {
-            const settings = await appStorage.findSettingByName('showInstructions');
-            const showInstructions = settings?.value === 'false' ? false : true;
+            const showInstructions = await appStorage.getAppInstruction();
             setShowOnboarding(showInstructions);
         };
         fetchSettings();
@@ -53,40 +52,40 @@ const AppInstructionModal = () => {
 
     const onClose = async () => {
         setShowOnboarding(false);
-        await appStorage.setAppSetting('showInstructions', 'false');
+        await appStorage.setAppInstruction(false);
     };
 
     const bottomPosNormal = Platform.OS === 'ios' ? 80 : 45;
     const bottomPosScan = Platform.OS === 'ios' ? 110 : 80;
 
-    return showOnboarding ? (
-        <View style={[styles.modalContainer, { bottom: currentTip === 2 ? bottomPosScan : bottomPosNormal }]}>
-            <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
-                <CloseIcon />
-            </TouchableOpacity>
-            <View style={styles.modalContent}>
-                <View style={{ gap: 8 }}>
-                    <Text style={styles.tipTitle}>{tips[currentTip].title}</Text>
-                    <View style={{ gap: 3 }}>
-                        {tips[currentTip].text.map((text, index) => (
-                            <View key={index} style={tips[currentTip].text.length > 1 ? styles.bulletItem : {}}>
-                                {tips[currentTip].text.length > 1 && <Text style={styles.bulletPoint}>•</Text>}
-                                <Text style={styles.tipText}>{text}</Text>
-                            </View>
-                        ))}
+    return (
+        showOnboarding && (
+            <View style={[styles.modalContainer, { bottom: currentTip === 2 ? bottomPosScan : bottomPosNormal }]}>
+                <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
+                    <CloseIcon />
+                </TouchableOpacity>
+                <View style={styles.modalContent}>
+                    <View style={{ gap: 8 }}>
+                        <Text style={styles.tipTitle}>{tips[currentTip].title}</Text>
+                        <View style={{ gap: 3 }}>
+                            {tips[currentTip].text.map((text, index) => (
+                                <View key={index} style={tips[currentTip].text.length > 1 ? styles.bulletItem : {}}>
+                                    {tips[currentTip].text.length > 1 && <Text style={styles.bulletPoint}>•</Text>}
+                                    <Text style={styles.tipText}>{text}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                    <View style={styles.footer}>
+                        <Text style={styles.pagination}>{`${currentTip + 1} of ${tips.length}`}</Text>
+                        <TouchableOpacity onPress={nextTip} style={styles.nextButton}>
+                            <Text style={styles.nextText}>{currentTip === tips.length - 1 ? "Let's go!" : 'Next'}</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.footer}>
-                    <Text style={styles.pagination}>{`${currentTip + 1} of ${tips.length}`}</Text>
-                    <TouchableOpacity onPress={nextTip} style={styles.nextButton}>
-                        <Text style={styles.nextText}>{currentTip === tips.length - 1 ? "Let's go!" : 'Next'}</Text>
-                    </TouchableOpacity>
-                </View>
+                <View style={[styles.arrow, { left: tips[currentTip].tabIndex * tabWidth + tabWidth / 2 - 8 }]} />
             </View>
-            <View style={[styles.arrow, { left: tips[currentTip].tabIndex * tabWidth + tabWidth / 2 - 8 }]} />
-        </View>
-    ) : (
-        <></>
+        )
     );
 };
 

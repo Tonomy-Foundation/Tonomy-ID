@@ -1,36 +1,53 @@
-import { Image, ImageSourcePropType, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ReceiveAssetScreenNavigationProp } from '../screens/Receive';
 import theme from '../utils/theme';
 import { Images } from '../assets';
 import QRCode from 'react-native-qrcode-svg';
 import Popover from 'react-native-popover-view';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import CopyIcon from '../assets/icons/CopyIcon';
 import { ShareAndroidSolid } from 'iconoir-react-native';
+import { getAssetDetails } from '../utils/assetDetails';
 
 export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
-    symbol: string;
-    name: string;
-    account?: string;
-    icon?: ImageSourcePropType | undefined;
-    accountBalance: { balance: string; usdBalance: number };
+    network: string;
 };
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
-    const message = `${props.account}`;
+
+    const [asset, setAsset] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAssetDetails = async () => {
+            console.log(props.network);
+            const assetData = await getAssetDetails(props.network);
+            setAsset(assetData);
+            setLoading(false);
+        };
+        fetchAssetDetails();
+    }, [props.network]);
+
+    if (loading) {
+        return (
+            <View>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
 
     const copyToClipboard = () => {
         setShowPopover(true);
-        Clipboard.setString(message);
+        Clipboard.setString(asset.account);
         setTimeout(() => setShowPopover(false), 400);
     };
 
     const onShare = async () => {
         try {
             await Share.share({
-                message: message,
+                message: asset.account,
             });
         } catch (error) {
             alert(error.message);
@@ -41,18 +58,18 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.subHeading}>
-                        {props.account !== ''
-                            ? `Only send ${props.symbol} assets to this address. Please make sure you are using the ${props.name} network before sending assets to this address`
+                        {asset.account && asset.account !== ''
+                            ? `Only send ${asset.symbol} assets to this address. Please make sure you are using the ${asset.network} network before sending assets to this address`
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>
-                        <Image source={props.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
-                        <Text style={styles.networkTitleName}>{props.name} Network</Text>
+                        <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
+                        <Text style={styles.networkTitleName}>{asset.network} Network</Text>
                     </View>
                     <View style={styles.flexCenter}>
                         <View style={{ ...styles.qrView, flexDirection: 'column' }}>
                             <QRCode value="testValue" size={200} />
-                            <Text style={styles.accountName}>{props.account}</Text>
+                            <Text style={styles.accountName}>{asset.account}</Text>
                         </View>
                         <View style={styles.iconContainer}>
                             <Popover

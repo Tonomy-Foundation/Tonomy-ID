@@ -7,13 +7,6 @@ export type AssetDetailScreenNavigationProp = NativeStackScreenProps<AssetDetail
 
 export default function AssetDetail(props: AssetDetailScreenNavigationProp) {
     return (
-        <AssetDetailContainer
-            symbol={props.route.params?.symbol}
-            name={props.route.params?.name}
-            account={props.route.params?.account}
-            icon={props.route.params?.icon}
-            navigation={props.navigation}
-            accountBalance={props.route.params?.accountBalance}
-        ></AssetDetailContainer>
+        <AssetDetailContainer network={props.route.params.network} navigation={props.navigation}></AssetDetailContainer>
     );
 }

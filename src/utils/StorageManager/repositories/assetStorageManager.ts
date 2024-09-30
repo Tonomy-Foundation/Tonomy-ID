@@ -8,6 +8,7 @@ interface AccountStorage {
     accountName: string;
     balance: string;
     usdBalance: number;
+    assetName?: string;
 }
 
 export abstract class AssetStorageManager {

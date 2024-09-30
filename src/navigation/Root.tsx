@@ -32,8 +32,8 @@ import SignTransactionConsentScreen from '../screens/SignTransactionConsentScree
 import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
-import { ImageSourcePropType } from 'react-native';
+import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
+
 import { SelectAssetNavigator } from './SelectAssetNavigator';
 import { AssetDetailNavigator } from './AssetDetailNavigator';
 import Debug from 'debug';
@@ -44,13 +44,9 @@ const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
-export interface AssetParamsScreen {
+export interface AssetsParamsScreen {
     screenTitle?: string;
-    symbol: string;
-    name: string;
-    icon?: ImageSourcePropType | undefined;
-    account?: string;
-    accountBalance: { balance: string; usdBalance: number };
+    network: string;
 }
 
 export type RouteStackParamList = {
@@ -112,7 +108,7 @@ export type RouteStackParamList = {
     BottomTabs: undefined;
 
     Assets: { did?: string };
-    SelectAssetMain: {
+    AssetListing: {
         screen: string;
         params?: {
             did?: string;
@@ -122,7 +118,7 @@ export type RouteStackParamList = {
     };
     AssetDetailMain: {
         screen: string;
-        params?: AssetParamsScreen;
+        params?: AssetsParamsScreen;
     };
     Onboarding: undefined;
     Citizenship: undefined;
@@ -285,7 +281,7 @@ export default function RootNavigation() {
                         />
 
                         <Stack.Screen
-                            name="SelectAssetMain"
+                            name="AssetListing"
                             options={{ headerShown: false }}
                             component={SelectAssetNavigator}
                         />

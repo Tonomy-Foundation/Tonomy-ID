@@ -62,8 +62,7 @@ const SelectAssetContainer = ({
     useFocusEffect(
         useCallback(() => {
             const fetchSettings = async () => {
-                const settings = await appStorage.findSettingByName('developerMode');
-                const developerMode = settings?.value === 'true' ? true : false;
+                const developerMode = await appStorage.getDeveloperMode();
                 setDeveloperMode(developerMode);
             };
             fetchSettings();

@@ -6,14 +6,5 @@ import { SelectAssetsStackParamList } from '../navigation/SelectAssetNavigator';
 export type SendAssetScreenNavigationProp = NativeStackScreenProps<SelectAssetsStackParamList, 'Send'>;
 
 export default function Send(props: SendAssetScreenNavigationProp) {
-    return (
-        <SendAssetContainer
-            symbol={props.route.params?.symbol}
-            name={props.route.params?.name}
-            account={props.route.params?.account}
-            icon={props.route.params?.icon}
-            navigation={props.navigation}
-            accountBalance={props.route.params?.accountBalance}
-        ></SendAssetContainer>
-    );
+    return <SendAssetContainer network={props.route.params.network} navigation={props.navigation}></SendAssetContainer>;
 }

@@ -8,12 +8,8 @@ export type ReceiveAssetScreenNavigationProp = NativeStackScreenProps<SelectAsse
 export default function Receive(props: ReceiveAssetScreenNavigationProp) {
     return (
         <ReceiveAssetContainer
-            symbol={props.route.params?.symbol}
-            name={props.route.params?.name}
-            account={props.route.params?.account}
-            icon={props.route.params?.icon}
+            network={props.route.params.network}
             navigation={props.navigation}
-            accountBalance={props.route.params?.accountBalance}
         ></ReceiveAssetContainer>
     );
 }

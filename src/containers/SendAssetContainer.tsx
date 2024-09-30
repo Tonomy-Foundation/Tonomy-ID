@@ -13,7 +13,7 @@ import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
 import QRScan from '../components/QRScan';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Images } from '../assets';
 import {
@@ -27,14 +27,11 @@ import { keyStorage } from '../utils/StorageManager/setup';
 import { ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
+import { getAssetDetails } from '../utils/assetDetails';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
-    symbol: string;
-    name: string;
-    account?: string;
-    icon?: ImageSourcePropType | undefined;
-    accountBalance: { balance: string; usdBalance: number };
+    network: string;
 };
 const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
@@ -43,6 +40,27 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const [disabled, setDisabled] = useState<boolean>(false);
     const refMessage = useRef(null);
     const errorStore = useErrorStore();
+
+    const [asset, setAsset] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAssetDetails = async () => {
+            const assetData = await getAssetDetails(props.network);
+            setAsset(assetData);
+            setLoading(false);
+        };
+        fetchAssetDetails();
+    }, [props.network]);
+
+    if (loading) {
+        return (
+            <View>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
     };
@@ -56,12 +74,12 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const getBalance = () => {
-        return props.accountBalance.balance.replace(props.symbol, '')?.trim();
+        return asset.balance.replace(asset.symbol, '')?.trim();
     };
 
     const handleMaxAmount = () => {
         onChangeAmount(getBalance());
-        onChangeUSDAmount(props.accountBalance.usdBalance.toString());
+        onChangeUSDAmount(asset.usdBalance.toString());
     };
 
     const getTransactionAmount = (currencySymbol, amount) => {
@@ -73,7 +91,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const handleSendTransaction = async () => {
-        if (props.symbol !== 'LEOS') {
+        if (asset.symbol !== 'LEOS') {
             if (!depositeAddress) {
                 errorStore.setError({
                     error: new Error('Transaction has no recipient'),
@@ -91,17 +109,17 @@ const SendAssetContainer = (props: SendAssetProps) => {
             setDisabled(true);
             const transactionData = {
                 to: depositeAddress,
-                from: props.account,
-                value: getTransactionAmount(props.symbol, Number(amount)),
+                from: asset.account,
+                value: getTransactionAmount(asset.symbol, Number(amount)),
             };
             let key, chain;
-            if (props.symbol === 'SepoliaETH') {
+            if (asset.symbol === 'SepoliaETH') {
                 chain = EthereumSepoliaChain;
                 key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-            } else if (props.symbol === 'ETH') {
+            } else if (asset.symbol === 'ETH') {
                 chain = EthereumMainnetChain;
                 key = await keyStorage.findByName('ethereum', chain);
-            } else if (props.symbol === 'MATIC') {
+            } else if (asset.symbol === 'MATIC') {
                 chain = EthereumPolygonChain;
                 key = await keyStorage.findByName('ethereumPolygon', chain);
             } else throw new Error('Unsupported chains');
@@ -173,8 +191,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.networkContainer}>
-                            <Image source={props.icon || Images.GetImage('logo1024')} style={styles.favicon} />
-                            <Text style={styles.networkName}>{props.name} network</Text>
+                            <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.favicon} />
+                            <Text style={styles.networkName}>{asset.network} network</Text>
                         </View>
                         <View>
                             <View style={styles.inputContainer}>
@@ -187,7 +205,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                 />
                                 <View style={{ flexDirection: 'row', gap: 8 }}>
                                     <TouchableOpacity style={styles.inputButton}>
-                                        <Text style={styles.currencyButtonText}>{props.symbol}</Text>
+                                        <Text style={styles.currencyButtonText}>{asset.symbol}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
                                         <Text style={styles.inputButtonText}>MAX</Text>

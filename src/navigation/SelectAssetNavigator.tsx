@@ -4,14 +4,14 @@ import SelectAssetScreen from '../screens/SelectAsset';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { TouchableOpacity } from 'react-native';
 import theme from '../utils/theme';
-import { AssetParamsScreen } from './Root';
+import { AssetsParamsScreen } from './Root';
 import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
 import { ArrowLeft } from 'iconoir-react-native';
 
 export type SelectAssetsStackParamList = {
     SelectAsset: { did?: string; screenTitle?: string; type: string };
-    Receive: AssetParamsScreen;
-    Send: AssetParamsScreen;
+    Receive: AssetsParamsScreen;
+    Send: AssetsParamsScreen;
     SignTransaction?: {
         transaction: ITransaction;
         privateKey: IPrivateKey;

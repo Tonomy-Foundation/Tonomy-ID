@@ -42,8 +42,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 debug('splash screen status: ', status);
 
-                const onboarding = await appStorage.findSettingByName('onboarding');
-                const haveOnboarding = onboarding?.value === 'false' ? false : true;
+                const haveOnboarding = await appStorage.getSplashOnboarding();
 
                 switch (status) {
                     case UserStatus.NONE:

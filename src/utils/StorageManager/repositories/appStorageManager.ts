@@ -30,19 +30,51 @@ export abstract class AppStorageManager {
         await this.repository.deleteAll();
     }
 
-    public async findSettingByName(name: string): Promise<AppStorage | null> {
-        return this.repository.findByName(name);
-    }
-
-    public async setAppSetting(name: string, value: string): Promise<void> {
-        const existingValue = await this.repository.findByName(name);
+    //-- Setting >> Developer Mode
+    public async setDeveloperMode(mode: boolean): Promise<void> {
+        const existingValue = await this.repository.findByName('developerMode');
         if (existingValue) {
-            existingValue.value = value;
+            existingValue.value = mode.toString();
             existingValue.updatedAt = new Date();
             await this.repository.updateSetting(existingValue);
         } else {
-            console.log(name, value);
-            await this.repository.addNewSetting(name, value);
+            await this.repository.addNewSetting('developerMode', mode.toString());
         }
+    }
+    public async getDeveloperMode(): Promise<boolean> {
+        const mode = await this.repository.findByName('developerMode');
+        return mode?.value === 'true' ? true : false;
+    }
+
+    //-- Splace Screen >> Onboarding
+    public async setSplashOnboarding(value: boolean): Promise<void> {
+        const existingValue = await this.repository.findByName('splashOnboarding');
+        if (existingValue) {
+            existingValue.value = value.toString();
+            existingValue.updatedAt = new Date();
+            await this.repository.updateSetting(existingValue);
+        } else {
+            await this.repository.addNewSetting('splashOnboarding', value.toString());
+        }
+    }
+    public async getSplashOnboarding(): Promise<boolean> {
+        const onboarding = await this.repository.findByName('splashOnboarding');
+        return onboarding?.value === 'false' ? false : true;
+    }
+
+    //-- Home >> App Instructions
+    public async setAppInstruction(value: boolean): Promise<void> {
+        const existingValue = await this.repository.findByName('appInstruction');
+        if (existingValue) {
+            existingValue.value = value.toString();
+            existingValue.updatedAt = new Date();
+            await this.repository.updateSetting(existingValue);
+        } else {
+            await this.repository.addNewSetting('appInstruction', value.toString());
+        }
+    }
+    public async getAppInstruction(): Promise<boolean> {
+        const instructions = await this.repository.findByName('appInstruction');
+        return instructions?.value === 'false' ? false : true;
     }
 }

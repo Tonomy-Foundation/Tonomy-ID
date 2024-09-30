@@ -21,13 +21,12 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
 
     const onToggleSwitch = async () => {
         setDeveloperMode(!developerMode);
-        await appStorage.setAppSetting('developerMode', !developerMode ? 'true' : 'false');
+        await appStorage.setDeveloperMode(!developerMode);
     };
 
     useEffect(() => {
         const fetchSettings = async () => {
-            const settings = await appStorage.findSettingByName('developerMode');
-            const developerMode = settings?.value === 'true' ? true : false;
+            const developerMode = await appStorage.getDeveloperMode();
             setDeveloperMode(developerMode);
         };
         fetchSettings();

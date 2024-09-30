@@ -202,7 +202,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                                 <LogOut height={20} width={20} color={theme.colors.grey9} style={styles.menuItemIcon} />
                             </View>
                             <View>
-                                <Text style={styles.menuItemText}>Logouts</Text>
+                                <Text style={styles.menuItemText}>Logout</Text>
                             </View>
                         </View>
                         <NavArrowRight width={25} height={30} color={theme.colors.grey9} />

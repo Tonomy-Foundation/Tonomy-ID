@@ -96,8 +96,7 @@ export default function AssetsContainer({
     useFocusEffect(
         useCallback(() => {
             const fetchSettings = async () => {
-                const settings = await appStorage.findSettingByName('developerMode');
-                const developerMode = settings?.value === 'true' ? true : false;
+                const developerMode = await appStorage.getDeveloperMode();
                 setDeveloperMode(developerMode);
             };
             fetchSettings();
@@ -339,7 +338,7 @@ export default function AssetsContainer({
                             <View style={styles.sendReceiveButtons}>
                                 <TouchableOpacity
                                     onPress={() =>
-                                        navigation.navigate('SelectAssetMain', {
+                                        navigation.navigate('AssetListing', {
                                             screen: 'SelectAsset',
                                             params: { did, type: 'send', screenTitle: 'Send' },
                                         })
@@ -353,7 +352,7 @@ export default function AssetsContainer({
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() =>
-                                        navigation.navigate('SelectAssetMain', {
+                                        navigation.navigate('AssetListing', {
                                             screen: 'SelectAsset',
                                             params: { did, type: 'receive', screenTitle: 'Receive' },
                                         })
@@ -389,11 +388,7 @@ export default function AssetsContainer({
                                             screen: 'AssetDetail',
                                             params: {
                                                 screenTitle: `${accountDetail.symbol}`,
-                                                accountBalance: {
-                                                    balance: `${pangeaBalance} LEOS`,
-                                                    usdBalance: Number(pangeaBalance * USD_CONVERSION),
-                                                },
-                                                ...accountDetail,
+                                                network: 'Pangea',
                                             },
                                         });
                                     }}
@@ -427,6 +422,7 @@ export default function AssetsContainer({
                                     const accountData = findAccountByChain(
                                         capitalizeFirstLetter(chainObj.chain.getName())
                                     );
+
                                     if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
                                         return null;
                                     }
@@ -434,21 +430,11 @@ export default function AssetsContainer({
                                         <TouchableOpacity
                                             key={index}
                                             onPress={() => {
-                                                const accountDetail = {
-                                                    symbol: chainObj.token.getSymbol(),
-                                                    name: capitalizeFirstLetter(chainObj.chain.getName()),
-                                                    icon: { uri: chainObj.token.getLogoUrl() },
-                                                    account: accountData.account || '',
-                                                    accountBalance: {
-                                                        balance: accountData.balance || '0',
-                                                        usdBalance: accountData.usdBalance || 0,
-                                                    },
-                                                };
                                                 navigation.navigate('AssetDetailMain', {
                                                     screen: 'AssetDetail',
                                                     params: {
                                                         screenTitle: `${chainObj.token.getSymbol()}`,
-                                                        ...accountDetail,
+                                                        network: capitalizeFirstLetter(chainObj.chain.getName()),
                                                     },
                                                 });
                                             }}

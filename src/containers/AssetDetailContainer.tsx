@@ -4,47 +4,62 @@ import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
+import { IToken } from '../utils/chain/types';
+import { getAssetDetails } from '../utils/assetDetails';
+import { useEffect, useState } from 'react';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
-    symbol: string;
-    name: string;
-    account?: string;
-    icon?: ImageSourcePropType | undefined;
-    accountBalance: { balance: string; usdBalance: number };
+    network: string;
 };
 const AssetDetailContainer = (props: AssetDetailProps) => {
+    const [asset, setAsset] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAssetDetails = async () => {
+            const assetData = await getAssetDetails(props.network);
+            setAsset(assetData);
+            setLoading(false);
+        };
+        fetchAssetDetails();
+    }, [props.network]);
+
+    if (loading) {
+        return (
+            <View>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.header}>
                         <View style={styles.networkHeading}>
-                            <Image source={props.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
+                            <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
                             <View style={styles.assetsNetwork}>
-                                <Text style={{ fontSize: 13 }}>{props.name}</Text>
+                                <Text style={{ fontSize: 13 }}>{asset.network}</Text>
                             </View>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <Text style={styles.headerAssetsAmount}>{`${props.accountBalance.balance}`}</Text>
-                            <Text style={styles.headerAssetUSDAmount}>${props.accountBalance.usdBalance} USD</Text>
+                            <Text style={styles.headerAssetsAmount}>{`${asset.balance}`}</Text>
+                            <Text style={styles.headerAssetUSDAmount}>${asset.usdBalance} USD</Text>
                         </View>
-                        {props.symbol === 'LEOS' && (
+                        {asset.symbol === 'LEOS' && (
                             <View style={styles.warning}>
                                 <Text>All LEOS is vested until the public sale</Text>
                             </View>
                         )}
                         <View style={styles.flexRow}>
-                            {props.symbol !== 'LEOS' && (
+                            {asset.symbol !== 'LEOS' && (
                                 <TouchableOpacity
                                     onPress={() =>
                                         props.navigation.navigate('Send', {
-                                            screenTitle: `Send ${props.symbol}`,
-                                            symbol: props.symbol,
-                                            name: props.name,
-                                            account: props.account,
-                                            icon: props.icon,
-                                            accountBalance: props.accountBalance,
+                                            screenTitle: `Send ${asset.symbol}`,
+                                            network: asset.network,
                                         })
                                     }
                                     style={styles.flexCenter}
@@ -58,12 +73,8 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                             <TouchableOpacity
                                 onPress={() =>
                                     props.navigation.navigate('Receive', {
-                                        screenTitle: `Receive ${props.symbol}`,
-                                        symbol: props.symbol,
-                                        name: props.name,
-                                        account: props.account,
-                                        icon: props.icon,
-                                        accountBalance: props.accountBalance,
+                                        screenTitle: `Receive ${asset.symbol}`,
+                                        network: asset.network,
                                     })
                                 }
                                 style={styles.flexCenter}
