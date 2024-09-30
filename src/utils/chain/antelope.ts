@@ -687,6 +687,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             bodyObject.tx_id = trxId;
             bodyObject.uid = uid;
 
+            // eslint-disable-next-line camelcase
             const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
 
             debug('approveTransactionRequest() callback', newCallback, bodyObject);
