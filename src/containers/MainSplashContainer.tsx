@@ -14,7 +14,6 @@ import { appStorage, connect } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/network';
-import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 

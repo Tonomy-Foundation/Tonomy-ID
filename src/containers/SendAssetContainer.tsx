@@ -84,7 +84,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     const getTransactionAmount = (currencySymbol, amount) => {
         if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
-            console.log(amount);
             return ethers.parseEther(amount.toString());
         }
         throw new Error('Unsupported currency symbol');

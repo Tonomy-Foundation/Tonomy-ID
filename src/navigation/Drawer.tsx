@@ -5,12 +5,14 @@ import CustomDrawer from '../components/CustomDrawer';
 import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
 import { SignClientTypes } from '@walletconnect/types';
-import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
+import { IPrivateKey, ITransaction, IChainSession } from '../utils/chain/types';
 import BottomTabNavigator from './BottomTabNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
 import { TouchableOpacity } from 'react-native';
 import MenuIcon from '../assets/icons/MenuIcon';
 import SupportScreen from '../screens/SupportScreen';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 export type DrawerStackParamList = {
     UserHome: { did?: string };
@@ -23,19 +25,20 @@ export type DrawerStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        session: ISession;
+        origin: string;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
+        session: IChainSession;
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform: 'mobile' | 'browser';
+        session: IChainSession;
     };
     CreateEthereumKey?: {
-        transaction?: {
-            transaction: ITransaction;
-            session: ISession;
-        };
-        payload?: SignClientTypes.EventArguments['session_proposal'];
+        transaction?: ITransaction;
+        payload?: Web3WalletTypes.SessionRequest | SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
+        session?: IChainSession;
     };
     BottomTabs: undefined;
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, Linking } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentSuccessScreen';
 import theme, { commonStyles } from '../utils/theme';
@@ -10,25 +10,28 @@ import { TH1 } from '../components/atoms/THeadings';
 import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
-import { formatDateTime } from '../utils/date';
-import useWalletStore from '../store/useWalletStore';
+import { ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import useErrorStore from '../store/errorStore';
+import { OperationData, Operations, TransactionFee } from '../components/Transaction';
+import TSpinner from '../components/atoms/TSpinner';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
-    transactionDetails,
+    operations,
+    transaction,
+    receipt,
 }: {
     navigation: Props['navigation'];
-    transactionDetails: {
-        transactionHash: string;
-        chainId: string;
-        toAccount: string;
-        shortAccountName: string;
-        fee: string;
-        usdFee: number;
-        total: string;
-        usdTotal: number;
-    };
+    operations: OperationData[];
+    transaction: ITransaction;
+    receipt: ITransactionReceipt;
 }) {
+    const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
+    const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
+    const [date, setDate] = useState<Date | null>(null);
+
+    const errorStore = useErrorStore();
+
     const backToHome = async () => {
         navigation.navigate({
             name: 'Assets',
@@ -37,21 +40,44 @@ export default function SignTransactionConsentSuccessContainer({
     };
 
     const viewBlockExplorer = () => {
-        let explorerUrl;
-        const chainId = transactionDetails.chainId;
-
-        if (chainId.toString() === '1') {
-            explorerUrl = `https://etherscan.io/tx/${transactionDetails.transactionHash}`;
-        } else if (chainId.toString() === '137') {
-            explorerUrl = `https://polygonscan.com/tx/${transactionDetails.transactionHash}`;
-        } else if (chainId.toString() === '11155111') {
-            explorerUrl = `https://sepolia.etherscan.io/tx/${transactionDetails.transactionHash}`;
-        } else {
-            throw new Error('Unknown network: Cannot redirect to block explorer');
-        }
+        const explorerUrl = receipt.getExplorerUrl();
 
         Linking.openURL(explorerUrl);
     };
+
+    useEffect(() => {
+        async function fetchTransactionDetail() {
+            try {
+                const date = await receipt.getTimestamp();
+
+                setDate(date);
+
+                const total = await transaction.estimateTransactionTotal();
+                const usdTotal = await total.getUsdValue();
+
+                const totalString = total.toString(4);
+                const usdTotalString = formatCurrencyValue(usdTotal);
+
+                setTotal({ total: totalString, totalUsd: usdTotalString });
+
+                const fee = await receipt.getFee();
+                const usdFee = await fee.getUsdValue();
+
+                const feeString = fee.toString(4);
+                const usdFeeString = formatCurrencyValue(usdFee);
+
+                setFee({ fee: feeString, usdFee: usdFeeString });
+            } catch (e) {
+                errorStore.setError({
+                    title: 'Error fetching total',
+                    error: e,
+                    expected: false,
+                });
+            }
+        }
+
+        fetchTransactionDetail();
+    }, [errorStore, receipt, transaction]);
 
     return (
         <LayoutComponent
@@ -62,35 +88,17 @@ export default function SignTransactionConsentSuccessContainer({
                         <View style={{ marginTop: 10, ...commonStyles.alignItemsCenter }}>
                             <TH1>Transaction successful</TH1>
                             <Text style={{ fontSize: 20 }}>
-                                {`${formatCurrencyValue(Number(transactionDetails?.total), 5)}`}
-                                <Text style={styles.secondaryColor}>
-                                    {` ($${formatCurrencyValue(Number(transactionDetails?.usdTotal.toFixed(4)), 3)})`}
-                                </Text>
+                                {total?.total}
+                                <Text style={styles.secondaryColor}>${total?.totalUsd}</Text>
                             </Text>
                         </View>
-                        <View style={styles.appDialog}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                                <Text style={styles.secondaryColor}>Date:</Text>
-                                <Text>{formatDateTime(new Date())}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={styles.secondaryColor}>Recipient:</Text>
-                                <Text>{transactionDetails?.shortAccountName}</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.appDialog}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={styles.secondaryColor}>Gas fee:</Text>
-                                <Text>
-                                    {formatCurrencyValue(Number(transactionDetails?.fee), 5)}
-                                    <Text style={styles.secondaryColor}>
-                                        ($
-                                        {formatCurrencyValue(Number(transactionDetails?.usdFee.toFixed(4)), 3)})
-                                    </Text>
-                                </Text>
-                            </View>
-                        </View>
+                        {date ? (
+                            <Operations operations={operations} date={date} />
+                        ) : (
+                            <Operations operations={operations} />
+                        )}
+                        {!fee && <TSpinner />}
+                        {fee && <TransactionFee transactionFee={fee} />}
                         <TButtonSecondaryContained
                             theme="secondary"
                             style={{ width: '100%', marginTop: 25 }}

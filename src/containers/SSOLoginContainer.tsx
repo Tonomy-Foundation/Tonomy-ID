@@ -21,6 +21,9 @@ import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();
@@ -136,21 +139,19 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 }
             );
 
+            setNextLoading(false);
+
             if (platform === 'mobile') {
-                setNextLoading(false);
                 if (typeof res !== 'string') throw new Error('Res is not string');
                 await Linking.openURL(res);
-                // @ts-expect-error item of type string is not assignable to type never
-                // TODO fix type error
-                navigation.navigate('Drawer', { screen: 'UserHome' });
-            } else {
-                setNextLoading(false);
-                // @ts-expect-error item of type string is not assignable to type never
-                // TODO fix type error
-                navigation.navigate('Drawer', { screen: 'UserHome' });
             }
+
+            // @ts-expect-error item of type string is not assignable to type never
+            // TODO fix type error
+            navigation.navigate('Drawer', { screen: 'UserHome' });
         } catch (e) {
             setCancelLoading(false);
+            debug('Error in cancel', e);
 
             if (
                 e instanceof CommunicationError &&
