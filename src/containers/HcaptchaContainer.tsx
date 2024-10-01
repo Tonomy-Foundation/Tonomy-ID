@@ -15,8 +15,8 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
-import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
+import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
@@ -33,7 +33,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const user = userStore.user;
     const siteKey = settings.config.captchaSiteKey;
     const { getPassphrase, unsetPassphraseList, unsetConfirmPassphraseWord } = usePassphraseStore();
-    const initializeWallet = useWalletStore((state) => state.initializeWalletState);
 
     const errorStore = useErrorStore();
     const [username, setUsername] = useState('');
@@ -92,7 +91,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             await user.saveLocal();
             await user.updateKeys(getPassphrase());
-            initializeWallet();
 
             unsetPassphraseList();
             unsetConfirmPassphraseWord();
@@ -115,7 +113,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             setAccountUrl(url);
         } catch (e) {
-            if (e instanceof SdkError) {
+            if (isNetworkError(e)) {
+                errorStore.setError(createNetworkErrorState());
+                setLoading(false);
+                return;
+            } else if (e instanceof SdkError) {
                 switch (e.code) {
                     case SdkErrors.UsernameTaken:
                         setShowUsernameErrorModal(true);

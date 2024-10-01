@@ -12,6 +12,7 @@ import useUserStore from '../store/userStore';
 import { TError } from '../components/TError';
 import useErrorStore from '../store/errorStore';
 import { formatUsername } from '../utils/username';
+import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
@@ -31,6 +32,11 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                 navigation.navigate('LoginPassphrase', { username: formattedUsername });
             else setErrorMessage('Username does not exist');
         } catch (error) {
+            if (isNetworkError(error)) {
+                setErrorMessage(NETWORK_ERROR_RESPONSE);
+                return;
+            }
+
             errorStore.setError({ error, expected: false });
         }
     };
@@ -76,6 +82,7 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
                         <TP size={1}>{"Don't have an account? "}</TP>
                         <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
                             <TP size={1} style={styles.link}>
+                                {' '}
                                 Sign up
                             </TP>
                         </TouchableOpacity>

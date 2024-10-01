@@ -22,7 +22,6 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setN
 
     async function onChangeWord(index: number, word: string) {
         setPassphrase((prev) => {
-            debug('prev', prev, index, word);
             const newPassphrase = [...prev];
 
             newPassphrase[index] = word;
