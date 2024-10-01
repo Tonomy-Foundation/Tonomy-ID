@@ -1,5 +1,6 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -379,13 +380,44 @@ export interface IChainSession {
     // initialize async object
 }
 
+type ESRTransactionRequest = {
+    chainId: IChain;
+    actions: Array<{
+        account: string;
+        name: string;
+        authorization: Array<{ actor: string; permission: string }>;
+        data: any;
+    }>;
+    signer?: string;
+    callback?: string;
+    request: ResolvedSigningRequest;
+};
+
+type EthereumTransactionRequest = {
+    chainId: number;
+    from: string;
+    to: string;
+    data?: string;
+    value?: string;
+    gas?: string;
+    gasPrice?: string;
+    nonce?: number;
+    type?: string;
+};
+
 export interface IRequestListener extends IChainSession {
     /**
      * Processes incoming transaction events
      * @param request The transaction request object.
      * @returns A boolean indicating if the transaction was successfully handled.
      */
-    onTransactionEvent(request: unknown): Promise<boolean>;
+    onTransactionEvent(request: ESRTransactionRequest | EthereumTransactionRequest): Promise<{
+        transaction: ITransaction; // Represents an Ethereum/ANtelope transaction
+        privateKey: IPrivateKey; // Represents an Ethereum/Antelope private key
+        origin: string; // The origin of the transaction request
+        request: ESRTransactionRequest | EthereumTransactionRequest; // The original Ethereum/antelope transaction request
+        session: IChainSession; // The WalletConnect/ESRTransactionRequest session object
+    }>;
 
     /**
      * Processes incoming session events.
