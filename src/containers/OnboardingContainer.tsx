@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { TButtonContained } from '../components/atoms/TButton';
@@ -45,7 +45,7 @@ export default function OnboardingContainer({ navigation }: { navigation: Props[
     ];
 
     const onFinish = async () => {
-        await appStorage.setSplashOnboarding(true);
+        await appStorage.setSplashOnboarding(false);
         navigation.dispatch(StackActions.replace('Home'));
     };
 
