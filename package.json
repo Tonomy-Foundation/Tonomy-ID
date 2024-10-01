@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.119.0",
+    "version": "0.120.0",
     "type": "commonjs",
     "scripts": {
         "eas-build-pre-install": "corepack enable",
@@ -38,7 +38,7 @@
         "@react-navigation/native": "^6.0.12",
         "@react-navigation/native-stack": "^6.8.0",
         "@sinonjs/text-encoding": "^0.7.2",
-        "@tonomy/tonomy-id-sdk": "0.22.0-development.1",
+        "@tonomy/tonomy-id-sdk": "0.22.0",
         "@veramo/core": "^6.0.0",
         "@walletconnect/core": "^2.13.0",
         "@walletconnect/react-native-compat": "^2.13.0",
