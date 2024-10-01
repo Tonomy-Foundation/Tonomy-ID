@@ -15,6 +15,9 @@ import {
     Asset,
     IChainSession,
     ChainType,
+    IAsset,
+    ExplorerOptions,
+    AbstractTransactionReceipt,
 } from './types';
 import {
     ABI,
@@ -38,6 +41,10 @@ import {
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
+import Debug from 'debug';
+import { createUrl, getQueryParam } from '../strings';
+
+const debug = Debug('tonomy-id:utils:chain:antelope');
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;
@@ -73,6 +80,41 @@ export type ActionData = {
     authorization: PermissionLevelType[];
     data: MapObject;
 };
+
+export class AntelopeTransactionReceipt extends AbstractTransactionReceipt {
+    private receipt: API.v1.PushTransactionResponse;
+    private transaction: SignedTransaction;
+
+    constructor(chain: AntelopeChain, receipt: API.v1.PushTransactionResponse, transaction: SignedTransaction) {
+        super(chain);
+        this.receipt = receipt;
+        this.transaction = transaction;
+    }
+
+    getTransactionHash(): string {
+        return this.receipt.transaction_id;
+    }
+
+    async getFee(): Promise<IAsset> {
+        return new Asset(this.getChain().getNativeToken(), 0n);
+    }
+
+    getExplorerUrl(): string {
+        return this.getChain().getExplorerUrl({ transactionHash: this.getTransactionHash() });
+    }
+
+    async getTimestamp(): Promise<Date> {
+        return new Date(this.receipt.processed.block_time);
+    }
+
+    getRawReceipt(): API.v1.PushTransactionResponse {
+        return this.receipt;
+    }
+
+    getRawTransaction(): SignedTransaction {
+        return this.transaction;
+    }
+}
 
 export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKey {
     private privateKey: PrivateKey;
@@ -137,13 +179,13 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         });
     }
 
-    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<API.v1.PushTransactionResponse> {
+    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
         const transaction = await this.signTransaction(data);
 
         try {
-            // const toPrint = data instanceof AntelopeTransaction ? await data.getData() : data;
-            // console.log('sendTransaction()', JSON.stringify(toPrint, null, 2));
-            return await this.chain.getApiClient().v1.chain.push_transaction(transaction);
+            const receipt = await this.chain.getApiClient().v1.chain.push_transaction(transaction);
+
+            return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
             console.error('sendTransaction()', JSON.stringify(error, null, 2));
             throw error;
@@ -159,14 +201,16 @@ export class AntelopeChain extends AbstractChain {
     protected chainType = ChainType.ANTELOPE;
     protected antelopeChainId: string;
     protected apiOrigin: string;
+    protected explorerOrigin: string;
     private apiClient: APIClient;
 
-    constructor(apiOrigin: string, name: string, antelopeChainId: string, logoUrl: string) {
+    constructor(apiOrigin: string, name: string, antelopeChainId: string, logoUrl: string, explorerOrigin: string) {
         const chainId = 'antelope-' + antelopeChainId;
 
         super(name, chainId, logoUrl);
         this.antelopeChainId = antelopeChainId;
         this.apiOrigin = apiOrigin;
+        this.explorerOrigin = explorerOrigin;
     }
 
     createKeyFromSeed(seed: string): AntelopePrivateKey {
@@ -201,6 +245,18 @@ export class AntelopeChain extends AbstractChain {
     formatShortAccountName(account: string): string {
         return account;
     }
+
+    getExplorerUrl(options?: ExplorerOptions): string {
+        if (options) {
+            if (options.transactionHash) {
+                return `${this.explorerOrigin}/transaction/${options.transactionHash}`;
+            } else if (options.accountName) {
+                return `${this.explorerOrigin}/account/${options.accountName}`;
+            }
+        }
+
+        return this.explorerOrigin;
+    }
 }
 
 export const LEOS_SEED_ROUND_PRICE = 0.002;
@@ -209,8 +265,6 @@ export const LEOS_PUBLIC_SALE_PRICE = 0.012;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
-    // @ts-expect-error chain overridden
-    // protected chain: AntelopeChain;
 
     constructor(
         chain: AntelopeChain,
@@ -225,8 +279,9 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     getChain(): AntelopeChain {
-        return this.chain;
+        return this.chain as AntelopeChain;
     }
+
     async getUsdPrice(): Promise<number> {
         switch (this.getChain().getName()) {
             case 'Pangea':
@@ -244,7 +299,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return AntelopeAccount.fromAccount(this.getChain(), 'eosio.token');
     }
 
-    async getBalance(account?: IAccount): Promise<Asset> {
+    async getBalance(account?: AntelopeAccount): Promise<Asset> {
         const contractAccount = this.getContractAccount();
 
         if (!contractAccount) throw new Error('Token has no contract account');
@@ -261,7 +316,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
             lookupAccount.getName(),
             this.getSymbol()
         );
-        const asset = assets.find((asset) => asset.symbol.code.equals(this.toAntelopeSymbol()));
+        const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, BigInt(0));
         return new Asset(this, BigInt(asset.units.value));
@@ -271,7 +326,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return AntelopeAsset.Symbol.fromParts(this.getSymbol(), this.getPrecision());
     }
 
-    async getUsdValue(account?: IAccount): Promise<number> {
+    async getUsdValue(account?: AntelopeAccount): Promise<number> {
         const balance = await this.getBalance(account);
 
         return balance.getUsdValue();
@@ -279,17 +334,21 @@ export class AntelopeToken extends AbstractToken implements IToken {
 }
 
 const PangeaMainnetChain = new AntelopeChain(
+    // 'https://blockchain-api.pangea.web4.world',
     'https://pangea.eosusa.io',
     'Pangea',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true'
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    'https://explorer.pangea.web4.world'
 );
 
 const PangeaTestnetChain = new AntelopeChain(
-    'https://pangea.test.eosusa.io',
+    // 'https://blockchain-api-testnet.pangea.web4.world',
+    'https://test.pangea.eosusa.io',
     'Pangea Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true'
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    'https://explorer.testnet.pangea.web4.world'
 );
 
 const LEOSToken = new AntelopeToken(
@@ -314,7 +373,8 @@ const EOSJungleChain = new AntelopeChain(
     'https://jungle4.cryptolions.io',
     'EOS Jungle Testnet',
     '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
-    'https://jungle3.bloks.io/img/chains/jungle.png'
+    'https://jungle3.bloks.io/img/chains/jungle.png',
+    'https://jungle3.bloks.io'
 );
 const EOSJungleToken = new AntelopeToken(
     EOSJungleChain,
@@ -360,9 +420,7 @@ export class AntelopeAction implements IOperation {
             this.action.name.toString() === 'transfer' &&
             this.action.data.to &&
             this.action.data.from &&
-            this.action.data.quantity &&
-            this.action.data.memo &&
-            this.action.account.toString() === this.chain.getNativeToken().getContractAccount()?.getName().toString()
+            this.action.data.quantity
         ) {
             return TransactionType.TRANSFER;
         } else {
@@ -386,12 +444,23 @@ export class AntelopeAction implements IOperation {
         }
     }
     async getArguments(): Promise<Record<string, string>> {
-        return this.action.data;
+        const data = this.action.data;
+        const args: Record<string, string> = {};
+
+        for (const key in data) {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                const value = data[key];
+
+                args[key] = value.toString();
+            }
+        }
+
+        return args;
     }
     async getFunction(): Promise<string> {
         return this.action.name.toString();
     }
-    async getValue(): Promise<Asset> {
+    async getValue(): Promise<IAsset> {
         // TODO: need to also handle token transfers on other contracts
 
         if ((await this.getType()) === TransactionType.TRANSFER) {
@@ -404,7 +473,7 @@ export class AntelopeAction implements IOperation {
     }
 }
 
-function getAssetFromQuantity(quantity: string, chain: AntelopeChain): Asset {
+function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const name = quantity.split(' ')[1];
     const symbol = name;
     const precision = quantity.split(' ')[0].split('.')[1].length;
@@ -537,12 +606,12 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         return this.privateKey.signTransaction(data);
     }
 
-    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<API.v1.PushTransactionResponse> {
+    async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }
 
-        return this.privateKey.sendTransaction(data);
+        return await this.privateKey.sendTransaction(data);
     }
 
     async isContract(): Promise<boolean> {
@@ -574,7 +643,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
     }
 }
 
-export class ESRSession implements IChainSession {
+export class AntelopeSigningRequestSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
     private antelopeKey: AntelopePrivateKey;
@@ -599,19 +668,40 @@ export class ESRSession implements IChainSession {
         return transaction;
     }
 
-    async approveTransactionRequest(signingRequest: ResolvedSigningRequest, signedTransaction): Promise<void> {
-        const callbackParams = signingRequest.getCallback(signedTransaction.signatures, 0);
+    async approveTransactionRequest(
+        request: ResolvedSigningRequest,
+        receipt: AntelopeTransactionReceipt
+    ): Promise<void> {
+        const signedTransaction = receipt.getRawTransaction();
+        const trxId = receipt.getTransactionHash();
+        // @ts-expect-error signatures type mismatch
+        const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
         if (callbackParams) {
-            const response = await fetch(callbackParams.url, {
+            const uid = getQueryParam(callbackParams.url, 'uid');
+
+            const bodyObject = callbackParams.payload;
+
+            bodyObject.tx = trxId;
+            // eslint-disable-next-line camelcase
+            bodyObject.tx_id = trxId;
+            bodyObject.uid = uid;
+
+            // eslint-disable-next-line camelcase
+            const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
+
+            debug('approveTransactionRequest() callback', newCallback, bodyObject);
+            const response = await fetch(newCallback, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(callbackParams?.payload),
+                body: JSON.stringify(bodyObject),
             });
 
-            if (!response.ok) {
+            debug('approveTransactionRequest() response status', response.status);
+
+            if (!response.ok || response.status !== 200) {
                 console.error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
         }
@@ -639,4 +729,9 @@ export class ESRSession implements IChainSession {
             throw new Error('No origin found in callback URL');
         }
     }
+}
+
+export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
+    if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Antelope chain not supported');
+    return ANTELOPE_CHAIN_ID_TO_CHAIN[chainId];
 }

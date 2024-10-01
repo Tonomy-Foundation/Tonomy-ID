@@ -47,19 +47,17 @@ import zlib from 'pako';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import * as SecureStore from 'expo-secure-store';
 import {
-    ActionData,
-    ANTELOPE_CHAIN_ID_TO_CHAIN,
     AntelopeAccount,
     AntelopeChain,
     AntelopePrivateKey,
     AntelopeTransaction,
-    EOSJungleChain,
-    ESRSession,
-    LEOS_PUBLIC_SALE_PRICE,
+    AntelopeSigningRequestSession,
+    LEOS_SEED_ROUND_PRICE,
+    getChainFromAntelopeChainId,
 } from '../utils/chain/antelope';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { IToken } from '../utils/chain/types';
-import { isNetworkError } from '../utils/errors';
+import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 import TSpinner from '../components/atoms/TSpinner';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
@@ -198,6 +196,8 @@ export default function MainContainer({
     }, [setUserName, did, onUrlOpen]);
 
     async function onScan({ data }: BarCodeScannerResult) {
+        debug('onScan() data:', data);
+
         try {
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
@@ -206,22 +206,38 @@ export default function MainContainer({
                 async function createMockSigningRequest() {
                     return await SigningRequest.create(
                         {
-                            action: {
-                                account: 'eosio.token',
-                                name: 'transfer',
-                                authorization: [
-                                    {
-                                        actor: 'jacktest2222',
-                                        permission: 'active',
+                            actions: [
+                                {
+                                    account: 'eosio.token',
+                                    name: 'transfer',
+                                    authorization: [
+                                        {
+                                            actor: 'jacktest2222',
+                                            permission: 'active',
+                                        },
+                                    ],
+                                    data: {
+                                        from: 'jacktest2222',
+                                        to: 'hippopotamus',
+                                        quantity: '1.0000 EOS',
+                                        memo: '',
                                     },
-                                ],
-                                data: {
-                                    from: 'jacktest2222',
-                                    to: 'hippopotamus',
-                                    quantity: '1.0000 EOS',
-                                    memo: '',
                                 },
-                            },
+                                // {
+                                //     account: 'eosio.token',
+                                //     name: 'close',
+                                //     authorization: [
+                                //         {
+                                //             actor: 'jacktest2222',
+                                //             permission: 'active',
+                                //         },
+                                //     ],
+                                //     data: {
+                                //         owner: 'jacktest2222',
+                                //         symbol: '4,EOS',
+                                //     },
+                                // },
+                            ],
                             callback: 'https://tonomy.io',
                             chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
                         },
@@ -236,13 +252,12 @@ export default function MainContainer({
                     );
                 }
 
-                const request = await createMockSigningRequest();
-                const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
-                // const signingRequestBasic = SigningRequest.from(data, { zlib });
+                // const request = await createMockSigningRequest();
+                // const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
+                const signingRequestBasic = SigningRequest.from(data, { zlib });
 
-                const chain: AntelopeChain = ANTELOPE_CHAIN_ID_TO_CHAIN[signingRequestBasic.getChainId().toString()];
+                const chain: AntelopeChain = getChainFromAntelopeChainId(signingRequestBasic.getChainId().toString());
 
-                if (!chain) throw new Error('This chain is not supported');
                 const client = new APIClient({ url: chain.getApiOrigin() });
 
                 // Define the options used when decoding/resolving the request
@@ -252,11 +267,10 @@ export default function MainContainer({
                 };
 
                 // Decode a signing request payload
-                const signingRequest = SigningRequest.from(data, options);
+                const signingRequest = SigningRequest.from(signingRequestBasic.toString(), options);
 
                 const isIdentity = signingRequest.isIdentity();
                 const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
-                // const privateKey = '5Hw7gAxYHruqAtwBcVjFUHS79A2A4QmVL2ModVgdhE12NpCpLdr';
                 const abis = await signingRequest.fetchAbis();
 
                 if (!privateKey) throw new Error('No private key found');
@@ -281,13 +295,15 @@ export default function MainContainer({
                     data: action.data,
                 }));
 
-                const account = AntelopeAccount.fromAccount(EOSJungleChain, 'jacktest2222');
-                const transaction = AntelopeTransaction.fromActions(actions, EOSJungleChain, account);
-                const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), EOSJungleChain);
-                const session = new ESRSession(antelopeKey, chain);
+                const account = AntelopeAccount.fromAccount(chain, (await user.getAccountName()).toString());
+                const transaction = AntelopeTransaction.fromActions(actions, chain, account);
+                const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), chain);
+                const session = new AntelopeSigningRequestSession(antelopeKey, chain);
 
                 const callback = resolvedSigningRequest.request.data.callback;
                 const origin = new URL(callback).origin;
+
+                debug('onScan() transaction:', transaction.getChain().getChainType());
 
                 if (!isIdentity) {
                     navigation.navigate('SignTransaction', {
@@ -337,7 +353,7 @@ export default function MainContainer({
                 debug('onScan() network error');
                 errorStore.setError({
                     title: 'Network Error',
-                    error: new Error('Check your connection, and try again.'),
+                    error: new Error(NETWORK_ERROR_RESPONSE),
                     expected: true,
                 });
             } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
@@ -567,7 +583,7 @@ export default function MainContainer({
                                                     <Text style={styles.secondaryColor}>
                                                         $
                                                         {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
+                                                            ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
                                                             : 0.0}
                                                     </Text>
                                                 </View>
