@@ -40,6 +40,7 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
 
 const debug = Debug('tonomy-id:navigation:root');
+
 import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt, TransactionType } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
@@ -166,21 +167,7 @@ export default function RootNavigation() {
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
                     <Stack.Screen name="Onboarding" options={noHeaderScreenOptions} component={OnboardingScreen} />
-                    <Stack.Screen
-                        name="SplashSecurity"
-                        options={noHeaderScreenOptions}
-                        component={SplashSecurityScreen}
-                    />
-                    <Stack.Screen
-                        name="SplashPrivacy"
-                        options={noHeaderScreenOptions}
-                        component={SplashPrivacyScreen}
-                    />
-                    <Stack.Screen
-                        name="SplashTransparency"
-                        options={noHeaderScreenOptions}
-                        component={SplashTransparencyScreen}
-                    />
+
                     <Stack.Screen
                         name="TermsAndCondition"
                         options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}

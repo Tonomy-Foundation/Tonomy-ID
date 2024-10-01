@@ -18,7 +18,9 @@ export type SelectAssetsStackParamList = {
         session: ISession | null;
     };
 };
+
 const SelectAssetStack = createNativeStackNavigator<SelectAssetsStackParamList>();
+
 export const SelectAssetNavigator = () => {
     const defaultScreenOptions: NativeStackNavigationOptions = {
         headerTitleStyle: {
@@ -29,6 +31,7 @@ export const SelectAssetNavigator = () => {
         headerTitleAlign: 'center',
         headerTintColor: theme.dark ? theme.colors.text : 'black',
     };
+
     return (
         <SelectAssetStack.Navigator screenOptions={defaultScreenOptions} initialRouteName="SelectAsset">
             <SelectAssetStack.Screen
