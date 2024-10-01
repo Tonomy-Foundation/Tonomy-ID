@@ -332,4 +332,43 @@ export interface IChainSession {
     approveTransactionRequest(request: unknown, transaction?: unknown): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;
+
+    //TODO remove these comments
+    // Event Listeners
+    // for antelope esr:// (return false if isIdentity request Type)
+    // for ethereum send the event:
+    //handle deep linking
+    //handle qr scanning
+
+    // (all handle login nd signing requests)
+    // initialize async object
+}
+
+export interface IRequestListener extends IChainSession {
+    /**
+     * Processes incoming transaction events
+     * @param request The transaction request object.
+     * @returns A boolean indicating if the transaction was successfully handled.
+     */
+    onTransactionEvent(request: unknown): Promise<boolean>;
+
+    /**
+     * Processes incoming session events.
+     * @param event The session event object.
+     */
+    onSessionEvent(event: unknown): void;
+
+    /**
+     * Handles deep linking
+     * @param url The deep link URL.
+     * @returns A boolean indicating if the transaction was successfully handled.
+     */
+    handleDeepLinking(url: string): Promise<boolean>;
+
+    /**
+     * Handles QR scanning events and parsing.
+     * @param scannedData The scanned QR code data.
+     *  @returns A boolean indicating if the transaction was successfully handled.
+     */
+    handleQrScanning(scannedData: string): Promise<boolean>;
 }
