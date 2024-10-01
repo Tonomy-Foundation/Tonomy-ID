@@ -394,14 +394,12 @@ type ESRTransactionRequest = {
 };
 
 type EthereumTransactionRequest = {
-    chainId: number;
+    chainId: IChain;
     from: string;
     to: string;
     data?: string;
     value?: string;
     gas?: string;
-    gasPrice?: string;
-    nonce?: number;
     type?: string;
 };
 
