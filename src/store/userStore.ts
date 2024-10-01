@@ -15,6 +15,7 @@ import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
+import { appStorage } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -53,7 +54,17 @@ const useUserStore = create<UserState>((set, get) => ({
 
         debug('getStatus() storageStatus', storageStatus);
 
-        if (storageStatus) {
+        const isOnboarding = await appStorage.getSplashOnboarding();
+
+        if (!isOnboarding) {
+            const status = UserStatus.NOT_LOGGED_IN;
+
+            if (storageStatus === status || get().status === status) {
+                set({ status: UserStatus.NONE });
+            }
+
+            return UserStatus.NONE;
+        } else if (storageStatus) {
             const userStatus = storageStatus as UserStatus;
 
             set({ status: userStatus });

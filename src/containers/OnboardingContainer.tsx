@@ -45,7 +45,7 @@ export default function OnboardingContainer({ navigation }: { navigation: Props[
     ];
 
     const onFinish = async () => {
-        await appStorage.setSplashOnboarding(false);
+        await appStorage.setSplashOnboarding(true);
         navigation.dispatch(StackActions.replace('Home'));
     };
 
