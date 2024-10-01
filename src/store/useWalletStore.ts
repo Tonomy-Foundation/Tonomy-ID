@@ -215,8 +215,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         const { ethereumAccount, sepoliaAccount, polygonAccount } = get();
 
-        debug('updateBalance() Updating account balance');
-
         if (ethereumAccount && sepoliaAccount && polygonAccount) {
             await connect();
             await Promise.all(

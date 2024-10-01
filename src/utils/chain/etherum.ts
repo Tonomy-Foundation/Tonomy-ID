@@ -24,27 +24,27 @@ import {
     IPrivateKey,
     Asset,
     IChainSession,
+    IOperation,
+    ExplorerOptions,
+    AbstractTransactionReceipt,
+    IAsset,
+    ChainType,
 } from './types';
 import settings from '../../settings';
-import { SignClientTypes } from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { getPriceCoinGecko } from './common';
+import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
-
-export const USD_CONVERSION = 0.002;
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
 const INFURA_KEY = settings.config.infuraKey;
 
-export async function getPrice(token: string, currency: string): Promise<number> {
-    const res = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
-    ).then((res) => res.json());
-
-    return res?.ethereum?.usd;
-}
+export const USD_CONVERSION = 0.002;
 
 export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
     async getAddress(): Promise<string> {
@@ -80,30 +80,25 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
         return this.wallet.populateTransaction(transaction);
     }
 
-    async sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse> {
-        return this.wallet.sendTransaction(transaction);
+    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
+        const receipt = await this.wallet.sendTransaction(transaction);
+
+        return new EthereumTransactionReceipt(this.chain, receipt);
     }
 }
 
 export class EthereumChain extends AbstractChain {
+    protected chainType = ChainType.ETHEREUM;
+    // See https://chainlist.org/ for Chain IDs
     protected infuraUrl: string;
-    protected name: string;
-    protected chainId: string;
-    protected logoUrl: string;
-    protected nativeToken: IToken;
+    protected explorerOrigin: string;
     private provider: JsonRpcProvider;
 
-    constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string) {
-        super();
+    constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string, explorerOrigin: string) {
+        super(name, chainId, logoUrl);
         this.infuraUrl = infuraUrl;
-        this.name = name;
-        this.chainId = chainId;
-        this.logoUrl = logoUrl;
         this.provider = new JsonRpcProvider(this.infuraUrl);
-    }
-
-    addToken(token: IToken): void {
-        this.nativeToken = token;
+        this.explorerOrigin = explorerOrigin;
     }
 
     createKeyFromSeed(seed: string): IPrivateKey {
@@ -120,17 +115,24 @@ export class EthereumChain extends AbstractChain {
         return `${account?.substring(0, 7)}...${account?.substring(account.length - 6)}`;
     }
 
-    public getProvider(): JsonRpcProvider {
+    getProvider(): JsonRpcProvider {
         return this.provider;
+    }
+
+    getExplorerUrl(options?: ExplorerOptions): string {
+        if (options) {
+            if (options.transactionHash) {
+                return `${this.explorerOrigin}/tx/${options.transactionHash}`;
+            } else if (options.accountName) {
+                return `${this.explorerOrigin}/address/${options.accountName}`;
+            }
+        }
+
+        return this.explorerOrigin;
     }
 }
 
 export class EthereumToken extends AbstractToken {
-    protected name: string;
-    protected symbol: string;
-    protected precision: number;
-    protected chain: EthereumChain;
-    protected logoUrl: string;
     protected coinmarketCapId: string;
 
     constructor(
@@ -141,17 +143,12 @@ export class EthereumToken extends AbstractToken {
         logoUrl: string,
         coinmarketCapId: string
     ) {
-        super();
-        this.name = name;
-        this.symbol = symbol;
-        this.precision = precision;
-        this.logoUrl = logoUrl;
+        super(name, symbol, precision, chain, logoUrl);
         this.coinmarketCapId = coinmarketCapId;
-        this.chain = chain;
     }
 
     async getUsdPrice(): Promise<number> {
-        return await getPrice(this.coinmarketCapId, 'usd');
+        return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
@@ -159,15 +156,15 @@ export class EthereumToken extends AbstractToken {
     async getBalance(account?: IAccount): Promise<Asset> {
         const lookupAccount: IAccount =
             account ||
-            this.account ||
+            this.getAccount() ||
             (() => {
                 throw new Error('Account not found');
             })();
 
-        debug('getBalance() lookupAccount', lookupAccount.getChain().getName(), lookupAccount.getName());
-        const balanceWei = await this.chain.getProvider().getBalance(lookupAccount.getName() || '');
+        debug('getBalance() lookupAccount', lookupAccount.getName());
+        const balanceWei = await (this.chain as EthereumChain).getProvider().getBalance(lookupAccount.getName() || '');
 
-        debug('getBalance() balance', lookupAccount.getChain().getName(), balanceWei);
+        debug('getBalance() balance', balanceWei);
 
         return new Asset(this, balanceWei);
     }
@@ -183,20 +180,23 @@ const EthereumMainnetChain = new EthereumChain(
     `https://mainnet.infura.io/v3/${INFURA_KEY}`,
     'Ethereum',
     '1',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png'
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    'https://etherscan.io'
 );
 const EthereumSepoliaChain = new EthereumChain(
     `https://sepolia.infura.io/v3/${INFURA_KEY}`,
     'sepolia',
     '11155111',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png'
+    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    'https://sepolia.etherscan.io'
 );
 
 const EthereumPolygonChain = new EthereumChain(
     `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
     'Polygon',
     '137',
-    'https://cryptologos.cc/logos/polygon-matic-logo.png'
+    'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    'https://polygonscan.com'
 );
 
 const ETHToken = new EthereumToken(
@@ -225,9 +225,9 @@ const ETHPolygonToken = new EthereumToken(
     'polygon'
 );
 
-EthereumMainnetChain.addToken(ETHToken);
-EthereumSepoliaChain.addToken(ETHSepoliaToken);
-EthereumPolygonChain.addToken(ETHPolygonToken);
+EthereumMainnetChain.setNativeToken(ETHToken);
+EthereumSepoliaChain.setNativeToken(ETHSepoliaToken);
+EthereumPolygonChain.setNativeToken(ETHPolygonToken);
 
 export { EthereumMainnetChain, EthereumSepoliaChain, EthereumPolygonChain, ETHToken, ETHSepoliaToken, ETHPolygonToken };
 
@@ -236,7 +236,6 @@ export class EthereumTransaction implements ITransaction {
     private type?: TransactionType;
     private abi?: string;
     protected chain: EthereumChain;
-    protected session: EthereumChainSession;
 
     constructor(transaction: TransactionRequest, chain: EthereumChain) {
         this.transaction = transaction;
@@ -256,29 +255,29 @@ export class EthereumTransaction implements ITransaction {
 
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
-        const isContract = await this.getTo().isContract();
+        const isContract = await (await this.getTo()).isContract();
         const isValuable = (await this.getValue()).getAmount() > BigInt(0);
 
         if (isContract && this.transaction.data) {
             if (isValuable) {
-                this.type = TransactionType.both;
+                this.type = TransactionType.BOTH;
             } else {
-                this.type = TransactionType.contract;
+                this.type = TransactionType.CONTRACT;
             }
         } else {
-            this.type = TransactionType.transfer;
+            this.type = TransactionType.TRANSFER;
         }
 
         return this.type;
     }
-    getFrom(): EthereumAccount {
+    async getFrom(): Promise<EthereumAccount> {
         if (!this.transaction.from) {
             throw new Error('Transaction has no sender');
         }
 
         return new EthereumAccount(this.chain, this.transaction.from.toString());
     }
-    getTo(): EthereumAccount {
+    async getTo(): Promise<EthereumAccount> {
         if (!this.transaction.to) {
             throw new Error('Transaction has no recipient');
         }
@@ -286,13 +285,15 @@ export class EthereumTransaction implements ITransaction {
         return new EthereumAccount(this.chain, this.transaction.to.toString());
     }
     async fetchAbi(): Promise<string> {
-        if ((await this.getType()) === TransactionType.transfer) {
+        if ((await this.getType()) === TransactionType.TRANSFER) {
             throw new Error('Not a contract call');
         }
 
         if (this.abi) return this.abi;
         // fetch the ABI from etherscan
-        const res = await fetch(`${ETHERSCAN_URL}&module=contract&action=getabi&address=${this.getTo().getName()}`)
+        const res = await fetch(
+            `${ETHERSCAN_URL}&module=contract&action=getabi&address=${(await this.getTo()).getName()}`
+        )
             .then((res) => res.json())
             .then((data) => data.result);
 
@@ -322,6 +323,7 @@ export class EthereumTransaction implements ITransaction {
         return decodedData.args;
     }
     async getValue(): Promise<Asset> {
+        // TODO: also need to handle other tokens
         return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
     }
 
@@ -350,23 +352,80 @@ export class EthereumTransaction implements ITransaction {
         return new Asset(this.chain.getNativeToken(), amount);
     }
 
-    async getData(): Promise<string> {
-        return this.transaction.data || '';
+    async getData(): Promise<TransactionRequest> {
+        return this.transaction;
+    }
+
+    hasMultipleOperations(): boolean {
+        return false;
+    }
+
+    async getOperations(): Promise<IOperation[]> {
+        throw new Error(
+            'Ethereum transactions have no operations, call getTo() and other functions on EthereumTransaction instead'
+        );
+    }
+}
+
+export class EthereumTransactionReceipt extends AbstractTransactionReceipt {
+    private receipt: TransactionResponse;
+
+    constructor(chain: EthereumChain, receipt: TransactionResponse) {
+        super(chain);
+        this.receipt = receipt;
+    }
+
+    getTransactionHash(): string {
+        return this.receipt.hash;
+    }
+
+    getExplorerUrl(): string {
+        return this.chain.getExplorerUrl({ transactionHash: this.getTransactionHash() });
+    }
+
+    async getFee(): Promise<IAsset> {
+        const receipt = await this.receipt.wait();
+
+        if (!receipt) throw new Error('Failed to fetch receipt');
+        return new Asset(this.chain.getNativeToken(), receipt.fee);
+    }
+
+    async getTimestamp(): Promise<Date> {
+        const receipt = await this.receipt.wait();
+        const provider = (this.chain as EthereumChain).getProvider();
+
+        if (!receipt) throw new Error('Failed to fetch receipt');
+        const block = await provider.getBlock(receipt?.blockNumber);
+
+        if (!block) throw new Error('Failed to fetch block');
+
+        return new Date(block.timestamp * 1000);
+    }
+
+    getRawReceipt(): TransactionResponse {
+        return this.receipt;
     }
 }
 
 export class EthereumAccount extends AbstractAccount {
     private privateKey?: EthereumPrivateKey;
-    protected name: string;
-    protected did: string;
-    protected chain: EthereumChain;
+
+    private static getDidChainName(chain: EthereumChain): string {
+        switch (chain.getChainId()) {
+            case '1':
+                return 'mainnet';
+            case '5':
+                return 'goerli';
+            default:
+                return '0x' + chain.getChainId();
+        }
+    }
 
     constructor(chain: EthereumChain, address: string, privateKey?: EthereumPrivateKey) {
-        super();
+        const did = `did:ethr:${EthereumAccount.getDidChainName(chain)}:${address}`;
+
+        super(address, did, chain);
         this.privateKey = privateKey;
-        this.name = address;
-        this.chain = chain;
-        const did = `did:ethr:${address}`; // needs to be different for different chains
 
         this.did = did;
     }
@@ -401,11 +460,7 @@ export class EthereumAccount extends AbstractAccount {
         return this.privateKey.signTransaction(transaction);
     }
 
-    async sendSignedTransaction(signedTransaction: string): Promise<TransactionReceipt> {
-        return this.chain.getProvider().send('eth_sendRawTransaction', [signedTransaction]);
-    }
-
-    async sendTransaction(transaction: TransactionRequest): Promise<TransactionResponse> {
+    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }
@@ -415,7 +470,7 @@ export class EthereumAccount extends AbstractAccount {
 
     async isContract(): Promise<boolean> {
         try {
-            const code = await this.chain.getProvider().getCode(this.name);
+            const code = await (this.chain as EthereumChain).getProvider().getCode(this.name);
 
             if (code !== '0x') return true;
         } catch (error) {
@@ -426,32 +481,76 @@ export class EthereumAccount extends AbstractAccount {
     }
 }
 
-export class EthereumChainSession implements IChainSession {
-    private payload: SignClientTypes.EventArguments['session_proposal'];
-    private chain: EthereumChain;
+export class WalletConnectSession implements IChainSession {
+    private wallet: IWeb3Wallet;
+    private namespaces: SessionTypes.Namespaces;
+    private accounts: EthereumAccount[];
 
-    constructor(payload: SignClientTypes.EventArguments['session_proposal'], chain: EthereumChain) {
-        this.payload = payload;
-        this.chain = chain;
+    constructor(wallet: IWeb3Wallet) {
+        this.wallet = wallet;
     }
 
-    getId(): number {
-        return this.payload.id;
+    setNamespaces(namespaces: SessionTypes.Namespaces): void {
+        this.namespaces = namespaces;
     }
 
-    getName(): string {
-        return this.payload.params.proposer.metadata.name;
+    getNamespaces(): SessionTypes.Namespaces {
+        return this.namespaces;
     }
 
-    getUrl(): string {
-        return this.payload.params.proposer.metadata.url;
+    setActiveAccounts(accounts: EthereumAccount[]): void {
+        this.accounts = accounts;
     }
 
-    getIcons(): string | null {
-        if (this.payload.params.proposer.metadata.icons?.length > 0) {
-            return this.payload.params.proposer.metadata.icons[0];
-        }
+    async getActiveAccounts(): Promise<EthereumAccount[]> {
+        return this.accounts;
+    }
 
-        return null;
+    async createSession(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet.approveSession({
+            id: request.id,
+            namespaces: this.getNamespaces(),
+        });
+    }
+
+    async cancelSessionRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet.rejectSession({
+            id: request.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
+    }
+
+    async createTransactionRequest(transaction: EthereumTransaction): Promise<TransactionRequest> {
+        const transactionRequest: TransactionRequest = {
+            to: (await transaction.getTo()).getName(),
+            from: (await transaction.getFrom()).getName(),
+            value: (await transaction.getValue()).getAmount(),
+            data: (await transaction.getData()).data,
+        };
+
+        return transactionRequest;
+    }
+
+    async approveTransactionRequest(
+        request: Web3WalletTypes.SessionRequest,
+        receipt: EthereumTransactionReceipt
+    ): Promise<void> {
+        const signedTransaction = receipt.getRawReceipt();
+        const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
+
+        await this.wallet.respondSessionRequest({ topic: request.topic, response });
+    }
+
+    async rejectTransactionRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
+        const response = {
+            id: request.id,
+            error: getSdkError('USER_REJECTED'),
+            jsonrpc: '2.0',
+        };
+
+        await this.wallet.respondSessionRequest({
+            topic: request.topic,
+            response,
+        });
     }
 }

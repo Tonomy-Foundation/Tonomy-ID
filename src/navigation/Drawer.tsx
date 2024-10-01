@@ -5,7 +5,9 @@ import MainScreen from '../screens/MainScreen';
 import SettingsNavigation from './Settings';
 import { useAppTheme } from '../utils/theme';
 import { SignClientTypes } from '@walletconnect/types';
-import { IPrivateKey, ISession, ITransaction } from '../utils/chain/types';
+import { IChainSession, IPrivateKey, ITransaction } from '../utils/chain/types';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 export type DrawerStackParamList = {
     UserHome: { did?: string };
@@ -17,19 +19,20 @@ export type DrawerStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        session: ISession;
+        origin: string;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
+        session: IChainSession;
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform: 'mobile' | 'browser';
+        session: IChainSession;
     };
     CreateEthereumKey?: {
-        transaction?: {
-            transaction: ITransaction;
-            session: ISession;
-        };
-        payload?: SignClientTypes.EventArguments['session_proposal'];
+        transaction?: ITransaction;
+        payload?: Web3WalletTypes.SessionRequest | SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
+        session?: IChainSession;
     };
 };
 

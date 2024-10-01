@@ -32,8 +32,11 @@ import SignTransactionConsentScreen from '../screens/SignTransactionConsentScree
 import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import { IPrivateKey, ISession, ITransaction, TransactionType } from '../utils/chain/types';
+import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt, TransactionType } from '../utils/chain/types';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
+import { OperationData } from '../components/Transaction';
 
 const prefix = Linking.createURL('');
 
@@ -66,31 +69,25 @@ export type RouteStackParamList = {
     SignTransaction: {
         transaction: ITransaction;
         privateKey: IPrivateKey;
-        session: ISession;
+        origin: string;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
+        session: IChainSession;
     };
     SignTransactionSuccess: {
-        transactionDetails: {
-            chainId: string;
-            transactionHash: string;
-            toAccount: string;
-            shortAccountName: string;
-            fee: string;
-            usdFee: number;
-            total: string;
-            usdTotal: number;
-        };
+        operations: OperationData[];
+        transaction: ITransaction;
+        receipt: ITransactionReceipt;
     };
     WalletConnectLogin: {
         payload: SignClientTypes.EventArguments['session_proposal'];
         platform?: 'mobile' | 'browser';
+        session: IChainSession;
     };
     CreateEthereumKey?: {
-        transaction?: {
-            transaction: ITransaction;
-            session: ISession;
-        };
-        payload?: SignClientTypes.EventArguments['session_proposal'];
+        transaction?: ITransaction;
+        payload?: Web3WalletTypes.SessionRequest | SignClientTypes.EventArguments['session_proposal'];
         requestType?: string;
+        session?: IChainSession;
     };
 };
 
