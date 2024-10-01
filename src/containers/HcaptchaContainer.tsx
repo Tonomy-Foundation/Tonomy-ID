@@ -5,7 +5,7 @@ import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Checkbox, ActivityIndicator } from 'react-native-paper';
-import { TButtonContained, TButtonText } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/HcaptchaScreen';
 import settings from '../settings';
@@ -13,10 +13,10 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
-import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
-import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
+import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
@@ -154,7 +154,13 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
-    const onPressCheckbox = () => {
+    const onPressCheckbox = async () => {
+        const netInfoState = await NetInfo.fetch();
+
+        if (!netInfoState.isConnected) {
+            throw new Error(NETWORK_ERROR_MESSAGE);
+        }
+
         setSuccess(!success);
         setLoading(true);
 
@@ -237,11 +243,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     </View>
                 }
             ></LayoutComponent>
-            <TErrorModal
+            <TModal
                 visible={showUsernameErrorModal}
                 onPress={onUsernameErrorModalPress}
                 title="Please choose another username"
-                expected={true}
             >
                 <View>
                     <Text>
@@ -249,7 +254,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         Please choose another one.
                     </Text>
                 </View>
-            </TErrorModal>
+            </TModal>
             <TModal
                 visible={showModal}
                 icon="check"
