@@ -158,7 +158,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         const netInfoState = await NetInfo.fetch();
 
         if (!netInfoState.isConnected) {
-            throw new Error(NETWORK_ERROR_MESSAGE);
+            errorStore.setError(createNetworkErrorState());
+            return;
         }
 
         setSuccess(!success);
