@@ -19,9 +19,11 @@ export type AccountItemProps = {
     account?: string;
     testnet?: boolean;
 };
+
 const AssetItem = (props: AccountItemProps) => {
     const handleOnPress = async () => {
         console.log(props.networkName);
+
         if (props.type === 'receive') {
             props.navigation.navigate('Receive', {
                 screenTitle: `Receive ${props.currency}`,
@@ -34,6 +36,8 @@ const AssetItem = (props: AccountItemProps) => {
             });
         }
     };
+
+    console.log(props.accountBalance.balance);
     return (
         <TouchableOpacity style={styles.assetsView} onPress={handleOnPress}>
             <Image
@@ -45,7 +49,7 @@ const AssetItem = (props: AccountItemProps) => {
                     <View style={styles.flexRowCenter}>
                         <Text style={{ fontSize: 16 }}>{props.currency}</Text>
                         <View style={styles.assetsNetwork}>
-                            <Text style={{ fontSize: 13 }}>{props.networkName}</Text>
+                            <Text style={{ fontSize: 12 }}>{props.networkName}</Text>
                         </View>
                     </View>
                     {props?.testnet === true && !props.leos && (
@@ -62,9 +66,9 @@ const AssetItem = (props: AccountItemProps) => {
                     )}
                 </View>
                 <View style={styles.flexColEnd}>
-                    {/* <View style={styles.rowCenter}>
-                        <Text style={{ fontSize: 16 }}>{getBalance() || 0}</Text>
-                    </View> */}
+                    <View style={styles.rowCenter}>
+                        <Text style={{ fontSize: 16 }}>{props.accountBalance.balance}</Text>
+                    </View>
                     <Text style={styles.secondaryColor}>
                         ${formatCurrencyValue(Number(props.accountBalance.usdBalance), 3)}
                     </Text>
@@ -78,7 +82,8 @@ const styles = StyleSheet.create({
     assetsView: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 6,
+        marginBottom: 4,
     },
     favicon: {
         width: 20,
@@ -108,7 +113,7 @@ const styles = StyleSheet.create({
     },
     flexRowCenter: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 3,
         alignItems: 'center',
     },
     flexColEnd: {

@@ -7,11 +7,5 @@ import { RouteStackParamList } from '../navigation/Root';
 export type SelectAssetScreenNavigationProp = NativeStackScreenProps<RouteStackParamList, 'SelectAsset'>;
 
 export default function SelectAsset(props: SelectAssetScreenNavigationProp) {
-    return (
-        <SelectAssetContainer
-            did={props.route.params?.did}
-            type={props.route.params?.type}
-            navigation={props.navigation}
-        ></SelectAssetContainer>
-    );
+    return <SelectAssetContainer type={props.route.params?.type} navigation={props.navigation}></SelectAssetContainer>;
 }

@@ -122,7 +122,7 @@ export type RouteStackParamList = {
     AssetDetail: AssetsParamsScreen;
     Receive: AssetsParamsScreen;
     Send: AssetsParamsScreen;
-    SelectAsset: { did?: string; screenTitle?: string; type: string };
+    SelectAsset: { screenTitle?: string; type: string };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();

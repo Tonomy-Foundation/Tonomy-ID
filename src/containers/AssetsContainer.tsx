@@ -22,7 +22,6 @@ import TSpinner from '../components/atoms/TSpinner';
 import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
-import { formatCurrencyValue } from '../utils/numbers';
 import {
     EthereumChain,
     EthereumMainnetChain,
@@ -38,7 +37,7 @@ import { AssetsScreenNavigationProp } from '../screens/Assets';
 import useWalletStore from '../store/useWalletStore';
 //import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
-
+import { formatCurrencyValue } from '../utils/numbers';
 import AssetsSummary from '../components/AssetsSummary';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { IToken } from '../utils/chain/types';
@@ -162,7 +161,7 @@ export default function AssetsContainer({
                     account = {
                         network: capitalizeFirstLetter(chainObj.chain.getName()),
                         accountName: null,
-                        balance: '0' + chainObj.token.getSymbol(),
+                        balance: '0',
                         usdBalance: 0,
                     };
                 }
@@ -240,10 +239,6 @@ export default function AssetsContainer({
         const account = accountExists?.accountName;
 
         return { account, balance, usdBalance };
-    };
-
-    const formatAssetBalance = (balance) => {
-        return balance.split(' ')[0];
     };
 
     const MainView = () => {
@@ -387,7 +382,7 @@ export default function AssetsContainer({
                                                         <View style={styles.flexColEnd}>
                                                             <View style={styles.flexRowCenter}>
                                                                 <Text style={{ fontSize: 15 }}>
-                                                                    {formatAssetBalance(accountData.balance)}
+                                                                    {accountData.balance}
                                                                 </Text>
                                                             </View>
                                                             <Text style={styles.secondaryColor}>
