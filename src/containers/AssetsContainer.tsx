@@ -92,6 +92,7 @@ export default function AssetsContainer({
     }));
 
     const [developerMode, setDeveloperMode] = React.useState(true);
+    const [total, setTotal] = useState<number>(0);
 
     useFocusEffect(
         useCallback(() => {
@@ -240,10 +241,10 @@ export default function AssetsContainer({
                         usdBalance: 0,
                     };
                 }
+
                 setAccounts((prevAccounts) => {
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
-
                     if (index !== -1) {
                         // Update the existing asset
                         const updatedAccounts = [...prevAccounts];
@@ -306,6 +307,14 @@ export default function AssetsContainer({
         }
     }, [accountDetails]);
 
+    useEffect(() => {
+        const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
+            return previousValue + currentValue.usdBalance;
+        }, 0);
+        const totalPangeaUSDBalance = pangeaBalance * USD_CONVERSION;
+        setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
+    }, [accounts, pangeaBalance]);
+
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
         const balance = accountExists?.balance;
@@ -334,7 +343,7 @@ export default function AssetsContainer({
                         refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
                     >
                         <View style={styles.header}>
-                            <Text style={styles.headerAssetsAmount}>$0.00</Text>
+                            <Text style={styles.headerAssetsAmount}>{`$${total.toFixed(2)}`}</Text>
                             <View style={styles.sendReceiveButtons}>
                                 <TouchableOpacity
                                     onPress={() =>

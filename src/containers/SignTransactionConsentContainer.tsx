@@ -169,7 +169,7 @@ export default function SignTransactionConsentContainer({
         setTransactionLoading(true);
         await session.rejectTransactionRequest(request);
         setTransactionLoading(false);
-        navigation.navigate({ name: 'UserHome', params: {} });
+        navigation.navigate({ name: 'Assets', params: {} });
     }
 
     async function onAccept() {

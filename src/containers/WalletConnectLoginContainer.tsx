@@ -45,7 +45,7 @@ export default function WalletConnectLoginContainer({
     const onCancel = async () => {
         await session.cancelSessionRequest(payload);
         navigation.navigate({
-            name: 'UserHome',
+            name: 'Assets',
             params: {},
         });
     };
@@ -54,14 +54,14 @@ export default function WalletConnectLoginContainer({
         try {
             await session.createSession(payload);
             navigation.navigate({
-                name: 'UserHome',
+                name: 'Assets',
                 params: {},
             });
         } catch (e) {
             await session.cancelSessionRequest(payload);
 
             navigation.navigate({
-                name: 'UserHome',
+                name: 'Assets',
                 params: {},
             });
             errorStore.setError({ title: 'Error', error: e, expected: false });

@@ -28,6 +28,7 @@ import { ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
 import { getAssetDetails } from '../utils/assetDetails';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -64,6 +65,24 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
     };
+    const handlePaste = async () => {
+        const content = await Clipboard.getString();
+        if (isValidCryptoAddress(content)) {
+            onChangeAddress(content);
+        } else {
+            onChangeAddress('');
+            errorStore.setError({
+                error: new Error('Invalid address!'),
+                expected: true,
+            });
+        }
+    };
+
+    const isValidCryptoAddress = (input) => {
+        const regex = /^0x[a-fA-F0-9]{40}$/;
+        return regex.test(input);
+    };
+
     const onClose = () => {
         (refMessage.current as any)?.close();
     };
@@ -184,10 +203,14 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                 placeholderTextColor={theme.colors.tabGray}
                                 onChangeText={onChangeAddress}
                             />
-                            <TouchableOpacity style={styles.inputButton} onPress={handleOpenQRScan}>
-                                <Text style={styles.inputButtonText}>Paste</Text>
-                                <ScanIcon color={theme.colors.success} width={18} height={18} />
-                            </TouchableOpacity>
+                            <View style={{ flexDirection: 'row', gap: 8 }}>
+                                <TouchableOpacity style={styles.inputButton} onPress={handlePaste}>
+                                    <Text style={styles.inputButtonText}>Paste</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.inputButton} onPress={handleOpenQRScan}>
+                                    <ScanIcon color={theme.colors.success} width={18} height={18} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                         <View style={styles.networkContainer}>
                             <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.favicon} />

@@ -15,6 +15,9 @@ import MenuIcon from '../assets/icons/MenuIcon';
 
 import ScanQRScreen from '../screens/ScanQRScreen';
 import { ArrowLeft, Community, Compass, GridPlus, Wallet } from 'iconoir-react-native';
+import { IChainSession, IPrivateKey, ITransaction } from '../utils/chain/types';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export type RouteStackParamList = {
     UserHome: { did?: string };
@@ -24,6 +27,13 @@ export type RouteStackParamList = {
     Scan: undefined;
     Apps: undefined;
     ScanQR: undefined;
+    SignTransaction: {
+        transaction: ITransaction;
+        privateKey: IPrivateKey;
+        origin: string;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
+        session: IChainSession | null;
+    };
 };
 
 const Tab = createBottomTabNavigator<RouteStackParamList>();

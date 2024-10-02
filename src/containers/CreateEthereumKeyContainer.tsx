@@ -155,10 +155,10 @@ export default function CreateEthereumKeyContainer({
                         origin: verifyContext?.verified?.origin,
                     });
                 } else {
-                    navigation.navigate({ name: 'UserHome', params: {} });
+                    navigation.navigate({ name: 'Assets', params: {} });
                 }
             } else {
-                navigation.navigate({ name: 'UserHome', params: {} });
+                navigation.navigate({ name: 'Assets', params: {} });
             }
         } else {
             errorsStore.setError({
