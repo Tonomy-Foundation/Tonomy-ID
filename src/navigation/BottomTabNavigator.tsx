@@ -31,7 +31,7 @@ export type RouteStackParamList = {
         transaction: ITransaction;
         privateKey: IPrivateKey;
         origin: string;
-        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
         session: IChainSession | null;
     };
 };
@@ -39,6 +39,7 @@ export type RouteStackParamList = {
 const Tab = createBottomTabNavigator<RouteStackParamList>();
 
 type ScanTabBarButtonProps = BottomTabBarButtonProps;
+
 const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }) => {
     return (
         <>
@@ -65,6 +66,7 @@ type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'Citizenship'>
 function BottomTabNavigator() {
     const theme = useAppTheme();
     const navigation = useNavigation<DrawerNavigation>();
+
     return (
         <Tab.Navigator
             initialRouteName="Citizenship"

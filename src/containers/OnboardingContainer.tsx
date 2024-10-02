@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { TButtonContained } from '../components/atoms/TButton';

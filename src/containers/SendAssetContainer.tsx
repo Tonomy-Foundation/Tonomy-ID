@@ -1,4 +1,13 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    Image,
+    ImageSourcePropType,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import { SendAssetScreenNavigationProp } from '../screens/Send';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
@@ -144,6 +153,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     transaction,
                     privateKey: key,
                     session: null,
+                    origin: '',
+                    request: null,
                 });
             }
         }

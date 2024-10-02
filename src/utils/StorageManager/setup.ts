@@ -4,7 +4,7 @@ import { AppStorage } from './entities/appSettings';
 import * as ExpoSQLiteDriver from 'expo-sqlite';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
-import { AppStorageRepository } from './repositories/appSettingRepository';
+import { AppStorageRepository } from './repositories/appStorageRepository';
 import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';

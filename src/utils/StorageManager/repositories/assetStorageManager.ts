@@ -22,7 +22,7 @@ export abstract class AssetStorageManager {
         const symbol = token.getSymbol();
         const name = token.getChain().getName() + '-' + symbol;
 
-        await this.repository.createAsset(name, value.getName(), symbol);
+        await this.repository.createAsset(name, value.getName());
     }
     public async updateAccountBalance(asset: IAsset): Promise<void> {
         const name = asset.getToken().getChain().getName() + '-' + asset.getToken().getSymbol();
@@ -43,7 +43,7 @@ export abstract class AssetStorageManager {
                 debug(`updateAccountBalance() error fetching ${name} usd balance`, error);
             }
 
-            existingAsset.balance = balance;
+            existingAsset.balance = balance.split(' ')[0];
             existingAsset.updatedAt = new Date();
             await this.repository.updateAccountBalance(existingAsset);
         } else {
