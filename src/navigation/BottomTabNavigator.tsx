@@ -1,39 +1,24 @@
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useRef } from 'react';
-
+import React from 'react';
 import AppsScreen from '../screens/Apps';
 import CitizenshipScreen from '../screens/Citizenship';
 import AssetsScreen from '../screens/Assets';
 import ExploreScreen from '../screens/Explore';
-
 import theme, { useAppTheme } from '../utils/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ScanIcon from '../assets/icons/ScanIcon';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import MenuIcon from '../assets/icons/MenuIcon';
-
 import ScanQRScreen from '../screens/ScanQRScreen';
 import { ArrowLeft, Community, Compass, GridPlus, Wallet } from 'iconoir-react-native';
-import { IChainSession, IPrivateKey, ITransaction } from '../utils/chain/types';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
-import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export type RouteStackParamList = {
-    UserHome: { did?: string };
     Citizenship: undefined;
-    Assets: { did?: string };
+    Assets: undefined;
     Explore: undefined;
-    Scan: undefined;
     Apps: undefined;
     ScanQR: undefined;
-    SignTransaction: {
-        transaction: ITransaction;
-        privateKey: IPrivateKey;
-        origin: string;
-        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
-        session: IChainSession | null;
-    };
 };
 
 const Tab = createBottomTabNavigator<RouteStackParamList>();
@@ -139,7 +124,7 @@ function BottomTabNavigator() {
                     headerLeft: () => (
                         <TouchableOpacity
                             style={{ paddingHorizontal: 5, paddingVertical: 10 }}
-                            onPress={() => navigation.navigate('Assets', {})}
+                            onPress={() => navigation.navigate('Assets')}
                         >
                             <ArrowLeft height={24} width={24} color={theme.colors.black} />
                         </TouchableOpacity>

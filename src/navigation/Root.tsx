@@ -102,7 +102,7 @@ export type RouteStackParamList = {
     };
     BottomTabs: undefined;
 
-    Assets: { did?: string };
+    Assets: undefined;
     AssetListing: {
         screen: string;
         params?: {
@@ -265,7 +265,6 @@ export default function RootNavigation() {
                             component={CreateEthereumKeyScreen}
                             initialParams={{}}
                         />
-
                         <Stack.Screen
                             name="AssetDetail"
                             options={({ route }) => ({

@@ -9,16 +9,13 @@ import {
     ScrollView,
     RefreshControl,
 } from 'react-native';
-import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonOutlined } from '../components/atoms/TButton';
 import { TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import useErrorStore from '../store/errorStore';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import TSpinner from '../components/atoms/TSpinner';
-
 import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
@@ -34,15 +31,11 @@ import {
 import AccountDetails from '../components/AccountDetails';
 import { AssetsScreenNavigationProp } from '../screens/Assets';
 import useWalletStore from '../store/useWalletStore';
-//import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
-
 import { formatCurrencyValue } from '../utils/numbers';
-
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
-import { progressiveRetryOnNetworkError } from '../utils/network';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
@@ -56,28 +49,19 @@ interface AccountDetails {
     icon?: ImageSourcePropType | undefined;
 }
 
-export default function AssetsContainer({
-    did,
-    navigation,
-}: {
-    did?: string;
-    navigation: AssetsScreenNavigationProp['navigation'];
-}) {
+export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const userStore = useUserStore();
     const user = userStore.user;
-    const [username, setUsername] = useState('');
-    const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
     const [pangeaBalance, setPangeaBalance] = useState(0);
     const [accountName, setAccountName] = useState('');
-    const errorStore = useErrorStore();
     const [refreshBalance, setRefreshBalance] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
         address: '',
     });
-    const { accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
+    const { accountExists, initializeWalletAccount } = useWalletStore();
     const refMessage = useRef(null);
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
@@ -111,13 +95,6 @@ export default function AssetsContainer({
         []
     );
 
-    // initializeWalletState() on mount with progressiveRetryOnNetworkError()
-    useEffect(() => {
-        if (!initialized) {
-            progressiveRetryOnNetworkError(initializeWalletState);
-        }
-    }, [initializeWalletState, initialized]);
-
     const updateLeosBalance = useCallback(async () => {
         try {
             debug('updateLeosBalance() fetching LEOS balance');
@@ -139,6 +116,9 @@ export default function AssetsContainer({
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
             if (!accountExists) await initializeWalletAccount();
             await connect();
 
@@ -167,6 +147,7 @@ export default function AssetsContainer({
                 setAccounts((prevAccounts) => {
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
+
                     if (index !== -1) {
                         // Update the existing asset
                         const updatedAccounts = [...prevAccounts];
@@ -182,7 +163,7 @@ export default function AssetsContainer({
         } catch (error) {
             debug('fetchCryptoAssets() error', error);
         }
-    }, [accountExists, initializeWalletAccount, chains]);
+    }, [accountExists, initializeWalletAccount, chains, user]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -234,6 +215,7 @@ export default function AssetsContainer({
             return previousValue + currentValue.usdBalance;
         }, 0);
         const totalPangeaUSDBalance = pangeaBalance * USD_CONVERSION;
+
         setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
     }, [accounts, pangeaBalance]);
 
