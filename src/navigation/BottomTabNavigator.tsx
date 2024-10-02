@@ -1,7 +1,7 @@
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import AppsScreen from '../screens/Apps';
-import CitizenshipScreen from '../screens/Citizenship';
+import CitizenshipScreen from '../screens/CitizenshipScreen';
 import AssetListingScreen from '../screens/AssetListingScreen';
 import ExploreScreen from '../screens/Explore';
 import theme, { useAppTheme } from '../utils/theme';
