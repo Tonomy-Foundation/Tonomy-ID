@@ -386,7 +386,7 @@ export default function AssetsContainer({
                                                     {accountData.account ? (
                                                         <View style={styles.flexColEnd}>
                                                             <View style={styles.flexRowCenter}>
-                                                                <Text style={{ fontSize: 16 }}>
+                                                                <Text style={{ fontSize: 15 }}>
                                                                     {formatAssetBalance(accountData.balance)}
                                                                 </Text>
                                                             </View>
