@@ -1,10 +1,9 @@
-import { Props } from '../screens/CitizenshipScreen';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import theme from '../utils/theme';
 import useUserStore from '../store/userStore';
 
-export default function CitizenshipContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function CitizenshipContainer() {
     const userStore = useUserStore();
     const user = userStore.user;
 
@@ -58,7 +57,7 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         </Text>
                     </View>
                     <View style={styles.identityImage}>
-                        <Image source={require('../assets/images/citizenship-banner.png')} />
+                        <Image source={require('../assets/images/citizenship-identity-image.png')} />
                     </View>
                 </View>
                 <Text style={styles.subTitle}>Pangea is your ticket to digital worlds available now</Text>
