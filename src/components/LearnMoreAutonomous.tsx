@@ -15,7 +15,7 @@ const LearnMoreAutonomous = (props: QRScanProps) => {
             ref={props.refMessage}
             openDuration={150}
             closeDuration={100}
-            height={750}
+            height={650}
             customStyles={{ container: { borderTopStartRadius: 8, borderTopEndRadius: 8 } }}
         >
             <View style={styles.rawTransactionDrawer}>
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
     },
     drawerHead: {
-        fontSize: 20,
+        fontSize: 19,
         fontWeight: '600',
         marginTop: 8,
     },

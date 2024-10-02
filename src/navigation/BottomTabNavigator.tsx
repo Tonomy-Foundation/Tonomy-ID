@@ -3,7 +3,7 @@ import React from 'react';
 import AppsScreen from '../screens/AppsScreen';
 import CitizenshipScreen from '../screens/CitizenshipScreen';
 import AssetListingScreen from '../screens/AssetListingScreen';
-import ExploreScreen from '../screens/Explore';
+import ExploreScreen from '../screens/ExploreScreen';
 import theme, { useAppTheme } from '../utils/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ScanIcon from '../assets/icons/ScanIcon';
