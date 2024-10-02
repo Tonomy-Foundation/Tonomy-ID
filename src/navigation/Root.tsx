@@ -292,7 +292,10 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SelectAsset"
-                            options={{ headerBackTitleVisible: false, title: 'Select Asset' }}
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'Select Asset',
+                            })}
                             component={SelectAsset}
                         />
                     </Stack.Navigator>
