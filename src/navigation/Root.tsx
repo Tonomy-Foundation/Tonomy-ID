@@ -4,9 +4,6 @@ import HomeScreen from '../screens/HomeScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import MainSplashScreen from '../screens/MainSplashScreen';
-import SplashSecurityScreen from '../screens/SplashSecurityScreen';
-import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
-import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 import DrawerNavigation from './Drawer';
@@ -34,23 +31,17 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import ReceiveScreen from '../screens/Receive';
 import SendScreen from '../screens/Send';
-
-import { SelectAssetNavigator } from './SelectAssetNavigator';
-import { AssetDetailNavigator } from './AssetDetailNavigator';
-
-import OnboardingScreen from '../screens/OnboardingScreen';
-import AppInstructionModal from '../components/AppInstructionModal';
-
-const debug = Debug('tonomy-id:navigation:root');
-
-import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt, TransactionType } from '../utils/chain/types';
+import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import { OperationData } from '../components/Transaction';
 import AssetDetail from '../screens/AssetDetail';
-import Send from '../screens/Send';
 import SelectAsset from '../screens/SelectAsset';
+import OnboardingScreen from '../screens/OnboardingScreen';
+import AppInstructionModal from '../components/AppInstructionModal';
+
+const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
