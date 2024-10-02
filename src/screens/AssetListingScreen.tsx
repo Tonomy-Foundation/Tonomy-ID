@@ -5,6 +5,6 @@ import { RouteStackParamList } from '../navigation/Root';
 
 export type AssetsScreenNavigationProp = NativeStackScreenProps<RouteStackParamList, 'Assets'>;
 
-export default function Assets(props: AssetsScreenNavigationProp) {
+export default function AssetListingScreen(props: AssetsScreenNavigationProp) {
     return <AssetsContainer navigation={props.navigation}></AssetsContainer>;
 }

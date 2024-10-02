@@ -2,7 +2,7 @@ import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-naviga
 import React from 'react';
 import AppsScreen from '../screens/Apps';
 import CitizenshipScreen from '../screens/Citizenship';
-import AssetsScreen from '../screens/Assets';
+import AssetListingScreen from '../screens/AssetListingScreen';
 import ExploreScreen from '../screens/Explore';
 import theme, { useAppTheme } from '../utils/theme';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -102,7 +102,7 @@ function BottomTabNavigator() {
             />
             <Tab.Screen
                 name="Assets"
-                component={AssetsScreen}
+                component={AssetListingScreen}
                 options={{
                     tabBarLabel: ({ focused }) => (
                         <Text

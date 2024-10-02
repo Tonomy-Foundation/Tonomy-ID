@@ -29,7 +29,7 @@ import {
     USD_CONVERSION,
 } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
-import { AssetsScreenNavigationProp } from '../screens/Assets';
+import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
