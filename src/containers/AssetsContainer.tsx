@@ -382,7 +382,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                                                     navigation.navigate('CreateEthereumKey');
                                                                 }}
                                                             >
-                                                                <Text style={{ fontSize: 14 }}>Not connected</Text>
+                                                                <Text style={{ fontSize: 13 }}>Not connected</Text>
                                                                 <Text style={styles.generateKey}>Generate key</Text>
                                                             </TouchableOpacity>
                                                         </View>
@@ -496,8 +496,8 @@ const styles = StyleSheet.create({
         color: theme.colors.secondary2,
     },
     favicon: {
-        width: 28,
-        height: 28,
+        width: 26,
+        height: 26,
         marginRight: 4,
     },
     accountsView: {
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 8,
-        padding: 14,
+        padding: 12,
     },
     assetsNetwork: {
         backgroundColor: theme.colors.grey7,
@@ -565,6 +565,7 @@ const styles = StyleSheet.create({
     },
     generateKey: {
         color: theme.colors.blue,
-        fontSize: 13,
+        fontSize: 11,
+        textAlign: 'right',
     },
 });
