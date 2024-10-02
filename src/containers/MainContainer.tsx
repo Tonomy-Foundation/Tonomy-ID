@@ -33,7 +33,6 @@ import {
     ETHPolygonToken,
     ETHSepoliaToken,
     ETHToken,
-    USD_CONVERSION,
 } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { MainScreenNavigationProp } from '../screens/MainScreen';
