@@ -1,10 +1,9 @@
-import { Image, ImageSourcePropType, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AssetDetailScreenNavigationProp } from '../screens/AssetDetail';
 import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { IToken } from '../utils/chain/types';
 import { getAssetDetails } from '../utils/assetDetails';
 import { useEffect, useState } from 'react';
 

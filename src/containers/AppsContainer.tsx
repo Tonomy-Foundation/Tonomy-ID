@@ -3,129 +3,108 @@ import { Props } from '../screens/Apps';
 import theme from '../utils/theme';
 import { openURL } from 'expo-linking';
 import { OpenNewWindow } from 'iconoir-react-native';
+const availableAppsData = [
+    {
+        id: 1,
+        image: require('../assets/images/sales-platform.png'),
+        title: 'LEOS Sales platform',
+        description:
+            'Invest in Pangea, purchase LEOS tokens easily. LEOS customers are protected under Europe’s MICA regulation.',
+        url: 'http://sales.pangea.web4.world',
+        isAvailable: true,
+    },
+    {
+        id: 2,
+        image: require('../assets/images/pangea-block-explorer.png'),
+        title: 'Pangea Developers Features Demo',
+        description: 'Search, view, and track your Pangea Blockchain transactions and activities in real-time.',
 
+        url: 'http://sales.pangea.web4.world',
+        isAvailable: true,
+    },
+    {
+        id: 3,
+        image: require('../assets/images/pangea-block-explorer.png'),
+        title: 'Pangea Block Explorer',
+        description:
+            'A website to demonstrate the flows and features available to developers in Pangea. See the  0.5s block time, easy data signing flows and simplified non-custodial crypto management.',
+        url: 'http://sales.pangea.web4.world',
+        isAvailable: true,
+    },
+    {
+        id: 4,
+        image: require('../assets/images/pangean-bankless.png'),
+        title: 'Pangea Bankless',
+        description:
+            'Manage your LEOS tokens as easily as any neo-banking application. Full control without compromise.',
+        url: 'http://sales.pangea.web4.world',
+        isAvailable: false,
+    },
+    {
+        id: 5,
+        image: require('../assets/images/pangea-dao.png'),
+        title: 'Pangea DAO',
+        description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
+        url: 'http://sales.pangea.web4.world',
+        isAvailable: false,
+    },
+    {
+        id: 6,
+        image: require('../assets/images/pangea-gov.png'),
+        title: 'Pangea Gov+',
+        description: 'Participate in the liquid democracy governance of the Pangea ecosystem.',
+        url: 'http://sales.pangea.web4.world',
+        isAvailable: false,
+    },
+    {
+        id: 7,
+        image: require('../assets/images/pangea-build.png'),
+        title: 'Pangea Build',
+        description:
+            'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
+        url: 'http://sales.pangea.web4.world',
+        isAvailable: false,
+    },
+];
 export default function AppsContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent}>
                 <View style={styles.flexColumn}>
                     <Text style={styles.headingText}>Available now</Text>
-                    <View style={styles.pangeaApp}>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/sales-platform.png')} />
-                            <TouchableOpacity
-                                style={styles.appWebUrl}
-                                onPress={() => openURL('http://sales.pangea.web4.world')}
-                            >
-                                <Text style={styles.visitAppWebUrl}>sales.pangea.web4.world</Text>
-                                <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={styles.pangeaAppHead}>LEOS Sales platform</Text>
-                        <Text style={styles.pangeaAppNotes}>
-                            Invest in Pangea, purchase LEOS tokens easily. LEOS customers are protected under Europe’s
-                            MICA regulation.
-                        </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.appButton}>Visit app</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.pangeaApp}>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/pangea-block-explorer.png')} />
-                            <TouchableOpacity
-                                style={styles.appWebUrl}
-                                onPress={() => Linking.openURL('http://demo.pangea.web4.world')}
-                            >
-                                <Text style={styles.visitAppWebUrl}>demo.pangea.web4.world</Text>
-                                <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={styles.pangeaAppHead}>Pangea Developers Features Demo</Text>
-                        <Text style={styles.pangeaAppNotes}>
-                            Search, view, and track your Pangea Blockchain transactions and activities in real-time.
-                        </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.appButton}>Visit app</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.pangeaApp}>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/pangea-block-explorer.png')} />
-                            <TouchableOpacity
-                                style={styles.appWebUrl}
-                                onPress={() => Linking.openURL('http://explorer.pangea.web4.world')}
-                            >
-                                <Text style={styles.visitAppWebUrl}>explorer.pangea.web4.world</Text>
-                                <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={styles.pangeaAppHead}>Pangea Block Explorer</Text>
-                        <Text style={styles.pangeaAppNotes}>
-                            A website to demonstrate the flows and features available to developers in Pangea. See the
-                            0.5s block time, easy data signing flows and simplified non-custodial crypto management.
-                        </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.appButton}>Visit app</Text>
-                        </TouchableOpacity>
-                    </View>
-
+                    {availableAppsData
+                        .filter((app) => app.isAvailable)
+                        .map((app) => (
+                            <View key={app.id} style={styles.pangeaApp}>
+                                <View style={styles.flexRow}>
+                                    <Image source={app.image} />
+                                    <TouchableOpacity style={styles.appWebUrl} onPress={() => openURL(app.url)}>
+                                        <Text style={styles.visitAppWebUrl}>{app.url}</Text>
+                                        <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
+                                    </TouchableOpacity>
+                                </View>
+                                <Text style={styles.pangeaAppHead}>{app.title}</Text>
+                                <Text style={styles.pangeaAppNotes}>{app.description}</Text>
+                                <TouchableOpacity onPress={() => openURL(app.url)}>
+                                    <Text style={styles.appButton}>Visit app</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
                     <Text style={styles.headingText}>Coming soon</Text>
-                    <View style={styles.pangeaApp}>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/pangean-bankless.png')} />
-                        </View>
-                        <Text style={styles.pangeaAppHead}>Pangea Bankless</Text>
-                        <Text style={styles.pangeaAppNotes}>
-                            Manage your LEOS tokens as easily as any neo-banking application. Full control without
-                            compromise.
-                        </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.appButton}>Learn more</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.pangeaApp}>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/pangea-dao.png')} />
-                        </View>
-                        <Text style={styles.pangeaAppHead}>Pangea DAO</Text>
-                        <Text style={styles.pangeaAppNotes}>
-                            Incorporate businesses and manage employee access and controls. Fully decentralised.
-                        </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.appButton}>Learn more</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.pangeaApp}>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/pangea-gov.png')} />
-                        </View>
-                        <Text style={styles.pangeaAppHead}>Pangea Gov+</Text>
-                        <Text style={styles.pangeaAppNotes}>
-                            Participate in the liquid democracy governance of the Pangea ecosystem.
-                        </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.appButton}>Learn more</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.pangeaApp}>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/pangea-build.png')} />
-                        </View>
-                        <Text style={styles.pangeaAppHead}>Pangea Build</Text>
-                        <Text style={styles.pangeaAppNotes}>
-                            Build anything with our Low-Code/No-Code suite, empowering next-generation secure and
-                            seamless app development
-                        </Text>
-                        <TouchableOpacity>
-                            <Text style={styles.appButton}>Learn more</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {availableAppsData
+                        .filter((app) => !app.isAvailable)
+                        .map((app) => (
+                            <View key={app.id} style={styles.pangeaApp}>
+                                <View style={styles.flexRow}>
+                                    <Image source={app.image} />
+                                </View>
+                                <Text style={styles.pangeaAppHead}>{app.title}</Text>
+                                <Text style={styles.pangeaAppNotes}>{app.description}</Text>
+                                <TouchableOpacity>
+                                    <Text style={styles.appButton}>Learn more</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
                 </View>
             </ScrollView>
         </View>

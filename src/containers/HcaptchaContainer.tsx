@@ -5,7 +5,7 @@ import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Checkbox, ActivityIndicator } from 'react-native-paper';
-import { TButtonContained, TButtonText } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/HcaptchaScreen';
 import settings from '../settings';

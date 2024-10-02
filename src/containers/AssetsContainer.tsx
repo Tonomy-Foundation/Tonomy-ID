@@ -24,7 +24,6 @@ import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue } from '../utils/numbers';
 import {
-    EthereumChain,
     EthereumMainnetChain,
     EthereumPolygonChain,
     EthereumSepoliaChain,
@@ -39,13 +38,9 @@ import useWalletStore from '../store/useWalletStore';
 //import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
 
-import AssetsSummary from '../components/AssetsSummary';
 import { capitalizeFirstLetter } from '../utils/strings';
-import { IToken } from '../utils/chain/types';
 import { isNetworkError } from '../utils/errors';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
-import settings from '../settings';
-import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import { progressiveRetryOnNetworkError } from '../utils/network';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 
@@ -81,7 +76,7 @@ export default function AssetsContainer({
         name: '',
         address: '',
     });
-    const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
+    const { accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
     const refMessage = useRef(null);
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
@@ -406,7 +401,7 @@ export default function AssetsContainer({
                                     <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
                                     <View style={styles.assetContent}>
                                         <View style={styles.flexRowCenter}>
-                                            <Text style={{ fontSize: 16 }}>LEOS</Text>
+                                            <Text style={{ fontSize: 16 }}>LEOSS</Text>
                                             <View style={styles.assetsNetwork}>
                                                 <Text style={{ fontSize: 13 }}>Pangea</Text>
                                             </View>

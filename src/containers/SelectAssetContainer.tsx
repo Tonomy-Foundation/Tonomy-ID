@@ -2,7 +2,6 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
 import theme from '../utils/theme';
 
-import { formatCurrencyValue } from '../utils/numbers';
 import {
     EthereumMainnetChain,
     EthereumPolygonChain,

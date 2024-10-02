@@ -39,8 +39,7 @@ export default function ScanQRContainer(props: ScanQRContainerProps) {
     const [username, setUsername] = useState('');
     const [accountName, setAccountName] = useState('');
 
-    const { web3wallet, ethereumAccount, initialized, sepoliaAccount, polygonAccount, initializeWalletState } =
-        useWalletStore();
+    const { web3wallet } = useWalletStore();
 
     const setUserName = useCallback(async () => {
         try {

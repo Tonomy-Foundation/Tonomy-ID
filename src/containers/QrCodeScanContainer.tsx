@@ -10,7 +10,6 @@ import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
 import { Props } from '../screens/QrCodeScanScreen';
 import Debug from 'debug';
-import { isNetworkError } from '../utils/errors';
 
 const debug = Debug('tonomy-id:containers:QrCodeScanContainer');
 

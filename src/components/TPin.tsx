@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import theme from '../utils/theme';
-import TButton from './atoms/TButton';
 
 function DotOrChar(props: { char: string | null }) {
     if (props.char) {

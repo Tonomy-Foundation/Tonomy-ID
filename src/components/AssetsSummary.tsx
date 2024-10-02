@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-import TButton from './atoms/TButton';
 import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/Assets';

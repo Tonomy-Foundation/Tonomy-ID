@@ -45,7 +45,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
 
                 switch (status) {
                     case UserStatus.NONE:
-                        navigation.navigate('SplashSecurity');
+                        navigation.navigate('Onboarding');
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         debug('status is NOT_LOGGED_IN');
