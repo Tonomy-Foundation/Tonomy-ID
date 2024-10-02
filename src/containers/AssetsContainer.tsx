@@ -252,9 +252,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowUp height={20} width={20} color={theme.colors.black} />
+                                        <ArrowUp height={20} width={20} color={theme.colors.black} strokeWidth={2} />
                                     </View>
-                                    <Text>Send</Text>
+                                    <Text style={styles.textSize}>Send</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() =>
@@ -266,9 +266,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowDown height={20} width={22} color={theme.colors.black} />
+                                        <ArrowDown height={20} width={20} color={theme.colors.black} strokeWidth={2} />
                                     </View>
-                                    <Text>Receive</Text>
+                                    <Text style={styles.textSize}>Receive</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -319,9 +319,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 </TouchableOpacity>
 
                                 {chains.map((chainObj, index) => {
-                                    const accountData = findAccountByChain(
-                                        capitalizeFirstLetter(chainObj.chain.getName())
-                                    );
+                                    const chainName = capitalizeFirstLetter(chainObj.chain.getName());
+
+                                    const accountData = findAccountByChain(chainName);
 
                                     if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
                                         return null;
@@ -332,8 +332,8 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                             key={index}
                                             onPress={() => {
                                                 navigation.navigate('AssetDetail', {
-                                                    screenTitle: `${chainObj.token.getSymbol()}`,
-                                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                                    screenTitle: chainName,
+                                                    network: chainName,
                                                 });
                                             }}
                                             style={styles.assetsView}
@@ -351,7 +351,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                                                 fontSize: 11,
                                                             }}
                                                         >
-                                                            {capitalizeFirstLetter(chainObj.chain.getName())}
+                                                            {chainName}
                                                         </Text>
                                                     </View>
                                                     {chainObj.chain.getChainId() === '11155111' && (
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerAssetsAmount: {
-        fontSize: 40,
+        fontSize: 35,
         fontWeight: '400',
         fontFamily: 'Roboto',
     },
@@ -513,12 +513,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 8,
-        padding: 12,
+        padding: 10,
     },
     assetsNetwork: {
         backgroundColor: theme.colors.grey7,
         paddingHorizontal: 6,
-        paddingVertical: 4,
         borderRadius: 4,
     },
     assetsTestnetNetwork: {
@@ -564,5 +563,10 @@ const styles = StyleSheet.create({
         color: theme.colors.blue,
         fontSize: 11,
         textAlign: 'right',
+    },
+    textSize: {
+        fontSize: 13,
+        fontWeight: '700',
+        fontFamily: 'Roboto',
     },
 });

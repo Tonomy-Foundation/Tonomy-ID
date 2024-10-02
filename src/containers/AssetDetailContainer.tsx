@@ -6,11 +6,13 @@ import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { getAssetDetails } from '../utils/assetDetails';
 import { useEffect, useState } from 'react';
+import { formatCurrencyValue } from '../utils/numbers';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
     network: string;
 };
+
 const AssetDetailContainer = (props: AssetDetailProps) => {
     const [asset, setAsset] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -18,9 +20,11 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.network);
+
             setAsset(assetData);
             setLoading(false);
         };
+
         fetchAssetDetails();
     }, [props.network]);
 
@@ -40,13 +44,14 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                         <View style={styles.networkHeading}>
                             <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
                             <View style={styles.assetsNetwork}>
-                                <Text style={{ fontSize: 13 }}>{asset.network}</Text>
+                                <Text style={{ fontSize: 13, fontWeight: '500' }}>{asset.network}</Text>
                             </View>
+                            <Text style={styles.headerAssetsAmount}>{`${asset.balance} ${asset.symbol}`}</Text>
+                            <Text style={styles.headerAssetUSDAmount}>
+                                ${formatCurrencyValue(asset.usdBalance, 3)} USD
+                            </Text>
                         </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={styles.headerAssetsAmount}>{`${asset.balance}`}</Text>
-                            <Text style={styles.headerAssetUSDAmount}>${asset.usdBalance} USD</Text>
-                        </View>
+
                         {asset.symbol === 'LEOS' && (
                             <View style={styles.warning}>
                                 <Text>All LEOS is vested until the public sale</Text>
@@ -64,9 +69,9 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowUp height={24} width={25} color={theme.colors.black} />
+                                        <ArrowUp height={21} width={21} color={theme.colors.black} strokeWidth={2} />
                                     </View>
-                                    <Text>Send</Text>
+                                    <Text style={styles.textSize}>Send</Text>
                                 </TouchableOpacity>
                             )}
                             <TouchableOpacity
@@ -79,9 +84,9 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                 style={styles.flexCenter}
                             >
                                 <View style={styles.headerButton}>
-                                    <ArrowDown height={24} width={25} color={theme.colors.black} />
+                                    <ArrowDown height={21} width={21} color={theme.colors.black} strokeWidth={2} />
                                 </View>
-                                <Text>Receive</Text>
+                                <Text style={styles.textSize}>Receive</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -121,7 +126,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
     },
     networkTitleName: {
         color: theme.colors.primary,
@@ -129,8 +133,9 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     faviconIcon: {
-        width: 48,
-        height: 48,
+        width: 42,
+        height: 42,
+        marginBottom: 10,
     },
     assetsNetwork: {
         backgroundColor: theme.colors.grey7,
@@ -139,8 +144,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     headerAssetsAmount: {
-        fontSize: 40,
-        fontWeight: '400',
+        fontSize: 23,
+        fontWeight: '700',
         fontFamily: 'Roboto',
     },
     header: {
@@ -149,13 +154,13 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     headerAssetUSDAmount: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '400',
         fontFamily: 'Roboto',
         color: theme.colors.secondary2,
     },
     headerButton: {
-        backgroundColor: theme.colors.grey7,
+        backgroundColor: theme.colors.backgroundGray,
         width: 46,
         height: 46,
         alignItems: 'center',
@@ -164,24 +169,29 @@ const styles = StyleSheet.create({
     },
     textButton: {
         fontSize: 16,
-        fontWeight: '400',
+        fontWeight: '500',
         fontFamily: 'Roboto',
     },
     transactionHistoryButton: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 15,
-        paddingHorizontal: 20,
+        paddingVertical: 10,
     },
     flexCenter: {
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 8,
+        gap: 7,
     },
     flexRow: {
         flexDirection: 'row',
-        gap: 40,
+        gap: 35,
         marginTop: 20,
     },
+    textSize: {
+        fontSize: 13,
+        fontWeight: '700',
+        fontFamily: 'Roboto',
+    },
 });
+
 export default AssetDetailContainer;

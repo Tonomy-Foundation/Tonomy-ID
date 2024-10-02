@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
+import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
 import {
     EthereumMainnetChain,

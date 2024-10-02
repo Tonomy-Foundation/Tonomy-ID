@@ -5,7 +5,7 @@ import { RouteStackParamList } from '../navigation/Root';
 
 export type AssetDetailScreenNavigationProp = NativeStackScreenProps<RouteStackParamList, 'AssetDetail'>;
 
-export default function AssetDetail(props: AssetDetailScreenNavigationProp) {
+export default function AssetDetailScreen(props: AssetDetailScreenNavigationProp) {
     return (
         <AssetDetailContainer network={props.route.params.network} navigation={props.navigation}></AssetDetailContainer>
     );

@@ -12,6 +12,7 @@ import {
 
 import { assetStorage } from './StorageManager/setup';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
+
 const vestingContract = VestingContract.Instance;
 
 interface AccountDetails {
@@ -38,6 +39,7 @@ export const getAssetDetails = async (network: string): Promise<AccountDetails |
 
         if (chain) {
             const asset = await assetStorage.findAssetByName(chain?.token);
+
             account = {
                 network: chain.network,
                 account: asset?.accountName || null,
@@ -53,6 +55,7 @@ export const getAssetDetails = async (network: string): Promise<AccountDetails |
         const user = userStore.user;
         const accountName = (await user.getAccountName()).toString();
         const accountPangeaBalance = await vestingContract.getBalance(accountName);
+
         account = {
             network: 'Pangea',
             account: accountName,
@@ -63,5 +66,6 @@ export const getAssetDetails = async (network: string): Promise<AccountDetails |
             testnet: false,
         };
     }
+
     return account;
 };

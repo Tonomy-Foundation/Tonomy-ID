@@ -5,6 +5,6 @@ import { RouteStackParamList } from '../navigation/Root';
 
 export type SendAssetScreenNavigationProp = NativeStackScreenProps<RouteStackParamList, 'Send'>;
 
-export default function Send(props: SendAssetScreenNavigationProp) {
+export default function SendAssetScreen(props: SendAssetScreenNavigationProp) {
     return <SendAssetContainer network={props.route.params.network} navigation={props.navigation}></SendAssetContainer>;
 }
