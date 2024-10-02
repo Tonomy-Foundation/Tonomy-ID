@@ -32,6 +32,8 @@ import SignTransactionConsentScreen from '../screens/SignTransactionConsentScree
 import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
+import ReceiveScreen from '../screens/Receive';
+import SendScreen from '../screens/Send';
 
 import { SelectAssetNavigator } from './SelectAssetNavigator';
 import { AssetDetailNavigator } from './AssetDetailNavigator';
@@ -46,6 +48,9 @@ import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import { OperationData } from '../components/Transaction';
+import AssetDetail from '../screens/AssetDetail';
+import Send from '../screens/Send';
+import SelectAsset from '../screens/SelectAsset';
 
 const prefix = Linking.createURL('');
 
@@ -123,6 +128,10 @@ export type RouteStackParamList = {
     Citizenship: undefined;
     Explore: undefined;
     Apps: undefined;
+    AssetDetail: AssetsParamsScreen;
+    Receive: AssetsParamsScreen;
+    Send: AssetsParamsScreen;
+    SelectAsset: { did?: string; screenTitle?: string; type: string };
 };
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
@@ -267,15 +276,33 @@ export default function RootNavigation() {
                         />
 
                         <Stack.Screen
-                            name="AssetListing"
-                            options={{ headerShown: false }}
-                            component={SelectAssetNavigator}
+                            name="AssetDetail"
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'AssetDetail',
+                            })}
+                            component={AssetDetail}
                         />
-
                         <Stack.Screen
-                            name="AssetDetailMain"
-                            options={{ headerShown: false }}
-                            component={AssetDetailNavigator}
+                            name="Send"
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'Send',
+                            })}
+                            component={SendScreen}
+                        />
+                        <Stack.Screen
+                            name="Receive"
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'Receive',
+                            })}
+                            component={ReceiveScreen}
+                        />
+                        <Stack.Screen
+                            name="SelectAsset"
+                            options={{ headerBackTitleVisible: false, title: 'Select Asset' }}
+                            component={SelectAsset}
                         />
                     </Stack.Navigator>
                 </>

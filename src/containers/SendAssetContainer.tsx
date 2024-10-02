@@ -33,6 +33,7 @@ export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     network: string;
 };
+
 const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
@@ -47,9 +48,11 @@ const SendAssetContainer = (props: SendAssetProps) => {
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.network);
+
             setAsset(assetData);
             setLoading(false);
         };
+
         fetchAssetDetails();
     }, [props.network]);
 
@@ -86,6 +89,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
         if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
             return ethers.parseEther(amount.toString());
         }
+
         throw new Error('Unsupported currency symbol');
     };
 
@@ -98,6 +102,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 });
                 return;
             }
+
             if (!amount) {
                 errorStore.setError({
                     error: new Error('Transaction has no amount'),
@@ -105,6 +110,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 });
                 return;
             }
+
             setDisabled(true);
             const transactionData = {
                 to: depositeAddress,
@@ -112,6 +118,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 value: getTransactionAmount(asset.symbol, Number(amount)),
             };
             let key, chain;
+
             if (asset.symbol === 'SepoliaETH') {
                 chain = EthereumSepoliaChain;
                 key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
@@ -128,6 +135,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
             if (key) {
                 const exportPrivateKey = await key.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+
                 transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
                 setDisabled(false);
                 props.navigation.navigate('SignTransaction', {
@@ -145,6 +153,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
             const data = await response.json();
             const ethPrice = data.usd;
             const usdAmount = Number(amount) * Number(ethPrice);
+
             onChangeUSDAmount(usdAmount.toFixed(2));
         } catch (error) {
             console.error('Error fetching ETH price:', error);
@@ -317,4 +326,5 @@ const styles = StyleSheet.create({
         gap: 15,
     },
 });
+
 export default SendAssetContainer;

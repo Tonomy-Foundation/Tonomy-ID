@@ -25,6 +25,7 @@ import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { isNetworkError } from '../utils/errors';
 import { progressiveRetryOnNetworkError } from '../utils/network';
+
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
 
@@ -63,8 +64,10 @@ const SelectAssetContainer = ({
         useCallback(() => {
             const fetchSettings = async () => {
                 const developerMode = await appStorage.getDeveloperMode();
+
                 setDeveloperMode(developerMode);
             };
+
             fetchSettings();
         }, [])
     );
@@ -95,6 +98,7 @@ const SelectAssetContainer = ({
 
                 debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
                 let account;
+
                 if (asset) {
                     account = {
                         network: capitalizeFirstLetter(chainObj.chain.getName()),
@@ -110,6 +114,7 @@ const SelectAssetContainer = ({
                         usdBalance: 0,
                     };
                 }
+
                 setAccounts((prevAccounts) => {
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
@@ -153,6 +158,7 @@ const SelectAssetContainer = ({
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
         isUpdatingBalances.current = true;
+
         try {
             debug('updateAllBalances()');
             await updateLeosBalance();
@@ -182,6 +188,7 @@ const SelectAssetContainer = ({
     useEffect(() => {
         updateAllBalances();
         const interval = setInterval(updateAllBalances, 10000);
+
         return () => clearInterval(interval);
     }, [updateAllBalances]);
 
@@ -190,6 +197,7 @@ const SelectAssetContainer = ({
         const balance = accountExists?.balance;
         const usdBalance = accountExists?.usdBalance;
         const account = accountExists?.accountName;
+
         return { account, balance, usdBalance };
     };
 
@@ -290,9 +298,11 @@ const SelectAssetContainer = ({
                         />
                         {chains.map((chainObj, index) => {
                             const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
+
                             if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
                                 return null;
                             }
+
                             return (
                                 <AssetItem
                                     key={index}
@@ -357,4 +367,5 @@ const styles = StyleSheet.create({
         color: theme.colors.secondary2,
     },
 });
+
 export default SelectAssetContainer;

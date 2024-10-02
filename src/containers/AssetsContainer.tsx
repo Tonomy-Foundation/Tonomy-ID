@@ -97,8 +97,10 @@ export default function AssetsContainer({
         useCallback(() => {
             const fetchSettings = async () => {
                 const developerMode = await appStorage.getDeveloperMode();
+
                 setDeveloperMode(developerMode);
             };
+
             fetchSettings();
         }, [])
     );
@@ -118,83 +120,6 @@ export default function AssetsContainer({
             progressiveRetryOnNetworkError(initializeWalletState);
         }
     }, [initializeWalletState, initialized]);
-
-    const connectToDid = useCallback(
-        async (did: string) => {
-            try {
-                // Connect to the browser using their did:jwk
-                const issuer = await user.getIssuer();
-                const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
-
-                await user.sendMessage(identifyMessage);
-            } catch (e) {
-                if (
-                    e instanceof CommunicationError &&
-                    e.exception?.status === 400 &&
-                    e.exception.message.startsWith('Recipient not connected')
-                ) {
-                    errorStore.setError({
-                        title: 'Problem connecting',
-                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-                        expected: true,
-                    });
-                } else {
-                    debug('connectToDid() error:', e);
-
-                    errorStore.setError({
-                        error: e,
-                        expected: false,
-                    });
-                }
-            }
-        },
-        [user, errorStore]
-    );
-
-    const onClose = useCallback(async () => {
-        setQrOpened(false);
-    }, []);
-
-    const onUrlOpen = useCallback(
-        async (did) => {
-            try {
-                await connectToDid(did);
-            } catch (e) {
-                if (isNetworkError(e)) {
-                    debug('onUrlOpen() network error when connectToDid called');
-                } else {
-                    errorStore.setError({ error: e, expected: false });
-                }
-            } finally {
-                onClose();
-            }
-        },
-        [errorStore, connectToDid, onClose]
-    );
-
-    const setUserName = useCallback(async () => {
-        try {
-            const u = await user.getUsername();
-
-            setUsername(u.getBaseUsername());
-            const accountName = (await user.getAccountName()).toString();
-
-            setAccountName(accountName);
-        } catch (e) {
-            if (isNetworkError(e)) {
-                debug('setUserName() network error');
-            } else errorStore.setError({ error: e, expected: false });
-        }
-    }, [user, errorStore]);
-
-    // setUserName() on mount
-    useEffect(() => {
-        setUserName();
-
-        if (did) {
-            onUrlOpen(did);
-        }
-    }, [setUserName, did, onUrlOpen]);
 
     const updateLeosBalance = useCallback(async () => {
         try {
@@ -225,6 +150,7 @@ export default function AssetsContainer({
 
                 debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
                 let account;
+
                 if (asset) {
                     account = {
                         network: capitalizeFirstLetter(chainObj.chain.getName()),
@@ -240,6 +166,7 @@ export default function AssetsContainer({
                         usdBalance: 0,
                     };
                 }
+
                 setAccounts((prevAccounts) => {
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
@@ -338,29 +265,27 @@ export default function AssetsContainer({
                             <View style={styles.sendReceiveButtons}>
                                 <TouchableOpacity
                                     onPress={() =>
-                                        navigation.navigate('AssetListing', {
-                                            screen: 'SelectAsset',
-                                            params: { did, type: 'send', screenTitle: 'Send' },
-                                        })
+                                        navigation.navigate('SelectAsset', { did, type: 'send', screenTitle: 'Send' })
                                     }
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowUp height={24} width={25} color={theme.colors.black} />
+                                        <ArrowUp height={20} width={20} color={theme.colors.black} />
                                     </View>
                                     <Text>Send</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() =>
-                                        navigation.navigate('AssetListing', {
-                                            screen: 'SelectAsset',
-                                            params: { did, type: 'receive', screenTitle: 'Receive' },
+                                        navigation.navigate('SelectAsset', {
+                                            did,
+                                            type: 'receive',
+                                            screenTitle: 'Recieve',
                                         })
                                     }
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowDown height={24} width={25} color={theme.colors.black} />
+                                        <ArrowDown height={20} width={22} color={theme.colors.black} />
                                     </View>
                                     <Text>Receive</Text>
                                 </TouchableOpacity>
@@ -384,12 +309,9 @@ export default function AssetsContainer({
                                             icon: Images.GetImage('logo48'),
                                         };
 
-                                        navigation.navigate('AssetDetailMain', {
-                                            screen: 'AssetDetail',
-                                            params: {
-                                                screenTitle: `${accountDetail.symbol}`,
-                                                network: 'Pangea',
-                                            },
+                                        navigation.navigate('AssetDetail', {
+                                            screenTitle: `${accountDetail.symbol}`,
+                                            network: 'Pangea',
                                         });
                                     }}
                                     style={styles.assetsView}
@@ -397,9 +319,9 @@ export default function AssetsContainer({
                                     <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
                                     <View style={styles.assetContent}>
                                         <View style={styles.flexRowCenter}>
-                                            <Text style={{ fontSize: 16 }}>LEOS</Text>
+                                            <Text style={{ fontSize: 15 }}>LEOS</Text>
                                             <View style={styles.assetsNetwork}>
-                                                <Text style={{ fontSize: 13 }}>Pangea</Text>
+                                                <Text style={{ fontSize: 11 }}>Pangea</Text>
                                             </View>
                                         </View>
                                         <View style={styles.flexColEnd}>
@@ -426,16 +348,14 @@ export default function AssetsContainer({
                                     if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
                                         return null;
                                     }
+
                                     return (
                                         <TouchableOpacity
                                             key={index}
                                             onPress={() => {
-                                                navigation.navigate('AssetDetailMain', {
-                                                    screen: 'AssetDetail',
-                                                    params: {
-                                                        screenTitle: `${chainObj.token.getSymbol()}`,
-                                                        network: capitalizeFirstLetter(chainObj.chain.getName()),
-                                                    },
+                                                navigation.navigate('AssetDetail', {
+                                                    screenTitle: `${chainObj.token.getSymbol()}`,
+                                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
                                                 });
                                             }}
                                             style={styles.assetsView}
@@ -446,11 +366,11 @@ export default function AssetsContainer({
                                             />
                                             <View style={styles.assetContent}>
                                                 <View style={styles.flexRowCenter}>
-                                                    <Text style={{ fontSize: 16 }}>{chainObj.token.getSymbol()}</Text>
+                                                    <Text style={{ fontSize: 15 }}>{chainObj.token.getSymbol()}</Text>
                                                     <View style={styles.assetsNetwork}>
                                                         <Text
                                                             style={{
-                                                                fontSize: 10,
+                                                                fontSize: 11,
                                                             }}
                                                         >
                                                             {capitalizeFirstLetter(chainObj.chain.getName())}
@@ -481,7 +401,7 @@ export default function AssetsContainer({
                                                                     navigation.navigate('CreateEthereumKey');
                                                                 }}
                                                             >
-                                                                <Text style={{ fontSize: 16 }}>Not connected</Text>
+                                                                <Text style={{ fontSize: 14 }}>Not connected</Text>
                                                                 <Text style={styles.generateKey}>Generate key</Text>
                                                             </TouchableOpacity>
                                                         </View>
@@ -558,8 +478,8 @@ const styles = StyleSheet.create({
     },
     headerButton: {
         backgroundColor: theme.colors.grey7,
-        width: 46,
-        height: 46,
+        width: 37,
+        height: 37,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,
@@ -612,11 +532,10 @@ const styles = StyleSheet.create({
     assetsView: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5,
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 8,
-        padding: 16,
+        padding: 14,
     },
     assetsNetwork: {
         backgroundColor: theme.colors.grey7,
@@ -627,11 +546,11 @@ const styles = StyleSheet.create({
     assetsTestnetNetwork: {
         backgroundColor: theme.colors.blue,
         paddingHorizontal: 6,
-        paddingVertical: 4,
+        paddingVertical: 3,
         borderRadius: 4,
     },
     assetTestnetText: {
-        fontSize: 10,
+        fontSize: 9,
         color: theme.colors.white,
     },
     sendReceiveButtons: {
@@ -642,12 +561,12 @@ const styles = StyleSheet.create({
     flexCenter: {
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 8,
+        gap: 6,
     },
     scrollContent: {
         marginTop: 40,
         flexDirection: 'column',
-        gap: 10,
+        gap: 7,
     },
     assetContent: {
         flexDirection: 'row',
@@ -656,7 +575,7 @@ const styles = StyleSheet.create({
     },
     flexRowCenter: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 7,
         alignItems: 'center',
     },
     flexColEnd: {
