@@ -62,6 +62,10 @@ const availableAppsData = [
     },
 ];
 
+const redirectToApp = (url: string) => {
+    openURL(`https://${url}`);
+};
+
 export default function AppsContainer() {
     return (
         <View style={styles.container}>
@@ -77,7 +81,7 @@ export default function AppsContainer() {
                                     {app.url && (
                                         <TouchableOpacity
                                             style={styles.appWebUrl}
-                                            onPress={() => openURL(`https://${app.url}`)}
+                                            onPress={() => redirectToApp(app.url)}
                                         >
                                             <View style={styles.textAndIconContainer}>
                                                 <Text style={styles.visitAppWebUrl}>{app.url}</Text>
@@ -94,7 +98,7 @@ export default function AppsContainer() {
                                 <Text style={styles.pangeaAppHead}>{app.title}</Text>
                                 <Text style={styles.pangeaAppNotes}>{app.description}</Text>
                                 {app.url && (
-                                    <TouchableOpacity onPress={() => openURL(app.url)}>
+                                    <TouchableOpacity onPress={() => redirectToApp(app.url)}>
                                         <Text style={styles.appButton}>Visit app</Text>
                                     </TouchableOpacity>
                                 )}
@@ -124,7 +128,7 @@ export default function AppsContainer() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 17,
+        marginTop: 6,
     },
     scrollContent: {
         padding: 16,
