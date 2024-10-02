@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        marginBottom: 4,
     },
     favicon: {
         width: 20,

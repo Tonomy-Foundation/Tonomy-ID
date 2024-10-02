@@ -53,7 +53,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const userStore = useUserStore();
     const user = userStore.user;
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [pangeaBalance, setPangeaBalance] = useState(0);
+    const [pangeaBalance, setPangeaBalance] = useState(0.0);
     const [accountName, setAccountName] = useState('');
     const [refreshBalance, setRefreshBalance] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
@@ -308,14 +308,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                         <View style={styles.flexColEnd}>
                                             <View style={styles.flexCenter}>
                                                 <Text style={{ fontSize: 16 }}>
-                                                    {formatCurrencyValue(pangeaBalance, 4) || 0}
+                                                    {formatCurrencyValue(pangeaBalance, 4) || 0.0}
                                                 </Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                $
-                                                {pangeaBalance
-                                                    ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
-                                                    : 0.0}
+                                                ${formatCurrencyValue(pangeaBalance * USD_CONVERSION, 3)}
                                             </Text>
                                         </View>
                                     </View>
