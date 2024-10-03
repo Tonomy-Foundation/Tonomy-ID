@@ -16,7 +16,7 @@ import useUserStore from '../store/userStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import TSpinner from '../components/atoms/TSpinner';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import {
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
     headerAssetsAmount: {
         fontSize: 35,
         fontWeight: '400',
-        fontFamily: 'Roboto',
+        ...commonStyles.secondaryFontFamily,
     },
     headerButton: {
         backgroundColor: theme.colors.grey7,
@@ -565,8 +565,8 @@ const styles = StyleSheet.create({
         textAlign: 'right',
     },
     textSize: {
-        fontSize: 13,
-        fontWeight: '700',
-        fontFamily: 'Roboto',
+        fontSize: 14,
+        fontWeight: '500',
+        ...commonStyles.secondaryFontFamily,
     },
 });

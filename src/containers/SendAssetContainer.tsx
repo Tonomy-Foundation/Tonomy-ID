@@ -98,14 +98,26 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const getBalance = () => {
-        return asset.balance.replace(asset.symbol, '')?.trim();
+        if (asset && asset.balance) {
+            return asset.balance.replace(asset.symbol, '')?.trim();
+        }
     };
 
     const handleMaxAmount = () => {
-        onChangeAmount(getBalance());
-        onChangeUSDAmount(asset.usdBalance.toString());
+        const balance = getBalance();
+        if (balance !== '0') {
+            onChangeAmount(balance);
+            onChangeUSDAmount(asset.usdBalance ? asset.usdBalance.toString() : '0');
+        } else {
+            onChangeAmount('');
+            onChangeUSDAmount('0');
+            errorStore.setError({
+                error: new Error('done'),
+                expected: true,
+            });
+            return;
+        }
     };
-
     const getTransactionAmount = (currencySymbol, amount) => {
         if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
             return ethers.parseEther(amount.toString());
@@ -127,6 +139,16 @@ const SendAssetContainer = (props: SendAssetProps) => {
             if (!amount) {
                 errorStore.setError({
                     error: new Error('Transaction has no amount'),
+                    expected: true,
+                });
+                return;
+            }
+
+            const balance = getBalance();
+
+            if (balance && Number(balance) < Number(amount)) {
+                errorStore.setError({
+                    error: new Error('Insufficient balance in account'),
                     expected: true,
                 });
                 return;
@@ -333,20 +355,20 @@ const styles = StyleSheet.create({
     currencyButtonText: {
         color: theme.colors.grey9,
         fontSize: 15,
-        fontFamily: 'Roboto',
         fontWeight: '500',
+        ...commonStyles.secondaryFontFamily,
     },
     inputButtonText: {
         color: theme.colors.success,
         fontSize: 15,
-        fontFamily: 'Roboto',
         fontWeight: '500',
+        ...commonStyles.secondaryFontFamily,
     },
     inputHelp: {
         marginTop: 5,
         fontSize: 15,
-        fontFamily: 'Roboto',
         color: theme.colors.tabGray,
+        ...commonStyles.secondaryFontFamily,
     },
     flexCol: {
         flexDirection: 'column',

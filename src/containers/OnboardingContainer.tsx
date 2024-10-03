@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { TButtonContained } from '../components/atoms/TButton';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import ArrowForwardIcon from '../assets/icons/ArrowForwardIcon';
 import { Props } from '../screens/OnboardingScreen';
 import { StackActions } from '@react-navigation/native';
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 16,
         lineHeight: 21,
-        fontFamily: 'Roboto',
+        ...commonStyles.secondaryFontFamily,
     },
     buttonContainer: {
         flexDirection: 'row',
