@@ -3,14 +3,14 @@ import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
+import { appStorage, assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 
 import Debug from 'debug';
 import useUserStore from '../store/userStore';
 import { formatCurrencyValue } from '../utils/numbers';
-import { getAssetDetails, supportedChains } from '../utils/assetDetails';
+import { supportedChains } from '../utils/assetDetails';
 import { IPrivateKey } from '../utils/chain/types';
 import { Images } from '../assets';
 import { USD_CONVERSION } from '../utils/chain/etherum';
@@ -118,22 +118,20 @@ const SelectAssetContainer = ({
     };
 
     const handleOnPress = async (chainObj) => {
-        const chainData = await getAssetDetails(chainObj.chain.getName());
+        if (type === 'receive') {
+            navigation.navigate('Receive', {
+                screenTitle: `Receive ${chainObj.token.getSymbol()}`,
+                network: chainObj.chain.getName(),
+            });
+        } else if (type === 'send') {
+            const key = await keyStorage.findByName(chainObj.keyName, chainObj.chain);
 
-        if (chainData) {
-            if (type === 'receive') {
-                navigation.navigate('Receive', {
-                    screenTitle: `Receive ${chainData.symbol}`,
-                    network: chainData.network,
-                });
-            } else if (type === 'send') {
-                navigation.navigate('Send', {
-                    screenTitle: `Send ${chainData.symbol}`,
-                    network: chainData.network,
-                    chain: chainObj.chain,
-                    privateKey: chainData.privateKey as IPrivateKey,
-                });
-            }
+            navigation.navigate('Send', {
+                screenTitle: `Send ${chainObj.token.getSymbol()}`,
+                network: chainObj.chain.getName(),
+                chain: chainObj.chain,
+                privateKey: key as IPrivateKey,
+            });
         }
     };
 

@@ -196,13 +196,12 @@ export default function SignTransactionConsentContainer({
 
                 await session.approveTransactionRequest(request, receipt);
             } else {
-                const transactionRequest: TransactionRequest = {
+                const transactionRequest = {
                     to: (await transaction.getTo()).getName(),
                     from: (await transaction.getFrom()).getName(),
                     value: (await transaction.getValue()).getAmount(),
                 };
 
-                console.log('transactionRequest', transactionRequest);
                 receipt = await privateKey.sendTransaction(transactionRequest);
             }
 
