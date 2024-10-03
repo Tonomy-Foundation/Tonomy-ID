@@ -6,7 +6,7 @@ import { OpenNewWindow } from 'iconoir-react-native';
 const availableAppsData = [
     {
         id: 1,
-        image: require('../assets/images/sales-platform.png'),
+        image: require('../assets/images/apps/sales-platform.png'),
         title: 'LEOS Sales platform',
         description:
             'Invest in Pangea, purchase LEOS tokens easily. LEOS customers are protected under Europe’s MICA regulation.',
@@ -15,7 +15,7 @@ const availableAppsData = [
     },
     {
         id: 2,
-        image: require('../assets/images/pangea-block-explorer.png'),
+        image: require('../assets/images/apps/pangea-block-explorer.png'),
         description: 'Search, view, and track your Pangea Blockchain transactions and activities in real-time.',
         title: 'Pangea Block Explorer',
         url: 'explorer.pangea.web4.world',
@@ -23,7 +23,7 @@ const availableAppsData = [
     },
     {
         id: 3,
-        image: require('../assets/images/pangea-block-explorer.png'),
+        image: require('../assets/images/apps/pangea-block-explorer.png'),
         title: 'Pangea Developers Features Demo',
         description:
             'A website to demonstrate the flows and features available to developers in Pangea. See the  0.5s block time, easy data signing flows and simplified non-custodial crypto management.',
@@ -32,7 +32,7 @@ const availableAppsData = [
     },
     {
         id: 4,
-        image: require('../assets/images/pangean-bankless.png'),
+        image: require('../assets/images/apps/pangean-bankless.png'),
         title: 'Pangea Bankless',
         description:
             'Manage your LEOS tokens as easily as any neo-banking application. Full control without compromise.',
@@ -40,21 +40,21 @@ const availableAppsData = [
     },
     {
         id: 5,
-        image: require('../assets/images/pangea-dao.png'),
+        image: require('../assets/images/apps/pangea-dao.png'),
         title: 'Pangea DAO',
         description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
         isAvailable: false,
     },
     {
         id: 6,
-        image: require('../assets/images/pangea-gov.png'),
+        image: require('../assets/images/apps/pangea-gov.png'),
         title: 'Pangea Gov+',
         description: 'Participate in the liquid democracy governance of the Pangea ecosystem.',
         isAvailable: false,
     },
     {
         id: 7,
-        image: require('../assets/images/pangea-build.png'),
+        image: require('../assets/images/apps/pangea-build.png'),
         title: 'Pangea Build',
         description:
             'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
     flexColumn: {
         flexDirection: 'column',
         gap: 10,
+        marginBottom: 65,
     },
     appWebUrl: {
         flexDirection: 'row',

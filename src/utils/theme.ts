@@ -78,6 +78,12 @@ export const commonStyles = StyleSheet.create({
     marginTop: {
         marginTop: 12,
     },
+    primaryFontFamily: {
+        fontFamily: 'Inter',
+    },
+    secondaryFontFamily: {
+        fontFamily: 'Roboto',
+    },
 });
 
 export default theme;

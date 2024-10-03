@@ -1,14 +1,14 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AssetDetailScreenNavigationProp } from '../screens/AssetDetail';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
 import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { getAssetDetails, supportedChains } from '../utils/assetDetails';
+import { getAssetDetails } from '../utils/assetDetails';
 import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
-import { IPrivateKey } from '../utils/chain/types';
-import { keyStorage } from '../utils/StorageManager/setup';
+import useUserStore from '../store/userStore';
+import settings from '../settings';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -18,6 +18,23 @@ export type AssetDetailProps = {
 const AssetDetailContainer = (props: AssetDetailProps) => {
     const [asset, setAsset] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+
+    const userStore = useUserStore();
+    const user = userStore.user;
+
+    const [accountName, setAccountName] = useState<string>('');
+
+    useEffect(() => {
+        const fetchAccountName = async () => {
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
+        };
+
+        if (user) {
+            fetchAccountName();
+        }
+    }, [user]);
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -37,6 +54,27 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
             </View>
         );
     }
+
+    const redirectToCheckExplorer = () => {
+        let networkURL: string | null = null;
+
+        switch (asset.symbol) {
+            case 'SepoliaETH':
+                networkURL = `https://sepolia.etherscan.io/address/${asset.address}`;
+                break;
+            case 'ETH':
+                networkURL = `https://etherscan.io/address/${asset.address}`;
+                break;
+            case 'MATIC':
+                networkURL = `https://polygonscan.com/address/${asset.address}`;
+                break;
+            case 'LEOS':
+                networkURL = `${settings.config.blockExplorerUrl}/account/${accountName}`;
+                break;
+        }
+
+        if (networkURL) Linking.openURL(networkURL).catch((err) => console.error('Failed to open URL: ', err));
+    };
 
     return (
         <View style={styles.container}>
@@ -98,7 +136,11 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                         <TouchableOpacity style={styles.transactionHistoryButton}>
                             <Text style={styles.textButton}>View your transaction history</Text>
                         </TouchableOpacity>
-                        <TButtonSecondaryContained style={commonStyles.marginBottom} size="large">
+                        <TButtonSecondaryContained
+                            onPress={redirectToCheckExplorer}
+                            style={commonStyles.marginBottom}
+                            size="large"
+                        >
                             Check explorer
                         </TButtonSecondaryContained>
                     </View>
@@ -150,7 +192,6 @@ const styles = StyleSheet.create({
     headerAssetsAmount: {
         fontSize: 23,
         fontWeight: '700',
-        fontFamily: 'Roboto',
     },
     header: {
         flexDirection: 'column',
@@ -160,8 +201,8 @@ const styles = StyleSheet.create({
     headerAssetUSDAmount: {
         fontSize: 15,
         fontWeight: '400',
-        fontFamily: 'Roboto',
         color: theme.colors.secondary2,
+        ...commonStyles.secondaryFontFamily,
     },
     headerButton: {
         backgroundColor: theme.colors.backgroundGray,
@@ -174,7 +215,7 @@ const styles = StyleSheet.create({
     textButton: {
         fontSize: 16,
         fontWeight: '500',
-        fontFamily: 'Roboto',
+        ...commonStyles.secondaryFontFamily,
     },
     transactionHistoryButton: {
         justifyContent: 'center',
@@ -192,9 +233,9 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     textSize: {
-        fontSize: 13,
-        fontWeight: '700',
-        fontFamily: 'Roboto',
+        fontSize: 14,
+        fontWeight: '500',
+        ...commonStyles.secondaryFontFamily,
     },
 });
 

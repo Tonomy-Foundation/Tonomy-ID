@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import useUserStore from '../store/userStore';
 
 export default function CitizenshipContainer() {
@@ -57,24 +57,24 @@ export default function CitizenshipContainer() {
                         </Text>
                     </View>
                     <View style={styles.identityImage}>
-                        <Image source={require('../assets/images/citizenship-identity-image.png')} />
+                        <Image source={require('../assets/images/citizenship/citizenship-identity-image.png')} />
                     </View>
                 </View>
                 <Text style={styles.subTitle}>Pangea is your ticket to digital worlds available now</Text>
                 <View style={styles.digitalWorldContent}>
-                    <TouchableOpacity>
+                    <TouchableOpacity style={styles.webMain}>
                         <View style={styles.webImage}>
-                            <Image source={require('../assets/images/login-webapps.png')} />
+                            <Image source={require('../assets/images/citizenship/login-webapps.png')} />
                         </View>
-                        <View style={{ width: 130 }}>
+                        <View>
                             <Text style={styles.webTitle}>Login to Web4 Apps</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity style={styles.webMain}>
                         <View style={styles.webImage}>
-                            <Image source={require('../assets/images/manage-crypto.png')} />
+                            <Image source={require('../assets/images/citizenship/manage-crypto.png')} />
                         </View>
-                        <View style={{ width: 130 }}>
+                        <View>
                             <Text style={styles.webTitle}>Manage your Crypto</Text>
                         </View>
                     </TouchableOpacity>
@@ -84,22 +84,22 @@ export default function CitizenshipContainer() {
                     <HorizontalScrollItem
                         title="Pay globally without middlemen"
                         subtitle="with Pangea Banklesss"
-                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
                     />
                     <HorizontalScrollItem
                         title="Unlock the Power of Decentralization"
                         subtitle="with Pangea DAO"
-                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
                     />
                     <HorizontalScrollItem
                         title="Be a part of Liquid Democracy"
                         subtitle="with Pangea Gov+"
-                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
                     />
                     <HorizontalScrollItem
                         title="Build Next- generation apps"
                         subtitle="with Pangea Build"
-                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
                     />
                 </ScrollView>
             </ScrollView>
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         fontSize: 16,
         lineHeight: 18.75,
-        fontFamily: 'Roboto',
+        ...commonStyles.secondaryFontFamily,
         flexDirection: 'column',
     },
     identityImage: {
@@ -160,18 +160,25 @@ const styles = StyleSheet.create({
         gap: 14,
         marginTop: 5,
     },
+    webMain: {
+        flexGrow: 1,
+        flexBasis: 0,
+    },
     webImage: {
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 10,
         paddingHorizontal: 18,
         paddingVertical: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     webTitle: {
         fontSize: 15,
         fontWeight: '500',
-        textAlign: 'center',
+        // textAlign: 'center',
         paddingTop: 8,
+        alignSelf: 'center',
     },
     horizontalScroll: {
         flexDirection: 'row',
@@ -198,9 +205,9 @@ const styles = StyleSheet.create({
     },
     horizontalScrollNotes: {
         width: 160,
-        fontFamily: 'Roboto',
         fontSize: 13,
         fontWeight: '400',
         borderColor: theme.colors.grey9,
+        ...commonStyles.secondaryFontFamily,
     },
 });

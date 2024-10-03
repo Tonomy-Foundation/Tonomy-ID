@@ -1,62 +1,103 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Props } from '../screens/ExploreScreen';
 import theme from '../utils/theme';
 import LearnMoreAutonomous from '../components/LearnMoreAutonomous';
 import { useRef } from 'react';
+import { Images } from '../assets';
+import { ArrowRight } from 'iconoir-react-native';
+import SocialIconX from '../assets/images/explore/icon-social-x';
+import SocialIconLinkedIn from '../assets/images/explore/icon-social-linkedin';
+import SocialIconTelegram from '../assets/images/explore/icon-social-telegram';
+import SocialIconDiscord from '../assets/images/explore/icon-social-discord';
+import SocialIconGithub from '../assets/images/explore/icon-social-github';
 
 export default function ExploreContainer({ navigation }: { navigation: Props['navigation'] }) {
     const refMessage = useRef(null);
     const onClose = () => {
         (refMessage.current as any)?.close();
     };
-    const handleLearnMore = () => {
-        (refMessage?.current as any)?.open();
-    };
+    // const handleLearnMore = () => {
+    //     (refMessage?.current as any)?.open();
+    // };
+
+    const openPangeaLinks = [
+        { title: 'Website', url: 'https://pangea.web4.world/' },
+        { title: 'Whitepapers', url: 'https://pangea.web4.world/about/whitepapers' },
+        { title: 'Pitch Decks', url: 'https://www.canva.com/design/DAGKvFBFvlQ/AicATNBAKdrj0wV6akGCZw/' },
+    ];
+
+    const openOurSocialLinks = [
+        {
+            url: 'https://twitter.com/pangeaweb4',
+            image: <SocialIconX />,
+        },
+        {
+            url: 'https://www.linkedin.com/company/tonomy-foundation',
+            image: <SocialIconLinkedIn />,
+        },
+        {
+            url: 'https://t.me/pangea_web4',
+            image: <SocialIconTelegram />,
+        },
+        {
+            url: 'https://discord.gg/8zDf8AF3ja',
+            image: <SocialIconDiscord />,
+        },
+        {
+            url: 'https://github.com/Tonomy-Foundation',
+            image: <SocialIconGithub />,
+        },
+    ];
 
     return (
         <View style={styles.container}>
             <LearnMoreAutonomous onClose={onClose} refMessage={refMessage} />
             <ScrollView style={styles.scrollContent}>
-                <Image
-                    source={require('../assets/images/join-community-discord.png')}
-                    style={styles.joinCommunityDiscordImage}
-                />
+                <TouchableOpacity onPress={() => Linking.openURL('https://discord.gg/8zDf8AF3ja')}>
+                    <Image
+                        source={require('../assets/images/explore/join-community-discord.png')}
+                        style={styles.joinCommunityDiscordImage}
+                    />
+                </TouchableOpacity>
                 <View style={styles.worldFristAutonomous}>
                     <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
-                    <Image source={require('../assets/images/earth-globe-network-connection.png')} />
-                    <TouchableOpacity style={styles.learnMoreButton} onPress={handleLearnMore}>
-                        <Text style={styles.learnMoreButtonText}>Learn more</Text>
-                    </TouchableOpacity>
+                    <Image source={require('../assets/images/explore/earth-globe-network-connection.png')} />
                 </View>
-                <Text style={styles.usefulLink}>Useful links</Text>
-                <View style={styles.usefulLinkButtonLayout}>
-                    <TouchableOpacity style={styles.usefullLinkButton}>
-                        <Text style={styles.usefullLinkButtonText}>Website</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.usefullLinkButton}>
-                        <Text style={styles.usefullLinkButtonText}>Whitepapers</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.usefullLinkButton}>
-                        <Text style={styles.usefullLinkButtonText}>Pitch decks</Text>
-                    </TouchableOpacity>
+                <Text style={styles.usefulLink}>Pangea links</Text>
+                <View style={styles.pangeaLinkButtonLayout}>
+                    {openPangeaLinks.map((link, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => Linking.openURL(link.url)}
+                            style={styles.pangeaLinkButton}
+                        >
+                            <View style={{ flexDirection: 'row' }}>
+                                <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
+                                <Text style={styles.pangeaLinkButtonText}>{link.title}</Text>
+                            </View>
+                            <ArrowRight width={24} height={24} color={theme.colors.grey9} />
+                        </TouchableOpacity>
+                    ))}
                 </View>
+
                 <Text style={styles.usefulLink}>Our socials</Text>
                 <View style={styles.usefulLinkButtonLayout}>
-                    <TouchableOpacity style={[styles.socialButton, { backgroundColor: theme.colors.black }]}>
-                        <Text style={styles.socialButtonText}>X</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.socialButton, { backgroundColor: '#00AEED' }]}>
-                        <Text style={styles.socialButtonText}>Telegram</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.socialButton, { backgroundColor: '#007BB5' }]}>
-                        <Text style={styles.socialButtonText}>LinkedIn</Text>
-                    </TouchableOpacity>
+                    {openOurSocialLinks.map((link, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => Linking.openURL(link.url)}
+                            style={styles.socialButton}
+                        >
+                            {link.image}
+                        </TouchableOpacity>
+                    ))}
                 </View>
+
                 <Text style={styles.usefulLink}>News</Text>
                 <View style={styles.newsFrameLayoutContainer}>
                     <View style={styles.newsFrameLayout}>
-                        <Image source={require('../assets/images/pangea-news.png')} />
+                        <Image source={require('../assets/images/explore/pangea-news.png')} />
                         <View>
                             <Text style={styles.newsFrameTitle}>
                                 Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...
@@ -67,7 +108,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                         </View>
                     </View>
                     <View style={styles.newsFrameLayout}>
-                        <Image source={require('../assets/images/pangea-news.png')} />
+                        <Image source={require('../assets/images/explore/pangea-news.png')} />
                         <View>
                             <Text style={styles.newsFrameTitle}>
                                 Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...
@@ -105,6 +146,8 @@ const styles = StyleSheet.create({
     worldFristAutonomousTitle: {
         fontSize: 17,
         fontWeight: '700',
+        lineHeight: 20.57,
+        letterSpacing: 0.5,
     },
     worldFristAutonomousNotes: {
         fontSize: 12,
@@ -131,6 +174,15 @@ const styles = StyleSheet.create({
     },
     usefulLinkButtonLayout: {
         flexDirection: 'row',
+        gap: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: theme.colors.grey8,
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+    },
+    pangeaLinkButtonLayout: {
+        flexDirection: 'column',
         gap: 8,
         flexWrap: 'wrap',
     },
@@ -138,12 +190,27 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         borderColor: theme.colors.grey8,
-        paddingVertical: 18,
         width: '100%',
+    },
+    pangeaLinkButton: {
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: theme.colors.grey8,
+        paddingVertical: 20,
+        width: '100%',
+        paddingHorizontal: 16,
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        flexGrow: 1,
-        flexBasis: 0,
+        justifyContent: 'space-between',
+    },
+    pangeaLinkButtonText: {
+        fontWeight: '400',
+        fontSize: 14,
+    },
+    favicon: {
+        width: 24,
+        height: 24,
+        marginRight: 8,
     },
     usefullLinkButtonText: {
         fontWeight: '400',
@@ -152,8 +219,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     socialButton: {
-        paddingVertical: 18,
-        borderRadius: 8,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
