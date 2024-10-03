@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
+import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
 import {
     EthereumMainnetChain,
@@ -119,8 +119,6 @@ const SelectAssetContainer = ({
         }
     }, [chains, user]);
 
-    console.log('accounts', pangeaBalance, accountName);
-
     useEffect(() => {
         fetchCryptoAssets();
     }, [fetchCryptoAssets]);
@@ -139,7 +137,7 @@ const SelectAssetContainer = ({
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.screenTitle}>select a currency to {type}</Text>
-                    <View style={{ marginTop: 20, flexDirection: 'column', gap: 20 }}>
+                    <View style={{ marginTop: 20, flexDirection: 'column', gap: 14 }}>
                         <AssetItem
                             type={type}
                             navigation={navigation}
@@ -165,7 +163,7 @@ const SelectAssetContainer = ({
                                     type={type}
                                     navigation={navigation}
                                     accountBalance={{
-                                        balance: accountData.balance || '',
+                                        balance: accountData.balance || '0.00',
                                         usdBalance: accountData.usdBalance || 0,
                                     }}
                                     testnet={chainObj.chain.getChainId() === '11155111'}

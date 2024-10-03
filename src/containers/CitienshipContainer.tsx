@@ -1,10 +1,9 @@
-import { Props } from '../screens/Citizenship';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import theme from '../utils/theme';
 import useUserStore from '../store/userStore';
 
-export default function CitizenshipContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function CitizenshipContainer() {
     const userStore = useUserStore();
     const user = userStore.user;
 
@@ -21,6 +20,31 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
             fetchUsername();
         }
     }, [user]);
+
+    const HorizontalScrollItem = ({
+        title,
+        subtitle,
+        imageSource,
+    }: {
+        title: string;
+        subtitle: string;
+        imageSource: any;
+    }) => {
+        return (
+            <View style={styles.horizontalScrollMain}>
+                <View style={styles.horizontalScroll}>
+                    <View style={styles.horizontalScrollContent}>
+                        <Text style={styles.horizontalScrollText}>{title}</Text>
+                        <Text style={styles.horizontalScrollNotes}>{subtitle}</Text>
+                    </View>
+                    <View>
+                        <Image source={imageSource} />
+                    </View>
+                </View>
+            </View>
+        );
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent}>
@@ -33,7 +57,7 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         </Text>
                     </View>
                     <View style={styles.identityImage}>
-                        <Image source={require('../assets/images/citizenship-banner.png')} />
+                        <Image source={require('../assets/images/citizenship-identity-image.png')} />
                     </View>
                 </View>
                 <Text style={styles.subTitle}>Pangea is your ticket to digital worlds available now</Text>
@@ -42,61 +66,41 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         <View style={styles.webImage}>
                             <Image source={require('../assets/images/login-webapps.png')} />
                         </View>
-                        <Text style={styles.webTitle}>Login to Web4 Apps</Text>
+                        <View style={{ width: 130 }}>
+                            <Text style={styles.webTitle}>Login to Web4 Apps</Text>
+                        </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
                         <View style={styles.webImage}>
                             <Image source={require('../assets/images/manage-crypto.png')} />
                         </View>
-                        <Text style={styles.webTitle}>Manage your Crypto</Text>
+                        <View style={{ width: 130 }}>
+                            <Text style={styles.webTitle}>Manage your Crypto</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.subTitle}>Worlds coming soon</Text>
                 <ScrollView horizontal={true} style={{ paddingBottom: 70 }}>
-                    <View style={styles.horizontalScrollMain}>
-                        <View style={styles.horizontalScroll}>
-                            <View style={styles.horizontalScrollContent}>
-                                <Text style={styles.horizontalScrollText}>Pay globally without middlemen</Text>
-                                <Text style={styles.horizontalScrollNotes}>with Pangea Banklesss</Text>
-                            </View>
-                            <View>
-                                <Image source={require('../assets/images/coming-soon-user-placeholder.png')} />
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.horizontalScrollMain}>
-                        <View style={styles.horizontalScroll}>
-                            <View style={styles.horizontalScrollContent}>
-                                <Text style={styles.horizontalScrollText}>Unlock the Power of Decentralization</Text>
-                                <Text style={styles.horizontalScrollNotes}>with Pangea DAO</Text>
-                            </View>
-                            <View>
-                                <Image source={require('../assets/images/coming-soon-user-placeholder.png')} />
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.horizontalScrollMain}>
-                        <View style={styles.horizontalScroll}>
-                            <View style={styles.horizontalScrollContent}>
-                                <Text style={styles.horizontalScrollText}>Be a part of Liquid Democracy</Text>
-                                <Text style={styles.horizontalScrollNotes}>with Pangea Gov+</Text>
-                            </View>
-                            <View>
-                                <Image source={require('../assets/images/coming-soon-user-placeholder.png')} />
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.horizontalScrollMain}>
-                        <View style={styles.horizontalScroll}>
-                            <View style={styles.horizontalScrollContent}>
-                                <Text style={styles.horizontalScrollText}>Build Next-generation apps</Text>
-                                <Text style={styles.horizontalScrollNotes}>with Pangea Build</Text>
-                            </View>
-                            <View>
-                                <Image source={require('../assets/images/coming-soon-user-placeholder.png')} />
-                            </View>
-                        </View>
-                    </View>
+                    <HorizontalScrollItem
+                        title="Pay globally without middlemen"
+                        subtitle="with Pangea Banklesss"
+                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                    />
+                    <HorizontalScrollItem
+                        title="Unlock the Power of Decentralization"
+                        subtitle="with Pangea DAO"
+                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                    />
+                    <HorizontalScrollItem
+                        title="Be a part of Liquid Democracy"
+                        subtitle="with Pangea Gov+"
+                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                    />
+                    <HorizontalScrollItem
+                        title="Build Next- generation apps"
+                        subtitle="with Pangea Build"
+                        imageSource={require('../assets/images/coming-soon-user-placeholder.png')}
+                    />
                 </ScrollView>
             </ScrollView>
         </View>
@@ -111,10 +115,9 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     title: {
-        fontSize: 26,
+        fontSize: 28,
         fontFamily: 'Inter',
         fontWeight: '700',
-        lineHeight: 33.89,
         paddingBottom: 18,
     },
     identityTitle: {
@@ -125,16 +128,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 10,
-        paddingHorizontal: 16,
-        paddingVertical: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 18,
         flexDirection: 'column',
-        gap: 14,
+        gap: 12,
     },
     identityText: {
         fontWeight: '600',
         fontFamily: 'Inter',
         fontSize: 17,
-        lineHeight: 20.57,
     },
     identityNotes: {
         fontWeight: '400',
@@ -147,67 +149,58 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     subTitle: {
-        marginTop: 30,
-        marginBottom: 10,
+        marginTop: 25,
+        marginBottom: 5,
         fontFamily: 'Inter',
         fontWeight: '700',
         fontSize: 20,
-        lineHeight: 24.2,
     },
     digitalWorldContent: {
         flexDirection: 'row',
-        gap: 16,
-        marginTop: 8,
+        gap: 14,
+        marginTop: 5,
     },
     webImage: {
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 10,
-        paddingHorizontal: 24,
-        paddingVertical: 16,
+        paddingHorizontal: 18,
+        paddingVertical: 12,
     },
     webTitle: {
-        width: 163.5,
-        fontFamily: 'Roboto',
-        fontSize: 16,
-        fontWeight: '400',
-        lineHeight: 21,
+        fontSize: 15,
+        fontWeight: '500',
         textAlign: 'center',
         paddingTop: 8,
-        paddingHorizontal: 20,
     },
     horizontalScroll: {
         flexDirection: 'row',
-        padding: 16,
+        padding: 14,
         marginTop: 8,
-        width: 326,
+        width: 300,
         height: 150,
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 10,
     },
     horizontalScrollMain: {
-        paddingEnd: 18,
+        paddingEnd: 12,
     },
     horizontalScrollContent: {
         alignSelf: 'center',
     },
     horizontalScrollText: {
-        width: 185,
+        width: 150,
         fontFamily: 'Inter',
         fontSize: 17,
         fontWeight: '700',
-        lineHeight: 20.57,
-        letterSpacing: 0.15,
         textAlign: 'left',
     },
     horizontalScrollNotes: {
-        width: 185,
+        width: 160,
         fontFamily: 'Roboto',
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '400',
-        lineHeight: 16.41,
-        letterSpacing: 0.16,
         borderColor: theme.colors.grey9,
     },
 });

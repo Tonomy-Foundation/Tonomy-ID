@@ -1,5 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Props } from '../screens/Explore';
+import { Props } from '../screens/ExploreScreen';
 import theme from '../utils/theme';
 import LearnMoreAutonomous from '../components/LearnMoreAutonomous';
 import { useRef } from 'react';
@@ -12,6 +12,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
     const handleLearnMore = () => {
         (refMessage?.current as any)?.open();
     };
+
     return (
         <View style={styles.container}>
             <LearnMoreAutonomous onClose={onClose} refMessage={refMessage} />
@@ -81,6 +82,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
         </View>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -92,22 +94,21 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 22,
         width: '100%',
+        borderRadius: 8,
     },
     worldFristAutonomous: {
         borderWidth: 1,
         borderRadius: 8,
-        padding: 16,
+        padding: 12,
         borderColor: theme.colors.grey8,
     },
     worldFristAutonomousTitle: {
         fontSize: 17,
         fontWeight: '700',
-        lineHeight: 20.57,
     },
     worldFristAutonomousNotes: {
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: '600',
-        lineHeight: 15.73,
         marginBottom: 8,
     },
     learnMoreButton: {
@@ -191,9 +192,8 @@ const styles = StyleSheet.create({
     newsFrameNote: {
         fontSize: 12,
         fontWeight: '400',
-        lineHeight: 16.41,
-        letterSpacing: 0.15,
+        lineHeight: 16,
         color: theme.colors.grey9,
-        width: 260,
+        width: '50%',
     },
 });

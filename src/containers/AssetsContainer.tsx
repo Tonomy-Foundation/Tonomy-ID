@@ -9,16 +9,13 @@ import {
     ScrollView,
     RefreshControl,
 } from 'react-native';
-import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import { TButtonOutlined } from '../components/atoms/TButton';
 import { TP } from '../components/atoms/THeadings';
 import useUserStore from '../store/userStore';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import useErrorStore from '../store/errorStore';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import TSpinner from '../components/atoms/TSpinner';
-
 import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
@@ -32,17 +29,13 @@ import {
     USD_CONVERSION,
 } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
-import { AssetsScreenNavigationProp } from '../screens/Assets';
+import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
-//import { capitalizeFirstLetter } from '../utils/helper';
 import Debug from 'debug';
-
 import { formatCurrencyValue } from '../utils/numbers';
-
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
-import { progressiveRetryOnNetworkError } from '../utils/network';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
@@ -56,28 +49,19 @@ interface AccountDetails {
     icon?: ImageSourcePropType | undefined;
 }
 
-export default function AssetsContainer({
-    did,
-    navigation,
-}: {
-    did?: string;
-    navigation: AssetsScreenNavigationProp['navigation'];
-}) {
+export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const userStore = useUserStore();
     const user = userStore.user;
-    const [username, setUsername] = useState('');
-    const [qrOpened, setQrOpened] = useState<boolean>(false);
     const [isLoadingView, setIsLoadingView] = useState(false);
-    const [pangeaBalance, setPangeaBalance] = useState(0);
+    const [pangeaBalance, setPangeaBalance] = useState(0.0);
     const [accountName, setAccountName] = useState('');
-    const errorStore = useErrorStore();
     const [refreshBalance, setRefreshBalance] = useState(false);
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
         address: '',
     });
-    const { accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
+    const { accountExists, initializeWalletAccount } = useWalletStore();
     const refMessage = useRef(null);
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
@@ -111,13 +95,6 @@ export default function AssetsContainer({
         []
     );
 
-    // initializeWalletState() on mount with progressiveRetryOnNetworkError()
-    useEffect(() => {
-        if (!initialized) {
-            progressiveRetryOnNetworkError(initializeWalletState);
-        }
-    }, [initializeWalletState, initialized]);
-
     const updateLeosBalance = useCallback(async () => {
         try {
             debug('updateLeosBalance() fetching LEOS balance');
@@ -139,6 +116,9 @@ export default function AssetsContainer({
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
+            const accountName = (await user.getAccountName()).toString();
+
+            setAccountName(accountName);
             if (!accountExists) await initializeWalletAccount();
             await connect();
 
@@ -167,6 +147,7 @@ export default function AssetsContainer({
                 setAccounts((prevAccounts) => {
                     // find index of the account in the array
                     const index = prevAccounts.findIndex((acc) => acc.network === account.network);
+
                     if (index !== -1) {
                         // Update the existing asset
                         const updatedAccounts = [...prevAccounts];
@@ -182,7 +163,7 @@ export default function AssetsContainer({
         } catch (error) {
             debug('fetchCryptoAssets() error', error);
         }
-    }, [accountExists, initializeWalletAccount, chains]);
+    }, [accountExists, initializeWalletAccount, chains, user]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -234,6 +215,7 @@ export default function AssetsContainer({
             return previousValue + currentValue.usdBalance;
         }, 0);
         const totalPangeaUSDBalance = pangeaBalance * USD_CONVERSION;
+
         setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
     }, [accounts, pangeaBalance]);
 
@@ -270,9 +252,9 @@ export default function AssetsContainer({
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowUp height={20} width={20} color={theme.colors.black} />
+                                        <ArrowUp height={20} width={20} color={theme.colors.black} strokeWidth={2} />
                                     </View>
-                                    <Text>Send</Text>
+                                    <Text style={styles.textSize}>Send</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() =>
@@ -284,9 +266,9 @@ export default function AssetsContainer({
                                     style={styles.flexCenter}
                                 >
                                     <View style={styles.headerButton}>
-                                        <ArrowDown height={20} width={22} color={theme.colors.black} />
+                                        <ArrowDown height={20} width={20} color={theme.colors.black} strokeWidth={2} />
                                     </View>
-                                    <Text>Receive</Text>
+                                    <Text style={styles.textSize}>Receive</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -326,23 +308,20 @@ export default function AssetsContainer({
                                         <View style={styles.flexColEnd}>
                                             <View style={styles.flexCenter}>
                                                 <Text style={{ fontSize: 16 }}>
-                                                    {formatCurrencyValue(pangeaBalance, 4) || 0}
+                                                    {formatCurrencyValue(pangeaBalance, 4) || 0.0}
                                                 </Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                $
-                                                {pangeaBalance
-                                                    ? formatCurrencyValue(pangeaBalance * USD_CONVERSION)
-                                                    : 0.0}
+                                                ${formatCurrencyValue(pangeaBalance * USD_CONVERSION, 3)}
                                             </Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
 
                                 {chains.map((chainObj, index) => {
-                                    const accountData = findAccountByChain(
-                                        capitalizeFirstLetter(chainObj.chain.getName())
-                                    );
+                                    const chainName = capitalizeFirstLetter(chainObj.chain.getName());
+
+                                    const accountData = findAccountByChain(chainName);
 
                                     if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
                                         return null;
@@ -353,8 +332,8 @@ export default function AssetsContainer({
                                             key={index}
                                             onPress={() => {
                                                 navigation.navigate('AssetDetail', {
-                                                    screenTitle: `${chainObj.token.getSymbol()}`,
-                                                    network: capitalizeFirstLetter(chainObj.chain.getName()),
+                                                    screenTitle: chainName,
+                                                    network: chainName,
                                                 });
                                             }}
                                             style={styles.assetsView}
@@ -372,7 +351,7 @@ export default function AssetsContainer({
                                                                 fontSize: 11,
                                                             }}
                                                         >
-                                                            {capitalizeFirstLetter(chainObj.chain.getName())}
+                                                            {chainName}
                                                         </Text>
                                                     </View>
                                                     {chainObj.chain.getChainId() === '11155111' && (
@@ -400,7 +379,7 @@ export default function AssetsContainer({
                                                                     navigation.navigate('CreateEthereumKey');
                                                                 }}
                                                             >
-                                                                <Text style={{ fontSize: 14 }}>Not connected</Text>
+                                                                <Text style={{ fontSize: 13 }}>Not connected</Text>
                                                                 <Text style={styles.generateKey}>Generate key</Text>
                                                             </TouchableOpacity>
                                                         </View>
@@ -471,7 +450,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerAssetsAmount: {
-        fontSize: 40,
+        fontSize: 35,
         fontWeight: '400',
         fontFamily: 'Roboto',
     },
@@ -514,8 +493,8 @@ const styles = StyleSheet.create({
         color: theme.colors.secondary2,
     },
     favicon: {
-        width: 28,
-        height: 28,
+        width: 26,
+        height: 26,
         marginRight: 4,
     },
     accountsView: {
@@ -534,12 +513,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 8,
-        padding: 14,
+        padding: 10,
     },
     assetsNetwork: {
         backgroundColor: theme.colors.grey7,
         paddingHorizontal: 6,
-        paddingVertical: 4,
         borderRadius: 4,
     },
     assetsTestnetNetwork: {
@@ -583,6 +561,12 @@ const styles = StyleSheet.create({
     },
     generateKey: {
         color: theme.colors.blue,
+        fontSize: 11,
+        textAlign: 'right',
+    },
+    textSize: {
         fontSize: 13,
+        fontWeight: '700',
+        fontFamily: 'Roboto',
     },
 });

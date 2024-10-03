@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { SendAssetScreenNavigationProp } from '../screens/Send';
+import { SendAssetScreenNavigationProp } from '../screens/SendAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
@@ -34,6 +34,7 @@ export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     network: string;
 };
+
 const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
@@ -48,9 +49,11 @@ const SendAssetContainer = (props: SendAssetProps) => {
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.network);
+
             setAsset(assetData);
             setLoading(false);
         };
+
         fetchAssetDetails();
     }, [props.network]);
 
@@ -67,6 +70,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
     const handlePaste = async () => {
         const content = await Clipboard.getString();
+
         if (isValidCryptoAddress(content)) {
             onChangeAddress(content);
         } else {
@@ -80,6 +84,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     const isValidCryptoAddress = (input) => {
         const regex = /^0x[a-fA-F0-9]{40}$/;
+
         return regex.test(input);
     };
 
@@ -105,6 +110,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
         if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
             return ethers.parseEther(amount.toString());
         }
+
         throw new Error('Unsupported currency symbol');
     };
 
@@ -117,6 +123,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 });
                 return;
             }
+
             if (!amount) {
                 errorStore.setError({
                     error: new Error('Transaction has no amount'),
@@ -124,6 +131,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 });
                 return;
             }
+
             setDisabled(true);
             const transactionData = {
                 to: depositeAddress,
@@ -131,6 +139,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 value: getTransactionAmount(asset.symbol, Number(amount)),
             };
             let key, chain;
+
             if (asset.symbol === 'SepoliaETH') {
                 chain = EthereumSepoliaChain;
                 key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
@@ -147,6 +156,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
             if (key) {
                 const exportPrivateKey = await key.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+
                 transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
                 setDisabled(false);
                 props.navigation.navigate('SignTransaction', {
@@ -166,6 +176,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
             const data = await response.json();
             const ethPrice = data.usd;
             const usdAmount = Number(amount) * Number(ethPrice);
+
             onChangeUSDAmount(usdAmount.toFixed(2));
         } catch (error) {
             console.error('Error fetching ETH price:', error);
@@ -342,4 +353,5 @@ const styles = StyleSheet.create({
         gap: 15,
     },
 });
+
 export default SendAssetContainer;

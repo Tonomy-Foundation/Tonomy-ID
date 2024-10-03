@@ -40,7 +40,14 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { initialized, web3wallet, disconnectSession } = useWalletStore();
+    const { initialized, web3wallet, disconnectSession, initializeWalletState } = useWalletStore();
+
+    // initializeWalletState() on mount with progressiveRetryOnNetworkError()
+    useEffect(() => {
+        if (!initialized) {
+            progressiveRetryOnNetworkError(initializeWalletState);
+        }
+    }, [initializeWalletState, initialized]);
 
     /**
      *  Login to communication microservice

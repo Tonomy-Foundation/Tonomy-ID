@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from 'react-native';
-import { Props } from '../screens/Apps';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import theme from '../utils/theme';
 import { openURL } from 'expo-linking';
 import { OpenNewWindow } from 'iconoir-react-native';
+
 const availableAppsData = [
     {
         id: 1,
@@ -10,25 +10,24 @@ const availableAppsData = [
         title: 'LEOS Sales platform',
         description:
             'Invest in Pangea, purchase LEOS tokens easily. LEOS customers are protected under Europe’s MICA regulation.',
-        url: 'http://sales.pangea.web4.world',
+        url: 'sales.pangea.web4.world',
         isAvailable: true,
     },
     {
         id: 2,
         image: require('../assets/images/pangea-block-explorer.png'),
-        title: 'Pangea Developers Features Demo',
         description: 'Search, view, and track your Pangea Blockchain transactions and activities in real-time.',
-
-        url: 'http://sales.pangea.web4.world',
+        title: 'Pangea Block Explorer',
+        url: 'explorer.pangea.web4.world',
         isAvailable: true,
     },
     {
         id: 3,
         image: require('../assets/images/pangea-block-explorer.png'),
-        title: 'Pangea Block Explorer',
+        title: 'Pangea Developers Features Demo',
         description:
             'A website to demonstrate the flows and features available to developers in Pangea. See the  0.5s block time, easy data signing flows and simplified non-custodial crypto management.',
-        url: 'http://sales.pangea.web4.world',
+        url: 'demo.pangea.web4.world',
         isAvailable: true,
     },
     {
@@ -37,7 +36,6 @@ const availableAppsData = [
         title: 'Pangea Bankless',
         description:
             'Manage your LEOS tokens as easily as any neo-banking application. Full control without compromise.',
-        url: 'http://sales.pangea.web4.world',
         isAvailable: false,
     },
     {
@@ -45,7 +43,6 @@ const availableAppsData = [
         image: require('../assets/images/pangea-dao.png'),
         title: 'Pangea DAO',
         description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
-        url: 'http://sales.pangea.web4.world',
         isAvailable: false,
     },
     {
@@ -53,7 +50,6 @@ const availableAppsData = [
         image: require('../assets/images/pangea-gov.png'),
         title: 'Pangea Gov+',
         description: 'Participate in the liquid democracy governance of the Pangea ecosystem.',
-        url: 'http://sales.pangea.web4.world',
         isAvailable: false,
     },
     {
@@ -62,11 +58,15 @@ const availableAppsData = [
         title: 'Pangea Build',
         description:
             'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
-        url: 'http://sales.pangea.web4.world',
         isAvailable: false,
     },
 ];
-export default function AppsContainer({ navigation }: { navigation: Props['navigation'] }) {
+
+const redirectToApp = (url: string) => {
+    openURL(`https://${url}`);
+};
+
+export default function AppsContainer() {
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent}>
@@ -78,16 +78,30 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
                             <View key={app.id} style={styles.pangeaApp}>
                                 <View style={styles.flexRow}>
                                     <Image source={app.image} />
-                                    <TouchableOpacity style={styles.appWebUrl} onPress={() => openURL(app.url)}>
-                                        <Text style={styles.visitAppWebUrl}>{app.url}</Text>
-                                        <OpenNewWindow height={10} width={12} color={theme.colors.blue} />
-                                    </TouchableOpacity>
+                                    {app.url && (
+                                        <TouchableOpacity
+                                            style={styles.appWebUrl}
+                                            onPress={() => redirectToApp(app.url)}
+                                        >
+                                            <View style={styles.textAndIconContainer}>
+                                                <Text style={styles.visitAppWebUrl}>{app.url}</Text>
+                                                <OpenNewWindow
+                                                    height={10}
+                                                    width={12}
+                                                    color={theme.colors.blue}
+                                                    strokeWidth={3}
+                                                />
+                                            </View>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                                 <Text style={styles.pangeaAppHead}>{app.title}</Text>
                                 <Text style={styles.pangeaAppNotes}>{app.description}</Text>
-                                <TouchableOpacity onPress={() => openURL(app.url)}>
-                                    <Text style={styles.appButton}>Visit app</Text>
-                                </TouchableOpacity>
+                                {app.url && (
+                                    <TouchableOpacity onPress={() => redirectToApp(app.url)}>
+                                        <Text style={styles.appButton}>Visit app</Text>
+                                    </TouchableOpacity>
+                                )}
                             </View>
                         ))}
                     <Text style={styles.headingText}>Coming soon</Text>
@@ -114,21 +128,19 @@ export default function AppsContainer({ navigation }: { navigation: Props['navig
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 6,
     },
     scrollContent: {
-        padding: 18,
+        padding: 16,
     },
     flexColumn: {
         flexDirection: 'column',
-        gap: 18,
-        paddingBottom: 70,
+        gap: 10,
     },
     appWebUrl: {
         flexDirection: 'row',
-        gap: 2,
     },
     headingText: {
-        paddingVertical: 5,
         fontWeight: '600',
         fontSize: 16,
     },
@@ -137,31 +149,28 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderColor: theme.colors.grey8,
         paddingHorizontal: 16,
-        paddingVertical: 24,
+        paddingVertical: 20,
+        marginBottom: 5,
     },
     leosSalesPlatformFlex: {
         flexDirection: 'row',
-        gap: 9,
         justifyContent: 'space-between',
         paddingBottom: 12,
     },
     leosSalesPlatformLink: {
         fontSize: 10,
         fontWeight: '400',
-        lineHeight: 11.4,
         color: theme.colors.blue,
     },
     pangeaAppHead: {
-        fontSize: 16,
-        fontWeight: '500',
-        lineHeight: 18.75,
+        fontSize: 15,
+        fontWeight: '600',
         textAlign: 'left',
-        paddingBottom: 8,
+        paddingBottom: 5,
     },
     pangeaAppNotes: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '400',
-        lineHeight: 16.41,
         color: theme.colors.grey9,
         paddingBottom: 16,
     },
@@ -176,14 +185,18 @@ const styles = StyleSheet.create({
     },
     flexRow: {
         flexDirection: 'row',
-        gap: 9,
         justifyContent: 'space-between',
         paddingBottom: 12,
     },
     visitAppWebUrl: {
-        fontSize: 10.5,
-        fontWeight: '400',
-        lineHeight: 11.4,
+        fontSize: 11,
+        fontWeight: '500',
         color: theme.colors.blue,
+        marginTop: -4,
+        marginRight: 3,
+    },
+    textAndIconContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
     },
 });

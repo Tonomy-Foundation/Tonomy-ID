@@ -27,8 +27,10 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
     useEffect(() => {
         const fetchSettings = async () => {
             const developerMode = await appStorage.getDeveloperMode();
+
             setDeveloperMode(developerMode);
         };
+
         fetchSettings();
     }, []);
 

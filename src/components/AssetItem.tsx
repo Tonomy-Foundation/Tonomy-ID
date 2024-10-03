@@ -2,7 +2,7 @@ import { Image, ImageSourcePropType, StyleSheet, Text, TouchableOpacity, View } 
 import theme from '../utils/theme';
 import { formatCurrencyValue } from '../utils/numbers';
 import { Images } from '../assets';
-import { SelectAssetScreenNavigationProp } from '../screens/SelectAsset';
+import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 
 export type AccountItemProps = {
     navigation: SelectAssetScreenNavigationProp['navigation'];
@@ -19,8 +19,6 @@ export type AccountItemProps = {
 
 const AssetItem = (props: AccountItemProps) => {
     const handleOnPress = async () => {
-        console.log(props.networkName);
-
         if (props.type === 'receive') {
             props.navigation.navigate('Receive', {
                 screenTitle: `Receive ${props.currency}`,
@@ -34,7 +32,6 @@ const AssetItem = (props: AccountItemProps) => {
         }
     };
 
-    console.log(props.accountBalance.balance);
     return (
         <TouchableOpacity style={styles.assetsView} onPress={handleOnPress}>
             <Image
@@ -80,7 +77,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        marginBottom: 4,
     },
     favicon: {
         width: 20,

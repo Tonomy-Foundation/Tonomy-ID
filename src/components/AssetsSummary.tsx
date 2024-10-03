@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { formatCurrencyValue } from '../utils/numbers';
 import theme from '../utils/theme';
-import { AssetsScreenNavigationProp } from '../screens/Assets';
+import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import { IAccount } from '../utils/chain/types';
 
 export type AccountSummaryProps = {

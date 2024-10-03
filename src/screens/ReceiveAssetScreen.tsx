@@ -5,7 +5,7 @@ import { RouteStackParamList } from '../navigation/Root';
 
 export type ReceiveAssetScreenNavigationProp = NativeStackScreenProps<RouteStackParamList, 'Receive'>;
 
-export default function Receive(props: ReceiveAssetScreenNavigationProp) {
+export default function ReceiveAssetScreen(props: ReceiveAssetScreenNavigationProp) {
     return (
         <ReceiveAssetContainer
             network={props.route.params.network}

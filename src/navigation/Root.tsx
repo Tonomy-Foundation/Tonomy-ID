@@ -29,15 +29,15 @@ import SignTransactionConsentScreen from '../screens/SignTransactionConsentScree
 import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import ReceiveScreen from '../screens/Receive';
-import SendScreen from '../screens/Send';
+import ReceiveScreen from '../screens/ReceiveAssetScreen';
+import SendScreen from '../screens/SendAssetScreen';
 import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import { OperationData } from '../components/Transaction';
-import AssetDetail from '../screens/AssetDetail';
-import SelectAsset from '../screens/SelectAsset';
+import AssetDetail from '../screens/AssetDetailScreen';
+import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
 
@@ -102,7 +102,7 @@ export type RouteStackParamList = {
     };
     BottomTabs: undefined;
 
-    Assets: { did?: string };
+    Assets: undefined;
     AssetListing: {
         screen: string;
         params?: {
@@ -265,7 +265,6 @@ export default function RootNavigation() {
                             component={CreateEthereumKeyScreen}
                             initialParams={{}}
                         />
-
                         <Stack.Screen
                             name="AssetDetail"
                             options={({ route }) => ({

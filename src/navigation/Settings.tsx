@@ -20,8 +20,6 @@ export type SettingsStackParamList = {
     FaceIdSettings: undefined;
     FingerprintUpdate: { password: string };
     FingerprintSettings: undefined;
-    // ChangePin: { action: string };
-    // AddPin: { action: string };
 };
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();

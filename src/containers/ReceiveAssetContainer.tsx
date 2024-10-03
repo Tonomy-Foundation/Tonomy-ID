@@ -1,5 +1,5 @@
 import { Image, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ReceiveAssetScreenNavigationProp } from '../screens/Receive';
+import { ReceiveAssetScreenNavigationProp } from '../screens/ReceiveAssetScreen';
 import theme from '../utils/theme';
 import { Images } from '../assets';
 import QRCode from 'react-native-qrcode-svg';
@@ -14,6 +14,7 @@ export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
     network: string;
 };
+
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
 
@@ -22,11 +23,12 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            console.log(props.network);
             const assetData = await getAssetDetails(props.network);
+
             setAsset(assetData);
             setLoading(false);
         };
+
         fetchAssetDetails();
     }, [props.network]);
 
@@ -53,13 +55,14 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
             alert(error.message);
         }
     };
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.subHeading}>
                         {asset.account && asset.account !== ''
-                            ? `Only send ${asset.symbol} assets to this address. Please make sure you are using the ${asset.network} network before sending assets to this address`
+                            ? `Only send ${asset.network} assets to this address. Please make sure you are using the ${asset.network} network before sending assets to this address`
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
     networkHeading: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 25,
+        marginTop: 20,
         justifyContent: 'center',
     },
     networkTitleName: {
@@ -144,11 +147,11 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 10,
         padding: 20,
-        marginHorizontal: 70,
+        marginHorizontal: 40,
     },
     accountName: {
         textAlign: 'center',
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '500',
         marginTop: 10,
     },
@@ -180,4 +183,5 @@ const styles = StyleSheet.create({
         marginTop: 15,
     },
 });
+
 export default ReceiveAssetContainer;
