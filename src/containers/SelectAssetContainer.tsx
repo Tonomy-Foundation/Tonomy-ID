@@ -1,17 +1,7 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumSepoliaChain,
-    ETHPolygonToken,
-    ETHSepoliaToken,
-    ETHToken,
-    USD_CONVERSION,
-} from '../utils/chain/etherum';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import AssetItem from '../components/AssetItem';
 import { useFocusEffect } from '@react-navigation/native';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
@@ -20,6 +10,10 @@ import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
 import useUserStore from '../store/userStore';
 import { formatCurrencyValue } from '../utils/numbers';
+import { getAssetDetails, supportedChains } from '../utils/assetDetails';
+import { IPrivateKey } from '../utils/chain/types';
+import { Images } from '../assets';
+import { USD_CONVERSION } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -54,14 +48,7 @@ const SelectAssetContainer = ({
         }, [])
     );
 
-    const chains = useMemo(
-        () => [
-            { token: ETHToken, chain: EthereumMainnetChain },
-            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-            { token: ETHPolygonToken, chain: EthereumPolygonChain },
-        ],
-        []
-    );
+    const chains = useMemo(() => supportedChains, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
@@ -79,8 +66,6 @@ const SelectAssetContainer = ({
 
                 debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
                 let account;
-
-                console.log('asset', asset);
 
                 if (asset) {
                     account = {
@@ -132,46 +117,118 @@ const SelectAssetContainer = ({
         return { account, balance, usdBalance };
     };
 
+    const handleOnPress = async (chainObj) => {
+        const chainData = await getAssetDetails(chainObj.chain.getName());
+
+        if (chainData) {
+            if (type === 'receive') {
+                navigation.navigate('Receive', {
+                    screenTitle: `Receive ${chainData.symbol}`,
+                    network: chainData.network,
+                });
+            } else if (type === 'send') {
+                navigation.navigate('Send', {
+                    screenTitle: `Send ${chainData.symbol}`,
+                    network: chainData.network,
+                    chain: chainObj.chain,
+                    privateKey: chainData.privateKey as IPrivateKey,
+                });
+            }
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.screenTitle}>select a currency to {type}</Text>
                     <View style={{ marginTop: 20, flexDirection: 'column', gap: 14 }}>
-                        <AssetItem
-                            type={type}
-                            navigation={navigation}
-                            networkName="Pangea"
-                            currency="LEOS"
-                            leos
-                            accountBalance={{
-                                balance: formatCurrencyValue(pangeaBalance),
-                                usdBalance: Number(pangeaBalance) * USD_CONVERSION,
+                        <TouchableOpacity
+                            style={styles.assetsView}
+                            onPress={() => {
+                                if (type === 'receive') {
+                                    navigation.navigate('Receive', {
+                                        screenTitle: `Receive LEOS`,
+                                        network: 'Pangea',
+                                    });
+                                }
                             }}
-                            accountName={accountName}
-                        />
+                        >
+                            <Image
+                                source={Images.GetImage('logo1024')}
+                                style={[styles.favicon, { resizeMode: 'contain' }]}
+                            />
+                            <View style={styles.assetContent}>
+                                <View style={styles.flexRowCenter}>
+                                    <View style={styles.flexRowCenter}>
+                                        <Text style={{ fontSize: 16 }}>LEOS</Text>
+                                        <View style={styles.assetsNetwork}>
+                                            <Text style={{ fontSize: 12 }}>Pangea</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={styles.flexColEnd}>
+                                    <View style={styles.rowCenter}>
+                                        <Text style={{ fontSize: 16 }}>
+                                            {formatCurrencyValue(pangeaBalance, 4) || 0.0}
+                                        </Text>
+                                    </View>
+                                    <Text style={styles.secondaryColor}>
+                                        ${formatCurrencyValue(pangeaBalance * USD_CONVERSION, 3)}
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
                         {chains.map((chainObj, index) => {
-                            const accountData = findAccountByChain(capitalizeFirstLetter(chainObj.chain.getName()));
+                            const chainName = capitalizeFirstLetter(chainObj.chain.getName());
+
+                            const accountData = findAccountByChain(chainName);
 
                             if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
                                 return null;
                             }
 
                             return (
-                                <AssetItem
+                                <TouchableOpacity
                                     key={index}
-                                    type={type}
-                                    navigation={navigation}
-                                    accountBalance={{
-                                        balance: accountData.balance || '0.00',
-                                        usdBalance: accountData.usdBalance || 0,
-                                    }}
-                                    testnet={chainObj.chain.getChainId() === '11155111'}
-                                    account={accountData.account || ''}
-                                    icon={{ uri: chainObj.token.getLogoUrl() }}
-                                    networkName={capitalizeFirstLetter(chainObj.chain.getName())}
-                                    currency={chainObj.token.getSymbol()}
-                                />
+                                    style={styles.assetsView}
+                                    onPress={() => handleOnPress(chainObj)}
+                                >
+                                    <Image
+                                        source={{ uri: chainObj.token.getLogoUrl() }}
+                                        style={[styles.favicon, { resizeMode: 'contain' }]}
+                                    />
+                                    <View style={styles.assetContent}>
+                                        <View style={styles.flexRowCenter}>
+                                            <View style={styles.flexRowCenter}>
+                                                <Text style={{ fontSize: 16 }}>{chainObj.token.getSymbol()}</Text>
+                                                <View style={styles.assetsNetwork}>
+                                                    <Text style={{ fontSize: 12 }}> {chainName}</Text>
+                                                </View>
+                                            </View>
+                                            {chainObj.chain.getChainId() === '11155111' && (
+                                                <View style={styles.assetsTestnetNetwork}>
+                                                    <Text
+                                                        style={{
+                                                            fontSize: 10,
+                                                            color: theme.colors.white,
+                                                        }}
+                                                    >
+                                                        Testnet
+                                                    </Text>
+                                                </View>
+                                            )}
+                                        </View>
+                                        <View style={styles.flexColEnd}>
+                                            <View style={styles.rowCenter}>
+                                                <Text style={{ fontSize: 16 }}>{accountData.balance}</Text>
+                                            </View>
+                                            <Text style={styles.secondaryColor}>
+                                                ${formatCurrencyValue(accountData.usdBalance ?? 0)}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
                             );
                         })}
                     </View>
@@ -219,6 +276,50 @@ const styles = StyleSheet.create({
     secondaryColor: {
         fontSize: 13,
         color: theme.colors.secondary2,
+    },
+    assetsView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    favicon: {
+        width: 20,
+        height: 20,
+        marginRight: 4,
+    },
+    assetsNetwork: {
+        backgroundColor: theme.colors.grey7,
+        paddingHorizontal: 6,
+        paddingVertical: 4,
+        borderRadius: 4,
+    },
+    secondaryColor: {
+        fontSize: 13,
+        color: theme.colors.secondary2,
+    },
+    assetsTestnetNetwork: {
+        backgroundColor: theme.colors.blue,
+        paddingHorizontal: 6,
+        paddingVertical: 4,
+        borderRadius: 4,
+    },
+    assetContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flex: 1,
+    },
+    flexRowCenter: {
+        flexDirection: 'row',
+        gap: 3,
+        alignItems: 'center',
+    },
+    flexColEnd: {
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    rowCenter: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });
 

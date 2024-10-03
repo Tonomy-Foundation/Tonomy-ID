@@ -31,7 +31,7 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import ReceiveScreen from '../screens/ReceiveAssetScreen';
 import SendScreen from '../screens/SendAssetScreen';
-import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import { IChain, IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
@@ -82,7 +82,7 @@ export type RouteStackParamList = {
         privateKey: IPrivateKey;
         origin: string;
         request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
-        session: IChainSession;
+        session: IChainSession | null;
     };
     SignTransactionSuccess: {
         operations: OperationData[];
@@ -111,17 +111,18 @@ export type RouteStackParamList = {
             screenTitle: string;
         };
     };
-    AssetDetailMain: {
-        screen: string;
-        params?: AssetsParamsScreen;
-    };
     Onboarding: undefined;
     Citizenship: undefined;
     Explore: undefined;
     Apps: undefined;
     AssetDetail: AssetsParamsScreen;
     Receive: AssetsParamsScreen;
-    Send: AssetsParamsScreen;
+    Send: {
+        screenTitle?: string;
+        network: string;
+        chain: IChain;
+        privateKey: IPrivateKey;
+    };
     SelectAsset: { screenTitle?: string; type: string };
 };
 

@@ -16,25 +16,18 @@ import QRScan from '../components/QRScan';
 import { useEffect, useRef, useState } from 'react';
 
 import { Images } from '../assets';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumPrivateKey,
-    EthereumSepoliaChain,
-    EthereumTransaction,
-    WalletConnectSession,
-} from '../utils/chain/etherum';
-import { keyStorage } from '../utils/StorageManager/setup';
-import { ITransaction } from '../utils/chain/types';
+import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
+import { IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
 import { getAssetDetails } from '../utils/assetDetails';
 import Clipboard from '@react-native-clipboard/clipboard';
-import useWalletStore from '../store/useWalletStore';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     network: string;
+    chain: IChain;
+    privateKey: IPrivateKey;
 };
 
 const SendAssetContainer = (props: SendAssetProps) => {
@@ -44,7 +37,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const [disabled, setDisabled] = useState<boolean>(false);
     const [asset, setAsset] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const { web3wallet } = useWalletStore();
     const refMessage = useRef(null);
     const errorStore = useErrorStore();
 
@@ -53,7 +45,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
             const assetData = await getAssetDetails(props.network);
 
             setAsset(assetData);
-            setLoading(false);
         };
 
         fetchAssetDetails();
@@ -70,6 +61,13 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
     };
+
+    const isValidCryptoAddress = (input) => {
+        const regex = /^0x[a-fA-F0-9]{40}$/;
+
+        return regex.test(input);
+    };
+
     const handlePaste = async () => {
         const content = await Clipboard.getString();
 
@@ -82,12 +80,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 expected: true,
             });
         }
-    };
-
-    const isValidCryptoAddress = (input) => {
-        const regex = /^0x[a-fA-F0-9]{40}$/;
-
-        return regex.test(input);
     };
 
     const onClose = () => {
@@ -104,8 +96,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const handleMaxAmount = () => {
-        onChangeAmount(getBalance());
-        onChangeUSDAmount(asset.usdBalance.toString());
+        onChangeAmount(asset.balance);
+        onChangeUSDAmount(asset.usdBalance);
     };
 
     const getTransactionAmount = (currencySymbol, amount) => {
@@ -138,34 +130,23 @@ const SendAssetContainer = (props: SendAssetProps) => {
             const transactionData = {
                 to: depositeAddress,
                 from: asset.account,
-                value: getTransactionAmount(asset.symbol, Number(amount)),
+                value: amount.toString(),
             };
-            let key, chain;
-
-            if (asset.symbol === 'SepoliaETH') {
-                chain = EthereumSepoliaChain;
-                key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-            } else if (asset.symbol === 'ETH') {
-                chain = EthereumMainnetChain;
-                key = await keyStorage.findByName('ethereum', chain);
-            } else if (asset.symbol === 'MATIC') {
-                chain = EthereumPolygonChain;
-                key = await keyStorage.findByName('ethereumPolygon', chain);
-            } else throw new Error('Unsupported chains');
 
             let transaction: ITransaction;
+            const key = props.privateKey;
+            const chain = props.chain as EthereumChain;
 
-            if (key && web3wallet) {
+            if (key) {
                 const exportPrivateKey = await key.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
-                const session = new WalletConnectSession(web3wallet);
 
                 transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
                 setDisabled(false);
                 props.navigation.navigate('SignTransaction', {
                     transaction,
                     privateKey: key,
-                    session,
+                    session: null,
                     origin: '',
                     request: null,
                 });

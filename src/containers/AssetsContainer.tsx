@@ -19,15 +19,7 @@ import TSpinner from '../components/atoms/TSpinner';
 import theme from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumSepoliaChain,
-    ETHPolygonToken,
-    ETHSepoliaToken,
-    ETHToken,
-    USD_CONVERSION,
-} from '../utils/chain/etherum';
+import { USD_CONVERSION } from '../utils/chain/etherum';
 import AccountDetails from '../components/AccountDetails';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
@@ -38,6 +30,7 @@ import { isNetworkError } from '../utils/errors';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import LottieView from 'lottie-react-native';
+import { supportedChains } from '../utils/assetDetails';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -93,14 +86,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         }, [])
     );
 
-    const chains = useMemo(
-        () => [
-            { token: ETHToken, chain: EthereumMainnetChain },
-            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-            { token: ETHPolygonToken, chain: EthereumPolygonChain },
-        ],
-        []
-    );
+    const chains = useMemo(() => supportedChains, []);
 
     const updateLeosBalance = useCallback(async () => {
         try {

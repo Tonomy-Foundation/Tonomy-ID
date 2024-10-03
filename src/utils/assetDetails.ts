@@ -9,8 +9,9 @@ import {
     ETHToken,
     USD_CONVERSION,
 } from './chain/etherum';
+import { IPrivateKey } from './chain/types';
 
-import { assetStorage } from './StorageManager/setup';
+import { assetStorage, keyStorage } from './StorageManager/setup';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
@@ -23,34 +24,19 @@ interface AccountDetails {
     icon: { uri: string } | string;
     symbol: string;
     testnet: boolean;
+    privateKey?: IPrivateKey;
 }
+
+export const supportedChains = [
+    { token: ETHToken, chain: EthereumMainnetChain, keyName: 'ethereum' },
+    { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: 'ethereumTestnetSepolia' },
+    { token: ETHPolygonToken, chain: EthereumPolygonChain, keyName: 'ethereumPolygon' },
+];
 
 export const getAssetDetails = async (network: string): Promise<AccountDetails | null> => {
     let account: AccountDetails | null = null;
 
-    const chains = [
-        { token: ETHToken, chain: EthereumMainnetChain, network: 'Ethereum' },
-        { token: ETHSepoliaToken, chain: EthereumSepoliaChain, network: 'Sepolia' },
-        { token: ETHPolygonToken, chain: EthereumPolygonChain, network: 'Polygon' },
-    ];
-
-    if (network !== 'Pangea') {
-        const chain = chains.find((c) => c.network === network);
-
-        if (chain) {
-            const asset = await assetStorage.findAssetByName(chain?.token);
-
-            account = {
-                network: chain.network,
-                account: asset?.accountName || null,
-                balance: asset?.balance || null,
-                usdBalance: asset?.usdBalance || null,
-                icon: { uri: chain.token.getLogoUrl() },
-                symbol: chain.token.getSymbol(),
-                testnet: chain.token.getChain().getChainId() === '11155111',
-            };
-        }
-    } else {
+    if (network === 'Pangea') {
         const userStore = useUserStore.getState();
         const user = userStore.user;
         const accountName = (await user.getAccountName()).toString();
@@ -65,6 +51,24 @@ export const getAssetDetails = async (network: string): Promise<AccountDetails |
             symbol: 'LEOS',
             testnet: false,
         };
+    } else {
+        const selectedChain = supportedChains.find((c) => c.chain.getName() === network);
+
+        if (selectedChain) {
+            const asset = await assetStorage.findAssetByName(selectedChain?.token);
+            const key = await keyStorage.findByName(selectedChain.keyName, selectedChain.chain);
+
+            account = {
+                network: selectedChain.chain.getName(),
+                account: asset?.accountName || null,
+                balance: asset?.balance || null,
+                usdBalance: asset?.usdBalance || null,
+                icon: { uri: selectedChain.token.getLogoUrl() },
+                symbol: selectedChain.token.getSymbol(),
+                testnet: selectedChain.token.getChain().getChainId() === '11155111',
+                ...(key && { privateKey: key }),
+            };
+        }
     }
 
     return account;

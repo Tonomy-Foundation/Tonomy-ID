@@ -3,9 +3,9 @@ import theme from '../utils/theme';
 import { formatCurrencyValue } from '../utils/numbers';
 import { Images } from '../assets';
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
+import { IChain, IPrivateKey } from '../utils/chain/types';
 
-export type AccountItemProps = {
-    navigation: SelectAssetScreenNavigationProp['navigation'];
+export type IOperationData = {
     accountBalance: { balance: string; usdBalance: number };
     networkName: string;
     currency: string;
@@ -15,19 +15,29 @@ export type AccountItemProps = {
     icon?: ImageSourcePropType | undefined;
     account?: string;
     testnet?: boolean;
+    chain?: IChain;
+    privateKey?: IPrivateKey;
+};
+
+export type AccountItemProps = {
+    navigation: SelectAssetScreenNavigationProp['navigation'];
+    operationData: IOperationData;
 };
 
 const AssetItem = (props: AccountItemProps) => {
+    const operationData = props.operationData;
     const handleOnPress = async () => {
-        if (props.type === 'receive') {
+        if (operationData.type === 'receive') {
             props.navigation.navigate('Receive', {
-                screenTitle: `Receive ${props.currency}`,
-                network: props.networkName,
+                screenTitle: `Receive ${operationData.currency}`,
+                network: operationData.networkName,
             });
-        } else if (props.type === 'send') {
+        } else if (operationData.type === 'send') {
             props.navigation.navigate('Send', {
-                screenTitle: `Send ${props.currency}`,
-                network: props.networkName,
+                screenTitle: `Send ${operationData.currency}`,
+                network: operationData.networkName,
+                chain: operationData.chain as IChain,
+                privateKey: operationData.privateKey as IPrivateKey,
             });
         }
     };
@@ -35,18 +45,18 @@ const AssetItem = (props: AccountItemProps) => {
     return (
         <TouchableOpacity style={styles.assetsView} onPress={handleOnPress}>
             <Image
-                source={props.icon || Images.GetImage('logo1024')}
+                source={operationData.icon || Images.GetImage('logo1024')}
                 style={[styles.favicon, { resizeMode: 'contain' }]}
             />
             <View style={styles.assetContent}>
                 <View style={styles.flexRowCenter}>
                     <View style={styles.flexRowCenter}>
-                        <Text style={{ fontSize: 16 }}>{props.currency}</Text>
+                        <Text style={{ fontSize: 16 }}>{operationData.currency}</Text>
                         <View style={styles.assetsNetwork}>
-                            <Text style={{ fontSize: 12 }}>{props.networkName}</Text>
+                            <Text style={{ fontSize: 12 }}>{operationData.networkName}</Text>
                         </View>
                     </View>
-                    {props?.testnet === true && !props.leos && (
+                    {operationData?.testnet === true && !operationData.leos && (
                         <View style={styles.assetsTestnetNetwork}>
                             <Text
                                 style={{
@@ -61,10 +71,10 @@ const AssetItem = (props: AccountItemProps) => {
                 </View>
                 <View style={styles.flexColEnd}>
                     <View style={styles.rowCenter}>
-                        <Text style={{ fontSize: 16 }}>{props.accountBalance.balance}</Text>
+                        <Text style={{ fontSize: 16 }}>{operationData.accountBalance.balance}</Text>
                     </View>
                     <Text style={styles.secondaryColor}>
-                        ${formatCurrencyValue(Number(props.accountBalance.usdBalance), 3)}
+                        ${formatCurrencyValue(Number(operationData.accountBalance.usdBalance), 3)}
                     </Text>
                 </View>
             </View>

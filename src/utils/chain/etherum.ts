@@ -4,7 +4,6 @@ import {
     TransactionResponse,
     TransactionRequest,
     JsonRpcProvider,
-    TransactionReceipt,
     computeAddress,
     Interface,
     ethers,

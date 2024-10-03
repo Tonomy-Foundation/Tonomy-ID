@@ -4,9 +4,11 @@ import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { getAssetDetails } from '../utils/assetDetails';
+import { getAssetDetails, supportedChains } from '../utils/assetDetails';
 import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
+import { IPrivateKey } from '../utils/chain/types';
+import { keyStorage } from '../utils/StorageManager/setup';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -64,6 +66,8 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                         props.navigation.navigate('Send', {
                                             screenTitle: `Send ${asset.symbol}`,
                                             network: asset.network,
+                                            chain: asset.chain,
+                                            privateKey: asset.privateKey,
                                         })
                                     }
                                     style={styles.flexCenter}
