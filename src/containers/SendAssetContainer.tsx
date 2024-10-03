@@ -22,6 +22,7 @@ import {
     EthereumPrivateKey,
     EthereumSepoliaChain,
     EthereumTransaction,
+    WalletConnectSession,
 } from '../utils/chain/etherum';
 import { keyStorage } from '../utils/StorageManager/setup';
 import { ITransaction } from '../utils/chain/types';
@@ -29,6 +30,7 @@ import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
 import { getAssetDetails } from '../utils/assetDetails';
 import Clipboard from '@react-native-clipboard/clipboard';
+import useWalletStore from '../store/useWalletStore';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -40,11 +42,11 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
     const [disabled, setDisabled] = useState<boolean>(false);
-    const refMessage = useRef(null);
-    const errorStore = useErrorStore();
-
     const [asset, setAsset] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const { web3wallet } = useWalletStore();
+    const refMessage = useRef(null);
+    const errorStore = useErrorStore();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -153,16 +155,17 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
             let transaction: ITransaction;
 
-            if (key) {
+            if (key && web3wallet) {
                 const exportPrivateKey = await key.exportPrivateKey();
                 const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                const session = new WalletConnectSession(web3wallet);
 
                 transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
                 setDisabled(false);
                 props.navigation.navigate('SignTransaction', {
                     transaction,
                     privateKey: key,
-                    session: null,
+                    session,
                     origin: '',
                     request: null,
                 });

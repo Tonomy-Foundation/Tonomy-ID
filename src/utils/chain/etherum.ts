@@ -535,22 +535,26 @@ export class WalletConnectSession implements IChainSession {
         request: Web3WalletTypes.SessionRequest,
         receipt: EthereumTransactionReceipt
     ): Promise<void> {
-        const signedTransaction = receipt.getRawReceipt();
-        const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
+        if (request) {
+            const signedTransaction = receipt.getRawReceipt();
+            const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
 
-        await this.wallet.respondSessionRequest({ topic: request.topic, response });
+            await this.wallet.respondSessionRequest({ topic: request.topic, response });
+        }
     }
 
     async rejectTransactionRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
-        const response = {
-            id: request.id,
-            error: getSdkError('USER_REJECTED'),
-            jsonrpc: '2.0',
-        };
+        if (request) {
+            const response = {
+                id: request.id,
+                error: getSdkError('USER_REJECTED'),
+                jsonrpc: '2.0',
+            };
 
-        await this.wallet.respondSessionRequest({
-            topic: request.topic,
-            response,
-        });
+            await this.wallet.respondSessionRequest({
+                topic: request.topic,
+                response,
+            });
+        }
     }
 }

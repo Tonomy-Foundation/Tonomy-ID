@@ -81,7 +81,7 @@ export type RouteStackParamList = {
         transaction: ITransaction;
         privateKey: IPrivateKey;
         origin: string;
-        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
         session: IChainSession;
     };
     SignTransactionSuccess: {

@@ -33,10 +33,7 @@ export default function SignTransactionConsentSuccessContainer({
     const errorStore = useErrorStore();
 
     const backToHome = async () => {
-        navigation.navigate({
-            name: 'Assets',
-            params: {},
-        });
+        navigation.navigate('Assets');
     };
 
     const viewBlockExplorer = () => {

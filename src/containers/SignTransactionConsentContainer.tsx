@@ -59,7 +59,7 @@ export default function SignTransactionConsentContainer({
                 const to = chain.formatShortAccountName((await operation.getTo()).getName());
                 const value = await operation.getValue();
 
-                const amount = value.toString();
+                const amount = value.toString(4);
                 const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 
                 return {
@@ -168,27 +168,18 @@ export default function SignTransactionConsentContainer({
         setTransactionLoading(true);
         await session.rejectTransactionRequest(request);
         setTransactionLoading(false);
-        navigation.navigate({ name: 'Assets', params: {} });
+        navigation.navigate('Assets');
     }
 
     async function onAccept() {
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-
-            let transactionRequest;
-            if (session) {
-                transactionRequest = await session.createTransactionRequest(transaction);
-            } else {
-                transactionRequest = {
-                    to: (await transaction.getTo()).getName(),
-                    from: (await transaction.getFrom()).getName(),
-                    value: (await transaction.getValue()).getAmount(),
-                };
-            }
+            const transactionRequest = await session.createTransactionRequest(transaction);
 
             const receipt = await privateKey.sendTransaction(transactionRequest);
-            if (session) await session.approveTransactionRequest(request, receipt);
+
+            await session.approveTransactionRequest(request, receipt);
             navigation.navigate('SignTransactionSuccess', {
                 operations,
                 transaction,
@@ -196,15 +187,14 @@ export default function SignTransactionConsentContainer({
             });
             setTransactionLoading(false);
         } catch (error) {
-            console.log(error);
             setTransactionLoading(false);
             errorStore.setError({
                 title: 'Signing Error',
                 error,
                 expected: false,
             });
-            navigation.navigate({ name: 'Assets', params: {} });
-            if (session) await session.rejectTransactionRequest(request);
+            navigation.navigate('Assets');
+            await session.rejectTransactionRequest(request);
         }
     }
 
@@ -213,14 +203,29 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={{ uri: chain.getNativeToken().getLogoUrl() }}
-                        ></Image>
-                        {session && (
-                            <View style={commonStyles.alignItemsCenter}>
-                                <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
-                                <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
+                        {origin ? (
+                            <>
+                                <Image
+                                    style={[styles.logo, commonStyles.marginBottom]}
+                                    source={{ uri: chain.getNativeToken().getLogoUrl() }}
+                                ></Image>
+
+                                <View style={commonStyles.alignItemsCenter}>
+                                    <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
+                                    <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
+                                </View>
+                            </>
+                        ) : (
+                            <View style={{ alignItems: 'center', marginVertical: 10 }}>
+                                <Text style={{ fontSize: 22, fontWeight: '600' }}>You are sending </Text>
+                                {operations && (
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ fontSize: 22, fontWeight: '600' }}>{operations[0].amount} </Text>
+                                        <Text style={[styles.secondaryColor, { fontSize: 22 }]}>
+                                            (${operations[0].usdValue})
+                                        </Text>
+                                    </View>
+                                )}
                             </View>
                         )}
                         <View style={styles.networkHeading}>
