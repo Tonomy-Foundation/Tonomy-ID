@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
+import { ExplorerOptions } from '../utils/chain/types';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -56,24 +57,19 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     }
 
     const redirectToCheckExplorer = () => {
-        let networkURL: string | null = null;
+        let explorerUrl: string;
 
-        switch (asset.symbol) {
-            case 'SepoliaETH':
-                networkURL = `https://sepolia.etherscan.io/address/${asset.address}`;
-                break;
-            case 'ETH':
-                networkURL = `https://etherscan.io/address/${asset.address}`;
-                break;
-            case 'MATIC':
-                networkURL = `https://polygonscan.com/address/${asset.address}`;
-                break;
-            case 'LEOS':
-                networkURL = `${settings.config.blockExplorerUrl}/account/${accountName}`;
-                break;
+        if (asset.symbol === 'LEOS') {
+            explorerUrl = `${settings.config.blockExplorerUrl}/account/${accountName}`;
+        } else {
+            const explorerOptions: ExplorerOptions = {
+                accountName: asset.account,
+            };
+
+            explorerUrl = asset.chain.getExplorerUrl(explorerOptions);
         }
 
-        if (networkURL) Linking.openURL(networkURL).catch((err) => console.error('Failed to open URL: ', err));
+        Linking.openURL(explorerUrl);
     };
 
     return (

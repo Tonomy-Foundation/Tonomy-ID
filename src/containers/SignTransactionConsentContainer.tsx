@@ -4,7 +4,14 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IChainSession, IOperation, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import {
+    IChainSession,
+    IOperation,
+    IPrivateKey,
+    ITransaction,
+    ITransactionReceipt,
+    TransactionType,
+} from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
@@ -14,6 +21,7 @@ import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
+import { TransactionRequest } from 'ethers';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -35,8 +43,8 @@ export default function SignTransactionConsentContainer({
     transaction: ITransaction;
     privateKey: IPrivateKey;
     origin: string;
-    request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
-    session: IChainSession;
+    request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
+    session: IChainSession | null;
 }) {
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
@@ -59,7 +67,8 @@ export default function SignTransactionConsentContainer({
                 const to = chain.formatShortAccountName((await operation.getTo()).getName());
                 const value = await operation.getValue();
 
-                const amount = value.toString(4);
+                const amount = value.toString(6);
+
                 const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 
                 return {
@@ -165,9 +174,12 @@ export default function SignTransactionConsentContainer({
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
     async function onReject() {
-        setTransactionLoading(true);
-        await session.rejectTransactionRequest(request);
-        setTransactionLoading(false);
+        if (session) {
+            setTransactionLoading(true);
+            await session.rejectTransactionRequest(request);
+            setTransactionLoading(false);
+        }
+
         navigation.navigate('Assets');
     }
 
@@ -175,11 +187,25 @@ export default function SignTransactionConsentContainer({
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-            const transactionRequest = await session.createTransactionRequest(transaction);
+            let receipt: ITransactionReceipt;
 
-            const receipt = await privateKey.sendTransaction(transactionRequest);
+            if (session) {
+                const transactionRequest = await session.createTransactionRequest(transaction);
 
-            await session.approveTransactionRequest(request, receipt);
+                receipt = await privateKey.sendTransaction(transactionRequest);
+
+                await session.approveTransactionRequest(request, receipt);
+            } else {
+                const transactionRequest: TransactionRequest = {
+                    to: (await transaction.getTo()).getName(),
+                    from: (await transaction.getFrom()).getName(),
+                    value: (await transaction.getValue()).getAmount(),
+                };
+
+                console.log('transactionRequest', transactionRequest);
+                receipt = await privateKey.sendTransaction(transactionRequest);
+            }
+
             navigation.navigate('SignTransactionSuccess', {
                 operations,
                 transaction,
@@ -194,7 +220,10 @@ export default function SignTransactionConsentContainer({
                 expected: false,
             });
             navigation.navigate('Assets');
-            await session.rejectTransactionRequest(request);
+
+            if (session) {
+                await session.rejectTransactionRequest(request);
+            }
         }
     }
 

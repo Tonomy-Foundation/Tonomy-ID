@@ -9,7 +9,7 @@ import {
     ETHToken,
     USD_CONVERSION,
 } from './chain/etherum';
-import { IPrivateKey } from './chain/types';
+import { IChain, IPrivateKey } from './chain/types';
 
 import { assetStorage, keyStorage } from './StorageManager/setup';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
@@ -25,6 +25,7 @@ interface AccountDetails {
     symbol: string;
     testnet: boolean;
     privateKey?: IPrivateKey;
+    chain?: IChain;
 }
 
 export const supportedChains = [
@@ -67,6 +68,7 @@ export const getAssetDetails = async (network: string): Promise<AccountDetails |
                 symbol: selectedChain.token.getSymbol(),
                 testnet: selectedChain.token.getChain().getChainId() === '11155111',
                 ...(key && { privateKey: key }),
+                chain: selectedChain.chain,
             };
         }
     }

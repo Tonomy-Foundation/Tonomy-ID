@@ -338,7 +338,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                             onPress={() => {
                                                 navigation.navigate('AssetDetail', {
                                                     screenTitle: chainName,
-                                                    network: chainName,
+                                                    network: chainObj.chain.getName(),
                                                 });
                                             }}
                                             style={styles.assetsView}
