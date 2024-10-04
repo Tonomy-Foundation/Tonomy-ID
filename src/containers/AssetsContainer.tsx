@@ -29,8 +29,8 @@ import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import LottieView from 'lottie-react-native';
 import { supportedChains } from '../utils/assetDetails';
+import Loader from '../components/Loader';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -67,12 +67,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [developerMode, setDeveloperMode] = React.useState(true);
     const [total, setTotal] = useState<number>(0);
 
-    const animation = useRef<LottieView>(null);
-
-    useEffect(() => {
-        // You can control the ref programmatically, rather than using autoPlay
-        animation.current?.play();
-    }, []);
+    const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
 
     useFocusEffect(
         useCallback(() => {
@@ -167,6 +162,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             await updateLeosBalance();
             await updateCryptoBalance();
             await fetchCryptoAssets();
+            setAssetLoading(false);
         } catch (error) {
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
@@ -230,18 +226,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
         return (
             <View style={styles.content}>
-                <View style={styles.animationContainer}>
-                    <LottieView
-                        autoPlay
-                        ref={animation}
-                        style={{
-                            width: 70,
-                            height: 70,
-                        }}
-                        // Find more Lottie files at https://lottiefiles.com/featured
-                        source={require('../assets/images/loading-gif.json')}
-                    />
-                </View>
                 <View style={styles.content}>
                     <ScrollView
                         contentContainerStyle={styles.scrollViewContent}
@@ -277,7 +261,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <ScrollView>
+                        {!isAssetLoading ? (
                             <View style={styles.scrollContent}>
                                 <TouchableOpacity
                                     onPress={() => {
@@ -395,7 +379,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                     );
                                 })}
                             </View>
-                        </ScrollView>
+                        ) : (
+                            <Loader />
+                        )}
                     </ScrollView>
                 </View>
             </View>
@@ -410,7 +396,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                     <TP style={styles.requestText} size={1}>
                         Linking to your web app and receiving data.
                     </TP>
-                    <TSpinner style={{ marginBottom: 12 }} />
+                    <View style={{ marginBottom: 12 }}>
+                        <Loader />
+                    </View>
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
@@ -576,8 +564,6 @@ const styles = StyleSheet.create({
     },
 
     animationContainer: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        marginBottom: 30,
     },
 });

@@ -10,6 +10,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
 import { ExplorerOptions } from '../utils/chain/types';
+import Loader from '../components/Loader';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -49,11 +50,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     }, [props.network]);
 
     if (loading) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
+        return <Loader />;
     }
 
     const redirectToCheckExplorer = () => {
@@ -80,7 +77,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                         <View style={styles.networkHeading}>
                             <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
                             <View style={styles.assetsNetwork}>
-                                <Text style={{ fontSize: 13, fontWeight: '500' }}>{asset.network}</Text>
+                                <Text style={styles.assetsNetworkText}>{asset.network}</Text>
                             </View>
                             <Text style={styles.headerAssetsAmount}>{`${asset.balance} ${asset.symbol}`}</Text>
                             <Text style={styles.headerAssetUSDAmount}>
@@ -128,7 +125,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ marginBottom: 20, justifyContent: 'center', gap: 10 }}>
+                    <View style={styles.transactionHistoryView}>
                         <TouchableOpacity style={styles.transactionHistoryButton}>
                             <Text style={styles.textButton}>View your transaction history</Text>
                         </TouchableOpacity>
@@ -185,6 +182,10 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
     },
+    assetsNetworkText: {
+        fontSize: 13,
+        fontWeight: '500',
+    },
     headerAssetsAmount: {
         fontSize: 23,
         fontWeight: '700',
@@ -217,6 +218,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 10,
+    },
+    transactionHistoryView: {
+        marginBottom: 20,
+        justifyContent: 'center',
+        gap: 10,
     },
     flexCenter: {
         justifyContent: 'center',

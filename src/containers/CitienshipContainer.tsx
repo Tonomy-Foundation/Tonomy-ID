@@ -116,9 +116,9 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 28,
-        fontFamily: 'Inter',
         fontWeight: '700',
         paddingBottom: 18,
+        ...commonStyles.primaryFontFamily,
     },
     identityTitle: {
         flexDirection: 'column',
@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
     },
     identityText: {
         fontWeight: '600',
-        fontFamily: 'Inter',
         fontSize: 17,
+        ...commonStyles.primaryFontFamily,
     },
     identityNotes: {
         fontWeight: '400',
@@ -151,9 +151,9 @@ const styles = StyleSheet.create({
     subTitle: {
         marginTop: 25,
         marginBottom: 5,
-        fontFamily: 'Inter',
         fontWeight: '700',
         fontSize: 20,
+        ...commonStyles.primaryFontFamily,
     },
     digitalWorldContent: {
         flexDirection: 'row',
@@ -198,10 +198,10 @@ const styles = StyleSheet.create({
     },
     horizontalScrollText: {
         width: 150,
-        fontFamily: 'Inter',
         fontSize: 17,
         fontWeight: '700',
         textAlign: 'left',
+        ...commonStyles.primaryFontFamily,
     },
     horizontalScrollNotes: {
         width: 160,
