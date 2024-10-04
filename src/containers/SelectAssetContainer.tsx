@@ -274,26 +274,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: theme.colors.secondary2,
     },
-    assetsView: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-    },
-    favicon: {
-        width: 20,
-        height: 20,
-        marginRight: 4,
-    },
-    assetsNetwork: {
-        backgroundColor: theme.colors.grey7,
-        paddingHorizontal: 6,
-        paddingVertical: 4,
-        borderRadius: 4,
-    },
-    secondaryColor: {
-        fontSize: 13,
-        color: theme.colors.secondary2,
-    },
     assetsTestnetNetwork: {
         backgroundColor: theme.colors.blue,
         paddingHorizontal: 6,
