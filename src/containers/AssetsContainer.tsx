@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerAssetsAmount: {
-        fontSize: 35,
+        fontSize: 40,
         fontWeight: '400',
         ...commonStyles.secondaryFontFamily,
     },

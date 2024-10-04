@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.gold,
         paddingVertical: 5,
         paddingHorizontal: 10,
-        borderRadius: 6,
+        borderRadius: 4,
     },
     scrollViewContent: {
         flexGrow: 1,
@@ -183,11 +183,11 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     assetsNetworkText: {
-        fontSize: 13,
+        fontSize: 10,
         fontWeight: '500',
     },
     headerAssetsAmount: {
-        fontSize: 23,
+        fontSize: 26,
         fontWeight: '700',
     },
     header: {
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     headerAssetUSDAmount: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '400',
         color: theme.colors.secondary2,
         ...commonStyles.secondaryFontFamily,
