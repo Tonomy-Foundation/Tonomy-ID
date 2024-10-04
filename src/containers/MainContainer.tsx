@@ -66,7 +66,7 @@ interface AccountDetails {
     symbol: string;
     image?: string;
     name: string;
-    address: string;
+    accountName: string;
     icon?: ImageSourcePropType | undefined;
 }
 
@@ -89,7 +89,7 @@ export default function MainContainer({
     const [accountDetails, setAccountDetails] = useState<AccountDetails>({
         symbol: '',
         name: '',
-        address: '',
+        accountName: '',
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
     const refMessage = useRef(null);
@@ -491,7 +491,7 @@ export default function MainContainer({
 
     // Open the AccountDetails component when accountDetails is set
     useEffect(() => {
-        if (accountDetails?.address) {
+        if (accountDetails?.accountName) {
             (refMessage?.current as any)?.open();
         }
     }, [accountDetails]);
@@ -511,7 +511,7 @@ export default function MainContainer({
         setAccountDetails({
             symbol: token.getSymbol(),
             name: capitalizeFirstLetter(chain.getName()),
-            address: accountData.account || '',
+            accountName: accountData.account || '',
             image: token.getLogoUrl(),
         });
         (refMessage.current as any)?.open();
@@ -557,7 +557,7 @@ export default function MainContainer({
                                             setAccountDetails({
                                                 symbol: 'LEOS',
                                                 name: 'Pangea',
-                                                address: accountName,
+                                                accountName,
                                                 icon: Images.GetImage('logo48'),
                                             });
                                             (refMessage.current as any)?.open(); // Open the AccountDetails component here
@@ -694,7 +694,7 @@ export default function MainContainer({
                                 accountDetails={accountDetails}
                                 onClose={() => {
                                     (refMessage.current as any)?.close();
-                                    setAccountDetails({ symbol: '', icon: undefined, name: '', address: '' });
+                                    setAccountDetails({ symbol: '', icon: undefined, name: '', accountName: '' });
                                 }}
                             />
                         </ScrollView>
