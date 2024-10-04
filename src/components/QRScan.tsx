@@ -8,7 +8,9 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import Debug from 'debug';
 
 import QRScanContainer from '../containers/QRScanContainer';
+
 const debug = Debug('tonomy-id:containers:MainContainer');
+
 export type QRScanProps = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
@@ -19,15 +21,19 @@ export type QRScanProps = {
 const QRScan = (props: QRScanProps) => {
     async function onScan({ data }: BarCodeScannerResult) {
         const address = validateCryptoAddress(data);
+
         if (props.onScan) props.onScan(address);
     }
 
     const validateCryptoAddress = (input) => {
         const parts = input.split(':');
+
         if (parts.length !== 2) {
             throw new Error('Invalid format. Use "type:address".');
         }
+
         const [type, address] = parts;
+
         return address;
     };
 
