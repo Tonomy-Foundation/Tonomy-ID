@@ -92,7 +92,7 @@ export default function MainContainer({
         accountName: '',
     });
     const { web3wallet, accountExists, initializeWalletAccount, initialized, initializeWalletState } = useWalletStore();
-    const refMessage = useRef(null);
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
@@ -492,7 +492,7 @@ export default function MainContainer({
     // Open the AccountDetails component when accountDetails is set
     useEffect(() => {
         if (accountDetails?.accountName) {
-            (refMessage?.current as any)?.open();
+            refMessage?.current?.open();
         }
     }, [accountDetails]);
 
@@ -514,7 +514,7 @@ export default function MainContainer({
             accountName: accountData.account || '',
             image: token.getLogoUrl(),
         });
-        (refMessage.current as any)?.open();
+        refMessage.current?.open();
     };
 
     const MainView = () => {
@@ -560,7 +560,7 @@ export default function MainContainer({
                                                 accountName,
                                                 icon: Images.GetImage('logo48'),
                                             });
-                                            (refMessage.current as any)?.open(); // Open the AccountDetails component here
+                                            refMessage.current?.open(); // Open the AccountDetails component here
                                         }}
                                     >
                                         <View style={[styles.appDialog, { justifyContent: 'center' }]}>
@@ -693,7 +693,7 @@ export default function MainContainer({
                                 refMessage={refMessage}
                                 accountDetails={accountDetails}
                                 onClose={() => {
-                                    (refMessage.current as any)?.close();
+                                    refMessage.current?.close();
                                     setAccountDetails({ symbol: '', icon: undefined, name: '', accountName: '' });
                                 }}
                             />
