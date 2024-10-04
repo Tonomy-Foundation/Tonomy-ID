@@ -91,11 +91,11 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 await Linking.openURL(callbackUrl);
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
-                navigation.navigate('Drawer', { screen: 'UserHome' });
+                navigation.navigate('Drawer', { screen: 'Assets' });
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
                 // TODO fix type error
-                navigation.navigate('Drawer', { screen: 'UserHome' });
+                navigation.navigate('Drawer', { screen: 'Assets' });
             }
         } catch (e) {
             setNextLoading(false);
@@ -107,13 +107,13 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             ) {
                 // User cancelled in the browser, so can just navigate back to home
                 // @ts-expect-error item of type string is not assignable to type never
-                navigation.navigate('Drawer', { screen: 'UserHome' });
+                navigation.navigate('Drawer', { screen: 'Assets' });
             } else {
                 errorStore.setError({
                     error: e,
                     expected: false,
                     // @ts-expect-error item of type string is not assignable to type never
-                    onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
+                    onClose: async () => navigation.navigate('Drawer', { screen: 'Assets' }),
                 });
             }
         }
@@ -148,7 +148,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             // @ts-expect-error item of type string is not assignable to type never
             // TODO fix type error
-            navigation.navigate('Drawer', { screen: 'UserHome' });
+            navigation.navigate('Drawer', { screen: 'Assets' });
         } catch (e) {
             setCancelLoading(false);
             debug('Error in cancel', e);
@@ -160,13 +160,13 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             ) {
                 // User cancelled in the browser, so can just navigate back to home
                 // @ts-expect-error item of type string is not assignable to type never
-                navigation.navigate('Drawer', { screen: 'UserHome' });
+                navigation.navigate('Drawer', { screen: 'Assets' });
             } else {
                 errorStore.setError({
                     error: e,
                     expected: false,
                     // @ts-expect-error item of type string is not assignable to type never
-                    onClose: async () => navigation.navigate('Drawer', { screen: 'UserHome' }),
+                    onClose: async () => navigation.navigate('Drawer', { screen: 'Assets' }),
                 });
             }
         }

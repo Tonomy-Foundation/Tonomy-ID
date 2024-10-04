@@ -33,7 +33,7 @@ export default function SettingsNavigation() {
         return (
             // @ts-expect-error no overload matches this call
             // TODO fix type error
-            <TouchableOpacity onPress={() => navigation.navigate('UserHome')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Assets')}>
                 <IconButton
                     icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'}
                     size={Platform.OS === 'android' ? 26 : 38}

@@ -6,7 +6,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { appStorage, assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
-
 import Debug from 'debug';
 import useUserStore from '../store/userStore';
 import { formatCurrencyValue } from '../utils/numbers';
