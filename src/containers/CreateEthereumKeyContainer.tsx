@@ -41,7 +41,7 @@ export default function CreateEthereumKeyContainer({
     const { user } = useUserStore();
     const transaction = route.params?.transaction;
 
-    const { web3wallet, initializeWalletState } = useWalletStore();
+    const { web3wallet } = useWalletStore();
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
@@ -155,10 +155,10 @@ export default function CreateEthereumKeyContainer({
                         origin: verifyContext?.verified?.origin,
                     });
                 } else {
-                    navigation.navigate({ name: 'Assets', params: {} });
+                    navigation.navigate('Assets');
                 }
             } else {
-                navigation.navigate({ name: 'Assets', params: {} });
+                navigation.navigate('Assets');
             }
         } else {
             errorsStore.setError({
