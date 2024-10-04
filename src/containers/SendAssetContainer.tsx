@@ -129,6 +129,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     origin: '',
                     request: null,
                 });
+            } else {
+                throw new Error('Chain not supported');
             }
         } catch (error) {
             errorStore.setError({
