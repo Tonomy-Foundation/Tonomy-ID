@@ -79,7 +79,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
             </View>
             <Text style={styles.subHeading}>
                 {accountData.accountName
-                    ? `Only send ${accountData.symbol} assets to this address. Other assets will be lost forever`
+                    ? `Only send ${accountData.symbol} assets to this account. Other assets will be lost forever`
                     : 'To complete the transaction, top up your account balance using this QR code'}
             </Text>
             <View style={styles.networkHeading}>

@@ -57,7 +57,7 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 You NEED to follow the above `Pre-run build` steps above before you can start the app!
 
 ```bash
-yarn run start
+DEBUG=tonomy* yarn run start
 ```
 
 ### Run with the Staging / Testnet environment and build
@@ -65,7 +65,7 @@ yarn run start
 Testing Staging / Testnet Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
 
 1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.testnet.json`
-2. Run `EXPO_NODE_ENV=staging yarn run start` or `EXPO_NODE_ENV=testnet yarn run start`
+2. Run `DEBUG=tonomy* EXPO_NODE_ENV=staging yarn run start` or `DEBUG=tonomy* EXPO_NODE_ENV=testnet yarn run start`
 3. Connect via QR and bundle and load the app
 4. Scroll down >> "Open React Native dev men"
 5. Click "Settings"
