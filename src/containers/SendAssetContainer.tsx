@@ -11,9 +11,9 @@ import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
-import { getAssetDetails } from '../utils/assetDetails';
+import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
 import Clipboard from '@react-native-clipboard/clipboard';
-
+import Loader from '../components/Loader';
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     network: string;
@@ -25,10 +25,11 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
-    const [asset, setAsset] = useState<any>(null);
+    const [asset, setAsset] = useState<AccountDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const refMessage = useRef(null);
     const errorStore = useErrorStore();
+    const [submitting, setSubmitting] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -41,12 +42,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
         fetchAssetDetails();
     }, [props.network]);
 
-    if (loading) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
+    if (loading || !asset || !asset.account) {
+        return <Loader />;
     }
 
     const handleOpenQRScan = () => {
@@ -83,11 +80,14 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const handleMaxAmount = () => {
-        onChangeAmount(asset.balance);
-        onChangeUSDAmount(asset.usdBalance ? asset.usdBalance.toString() : '0');
+        if (asset.balance) {
+            onChangeAmount(asset.balance);
+            onChangeUSDAmount(asset.usdBalance ? asset.usdBalance.toString() : '0');
+        }
     };
 
     const handleSendTransaction = async () => {
+        setSubmitting(true);
         try {
             if (Number(asset.balance) < Number(amount)) {
                 errorStore.setError({
@@ -132,7 +132,9 @@ const SendAssetContainer = (props: SendAssetProps) => {
             } else {
                 throw new Error('Chain not supported');
             }
+            setSubmitting(false);
         } catch (error) {
+            setSubmitting(false);
             errorStore.setError({
                 error,
                 expected: false,
@@ -236,8 +238,13 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     </View>
                 </ScrollView>
                 <View style={commonStyles.marginBottom}>
+                    {submitting && (
+                        <View style={commonStyles.marginBottom}>
+                            <Loader />
+                        </View>
+                    )}
                     <TButtonContained
-                        disabled={!depositeAddress || !amount}
+                        disabled={!depositeAddress || !amount || submitting}
                         style={commonStyles.marginBottom}
                         size="large"
                         onPress={handleSendTransaction}

@@ -64,7 +64,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
                     <Image source={require('../assets/images/explore/earth-globe-network-connection.png')} />
                 </View>
-                <Text style={styles.usefulLink}>Pangea links</Text>
+                <Text style={styles.subTitle}>Pangea links</Text>
                 <View style={styles.pangeaLinkButtonLayout}>
                     {openPangeaLinks.map((link, index) => (
                         <TouchableOpacity
@@ -81,8 +81,8 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                     ))}
                 </View>
 
-                <Text style={styles.usefulLink}>Our socials</Text>
-                <View style={styles.usefulLinkButtonLayout}>
+                <Text style={styles.subTitle}>Our socials</Text>
+                <View style={styles.socialLinkButtonLayout}>
                     {openOurSocialLinks.map((link, index) => (
                         <TouchableOpacity
                             key={index}
@@ -94,7 +94,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                     ))}
                 </View>
 
-                <Text style={styles.usefulLink}>News</Text>
+                <Text style={styles.subTitle}>News</Text>
                 <View style={styles.newsFrameLayoutContainer}>
                     <View style={styles.newsFrameLayout}>
                         <Image source={require('../assets/images/explore/pangea-news.png')} />
@@ -166,13 +166,13 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         fontSize: 14,
     },
-    usefulLink: {
+    subTitle: {
         fontWeight: '600',
         fontSize: 16,
         marginTop: 26,
         paddingBottom: 8,
     },
-    usefulLinkButtonLayout: {
+    socialLinkButtonLayout: {
         flexDirection: 'row',
         gap: 16,
         borderRadius: 8,
@@ -185,12 +185,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         gap: 8,
         flexWrap: 'wrap',
-    },
-    usefullLinkButton: {
-        borderWidth: 1,
-        borderRadius: 8,
-        borderColor: theme.colors.grey8,
-        width: '100%',
     },
     pangeaLinkButton: {
         borderWidth: 1,
@@ -211,12 +205,6 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         marginRight: 8,
-    },
-    usefullLinkButtonText: {
-        fontWeight: '400',
-        fontSize: 14,
-        color: theme.colors.blue,
-        textAlign: 'center',
     },
     socialButton: {
         width: '100%',

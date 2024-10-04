@@ -76,7 +76,7 @@ export default function OnboardingContainer({ navigation }: { navigation: Props[
             </Swiper>
 
             {/* Title and Text */}
-            <View style={{ flex: 0.3, flexDirection: 'column', justifyContent: 'space-between' }}>
+            <View style={styles.main}>
                 <View style={styles.content}>
                     <Text style={styles.title}>{slides[activeIndex].title}</Text>
                     <Text style={styles.text}>{slides[activeIndex].text}</Text>
@@ -104,6 +104,11 @@ export default function OnboardingContainer({ navigation }: { navigation: Props[
 }
 
 const styles = StyleSheet.create({
+    main: {
+        flex: 0.3,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
@@ -143,7 +148,7 @@ const styles = StyleSheet.create({
         fontSize: 26,
         fontWeight: 'bold',
         lineHeight: 36,
-        fontFamily: 'Inter',
+        ...commonStyles.primaryFontFamily,
     },
     text: {
         fontSize: 16,

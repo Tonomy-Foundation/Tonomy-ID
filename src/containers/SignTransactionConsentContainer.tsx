@@ -13,7 +13,7 @@ import {
     TransactionType,
 } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
-import TSpinner from '../components/atoms/TSpinner';
+
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
@@ -21,7 +21,7 @@ import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
-import { TransactionRequest } from 'ethers';
+import Loader from '../components/Loader';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -240,16 +240,30 @@ export default function SignTransactionConsentContainer({
 
                                 <View style={commonStyles.alignItemsCenter}>
                                     <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
-                                    <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
+                                    <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
                                 </View>
                             </>
                         ) : (
-                            <View style={{ alignItems: 'center', marginVertical: 10 }}>
-                                <Text style={{ fontSize: 22, fontWeight: '600' }}>You are sending </Text>
+                            <View style={styles.sandingMain}>
+                                <Text style={styles.sandingTitle}>You are sending </Text>
                                 {operations && (
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <Text style={{ fontSize: 22, fontWeight: '600' }}>{operations[0].amount} </Text>
-                                        <Text style={[styles.secondaryColor, { fontSize: 22 }]}>
+                                    <View style={styles.sandingContent}>
+                                        <Text
+                                            style={{
+                                                fontSize: 24,
+                                                fontWeight: '600',
+                                                ...commonStyles.primaryFontFamily,
+                                            }}
+                                        >
+                                            {operations[0].amount}{' '}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.secondaryColor,
+                                                commonStyles.secondaryFontFamily,
+                                                { fontSize: 22 },
+                                            ]}
+                                        >
                                             (${operations[0].usdValue})
                                         </Text>
                                     </View>
@@ -260,13 +274,13 @@ export default function SignTransactionConsentContainer({
                             <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                             <Text style={styles.nameText}>{chainName} Network</Text>
                         </View>
-                        {!accountName && <TSpinner />}
+                        {!accountName && <Loader />}
                         {accountName && <TransactionAccount accountName={accountName} />}
-                        {!operations && <TSpinner />}
+                        {!operations && <Loader />}
                         {operations && <Operations operations={operations} />}
-                        {!transactionFeeData && <TSpinner />}
+                        {!transactionFeeData && <Loader />}
                         {transactionFeeData && <TransactionFee transactionFee={transactionFeeData} />}
-                        {!transactionTotalData && <TSpinner />}
+                        {!transactionTotalData && <Loader />}
                         {transactionTotalData && (
                             <TransactionTotal
                                 transactionTotal={transactionTotalData}
@@ -330,11 +344,11 @@ function TransactionTotal({
                 },
             ]}
         >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text>{transactionTotal.total}</Text>
-                    <Text style={styles.secondaryColor}>${transactionTotal.totalUsd}</Text>
+            <View style={styles.totalView}>
+                <Text style={styles.totalTitle}>Total</Text>
+                <View style={styles.totalContentView}>
+                    <Text style={styles.totalContent}>{transactionTotal.total}</Text>
+                    <Text style={styles.secondaryColor}>(${transactionTotal.totalUsd})</Text>
                 </View>
                 {transactionTotal.balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
             </View>
@@ -366,6 +380,40 @@ const styles = StyleSheet.create({
         padding: 2,
         fontSize: 19,
     },
+    applinkContent: {
+        marginLeft: 6,
+        fontSize: 19,
+    },
+    sandingMain: {
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    sandingTitle: {
+        fontSize: 24,
+        fontWeight: '600',
+        ...commonStyles.primaryFontFamily,
+    },
+    sandingContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    totalView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    totalTitle: {
+        marginRight: 8,
+        fontWeight: '600',
+    },
+    totalContentView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    totalContent: {
+        fontSize: 16,
+        ...commonStyles.secondaryFontFamily,
+    },
     imageStyle: {
         width: 10,
         height: 13,
@@ -376,13 +424,14 @@ const styles = StyleSheet.create({
         marginTop: 12,
     },
     accountNameStyle: {
-        fontSize: 14,
+        fontSize: 16,
         marginTop: 5,
+        ...commonStyles.secondaryFontFamily,
     },
     nameText: {
         color: theme.colors.secondary2,
         marginLeft: 5,
-        fontSize: 15,
+        fontSize: 14,
     },
     totalSection: {
         padding: 16,
@@ -393,6 +442,8 @@ const styles = StyleSheet.create({
     secondaryColor: {
         color: theme.colors.secondary2,
         marginLeft: 4,
+        fontSize: 16,
+        ...commonStyles.secondaryFontFamily,
     },
     balanceError: {
         textAlign: 'right',

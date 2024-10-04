@@ -16,7 +16,7 @@ import { VestingContract } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
 
-interface AccountDetails {
+export interface AccountDetails {
     network: string;
     account: string | null;
     balance: string | null;

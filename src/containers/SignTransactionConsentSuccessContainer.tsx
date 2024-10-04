@@ -13,7 +13,8 @@ import { formatCurrencyValue } from '../utils/numbers';
 import { ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
 import { OperationData, Operations, TransactionFee } from '../components/Transaction';
-import TSpinner from '../components/atoms/TSpinner';
+
+import Loader from '../components/Loader';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
@@ -82,19 +83,23 @@ export default function SignTransactionConsentSuccessContainer({
                 <ScrollView>
                     <View style={styles.container}>
                         <TransactionSuccessIcon />
-                        <View style={{ marginTop: 10, ...commonStyles.alignItemsCenter }}>
+                        <View style={styles.transactionView}>
                             <TH1>Transaction successful</TH1>
-                            <Text style={{ fontSize: 20 }}>
-                                {total?.total}
-                                <Text style={styles.secondaryColor}>${total?.totalUsd}</Text>
-                            </Text>
+                            {fee && (
+                                <Text style={{ fontSize: 20 }}>
+                                    {`${total?.total} `}
+                                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
+                                        (${total?.totalUsd})
+                                    </Text>
+                                </Text>
+                            )}
                         </View>
                         {date ? (
                             <Operations operations={operations} date={date} />
                         ) : (
                             <Operations operations={operations} />
                         )}
-                        {!fee && <TSpinner />}
+                        {!fee && <Loader />}
                         {fee && <TransactionFee transactionFee={fee} />}
                         <TButtonSecondaryContained
                             theme="secondary"
@@ -133,6 +138,10 @@ const styles = StyleSheet.create({
         padding: 14,
         width: '100%',
         marginTop: 10,
+    },
+    transactionView: {
+        marginTop: 10,
+        ...commonStyles.alignItemsCenter,
     },
     secondaryColor: {
         color: theme.colors.secondary2,
