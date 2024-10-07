@@ -9,7 +9,7 @@ export function numberToOrdinal(value: number) {
     return screenNumber;
 }
 
-export function formatCurrencyValue(value: number, decimalPlaces = 2) {
+export function formatCurrencyValue(value: number, decimalPlaces = 2): string {
     if (value) {
         return value.toLocaleString('en-US', {
             minimumFractionDigits: decimalPlaces,
@@ -17,5 +17,5 @@ export function formatCurrencyValue(value: number, decimalPlaces = 2) {
         });
     }
 
-    return 0;
+    return '0.00';
 }

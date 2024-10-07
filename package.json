@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.118.0",
+    "version": "0.122.0",
     "type": "commonjs",
     "scripts": {
         "eas-build-pre-install": "corepack enable",
@@ -31,7 +31,7 @@
         "@json-rpc-tools/utils": "^1.7.6",
         "@react-native-async-storage/async-storage": "1.18.2",
         "@react-native-clipboard/clipboard": "^1.14.1",
-        "@react-native-community/netinfo": "9.3.10",
+        "@react-native-community/netinfo": "^11.4.1",
         "@react-navigation/bottom-tabs": "^6.5.0",
         "@react-navigation/drawer": "^6.5.0",
         "@react-navigation/native": "^6.0.12",
@@ -43,7 +43,11 @@
         "@walletconnect/react-native-compat": "^2.13.0",
         "@walletconnect/utils": "^2.13.0",
         "@walletconnect/web3wallet": "^1.12.0",
-        "@wharfkit/antelope": "^1.0.8",
+        "@wharfkit/abicache": "^1.2.2",
+        "@wharfkit/antelope": "^1.0.12",
+        "@wharfkit/session": "^1.4.0",
+        "@wharfkit/signing-request": "^3.2.0",
+        "@wharfkit/wallet-plugin-privatekey": "^1.1.0",
         "big-integer": "^1.6.51",
         "cross-fetch": "^4.0.0",
         "crypto-browserify": "^3.12.0",
@@ -61,6 +65,7 @@
         "expo-sharing": "~11.5.0",
         "expo-sqlite": "~11.3.3",
         "expo-status-bar": "~1.6.0",
+        "pako": "^2.1.0",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-native": "0.72.10",
@@ -119,5 +124,9 @@
         "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto"
     },
     "private": true,
-    "packageManager": "yarn@4.3.1"
+    "packageManager": "yarn@4.3.1",
+    "engines": {
+        "node": ">=20.0.0",
+        "yarn": "^4.3.1"
+    }
 }

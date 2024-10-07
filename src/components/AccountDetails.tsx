@@ -19,7 +19,7 @@ export type AccountDetailsProps = {
         name: string;
         icon?: ImageSourcePropType | undefined;
         balance?: { balance: string; usdBalance: number };
-        address?: string;
+        accountName?: string;
         image?: string | null;
     };
     refMessage: React.RefObject<any>;
@@ -51,7 +51,7 @@ const AccountDetails = (props: AccountDetailsProps) => {
         fetchBalance();
     }, [balance]);
 
-    const message = `${accountData.address}`;
+    const message = `${accountData.accountName}`;
 
     const copyToClipboard = () => {
         setShowPopover(true);
@@ -72,14 +72,14 @@ const AccountDetails = (props: AccountDetailsProps) => {
     return (
         <RBSheet ref={props.refMessage} openDuration={150} closeDuration={100} height={560}>
             <View style={styles.rawTransactionDrawer}>
-                <Text style={styles.drawerHead}>{accountData.address ? 'Receive' : 'Top up'}</Text>
+                <Text style={styles.drawerHead}>{accountData.accountName ? 'Receive' : 'Top up'}</Text>
                 <TouchableOpacity onPress={props.onClose}>
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} />
                 </TouchableOpacity>
             </View>
             <Text style={styles.subHeading}>
-                {accountData.address
-                    ? `Only send ${accountData.symbol} assets to this address. Other assets will be lost forever`
+                {accountData.accountName
+                    ? `Only send ${accountData.symbol} assets to this account. Other assets will be lost forever`
                     : 'To complete the transaction, top up your account balance using this QR code'}
             </Text>
             <View style={styles.networkHeading}>
@@ -92,11 +92,11 @@ const AccountDetails = (props: AccountDetailsProps) => {
             </View>
             <View style={{ ...styles.qrView, flexDirection: 'column' }}>
                 <QRCode value="testValue" size={150} />
-                {accountData.address ? (
-                    <Text style={styles.accountName}>{accountData.address}</Text>
+                {accountData.accountName ? (
+                    <Text style={styles.accountName}>{accountData.accountName}</Text>
                 ) : (
                     <Text style={styles.accountName}>
-                        {accountBalance.balance} ( ${formatCurrencyValue(Number(accountBalance.usdValue), 3)})
+                        {accountBalance.balance} ( ${formatCurrencyValue(accountBalance.usdValue)})
                     </Text>
                 )}
             </View>
