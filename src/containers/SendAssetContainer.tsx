@@ -14,6 +14,7 @@ import useErrorStore from '../store/errorStore';
 import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Loader from '../components/Loader';
+
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
     network: string;
@@ -88,6 +89,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     const handleSendTransaction = async () => {
         setSubmitting(true);
+
         try {
             if (Number(asset.balance) < Number(amount)) {
                 errorStore.setError({
@@ -132,6 +134,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
             } else {
                 throw new Error('Chain not supported');
             }
+
             setSubmitting(false);
         } catch (error) {
             setSubmitting(false);

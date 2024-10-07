@@ -12,7 +12,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import MenuIcon from '../assets/icons/MenuIcon';
 import ScanQRScreen from '../screens/ScanQRScreen';
 import { ArrowLeft, Community, Compass, GridPlus, Wallet } from 'iconoir-react-native';
-import { BottonNavigatorRouteStackParamList } from './Root';
+import { BottonNavigatorRouteStackParamList, RouteStackParamList } from './Root';
 
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
 
