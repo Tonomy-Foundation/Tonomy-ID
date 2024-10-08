@@ -127,7 +127,6 @@ const SelectAssetContainer = ({
 
             navigation.navigate('Send', {
                 screenTitle: `Send ${chainObj.token.getSymbol()}`,
-                network: chainObj.chain.getName(),
                 chain: chainObj.chain,
                 privateKey: key as IPrivateKey,
             });

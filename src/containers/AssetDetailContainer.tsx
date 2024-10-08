@@ -96,7 +96,6 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                     onPress={() =>
                                         props.navigation.navigate('Send', {
                                             screenTitle: `Send ${asset.symbol}`,
-                                            network: asset.network,
                                             chain: asset.chain,
                                             privateKey: asset.privateKey,
                                         })
