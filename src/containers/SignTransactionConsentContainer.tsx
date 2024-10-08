@@ -200,6 +200,7 @@ export default function SignTransactionConsentContainer({
                     to: (await transaction.getTo()).getName(),
                     from: (await transaction.getFrom()).getName(),
                     value: (await transaction.getValue()).getAmount(),
+                    data: ((await transaction.getData()) as { data: string }).data,
                 };
 
                 receipt = await privateKey.sendTransaction(transactionRequest);
