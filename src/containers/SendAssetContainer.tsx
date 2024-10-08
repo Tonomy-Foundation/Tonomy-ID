@@ -53,7 +53,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const handlePaste = async () => {
         const content = await Clipboard.getString();
 
-        if (props.chain.isValidCryptoAddress(content)) {
+        if (props.chain.isValidAccountName(content)) {
             onChangeAddress(content);
         } else {
             errorStore.setError({
@@ -137,7 +137,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
         }
     };
     const fetchEthPrice = async (amount) => {
-        const ethPrice = props.chain.getNativeToken().getUsdPrice();
+        const ethPrice = await props.chain.getNativeToken().getUsdPrice();
+
         const usdAmount = Number(amount) * Number(ethPrice);
 
         onChangeUSDAmount(usdAmount.toFixed(4));
@@ -178,7 +179,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                 onEndEditing={(e) => {
                                     const address = e.nativeEvent.text;
 
-                                    if (!props.chain.isValidCryptoAddress(address)) {
+                                    if (!props.chain.isValidAccountName(address)) {
                                         errorStore.setError({
                                             error: new Error('The address you entered is invalid!'),
                                             title: 'Invalid address',

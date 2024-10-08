@@ -257,9 +257,10 @@ export class AntelopeChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
-    isValidCryptoAddress(account: string): boolean {
-        //TODO add validation
-        return true;
+    isValidAccountName(account: string): boolean {
+        const regex = /^[a-z1-5.]{12}$/;
+
+        return regex.test(account);
     }
 }
 

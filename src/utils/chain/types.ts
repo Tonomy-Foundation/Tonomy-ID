@@ -96,7 +96,7 @@ export interface IChain {
     createKeyFromSeed(seed: string): IPrivateKey;
     formatShortAccountName(account: string): string;
     getExplorerUrl(options?: ExplorerOptions): string;
-    isValidCryptoAddress(account: string): boolean;
+    isValidAccountName(account: string): boolean;
 }
 
 export enum ChainType {
@@ -138,7 +138,7 @@ export abstract class AbstractChain implements IChain {
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
     abstract getExplorerUrl(options?: ExplorerOptions): string;
-    abstract isValidCryptoAddress(account: string): boolean;
+    abstract isValidAccountName(account: string): boolean;
 }
 
 export interface IAsset {

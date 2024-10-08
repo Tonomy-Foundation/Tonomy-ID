@@ -127,7 +127,7 @@ export class EthereumChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
-    isValidCryptoAddress(account: string): boolean {
+    isValidAccountName(account: string): boolean {
         const regex = /^0x[a-fA-F0-9]{40}$/;
 
         return regex.test(account);
