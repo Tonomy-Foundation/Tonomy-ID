@@ -15,12 +15,10 @@ import useUserStore from '../store/userStore';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import TSpinner from '../components/atoms/TSpinner';
 import theme, { commonStyles } from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
-import { USD_CONVERSION } from '../utils/chain/etherum';
-import AccountDetails from '../components/AccountDetails';
+import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
@@ -35,14 +33,6 @@ import Loader from '../components/Loader';
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
 
-interface AccountDetails {
-    symbol: string;
-    image?: string;
-    name: string;
-    address: string;
-    icon?: ImageSourcePropType | undefined;
-}
-
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const userStore = useUserStore();
     const user = userStore.user;
@@ -50,13 +40,8 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [pangeaBalance, setPangeaBalance] = useState(0.0);
     const [accountName, setAccountName] = useState('');
     const [refreshBalance, setRefreshBalance] = useState(false);
-    const [accountDetails, setAccountDetails] = useState<AccountDetails>({
-        symbol: '',
-        name: '',
-        address: '',
-    });
+
     const { accountExists, initializeWalletAccount } = useWalletStore();
-    const refMessage = useRef(null);
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
@@ -192,18 +177,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         return () => clearInterval(interval);
     }, [updateAllBalances]);
 
-    // Open the AccountDetails component when accountDetails is set
-    useEffect(() => {
-        if (accountDetails?.address) {
-            (refMessage?.current as any)?.open();
-        }
-    }, [accountDetails]);
-
     useEffect(() => {
         const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
             return previousValue + currentValue.usdBalance;
         }, 0);
-        const totalPangeaUSDBalance = pangeaBalance * USD_CONVERSION;
+        const totalPangeaUSDBalance = pangeaBalance * LEOS_SEED_ROUND_PRICE;
 
         setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
     }, [accounts, pangeaBalance]);
@@ -265,13 +243,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                             <View style={styles.scrollContent}>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        setAccountDetails({
-                                            symbol: 'LEOS',
-                                            name: 'Pangea',
-                                            address: accountName,
-                                            icon: Images.GetImage('logo48'),
-                                        });
-
                                         const accountDetail = {
                                             symbol: 'LEOS',
                                             name: 'Pangea',
@@ -297,11 +268,14 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                         <View style={styles.flexColEnd}>
                                             <View style={styles.flexCenter}>
                                                 <Text style={{ fontSize: 16 }}>
-                                                    {formatCurrencyValue(pangeaBalance, 4) || 0.0}
+                                                    {formatCurrencyValue(pangeaBalance, 4) || 0}
                                                 </Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                ${formatCurrencyValue(pangeaBalance * USD_CONVERSION, 3)}
+                                                ${' '}
+                                                {pangeaBalance
+                                                    ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
+                                                    : 0.0}
                                             </Text>
                                         </View>
                                     </View>
