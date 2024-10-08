@@ -257,6 +257,10 @@ export class AntelopeChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
+    isValidCryptoAddress(account: string): boolean {
+        //TODO add validation
+        return true;
+    }
 }
 
 export const LEOS_SEED_ROUND_PRICE = 0.002;

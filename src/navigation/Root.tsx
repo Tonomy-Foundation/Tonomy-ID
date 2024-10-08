@@ -114,7 +114,6 @@ export type MainRouteStackParamList = {
     Receive: AssetsParamsScreen;
     Send: {
         screenTitle?: string;
-        network: string;
         chain: IChain;
         privateKey: IPrivateKey;
     };

@@ -67,7 +67,7 @@ export default function SignTransactionConsentContainer({
                 const to = chain.formatShortAccountName((await operation.getTo()).getName());
                 const value = await operation.getValue();
 
-                const amount = value.toString(6);
+                const amount = value.toString();
 
                 const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 

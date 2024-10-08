@@ -129,6 +129,11 @@ export class EthereumChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
+    isValidCryptoAddress(account: string): boolean {
+        const regex = /^0x[a-fA-F0-9]{40}$/;
+
+        return regex.test(account);
+    }
 }
 
 export class EthereumToken extends AbstractToken {
@@ -539,6 +544,8 @@ export class WalletConnectSession implements IChainSession {
             const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await this.wallet.respondSessionRequest({ topic: request.topic, response });
+        } else {
+            throw new Error('Invalid request');
         }
     }
 
@@ -554,6 +561,8 @@ export class WalletConnectSession implements IChainSession {
                 topic: request.topic,
                 response,
             });
+        } else {
+            throw new Error('Invalid request');
         }
     }
 }

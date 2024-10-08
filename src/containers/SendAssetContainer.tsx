@@ -17,7 +17,6 @@ import Loader from '../components/Loader';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
-    network: string;
     chain: IChain;
     privateKey: IPrivateKey;
 };
@@ -34,14 +33,14 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.network);
+            const assetData = await getAssetDetails(props.chain.getName());
 
             setAsset(assetData);
             setLoading(false);
         };
 
         fetchAssetDetails();
-    }, [props.network]);
+    }, [props.chain]);
 
     if (loading || !asset || !asset.account) {
         return <Loader />;
@@ -51,16 +50,10 @@ const SendAssetContainer = (props: SendAssetProps) => {
         (refMessage?.current as any)?.open();
     };
 
-    const isValidCryptoAddress = (input) => {
-        const regex = /^0x[a-fA-F0-9]{40}$/;
-
-        return regex.test(input);
-    };
-
     const handlePaste = async () => {
         const content = await Clipboard.getString();
 
-        if (isValidCryptoAddress(content)) {
+        if (props.chain.isValidCryptoAddress(content)) {
             onChangeAddress(content);
         } else {
             errorStore.setError({
@@ -134,31 +127,20 @@ const SendAssetContainer = (props: SendAssetProps) => {
             } else {
                 throw new Error('Chain not supported');
             }
-
-            setSubmitting(false);
         } catch (error) {
-            setSubmitting(false);
             errorStore.setError({
                 error,
                 expected: false,
             });
+        } finally {
+            setSubmitting(false);
         }
     };
     const fetchEthPrice = async (amount) => {
-        try {
-            const response = await fetch(
-                `https://pangea-sales-api-yx37y.ondigitalocean.app/crypto?symbol=${props.chain
-                    .getNativeToken()
-                    .getSymbol()}`
-            );
-            const data = await response.json();
-            const ethPrice = data.usd;
-            const usdAmount = Number(amount) * Number(ethPrice);
+        const ethPrice = props.chain.getNativeToken().getUsdPrice();
+        const usdAmount = Number(amount) * Number(ethPrice);
 
-            onChangeUSDAmount(usdAmount.toFixed(4));
-        } catch (error) {
-            console.error('Error fetching ETH price:', error);
-        }
+        onChangeUSDAmount(usdAmount.toFixed(4));
     };
 
     const debounce = (func, delay) => {
@@ -196,7 +178,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                 onEndEditing={(e) => {
                                     const address = e.nativeEvent.text;
 
-                                    if (!isValidCryptoAddress(address)) {
+                                    if (!props.chain.isValidCryptoAddress(address)) {
                                         errorStore.setError({
                                             error: new Error('The address you entered is invalid!'),
                                             title: 'Invalid address',

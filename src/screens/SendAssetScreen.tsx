@@ -10,7 +10,6 @@ export default function SendAssetScreen(props: SendAssetScreenNavigationProp) {
         <SendAssetContainer
             chain={props.route.params.chain}
             privateKey={props.route.params.privateKey}
-            network={props.route.params.network}
             navigation={props.navigation}
         ></SendAssetContainer>
     );
