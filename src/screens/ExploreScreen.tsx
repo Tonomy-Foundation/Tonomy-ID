@@ -6,5 +6,5 @@ import ExploreContainer from '../containers/ExploreContainer';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'Explore'>;
 
 export default function ExploreScreen(props: Props) {
-    return <ExploreContainer navigation={props.navigation}></ExploreContainer>;
+    return <ExploreContainer></ExploreContainer>;
 }

@@ -21,7 +21,7 @@ import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
-import Loader from '../components/Loader';
+import TSpinner from '../components/atoms/TSpinner';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -275,13 +275,13 @@ export default function SignTransactionConsentContainer({
                             <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                             <Text style={styles.nameText}>{chainName} Network</Text>
                         </View>
-                        {!accountName && <Loader />}
+                        {!accountName && <TSpinner />}
                         {accountName && <TransactionAccount accountName={accountName} />}
-                        {!operations && <Loader />}
+                        {!operations && <TSpinner />}
                         {operations && <Operations operations={operations} />}
-                        {!transactionFeeData && <Loader />}
+                        {!transactionFeeData && <TSpinner />}
                         {transactionFeeData && <TransactionFee transactionFee={transactionFeeData} />}
-                        {!transactionTotalData && <Loader />}
+                        {!transactionTotalData && <TSpinner />}
                         {transactionTotalData && (
                             <TransactionTotal
                                 transactionTotal={transactionTotalData}

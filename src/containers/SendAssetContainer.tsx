@@ -3,9 +3,8 @@ import { SendAssetScreenNavigationProp } from '../screens/SendAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
-import QRScan from '../components/QRScan';
+import ReceiverAccountScanner from '../components/ReceiverAccountScanner';
 import { useEffect, useRef, useState } from 'react';
-
 import { Images } from '../assets';
 import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
@@ -13,7 +12,7 @@ import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
 import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Loader from '../components/Loader';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -22,12 +21,12 @@ export type SendAssetProps = {
 };
 
 const SendAssetContainer = (props: SendAssetProps) => {
-    const [depositeAddress, onChangeAddress] = useState<string>();
+    const [depositeAccount, onScanQR] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
     const [asset, setAsset] = useState<AccountDetails | null>(null);
     const [loading, setLoading] = useState(true);
-    const refMessage = useRef(null);
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const errorStore = useErrorStore();
     const [submitting, setSubmitting] = useState<boolean>(false);
 
@@ -43,34 +42,25 @@ const SendAssetContainer = (props: SendAssetProps) => {
     }, [props.chain]);
 
     if (loading || !asset || !asset.account) {
-        return <Loader />;
+        return <TSpinner />;
     }
 
     const handleOpenQRScan = () => {
-        (refMessage?.current as any)?.open();
+        refMessage?.current?.open();
     };
 
     const handlePaste = async () => {
         const content = await Clipboard.getString();
 
         if (props.chain.isValidAccountName(content)) {
-            onChangeAddress(content);
+            onScanQR(content);
         } else {
             errorStore.setError({
-                error: new Error('The address you entered is invalid!'),
-                title: 'Invalid address',
+                error: new Error('The account you entered is invalid!'),
+                title: 'Invalid account',
                 expected: true,
             });
         }
-    };
-
-    const onClose = () => {
-        (refMessage.current as any)?.close();
-    };
-
-    const onScan = (address) => {
-        onChangeAddress(address);
-        onClose();
     };
 
     const handleMaxAmount = () => {
@@ -98,7 +88,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
             let value;
             const transactionData = {
-                to: depositeAddress,
+                to: depositeAccount,
                 from: asset.account,
                 value,
             };
@@ -165,24 +155,24 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     return (
         <View style={styles.container}>
-            <QRScan onClose={onClose} cryptoWallet onScan={onScan} refMessage={refMessage} />
+            <ReceiverAccountScanner onScanQR={onScanQR} refMessage={refMessage} />
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.flexCol}>
                         <View style={styles.inputContainer}>
                             <TextInput
-                                value={depositeAddress}
+                                value={depositeAccount}
                                 style={styles.input}
-                                placeholder="Enter or scan the address"
+                                placeholder="Enter or scan the account"
                                 placeholderTextColor={theme.colors.tabGray}
-                                onChangeText={onChangeAddress}
+                                onChangeText={onScanQR}
                                 onEndEditing={(e) => {
-                                    const address = e.nativeEvent.text;
+                                    const account = e.nativeEvent.text;
 
-                                    if (!props.chain.isValidAccountName(address)) {
+                                    if (!props.chain.isValidAccountName(account)) {
                                         errorStore.setError({
-                                            error: new Error('The address you entered is invalid!'),
-                                            title: 'Invalid address',
+                                            error: new Error('The account you entered is invalid!'),
+                                            title: 'Invalid account',
                                             expected: true,
                                         });
                                     }
@@ -226,11 +216,11 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 <View style={commonStyles.marginBottom}>
                     {submitting && (
                         <View style={commonStyles.marginBottom}>
-                            <Loader />
+                            <TSpinner />
                         </View>
                     )}
                     <TButtonContained
-                        disabled={!depositeAddress || !amount || submitting}
+                        disabled={!depositeAccount || !amount || submitting}
                         style={commonStyles.marginBottom}
                         size="large"
                         onPress={handleSendTransaction}

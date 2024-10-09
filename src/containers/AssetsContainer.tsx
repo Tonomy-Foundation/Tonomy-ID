@@ -28,7 +28,7 @@ import { isNetworkError } from '../utils/errors';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { supportedChains } from '../utils/assetDetails';
-import Loader from '../components/Loader';
+import TSpinner from '../components/atoms/TSpinner';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -354,7 +354,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 })}
                             </View>
                         ) : (
-                            <Loader />
+                            <TSpinner />
                         )}
                     </ScrollView>
                 </View>
@@ -371,7 +371,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                         Linking to your web app and receiving data.
                     </TP>
                     <View style={{ marginBottom: 12 }}>
-                        <Loader />
+                        <TSpinner />
                     </View>
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>

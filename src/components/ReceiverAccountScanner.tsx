@@ -1,44 +1,43 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import TIconButton from '../components/TIconButton';
+import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 
 import Debug from 'debug';
 
-import QRScanContainer from '../containers/QRScanContainer';
+import QRCodeScanner from './QRCodeScanner';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 
-export type QRScanProps = {
-    refMessage: React.RefObject<any>;
-    onClose: () => void;
-    cryptoWallet?: boolean;
-    onScan?: (address) => void;
+export type ReceiverAccountScannerProps = {
+    refMessage: React.RefObject<{ open: () => void; close: () => void }>;
+    onScanQR: (accountName: string) => void;
 };
 
-const QRScan = (props: QRScanProps) => {
+const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
     async function onScan({ data }: BarCodeScannerResult) {
-        const address = validateCryptoAddress(data);
+        const accountName = validateCryptoAccount(data);
 
-        if (props.onScan) props.onScan(address);
+        props.onScanQR(accountName);
+        onClose();
     }
 
-    const validateCryptoAddress = (input) => {
+    const validateCryptoAccount = (input) => {
         const parts = input.split(':');
 
         if (parts.length !== 2) {
-            throw new Error('Invalid format. Use "type:address".');
+            throw new Error('Invalid format. Use "protocol:domain".');
         }
 
-        const [type, address] = parts;
+        const [protocol, domain] = parts;
 
-        return address;
+        return domain;
     };
 
     const onClose = () => {
-        props.onClose();
+        props.refMessage.current?.close();
     };
 
     return (
@@ -51,12 +50,12 @@ const QRScan = (props: QRScanProps) => {
         >
             <View style={styles.rawTransactionDrawer}>
                 <Text style={styles.drawerHead}>Scan QR code</Text>
-                <TouchableOpacity onPress={props.onClose}>
+                <TouchableOpacity onPress={onClose}>
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} />
                 </TouchableOpacity>
             </View>
             <View style={styles.content}>
-                <QRScanContainer onScan={onScan} onClose={onClose} />
+                <QRCodeScanner onScan={onScan} onClose={onClose} />
             </View>
         </RBSheet>
     );
@@ -81,4 +80,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default QRScan;
+export default ReceiverAccountScanner;

@@ -52,13 +52,13 @@ export async function testKeyGenerator() {
             EthereumSepoliaChain,
             await privateKeyEth.getPublicKey()
         );
-        const accountAddress = await ethereumAccount.getName();
+        const accountName = await ethereumAccount.getName();
 
-        debug('accountAddress:', accountAddress);
+        debug('accountName:', accountName);
 
         const transactionRequest: TransactionRequest = {
-            to: accountAddress,
-            from: accountAddress,
+            to: accountName,
+            from: accountName,
             value: ethers.parseEther('0'),
             data: '0x00',
         };

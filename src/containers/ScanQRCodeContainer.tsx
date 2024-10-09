@@ -8,7 +8,7 @@ import useErrorStore from '../store/errorStore';
 import { ScanQRScreenProps } from '../screens/ScanQRScreen';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Images } from '../assets';
-import QRScanContainer from './QRScanContainer';
+import QRCodeScanner from '../components/QRCodeScanner';
 import theme from '../utils/theme';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
@@ -33,7 +33,7 @@ export type ScanQRContainerProps = {
     did;
     navigation: ScanQRScreenProps['navigation'];
 };
-export default function ScanQRContainer({
+export default function ScanQRCodeContainer({
     did,
     navigation,
 }: {
@@ -43,16 +43,12 @@ export default function ScanQRContainer({
     const userStore = useUserStore();
     const user = userStore.user;
     const errorStore = useErrorStore();
-    const [username, setUsername] = useState('');
     const [accountName, setAccountName] = useState('');
 
     const { web3wallet } = useWalletStore();
 
     const setUserName = useCallback(async () => {
         try {
-            const u = await user.getUsername();
-
-            setUsername(u.getBaseUsername());
             const accountName = (await user.getAccountName()).toString();
 
             setAccountName(accountName);
@@ -127,54 +123,54 @@ export default function ScanQRContainer({
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('esr:')) {
                 // eslint-disable-next-line no-inner-declarations
-                async function createMockSigningRequest() {
-                    return await SigningRequest.create(
-                        {
-                            actions: [
-                                {
-                                    account: 'eosio.token',
-                                    name: 'transfer',
-                                    authorization: [
-                                        {
-                                            actor: 'jacktest2222',
-                                            permission: 'active',
-                                        },
-                                    ],
-                                    data: {
-                                        from: 'jacktest2222',
-                                        to: 'hippopotamus',
-                                        quantity: '1.0000 EOS',
-                                        memo: '',
-                                    },
-                                },
-                                // {
-                                //     account: 'eosio.token',
-                                //     name: 'close',
-                                //     authorization: [
-                                //         {
-                                //             actor: 'jacktest2222',
-                                //             permission: 'active',
-                                //         },
-                                //     ],
-                                //     data: {
-                                //         owner: 'jacktest2222',
-                                //         symbol: '4,EOS',
-                                //     },
-                                // },
-                            ],
-                            callback: 'https://tonomy.io',
-                            chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
-                        },
-                        {
-                            abiProvider: new ABICache(
-                                new APIClient({
-                                    url: 'https://jungle4.cryptolions.io',
-                                })
-                            ) as unknown as AbiProvider,
-                            zlib,
-                        }
-                    );
-                }
+                // async function createMockSigningRequest() {
+                //     return await SigningRequest.create(
+                //         {
+                //             actions: [
+                //                 {
+                //                     account: 'eosio.token',
+                //                     name: 'transfer',
+                //                     authorization: [
+                //                         {
+                //                             actor: 'jacktest2222',
+                //                             permission: 'active',
+                //                         },
+                //                     ],
+                //                     data: {
+                //                         from: 'jacktest2222',
+                //                         to: 'hippopotamus',
+                //                         quantity: '1.0000 EOS',
+                //                         memo: '',
+                //                     },
+                //                 },
+                //                 // {
+                //                 //     account: 'eosio.token',
+                //                 //     name: 'close',
+                //                 //     authorization: [
+                //                 //         {
+                //                 //             actor: 'jacktest2222',
+                //                 //             permission: 'active',
+                //                 //         },
+                //                 //     ],
+                //                 //     data: {
+                //                 //         owner: 'jacktest2222',
+                //                 //         symbol: '4,EOS',
+                //                 //     },
+                //                 // },
+                //             ],
+                //             callback: 'https://tonomy.io',
+                //             chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
+                //         },
+                //         {
+                //             abiProvider: new ABICache(
+                //                 new APIClient({
+                //                     url: 'https://jungle4.cryptolions.io',
+                //                 })
+                //             ) as unknown as AbiProvider,
+                //             zlib,
+                //         }
+                //     );
+                // }
 
                 // const request = await createMockSigningRequest();
                 // const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
@@ -320,7 +316,7 @@ export default function ScanQRContainer({
         <View style={styles.content}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.QRContainer}>
-                    <QRScanContainer onScan={onScan} onClose={onClose} />
+                    <QRCodeScanner onScan={onScan} onClose={onClose} />
                 </View>
                 <View style={styles.bottomInstruction}>
                     <Text style={{ fontWeight: '500' }}>QR scanner can be used for:</Text>

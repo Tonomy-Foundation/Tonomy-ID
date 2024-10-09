@@ -11,14 +11,11 @@ import SocialIconTelegram from '../assets/images/explore/icon-social-telegram';
 import SocialIconDiscord from '../assets/images/explore/icon-social-discord';
 import SocialIconGithub from '../assets/images/explore/icon-social-github';
 
-export default function ExploreContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const refMessage = useRef(null);
+export default function ExploreContainer() {
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const onClose = () => {
-        (refMessage.current as any)?.close();
+        refMessage.current?.close();
     };
-    // const handleLearnMore = () => {
-    //     (refMessage?.current as any)?.open();
-    // };
 
     const openPangeaLinks = [
         { title: 'Website', url: 'https://pangea.web4.world/' },
@@ -32,7 +29,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
             image: <SocialIconX />,
         },
         {
-            url: 'https://www.linkedin.com/company/tonomy-foundation',
+            url: 'https://www.linkedin.com/showcase/pangea-virtual-nation',
             image: <SocialIconLinkedIn />,
         },
         {

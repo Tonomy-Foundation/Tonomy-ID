@@ -10,7 +10,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
 import { ExplorerOptions } from '../utils/chain/types';
-import Loader from '../components/Loader';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -21,8 +21,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     const [asset, setAsset] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    const userStore = useUserStore();
-    const user = userStore.user;
+    const { user } = useUserStore();
 
     const [accountName, setAccountName] = useState<string>('');
 
@@ -50,7 +49,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     }, [props.network]);
 
     if (loading) {
-        return <Loader />;
+        return <TSpinner />;
     }
 
     const redirectToCheckExplorer = () => {

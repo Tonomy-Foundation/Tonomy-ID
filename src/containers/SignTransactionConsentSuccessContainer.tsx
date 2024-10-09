@@ -14,7 +14,7 @@ import { ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
 import { OperationData, Operations, TransactionFee } from '../components/Transaction';
 
-import Loader from '../components/Loader';
+import TSpinner from '../components/atoms/TSpinner';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
@@ -99,7 +99,7 @@ export default function SignTransactionConsentSuccessContainer({
                         ) : (
                             <Operations operations={operations} />
                         )}
-                        {!fee && <Loader />}
+                        {!fee && <TSpinner />}
                         {fee && <TransactionFee transactionFee={fee} />}
                         <TButtonSecondaryContained
                             theme="secondary"

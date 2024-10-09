@@ -22,8 +22,8 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
 
         if (currentHour < 12) {
             setGreeting('Good morning');
-        } else if (currentHour >= 12 && currentHour < 17) {
-            setGreeting('Good noon');
+        } else if (currentHour >= 12 && currentHour < 18) {
+            setGreeting('Good afternoon');
         } else {
             setGreeting('Good evening');
         }

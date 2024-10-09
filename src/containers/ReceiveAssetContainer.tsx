@@ -9,7 +9,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import CopyIcon from '../assets/icons/CopyIcon';
 import { ShareAndroidSolid } from 'iconoir-react-native';
 import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
-import Loader from '../components/Loader';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
@@ -37,7 +37,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     }, [props.network]);
 
     if (loading || !asset || !asset.account) {
-        return <Loader />;
+        return <TSpinner />;
     }
 
     const copyToClipboard = () => {
@@ -64,7 +64,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.subHeading}>
                         {asset.account && asset.account !== ''
-                            ? `Only send ${asset.network} assets to this address. Please make sure you are using the ${asset.network} network before sending assets to this address`
+                            ? `Only send ${asset.network} assets to this account. Please make sure you are using the ${asset.network} network before sending assets to this account`
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>

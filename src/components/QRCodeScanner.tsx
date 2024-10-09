@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TButtonContained } from '../components/atoms/TButton';
-import { TP } from '../components/atoms/THeadings';
+import { TButtonContained } from './atoms/TButton';
+import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import QrScannerBorders from '../assets/images/QrScannerBorders';
@@ -15,7 +15,7 @@ export type Props = {
     onScan: (result: BarCodeScannerResult) => void;
 };
 
-export default function QRScanContainer(props: Props) {
+export default function QRCodeScanner(props: Props) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);
     const [scanned, setScanned] = useState(false);
     const [isFlashlightOn, setFlashLightOn] = useState(false);
