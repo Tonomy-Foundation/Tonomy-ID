@@ -10,6 +10,7 @@ import SocialIconLinkedIn from '../assets/images/explore/icon-social-linkedin';
 import SocialIconTelegram from '../assets/images/explore/icon-social-telegram';
 import SocialIconDiscord from '../assets/images/explore/icon-social-discord';
 import SocialIconGithub from '../assets/images/explore/icon-social-github';
+import { WebView } from 'react-native-webview';
 
 export default function ExploreContainer({ navigation }: { navigation: Props['navigation'] }) {
     const refMessage = useRef(null);
@@ -62,9 +63,14 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                 <View style={styles.worldFristAutonomous}>
                     <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
-                    <Image source={require('../assets/images/explore/earth-globe-network-connection.png')} />
+                    <WebView
+                        source={{ uri: 'https://www.youtube.com/embed/d5b2gmJWKp4?si=9Ufd0Py74nLUSNQc' }}
+                        style={styles.video}
+                        javaScriptEnabled
+                        allowsInlineMediaPlayback
+                    />
                 </View>
-                <Text style={styles.subTitle}>Pangea links</Text>
+                <Text style={styles.usefulLink}>Pangea links</Text>
                 <View style={styles.pangeaLinkButtonLayout}>
                     {openPangeaLinks.map((link, index) => (
                         <TouchableOpacity
@@ -81,8 +87,8 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                     ))}
                 </View>
 
-                <Text style={styles.subTitle}>Our socials</Text>
-                <View style={styles.socialLinkButtonLayout}>
+                <Text style={styles.usefulLink}>Our socials</Text>
+                <View style={styles.usefulLinkButtonLayout}>
                     {openOurSocialLinks.map((link, index) => (
                         <TouchableOpacity
                             key={index}
@@ -94,7 +100,7 @@ export default function ExploreContainer({ navigation }: { navigation: Props['na
                     ))}
                 </View>
 
-                <Text style={styles.subTitle}>News</Text>
+                <Text style={styles.usefulLink}>News</Text>
                 <View style={styles.newsFrameLayoutContainer}>
                     <View style={styles.newsFrameLayout}>
                         <Image source={require('../assets/images/explore/pangea-news.png')} />
@@ -131,6 +137,12 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: 16,
     },
+    video: {
+        width: '100%',
+        height: 200,
+        marginTop: 10,
+        borderRadius: 20,
+    },
     joinCommunityDiscordImage: {
         alignSelf: 'center',
         marginBottom: 22,
@@ -166,13 +178,13 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         fontSize: 14,
     },
-    subTitle: {
+    usefulLink: {
         fontWeight: '600',
         fontSize: 16,
         marginTop: 26,
         paddingBottom: 8,
     },
-    socialLinkButtonLayout: {
+    usefulLinkButtonLayout: {
         flexDirection: 'row',
         gap: 16,
         borderRadius: 8,
@@ -185,6 +197,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         gap: 8,
         flexWrap: 'wrap',
+    },
+    usefullLinkButton: {
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: theme.colors.grey8,
+        width: '100%',
     },
     pangeaLinkButton: {
         borderWidth: 1,
@@ -205,6 +223,12 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         marginRight: 8,
+    },
+    usefullLinkButtonText: {
+        fontWeight: '400',
+        fontSize: 14,
+        color: theme.colors.blue,
+        textAlign: 'center',
     },
     socialButton: {
         width: '100%',

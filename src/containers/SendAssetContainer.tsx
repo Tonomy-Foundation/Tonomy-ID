@@ -136,31 +136,9 @@ const SendAssetContainer = (props: SendAssetProps) => {
             setSubmitting(false);
         }
     };
-    const fetchEthPrice = async (amount) => {
-        const ethPrice = await props.chain.getNativeToken().getUsdPrice();
-
-        const usdAmount = Number(amount) * Number(ethPrice);
-
-        onChangeUSDAmount(usdAmount.toFixed(4));
-    };
-
-    const debounce = (func, delay) => {
-        let timeoutId;
-
-        return (...args) => {
-            clearTimeout(timeoutId);
-
-            timeoutId = setTimeout(() => {
-                func.apply(this, args);
-            }, delay);
-        };
-    };
-
-    const debouncedSearch = debounce(fetchEthPrice, 500);
 
     const handleAmountChange = async (amount) => {
         onChangeAmount(amount);
-        debouncedSearch(amount);
     };
 
     return (
@@ -267,6 +245,7 @@ const styles = StyleSheet.create({
     },
     networkName: {
         fontSize: 15,
+        textTransform: 'capitalize',
     },
     favicon: {
         width: 24,
