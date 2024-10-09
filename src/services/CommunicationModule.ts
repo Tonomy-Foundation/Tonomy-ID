@@ -14,7 +14,7 @@ import { useCallback, useEffect, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
-import { AppState } from 'react-native';
+import { AppState, Linking } from 'react-native';
 import { keyStorage } from '../utils/StorageManager/setup';
 import {
     EthereumAccount,
@@ -185,6 +185,45 @@ export default function CommunicationModule() {
             });
         }
     }
+
+    useEffect(() => {
+        // Function to handle incoming URLs
+        const handleDeepLink = ({ url }) => {
+            debug('Received URL:', url);
+        };
+
+        // Listen for deep links when the app is running
+        const listener = Linking.addEventListener('url', handleDeepLink);
+
+        // Check if the app was opened from a deep link
+        Linking.getInitialURL()
+            .then((url) => {
+                debug('Initial URL:', url);
+
+                if (url && url.startsWith('esr')) {
+                    handleDeepLink({ url });
+                }
+            })
+            .catch((err) => console.error('An error occurred', err));
+
+        // Check if the device can handle the esr URL scheme
+        Linking.canOpenURL('esr://')
+            .then((supported) => {
+                debug('Checking if device can handle esr URL scheme', supported);
+
+                if (!supported) {
+                    console.error('Error', 'Cannot handle esr URL scheme');
+                } else {
+                    debug('Device can handle esr URL scheme');
+                }
+            })
+            .catch((err) => console.error('An error occurred', err));
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            if (listener) listener.remove();
+        };
+    }, []);
 
     const { ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
 

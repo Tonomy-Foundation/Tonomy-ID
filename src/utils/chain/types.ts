@@ -1,5 +1,6 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -367,4 +368,72 @@ export interface IChainSession {
     approveTransactionRequest(request: unknown, transaction: ITransactionReceipt): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;
+
+    //TODO remove these comments
+    // Event Listeners
+    // for antelope esr:// (return false if isIdentity request Type)
+    // for ethereum send the event:
+    //handle deep linking
+    //handle qr scanning
+
+    // (all handle login nd signing requests)
+    // initialize async object
+}
+
+type ESRTransactionRequest = {
+    chainId: IChain;
+    actions: Array<{
+        account: string;
+        name: string;
+        authorization: Array<{ actor: string; permission: string }>;
+        data: any;
+    }>;
+    signer?: string;
+    callback?: string;
+    request: ResolvedSigningRequest;
+};
+
+type EthereumTransactionRequest = {
+    chainId: IChain;
+    from: string;
+    to: string;
+    data?: string;
+    value?: string;
+    gas?: string;
+    type?: string;
+};
+
+export interface IRequestListener extends IChainSession {
+    /**
+     * Processes incoming transaction events
+     * @param request The transaction request object.
+     * @returns A boolean indicating if the transaction was successfully handled.
+     */
+    onTransactionEvent(request: ESRTransactionRequest | EthereumTransactionRequest): Promise<{
+        transaction: ITransaction; // Represents an Ethereum/ANtelope transaction
+        privateKey: IPrivateKey; // Represents an Ethereum/Antelope private key
+        origin: string; // The origin of the transaction request
+        request: ESRTransactionRequest | EthereumTransactionRequest; // The original Ethereum/antelope transaction request
+        session: IChainSession; // The WalletConnect/ESRTransactionRequest session object
+    }>;
+
+    /**
+     * Processes incoming session events.
+     * @param event The session event object.
+     */
+    onSessionEvent(event: unknown): void;
+
+    /**
+     * Handles deep linking
+     * @param url The deep link URL.
+     * @returns A boolean indicating if the transaction was successfully handled.
+     */
+    handleDeepLinking(url: string): Promise<boolean>;
+
+    /**
+     * Handles QR scanning events and parsing.
+     * @param scannedData The scanned QR code data.
+     *  @returns A boolean indicating if the transaction was successfully handled.
+     */
+    handleQrScanning(scannedData: string): Promise<boolean>;
 }
