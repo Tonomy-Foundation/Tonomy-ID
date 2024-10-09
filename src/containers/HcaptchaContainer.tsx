@@ -13,7 +13,6 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
-import TErrorModal from '../components/TErrorModal';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
@@ -44,26 +43,30 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     };
 
     const onMessage = (event: { nativeEvent: { data: string } }) => {
-        if (event && event.nativeEvent.data) {
-            if (['cancel'].includes(event.nativeEvent.data)) {
-                hideHcaptcha();
-                setCode(event.nativeEvent.data);
-                setErrorMsg('You cancelled the challenge. Please try again.');
-            } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
-                hideHcaptcha();
-                setCode(event.nativeEvent.data);
-                setErrorMsg('Challenge expired or some error occured. Please try again.');
-            } else if (event.nativeEvent.data === 'open') {
-                debug('Visual challenge opened');
-            } else {
-                debug('Verified code from hCaptcha', event.nativeEvent.data);
+        try {
+            if (event && event.nativeEvent.data) {
+                if (['cancel'].includes(event.nativeEvent.data)) {
+                    hideHcaptcha();
+                    setCode(event.nativeEvent.data);
+                    setErrorMsg('You cancelled the challenge. Please try again.');
+                } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
+                    hideHcaptcha();
+                    setCode(event.nativeEvent.data);
+                    setErrorMsg('Challenge expired or some error occured. Please try again.');
+                } else if (event.nativeEvent.data === 'open') {
+                    debug('Visual challenge opened');
+                } else {
+                    debug('Verified code from hCaptcha', event.nativeEvent.data);
 
-                if (settings.env === 'local') {
-                    setCode('10000000-aaaa-bbbb-cccc-000000000001');
-                } else setCode(event.nativeEvent.data);
-                hideHcaptcha();
-                setSuccess(true);
+                    if (settings.env === 'local') {
+                        setCode('10000000-aaaa-bbbb-cccc-000000000001');
+                    } else setCode(event.nativeEvent.data);
+                    hideHcaptcha();
+                    setSuccess(true);
+                }
             }
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
         }
     };
 
@@ -237,11 +240,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     </View>
                 }
             ></LayoutComponent>
-            <TErrorModal
+            <TModal
                 visible={showUsernameErrorModal}
                 onPress={onUsernameErrorModalPress}
                 title="Please choose another username"
-                expected={true}
+                icon="exclamation"
             >
                 <View>
                     <Text>
@@ -249,7 +252,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                         Please choose another one.
                     </Text>
                 </View>
-            </TErrorModal>
+            </TModal>
             <TModal
                 visible={showModal}
                 icon="check"
