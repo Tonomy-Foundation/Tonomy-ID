@@ -79,7 +79,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             } catch (e) {
                 debug('main screen error', e);
                 errorStore.setError({ error: e, expected: false });
-                navigation.navigate('SplashSecurity');
+                navigation.navigate('Onboarding');
             }
         }
 

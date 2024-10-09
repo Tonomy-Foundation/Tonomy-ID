@@ -8,6 +8,7 @@ export default function SocialIconX(props: SvgProps) {
     if (props.color && typeof props.color === 'string') {
         color = props.color;
     }
+
     const xml = `
     <svg width="45" height="44" viewBox="0 0 45 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_10393_8443)">

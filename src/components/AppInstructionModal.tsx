@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from '
 import theme from '../utils/theme';
 import CloseIcon from '../assets/icons/CloseIcon';
 import { appStorage } from '../utils/StorageManager/setup';
+
 const { width } = Dimensions.get('window');
 const numberOfTabs = 5;
 const tabWidth = width / numberOfTabs;
@@ -10,11 +11,14 @@ const tabWidth = width / numberOfTabs;
 const AppInstructionModal = () => {
     const [currentTip, setCurrentTip] = useState(0);
     const [showOnboarding, setShowOnboarding] = useState(false);
+
     useEffect(() => {
         const fetchSettings = async () => {
             const showInstructions = await appStorage.getAppInstruction();
+
             setShowOnboarding(showInstructions);
         };
+
         fetchSettings();
     }, []);
 

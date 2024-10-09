@@ -7,8 +7,8 @@ import {
     ETHPolygonToken,
     ETHSepoliaToken,
     ETHToken,
-    USD_CONVERSION,
 } from './chain/etherum';
+import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
 import { IChain, IPrivateKey } from './chain/types';
 
 import { assetStorage, keyStorage } from './StorageManager/setup';
@@ -47,7 +47,7 @@ export const getAssetDetails = async (network: string): Promise<AccountDetails |
             network: 'Pangea',
             account: accountName,
             balance: `${accountPangeaBalance} LEOS`,
-            usdBalance: accountPangeaBalance * USD_CONVERSION,
+            usdBalance: accountPangeaBalance * LEOS_SEED_ROUND_PRICE,
             icon: Images.GetImage('logo48'),
             symbol: 'LEOS',
             testnet: false,

@@ -44,26 +44,17 @@ export default function WalletConnectLoginContainer({
 
     const onCancel = async () => {
         await session.cancelSessionRequest(payload);
-        navigation.navigate({
-            name: 'Assets',
-            params: {},
-        });
+        navigation.navigate('Assets');
     };
 
     const handleAccept = async () => {
         try {
             await session.createSession(payload);
-            navigation.navigate({
-                name: 'Assets',
-                params: {},
-            });
+            navigation.navigate('Assets');
         } catch (e) {
             await session.cancelSessionRequest(payload);
+            navigation.navigate('Assets');
 
-            navigation.navigate({
-                name: 'Assets',
-                params: {},
-            });
             errorStore.setError({ title: 'Error', error: e, expected: false });
         }
     };

@@ -19,6 +19,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
 
     useEffect(() => {
         const currentHour = new Date().getHours(); // Get current hour from device time
+
         if (currentHour < 12) {
             setGreeting('Good morning');
         } else if (currentHour >= 12 && currentHour < 17) {
@@ -31,8 +32,10 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     useEffect(() => {
         const fetchUsername = async () => {
             const u = await user.getUsername();
+
             setUsername(u.getBaseUsername());
         };
+
         if (user) {
             fetchUsername();
         }

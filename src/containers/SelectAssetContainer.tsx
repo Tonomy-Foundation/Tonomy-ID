@@ -12,7 +12,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import { supportedChains } from '../utils/assetDetails';
 import { IPrivateKey } from '../utils/chain/types';
 import { Images } from '../assets';
-import { USD_CONVERSION } from '../utils/chain/etherum';
+import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -170,7 +170,7 @@ const SelectAssetContainer = ({
                                         </Text>
                                     </View>
                                     <Text style={styles.secondaryColor}>
-                                        ${formatCurrencyValue(pangeaBalance * USD_CONVERSION, 3)}
+                                        ${formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE, 3)}
                                     </Text>
                                 </View>
                             </View>

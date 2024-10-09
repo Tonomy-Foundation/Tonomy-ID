@@ -5,6 +5,7 @@ import { TransactionType } from '../utils/chain/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { QuestionMark } from 'iconoir-react-native';
+
 export type TransactionFeeData = {
     fee: string;
     usdFee: string;

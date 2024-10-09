@@ -679,7 +679,6 @@ export class AntelopeSigningRequestSession implements IChainSession {
     ): Promise<void> {
         const signedTransaction = receipt.getRawTransaction();
         const trxId = receipt.getTransactionHash();
-        // @ts-expect-error signatures type mismatch
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
         if (callbackParams) {
