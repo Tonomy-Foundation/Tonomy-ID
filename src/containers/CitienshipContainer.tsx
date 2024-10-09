@@ -116,9 +116,9 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 28,
-        fontFamily: 'Inter',
         fontWeight: '700',
         paddingBottom: 18,
+        ...commonStyles.primaryFontFamily,
     },
     identityTitle: {
         flexDirection: 'column',
@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
     },
     identityText: {
         fontWeight: '600',
-        fontFamily: 'Inter',
         fontSize: 17,
+        ...commonStyles.primaryFontFamily,
     },
     identityNotes: {
         fontWeight: '400',
@@ -149,11 +149,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     subTitle: {
-        marginTop: 25,
+        marginTop: 20,
         marginBottom: 5,
-        fontFamily: 'Inter',
         fontWeight: '700',
         fontSize: 20,
+        ...commonStyles.primaryFontFamily,
     },
     digitalWorldContent: {
         flexDirection: 'row',
@@ -174,18 +174,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     webTitle: {
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: '500',
-        // textAlign: 'center',
         paddingTop: 8,
         alignSelf: 'center',
     },
     horizontalScroll: {
         flexDirection: 'row',
-        padding: 14,
+        padding: 16,
         marginTop: 8,
-        width: 300,
-        height: 150,
+        width: 326,
+        height: 149,
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 10,
@@ -197,11 +196,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     horizontalScrollText: {
-        width: 150,
-        fontFamily: 'Inter',
+        width: 165,
         fontSize: 17,
         fontWeight: '700',
+        lineHeight: 18.57,
+        height: 42,
         textAlign: 'left',
+        ...commonStyles.primaryFontFamily,
     },
     horizontalScrollNotes: {
         width: 160,

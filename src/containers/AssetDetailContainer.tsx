@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
+import { ExplorerOptions } from '../utils/chain/types';
+import Loader from '../components/Loader';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -27,8 +29,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     useEffect(() => {
         const fetchAccountName = async () => {
             const accountName = (await user.getAccountName()).toString();
+
             setAccountName(accountName);
         };
+
         if (user) {
             fetchAccountName();
         }
@@ -37,6 +41,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.network);
+
             setAsset(assetData);
             setLoading(false);
         };
@@ -45,29 +50,23 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
     }, [props.network]);
 
     if (loading) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
+        return <Loader />;
     }
+
     const redirectToCheckExplorer = () => {
-        let networkURL: string | null = null;
-        switch (asset.symbol) {
-            case 'SepoliaETH':
-                networkURL = `https://sepolia.etherscan.io/address/${asset.address}`;
-                break;
-            case 'ETH':
-                networkURL = `https://etherscan.io/address/${asset.address}`;
-                break;
-            case 'MATIC':
-                networkURL = `https://polygonscan.com/address/${asset.address}`;
-                break;
-            case 'LEOS':
-                networkURL = `${settings.config.blockExplorerUrl}/account/${accountName}`;
-                break;
+        let explorerUrl: string;
+
+        if (asset.symbol === 'LEOS') {
+            explorerUrl = `${settings.config.blockExplorerUrl}/account/${accountName}`;
+        } else {
+            const explorerOptions: ExplorerOptions = {
+                accountName: asset.account,
+            };
+
+            explorerUrl = asset.chain.getExplorerUrl(explorerOptions);
         }
-        if (networkURL) Linking.openURL(networkURL).catch((err) => console.error('Failed to open URL: ', err));
+
+        Linking.openURL(explorerUrl);
     };
 
     return (
@@ -78,7 +77,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                         <View style={styles.networkHeading}>
                             <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
                             <View style={styles.assetsNetwork}>
-                                <Text style={{ fontSize: 13, fontWeight: '500' }}>{asset.network}</Text>
+                                <Text style={styles.assetsNetworkText}>{asset.network}</Text>
                             </View>
                             <Text style={styles.headerAssetsAmount}>{`${asset.balance} ${asset.symbol}`}</Text>
                             <Text style={styles.headerAssetUSDAmount}>
@@ -97,7 +96,8 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                     onPress={() =>
                                         props.navigation.navigate('Send', {
                                             screenTitle: `Send ${asset.symbol}`,
-                                            network: asset.network,
+                                            chain: asset.chain,
+                                            privateKey: asset.privateKey,
                                         })
                                     }
                                     style={styles.flexCenter}
@@ -124,7 +124,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ marginBottom: 20, justifyContent: 'center', gap: 10 }}>
+                    <View style={styles.transactionHistoryView}>
                         <TouchableOpacity style={styles.transactionHistoryButton}>
                             <Text style={styles.textButton}>View your transaction history</Text>
                         </TouchableOpacity>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.gold,
         paddingVertical: 5,
         paddingHorizontal: 10,
-        borderRadius: 6,
+        borderRadius: 4,
     },
     scrollViewContent: {
         flexGrow: 1,
@@ -181,8 +181,12 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
     },
+    assetsNetworkText: {
+        fontSize: 10,
+        fontWeight: '500',
+    },
     headerAssetsAmount: {
-        fontSize: 23,
+        fontSize: 26,
         fontWeight: '700',
     },
     header: {
@@ -191,7 +195,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     headerAssetUSDAmount: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '400',
         color: theme.colors.secondary2,
         ...commonStyles.secondaryFontFamily,
@@ -213,6 +217,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 10,
+    },
+    transactionHistoryView: {
+        marginBottom: 20,
+        justifyContent: 'center',
+        gap: 10,
     },
     flexCenter: {
         justifyContent: 'center',

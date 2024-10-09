@@ -1,13 +1,4 @@
-import {
-    Image,
-    ImageSourcePropType,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SendAssetScreenNavigationProp } from '../screens/SendAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
@@ -16,76 +7,61 @@ import QRScan from '../components/QRScan';
 import { useEffect, useRef, useState } from 'react';
 
 import { Images } from '../assets';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumPrivateKey,
-    EthereumSepoliaChain,
-    EthereumTransaction,
-} from '../utils/chain/etherum';
-import { keyStorage } from '../utils/StorageManager/setup';
-import { ITransaction } from '../utils/chain/types';
+import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
+import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
-import { getAssetDetails } from '../utils/assetDetails';
+import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
 import Clipboard from '@react-native-clipboard/clipboard';
+import Loader from '../components/Loader';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
-    network: string;
+    chain: IChain;
+    privateKey: IPrivateKey;
 };
 
 const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAddress, onChangeAddress] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
-    const [disabled, setDisabled] = useState<boolean>(false);
+    const [asset, setAsset] = useState<AccountDetails | null>(null);
+    const [loading, setLoading] = useState(true);
     const refMessage = useRef(null);
     const errorStore = useErrorStore();
-
-    const [asset, setAsset] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.network);
+            const assetData = await getAssetDetails(props.chain.getName());
 
             setAsset(assetData);
             setLoading(false);
         };
 
         fetchAssetDetails();
-    }, [props.network]);
+    }, [props.chain]);
 
-    if (loading) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
+    if (loading || !asset || !asset.account) {
+        return <Loader />;
     }
 
     const handleOpenQRScan = () => {
         (refMessage?.current as any)?.open();
     };
+
     const handlePaste = async () => {
         const content = await Clipboard.getString();
 
-        if (isValidCryptoAddress(content)) {
+        if (props.chain.isValidAccountName(content)) {
             onChangeAddress(content);
         } else {
-            onChangeAddress('');
             errorStore.setError({
-                error: new Error('Invalid address!'),
+                error: new Error('The address you entered is invalid!'),
+                title: 'Invalid address',
                 expected: true,
             });
         }
-    };
-
-    const isValidCryptoAddress = (input) => {
-        const regex = /^0x[a-fA-F0-9]{40}$/;
-
-        return regex.test(input);
     };
 
     const onClose = () => {
@@ -97,90 +73,50 @@ const SendAssetContainer = (props: SendAssetProps) => {
         onClose();
     };
 
-    const getBalance = () => {
-        if (asset && asset.balance) {
-            return asset.balance.replace(asset.symbol, '')?.trim();
-        }
-    };
-
     const handleMaxAmount = () => {
-        const balance = getBalance();
-        if (balance !== '0') {
-            onChangeAmount(balance);
+        if (asset.balance) {
+            onChangeAmount(asset.balance);
             onChangeUSDAmount(asset.usdBalance ? asset.usdBalance.toString() : '0');
-        } else {
-            onChangeAmount('');
-            onChangeUSDAmount('0');
-            errorStore.setError({
-                error: new Error('done'),
-                expected: true,
-            });
-            return;
         }
-    };
-    const getTransactionAmount = (currencySymbol, amount) => {
-        if (currencySymbol === 'ETH' || currencySymbol === 'SepoliaETH' || currencySymbol === 'MATIC') {
-            return ethers.parseEther(amount.toString());
-        }
-
-        throw new Error('Unsupported currency symbol');
     };
 
     const handleSendTransaction = async () => {
-        if (asset.symbol !== 'LEOS') {
-            if (!depositeAddress) {
+        setSubmitting(true);
+
+        try {
+            if (Number(asset.balance) < Number(amount)) {
                 errorStore.setError({
-                    error: new Error('Transaction has no recipient'),
+                    error: new Error('You do not have enough balance!'),
                     expected: true,
                 });
                 return;
             }
 
-            if (!amount) {
-                errorStore.setError({
-                    error: new Error('Transaction has no amount'),
-                    expected: true,
-                });
-                return;
-            }
+            const key = props.privateKey;
+            const chain = props.chain;
+            const chainType = chain.getChainType();
 
-            const balance = getBalance();
-
-            if (balance && Number(balance) < Number(amount)) {
-                errorStore.setError({
-                    error: new Error('Insufficient balance in account'),
-                    expected: true,
-                });
-                return;
-            }
-
-            setDisabled(true);
+            let value;
             const transactionData = {
                 to: depositeAddress,
                 from: asset.account,
-                value: getTransactionAmount(asset.symbol, Number(amount)),
+                value,
             };
-            let key, chain;
-
-            if (asset.symbol === 'SepoliaETH') {
-                chain = EthereumSepoliaChain;
-                key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-            } else if (asset.symbol === 'ETH') {
-                chain = EthereumMainnetChain;
-                key = await keyStorage.findByName('ethereum', chain);
-            } else if (asset.symbol === 'MATIC') {
-                chain = EthereumPolygonChain;
-                key = await keyStorage.findByName('ethereumPolygon', chain);
-            } else throw new Error('Unsupported chains');
 
             let transaction: ITransaction;
 
-            if (key) {
+            if (chainType === ChainType.ETHEREUM) {
+                transactionData.value = ethers.parseEther(amount ? amount.toString() : '0.00');
+                const ethereumChain = props.chain as EthereumChain;
                 const exportPrivateKey = await key.exportPrivateKey();
-                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, ethereumChain);
 
-                transaction = await EthereumTransaction.fromTransaction(ethereumPrivateKey, transactionData, chain);
-                setDisabled(false);
+                transaction = await EthereumTransaction.fromTransaction(
+                    ethereumPrivateKey,
+                    transactionData,
+                    ethereumChain
+                );
+                //TODO move it after condition when implement other chains
                 props.navigation.navigate('SignTransaction', {
                     transaction,
                     privateKey: key,
@@ -188,21 +124,24 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     origin: '',
                     request: null,
                 });
+            } else {
+                throw new Error('Chain not supported');
             }
+        } catch (error) {
+            errorStore.setError({
+                error,
+                expected: false,
+            });
+        } finally {
+            setSubmitting(false);
         }
     };
-
     const fetchEthPrice = async (amount) => {
-        try {
-            const response = await fetch('https://pangea-sales-api-yx37y.ondigitalocean.app/crypto?symbol=ETH');
-            const data = await response.json();
-            const ethPrice = data.usd;
-            const usdAmount = Number(amount) * Number(ethPrice);
+        const ethPrice = await props.chain.getNativeToken().getUsdPrice();
 
-            onChangeUSDAmount(usdAmount.toFixed(2));
-        } catch (error) {
-            console.error('Error fetching ETH price:', error);
-        }
+        const usdAmount = Number(amount) * Number(ethPrice);
+
+        onChangeUSDAmount(usdAmount.toFixed(4));
     };
 
     const debounce = (func, delay) => {
@@ -237,6 +176,17 @@ const SendAssetContainer = (props: SendAssetProps) => {
                                 placeholder="Enter or scan the address"
                                 placeholderTextColor={theme.colors.tabGray}
                                 onChangeText={onChangeAddress}
+                                onEndEditing={(e) => {
+                                    const address = e.nativeEvent.text;
+
+                                    if (!props.chain.isValidAccountName(address)) {
+                                        errorStore.setError({
+                                            error: new Error('The address you entered is invalid!'),
+                                            title: 'Invalid address',
+                                            expected: true,
+                                        });
+                                    }
+                                }}
                             />
                             <View style={{ flexDirection: 'row', gap: 8 }}>
                                 <TouchableOpacity style={styles.inputButton} onPress={handlePaste}>
@@ -274,8 +224,13 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     </View>
                 </ScrollView>
                 <View style={commonStyles.marginBottom}>
+                    {submitting && (
+                        <View style={commonStyles.marginBottom}>
+                            <Loader />
+                        </View>
+                    )}
                     <TButtonContained
-                        disabled={disabled}
+                        disabled={!depositeAddress || !amount || submitting}
                         style={commonStyles.marginBottom}
                         size="large"
                         onPress={handleSendTransaction}

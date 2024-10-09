@@ -31,7 +31,7 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import ReceiveScreen from '../screens/ReceiveAssetScreen';
 import SendScreen from '../screens/SendAssetScreen';
-import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import { IChain, IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
@@ -50,11 +50,8 @@ export interface AssetsParamsScreen {
     network: string;
 }
 
-export type RouteStackParamList = {
+export type MainRouteStackParamList = {
     Splash: undefined;
-    SplashSecurity: undefined;
-    SplashPrivacy: undefined;
-    SplashTransparency: undefined;
     Home: undefined;
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
@@ -65,12 +62,10 @@ export type RouteStackParamList = {
     LoginWithPin: { password: string };
     LoginUsername: undefined;
     LoginPassphrase: { username: string };
-    UserHome: { did?: string };
     Drawer: undefined;
     SetPassword: undefined;
     Settings: undefined;
     Support: undefined;
-    QrScanner: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
@@ -81,8 +76,8 @@ export type RouteStackParamList = {
         transaction: ITransaction;
         privateKey: IPrivateKey;
         origin: string;
-        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
-        session: IChainSession;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
+        session: IChainSession | null;
     };
     SignTransactionSuccess: {
         operations: OperationData[];
@@ -111,19 +106,29 @@ export type RouteStackParamList = {
             screenTitle: string;
         };
     };
-    AssetDetailMain: {
-        screen: string;
-        params?: AssetsParamsScreen;
-    };
     Onboarding: undefined;
     Citizenship: undefined;
     Explore: undefined;
     Apps: undefined;
     AssetDetail: AssetsParamsScreen;
     Receive: AssetsParamsScreen;
-    Send: AssetsParamsScreen;
+    Send: {
+        screenTitle?: string;
+        chain: IChain;
+        privateKey: IPrivateKey;
+    };
     SelectAsset: { screenTitle?: string; type: string };
 };
+
+export type BottonNavigatorRouteStackParamList = {
+    Citizenship: undefined;
+    Assets: undefined;
+    Explore: undefined;
+    Apps: undefined;
+    ScanQR: { did?: string };
+};
+
+export type RouteStackParamList = MainRouteStackParamList & BottonNavigatorRouteStackParamList;
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 

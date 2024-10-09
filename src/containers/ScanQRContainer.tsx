@@ -1,4 +1,3 @@
-import QrCodeScanContainer from '../containers/QrCodeScanContainer';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
@@ -15,7 +14,9 @@ import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import ABICache from '@wharfkit/abicache';
 import { APIClient, PrivateKey } from '@wharfkit/antelope';
+
 const debug = Debug('tonomy-id:containers:MainContainer');
+
 import zlib from 'pako';
 import {
     AntelopeAccount,
@@ -29,10 +30,16 @@ import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
 
 export type ScanQRContainerProps = {
+    did;
     navigation: ScanQRScreenProps['navigation'];
 };
-
-export default function ScanQRContainer(props: ScanQRContainerProps) {
+export default function ScanQRContainer({
+    did,
+    navigation,
+}: {
+    did?: string;
+    navigation: ScanQRContainerProps['navigation'];
+}) {
     const userStore = useUserStore();
     const user = userStore.user;
     const errorStore = useErrorStore();
@@ -56,9 +63,61 @@ export default function ScanQRContainer(props: ScanQRContainerProps) {
         }
     }, [user, errorStore]);
 
+    const connectToDid = useCallback(
+        async (did: string) => {
+            try {
+                // Connect to the browser using their did:jwk
+                const issuer = await user.getIssuer();
+                const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
+
+                await user.sendMessage(identifyMessage);
+            } catch (e) {
+                if (
+                    e instanceof CommunicationError &&
+                    e.exception?.status === 400 &&
+                    e.exception.message.startsWith('Recipient not connected')
+                ) {
+                    errorStore.setError({
+                        title: 'Problem connecting',
+                        error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
+                        expected: true,
+                    });
+                } else {
+                    debug('connectToDid() error:', e);
+
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                    });
+                }
+            }
+        },
+        [user, errorStore]
+    );
+
+    const onUrlOpen = useCallback(
+        async (did) => {
+            try {
+                await connectToDid(did);
+            } catch (e) {
+                if (isNetworkError(e)) {
+                    debug('onUrlOpen() network error when connectToDid called');
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            }
+        },
+        [errorStore, connectToDid]
+    );
+
+    // setUserName() on mount
     useEffect(() => {
         setUserName();
-    }, [setUserName]);
+
+        if (did) {
+            onUrlOpen(did);
+        }
+    }, [setUserName, did, onUrlOpen]);
 
     async function onScan({ data }: BarCodeScannerResult) {
         debug('onScan() data:', data);
@@ -171,7 +230,7 @@ export default function ScanQRContainer(props: ScanQRContainerProps) {
                 debug('onScan() transaction:', transaction.getChain().getChainType());
 
                 if (!isIdentity) {
-                    props.navigation.navigate('SignTransaction', {
+                    navigation.navigate('SignTransaction', {
                         transaction,
                         privateKey: antelopeKey,
                         origin,
@@ -252,33 +311,11 @@ export default function ScanQRContainer(props: ScanQRContainerProps) {
             onClose();
         }
     }
-    async function connectToDid(did: string) {
-        try {
-            // Connect to the browser using their did:jwk
-            const issuer = await user.getIssuer();
-            const identifyMessage = await IdentifyMessage.signMessage({}, issuer, did);
-
-            await user.sendMessage(identifyMessage);
-        } catch (e) {
-            if (
-                e instanceof CommunicationError &&
-                e.exception?.status === 400 &&
-                e.exception.message.startsWith('Recipient not connected')
-            ) {
-                errorStore.setError({
-                    title: 'Problem connecting',
-                    error: new Error("We couldn't connect to the website. Please refresh the page or try again."),
-                    expected: true,
-                });
-            } else {
-                throw e;
-            }
-        }
-    }
 
     function onClose() {
-        props.navigation.navigate('Assets', {});
+        navigation.navigate('Assets');
     }
+
     return (
         <View style={styles.content}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -302,6 +339,7 @@ export default function ScanQRContainer(props: ScanQRContainerProps) {
         </View>
     );
 }
+
 const styles = StyleSheet.create({
     content: {
         flex: 1,

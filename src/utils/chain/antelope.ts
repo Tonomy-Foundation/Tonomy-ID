@@ -257,11 +257,16 @@ export class AntelopeChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
+    isValidAccountName(account: string): boolean {
+        const regex = /^[a-z1-5.]{12}$/;
+
+        return regex.test(account);
+    }
 }
 
-export const LEOS_SEED_ROUND_PRICE = 0.002;
-export const LEOS_SEED_LATE_ROUND_PRICE = 0.004;
-export const LEOS_PUBLIC_SALE_PRICE = 0.012;
+export const LEOS_SEED_ROUND_PRICE = 0.0002;
+export const LEOS_SEED_LATE_ROUND_PRICE = 0.0004;
+export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;

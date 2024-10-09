@@ -164,13 +164,13 @@ const styles = StyleSheet.create({
         color: theme.colors.blue,
     },
     pangeaAppHead: {
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: '600',
         textAlign: 'left',
         paddingBottom: 5,
     },
     pangeaAppNotes: {
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: '400',
         color: theme.colors.grey9,
         paddingBottom: 16,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         paddingBottom: 12,
     },
     visitAppWebUrl: {
-        fontSize: 11,
+        fontSize: 10,
         fontWeight: '500',
         color: theme.colors.blue,
         marginTop: -4,

@@ -8,7 +8,8 @@ import { useEffect, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import CopyIcon from '../assets/icons/CopyIcon';
 import { ShareAndroidSolid } from 'iconoir-react-native';
-import { getAssetDetails } from '../utils/assetDetails';
+import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
+import Loader from '../components/Loader';
 
 export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
@@ -18,39 +19,40 @@ export type ReceiveAssetProps = {
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
 
-    const [asset, setAsset] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const [asset, setAsset] = useState<AccountDetails | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.network);
 
-            setAsset(assetData);
+            if (assetData) {
+                setAsset(assetData);
+            }
+
             setLoading(false);
         };
 
         fetchAssetDetails();
     }, [props.network]);
 
-    if (loading) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
+    if (loading || !asset || !asset.account) {
+        return <Loader />;
     }
 
     const copyToClipboard = () => {
         setShowPopover(true);
-        Clipboard.setString(asset.account);
+        if (asset.account) Clipboard.setString(asset.account);
         setTimeout(() => setShowPopover(false), 400);
     };
 
     const onShare = async () => {
         try {
-            await Share.share({
-                message: asset.account,
-            });
+            if (asset.account) {
+                await Share.share({
+                    message: asset.account,
+                });
+            }
         } catch (error) {
             alert(error.message);
         }
@@ -71,7 +73,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                     </View>
                     <View style={styles.flexCenter}>
                         <View style={{ ...styles.qrView, flexDirection: 'column' }}>
-                            <QRCode value="testValue" size={200} />
+                            <QRCode value={asset.account} size={200} />
                             <Text style={styles.accountName}>{asset.account}</Text>
                         </View>
                         <View style={styles.iconContainer}>

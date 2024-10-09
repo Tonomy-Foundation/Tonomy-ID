@@ -15,20 +15,10 @@ import useUserStore from '../store/userStore';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import TSpinner from '../components/atoms/TSpinner';
 import theme, { commonStyles } from '../utils/theme';
 import { Images } from '../assets';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumSepoliaChain,
-    ETHPolygonToken,
-    ETHSepoliaToken,
-    ETHToken,
-    USD_CONVERSION,
-} from '../utils/chain/etherum';
-import AccountDetails from '../components/AccountDetails';
+import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
@@ -37,17 +27,11 @@ import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
 import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
+import { supportedChains } from '../utils/assetDetails';
+import Loader from '../components/Loader';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
-
-interface AccountDetails {
-    symbol: string;
-    image?: string;
-    name: string;
-    address: string;
-    icon?: ImageSourcePropType | undefined;
-}
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const userStore = useUserStore();
@@ -56,13 +40,8 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [pangeaBalance, setPangeaBalance] = useState(0.0);
     const [accountName, setAccountName] = useState('');
     const [refreshBalance, setRefreshBalance] = useState(false);
-    const [accountDetails, setAccountDetails] = useState<AccountDetails>({
-        symbol: '',
-        name: '',
-        address: '',
-    });
+
     const { accountExists, initializeWalletAccount } = useWalletStore();
-    const refMessage = useRef(null);
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
@@ -70,9 +49,10 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const { updateBalance: updateCryptoBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
-
     const [developerMode, setDeveloperMode] = React.useState(true);
     const [total, setTotal] = useState<number>(0);
+
+    const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
 
     useFocusEffect(
         useCallback(() => {
@@ -86,14 +66,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         }, [])
     );
 
-    const chains = useMemo(
-        () => [
-            { token: ETHToken, chain: EthereumMainnetChain },
-            { token: ETHSepoliaToken, chain: EthereumSepoliaChain },
-            { token: ETHPolygonToken, chain: EthereumPolygonChain },
-        ],
-        []
-    );
+    const chains = useMemo(() => supportedChains, []);
 
     const updateLeosBalance = useCallback(async () => {
         try {
@@ -174,6 +147,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             await updateLeosBalance();
             await updateCryptoBalance();
             await fetchCryptoAssets();
+            setAssetLoading(false);
         } catch (error) {
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
@@ -203,18 +177,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         return () => clearInterval(interval);
     }, [updateAllBalances]);
 
-    // Open the AccountDetails component when accountDetails is set
-    useEffect(() => {
-        if (accountDetails?.address) {
-            (refMessage?.current as any)?.open();
-        }
-    }, [accountDetails]);
-
     useEffect(() => {
         const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
             return previousValue + currentValue.usdBalance;
         }, 0);
-        const totalPangeaUSDBalance = pangeaBalance * USD_CONVERSION;
+        const totalPangeaUSDBalance = pangeaBalance * LEOS_SEED_ROUND_PRICE;
 
         setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
     }, [accounts, pangeaBalance]);
@@ -272,17 +239,10 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <ScrollView>
+                        {!isAssetLoading ? (
                             <View style={styles.scrollContent}>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        setAccountDetails({
-                                            symbol: 'LEOS',
-                                            name: 'Pangea',
-                                            address: accountName,
-                                            icon: Images.GetImage('logo48'),
-                                        });
-
                                         const accountDetail = {
                                             symbol: 'LEOS',
                                             name: 'Pangea',
@@ -308,11 +268,14 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                         <View style={styles.flexColEnd}>
                                             <View style={styles.flexCenter}>
                                                 <Text style={{ fontSize: 16 }}>
-                                                    {formatCurrencyValue(pangeaBalance, 4) || 0.0}
+                                                    {formatCurrencyValue(pangeaBalance, 4) || 0}
                                                 </Text>
                                             </View>
                                             <Text style={styles.secondaryColor}>
-                                                ${formatCurrencyValue(pangeaBalance * USD_CONVERSION, 3)}
+                                                ${' '}
+                                                {pangeaBalance
+                                                    ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
+                                                    : 0.0}
                                             </Text>
                                         </View>
                                     </View>
@@ -333,7 +296,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                             onPress={() => {
                                                 navigation.navigate('AssetDetail', {
                                                     screenTitle: chainName,
-                                                    network: chainName,
+                                                    network: chainObj.chain.getName(),
                                                 });
                                             }}
                                             style={styles.assetsView}
@@ -390,7 +353,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                     );
                                 })}
                             </View>
-                        </ScrollView>
+                        ) : (
+                            <Loader />
+                        )}
                     </ScrollView>
                 </View>
             </View>
@@ -405,7 +370,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                     <TP style={styles.requestText} size={1}>
                         Linking to your web app and receiving data.
                     </TP>
-                    <TSpinner style={{ marginBottom: 12 }} />
+                    <View style={{ marginBottom: 12 }}>
+                        <Loader />
+                    </View>
                     <TButtonOutlined onPress={() => setIsLoadingView(false)}>Cancel</TButtonOutlined>
                 </View>
             ) : (
@@ -450,7 +417,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerAssetsAmount: {
-        fontSize: 35,
+        fontSize: 40,
         fontWeight: '400',
         ...commonStyles.secondaryFontFamily,
     },
@@ -568,5 +535,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
         ...commonStyles.secondaryFontFamily,
+    },
+
+    animationContainer: {
+        marginBottom: 30,
     },
 });

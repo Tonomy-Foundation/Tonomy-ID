@@ -4,7 +4,6 @@ import {
     TransactionResponse,
     TransactionRequest,
     JsonRpcProvider,
-    TransactionReceipt,
     computeAddress,
     Interface,
     ethers,
@@ -43,8 +42,6 @@ const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
 const INFURA_KEY = settings.config.infuraKey;
-
-export const USD_CONVERSION = 0.002;
 
 export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
     async getAddress(): Promise<string> {
@@ -129,6 +126,11 @@ export class EthereumChain extends AbstractChain {
         }
 
         return this.explorerOrigin;
+    }
+    isValidAccountName(account: string): boolean {
+        const regex = /^0x[a-fA-F0-9]{40}$/;
+
+        return regex.test(account);
     }
 }
 

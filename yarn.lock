@@ -8467,6 +8467,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dedent@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "dedent@npm:0.6.0"
+  checksum: 10c0/0fade439baf9cec04f98c0881bf6b6b3da4687488b74aecce3bda96ec1c2b441cdd5e0921d0b911adcbaaf66367896fd31c7a2da1e575bf81e84848269818c0a
+  languageName: node
+  linkType: hard
+
 "dedent@npm:^1.0.0":
   version: 1.5.3
   resolution: "dedent@npm:1.5.3"
@@ -13498,6 +13505,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lottie-react-native@npm:5.1.6":
+  version: 5.1.6
+  resolution: "lottie-react-native@npm:5.1.6"
+  dependencies:
+    invariant: "npm:^2.2.2"
+    react-native-safe-modules: "npm:^1.0.3"
+  peerDependencies:
+    lottie-ios: ^3.4.0
+    react: "*"
+    react-native: ">=0.46"
+    react-native-windows: ">=0.63.x"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 10c0/becb609bb9f975a198d6e5ebdf1ded0a7004807c3427d04aaa9a1d4f69b74b32ae8e30701b89cdeacaaa2b7d5df367c3c3b3e2536f0329ebfcb719ba9fdfa392
+  languageName: node
+  linkType: hard
+
 "lru-cache@npm:^10.0.1, lru-cache@npm:^10.2.0, lru-cache@npm:^10.4.3":
   version: 10.4.3
   resolution: "lru-cache@npm:10.4.3"
@@ -16247,6 +16272,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-safe-modules@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "react-native-safe-modules@npm:1.0.3"
+  dependencies:
+    dedent: "npm:^0.6.0"
+  peerDependencies:
+    react-native: "*"
+  checksum: 10c0/1f0e5199f81f0402e87cb2da16c956b1980f75cad06c351fe22c64959edca1e4dfad7d971158487659851d195bbc888fe98e639380d8e70dfef79adb718470d1
+  languageName: node
+  linkType: hard
+
 "react-native-screens@npm:~3.22.0":
   version: 3.22.1
   resolution: "react-native-screens@npm:3.22.1"
@@ -18320,6 +18356,7 @@ __metadata:
     iconoir-react-native: "npm:^7.9.0"
     jest: "npm:^29.5.0"
     jest-expo: "npm:^49.0.0"
+    lottie-react-native: "npm:5.1.6"
     pako: "npm:^2.1.0"
     prettier: "npm:^2.7.1"
     react: "npm:18.2.0"
