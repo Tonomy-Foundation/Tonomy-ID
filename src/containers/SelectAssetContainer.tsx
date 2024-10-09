@@ -13,6 +13,7 @@ import { supportedChains } from '../utils/assetDetails';
 import { IPrivateKey } from '../utils/chain/types';
 import { Images } from '../assets';
 import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
+import { appSettingStore } from '../store/appSettingStore';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -33,19 +34,7 @@ const SelectAssetContainer = ({
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
     >([]);
 
-    const [developerMode, setDeveloperMode] = useState(true);
-
-    useFocusEffect(
-        useCallback(() => {
-            const fetchSettings = async () => {
-                const developerMode = await appStorage.getDeveloperMode();
-
-                setDeveloperMode(developerMode);
-            };
-
-            fetchSettings();
-        }, [])
-    );
+    const { developerMode } = appSettingStore();
 
     const chains = useMemo(() => supportedChains, []);
 

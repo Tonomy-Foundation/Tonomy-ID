@@ -8,6 +8,7 @@ import { TButtonText } from '../components/atoms/TButton';
 import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 import { Switch } from 'react-native-paper';
 import { BinMinusIn, Code, LogOut, NavArrowRight } from 'iconoir-react-native';
+import { appSettingStore } from '../store/appSettingStore';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { logout } = useUserStore();
@@ -17,22 +18,11 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
-    const [developerMode, setDeveloperMode] = React.useState(true);
+    const { developerMode, setDeveloperMode } = appSettingStore();
 
     const onToggleSwitch = async () => {
         setDeveloperMode(!developerMode);
-        await appStorage.setDeveloperMode(!developerMode);
     };
-
-    useEffect(() => {
-        const fetchSettings = async () => {
-            const developerMode = await appStorage.getDeveloperMode();
-
-            setDeveloperMode(developerMode);
-        };
-
-        fetchSettings();
-    }, []);
 
     return (
         <ScrollView style={styles.container}>

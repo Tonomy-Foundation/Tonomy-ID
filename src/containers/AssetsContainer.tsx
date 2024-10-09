@@ -29,6 +29,7 @@ import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { supportedChains } from '../utils/assetDetails';
 import TSpinner from '../components/atoms/TSpinner';
+import { appSettingStore } from '../store/appSettingStore';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -42,6 +43,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [refreshBalance, setRefreshBalance] = useState(false);
 
     const { accountExists, initializeWalletAccount } = useWalletStore();
+    const { developerMode } = appSettingStore();
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
@@ -49,22 +51,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const { updateBalance: updateCryptoBalance } = useWalletStore((state) => ({
         updateBalance: state.updateBalance,
     }));
-    const [developerMode, setDeveloperMode] = React.useState(true);
     const [total, setTotal] = useState<number>(0);
 
     const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
-
-    useFocusEffect(
-        useCallback(() => {
-            const fetchSettings = async () => {
-                const developerMode = await appStorage.getDeveloperMode();
-
-                setDeveloperMode(developerMode);
-            };
-
-            fetchSettings();
-        }, [])
-    );
 
     const chains = useMemo(() => supportedChains, []);
 
