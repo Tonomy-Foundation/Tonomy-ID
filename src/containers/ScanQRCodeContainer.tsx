@@ -184,6 +184,30 @@ export default function ScanQRCodeContainer({
                 } else {
                     debug('Identity request not supported yet');
                     return;
+                    // const signedTransaction = await antelopeKey.signTransaction(transaction);
+                    // const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures as any, 0);
+
+                    // if (callbackParams) {
+                    //     const response = await fetch(callbackParams.url, {
+                    //         method: 'POST',
+                    //         headers: {
+                    //             'Content-Type': 'application/json',
+                    //         },
+                    //         body: JSON.stringify(callbackParams?.payload),
+                    //     });
+
+                    //     if (!response.ok) {
+                    //         throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+                    //     }
+                    // }
+                    //TODO
+                    // const session = new ESRSession(account, transaction, antelopeKey);
+
+                    // navigation.navigate('WalletConnectLogin', {
+                    //     payload: resolvedSigningRequest,
+                    //     platform: 'browser',
+                    //     session,
+                    // });
                 }
             } else {
                 const did = validateQrCode(data);
