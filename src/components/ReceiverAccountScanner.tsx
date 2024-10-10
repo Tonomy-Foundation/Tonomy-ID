@@ -1,40 +1,30 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-
 import Debug from 'debug';
-
 import QRCodeScanner from './QRCodeScanner';
+import { IChain } from '../utils/chain/types';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 
 export type ReceiverAccountScannerProps = {
     refMessage: React.RefObject<{ open: () => void; close: () => void }>;
     onScanQR: (accountName: string) => void;
+    chain: IChain;
 };
 
 const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
     async function onScan({ data }: BarCodeScannerResult) {
-        const accountName = validateCryptoAccount(data);
-
-        props.onScanQR(accountName);
-        onClose();
-    }
-
-    const validateCryptoAccount = (input) => {
-        const parts = input.split(':');
-
-        if (parts.length !== 2) {
-            throw new Error('Invalid format. Use "protocol:domain".');
+        if (!props.chain.isValidAccountName(data)) {
+            throw new Error('The account you entered is invalid!');
         }
 
-        const [protocol, domain] = parts;
-
-        return domain;
-    };
+        props.onScanQR(data);
+        onClose();
+    }
 
     const onClose = () => {
         props.refMessage.current?.close();
