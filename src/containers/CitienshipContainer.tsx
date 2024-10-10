@@ -38,7 +38,7 @@ export default function CitizenshipContainer() {
                         <Text style={styles.horizontalScrollNotes}>{subtitle}</Text>
                     </View>
                     <View>
-                        <Image source={imageSource} />
+                        <Image style={{ width: 120, height: 120 }} source={imageSource} />
                     </View>
                 </View>
             </View>
@@ -57,14 +57,20 @@ export default function CitizenshipContainer() {
                         </Text>
                     </View>
                     <View style={styles.identityImage}>
-                        <Image source={require('../assets/images/citizenship/citizenship-identity-image.png')} />
+                        <Image
+                            style={styles.image}
+                            source={require('../assets/images/citizenship/citizenship-identity-image.png')}
+                        />
                     </View>
                 </View>
                 <Text style={styles.subTitle}>Pangea is your ticket to digital worlds available now</Text>
                 <View style={styles.digitalWorldContent}>
                     <TouchableOpacity style={styles.webMain}>
                         <View style={styles.webImage}>
-                            <Image source={require('../assets/images/citizenship/login-webapps.png')} />
+                            <Image
+                                style={{ height: 120, width: 120 }}
+                                source={require('../assets/images/citizenship/login-webapps.png')}
+                            />
                         </View>
                         <View>
                             <Text style={styles.webTitle}>Login to Web4 Apps</Text>
@@ -72,7 +78,10 @@ export default function CitizenshipContainer() {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.webMain}>
                         <View style={styles.webImage}>
-                            <Image source={require('../assets/images/citizenship/manage-crypto.png')} />
+                            <Image
+                                style={{ height: 120, width: 120 }}
+                                source={require('../assets/images/citizenship/manage-crypto.png')}
+                            />
                         </View>
                         <View>
                             <Text style={styles.webTitle}>Manage your Crypto</Text>
@@ -84,22 +93,22 @@ export default function CitizenshipContainer() {
                     <HorizontalScrollItem
                         title="Pay globally without middlemen"
                         subtitle="with Pangea Banklesss"
-                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/1-slide.png')}
                     />
                     <HorizontalScrollItem
                         title="Unlock the Power of Decentralization"
                         subtitle="with Pangea DAO"
-                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/2-slide.png')}
                     />
                     <HorizontalScrollItem
                         title="Be a part of Liquid Democracy"
                         subtitle="with Pangea Gov+"
-                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/3-slide.png')}
                     />
                     <HorizontalScrollItem
                         title="Build Next- generation apps"
                         subtitle="with Pangea Build"
-                        imageSource={require('../assets/images/citizenship/coming-soon-user-placeholder.png')}
+                        imageSource={require('../assets/images/citizenship/4-slide.png')}
                     />
                 </ScrollView>
             </ScrollView>
@@ -110,6 +119,11 @@ export default function CitizenshipContainer() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    image: {
+        width: '100%',
+        height: 309,
+        resizeMode: 'cover',
     },
     scrollContent: {
         padding: 16,

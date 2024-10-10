@@ -122,58 +122,6 @@ export default function ScanQRCodeContainer({
             if (data.startsWith('wc:')) {
                 if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('esr:')) {
-                // eslint-disable-next-line no-inner-declarations
-                // async function createMockSigningRequest() {
-                //     return await SigningRequest.create(
-                //         {
-                //             actions: [
-                //                 {
-                //                     account: 'eosio.token',
-                //                     name: 'transfer',
-                //                     authorization: [
-                //                         {
-                //                             actor: 'jacktest2222',
-                //                             permission: 'active',
-                //                         },
-                //                     ],
-                //                     data: {
-                //                         from: 'jacktest2222',
-                //                         to: 'hippopotamus',
-                //                         quantity: '1.0000 EOS',
-                //                         memo: '',
-                //                     },
-                //                 },
-                //                 // {
-                //                 //     account: 'eosio.token',
-                //                 //     name: 'close',
-                //                 //     authorization: [
-                //                 //         {
-                //                 //             actor: 'jacktest2222',
-                //                 //             permission: 'active',
-                //                 //         },
-                //                 //     ],
-                //                 //     data: {
-                //                 //         owner: 'jacktest2222',
-                //                 //         symbol: '4,EOS',
-                //                 //     },
-                //                 // },
-                //             ],
-                //             callback: 'https://tonomy.io',
-                //             chainId: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
-                //         },
-                //         {
-                //             abiProvider: new ABICache(
-                //                 new APIClient({
-                //                     url: 'https://jungle4.cryptolions.io',
-                //                 })
-                //             ) as unknown as AbiProvider,
-                //             zlib,
-                //         }
-                //     );
-                // }
-
-                // const request = await createMockSigningRequest();
-                // const signingRequestBasic = SigningRequest.from(request.toString(), { zlib });
                 const signingRequestBasic = SigningRequest.from(data, { zlib });
 
                 const chain: AntelopeChain = getChainFromAntelopeChainId(signingRequestBasic.getChainId().toString());
@@ -236,30 +184,6 @@ export default function ScanQRCodeContainer({
                 } else {
                     debug('Identity request not supported yet');
                     return;
-                    // const signedTransaction = await antelopeKey.signTransaction(transaction);
-                    // const callbackParams = resolvedSigningRequest.getCallback(signedTransaction.signatures as any, 0);
-
-                    // if (callbackParams) {
-                    //     const response = await fetch(callbackParams.url, {
-                    //         method: 'POST',
-                    //         headers: {
-                    //             'Content-Type': 'application/json',
-                    //         },
-                    //         body: JSON.stringify(callbackParams?.payload),
-                    //     });
-
-                    //     if (!response.ok) {
-                    //         throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
-                    //     }
-                    // }
-                    //TODO
-                    // const session = new ESRSession(account, transaction, antelopeKey);
-
-                    // navigation.navigate('WalletConnectLogin', {
-                    //     payload: resolvedSigningRequest,
-                    //     platform: 'browser',
-                    //     session,
-                    // });
                 }
             } else {
                 const did = validateQrCode(data);
