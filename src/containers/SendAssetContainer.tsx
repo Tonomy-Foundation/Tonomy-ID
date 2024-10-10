@@ -155,7 +155,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     return (
         <View style={styles.container}>
-            <ReceiverAccountScanner onScanQR={onScanQR} refMessage={refMessage} />
+            <ReceiverAccountScanner onScanQR={onScanQR} chain={props.chain} refMessage={refMessage} />
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.flexCol}>
