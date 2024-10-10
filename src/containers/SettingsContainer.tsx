@@ -8,7 +8,7 @@ import { TButtonText } from '../components/atoms/TButton';
 import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 import { Switch } from 'react-native-paper';
 import { BinMinusIn, Code, LogOut, NavArrowRight } from 'iconoir-react-native';
-import { appSettingStore } from '../store/appSettingStore';
+import useAppSettings from '../hooks/useAppSettings';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { logout } = useUserStore();
@@ -18,10 +18,10 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
-    const { developerMode, setDeveloperMode } = appSettingStore();
+    const { developerMode, setDeveloperModeSettings } = useAppSettings();
 
     const onToggleSwitch = async () => {
-        setDeveloperMode(!developerMode);
+        setDeveloperModeSettings(!developerMode);
     };
 
     return (

@@ -7,7 +7,7 @@ const TSpinner = ({ size = 70 }: { size?: number }) => {
         <View style={styles.animationContainer}>
             <LottieView
                 style={{ width: size, height: size }}
-                source={require('../assets/images/loading-gif.json')}
+                source={require('../../assets/images/loading-gif.json')}
                 loop={true}
                 autoPlay={true}
             />

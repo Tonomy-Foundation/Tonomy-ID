@@ -25,11 +25,11 @@ import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
-import { appStorage, assetStorage, connect } from '../utils/StorageManager/setup';
+import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { supportedChains } from '../utils/assetDetails';
 import TSpinner from '../components/atoms/TSpinner';
-import { appSettingStore } from '../store/appSettingStore';
+import useAppSettings from '../hooks/useAppSettings';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -43,7 +43,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [refreshBalance, setRefreshBalance] = useState(false);
 
     const { accountExists, initializeWalletAccount } = useWalletStore();
-    const { developerMode } = appSettingStore();
+
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
@@ -186,6 +186,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const MainView = () => {
         const isFocused = useIsFocused();
+        const { developerMode } = useAppSettings();
 
         if (!isFocused) {
             return null;
