@@ -4,9 +4,16 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IChainSession, IOperation, IPrivateKey, ITransaction, TransactionType } from '../utils/chain/types';
+import {
+    IChainSession,
+    IOperation,
+    IPrivateKey,
+    ITransaction,
+    ITransactionReceipt,
+    TransactionType,
+} from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
-import TSpinner from '../components/atoms/TSpinner';
+
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
@@ -14,6 +21,7 @@ import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
+import TSpinner from '../components/atoms/TSpinner';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -35,8 +43,8 @@ export default function SignTransactionConsentContainer({
     transaction: ITransaction;
     privateKey: IPrivateKey;
     origin: string;
-    request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
-    session: IChainSession;
+    request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
+    session: IChainSession | null;
 }) {
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
@@ -60,6 +68,7 @@ export default function SignTransactionConsentContainer({
                 const value = await operation.getValue();
 
                 const amount = value.toString();
+
                 const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 
                 return {
@@ -165,21 +174,38 @@ export default function SignTransactionConsentContainer({
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
     async function onReject() {
-        setTransactionLoading(true);
-        await session.rejectTransactionRequest(request);
-        setTransactionLoading(false);
-        navigation.navigate({ name: 'UserHome', params: {} });
+        if (session) {
+            setTransactionLoading(true);
+            await session.rejectTransactionRequest(request);
+            setTransactionLoading(false);
+        }
+
+        navigation.navigate('Assets');
     }
 
     async function onAccept() {
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-            const transactionRequest = await session.createTransactionRequest(transaction);
+            let receipt: ITransactionReceipt;
 
-            const receipt = await privateKey.sendTransaction(transactionRequest);
+            if (session) {
+                const transactionRequest = await session.createTransactionRequest(transaction);
 
-            await session.approveTransactionRequest(request, receipt);
+                receipt = await privateKey.sendTransaction(transactionRequest);
+
+                await session.approveTransactionRequest(request, receipt);
+            } else {
+                const transactionRequest = {
+                    to: (await transaction.getTo()).getName(),
+                    from: (await transaction.getFrom()).getName(),
+                    value: (await transaction.getValue()).getAmount(),
+                    data: ((await transaction.getData()) as { data: string }).data,
+                };
+
+                receipt = await privateKey.sendTransaction(transactionRequest);
+            }
+
             navigation.navigate('SignTransactionSuccess', {
                 operations,
                 transaction,
@@ -193,8 +219,11 @@ export default function SignTransactionConsentContainer({
                 error,
                 expected: false,
             });
-            navigation.navigate({ name: 'UserHome', params: {} });
-            await session.rejectTransactionRequest(request);
+            navigation.navigate('Assets');
+
+            if (session) {
+                await session.rejectTransactionRequest(request);
+            }
         }
     }
 
@@ -203,14 +232,45 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={{ uri: chain.getNativeToken().getLogoUrl() }}
-                        ></Image>
-                        <View style={commonStyles.alignItemsCenter}>
-                            <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
-                            <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
-                        </View>
+                        {origin ? (
+                            <>
+                                <Image
+                                    style={[styles.logo, commonStyles.marginBottom]}
+                                    source={{ uri: chain.getNativeToken().getLogoUrl() }}
+                                ></Image>
+
+                                <View style={commonStyles.alignItemsCenter}>
+                                    <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
+                                    <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
+                                </View>
+                            </>
+                        ) : (
+                            <View style={styles.sandingMain}>
+                                <Text style={styles.sandingTitle}>You are sending </Text>
+                                {operations && (
+                                    <View style={styles.sandingContent}>
+                                        <Text
+                                            style={{
+                                                fontSize: 24,
+                                                fontWeight: '600',
+                                                ...commonStyles.primaryFontFamily,
+                                            }}
+                                        >
+                                            {operations[0].amount}{' '}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.secondaryColor,
+                                                commonStyles.secondaryFontFamily,
+                                                { fontSize: 22 },
+                                            ]}
+                                        >
+                                            (${operations[0].usdValue})
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+                        )}
                         <View style={styles.networkHeading}>
                             <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                             <Text style={styles.nameText}>{chainName} Network</Text>
@@ -285,11 +345,11 @@ function TransactionTotal({
                 },
             ]}
         >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ marginRight: 8, fontWeight: '600' }}>Total estimated cost:</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text>{transactionTotal.total}</Text>
-                    <Text style={styles.secondaryColor}>${transactionTotal.totalUsd}</Text>
+            <View style={styles.totalView}>
+                <Text style={styles.totalTitle}>Total</Text>
+                <View style={styles.totalContentView}>
+                    <Text style={styles.totalContent}>{transactionTotal.total}</Text>
+                    <Text style={styles.secondaryColor}>(${transactionTotal.totalUsd})</Text>
                 </View>
                 {transactionTotal.balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
             </View>
@@ -321,6 +381,40 @@ const styles = StyleSheet.create({
         padding: 2,
         fontSize: 19,
     },
+    applinkContent: {
+        marginLeft: 6,
+        fontSize: 19,
+    },
+    sandingMain: {
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    sandingTitle: {
+        fontSize: 24,
+        fontWeight: '600',
+        ...commonStyles.primaryFontFamily,
+    },
+    sandingContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    totalView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    totalTitle: {
+        marginRight: 8,
+        fontWeight: '600',
+    },
+    totalContentView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    totalContent: {
+        fontSize: 16,
+        ...commonStyles.secondaryFontFamily,
+    },
     imageStyle: {
         width: 10,
         height: 13,
@@ -331,13 +425,14 @@ const styles = StyleSheet.create({
         marginTop: 12,
     },
     accountNameStyle: {
-        fontSize: 14,
+        fontSize: 16,
         marginTop: 5,
+        ...commonStyles.secondaryFontFamily,
     },
     nameText: {
         color: theme.colors.secondary2,
         marginLeft: 5,
-        fontSize: 15,
+        fontSize: 14,
     },
     totalSection: {
         padding: 16,
@@ -348,6 +443,8 @@ const styles = StyleSheet.create({
     secondaryColor: {
         color: theme.colors.secondary2,
         marginLeft: 4,
+        fontSize: 16,
+        ...commonStyles.secondaryFontFamily,
     },
     balanceError: {
         textAlign: 'right',

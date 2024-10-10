@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { commonStyles, useAppTheme } from '../utils/theme';
+import { useAppTheme } from '../utils/theme';
 import { TCaption, TP } from './atoms/THeadings';
 
 export type NavigationButtonProps = {

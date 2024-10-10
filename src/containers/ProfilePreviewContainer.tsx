@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Props } from '../screens/ProfilePreviewScreen';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import TInputTextBox from '../components/TInputTextBox';
-import { TH1, TP } from '../components/atoms/THeadings';
+import { TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import TInfoBox from '../components/TInfoBox';

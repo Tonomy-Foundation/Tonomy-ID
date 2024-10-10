@@ -197,7 +197,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     clearState: async () => {
         try {
             await keyStorage.deleteAll();
-            await appStorage.deleteAll();
             await assetStorage.deleteAll();
             set({
                 initialized: false,

@@ -32,12 +32,21 @@ const theme = {
         grey4: '#F9F9F9',
         grey5: '#E4E4E4',
         grey6: '#F4F4F4',
+        grey7: '#F6F9FB',
+        grey8: '#D2DDEC',
+        grey9: '#6E84A3',
         shadow: '#4D4D4D',
         shadowDark: '#000',
         error: '#F44336',
         success: '#4CAF50',
         errorBackground: '#F443361A',
         backgroundGray: '#EDF2F9',
+        tabGray: '#607EAA',
+        border: '#E6ECF4',
+        blue: '#007BFF',
+        gold: '#D9B701',
+        blue1: '#00AEED',
+        blue2: '#007BB5',
     },
 };
 
@@ -68,6 +77,12 @@ export const commonStyles = StyleSheet.create({
     },
     marginTop: {
         marginTop: 12,
+    },
+    primaryFontFamily: {
+        fontFamily: 'Inter',
+    },
+    secondaryFontFamily: {
+        fontFamily: 'Roboto',
     },
 });
 
