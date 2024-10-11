@@ -257,6 +257,11 @@ export class AntelopeChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
+    isValidAccountName(account: string): boolean {
+        const regex = /^[a-z1-5.]{12}$/;
+
+        return regex.test(account);
+    }
 }
 
 export const LEOS_SEED_ROUND_PRICE = 0.0002;
@@ -674,7 +679,6 @@ export class AntelopeSigningRequestSession implements IChainSession {
     ): Promise<void> {
         const signedTransaction = receipt.getRawTransaction();
         const trxId = receipt.getTransactionHash();
-        // @ts-expect-error signatures type mismatch
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
         if (callbackParams) {

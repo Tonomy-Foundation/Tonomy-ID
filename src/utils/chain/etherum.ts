@@ -4,7 +4,6 @@ import {
     TransactionResponse,
     TransactionRequest,
     JsonRpcProvider,
-    TransactionReceipt,
     computeAddress,
     Interface,
     ethers,
@@ -127,6 +126,11 @@ export class EthereumChain extends AbstractChain {
         }
 
         return this.explorerOrigin;
+    }
+    isValidAccountName(account: string): boolean {
+        const regex = /^0x[a-fA-F0-9]{40}$/;
+
+        return regex.test(account);
     }
 }
 

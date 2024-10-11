@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { TButtonContained } from '../components/atoms/TButton';
-import { TP } from '../components/atoms/THeadings';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TButtonContained } from './atoms/TButton';
+import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import QrScannerBorders from '../assets/images/QrScannerBorders';
-import { ActivityIndicator, IconButton } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import useErrorStore from '../store/errorStore';
 import { Camera, FlashMode } from 'expo-camera';
-import { Props } from '../screens/QrCodeScanScreen';
-import Debug from 'debug';
-import { isNetworkError } from '../utils/errors';
+import FlashOnIcon from '../assets/icons/FlashIcon';
 
-const debug = Debug('tonomy-id:containers:QrCodeScanContainer');
+export type Props = {
+    onClose?: () => void;
+    onScan: (result: BarCodeScannerResult) => void;
+};
 
-export default function QrCodeScanContainer(props: Props) {
+export default function QRCodeScanner(props: Props) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);
     const [scanned, setScanned] = useState(false);
     const [isFlashlightOn, setFlashLightOn] = useState(false);
@@ -49,34 +50,27 @@ export default function QrCodeScanContainer(props: Props) {
                 <>
                     <View style={styles.QRContainer}>
                         <View style={styles.QROverlay}>
-                            <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom]}>
-                                <TP size={3} style={[styles.colorWhite, commonStyles.marginBottom]}>
+                            <View style={[commonStyles.alignItemsCenter, { marginTop: 20 }]}>
+                                <TP size={3} style={[styles.colorWhite]}>
                                     Align QR Code within frame to scan
                                 </TP>
-                                <IconButton
-                                    icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
-                                    onPress={toggleFlashLight}
-                                    color={styles.colorWhite.color}
-                                    style={[styles.iconButton]}
-                                ></IconButton>
                             </View>
                             <View>
-                                <QrScannerBorders style={commonStyles.marginBottom}></QrScannerBorders>
+                                <QrScannerBorders color="white" style={commonStyles.marginBottom}></QrScannerBorders>
                             </View>
 
-                            <View style={commonStyles.marginBottom}>
-                                <TButtonContained
-                                    size="huge"
-                                    style={commonStyles.marginBottom}
-                                    onPress={() => (props.onClose ? props.onClose() : null)}
-                                >
-                                    Cancel
-                                </TButtonContained>
+                            <View style={{ ...commonStyles.marginBottom }}>
                                 {scanned && (
                                     <TButtonContained onPress={() => setScanned(false)} size="huge">
                                         Tap to Scan Again
                                     </TButtonContained>
                                 )}
+                                <TouchableOpacity
+                                    style={[styles.flashButton, isFlashlightOn && styles.flashOnButton]}
+                                    onPress={toggleFlashLight}
+                                >
+                                    <FlashOnIcon color="white" />
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <Camera
@@ -104,14 +98,18 @@ export default function QrCodeScanContainer(props: Props) {
 const styles = StyleSheet.create({
     QRContainer: {
         flex: 1,
+        borderRadius: 25,
+        position: 'relative',
+        overflow: 'hidden',
     },
     QROverlay: {
         ...StyleSheet.absoluteFillObject,
         zIndex: 2,
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
         padding: 16,
         justifyContent: 'space-between',
+        position: 'relative',
+        gap: 40,
     },
 
     colorWhite: {
@@ -125,5 +123,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
+    },
+    flashButton: {
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        borderRadius: 42,
+        width: 48,
+        height: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    flashOnButton: {
+        backgroundColor: 'rgba(255,255,255,0.5)',
     },
 });
