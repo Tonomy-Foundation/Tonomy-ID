@@ -18,6 +18,8 @@ describe('AntelopeTransaction', () => {
 
     const SIMPLE_ASSSET_CONTRACT_NAME = 'simpleassets';
 
+    //to resolve powerup error
+    // go to https://monitor4.jungletestnet.io/  and press "PowerUp" and put in the account name
     it('generate private key and sign transaction', async () => {
         const antelopeKey = new AntelopePrivateKey(privateKey, EOSJungleChain);
         const account = AntelopeAccount.fromAccountAndPrivateKey(EOSJungleChain, jungleAccountName, antelopeKey);
