@@ -1,4 +1,4 @@
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import useWalletStore from '../store/useWalletStore';
@@ -8,15 +8,12 @@ import useErrorStore from '../store/errorStore';
 import { ScanQRScreenProps } from '../screens/ScanQRScreen';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Images } from '../assets';
-import { CameraView, FlashToggleButton, ScannerOverlay, PermissionStatus } from '../components/QRCodeScanner';
+import QRCodeScanner from '../components/QRCodeScanner';
 import theme from '../utils/theme';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import ABICache from '@wharfkit/abicache';
 import { APIClient, PrivateKey } from '@wharfkit/antelope';
-
-const debug = Debug('tonomy-id:containers:MainContainer');
-
 import zlib from 'pako';
 import {
     AntelopeAccount,
@@ -29,7 +26,8 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
 import TSpinner from '../components/atoms/TSpinner';
-import { useFocusEffect } from '@react-navigation/native';
+
+const debug = Debug('tonomy-id:containers:ScanQRCodeContainer');
 
 export type ScanQRContainerProps = {
     did;
@@ -259,49 +257,11 @@ export default function ScanQRCodeContainer({
         }
     }
 
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-    const [isFlashlightOn, setFlashLightOn] = useState(false);
-
-    useFocusEffect(
-        useCallback(() => {
-            setHasPermission(null);
-            setFlashLightOn(false);
-
-            const getBarCodeScannerPermissions = async () => {
-                try {
-                    const { status } = await BarCodeScanner.requestPermissionsAsync();
-
-                    setHasPermission(status === 'granted');
-                } catch (e) {
-                    errorStore.setError({ error: e, expected: false });
-                }
-            };
-
-            getBarCodeScannerPermissions();
-        }, [errorStore])
-    );
-
-    const toggleFlashLight = () => setFlashLightOn(!isFlashlightOn);
-
     return (
         <View style={styles.content}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.QRContainer}>
-                    {isLoadingView ? (
-                        <TSpinner />
-                    ) : (
-                        <View>
-                            {hasPermission === true ? (
-                                <View style={styles.QRContainer}>
-                                    <ScannerOverlay />
-                                    <FlashToggleButton isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
-                                    <CameraView onBarCodeScanned={onScan} isFlashlightOn={isFlashlightOn} />
-                                </View>
-                            ) : (
-                                <PermissionStatus hasPermission={hasPermission} />
-                            )}
-                        </View>
-                    )}
+                    {isLoadingView ? <TSpinner /> : <QRCodeScanner onScan={onScan} />}
                 </View>
                 <View style={styles.bottomInstruction}>
                     <Text style={{ fontWeight: '500' }}>QR scanner can be used for:</Text>
@@ -326,12 +286,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-    QRContainer: {
-        flex: 1,
-        borderRadius: 25,
-        position: 'relative',
-        overflow: 'hidden',
-    },
+
     scrollViewContent: {
         flexGrow: 1,
     },
@@ -355,5 +310,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
+    },
+    QRContainer: {
+        flex: 1,
+        borderRadius: 25,
+        position: 'relative',
+        overflow: 'hidden',
     },
 });
