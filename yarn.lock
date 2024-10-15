@@ -4606,7 +4606,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:^0.23.0":
+"@tonomy/tonomy-id-sdk@npm:0.23.0":
   version: 0.23.0
   resolution: "@tonomy/tonomy-id-sdk@npm:0.23.0"
   dependencies:
@@ -18136,7 +18136,7 @@ __metadata:
     "@react-navigation/native": "npm:^6.0.12"
     "@react-navigation/native-stack": "npm:^6.8.0"
     "@sinonjs/text-encoding": "npm:^0.7.2"
-    "@tonomy/tonomy-id-sdk": "npm:^0.23.0"
+    "@tonomy/tonomy-id-sdk": "npm:0.23.0"
     "@types/jest": "npm:^29.5.0"
     "@types/react": "npm:~18.2.14"
     "@types/react-native-base64": "npm:^0.2.0"
