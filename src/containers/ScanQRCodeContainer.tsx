@@ -251,8 +251,6 @@ export default function ScanQRCodeContainer({
                 onClose();
                 errorStore.setError({ error: e, expected: false });
             }
-        } finally {
-            onClose();
         }
     }
 
