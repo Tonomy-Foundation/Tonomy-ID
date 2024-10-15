@@ -452,16 +452,28 @@ export class AntelopeAction implements IOperation {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 const value = data[key];
 
-                switch (value) {
-                    case null:
-                        args[key] = 'null';
-                        break;
-                    case undefined:
-                        args[key] = 'undefined';
-                        break;
-                    default:
-                        args[key] = value.toString ? value.toString() : JSON.stringify(value);
-                        break;
+                debug('getArguments()', key, value);
+
+                if (value === null) {
+                    args[key] = 'null';
+                } else if (value === undefined) {
+                    args[key] = 'undefined';
+                } else if (typeof value === 'object') {
+                    try {
+                        args[key] = JSON.stringify(value);
+                    } catch (error) {
+                        console.error('getArguments() object', error);
+                        args[key] = 'unpackable object';
+                    }
+                } else if (value.toString) {
+                    args[key] = value.toString();
+                } else {
+                    try {
+                        args[key] = JSON.stringify(value);
+                    } catch (error) {
+                        console.error('getArguments() value', error);
+                        args[key] = 'unpackable value';
+                    }
                 }
             }
         }
@@ -688,6 +700,8 @@ export class AntelopeSigningRequestSession implements IChainSession {
         // @ts-expect-error signatures type mismatch
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
+        debug('approveTransactionRequest() callbackParams', callbackParams);
+
         if (callbackParams) {
             const uid = getQueryParam(callbackParams.url, 'uid');
 
@@ -720,9 +734,11 @@ export class AntelopeSigningRequestSession implements IChainSession {
 
     async rejectTransactionRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
         const callback = resolvedSigningRequest.request.data.callback;
-        const origin = new URL(callback).origin;
 
-        if (origin) {
+        debug('rejectTransactionRequest() callback', callback);
+
+        if (callback) {
+            const origin = new URL(callback).origin;
             const response = await fetch(origin, {
                 method: 'POST',
                 headers: {
@@ -733,11 +749,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+            if (!response.ok || response.status !== 200) {
+                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
-        } else {
-            throw new Error('No origin found in callback URL');
         }
     }
 }
