@@ -18,6 +18,8 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         if (isFatal) {
             errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
+            debug('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
+
             // @ts-expect-error context does not exist on Error
             if (e?.context?.startsWith('core') && e?.time && e?.level && e?.msg) {
                 // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
