@@ -262,6 +262,7 @@ export class AntelopeChain extends AbstractChain {
 export const LEOS_SEED_ROUND_PRICE = 0.0002;
 export const LEOS_SEED_LATE_ROUND_PRICE = 0.0004;
 export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
+export const LEOS_CURRENT_PRICE = LEOS_SEED_ROUND_PRICE;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;

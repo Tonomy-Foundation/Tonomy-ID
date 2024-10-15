@@ -51,7 +51,7 @@ import {
     AntelopePrivateKey,
     AntelopeTransaction,
     AntelopeSigningRequestSession,
-    LEOS_SEED_ROUND_PRICE,
+    LEOS_CURRENT_PRICE,
     getChainFromAntelopeChainId,
 } from '../utils/chain/antelope';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
@@ -418,17 +418,17 @@ export default function MainContainer({
 
                 const account = asset
                     ? {
-                          network: capitalizeFirstLetter(chainObj.chain.getName()),
-                          accountName: asset.accountName,
-                          balance: asset.balance,
-                          usdBalance: asset.usdBalance,
-                      }
+                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        accountName: asset.accountName,
+                        balance: asset.balance,
+                        usdBalance: asset.usdBalance,
+                    }
                     : {
-                          network: capitalizeFirstLetter(chainObj.chain.getName()),
-                          accountName: null,
-                          balance: '0' + chainObj.token.getSymbol(),
-                          usdBalance: 0,
-                      };
+                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        accountName: null,
+                        balance: '0' + chainObj.token.getSymbol(),
+                        usdBalance: 0,
+                    };
 
                 setAccounts((prevAccounts) => {
                     // find index of the account in the array
@@ -582,7 +582,7 @@ export default function MainContainer({
                                                     <Text style={styles.secondaryColor}>
                                                         $
                                                         {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
+                                                            ? formatCurrencyValue(pangeaBalance * LEOS_CURRENT_PRICE)
                                                             : 0.0}
                                                     </Text>
                                                 </View>
