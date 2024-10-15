@@ -452,7 +452,17 @@ export class AntelopeAction implements IOperation {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 const value = data[key];
 
-                args[key] = value.toString();
+                switch (value) {
+                    case null:
+                        args[key] = 'null';
+                        break;
+                    case undefined:
+                        args[key] = 'undefined';
+                        break;
+                    default:
+                        args[key] = value.toString ? value.toString() : JSON.stringify(value);
+                        break;
+                }
             }
         }
 
