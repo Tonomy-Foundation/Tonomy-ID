@@ -1,27 +1,13 @@
 import React, { useCallback, useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import FlashOnIcon from '../assets/icons/FlashIcon';
+import { View, StyleSheet } from 'react-native';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import { Camera, FlashMode } from 'expo-camera';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, IconButton } from 'react-native-paper';
 import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import QrScannerBorders from '../assets/images/QrScannerBorders';
 import { useFocusEffect } from '@react-navigation/native';
 import useErrorStore from '../store/errorStore';
-
-type FlashToggleProps = {
-    isFlashlightOn: boolean;
-    onPress: () => void;
-};
-
-export const FlashToggleButton = ({ isFlashlightOn, onPress }: FlashToggleProps) => {
-    return (
-        <TouchableOpacity style={[styles.flashButton, isFlashlightOn && styles.flashOnButton]} onPress={onPress}>
-            <FlashOnIcon color="white" />
-        </TouchableOpacity>
-    );
-};
 
 type CameraProps = {
     onBarCodeScanned: (result: BarCodeScannerResult) => void;
@@ -55,13 +41,24 @@ export const PermissionStatus = ({ hasPermission }: PermissionProps) => {
     );
 };
 
-export const ScannerOverlay = () => {
+type ScannerOverlayProps = {
+    isFlashlightOn: boolean;
+    onPress: () => void;
+};
+
+export const ScannerOverlay = ({ isFlashlightOn, onPress }: ScannerOverlayProps) => {
     return (
         <View style={styles.overlay}>
             <View style={[commonStyles.alignItemsCenter, { marginTop: 20 }]}>
                 <TP size={3} style={styles.colorWhite}>
                     Align QR Code within frame to scan
                 </TP>
+                <IconButton
+                    icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
+                    onPress={onPress}
+                    color={styles.colorWhite.color}
+                    style={[styles.iconButton]}
+                ></IconButton>
             </View>
             <View>
                 <QrScannerBorders color="white" style={commonStyles.marginBottom}></QrScannerBorders>
@@ -105,8 +102,7 @@ export default function QRCodeScanner(props: Props) {
         <>
             {hasPermission === true ? (
                 <View style={styles.QRContainer}>
-                    <ScannerOverlay />
-                    <FlashToggleButton isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
+                    <ScannerOverlay isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
                     <CameraView onBarCodeScanned={props.onScan} isFlashlightOn={isFlashlightOn} />
                 </View>
             ) : (
@@ -160,5 +156,9 @@ const styles = StyleSheet.create({
     },
     colorWhite: {
         color: theme.colors.white,
+    },
+    iconButton: {
+        borderColor: theme.colors.white,
+        borderWidth: 1,
     },
 });
