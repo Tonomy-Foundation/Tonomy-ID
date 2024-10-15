@@ -17,7 +17,6 @@ export type Props = {
 
 export default function QRCodeScanner(props: Props) {
     const [hasPermission, setHasPermission] = useState(null as null | boolean);
-    const [scanned, setScanned] = useState(false);
     const [isFlashlightOn, setFlashLightOn] = useState(false);
     const errorStore = useErrorStore();
 
@@ -40,8 +39,7 @@ export default function QRCodeScanner(props: Props) {
     };
 
     const handleBarCodeScanned = (result: BarCodeScannerResult) => {
-        if (!scanned) props.onScan(result);
-        setScanned(true);
+        props.onScan(result);
     };
 
     return (
@@ -60,11 +58,6 @@ export default function QRCodeScanner(props: Props) {
                             </View>
 
                             <View style={{ ...commonStyles.marginBottom }}>
-                                {scanned && (
-                                    <TButtonContained onPress={() => setScanned(false)} size="huge">
-                                        Tap to Scan Again
-                                    </TButtonContained>
-                                )}
                                 <TouchableOpacity
                                     style={[styles.flashButton, isFlashlightOn && styles.flashOnButton]}
                                     onPress={toggleFlashLight}
