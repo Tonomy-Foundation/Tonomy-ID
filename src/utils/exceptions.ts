@@ -21,7 +21,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
             debug('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
 
             // @ts-expect-error context does not exist on Error
-            if (e?.context?.startsWith('core') && e?.time && e?.level && e?.msg) {
+            if (e?.context?.startsWith('core') && e?.time && e?.level) {
                 // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
                 debug('Ignoring WalletConnect Core Relay error', e);
                 return;
