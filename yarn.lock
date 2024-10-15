@@ -4631,9 +4631,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.23.0-development.1":
-  version: 0.23.0-development.1
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.23.0-development.1"
+"@tonomy/tonomy-id-sdk@npm:0.23.0-development.2":
+  version: 0.23.0-development.2
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.23.0-development.2"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4659,7 +4659,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/bafda717ddd9cd3b92c9f3b6f0d5ef4e3d8a000e40a09488666c77baf2e340b21c6cc2590f802942ca8c597950e8a91617a4b5294742e416672bd043eaa44aee
+  checksum: 10c0/d2bda06483d591c53015f8ab568e5a4023c878a55e97490f0b01cf0a2a3831ed0acb9caab91ae2ba37c222ea9a31c04ef5a753e35a16fd2c8a4358944212aab6
   languageName: node
   linkType: hard
 
@@ -18306,7 +18306,7 @@ __metadata:
     "@react-navigation/native": "npm:^6.0.12"
     "@react-navigation/native-stack": "npm:^6.8.0"
     "@sinonjs/text-encoding": "npm:^0.7.2"
-    "@tonomy/tonomy-id-sdk": "npm:0.23.0-development.1"
+    "@tonomy/tonomy-id-sdk": "npm:0.23.0-development.2"
     "@types/jest": "npm:^29.5.0"
     "@types/react": "npm:~18.2.14"
     "@types/react-native-base64": "npm:^0.2.0"

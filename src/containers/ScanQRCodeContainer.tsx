@@ -1,4 +1,4 @@
-import { BarCodeScannerResult } from 'expo-barcode-scanner';
+import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import useWalletStore from '../store/useWalletStore';
@@ -8,7 +8,7 @@ import useErrorStore from '../store/errorStore';
 import { ScanQRScreenProps } from '../screens/ScanQRScreen';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Images } from '../assets';
-import QRCodeScanner from '../components/QRCodeScanner';
+import { CameraView, FlashToggleButton, ScannerOverlay, PermissionStatus } from '../components/QRCodeScanner';
 import theme from '../utils/theme';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
@@ -28,6 +28,8 @@ import {
 } from '../utils/chain/antelope';
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
+import TSpinner from '../components/atoms/TSpinner';
+import { useFocusEffect } from '@react-navigation/native';
 
 export type ScanQRContainerProps = {
     did;
@@ -44,6 +46,7 @@ export default function ScanQRCodeContainer({
     const user = userStore.user;
     const errorStore = useErrorStore();
     const [accountName, setAccountName] = useState('');
+    const [isLoadingView, setIsLoadingView] = useState(false);
 
     const { web3wallet } = useWalletStore();
 
@@ -117,6 +120,7 @@ export default function ScanQRCodeContainer({
 
     async function onScan({ data }: BarCodeScannerResult) {
         debug('onScan() data:', data);
+        setIsLoadingView(true);
 
         try {
             if (data.startsWith('wc:')) {
@@ -248,21 +252,56 @@ export default function ScanQRCodeContainer({
                     title: 'Communication Error',
                 });
             } else {
-                onClose();
                 errorStore.setError({ error: e, expected: false });
             }
+        } finally {
+            setIsLoadingView(false);
         }
     }
 
-    function onClose() {
-        navigation.navigate('Assets');
-    }
+    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+    const [isFlashlightOn, setFlashLightOn] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            setHasPermission(null);
+            setFlashLightOn(false);
+
+            const getBarCodeScannerPermissions = async () => {
+                try {
+                    const { status } = await BarCodeScanner.requestPermissionsAsync();
+
+                    setHasPermission(status === 'granted');
+                } catch (e) {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            };
+
+            getBarCodeScannerPermissions();
+        }, [errorStore])
+    );
+
+    const toggleFlashLight = () => setFlashLightOn(!isFlashlightOn);
 
     return (
         <View style={styles.content}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.QRContainer}>
-                    <QRCodeScanner onScan={onScan} onClose={onClose} />
+                    {isLoadingView ? (
+                        <TSpinner />
+                    ) : (
+                        <View>
+                            {hasPermission === true ? (
+                                <View style={styles.QRContainer}>
+                                    <ScannerOverlay />
+                                    <FlashToggleButton isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
+                                    <CameraView onBarCodeScanned={onScan} isFlashlightOn={isFlashlightOn} />
+                                </View>
+                            ) : (
+                                <PermissionStatus hasPermission={hasPermission} />
+                            )}
+                        </View>
+                    )}
                 </View>
                 <View style={styles.bottomInstruction}>
                     <Text style={{ fontWeight: '500' }}>QR scanner can be used for:</Text>
