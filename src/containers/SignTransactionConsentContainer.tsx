@@ -58,8 +58,8 @@ export default function SignTransactionConsentContainer({
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
-    const hostname = extractHostname(origin);
-    const topLevelHostname = hostname.split('.').slice(-2).join('.');
+    const hostname = origin ? extractHostname(origin) : null;
+    const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
 
     const getOperationData = useCallback(
         async (operation: IOperation) => {
@@ -257,7 +257,9 @@ export default function SignTransactionConsentContainer({
                                                 ...commonStyles.primaryFontFamily,
                                             }}
                                         >
-                                            {operations[0].amount}{' '}
+                                            {operations[0].amount
+                                                ? parseFloat(operations[0].amount).toFixed(4)
+                                                : '0.0000'}
                                         </Text>
                                         <Text
                                             style={[
