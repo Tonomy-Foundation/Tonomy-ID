@@ -51,7 +51,7 @@ import {
     AntelopePrivateKey,
     AntelopeTransaction,
     AntelopeSigningRequestSession,
-    LEOS_SEED_ROUND_PRICE,
+    LEOS_CURRENT_PRICE,
     getChainFromAntelopeChainId,
 } from '../utils/chain/antelope';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
@@ -582,7 +582,7 @@ export default function MainContainer({
                                                     <Text style={styles.secondaryColor}>
                                                         $
                                                         {pangeaBalance
-                                                            ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
+                                                            ? formatCurrencyValue(pangeaBalance * LEOS_CURRENT_PRICE)
                                                             : 0.0}
                                                     </Text>
                                                 </View>
