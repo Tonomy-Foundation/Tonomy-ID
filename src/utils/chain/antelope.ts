@@ -262,6 +262,7 @@ export class AntelopeChain extends AbstractChain {
 export const LEOS_SEED_ROUND_PRICE = 0.0002;
 export const LEOS_SEED_LATE_ROUND_PRICE = 0.0004;
 export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
+export const LEOS_CURRENT_PRICE = LEOS_SEED_ROUND_PRICE;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -451,7 +452,29 @@ export class AntelopeAction implements IOperation {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 const value = data[key];
 
-                args[key] = value.toString();
+                debug('getArguments()', key, value);
+
+                if (value === null) {
+                    args[key] = 'null';
+                } else if (value === undefined) {
+                    args[key] = 'undefined';
+                } else if (typeof value === 'object') {
+                    try {
+                        args[key] = JSON.stringify(value);
+                    } catch (error) {
+                        console.error('getArguments() object', error);
+                        args[key] = 'unpackable object';
+                    }
+                } else if (value.toString) {
+                    args[key] = value.toString();
+                } else {
+                    try {
+                        args[key] = JSON.stringify(value);
+                    } catch (error) {
+                        console.error('getArguments() value', error);
+                        args[key] = 'unpackable value';
+                    }
+                }
             }
         }
 
@@ -677,6 +700,8 @@ export class AntelopeSigningRequestSession implements IChainSession {
         // @ts-expect-error signatures type mismatch
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
+        debug('approveTransactionRequest() callbackParams', callbackParams);
+
         if (callbackParams) {
             const uid = getQueryParam(callbackParams.url, 'uid');
 
@@ -690,7 +715,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             // eslint-disable-next-line camelcase
             const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
 
-            debug('approveTransactionRequest() callback', newCallback, bodyObject);
+            debug('approveTransactionRequest() callback', new Date(), newCallback, bodyObject);
             const response = await fetch(newCallback, {
                 method: 'POST',
                 headers: {
@@ -709,9 +734,11 @@ export class AntelopeSigningRequestSession implements IChainSession {
 
     async rejectTransactionRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
         const callback = resolvedSigningRequest.request.data.callback;
-        const origin = new URL(callback).origin;
 
-        if (origin) {
+        debug('rejectTransactionRequest() callback', callback);
+
+        if (callback) {
+            const origin = new URL(callback).origin;
             const response = await fetch(origin, {
                 method: 'POST',
                 headers: {
@@ -722,11 +749,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+            if (!response.ok || response.status !== 200) {
+                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
-        } else {
-            throw new Error('No origin found in callback URL');
         }
     }
 }
