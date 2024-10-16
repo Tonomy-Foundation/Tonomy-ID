@@ -22,7 +22,7 @@ const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
 
     async function onScan({ data }: BarCodeScannerResult) {
         debug('send scan data: ', data);
-        const account = data.replace(/^(ethereum:|eth:)/, '');
+        const account = data.replace(/^.*?(0x[a-fA-F0-9]{40})$/, '$1');
         if (!props.chain.isValidAccountName(account)) {
             props.refMessage.current?.close();
             errorStore.setError({
