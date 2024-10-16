@@ -6,7 +6,7 @@ import theme from '../utils/theme';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import Debug from 'debug';
 import QRCodeScanner from './QRCodeScanner';
-import { IChain } from '../utils/chain/types';
+import { ChainType, IChain } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
 
 const debug = Debug('tonomy-id:components:ReceiverAccountScanner');
@@ -22,7 +22,13 @@ const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
 
     async function onScan({ data }: BarCodeScannerResult) {
         debug('send scan data: ', data);
-        const account = data.replace(/^.*?(0x[a-fA-F0-9]{40})$/, '$1');
+        const chainType = props.chain.getChainType();
+        let account = data;
+
+        if (chainType === ChainType.ETHEREUM) {
+            account = data.replace(/^.*?(0x[a-fA-F0-9]{40})$/, '$1');
+        }
+
         if (!props.chain.isValidAccountName(account)) {
             props.refMessage.current?.close();
             errorStore.setError({
@@ -31,6 +37,7 @@ const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
             });
             return;
         }
+
         props.onScanQR(account);
         onClose();
     }
