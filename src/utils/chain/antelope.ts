@@ -715,7 +715,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             // eslint-disable-next-line camelcase
             const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
 
-            debug('approveTransactionRequest() callback', newCallback, bodyObject);
+            debug('approveTransactionRequest() callback', new Date(), newCallback, bodyObject);
             const response = await fetch(newCallback, {
                 method: 'POST',
                 headers: {

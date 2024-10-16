@@ -50,6 +50,8 @@ export default function SignTransactionConsentContainer({
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
+    const hostname = extractHostname(origin);
+    const topLevelHostname = hostname.split('.').slice(-2).join('.');
 
     const getOperationData = useCallback(
         async (operation: IOperation) => {
@@ -208,7 +210,7 @@ export default function SignTransactionConsentContainer({
                             source={{ uri: chain.getNativeToken().getLogoUrl() }}
                         ></Image>
                         <View style={commonStyles.alignItemsCenter}>
-                            <Text style={styles.applinkText}>{extractHostname(origin)}</Text>
+                            <Text style={styles.applinkText}>{topLevelHostname}</Text>
                             <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
                         </View>
                         <View style={styles.networkHeading}>
