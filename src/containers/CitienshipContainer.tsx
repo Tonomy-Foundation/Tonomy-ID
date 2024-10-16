@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 16,
         marginTop: 8,
-        width: 326,
+        width: 300,
         height: 149,
         borderWidth: 1,
         borderColor: theme.colors.grey8,

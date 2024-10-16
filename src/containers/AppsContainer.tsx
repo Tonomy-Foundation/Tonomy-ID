@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '500',
         color: theme.colors.blue,
-        marginTop: -4,
+        marginTop: -2,
         marginRight: 3,
     },
     textAndIconContainer: {
