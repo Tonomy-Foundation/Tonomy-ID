@@ -22,8 +22,8 @@ const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
 
     async function onScan({ data }: BarCodeScannerResult) {
         debug('send scan data: ', data);
-
-        if (!props.chain.isValidAccountName(data)) {
+        const account = data.replace(/^(ethereum:|eth:)/, '');
+        if (!props.chain.isValidAccountName(account)) {
             props.refMessage.current?.close();
             errorStore.setError({
                 error: new Error('The account you entered is invalid!'),
@@ -31,8 +31,7 @@ const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
             });
             return;
         }
-
-        props.onScanQR(data);
+        props.onScanQR(account);
         onClose();
     }
 
