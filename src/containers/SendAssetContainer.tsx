@@ -30,6 +30,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const errorStore = useErrorStore();
     const [submitting, setSubmitting] = useState<boolean>(false);
 
+    console.log('asset', typeof asset?.balance, asset?.usdBalance);
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.chain.getName());
@@ -74,10 +75,11 @@ const SendAssetContainer = (props: SendAssetProps) => {
         setSubmitting(true);
 
         try {
-            if (Number(asset.balance) < Number(amount)) {
+            if (Number(asset.balance) < Number(amount) || Number(asset.balance) <= 0) {
                 errorStore.setError({
-                    error: new Error('You do not have enough balance!'),
+                    error: new Error('You do not have enough balance to perform transaction!'),
                     expected: true,
+                    title: 'Insufficient balance',
                 });
                 return;
             }
