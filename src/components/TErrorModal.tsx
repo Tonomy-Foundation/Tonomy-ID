@@ -108,11 +108,11 @@ export default function TErrorModal(props: TErrorModalProps) {
                             <TP size={1}>{props?.error?.message}</TP>
                         </View>
 
-                        {props?.expected === false && (
+                        {/* {props?.expected === false && (
                             <View>
                                 <Text>The Tonomy Foundation has been notified</Text>
                             </View>
-                        )}
+                        )} */}
 
                         {isExpandable() && (
                             <>

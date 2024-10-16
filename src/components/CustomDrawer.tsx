@@ -4,7 +4,6 @@ import { DrawerContentScrollView, DrawerContentComponentProps } from '@react-nav
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import useUserStore from '../store/userStore';
 import { useAppTheme } from '../utils/theme';
-import useWalletStore from '../store/useWalletStore';
 
 import { HeadsetHelp, HomeSimple, LogOut, NavArrowRight, ProfileCircle, Settings } from 'iconoir-react-native';
 
@@ -12,7 +11,6 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const userStore = useUserStore();
     const user = userStore.user;
-    const { clearState } = useWalletStore();
 
     const [username, setUsername] = useState<string>('');
     const [greeting, setGreeting] = useState<string>('Good morning');
@@ -197,7 +195,6 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         style={styles.menuItemContainer}
                         onPress={async () => {
                             await userStore.logout('Logout in main menu');
-                            clearState();
                         }}
                     >
                         <View style={styles.menuItem}>

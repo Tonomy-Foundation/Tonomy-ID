@@ -9,7 +9,6 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
-import useWalletStore from '../store/useWalletStore';
 import { appStorage, connect } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
 import Debug from 'debug';
@@ -20,7 +19,6 @@ const debug = Debug('tonomy-id:container:mainSplashScreen');
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
-    const { clearState } = useWalletStore();
 
     useFonts({
         Roboto: require('../assets/fonts/Roboto-Regular.ttf'),
@@ -65,7 +63,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
-                                clearState();
                             } else {
                                 debug('loggedin error', e);
                                 throw e;
@@ -84,17 +81,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
         }
 
         main();
-    }, [
-        errorStore,
-        getStatus,
-        initializeStatusFromStorage,
-        logout,
-        navigation,
-        user,
-        clearState,
-        setStatus,
-        isAppInitialized,
-    ]);
+    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, setStatus, isAppInitialized]);
 
     return (
         <LayoutComponent
