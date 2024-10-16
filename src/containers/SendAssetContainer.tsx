@@ -30,7 +30,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const errorStore = useErrorStore();
     const [submitting, setSubmitting] = useState<boolean>(false);
 
-    console.log('asset', typeof asset?.balance, asset?.usdBalance);
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.chain.getName());
