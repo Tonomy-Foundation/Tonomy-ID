@@ -20,7 +20,7 @@ export default function ExploreContainer() {
     const openPangeaLinks = [
         { title: 'Website', url: 'https://pangea.web4.world/' },
         { title: 'Whitepapers', url: 'https://pangea.web4.world/about/whitepapers' },
-        { title: 'Pitch Decks', url: 'https://www.canva.com/design/DAGKvFBFvlQ/AicATNBAKdrj0wV6akGCZw/' },
+        { title: 'Pitch Decks', url: 'https://www.canva.com/design/DAGKvFBFvlQ/AicATNBAKdrj0wV6akGCZw/view' },
     ];
 
     const openOurSocialLinks = [
