@@ -14,9 +14,6 @@ import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import ABICache from '@wharfkit/abicache';
 import { APIClient, PrivateKey } from '@wharfkit/antelope';
-
-const debug = Debug('tonomy-id:containers:MainContainer');
-
 import zlib from 'pako';
 import {
     AntelopeAccount,
@@ -28,6 +25,9 @@ import {
 } from '../utils/chain/antelope';
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
+import TSpinner from '../components/atoms/TSpinner';
+
+const debug = Debug('tonomy-id:containers:ScanQRCodeContainer');
 
 export type ScanQRContainerProps = {
     did;
@@ -44,6 +44,7 @@ export default function ScanQRCodeContainer({
     const user = userStore.user;
     const errorStore = useErrorStore();
     const [accountName, setAccountName] = useState('');
+    const [isLoadingView, setIsLoadingView] = useState(false);
 
     const { web3wallet } = useWalletStore();
 
@@ -117,6 +118,7 @@ export default function ScanQRCodeContainer({
 
     async function onScan({ data }: BarCodeScannerResult) {
         debug('onScan() data:', data);
+        setIsLoadingView(true);
 
         try {
             if (data.startsWith('wc:')) {
@@ -248,23 +250,18 @@ export default function ScanQRCodeContainer({
                     title: 'Communication Error',
                 });
             } else {
-                onClose();
                 errorStore.setError({ error: e, expected: false });
             }
         } finally {
-            onClose();
+            setIsLoadingView(false);
         }
-    }
-
-    function onClose() {
-        navigation.navigate('Assets');
     }
 
     return (
         <View style={styles.content}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.QRContainer}>
-                    <QRCodeScanner onScan={onScan} onClose={onClose} />
+                    {isLoadingView ? <TSpinner /> : <QRCodeScanner onScan={onScan} />}
                 </View>
                 <View style={styles.bottomInstruction}>
                     <Text style={{ fontWeight: '500' }}>QR scanner can be used for:</Text>
@@ -289,12 +286,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-    QRContainer: {
-        flex: 1,
-        borderRadius: 25,
-        position: 'relative',
-        overflow: 'hidden',
-    },
+
     scrollViewContent: {
         flexGrow: 1,
     },
@@ -318,5 +310,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
+    },
+    QRContainer: {
+        flex: 1,
+        borderRadius: 25,
+        position: 'relative',
+        overflow: 'hidden',
     },
 });

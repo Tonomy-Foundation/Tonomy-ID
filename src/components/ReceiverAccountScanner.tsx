@@ -7,8 +7,9 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import Debug from 'debug';
 import QRCodeScanner from './QRCodeScanner';
 import { IChain } from '../utils/chain/types';
+import useErrorStore from '../store/errorStore';
 
-const debug = Debug('tonomy-id:containers:MainContainer');
+const debug = Debug('tonomy-id:components:ReceiverAccountScanner');
 
 export type ReceiverAccountScannerProps = {
     refMessage: React.RefObject<{ open: () => void; close: () => void }>;
@@ -17,9 +18,18 @@ export type ReceiverAccountScannerProps = {
 };
 
 const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
+    const errorStore = useErrorStore();
+
     async function onScan({ data }: BarCodeScannerResult) {
+        debug('send scan data: ', data);
+
         if (!props.chain.isValidAccountName(data)) {
-            throw new Error('The account you entered is invalid!');
+            props.refMessage.current?.close();
+            errorStore.setError({
+                error: new Error('The account you entered is invalid!'),
+                expected: true,
+            });
+            return;
         }
 
         props.onScanQR(data);

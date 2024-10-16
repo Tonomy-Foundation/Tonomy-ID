@@ -1,14 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TButtonContained } from './atoms/TButton';
+import React, { useCallback, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+import { Camera, FlashMode } from 'expo-camera';
+import { ActivityIndicator, IconButton } from 'react-native-paper';
 import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import QrScannerBorders from '../assets/images/QrScannerBorders';
-import { ActivityIndicator } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import useErrorStore from '../store/errorStore';
-import { Camera, FlashMode } from 'expo-camera';
-import FlashOnIcon from '../assets/icons/FlashIcon';
+
+type CameraProps = {
+    onBarCodeScanned: (result: BarCodeScannerResult) => void;
+    isFlashlightOn: boolean;
+};
+
+export const CameraView = ({ onBarCodeScanned, isFlashlightOn }: CameraProps) => {
+    return (
+        <Camera
+            flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
+            barCodeScannerSettings={{
+                barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+            }}
+            onBarCodeScanned={onBarCodeScanned}
+            style={StyleSheet.absoluteFill}
+        />
+    );
+};
+
+type PermissionProps = {
+    hasPermission: boolean | null;
+};
+
+export const PermissionStatus = ({ hasPermission }: PermissionProps) => {
+    return (
+        <View style={styles.container}>
+            <ActivityIndicator animating={true} />
+            {hasPermission === null && <TP size={2}>Requesting camera permission</TP>}
+            {hasPermission === false && <TP size={3}>No access to camera</TP>}
+        </View>
+    );
+};
+
+type ScannerOverlayProps = {
+    isFlashlightOn: boolean;
+    onPress: () => void;
+};
+
+export const ScannerOverlay = ({ isFlashlightOn, onPress }: ScannerOverlayProps) => {
+    return (
+        <View style={styles.overlay}>
+            <View style={[commonStyles.alignItemsCenter, { marginTop: 20 }]}>
+                <TP size={3} style={styles.colorWhite}>
+                    Align QR Code within frame to scan
+                </TP>
+                <IconButton
+                    icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
+                    onPress={onPress}
+                    color={styles.colorWhite.color}
+                    style={[styles.iconButton]}
+                ></IconButton>
+            </View>
+            <View>
+                <QrScannerBorders color="white" style={commonStyles.marginBottom}></QrScannerBorders>
+            </View>
+        </View>
+    );
+};
 
 export type Props = {
     onClose?: () => void;
@@ -16,86 +73,52 @@ export type Props = {
 };
 
 export default function QRCodeScanner(props: Props) {
-    const [hasPermission, setHasPermission] = useState(null as null | boolean);
-    const [scanned, setScanned] = useState(false);
+    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [isFlashlightOn, setFlashLightOn] = useState(false);
     const errorStore = useErrorStore();
 
-    useEffect(() => {
-        const getBarCodeScannerPermissions = async () => {
-            try {
-                const { status } = await BarCodeScanner.requestPermissionsAsync();
+    useFocusEffect(
+        useCallback(() => {
+            setHasPermission(null);
+            setFlashLightOn(false);
 
-                setHasPermission(status === 'granted');
-            } catch (e) {
-                errorStore.setError({ error: e, expected: false });
-            }
-        };
+            const getBarCodeScannerPermissions = async () => {
+                try {
+                    const { status } = await BarCodeScanner.requestPermissionsAsync();
 
-        getBarCodeScannerPermissions();
-    }, []);
+                    setHasPermission(status === 'granted');
+                } catch (e) {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            };
 
-    const toggleFlashLight = () => {
-        setFlashLightOn(!isFlashlightOn);
-    };
+            getBarCodeScannerPermissions();
+        }, [errorStore])
+    );
 
-    const handleBarCodeScanned = (result: BarCodeScannerResult) => {
-        if (!scanned) props.onScan(result);
-        setScanned(true);
-    };
+    const toggleFlashLight = () => setFlashLightOn(!isFlashlightOn);
 
     return (
         <>
-            {hasPermission === true && (
-                <>
-                    <View style={styles.QRContainer}>
-                        <View style={styles.QROverlay}>
-                            <View style={[commonStyles.alignItemsCenter, { marginTop: 20 }]}>
-                                <TP size={3} style={[styles.colorWhite]}>
-                                    Align QR Code within frame to scan
-                                </TP>
-                            </View>
-                            <View>
-                                <QrScannerBorders color="white" style={commonStyles.marginBottom}></QrScannerBorders>
-                            </View>
-
-                            <View style={{ ...commonStyles.marginBottom }}>
-                                {scanned && (
-                                    <TButtonContained onPress={() => setScanned(false)} size="huge">
-                                        Tap to Scan Again
-                                    </TButtonContained>
-                                )}
-                                <TouchableOpacity
-                                    style={[styles.flashButton, isFlashlightOn && styles.flashOnButton]}
-                                    onPress={toggleFlashLight}
-                                >
-                                    <FlashOnIcon color="white" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <Camera
-                            flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
-                            barCodeScannerSettings={{
-                                barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-                            }}
-                            onBarCodeScanned={handleBarCodeScanned}
-                            style={StyleSheet.absoluteFill}
-                        />
-                    </View>
-                </>
-            )}
-            {hasPermission !== true && (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator animating={true}></ActivityIndicator>
-                    {hasPermission === null && <TP size={2}>Requesting camera permission</TP>}
-                    {hasPermission === false && <TP size={3}>No access to camera</TP>}
+            {hasPermission === true ? (
+                <View style={styles.QRContainer}>
+                    <ScannerOverlay isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
+                    <CameraView onBarCodeScanned={props.onScan} isFlashlightOn={isFlashlightOn} />
                 </View>
+            ) : (
+                <PermissionStatus hasPermission={hasPermission} />
             )}
         </>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+    },
+
     QRContainer: {
         flex: 1,
         borderRadius: 25,
@@ -111,19 +134,6 @@ const styles = StyleSheet.create({
         position: 'relative',
         gap: 40,
     },
-
-    colorWhite: {
-        color: theme.colors.white,
-    },
-    iconButton: {
-        borderColor: theme.colors.white,
-        borderWidth: 1,
-    },
-    loadingContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1,
-    },
     flashButton: {
         backgroundColor: 'rgba(255,255,255,0.2)',
         borderRadius: 42,
@@ -134,5 +144,21 @@ const styles = StyleSheet.create({
     },
     flashOnButton: {
         backgroundColor: 'rgba(255,255,255,0.5)',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 2,
+        alignItems: 'center',
+        padding: 16,
+        justifyContent: 'space-between',
+        position: 'relative',
+        gap: 40,
+    },
+    colorWhite: {
+        color: theme.colors.white,
+    },
+    iconButton: {
+        borderColor: theme.colors.white,
+        borderWidth: 1,
     },
 });

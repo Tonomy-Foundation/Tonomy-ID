@@ -136,6 +136,11 @@ const SelectAssetContainer = ({
                                         screenTitle: `Receive LEOS`,
                                         network: 'Pangea',
                                     });
+                                } else {
+                                    navigation.navigate('AssetDetail', {
+                                        screenTitle: `LEOS`,
+                                        network: 'Pangea',
+                                    });
                                 }
                             }}
                         >
