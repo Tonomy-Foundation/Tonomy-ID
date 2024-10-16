@@ -257,7 +257,7 @@ export default function SignTransactionConsentContainer({
                                                 ...commonStyles.primaryFontFamily,
                                             }}
                                         >
-                                            {operations[0].amount.toString(4)}{' '}
+                                            {operations[0].amount}{' '}
                                         </Text>
                                         <Text
                                             style={[
