@@ -321,7 +321,7 @@ export default function CommunicationModule() {
                     }
                 }
             } catch (error) {
-                console.error('session_proposal', error);
+                debug('session_proposal', error);
             }
         };
 
@@ -444,7 +444,7 @@ export default function CommunicationModule() {
                     }
                 }
             } catch (disconnectError) {
-                console.error('Failed to disconnect session:', disconnectError);
+                debug('Failed to disconnect session:', disconnectError);
             }
         }, 1000);
 
