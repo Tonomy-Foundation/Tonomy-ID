@@ -81,7 +81,7 @@ export async function connect() {
         if (isNetworkError(error)) {
             debug('Network error occurred. Retrying...');
         } else {
-            console.error('StorageManager.connect() error', error);
+            debug('StorageManager.connect() error', error);
         }
     }
 }

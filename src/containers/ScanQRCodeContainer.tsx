@@ -253,7 +253,9 @@ export default function ScanQRCodeContainer({
                 errorStore.setError({ error: e, expected: false });
             }
         } finally {
-            setIsLoadingView(false);
+            setTimeout(() => {
+                setIsLoadingView(false);
+            }, 8000);
         }
     }
 

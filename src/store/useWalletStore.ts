@@ -196,6 +196,8 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
     clearState: async () => {
         try {
+            await connect();
+
             await keyStorage.deleteAll();
             await assetStorage.deleteAll();
             set({
@@ -208,7 +210,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 core: null,
             });
         } catch (error) {
-            console.error('useWalletStore() Error clearing wallet state:', error);
+            debug('useWalletStore() Error clearing wallet state:', error);
         }
     },
     updateBalance: async () => {
