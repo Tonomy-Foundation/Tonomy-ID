@@ -368,72 +368,42 @@ export interface IChainSession {
     approveTransactionRequest(request: unknown, transaction: ITransactionReceipt): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;
-
-    //TODO remove these comments
-    // Event Listeners
-    // for antelope esr:// (return false if isIdentity request Type)
-    // for ethereum send the event:
-    //handle deep linking
-    //handle qr scanning
-
-    // (all handle login nd signing requests)
-    // initialize async object
 }
 
-type ESRTransactionRequest = {
-    chainId: IChain;
-    actions: Array<{
-        account: string;
-        name: string;
-        authorization: Array<{ actor: string; permission: string }>;
-        data: any;
-    }>;
-    signer?: string;
-    callback?: string;
-    request: ResolvedSigningRequest;
-};
+export interface ILoginApp {
+    getLogoUrl(): string;
+    getName(): string;
+    getChain(): IChain;
+}
 
-type EthereumTransactionRequest = {
-    chainId: IChain;
-    from: string;
-    to: string;
-    data?: string;
-    value?: string;
-    gas?: string;
-    type?: string;
-};
+export interface ILoginRequest {
+    session?: ISession;
+    loginApp: ILoginApp;
+    privateKey: IPrivateKey;
+    account: IAccount;
+    request?: unknown;
+    reject(): Promise<void>;
+    approve(): Promise<void>;
+}
 
-export interface IRequestListener extends IChainSession {
-    /**
-     * Processes incoming transaction events
-     * @param request The transaction request object.
-     * @returns A boolean indicating if the transaction was successfully handled.
-     */
-    onTransactionEvent(request: ESRTransactionRequest | EthereumTransactionRequest): Promise<{
-        transaction: ITransaction; // Represents an Ethereum/ANtelope transaction
-        privateKey: IPrivateKey; // Represents an Ethereum/Antelope private key
-        origin: string; // The origin of the transaction request
-        request: ESRTransactionRequest | EthereumTransactionRequest; // The original Ethereum/antelope transaction request
-        session: IChainSession; // The WalletConnect/ESRTransactionRequest session object
-    }>;
+export interface ITransactionRequest {
+    transactionRequest: ITransactionRequest;
+    session?: ISession;
+    transaction: ITransaction;
+    privateKey: IPrivateKey;
+    account: IAccount;
+    request?: unknown;
+    reject(): Promise<void>;
+    approve(): Promise<ITransactionReceipt>;
+}
 
-    /**
-     * Processes incoming session events.
-     * @param event The session event object.
-     */
-    onSessionEvent(event: unknown): void;
-
-    /**
-     * Handles deep linking
-     * @param url The deep link URL.
-     * @returns A boolean indicating if the transaction was successfully handled.
-     */
-    handleDeepLinking(url: string): Promise<boolean>;
-
-    /**
-     * Handles QR scanning events and parsing.
-     * @param scannedData The scanned QR code data.
-     *  @returns A boolean indicating if the transaction was successfully handled.
-     */
-    handleQrScanning(scannedData: string): Promise<boolean>;
+export interface ISession {
+    initialize(): Promise<void>;
+    onQrScan(data: string): Promise<void>;
+    onLink(data: string): Promise<void>;
+    onEvent(request: unknown): Promise<void>;
+    handleLoginRequest(request: unknown): Promise<void>;
+    handleTransactionRequest(request: unknown): Promise<void>;
+    navigateToLoginScreen(request: ILoginRequest): Promise<void>;
+    navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
 }
