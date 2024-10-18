@@ -97,9 +97,10 @@ This is now running in production mode connected to the staging environment.
 ## How to test app upgrades on android
 
 1. Delete the app storage from settings
-2. Install previous version use apk from the github action install it
+2. Install previous version use apk from the github action (Build Android APK) install it
+<https://github.com/Tonomy-Foundation/Tonomy-ID/actions/workflows/build-apk.yaml>
 4. Create account or login with the existing account
-5. Go to the google play latest version update the app.
+5. Go to the latest version of the app from the github actions 
 6. Test again and if face any error mention it in github issues with the replicate steps
 
 ## Update the Tonomy-ID-SDK version to the latest
