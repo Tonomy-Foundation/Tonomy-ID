@@ -1,5 +1,6 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
+import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -370,3 +371,42 @@ export interface IChainSession {
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;
 }
+
+export interface ILoginApp {
+    getLogoUrl(): string;
+    getName(): string;
+    getChains(): IChain[];
+    getOrigin(): string;
+}
+
+export interface ILoginRequest {
+    session?: ISession;
+    loginApp: ILoginApp;
+    privateKey: IPrivateKey;
+    account: IAccount;
+    request?: unknown;
+    reject(): Promise<void>;
+    approve(): Promise<void>;
+}
+
+export interface ITransactionRequest {
+    session?: ISession;
+    transaction: ITransaction;
+    privateKey: IPrivateKey;
+    account: IAccount;
+    request?: unknown;
+    reject(): Promise<void>;
+    approve(): Promise<ITransactionReceipt>;
+}
+
+export interface ISession {
+    initialize(): Promise<void>;
+    onQrScan(data: string): Promise<void>; //make this function static
+    onLink(data: string): Promise<void>; //make this function static
+    onEvent(request: unknown): Promise<void>;
+    handleLoginRequest(request: unknown): Promise<void>;
+    handleTransactionRequest(request: unknown): Promise<void>;
+    navigateToLoginScreen(request: ILoginRequest): Promise<void>;
+    navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
+}
+//make abstract class and make handle ftns abstract
