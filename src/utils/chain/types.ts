@@ -373,7 +373,8 @@ export interface IChainSession {
 export interface ILoginApp {
     getLogoUrl(): string;
     getName(): string;
-    getChain(): IChain;
+    getChains(): IChain[];
+    getOrigin(): string;
 }
 
 export interface ILoginRequest {
@@ -387,7 +388,6 @@ export interface ILoginRequest {
 }
 
 export interface ITransactionRequest {
-    transactionRequest: ITransactionRequest;
     session?: ISession;
     transaction: ITransaction;
     privateKey: IPrivateKey;
@@ -399,11 +399,12 @@ export interface ITransactionRequest {
 
 export interface ISession {
     initialize(): Promise<void>;
-    onQrScan(data: string): Promise<void>;
-    onLink(data: string): Promise<void>;
+    onQrScan(data: string): Promise<void>; //make this function static
+    onLink(data: string): Promise<void>; //make this function static
     onEvent(request: unknown): Promise<void>;
     handleLoginRequest(request: unknown): Promise<void>;
     handleTransactionRequest(request: unknown): Promise<void>;
     navigateToLoginScreen(request: ILoginRequest): Promise<void>;
     navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
 }
+//make abstract class and make handle ftns abstract
