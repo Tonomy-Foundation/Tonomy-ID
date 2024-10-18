@@ -85,6 +85,23 @@ This is now running in production mode connected to the staging environment.
 6. Connect your phone to the pc with a usb cable.
 7. Open the the react native app you want to debug.
 
+## How to test app upgrades on iOS and testflight
+
+1. iOS use testflight versions
+2. Delete the app storage from settings → General → iPhone Storage.
+3. Install previous version from the testflight
+4. Create account or login with the existing account
+5. Go to the testflight update the app to the latest version
+6. Test again and if face any error mention it in github issues with the replicate steps
+
+## How to test app upgrades on android
+
+1. Delete the app storage from settings
+2. Install previous version use apk from the github action install it
+4. Create account or login with the existing account
+5. Go to the google play latest version update the app.
+6. Test again and if face any error mention it in github issues with the replicate steps
+
 ## Update the Tonomy-ID-SDK version to the latest
 
 ```bash
