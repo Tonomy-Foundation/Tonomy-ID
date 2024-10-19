@@ -68,8 +68,8 @@ export default function SignTransactionConsentContainer({
             if (type === TransactionType.TRANSFER) {
                 const to = chain.formatShortAccountName((await operation.getTo()).getName());
                 const value = await operation.getValue();
-
-                const amount = value.toString();
+                const precision = chain.getNativeToken().getPrecision();
+                const amount = value.toString(precision <= 4 ? 4 : 6).replace(/\.?0+$/, '');
 
                 const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 

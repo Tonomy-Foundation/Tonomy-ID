@@ -194,160 +194,158 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
         return (
             <View style={styles.content}>
-                <View style={styles.content}>
-                    <ScrollView
-                        contentContainerStyle={styles.scrollViewContent}
-                        refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
-                    >
-                        <View style={styles.header}>
-                            <Text style={styles.headerAssetsAmount}>{`$${total.toFixed(2)}`}</Text>
-                            <View style={styles.sendReceiveButtons}>
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        navigation.navigate('SelectAsset', { type: 'send', screenTitle: 'Send' })
-                                    }
-                                    style={styles.flexCenter}
-                                >
-                                    <View style={styles.headerButton}>
-                                        <ArrowUp height={20} width={20} color={theme.colors.black} strokeWidth={2} />
-                                    </View>
-                                    <Text style={styles.textSize}>Send</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        navigation.navigate('SelectAsset', {
-                                            type: 'receive',
-                                            screenTitle: 'Recieve',
-                                        })
-                                    }
-                                    style={styles.flexCenter}
-                                >
-                                    <View style={styles.headerButton}>
-                                        <ArrowDown height={20} width={20} color={theme.colors.black} strokeWidth={2} />
-                                    </View>
-                                    <Text style={styles.textSize}>Receive</Text>
-                                </TouchableOpacity>
-                            </View>
+                <ScrollView
+                    contentContainerStyle={styles.scrollViewContent}
+                    refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                >
+                    <View style={styles.header}>
+                        <Text style={styles.headerAssetsAmount}>{`$${total.toFixed(2)}`}</Text>
+                        <View style={styles.sendReceiveButtons}>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.navigate('SelectAsset', { type: 'send', screenTitle: 'Send' })
+                                }
+                                style={styles.flexCenter}
+                            >
+                                <View style={styles.headerButton}>
+                                    <ArrowUp height={20} width={20} color={theme.colors.black} strokeWidth={2} />
+                                </View>
+                                <Text style={styles.textSize}>Send</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.navigate('SelectAsset', {
+                                        type: 'receive',
+                                        screenTitle: 'Recieve',
+                                    })
+                                }
+                                style={styles.flexCenter}
+                            >
+                                <View style={styles.headerButton}>
+                                    <ArrowDown height={20} width={20} color={theme.colors.black} strokeWidth={2} />
+                                </View>
+                                <Text style={styles.textSize}>Receive</Text>
+                            </TouchableOpacity>
                         </View>
-                        {!isAssetLoading ? (
-                            <View style={styles.scrollContent}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        const accountDetail = {
-                                            symbol: 'LEOS',
-                                            name: 'Pangea',
-                                            account: accountName,
-                                            icon: Images.GetImage('logo48'),
-                                        };
+                    </View>
+                    {!isAssetLoading ? (
+                        <View style={styles.scrollContent}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    const accountDetail = {
+                                        symbol: 'LEOS',
+                                        name: 'Pangea',
+                                        account: accountName,
+                                        icon: Images.GetImage('logo48'),
+                                    };
 
-                                        navigation.navigate('AssetDetail', {
-                                            screenTitle: `${accountDetail.symbol}`,
-                                            network: 'Pangea',
-                                        });
-                                    }}
-                                    style={styles.assetsView}
-                                >
-                                    <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
-                                    <View style={styles.assetContent}>
-                                        <View style={styles.flexRowCenter}>
-                                            <Text style={{ fontSize: 15 }}>LEOS</Text>
-                                            <View style={styles.assetsNetwork}>
-                                                <Text style={{ fontSize: 11 }}>Pangea</Text>
-                                            </View>
+                                    navigation.navigate('AssetDetail', {
+                                        screenTitle: `${accountDetail.symbol}`,
+                                        network: 'Pangea',
+                                    });
+                                }}
+                                style={styles.assetsView}
+                            >
+                                <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
+                                <View style={styles.assetContent}>
+                                    <View style={styles.flexRowCenter}>
+                                        <Text style={{ fontSize: 15 }}>LEOS</Text>
+                                        <View style={styles.assetsNetwork}>
+                                            <Text style={{ fontSize: 11 }}>Pangea</Text>
                                         </View>
-                                        <View style={styles.flexColEnd}>
-                                            <View style={styles.flexCenter}>
-                                                <Text style={{ fontSize: 16 }}>
-                                                    {formatCurrencyValue(pangeaBalance, 4) || 0}
-                                                </Text>
-                                            </View>
-                                            <Text style={styles.secondaryColor}>
-                                                ${' '}
-                                                {pangeaBalance
-                                                    ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
-                                                    : 0.0}
+                                    </View>
+                                    <View style={styles.flexColEnd}>
+                                        <View style={styles.flexCenter}>
+                                            <Text style={{ fontSize: 16 }}>
+                                                {formatCurrencyValue(pangeaBalance, 4) || 0}
                                             </Text>
                                         </View>
+                                        <Text style={styles.secondaryColor}>
+                                            ${' '}
+                                            {pangeaBalance
+                                                ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
+                                                : 0.0}
+                                        </Text>
                                     </View>
-                                </TouchableOpacity>
+                                </View>
+                            </TouchableOpacity>
 
-                                {chains.map((chainObj, index) => {
-                                    const chainName = capitalizeFirstLetter(chainObj.chain.getName());
+                            {chains.map((chainObj, index) => {
+                                const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
-                                    const accountData = findAccountByChain(chainName);
+                                const accountData = findAccountByChain(chainName);
 
-                                    if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
-                                        return null;
-                                    }
+                                if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
+                                    return null;
+                                }
 
-                                    return (
-                                        <TouchableOpacity
-                                            key={index}
-                                            onPress={() => {
-                                                navigation.navigate('AssetDetail', {
-                                                    screenTitle: chainName,
-                                                    network: chainObj.chain.getName(),
-                                                });
-                                            }}
-                                            style={styles.assetsView}
-                                        >
-                                            <Image
-                                                source={{ uri: chainObj.token.getLogoUrl() }}
-                                                style={[styles.favicon, { resizeMode: 'contain' }]}
-                                            />
-                                            <View style={styles.assetContent}>
-                                                <View style={styles.flexRowCenter}>
-                                                    <Text style={{ fontSize: 15 }}>{chainObj.token.getSymbol()}</Text>
-                                                    <View style={styles.assetsNetwork}>
-                                                        <Text
-                                                            style={{
-                                                                fontSize: 11,
-                                                            }}
-                                                        >
-                                                            {chainName}
+                                return (
+                                    <TouchableOpacity
+                                        key={index}
+                                        onPress={() => {
+                                            navigation.navigate('AssetDetail', {
+                                                screenTitle: chainName,
+                                                network: chainObj.chain.getName(),
+                                            });
+                                        }}
+                                        style={styles.assetsView}
+                                    >
+                                        <Image
+                                            source={{ uri: chainObj.token.getLogoUrl() }}
+                                            style={[styles.favicon, { resizeMode: 'contain' }]}
+                                        />
+                                        <View style={styles.assetContent}>
+                                            <View style={styles.flexRowCenter}>
+                                                <Text style={{ fontSize: 15 }}>{chainObj.token.getSymbol()}</Text>
+                                                <View style={styles.assetsNetwork}>
+                                                    <Text
+                                                        style={{
+                                                            fontSize: 11,
+                                                        }}
+                                                    >
+                                                        {chainName}
+                                                    </Text>
+                                                </View>
+                                                {chainObj.chain.getChainId() === '11155111' && (
+                                                    <View style={styles.assetsTestnetNetwork}>
+                                                        <Text style={styles.assetTestnetText}>Testnet</Text>
+                                                    </View>
+                                                )}
+                                            </View>
+                                            <View style={styles.flexColEnd}>
+                                                {accountData.account ? (
+                                                    <View style={styles.flexColEnd}>
+                                                        <View style={styles.flexRowCenter}>
+                                                            <Text style={{ fontSize: 15 }}>{accountData.balance}</Text>
+                                                        </View>
+                                                        <Text style={styles.secondaryColor}>
+                                                            ${formatCurrencyValue(accountData.usdBalance ?? 0)}
                                                         </Text>
                                                     </View>
-                                                    {chainObj.chain.getChainId() === '11155111' && (
-                                                        <View style={styles.assetsTestnetNetwork}>
-                                                            <Text style={styles.assetTestnetText}>Testnet</Text>
-                                                        </View>
-                                                    )}
-                                                </View>
-                                                <View style={styles.flexColEnd}>
-                                                    {accountData.account ? (
-                                                        <View style={styles.flexColEnd}>
-                                                            <View style={styles.flexRowCenter}>
-                                                                <Text style={{ fontSize: 15 }}>
-                                                                    {accountData.balance}
-                                                                </Text>
-                                                            </View>
-                                                            <Text style={styles.secondaryColor}>
-                                                                ${formatCurrencyValue(accountData.usdBalance ?? 0)}
-                                                            </Text>
-                                                        </View>
-                                                    ) : (
-                                                        <View>
-                                                            <TouchableOpacity
-                                                                onPress={() => {
-                                                                    navigation.navigate('CreateEthereumKey');
-                                                                }}
-                                                            >
-                                                                <Text style={{ fontSize: 13 }}>Not connected</Text>
-                                                                <Text style={styles.generateKey}>Generate key</Text>
-                                                            </TouchableOpacity>
-                                                        </View>
-                                                    )}
-                                                </View>
+                                                ) : (
+                                                    <View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                navigation.navigate('CreateEthereumKey');
+                                                            }}
+                                                        >
+                                                            <Text style={{ fontSize: 13 }}>Not connected</Text>
+                                                            <Text style={styles.generateKey}>Generate key</Text>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                )}
                                             </View>
-                                        </TouchableOpacity>
-                                    );
-                                })}
-                            </View>
-                        ) : (
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    ) : (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <TSpinner />
-                        )}
-                    </ScrollView>
-                </View>
+                        </View>
+                    )}
+                </ScrollView>
             </View>
         );
     };
@@ -401,6 +399,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
+        paddingVertical: 20,
     },
     header: {
         flexDirection: 'column',

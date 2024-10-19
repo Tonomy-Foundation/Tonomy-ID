@@ -57,11 +57,6 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                         style={styles.menuItemContainer}
                         onPress={async () => {
                             await logout('Logout in settings menu');
-
-                            if (keyStorage && appStorage) {
-                                await keyStorage.deleteAll();
-                                await appStorage.deleteAll();
-                            }
                         }}
                     >
                         <View style={styles.menuItem}>
