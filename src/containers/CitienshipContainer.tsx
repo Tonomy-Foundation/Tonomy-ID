@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
 import useUserStore from '../store/userStore';
+import { Props } from '../screens/CitizenshipScreen';
 
-export default function CitizenshipContainer() {
+export default function CitizenshipContainer({ navigation }: { navigation: Props['navigation'] }) {
     const userStore = useUserStore();
     const user = userStore.user;
 
@@ -25,13 +26,15 @@ export default function CitizenshipContainer() {
         title,
         subtitle,
         imageSource,
+        url,
     }: {
         title: string;
         subtitle: string;
         imageSource: any;
+        url: string;
     }) => {
         return (
-            <View style={styles.horizontalScrollMain}>
+            <TouchableOpacity style={styles.horizontalScrollMain} onPress={() => Linking.openURL(url)}>
                 <View style={styles.horizontalScroll}>
                     <View style={styles.horizontalScrollContent}>
                         <Text style={styles.horizontalScrollText}>{title}</Text>
@@ -41,7 +44,7 @@ export default function CitizenshipContainer() {
                         <Image style={{ width: 120, height: 120 }} source={imageSource} />
                     </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
     };
 
@@ -65,7 +68,7 @@ export default function CitizenshipContainer() {
                 </View>
                 <Text style={styles.subTitle}>Pangea is your ticket to digital worlds available now</Text>
                 <View style={styles.digitalWorldContent}>
-                    <TouchableOpacity style={styles.webMain}>
+                    <TouchableOpacity style={styles.webMain} onPress={() => navigation.navigate('Apps')}>
                         <View style={styles.webImage}>
                             <Image
                                 style={{ height: 120, width: 120 }}
@@ -76,7 +79,7 @@ export default function CitizenshipContainer() {
                             <Text style={styles.webTitle}>Login to Web4 Apps</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.webMain}>
+                    <TouchableOpacity style={styles.webMain} onPress={() => navigation.navigate('Assets')}>
                         <View style={styles.webImage}>
                             <Image
                                 style={{ height: 120, width: 120 }}
@@ -94,21 +97,25 @@ export default function CitizenshipContainer() {
                         title="Pay globally without middlemen"
                         subtitle="with Pangea Banklesss"
                         imageSource={require('../assets/images/citizenship/1-slide.png')}
+                        url="https://pangea.web4.world/technology/pangea-bankless"
                     />
                     <HorizontalScrollItem
                         title="Unlock the Power of Decentralization"
                         subtitle="with Pangea DAO"
                         imageSource={require('../assets/images/citizenship/2-slide.png')}
+                        url="https://pangea.web4.world/technology/pangea-dao"
                     />
                     <HorizontalScrollItem
                         title="Be a part of Liquid Democracy"
                         subtitle="with Pangea Gov+"
                         imageSource={require('../assets/images/citizenship/3-slide.png')}
+                        url="https://pangea.web4.world/technology/pangea-gov"
                     />
                     <HorizontalScrollItem
                         title="Build Next- generation apps"
                         subtitle="with Pangea Build"
                         imageSource={require('../assets/images/citizenship/4-slide.png')}
+                        url="https://pangea.web4.world/technology/pangea-build"
                     />
                 </ScrollView>
             </ScrollView>

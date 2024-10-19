@@ -57,6 +57,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
 
         if (asset.symbol === 'LEOS') {
             explorerUrl = `${settings.config.blockExplorerUrl}/account/${accountName}`;
+
+            if (settings.env === 'staging') {
+                explorerUrl += `?nodeUrl=${settings.config.blockchainUrl}`;
+            }
         } else {
             const explorerOptions: ExplorerOptions = {
                 accountName: asset.account,
