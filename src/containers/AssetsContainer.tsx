@@ -168,11 +168,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     }, [updateAllBalances]);
 
     useEffect(() => {
-        const totalAssetsUSDBalance = accounts
-            .filter((a) => a.network !== 'Sepolia')
-            .reduce((previousValue, currentValue) => {
-                return previousValue + currentValue.usdBalance;
-            }, 0);
+        const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
+            return previousValue + currentValue.usdBalance;
+        }, 0);
         const totalPangeaUSDBalance = pangeaBalance * LEOS_SEED_ROUND_PRICE;
 
         setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
