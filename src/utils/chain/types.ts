@@ -97,6 +97,7 @@ export interface IChain {
     formatShortAccountName(account: string): string;
     getExplorerUrl(options?: ExplorerOptions): string;
     isValidAccountName(account: string): boolean;
+    isTestnet(): boolean;
 }
 
 export enum ChainType {
@@ -110,11 +111,13 @@ export abstract class AbstractChain implements IChain {
     protected chainId: string;
     protected logoUrl: string;
     protected nativeToken?: IToken;
+    protected testnet = false;
 
-    constructor(name: string, chainId: string, logoUrl: string) {
+    constructor(name: string, chainId: string, logoUrl: string, testnet = false) {
         this.name = name;
         this.chainId = chainId;
         this.logoUrl = logoUrl;
+        this.testnet = testnet;
     }
     setNativeToken(token: IToken): void {
         this.nativeToken = token;
@@ -135,6 +138,9 @@ export abstract class AbstractChain implements IChain {
     getChainType(): ChainType {
         return this.chainType;
     }
+    isTestnet(): boolean {
+        return this.testnet;
+    }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
     abstract getExplorerUrl(options?: ExplorerOptions): string;
@@ -148,13 +154,13 @@ export interface IAsset {
     getSymbol(): string;
     getPrecision(): number;
     toString(precision?: number): string;
+    add(other: IAsset): IAsset;
     /*
     gt(other: IAsset): boolean;
     gte(other: IAsset): boolean;
     lt(other: IAsset): boolean;
     lte(other: IAsset): boolean;
     eq(other: IAsset): boolean;
-    add(other: IAsset): IAsset;
     sub(other: IAsset): IAsset;
     mul(other: IAsset): IAsset;
     div(other: IAsset): IAsset;
@@ -171,31 +177,23 @@ export abstract class AbstractAsset implements IAsset {
     getAmount(): bigint {
         return this.amount;
     }
-
+    add(other: IAsset): IAsset {
+        if (!this.token.eq(other.getToken())) throw new Error('Different tokens');
+        return new Asset(this.token, this.amount + other.getAmount());
+    }
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
 
         if (price) {
-            // Use a higher precision for the multiplier to ensure small values are accurately represented
-            const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
+            const precision = this.token.getPrecision();
+            const precisionMultiplier = BigInt(10) ** BigInt(precision);
 
-            const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
+            const priceMultiplier = 10 ** 4; // $ price assumed to have maximum 4 decimal places
+            const priceBigInt = BigInt(price * priceMultiplier);
 
-            // Convert price to a BigInteger without losing precision
-            const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
+            const usdValueBigInt = (this.amount * priceBigInt) / precisionMultiplier;
 
-            // Adjust the amount to match the high precision multiplier
-
-            const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
-
-            // Calculate usdValue using BigInt for accurate arithmetic operations
-            const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
-
-            // Convert the result back to a floating-point number with controlled precision
-            const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
-
-            // Ensure the result is formatted to a fixed number of decimal places without rounding issues
-            return parseFloat(usdValue.toFixed(10));
+            return parseFloat(usdValueBigInt.toString()) / priceMultiplier;
         } else {
             return 0;
         }
@@ -215,7 +213,6 @@ export abstract class AbstractAsset implements IAsset {
 
         return formatCurrencyValue(value, precision ?? this.getPrecision());
     }
-
     toString(precision?: number): string {
         return `${this.printValue(precision)} ${this.token.getSymbol()}`;
     }
@@ -235,6 +232,7 @@ export interface IToken {
     getAccount(): IAccount | undefined;
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
+    eq(other: IToken): boolean;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -276,6 +274,13 @@ export abstract class AbstractToken implements IToken {
     }
     getAccount(): IAccount | undefined {
         return this.account;
+    }
+    eq(other: IToken): boolean {
+        return (
+            this.getName() === other.getName() &&
+            this.getSymbol() === other.getSymbol() &&
+            this.getPrecision() === other.getPrecision()
+        );
     }
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;

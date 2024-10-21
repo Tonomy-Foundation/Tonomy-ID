@@ -1,7 +1,6 @@
 import {
     IPublicKey,
     IToken,
-    IChain,
     IOperation,
     TransactionType,
     AbstractChain,
@@ -43,6 +42,11 @@ import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
+import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import settings from '../../settings';
+import { getApi } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
+
+const vestingContract = VestingContract.Instance;
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -204,10 +208,17 @@ export class AntelopeChain extends AbstractChain {
     protected explorerOrigin: string;
     private apiClient: APIClient;
 
-    constructor(apiOrigin: string, name: string, antelopeChainId: string, logoUrl: string, explorerOrigin: string) {
+    constructor(
+        apiOrigin: string,
+        name: string,
+        antelopeChainId: string,
+        logoUrl: string,
+        explorerOrigin: string,
+        testnet = false
+    ) {
         const chainId = 'antelope-' + antelopeChainId;
 
-        super(name, chainId, logoUrl);
+        super(name, chainId, logoUrl, testnet);
         this.antelopeChainId = antelopeChainId;
         this.apiOrigin = apiOrigin;
         this.explorerOrigin = explorerOrigin;
@@ -291,11 +302,11 @@ export class AntelopeToken extends AbstractToken implements IToken {
     async getUsdPrice(): Promise<number> {
         switch (this.getChain().getName()) {
             case 'Pangea':
-                return LEOS_PUBLIC_SALE_PRICE;
+                return LEOS_CURRENT_PRICE;
             case 'Pangea Testnet':
-                return LEOS_PUBLIC_SALE_PRICE;
+                return 0;
             case 'EOS Jungle Testnet':
-                return LEOS_PUBLIC_SALE_PRICE;
+                return 0;
             default:
                 throw new Error('Unsupported Antelope chain');
         }
@@ -305,7 +316,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return AntelopeAccount.fromAccount(this.getChain(), 'eosio.token');
     }
 
-    async getBalance(account?: AntelopeAccount): Promise<Asset> {
+    async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const contractAccount = this.getContractAccount();
 
         if (!contractAccount) throw new Error('Token has no contract account');
@@ -339,7 +350,36 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 }
 
-const PangeaMainnetChain = new AntelopeChain(
+class PangeaVestedToken extends AntelopeToken {
+    async getBalance(account?: AntelopeAccount): Promise<IAsset> {
+        const availableBalance = await this.getAvailableBalance(account);
+        const vestedBalance = await this.getVestedTotalBalance(account);
+
+        return availableBalance.add(vestedBalance);
+    }
+
+    getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
+        return super.getBalance(account);
+    }
+
+    async getVestedTotalBalance(account?: AntelopeAccount): Promise<IAsset> {
+        const lookupAccount: IAccount =
+            account ||
+            this.getAccount() ||
+            (() => {
+                throw new Error('Account not found');
+            })();
+
+        const vestedBalance = await vestingContract.getBalance(lookupAccount.getName());
+
+        return new Asset(this, BigInt(vestedBalance));
+    }
+
+    // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
+    // }
+}
+
+export const PangeaMainnetChain = new AntelopeChain(
     // 'https://blockchain-api.pangea.web4.world',
     'https://pangea.eosusa.io',
     'Pangea',
@@ -348,16 +388,35 @@ const PangeaMainnetChain = new AntelopeChain(
     'https://explorer.pangea.web4.world'
 );
 
-const PangeaTestnetChain = new AntelopeChain(
+export const PangeaTestnetChain = new AntelopeChain(
     // 'https://blockchain-api-testnet.pangea.web4.world',
     'https://test.pangea.eosusa.io',
     'Pangea Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-    'https://explorer.testnet.pangea.web4.world'
+    'https://explorer.testnet.pangea.web4.world',
+    true
 );
 
-const LEOSToken = new AntelopeToken(
+export const PangeaStagingChain = new AntelopeChain(
+    'https://blockchain-api-staging.tonomy.foundation/',
+    'Pangea Staging',
+    '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
+    true
+);
+
+export const PangeaLocalChain = new AntelopeChain(
+    'http://localhost:8888',
+    'Pangea Localhost',
+    'unknown chain id at this time',
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
+    true
+);
+
+export const LEOSToken = new PangeaVestedToken(
     PangeaMainnetChain,
     'LEOS',
     'LEOS',
@@ -366,26 +425,46 @@ const LEOSToken = new AntelopeToken(
     'leos'
 );
 
-const LEOSTestnetToken = new AntelopeToken(
+export const LEOSTestnetToken = new PangeaVestedToken(
     PangeaTestnetChain,
-    'TestnetLEOS',
     'LEOS',
+    'TestnetLEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-testnet'
 );
 
-const EOSJungleChain = new AntelopeChain(
+export const LEOSStagingToken = new PangeaVestedToken(
+    PangeaStagingChain,
+    'LEOS',
+    'StagingLEOS',
+    6,
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    'leos-staging'
+);
+
+export const LEOSLocalToken = new PangeaVestedToken(
+    PangeaLocalChain,
+    'LEOS',
+    'LocalLEOS',
+    6,
+    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    'leos-local'
+);
+
+export const EOSJungleChain = new AntelopeChain(
     'https://jungle4.cryptolions.io',
     'EOS Jungle Testnet',
     '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
     'https://jungle3.bloks.io/img/chains/jungle.png',
-    'https://jungle3.bloks.io'
+    'https://jungle3.bloks.io',
+    true
 );
-const EOSJungleToken = new AntelopeToken(
+
+export const EOSJungleToken = new AntelopeToken(
     EOSJungleChain,
     'EOS',
-    'EOS',
+    'JungleEOS',
     4,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
     'jungle'
@@ -394,22 +473,38 @@ const EOSJungleToken = new AntelopeToken(
 EOSJungleChain.setNativeToken(EOSJungleToken);
 PangeaMainnetChain.setNativeToken(LEOSToken);
 PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
+PangeaStagingChain.setNativeToken(LEOSStagingToken);
+PangeaLocalChain.setNativeToken(LEOSLocalToken);
 
-const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
+export const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
 
 ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
 ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
 ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
 
-export {
-    PangeaMainnetChain,
-    PangeaTestnetChain,
-    EOSJungleChain,
-    LEOSToken,
-    LEOSTestnetToken,
-    EOSJungleToken as JUNGLEToken,
-    ANTELOPE_CHAIN_ID_TO_CHAIN,
-};
+async function addLocalChain() {
+    const chainId = (await (await getApi()).v1.chain.get_info()).chain_id;
+
+    // @ts-expect-error antelopeChainId is protected
+    PangeaLocalChain.antelopeChainId = chainId.toString();
+
+    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaLocalChain.getAntelopeChainId()] = PangeaLocalChain;
+}
+
+if (settings.env === 'production') {
+    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
+} else if (settings.env === 'testnet') {
+    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
+} else if (settings.env === 'staging') {
+    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaStagingChain.getAntelopeChainId()] = PangeaStagingChain;
+} else {
+    addLocalChain();
+}
+
+export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
+    if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Antelope chain not supported');
+    return ANTELOPE_CHAIN_ID_TO_CHAIN[chainId];
+}
 
 export class AntelopeAction implements IOperation {
     private action: ActionData;
@@ -584,6 +679,7 @@ export class AntelopeTransaction implements ITransaction {
         return this.actions.map((action) => new AntelopeAction(action, this.chain));
     }
 }
+
 export class AntelopeAccount extends AbstractAccount implements IAccount {
     private privateKey?: AntelopePrivateKey;
     // @ts-expect-error chain overridden
@@ -758,9 +854,4 @@ export class AntelopeSigningRequestSession implements IChainSession {
             }
         }
     }
-}
-
-export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
-    if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Antelope chain not supported');
-    return ANTELOPE_CHAIN_ID_TO_CHAIN[chainId];
 }

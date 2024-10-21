@@ -1,5 +1,3 @@
-import { Images } from '../assets';
-import useUserStore from '../store/userStore';
 import {
     EthereumMainnetChain,
     EthereumPolygonChain,
@@ -8,13 +6,21 @@ import {
     ETHSepoliaToken,
     ETHToken,
 } from './chain/etherum';
-import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
-import { IChain, IPrivateKey } from './chain/types';
-
+import {
+    currentPangeaChain,
+    currentPangeaToken,
+    LEOSLocalToken,
+    LEOSStagingToken,
+    LEOSTestnetToken,
+    LEOSToken,
+    PangeaLocalChain,
+    PangeaMainnetChain,
+    PangeaStagingChain,
+    PangeaTestnetChain,
+} from '../utils/chain/antelope';
+import { IChain, IPrivateKey, IToken } from './chain/types';
 import { assetStorage, keyStorage } from './StorageManager/setup';
-import { VestingContract } from '@tonomy/tonomy-id-sdk';
-
-const vestingContract = VestingContract.Instance;
+import settings from '../settings';
 
 export interface AccountDetails {
     network: string;
@@ -28,50 +34,52 @@ export interface AccountDetails {
     chain?: IChain;
 }
 
-export const supportedChains = [
+export type ChainRegistryEntity = {
+    token: IToken;
+    chain: IChain;
+    keyName: string;
+};
+
+export const chainRegistry: ChainRegistryEntity[] = [
     { token: ETHToken, chain: EthereumMainnetChain, keyName: 'ethereum' },
-    { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: 'ethereumTestnetSepolia' },
     { token: ETHPolygonToken, chain: EthereumPolygonChain, keyName: 'ethereumPolygon' },
+    { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: 'ethereumTestnetSepolia' },
 ];
 
-export const getAssetDetails = async (network: string): Promise<AccountDetails | null> => {
-    let account: AccountDetails | null = null;
+switch (settings.env) {
+    case 'production':
+        chainRegistry.unshift({ token: LEOSToken, chain: PangeaMainnetChain, keyName: 'pangeaLeos' });
+        break;
+    case 'testnet':
+        chainRegistry.unshift({ token: LEOSTestnetToken, chain: PangeaTestnetChain, keyName: 'pangeaTestnetLeos' });
+        break;
+    case 'staging':
+        chainRegistry.push({ token: LEOSStagingToken, chain: PangeaStagingChain, keyName: 'pangeaStagingLeos' });
+        break;
+    default:
+        chainRegistry.push({ token: LEOSLocalToken, chain: PangeaLocalChain, keyName: 'pangeaLocalLeos' });
+        break;
+}
 
-    if (network === 'Pangea') {
-        const userStore = useUserStore.getState();
-        const user = userStore.user;
-        const accountName = (await user.getAccountName()).toString();
-        const accountPangeaBalance = await vestingContract.getBalance(accountName);
+export const getAssetDetails = async (chainName: string): Promise<AccountDetails | null> => {
+    const selectedChain = chainRegistry.find((c) => c.chain.getName() === chainName);
 
-        account = {
-            network: 'Pangea',
-            account: accountName,
-            balance: `${accountPangeaBalance} LEOS`,
-            usdBalance: accountPangeaBalance * LEOS_SEED_ROUND_PRICE,
-            icon: Images.GetImage('logo48'),
-            symbol: 'LEOS',
-            testnet: false,
-        };
-    } else {
-        const selectedChain = supportedChains.find((c) => c.chain.getName() === network);
-
-        if (selectedChain) {
-            const asset = await assetStorage.findAssetByName(selectedChain?.token);
-            const key = await keyStorage.findByName(selectedChain.keyName, selectedChain.chain);
-
-            account = {
-                network: selectedChain.chain.getName(),
-                account: asset?.accountName || null,
-                balance: asset?.balance || null,
-                usdBalance: asset?.usdBalance || null,
-                icon: { uri: selectedChain.token.getLogoUrl() },
-                symbol: selectedChain.token.getSymbol(),
-                testnet: selectedChain.token.getChain().getChainId() === '11155111',
-                ...(key && { privateKey: key }),
-                chain: selectedChain.chain,
-            };
-        }
+    if (!selectedChain) {
+        throw new Error(`Unsupported chain ${chainName} from getAssetDetails()`);
     }
 
-    return account;
+    const asset = await assetStorage.findAssetByName(selectedChain?.token);
+    const key = await keyStorage.findByName(selectedChain.keyName, selectedChain.chain);
+
+    return {
+        network: selectedChain.chain.getName(),
+        account: asset?.accountName || null,
+        balance: asset?.balance || null,
+        usdBalance: asset?.usdBalance || null,
+        icon: { uri: selectedChain.token.getLogoUrl() },
+        symbol: selectedChain.token.getSymbol(),
+        testnet: selectedChain.token.getChain().isTestnet(),
+        ...(key && { privateKey: key }), // why is this returned?
+        chain: selectedChain.chain,
+    };
 };

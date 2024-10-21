@@ -5,7 +5,7 @@ import {
     AntelopePrivateKey,
     AntelopeTransaction,
     EOSJungleChain,
-    JUNGLEToken,
+    EOSJungleToken,
 } from '../../src/utils/chain/antelope';
 import { PrivateKey } from '@wharfkit/antelope';
 import { TransactionType } from '../../src/utils/chain/types';
@@ -14,7 +14,7 @@ describe('AntelopeTransaction', () => {
     const jungleAccountName = 'mytest123tes';
     const privateKey = PrivateKey.from('PVT_K1_2Yn362S23hWaDuDjLawDB1ZByF8fqsZZXFUDPTHnk6tXX44D2R');
 
-    EOSJungleChain.setNativeToken(JUNGLEToken);
+    EOSJungleChain.setNativeToken(EOSJungleToken);
 
     const SIMPLE_ASSSET_CONTRACT_NAME = 'simpleassets';
 

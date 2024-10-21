@@ -13,6 +13,7 @@ import useErrorStore from '../store/errorStore';
 import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
+import { debounce } from '../utils/network';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -21,7 +22,7 @@ export type SendAssetProps = {
 };
 
 const SendAssetContainer = (props: SendAssetProps) => {
-    const [depositeAccount, onScanQR] = useState<string>();
+    const [depositAccount, onScanQR] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
     const [usdAmount, onChangeUSDAmount] = useState<string>();
     const [asset, setAsset] = useState<AccountDetails | null>(null);
@@ -84,40 +85,31 @@ const SendAssetContainer = (props: SendAssetProps) => {
             }
 
             const key = props.privateKey;
-            const chain = props.chain;
-            const chainType = chain.getChainType();
-
-            let value;
-            const transactionData = {
-                to: depositeAccount,
-                from: asset.account,
-                value,
-            };
-
             let transaction: ITransaction;
 
-            if (chainType === ChainType.ETHEREUM) {
-                transactionData.value = ethers.parseEther(amount ? amount.toString() : '0.00');
-                const ethereumChain = props.chain as EthereumChain;
-                const exportPrivateKey = await key.exportPrivateKey();
-                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, ethereumChain);
+            if (props.chain.getChainType() === ChainType.ETHEREUM) {
+                const transactionData = {
+                    to: depositAccount,
+                    from: asset.account,
+                    value: ethers.parseEther(amount ? amount.toString() : '0.00'),
+                };
 
                 transaction = await EthereumTransaction.fromTransaction(
-                    ethereumPrivateKey,
+                    key as EthereumPrivateKey,
                     transactionData,
-                    ethereumChain
+                    props.chain as EthereumChain
                 );
-                //TODO move it after condition when implement other chains
-                props.navigation.navigate('SignTransaction', {
-                    transaction,
-                    privateKey: key,
-                    session: null,
-                    origin: '',
-                    request: null,
-                });
             } else {
-                throw new Error('Chain not supported');
+                throw new Error('Chain not supported to send assets');
             }
+
+            props.navigation.navigate('SignTransaction', {
+                transaction,
+                privateKey: key,
+                session: null,
+                origin: '',
+                request: null,
+            });
         } catch (error) {
             errorStore.setError({
                 error,
@@ -135,18 +127,6 @@ const SendAssetContainer = (props: SendAssetProps) => {
         onChangeUSDAmount(usdAmount.toFixed(4));
     };
 
-    const debounce = (func, delay) => {
-        let timeoutId;
-
-        return (...args) => {
-            clearTimeout(timeoutId);
-
-            timeoutId = setTimeout(() => {
-                func.apply(this, args);
-            }, delay);
-        };
-    };
-
     const debouncedSearch = debounce(fetchEthPrice, 500);
 
     const handleAmountChange = async (amount) => {
@@ -162,7 +142,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                     <View style={styles.flexCol}>
                         <View style={styles.inputContainer}>
                             <TextInput
-                                value={depositeAccount}
+                                value={depositAccount}
                                 style={styles.input}
                                 placeholder="Enter or scan the account"
                                 placeholderTextColor={theme.colors.tabGray}
@@ -221,7 +201,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                         </View>
                     )}
                     <TButtonContained
-                        disabled={!depositeAccount || !amount || submitting}
+                        disabled={!depositAccount || !amount || submitting}
                         style={commonStyles.marginBottom}
                         size="large"
                         onPress={handleSendTransaction}
