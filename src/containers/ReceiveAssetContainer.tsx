@@ -26,10 +26,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(props.network);
 
-            if (assetData) {
-                setAsset(assetData);
-            }
-
+            setAsset(assetData);
             setLoading(false);
         };
 

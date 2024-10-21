@@ -258,15 +258,24 @@ export class AntelopeChain extends AbstractChain {
     }
 
     getExplorerUrl(options?: ExplorerOptions): string {
+        let url = this.explorerOrigin;
+
         if (options) {
             if (options.transactionHash) {
-                return `${this.explorerOrigin}/transaction/${options.transactionHash}`;
+                url += `${this.explorerOrigin}/transaction/${options.transactionHash}`;
             } else if (options.accountName) {
-                return `${this.explorerOrigin}/account/${options.accountName}`;
+                url += `${this.explorerOrigin}/account/${options.accountName}`;
             }
         }
 
-        return this.explorerOrigin;
+        if (this.explorerOrigin.includes('https://local.bloks.io')) {
+            url += '?nodeUrl=' + encodeURIComponent(this.apiOrigin);
+            url += '&coreSymbol=LEOS';
+            url += '&corePrecision=6';
+            url += '&systemDomain=eosio';
+        }
+
+        return url;
     }
     isValidAccountName(account: string): boolean {
         const regex = /^[a-z1-5.]{12}$/;
@@ -289,9 +298,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         symbol: string,
         precision: number,
         logoUrl: string,
-        coinmarketCapId: string
+        coinmarketCapId: string,
+        transferable = true
     ) {
-        super(name, symbol, precision, chain, logoUrl);
+        super(name, symbol, precision, chain, logoUrl, transferable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -422,7 +432,8 @@ export const LEOSToken = new PangeaVestedToken(
     'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos'
+    'leos',
+    false
 );
 
 export const LEOSTestnetToken = new PangeaVestedToken(
@@ -431,7 +442,8 @@ export const LEOSTestnetToken = new PangeaVestedToken(
     'TestnetLEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos-testnet'
+    'leos-testnet',
+    false
 );
 
 export const LEOSStagingToken = new PangeaVestedToken(
@@ -440,7 +452,8 @@ export const LEOSStagingToken = new PangeaVestedToken(
     'StagingLEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos-staging'
+    'leos-staging',
+    false
 );
 
 export const LEOSLocalToken = new PangeaVestedToken(
@@ -449,7 +462,8 @@ export const LEOSLocalToken = new PangeaVestedToken(
     'LocalLEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos-local'
+    'leos-local',
+    false
 );
 
 export const EOSJungleChain = new AntelopeChain(
@@ -483,6 +497,7 @@ ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTest
 ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
 
 async function addLocalChain() {
+    activeAntelopeChain = PangeaLocalChain;
     const chainId = (await (await getApi()).v1.chain.get_info()).chain_id;
 
     // @ts-expect-error antelopeChainId is protected
@@ -491,11 +506,16 @@ async function addLocalChain() {
     ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaLocalChain.getAntelopeChainId()] = PangeaLocalChain;
 }
 
+export let activeAntelopeChain: AntelopeChain;
+
 if (settings.env === 'production') {
+    activeAntelopeChain = PangeaMainnetChain;
     ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
 } else if (settings.env === 'testnet') {
+    activeAntelopeChain = PangeaTestnetChain;
     ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
 } else if (settings.env === 'staging') {
+    activeAntelopeChain = PangeaStagingChain;
     ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaStagingChain.getAntelopeChainId()] = PangeaStagingChain;
 } else {
     addLocalChain();
@@ -596,14 +616,20 @@ export class AntelopeAction implements IOperation {
     }
 }
 
+/*
+ * Converts a quantity string to an Asset
+ * @param {string} quantity - The quantity string e.g. "1.0000 LEOS"
+ * @param {AntelopeChain} chain - The chain the asset is on
+ * @returns {IAsset} - The asset
+ */
 function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const name = quantity.split(' ')[1];
     const symbol = name;
-    const precision = quantity.split(' ')[0].split('.')[1].length;
-    const logoUrl = name === 'LEOS' ? LEOSToken.getLogoUrl() : '';
+    const amountString = quantity.split(' ')[0];
+    const precision = amountString.split('.')[1].length;
 
-    const token = new AntelopeToken(chain, name, symbol, precision, logoUrl, '');
-    const amountNumber = parseFloat(quantity.split(' ')[0]);
+    const token = new AntelopeToken(chain, name, symbol, precision, '', '');
+    const amountNumber = parseFloat(amountString);
     const amount = BigInt(amountNumber * 10 ** precision);
 
     return new Asset(token, amount);

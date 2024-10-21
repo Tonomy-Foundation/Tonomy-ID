@@ -16,6 +16,7 @@ import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { activeAntelopeChain } from '../utils/chain/antelope';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
@@ -99,20 +100,9 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             unsetConfirmPassphraseWord();
 
             await setUserName();
-            let url;
             const accountName = (await user.getAccountName()).toString();
 
-            if (settings.env === 'staging' || settings.env === 'development') {
-                url =
-                    settings.config.blockExplorerUrl +
-                    '/account/' +
-                    accountName +
-                    '?nodeUrl=' +
-                    settings.config.blockchainUrl +
-                    '&coreSymbol=LEOS&corePrecision=6';
-            } else {
-                url = settings.config.blockExplorerUrl + '/account/' + accountName;
-            }
+            const url = activeAntelopeChain.getExplorerUrl({ accountName });
 
             setAccountUrl(url);
         } catch (e) {

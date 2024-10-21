@@ -6,7 +6,7 @@ import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup
 import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
-import { ChainRegistryEntity, chainRegistry } from '../utils/assetDetails';
+import { ChainRegistryEntry, chainRegistry } from '../utils/assetDetails';
 import { IPrivateKey } from '../utils/chain/types';
 import useAppSettings from '../hooks/useAppSettings';
 
@@ -87,7 +87,7 @@ const SelectAssetContainer = ({
         return { account, balance, usdBalance };
     };
 
-    const handleOnPress = async (chainObj: ChainRegistryEntity) => {
+    const handleOnPress = async (chainObj: ChainRegistryEntry) => {
         if (type === 'receive') {
             navigation.navigate('Receive', {
                 screenTitle: `Receive ${chainObj.token.getSymbol()}`,

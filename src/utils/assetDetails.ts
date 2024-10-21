@@ -22,23 +22,24 @@ import settings from '../settings';
 
 export interface AccountDetails {
     network: string;
-    account: string | null;
-    balance: string | null;
-    usdBalance: number | null;
-    icon: { uri: string } | string;
+    account: string;
+    balance: string;
+    usdBalance: number;
+    icon: string;
     symbol: string;
     testnet: boolean;
-    privateKey?: IPrivateKey;
-    chain?: IChain;
+    isTransferable: boolean;
+    privateKey: IPrivateKey;
+    chain: IChain;
 }
 
-export type ChainRegistryEntity = {
+export type ChainRegistryEntry = {
     token: IToken;
     chain: IChain;
     keyName: string;
 };
 
-export const chainRegistry: ChainRegistryEntity[] = [
+export const chainRegistry: ChainRegistryEntry[] = [
     { token: ETHToken, chain: EthereumMainnetChain, keyName: 'ethereum' },
     { token: ETHPolygonToken, chain: EthereumPolygonChain, keyName: 'ethereumPolygon' },
     { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: 'ethereumTestnetSepolia' },
@@ -59,25 +60,27 @@ switch (settings.env) {
         break;
 }
 
-export const getAssetDetails = async (chainName: string): Promise<AccountDetails | null> => {
-    const selectedChain = chainRegistry.find((c) => c.chain.getName() === chainName);
+export const getAssetDetails = async (chainName: string): Promise<AccountDetails> => {
+    const chainRegistryEntry = chainRegistry.find((c) => c.chain.getName() === chainName);
 
-    if (!selectedChain) {
-        throw new Error(`Unsupported chain ${chainName} from getAssetDetails()`);
-    }
+    if (!chainRegistryEntry) throw new Error(`Unsupported chain ${chainName} from getAssetDetails()`);
 
-    const asset = await assetStorage.findAssetByName(selectedChain?.token);
-    const key = await keyStorage.findByName(selectedChain.keyName, selectedChain.chain);
+    const asset = await assetStorage.findAssetByName(chainRegistryEntry.token);
+    const key = await keyStorage.findByName(chainRegistryEntry.keyName, chainRegistryEntry.chain);
+
+    if (!asset) throw new Error(`Asset not found for ${chainRegistryEntry.chain.getName()}`);
+    if (!key) throw new Error(`Key not found for ${chainRegistryEntry.chain.getName()}`);
 
     return {
-        network: selectedChain.chain.getName(),
-        account: asset?.accountName || null,
-        balance: asset?.balance || null,
-        usdBalance: asset?.usdBalance || null,
-        icon: { uri: selectedChain.token.getLogoUrl() },
-        symbol: selectedChain.token.getSymbol(),
-        testnet: selectedChain.token.getChain().isTestnet(),
-        ...(key && { privateKey: key }), // why is this returned?
-        chain: selectedChain.chain,
+        network: chainRegistryEntry.chain.getName(),
+        account: asset.accountName,
+        balance: asset.balance,
+        usdBalance: asset.usdBalance,
+        icon: chainRegistryEntry.token.getLogoUrl(),
+        symbol: chainRegistryEntry.token.getSymbol(),
+        testnet: chainRegistryEntry.token.getChain().isTestnet(),
+        isTransferable: chainRegistryEntry.token.isTransferable(),
+        privateKey: key,
+        chain: chainRegistryEntry.chain,
     };
 };

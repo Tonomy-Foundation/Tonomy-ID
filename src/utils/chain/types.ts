@@ -219,9 +219,7 @@ export abstract class AbstractAsset implements IAsset {
 }
 
 export interface IToken {
-    // initialize with an account to easily get balance and usd value
     setAccount(account: IAccount): IToken;
-
     getName(): string;
     getSymbol(): string;
     getPrecision(): number;
@@ -232,6 +230,7 @@ export interface IToken {
     getAccount(): IAccount | undefined;
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
+    isTransferable(): boolean;
     eq(other: IToken): boolean;
 }
 
@@ -242,13 +241,15 @@ export abstract class AbstractToken implements IToken {
     protected precision: number;
     protected chain: IChain;
     protected logoUrl: string;
+    protected transferable = true;
 
-    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string) {
+    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string, transferable = true) {
         this.name = name;
         this.symbol = symbol;
         this.precision = precision;
         this.chain = chain;
         this.logoUrl = logoUrl;
+        this.transferable = transferable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -274,6 +275,9 @@ export abstract class AbstractToken implements IToken {
     }
     getAccount(): IAccount | undefined {
         return this.account;
+    }
+    isTransferable(): boolean {
+        return this.transferable;
     }
     eq(other: IToken): boolean {
         return (
