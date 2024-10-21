@@ -79,9 +79,17 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
-        const receipt = await this.wallet.sendTransaction(transaction);
+        try {
+            const receipt = await this.wallet.sendTransaction(transaction);
 
-        return new EthereumTransactionReceipt(this.chain, receipt);
+            return new EthereumTransactionReceipt(this.chain, receipt);
+        } catch (error) {
+            if (error?.code === 'INSUFFICIENT_FUNDS') {
+                throwError('Insufficient balance', ApplicationErrors.NotEnoughCoins);
+            }
+
+            throw error;
+        }
     }
 }
 
@@ -468,15 +476,7 @@ export class EthereumAccount extends AbstractAccount {
             throw new Error('Account has no private key');
         }
 
-        try {
-            return await this.privateKey.sendTransaction(transaction);
-        } catch (error) {
-            if (error?.code === 'INSUFFICIENT_FUNDS') {
-                throwError('Insufficient balance', ApplicationErrors.NotEnoughCoins);
-            }
-
-            throw error;
-        }
+        return this.privateKey.sendTransaction(transaction);
     }
 
     async isContract(): Promise<boolean> {
