@@ -19,7 +19,16 @@ export type SendAssetProps = {
     chain: IChain;
     privateKey: IPrivateKey;
 };
-
+export enum ApplicationError {
+    NotEnoughCoins = 'NotEnoughCoins',
+}
+export class AppError extends Error {
+    public readonly type: ApplicationError;
+    constructor(type: ApplicationError, message: string) {
+        super(message);
+        this.type = type;
+    }
+}
 const SendAssetContainer = (props: SendAssetProps) => {
     const [depositeAccount, onScanQR] = useState<string>();
     const [amount, onChangeAmount] = useState<string>();
@@ -75,12 +84,10 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
         try {
             if (Number(asset.balance) < Number(amount) || Number(asset.balance) <= 0) {
-                errorStore.setError({
-                    error: new Error('You do not have enough balance to perform transaction!'),
-                    expected: true,
-                    title: 'Insufficient balance',
-                });
-                return;
+                throw new AppError(
+                    ApplicationError.NotEnoughCoins,
+                    'You do not have enough balance to perform this transaction!'
+                );
             }
 
             const key = props.privateKey;
