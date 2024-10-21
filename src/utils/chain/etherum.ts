@@ -159,7 +159,11 @@ export class EthereumToken extends AbstractToken {
     }
 
     async getUsdPrice(): Promise<number> {
-        return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
+        if (this.chain.getChainId() === '11155111') {
+            return 0;
+        } else {
+            return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
+        }
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
