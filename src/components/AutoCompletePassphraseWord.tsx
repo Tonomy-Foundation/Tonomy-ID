@@ -23,6 +23,7 @@ interface AutocompleteProps {
     textInputStyle?: object;
     containerStyle?: object;
     menuStyle?: object;
+    disabled?: boolean;
 }
 
 const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
@@ -31,6 +32,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
     textInputStyle,
     containerStyle,
     menuStyle,
+    disabled,
 }) => {
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [suggestedWords, setSuggestedWords] = useState<string[]>([]);
@@ -130,6 +132,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                         onFocus={handleFocus}
                         onBlur={handleBlur}
                         onChangeText={(text) => onChangeText(text)}
+                        disabled={disabled}
                     />
                 </View>
             </View>

@@ -6,5 +6,5 @@ import CitizenshipContainer from '../containers/CitienshipContainer';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'Citizenship'>;
 
 export default function CitizenshipScreen(props: Props) {
-    return <CitizenshipContainer></CitizenshipContainer>;
+    return <CitizenshipContainer navigation={props.navigation}></CitizenshipContainer>;
 }

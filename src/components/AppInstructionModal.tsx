@@ -28,7 +28,7 @@ const AppInstructionModal = () => {
             text: ['Find out what awaits you as a citizen of the Pangea world'],
             tabIndex: 0,
         },
-        { title: 'Assets', text: ['Send and receive LEOS, BTC, ETH and other cryptocurrencies'], tabIndex: 1 },
+        { title: 'Assets', text: ['Send and receive LEOS, ETH and other cryptocurrencies'], tabIndex: 1 },
         {
             title: 'Scan QR codes',
             tabIndex: 2,

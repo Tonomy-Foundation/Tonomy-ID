@@ -15,31 +15,31 @@ export default function OnboardingContainer({ navigation }: { navigation: Props[
         {
             id: 1,
             title: 'Welcome to the Virtual Nation of Pangea',
-            text: 'United Citizens Wallet is going to be your access point to a brand new world',
+            text: 'United Citizens Wallet is your access point to a brand new world.',
             image: require('../assets/images/onboarding/1.png'),
         },
         {
             id: 2,
             title: 'Passwordless login to Pangea apps',
-            text: 'You no longer need to memorize passwords. We got you covered!',
+            text: 'No more passwords for every app you use! Using the secure login of Pangea.',
             image: require('../assets/images/onboarding/2.png'),
         },
         {
             id: 3,
             title: 'You control your data and citizenship',
-            text: 'No one will know where your data is. Not even us',
+            text: 'Your data is stored on your phone. Pangea and third parties can’t access it.',
             image: require('../assets/images/onboarding/3.png'),
         },
         {
             id: 4,
             title: 'Manage your crypto assets with ease',
-            text: 'We don’t even need to explain how to use it. Just try this out!',
+            text: 'So easy it’s obvious. No technical knowledge required.',
             image: require('../assets/images/onboarding/4.png'),
         },
         {
             id: 5,
             title: 'Web4 trust-less platform for people',
-            text: 'We give citizens full control with Web4 technology that is completely invisible!',
+            text: 'We give citizens full control, powered by invisible Web4 technology!',
             image: require('../assets/images/onboarding/5.png'),
         },
     ];
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         height: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.colors.black,
+        backgroundColor: theme.colors.primary,
         borderRadius: 40,
     },
 });

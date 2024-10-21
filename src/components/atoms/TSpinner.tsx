@@ -18,6 +18,8 @@ const TSpinner = ({ size = 70 }: { size?: number }) => {
 const styles = StyleSheet.create({
     animationContainer: {
         flex: 1,
+        width: 30,
+        height: 18,
         alignItems: 'center',
         justifyContent: 'center',
     },

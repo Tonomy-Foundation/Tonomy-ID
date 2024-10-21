@@ -59,7 +59,9 @@ export default function ExploreContainer() {
                 <View style={styles.worldFristAutonomous}>
                     <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
-                    <Image source={require('../assets/images/explore/earth-globe-network-connection.png')} />
+                    <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/watch?v=d5b2gmJWKp4')}>
+                        <Image source={require('../assets/images/explore/explore-video.png')} />
+                    </TouchableOpacity>
                 </View>
                 <Text style={styles.subTitle}>Pangea links</Text>
                 <View style={styles.pangeaLinkButtonLayout}>
