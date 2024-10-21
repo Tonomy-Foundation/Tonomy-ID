@@ -16,6 +16,7 @@ import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
+import { AppSettingsProvider } from './src/context/AppSettingsContext';
 
 Debug.enable(process.env.DEBUG);
 
@@ -32,7 +33,9 @@ export default function App() {
         <PaperProvider theme={theme}>
             <SafeAreaProvider>
                 <ErrorHandlerContainer />
-                <RootNavigation />
+                <AppSettingsProvider>
+                    <RootNavigation />
+                </AppSettingsProvider>
             </SafeAreaProvider>
         </PaperProvider>
     );

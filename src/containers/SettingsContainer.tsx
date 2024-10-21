@@ -5,10 +5,9 @@ import useUserStore from '../store/userStore';
 import TModal from '../components/TModal';
 import theme from '../utils/theme';
 import { TButtonText } from '../components/atoms/TButton';
-import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 import { Switch } from 'react-native-paper';
 import { BinMinusIn, Code, LogOut, NavArrowRight } from 'iconoir-react-native';
-import useAppSettings from '../hooks/useAppSettings';
+import { useAppSettings } from '../context/AppSettingsContext';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { logout } = useUserStore();

@@ -34,10 +34,13 @@ export abstract class AssetStorageManager {
             debug(`updateAccountBalance() updating ${name} balance to ${balance}`);
 
             try {
-                const usdBalance = await asset.getUsdValue();
-
-                if (usdBalance > 0 && usdBalance !== existingAsset.usdBalance) {
-                    existingAsset.usdBalance = usdBalance;
+                if (asset.getToken().getSymbol() !== 'SepoliaETH') {
+                    const usdBalance = await asset.getUsdValue();
+                    if (usdBalance > 0 && usdBalance !== existingAsset.usdBalance) {
+                        existingAsset.usdBalance = usdBalance;
+                    }
+                } else {
+                    existingAsset.usdBalance = 0;
                 }
             } catch (error) {
                 debug(`updateAccountBalance() error fetching ${name} usd balance`, error);
