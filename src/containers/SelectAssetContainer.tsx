@@ -13,7 +13,7 @@ import { supportedChains } from '../utils/assetDetails';
 import { IPrivateKey } from '../utils/chain/types';
 import { Images } from '../assets';
 import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
-import useAppSettings from '../hooks/useAppSettings';
+import { useAppSettings } from '../context/AppSettingsContext';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;

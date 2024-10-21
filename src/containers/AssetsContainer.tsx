@@ -29,13 +29,14 @@ import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { supportedChains } from '../utils/assetDetails';
 import TSpinner from '../components/atoms/TSpinner';
-import useAppSettings from '../hooks/useAppSettings';
+import { useAppSettings } from '../context/AppSettingsContext';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const userStore = useUserStore();
+    const { developerMode } = useAppSettings();
     const user = userStore.user;
     const [isLoadingView, setIsLoadingView] = useState(false);
     const [pangeaBalance, setPangeaBalance] = useState(0.0);
@@ -167,9 +168,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     }, [updateAllBalances]);
 
     useEffect(() => {
-        const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
-            return previousValue + currentValue.usdBalance;
-        }, 0);
+        const totalAssetsUSDBalance = accounts
+            .filter((a) => a.network !== 'Sepolia')
+            .reduce((previousValue, currentValue) => {
+                return previousValue + currentValue.usdBalance;
+            }, 0);
         const totalPangeaUSDBalance = pangeaBalance * LEOS_SEED_ROUND_PRICE;
 
         setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
@@ -186,7 +189,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const MainView = () => {
         const isFocused = useIsFocused();
-        const { developerMode } = useAppSettings();
 
         if (!isFocused) {
             return null;
@@ -274,7 +276,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
                                 const accountData = findAccountByChain(chainName);
-
                                 if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
                                     return null;
                                 }
