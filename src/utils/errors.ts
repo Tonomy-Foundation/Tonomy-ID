@@ -30,6 +30,7 @@ enum ApplicationErrors {
     InvalidJwt = 'InvalidJwt',
     MissingParams = 'MissingParams',
     InvalidLinkAuthRequest = 'InvalidLinkAuthRequest',
+    NotEnoughCoins = 'NotEnoughCoins',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
