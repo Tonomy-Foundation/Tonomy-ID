@@ -7,8 +7,6 @@ import {
     ETHToken,
 } from './chain/etherum';
 import {
-    currentPangeaChain,
-    currentPangeaToken,
     LEOSLocalToken,
     LEOSStagingToken,
     LEOSTestnetToken,
