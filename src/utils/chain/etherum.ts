@@ -463,24 +463,6 @@ export class EthereumAccount extends AbstractAccount {
         return this.privateKey.signTransaction(transaction);
     }
 
-    // async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
-    //     if (!this.privateKey) {
-    //         throw new Error('Account has no private key');
-    //     }
-
-    //     // await, try catch, match error.code, throwError('message', ApplicationErrors.NotEnoughCoins)
-    //     try {
-    //         return await this.privateKey.sendTransaction(transaction);
-    //     } catch (error) {
-    //         if (error?.code === 'INSUFFICIENT_FUNDS') {
-    //             throwError('Insufficient balance', ApplicationErrors.NotEnoughCoins);
-    //         } else {
-    //             console.error('sendTransaction: ', error);
-    //             throw new Error(error);
-    //         }
-    //     }
-    // }
-
     async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
