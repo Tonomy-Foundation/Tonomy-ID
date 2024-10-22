@@ -17,6 +17,7 @@ import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
 
+
 Debug.enable(process.env.DEBUG);
 
 if (!settings.isProduction()) {

@@ -186,7 +186,6 @@ export class EthereumToken extends AbstractToken {
 
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
-
         return balance.getUsdValue();
     }
 }
