@@ -9,11 +9,25 @@ import {
     ETHSepoliaToken,
     ETHToken,
 } from './chain/etherum';
-import { activeAntelopeChainEntry, AntelopeAccount, AntelopeChain, AntelopePrivateKey } from '../utils/chain/antelope';
+import {
+    ANTELOPE_CHAIN_ID_TO_CHAIN,
+    AntelopeAccount,
+    AntelopeChain,
+    AntelopePrivateKey,
+    LEOSLocalToken,
+    LEOSStagingToken,
+    LEOSTestnetToken,
+    LEOSToken,
+    PangeaLocalChain,
+    PangeaMainnetChain,
+    PangeaStagingChain,
+    PangeaTestnetChain,
+} from '../utils/chain/antelope';
 import { Asset, ChainType, IAccount, IChain, IPrivateKey, IToken } from './chain/types';
 import { assetStorage, keyStorage } from './StorageManager/setup';
 import { AssetStorage } from './StorageManager/repositories/assetStorageManager';
-import { IUser } from '@tonomy/tonomy-id-sdk';
+import { EosioUtil, IUser } from '@tonomy/tonomy-id-sdk';
+import settings from '../settings';
 
 export interface AccountDetails {
     network: string;
@@ -50,8 +64,43 @@ export const chainRegistry: ChainRegistryEntry[] = [
     { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: ChainKeyName.ethereumTestnetSepolia },
 ];
 
-activeAntelopeChainEntry.token.isTransferable = () => true;
-activeAntelopeChainEntry.chain.isTestnet = () => false;
+async function addLocalChain() {
+    const chainId = (await (await EosioUtil.getApi()).v1.chain.get_info()).chain_id;
+
+    // @ts-expect-error antelopeChainId is protected
+    PangeaLocalChain.antelopeChainId = chainId.toString();
+}
+
+export let activeAntelopeChainEntry: ChainRegistryEntry & { chain: AntelopeChain };
+
+if (settings.env === 'production') {
+    activeAntelopeChainEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: ChainKeyName.pangeaLeos };
+} else if (settings.env === 'testnet') {
+    activeAntelopeChainEntry = {
+        token: LEOSTestnetToken,
+        chain: PangeaTestnetChain,
+        keyName: ChainKeyName.pangeaTestnetLeos,
+    };
+} else if (settings.env === 'staging' || settings.env === 'development') {
+    activeAntelopeChainEntry = {
+        token: LEOSStagingToken,
+        chain: PangeaStagingChain,
+        keyName: ChainKeyName.pangeaStagingLeos,
+    };
+} else {
+    activeAntelopeChainEntry = {
+        token: LEOSLocalToken,
+        chain: PangeaLocalChain,
+        keyName: ChainKeyName.pangeaLocalLeos,
+    };
+    addLocalChain();
+}
+
+ANTELOPE_CHAIN_ID_TO_CHAIN[activeAntelopeChainEntry.chain.getAntelopeChainId()] = activeAntelopeChainEntry.chain;
+
+// Uncomment out these lines to test the chain easily:
+// activeAntelopeChainEntry.token.isTransferable = () => true;
+// activeAntelopeChainEntry.chain.isTestnet = () => false;
 
 if (activeAntelopeChainEntry.chain.isTestnet()) {
     chainRegistry.push(activeAntelopeChainEntry);

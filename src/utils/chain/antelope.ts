@@ -42,9 +42,6 @@ import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
-import settings from '../../settings';
-import { EosioUtil } from '@tonomy/tonomy-id-sdk';
-import { ChainKeyName, ChainRegistryEntry } from '../assetDetails';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 
 const vestingContract = VestingContract.Instance;
@@ -505,40 +502,6 @@ export const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
 ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
 ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
 ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
-
-async function addLocalChain() {
-    const chainId = (await (await EosioUtil.getApi()).v1.chain.get_info()).chain_id;
-
-    // @ts-expect-error antelopeChainId is protected
-    PangeaLocalChain.antelopeChainId = chainId.toString();
-}
-
-export let activeAntelopeChainEntry: ChainRegistryEntry & { chain: AntelopeChain };
-
-if (settings.env === 'production') {
-    activeAntelopeChainEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: ChainKeyName.pangeaLeos };
-} else if (settings.env === 'testnet') {
-    activeAntelopeChainEntry = {
-        token: LEOSTestnetToken,
-        chain: PangeaTestnetChain,
-        keyName: ChainKeyName.pangeaTestnetLeos,
-    };
-} else if (settings.env === 'staging' || settings.env === 'development') {
-    activeAntelopeChainEntry = {
-        token: LEOSStagingToken,
-        chain: PangeaStagingChain,
-        keyName: ChainKeyName.pangeaStagingLeos,
-    };
-} else {
-    activeAntelopeChainEntry = {
-        token: LEOSLocalToken,
-        chain: PangeaLocalChain,
-        keyName: ChainKeyName.pangeaLocalLeos,
-    };
-    addLocalChain();
-}
-
-ANTELOPE_CHAIN_ID_TO_CHAIN[activeAntelopeChainEntry.chain.getAntelopeChainId()] = activeAntelopeChainEntry.chain;
 
 export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
     if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Antelope chain not supported');
