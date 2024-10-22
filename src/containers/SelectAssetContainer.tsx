@@ -13,7 +13,7 @@ import { supportedChains } from '../utils/assetDetails';
 import { IPrivateKey } from '../utils/chain/types';
 import { Images } from '../assets';
 import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
-import { useAppSettings } from '../context/AppSettingsContext';
+import useAppSettings from '../hooks/useAppSettings';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -94,6 +94,10 @@ const SelectAssetContainer = ({
 
     useEffect(() => {
         fetchCryptoAssets();
+
+        const interval = setInterval(fetchCryptoAssets, 10000);
+
+        return () => clearInterval(interval);
     }, [fetchCryptoAssets]);
 
     const findAccountByChain = (chain: string) => {

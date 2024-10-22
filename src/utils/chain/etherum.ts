@@ -79,9 +79,17 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
-        const receipt = await this.wallet.sendTransaction(transaction);
+        try {
+            const receipt = await this.wallet.sendTransaction(transaction);
 
-        return new EthereumTransactionReceipt(this.chain, receipt);
+            return new EthereumTransactionReceipt(this.chain, receipt);
+        } catch (error) {
+            if (error?.code === 'INSUFFICIENT_FUNDS') {
+                throwError('Insufficient balance', ApplicationErrors.NotEnoughCoins);
+            }
+
+            throw error;
+        }
     }
 }
 
@@ -151,7 +159,11 @@ export class EthereumToken extends AbstractToken {
     }
 
     async getUsdPrice(): Promise<number> {
-        return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
+        if (this.chain.getChainId() === '11155111') {
+            return 0;
+        } else {
+            return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
+        }
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
@@ -174,7 +186,6 @@ export class EthereumToken extends AbstractToken {
 
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
-
         return balance.getUsdValue();
     }
 }
@@ -468,15 +479,7 @@ export class EthereumAccount extends AbstractAccount {
             throw new Error('Account has no private key');
         }
 
-        try {
-            return await this.privateKey.sendTransaction(transaction);
-        } catch (error) {
-            if (error?.code === 'INSUFFICIENT_FUNDS') {
-                throwError('Insufficient balance', ApplicationErrors.NotEnoughCoins);
-            }
-
-            throw error;
-        }
+        return this.privateKey.sendTransaction(transaction);
     }
 
     async isContract(): Promise<boolean> {

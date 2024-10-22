@@ -46,6 +46,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
         };
 
         fetchAssetDetails();
+
+        const interval = setInterval(fetchAssetDetails, 10000);
+
+        return () => clearInterval(interval);
     }, [props.network]);
 
     if (loading) {

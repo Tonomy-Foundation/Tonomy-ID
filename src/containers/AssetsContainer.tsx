@@ -29,14 +29,13 @@ import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { supportedChains } from '../utils/assetDetails';
 import TSpinner from '../components/atoms/TSpinner';
-import { useAppSettings } from '../context/AppSettingsContext';
+import useAppSettings from '../hooks/useAppSettings';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const userStore = useUserStore();
-    const { developerMode } = useAppSettings();
     const user = userStore.user;
     const [pangeaBalance, setPangeaBalance] = useState(0.0);
     const [accountName, setAccountName] = useState('');

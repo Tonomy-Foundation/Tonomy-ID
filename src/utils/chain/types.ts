@@ -173,6 +173,9 @@ export abstract class AbstractAsset implements IAsset {
     }
 
     async getUsdValue(): Promise<number> {
+        if (this.token.getSymbol() === 'SepoliaETH') {
+            return 0;
+        }
         const price = await this.token.getUsdPrice();
 
         if (price) {
