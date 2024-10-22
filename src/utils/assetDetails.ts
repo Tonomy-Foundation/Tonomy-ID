@@ -7,6 +7,7 @@ import {
     ETHToken,
 } from './chain/etherum';
 import {
+    activeAntelopeChainEntry,
     LEOSLocalToken,
     LEOSStagingToken,
     LEOSTestnetToken,
@@ -45,19 +46,10 @@ export const chainRegistry: ChainRegistryEntry[] = [
     { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: 'ethereumTestnetSepolia' },
 ];
 
-switch (settings.env) {
-    case 'production':
-        chainRegistry.unshift({ token: LEOSToken, chain: PangeaMainnetChain, keyName: 'pangeaLeos' });
-        break;
-    case 'testnet':
-        chainRegistry.unshift({ token: LEOSTestnetToken, chain: PangeaTestnetChain, keyName: 'pangeaTestnetLeos' });
-        break;
-    case 'staging':
-        chainRegistry.push({ token: LEOSStagingToken, chain: PangeaStagingChain, keyName: 'pangeaStagingLeos' });
-        break;
-    default:
-        chainRegistry.push({ token: LEOSLocalToken, chain: PangeaLocalChain, keyName: 'pangeaLocalLeos' });
-        break;
+if (activeAntelopeChainEntry.chain.isTestnet()) {
+    chainRegistry.push(activeAntelopeChainEntry);
+} else {
+    chainRegistry.unshift(activeAntelopeChainEntry);
 }
 
 export const getAssetDetails = async (chainName: string): Promise<AccountDetails> => {

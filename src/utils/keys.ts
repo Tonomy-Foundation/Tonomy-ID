@@ -11,8 +11,8 @@ import {
 import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
-import settings from '../settings';
 import Debug from 'debug';
+import { activeAntelopeChainEntry, AntelopePrivateKey } from './chain/antelope';
 
 const debug = Debug('tonomy-id:utils:keys');
 
@@ -86,7 +86,10 @@ export async function generatePrivateKeyFromPassword(
     };
 }
 
-async function generateSeedFromPassword(password: string, salt?: string): Promise<{ seed: string; salt: string }> {
+export async function generateSeedFromPassword(
+    password: string,
+    salt?: string
+): Promise<{ seed: string; salt: string }> {
     if (!salt) salt = Checksum256.from(randomBytes(32)).hexString;
     const result = await argon2(password, salt, {
         mode: 'argon2id',
@@ -115,10 +118,13 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     const ethereumKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumMainnetChain);
     const sepoliaKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumSepoliaChain);
     const polygonKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumPolygonChain);
+    const pangeaKey = activeAntelopeChainEntry.chain.createKeyFromSeed(seedData.seed);
 
     // Save the keys and seed to the storage
     await keyStorage.emplaceKey('ethereum', ethereumKey);
     await keyStorage.emplaceKey('ethereumTestnetSepolia', sepoliaKey);
     await keyStorage.emplaceKey('ethereumPolygon', polygonKey);
+    await keyStorage.emplaceKey(activeAntelopeChainEntry.keyName, pangeaKey);
+
     await appStorage.setCryptoSeed(seedData.seed);
 }

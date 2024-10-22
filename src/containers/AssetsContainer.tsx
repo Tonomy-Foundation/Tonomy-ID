@@ -29,7 +29,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+        { network: string; accountName: string; balance: string; usdBalance: number }[]
     >([]);
     const { updateBalance } = useWalletStore();
 
@@ -40,22 +40,22 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             if (!accountExists) await initializeWalletAccount();
             await connect();
 
-            for (const chainObj of chains) {
-                const asset = await assetStorage.findAssetByName(chainObj.token);
+            for (const chainEntry of chains) {
+                const asset = await assetStorage.findAssetByName(chainEntry.token);
 
-                debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
+                debug(`fetchCryptoAssets() fetching asset for ${chainEntry.chain.getName()}`);
                 let account;
 
                 if (asset) {
                     account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        network: capitalizeFirstLetter(chainEntry.chain.getName()),
                         accountName: asset.accountName,
                         balance: asset.balance,
                         usdBalance: asset.usdBalance,
                     };
                 } else {
                     account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        network: capitalizeFirstLetter(chainEntry.chain.getName()),
                         accountName: null,
                         balance: '0',
                         usdBalance: 0,
@@ -131,11 +131,12 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
-        const balance = accountExists?.balance;
-        const usdBalance = accountExists?.usdBalance;
-        const account = accountExists?.accountName;
 
-        return { account, balance, usdBalance };
+        return {
+            account: accountExists?.accountName,
+            balance: accountExists?.balance,
+            usdBalance: accountExists?.usdBalance,
+        };
     };
 
     const MainView = () => {

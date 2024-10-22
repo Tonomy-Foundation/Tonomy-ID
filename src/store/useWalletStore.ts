@@ -129,8 +129,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         let account: EthereumAccount;
 
                         if (!asset) {
-                            const exportPrivateKey = await key.exportPrivateKey();
-                            const privateKey = new EthereumPrivateKey(exportPrivateKey, chain);
+                            const privateKey = key as EthereumPrivateKey;
 
                             account = await EthereumAccount.fromPublicKey(chain, await privateKey.getPublicKey());
                             const abstractAsset = new Asset(token, BigInt(0));
@@ -153,10 +152,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 }
             };
 
-            const [ethereumData, sepoliaData, polygonData] = await Promise.allSettled([
+            const [ethereumData, polygonData, sepoliaData] = await Promise.allSettled([
                 fetchAccountData(EthereumMainnetChain, ETHToken, 'ethereum'),
-                fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
                 fetchAccountData(EthereumPolygonChain, ETHPolygonToken, 'ethereumPolygon'),
+                fetchAccountData(EthereumSepoliaChain, ETHSepoliaToken, 'ethereumTestnetSepolia'),
             ]);
 
             if (ethereumData.status === 'fulfilled' && ethereumData.value) {

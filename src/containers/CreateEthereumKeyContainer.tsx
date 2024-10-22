@@ -25,6 +25,7 @@ import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import { SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { addNativeTokenToAssetStorage } from './LoginPassphraseContainer';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
@@ -84,11 +85,11 @@ export default function CreateEthereumKeyContainer({
             const salt = idData.password_salt;
 
             await user.login(tonomyUsername, passphrase.join(' '), {
-                // @ts-ignore (Checksum256 type error)
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
             await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
+            await addNativeTokenToAssetStorage(user);
 
             setPassphrase(['', '', '', '', '', '']);
             setNextDisabled(false);

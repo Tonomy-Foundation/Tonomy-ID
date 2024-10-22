@@ -106,7 +106,7 @@ export class EthereumChain extends AbstractChain {
         this.explorerOrigin = explorerOrigin;
     }
 
-    createKeyFromSeed(seed: string): IPrivateKey {
+    createKeyFromSeed(seed: string): EthereumPrivateKey {
         const wallet = new ethers.Wallet(seed);
 
         return new EthereumPrivateKey(wallet.privateKey, this);

@@ -7,8 +7,10 @@ import {
     EOSJungleChain,
     EOSJungleToken,
 } from '../../src/utils/chain/antelope';
-import { PrivateKey } from '@wharfkit/antelope';
+import { KeyType, PrivateKey } from '@wharfkit/antelope';
 import { TransactionType } from '../../src/utils/chain/types';
+import { generatePrivateKeyFromPassword, generateSeedFromPassword } from '../../src/utils/keys';
+import { hexToBytes, bytesToHex } from 'did-jwt';
 
 describe('AntelopeTransaction', () => {
     const jungleAccountName = 'mytest123tes';
@@ -103,4 +105,35 @@ describe('AntelopeTransaction', () => {
         expect(receipt2).toBeDefined();
         expect(receipt2.processed.receipt.status).toBe('executed');
     }, 30000);
+});
+
+describe('AntelopePrivateKey', () => {
+    it('Uint8Array conversion', async () => {
+        const array = new Uint8Array([1, 2, 3, 4, 5]);
+        const hexString = bytesToHex(array);
+        const newUint8Array = hexToBytes(hexString);
+
+        expect(newUint8Array).toEqual(array);
+    });
+
+    it('can export and import a key using hex string', async () => {
+        const privateKey = PrivateKey.generate(KeyType.K1);
+        const antelopePrivateKey = new AntelopePrivateKey(privateKey, EOSJungleChain);
+        const privateKeyHex = await antelopePrivateKey.exportPrivateKey();
+        const newAntelopePrivateKey = await AntelopePrivateKey.fromPrivateKeyHex(privateKeyHex, EOSJungleChain);
+
+        expect(antelopePrivateKey.toPrivateKey().toString()).toEqual(newAntelopePrivateKey.toPrivateKey().toString());
+    });
+});
+
+describe('AntelopeChain', () => {
+    it('createKeyFromSeed() creates the same key as generatePrivateKeyFromPassword()', async () => {
+        const passphrase = 'mysecretpassword';
+        const { privateKey, salt } = await generatePrivateKeyFromPassword(passphrase);
+
+        const { seed } = await generateSeedFromPassword(passphrase, salt.hexString);
+        const antelopePrivateKey = (await EOSJungleChain.createKeyFromSeed(seed)) as AntelopePrivateKey;
+
+        expect(privateKey.toString()).toEqual(antelopePrivateKey.toPrivateKey().toString());
+    });
 });

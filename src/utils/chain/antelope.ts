@@ -26,7 +26,6 @@ import {
     API,
     APIClient,
     Bytes,
-    Checksum256,
     FetchProvider,
     KeyType,
     Name,
@@ -44,7 +43,9 @@ import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import settings from '../../settings';
-import { getApi } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
+import { EosioUtil } from '@tonomy/tonomy-id-sdk';
+import { ChainRegistryEntry } from '../assetDetails';
+import { hexToBytes, bytesToHex } from 'did-jwt';
 
 const vestingContract = VestingContract.Instance;
 
@@ -126,11 +127,20 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 
     constructor(privateKey: PrivateKey, chain: AntelopeChain) {
         const type = privateKey.type === KeyType.K1 ? 'Secp256k1' : 'Secp256r1';
-        const privateKeyHex = new TextDecoder().decode(privateKey.data.array);
+        const privateKeyHex = bytesToHex(privateKey.data.array);
 
         super(privateKeyHex, type);
         this.privateKey = privateKey;
         this.chain = chain;
+    }
+
+    static fromPrivateKeyHex(privateKeyHex: string, chain: AntelopeChain): AntelopePrivateKey {
+        const keyUint8Array = hexToBytes(privateKeyHex);
+
+        const bytes = Bytes.from(keyUint8Array, 'hex');
+        const privateKey = new PrivateKey(KeyType.K1, bytes);
+
+        return new AntelopePrivateKey(privateKey, chain);
     }
 
     async getPublicKey(): Promise<AntelopePublicKey> {
@@ -225,7 +235,7 @@ export class AntelopeChain extends AbstractChain {
     }
 
     createKeyFromSeed(seed: string): AntelopePrivateKey {
-        const bytes: Bytes = Bytes.from(Checksum256.hash(seed));
+        const bytes = Bytes.from(seed, 'hex');
         const privateKey = new PrivateKey(KeyType.K1, bytes);
 
         return new AntelopePrivateKey(privateKey, this);
@@ -497,29 +507,26 @@ ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTest
 ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
 
 async function addLocalChain() {
-    activeAntelopeChain = PangeaLocalChain;
-    const chainId = (await (await getApi()).v1.chain.get_info()).chain_id;
+    const chainId = (await (await EosioUtil.getApi()).v1.chain.get_info()).chain_id;
 
     // @ts-expect-error antelopeChainId is protected
     PangeaLocalChain.antelopeChainId = chainId.toString();
-
-    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaLocalChain.getAntelopeChainId()] = PangeaLocalChain;
 }
 
-export let activeAntelopeChain: AntelopeChain;
+export let activeAntelopeChainEntry: ChainRegistryEntry & { chain: AntelopeChain };
 
 if (settings.env === 'production') {
-    activeAntelopeChain = PangeaMainnetChain;
-    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
+    activeAntelopeChainEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: 'pangeaLeos' };
 } else if (settings.env === 'testnet') {
-    activeAntelopeChain = PangeaTestnetChain;
-    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
-} else if (settings.env === 'staging') {
-    activeAntelopeChain = PangeaStagingChain;
-    ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaStagingChain.getAntelopeChainId()] = PangeaStagingChain;
+    activeAntelopeChainEntry = { token: LEOSTestnetToken, chain: PangeaTestnetChain, keyName: 'pangeaTestnetLeos' };
+} else if (settings.env === 'staging' || settings.env === 'development') {
+    activeAntelopeChainEntry = { token: LEOSStagingToken, chain: PangeaStagingChain, keyName: 'pangeaStagingLeos' };
 } else {
+    activeAntelopeChainEntry = { token: LEOSLocalToken, chain: PangeaLocalChain, keyName: 'pangeaLocalLeos' };
     addLocalChain();
 }
+
+ANTELOPE_CHAIN_ID_TO_CHAIN[activeAntelopeChainEntry.chain.getAntelopeChainId()] = activeAntelopeChainEntry.chain;
 
 export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
     if (!ANTELOPE_CHAIN_ID_TO_CHAIN[chainId]) throw new Error('Antelope chain not supported');

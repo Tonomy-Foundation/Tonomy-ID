@@ -31,7 +31,7 @@ export abstract class KeyManager {
             if (chain.getChainType() === ChainType.ETHEREUM) {
                 return new EthereumPrivateKey(key.value, chain as EthereumChain);
             } else {
-                return new AntelopePrivateKey(PrivateKey.from(key.value), chain as AntelopeChain);
+                return AntelopePrivateKey.fromPrivateKeyHex(key.value, chain as AntelopeChain);
             }
         } else return null;
     }

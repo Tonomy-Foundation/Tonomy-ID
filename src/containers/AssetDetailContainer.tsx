@@ -60,7 +60,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
 
                             {!asset.isTransferable && (
                                 <View style={styles.warning}>
-                                    <Text>`All {asset.symbol} is vested until the public sale`</Text>
+                                    <Text>All {asset.symbol} is vested until the public sale</Text>
                                 </View>
                             )}
                             <View style={styles.flexRow}>
