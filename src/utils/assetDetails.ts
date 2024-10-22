@@ -58,7 +58,7 @@ export type ChainRegistryEntry = {
     keyName: string;
 };
 
-export const chainRegistry: ChainRegistryEntry[] = [
+export const tokenRegistry: ChainRegistryEntry[] = [
     { token: ETHToken, chain: EthereumMainnetChain, keyName: ChainKeyName.ethereum },
     { token: ETHPolygonToken, chain: EthereumPolygonChain, keyName: ChainKeyName.ethereumPolygon },
     { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: ChainKeyName.ethereumTestnetSepolia },
@@ -103,14 +103,14 @@ ANTELOPE_CHAIN_ID_TO_CHAIN[activeAntelopeChainEntry.chain.getAntelopeChainId()] 
 // activeAntelopeChainEntry.chain.isTestnet = () => false;
 
 if (activeAntelopeChainEntry.chain.isTestnet()) {
-    chainRegistry.push(activeAntelopeChainEntry);
+    tokenRegistry.push(activeAntelopeChainEntry);
 } else {
-    chainRegistry.unshift(activeAntelopeChainEntry);
+    tokenRegistry.unshift(activeAntelopeChainEntry);
 }
 
 export async function getChainEntryByName(chain: string | IChain): Promise<ChainRegistryEntry> {
     const chainName = typeof chain === 'string' ? chain : chain.getName();
-    const chainEntry = chainRegistry.find((c) => c.chain.getName() === chainName);
+    const chainEntry = tokenRegistry.find((c) => c.chain.getName() === chainName);
 
     if (!chainEntry) throw new Error(`Unsupported chain ${chainName} from getAssetFromChain()`);
     return chainEntry;

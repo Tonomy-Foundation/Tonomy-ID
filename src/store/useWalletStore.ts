@@ -9,7 +9,7 @@ import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import { chainRegistry, ChainRegistryEntry, getAccountFromChain, getChainEntryByName } from '../utils/assetDetails';
+import { tokenRegistry, ChainRegistryEntry, getAccountFromChain, getChainEntryByName } from '../utils/assetDetails';
 import useUserStore from './userStore';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
@@ -103,7 +103,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
             await connect();
 
-            const accountPromises = chainRegistry.map(
+            const accountPromises = tokenRegistry.map(
                 async (chainEntry: ChainRegistryEntry): Promise<IAccount | null> => {
                     try {
                         const { user } = useUserStore();

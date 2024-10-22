@@ -13,7 +13,7 @@ import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { chainRegistry } from '../utils/assetDetails';
+import { tokenRegistry } from '../utils/assetDetails';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
 
@@ -33,7 +33,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     >([]);
     const { updateBalance } = useWalletStore();
 
-    const chains = useMemo(() => chainRegistry, []);
+    const chains = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {

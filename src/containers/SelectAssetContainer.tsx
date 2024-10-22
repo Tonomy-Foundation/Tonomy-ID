@@ -6,7 +6,7 @@ import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup
 import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
-import { ChainRegistryEntry, chainRegistry } from '../utils/assetDetails';
+import { ChainRegistryEntry, tokenRegistry } from '../utils/assetDetails';
 import { IPrivateKey } from '../utils/chain/types';
 import useAppSettings from '../hooks/useAppSettings';
 
@@ -25,7 +25,7 @@ const SelectAssetContainer = ({
 
     const { developerMode } = useAppSettings();
 
-    const chains = useMemo(() => chainRegistry, []);
+    const chains = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {

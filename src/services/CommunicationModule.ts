@@ -30,12 +30,12 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
-import { chainRegistry, getKeyFromChain } from '../utils/assetDetails';
+import { tokenRegistry, getKeyFromChain } from '../utils/assetDetails';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
 export const findEthChainEntryByChainId = (chainId: string) => {
-    return chainRegistry.find(
+    return tokenRegistry.find(
         ({ chain }) => chain.getChainType() === ChainType.ETHEREUM && chain.getChainId() === chainId
     );
 };
