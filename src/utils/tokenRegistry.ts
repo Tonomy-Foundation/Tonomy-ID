@@ -24,7 +24,7 @@ import {
     PangeaTestnetChain,
 } from './chain/antelope';
 import { Asset, ChainType, IAccount, IChain, IPrivateKey, IToken } from './chain/types';
-import { assetStorage, keyStorage } from './StorageManager/setup';
+import { appStorage, assetStorage, keyStorage } from './StorageManager/setup';
 import { AssetStorage } from './StorageManager/repositories/assetStorageManager';
 import { EosioUtil, IUser } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
@@ -123,11 +123,27 @@ export async function getAssetFromChain(chainEntry: TokenRegistryEntry): Promise
     return asset;
 }
 
-export async function getKeyFromChain(chainEntry: TokenRegistryEntry): Promise<IPrivateKey> {
-    const key = await keyStorage.findByName(chainEntry.keyName, chainEntry.chain);
+export async function getKeyFromChain({ chain, keyName }: TokenRegistryEntry): Promise<IPrivateKey> {
+    let key = await keyStorage.findByName(keyName, chain);
 
-    if (!key) throw new Error(`Key not found for ${chainEntry.chain.getName()}`);
+    if (!key) {
+        const seed = await appStorage.getCryptoSeed();
+
+        if (!seed) throw new Error(`Key not found for ${chain.getName()}`);
+        key = await chain.createKeyFromSeed(seed);
+        await keyStorage.emplaceKey(keyName, key);
+    }
+
     return key;
+}
+
+export async function getKeyOrNullFromChain(chainEntry: TokenRegistryEntry): Promise<IPrivateKey | null> {
+    try {
+        return await getKeyFromChain(chainEntry);
+    } catch (error) {
+        if (error.message.startsWith('Key not found for')) return null;
+        throw error;
+    }
 }
 
 export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user: IUser): Promise<IAccount> {
@@ -178,4 +194,14 @@ export const getAssetDetails = async (chainName: string | IChain): Promise<Accou
         privateKey: key,
         chain: chainRegistryEntry.chain,
     };
+};
+
+export const findEthereumTokenByChainId = (chainId: string) => {
+    return tokenRegistry.find(
+        ({ chain }) => chain.getChainType() === ChainType.ETHEREUM && chain.getChainId() === chainId
+    );
+};
+
+export const eip155StringToChainId = (eip155String: string) => {
+    return eip155String.split(':')[1];
 };

@@ -6,7 +6,7 @@ import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain, ChainType } from '../utils/chain/types';
 import Debug from 'debug';
-import { tokenRegistry } from './tokenRegistry';
+import { getKeyOrNullFromChain, tokenRegistry } from './tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:keys');
 
@@ -96,31 +96,20 @@ export async function generateSeedFromPassword(
     return { seed: result.rawHash as string, salt };
 }
 
-export async function generatePrivateKeyFromSeed(seed: string, chain: IChain): Promise<IPrivateKey> {
-    const chainSeed = sha256(seed + chain.getChainId());
-
-    const privateKey = chain.createKeyFromSeed(chainSeed);
-
-    return privateKey;
-}
-
 export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
     // Generate the seed data from the password and salt (computationally expensive)
-    const seedData = await generateSeedFromPassword(passphrase, salt);
+    const { seed } = await generateSeedFromPassword(passphrase, salt);
 
-    for (const { chain, keyName } of tokenRegistry) {
-        let key = await keyStorage.findByName(keyName, chain);
+    for (const tokenEntry of tokenRegistry) {
+        const { chain, keyName } = tokenEntry;
+        let key = await getKeyOrNullFromChain(tokenEntry);
 
         if (!key) {
-            if (chain.getChainType() === ChainType.ETHEREUM) {
-                key = await generatePrivateKeyFromSeed(seedData.seed, chain);
-            } else {
-                key = chain.createKeyFromSeed(seedData.seed);
-            }
+            key = await chain.createKeyFromSeed(seed);
 
             await keyStorage.emplaceKey(keyName, key);
         }
     }
 
-    await appStorage.setCryptoSeed(seedData.seed);
+    await appStorage.setCryptoSeed(seed);
 }

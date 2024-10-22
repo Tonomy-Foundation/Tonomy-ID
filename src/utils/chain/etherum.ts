@@ -35,7 +35,6 @@ import { getPriceCoinGecko } from './common';
 import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
-import { TokenRegistryEntry } from '../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -107,7 +106,8 @@ export class EthereumChain extends AbstractChain {
     }
 
     createKeyFromSeed(seed: string): EthereumPrivateKey {
-        const wallet = new ethers.Wallet(seed);
+        const chainSeed = this.generateUniqueSeed(seed);
+        const wallet = new ethers.Wallet(chainSeed);
 
         return new EthereumPrivateKey(wallet.privateKey, this);
     }

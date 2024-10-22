@@ -1,5 +1,6 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
+import { sha256 } from '@tonomy/tonomy-id-sdk';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -140,6 +141,9 @@ export abstract class AbstractChain implements IChain {
     }
     isTestnet(): boolean {
         return this.testnet;
+    }
+    protected generateUniqueSeed(seed: string): string {
+        return sha256(seed + this.getChainId());
     }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;

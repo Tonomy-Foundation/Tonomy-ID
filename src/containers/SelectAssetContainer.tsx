@@ -2,12 +2,11 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'rea
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
+import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
-import { TokenRegistryEntry, tokenRegistry } from '../utils/tokenRegistry';
-import { IPrivateKey } from '../utils/chain/types';
+import { TokenRegistryEntry, getKeyOrNullFromChain, tokenRegistry } from '../utils/tokenRegistry';
 import useAppSettings from '../hooks/useAppSettings';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
@@ -87,19 +86,24 @@ const SelectAssetContainer = ({
         return { account, balance, usdBalance };
     };
 
-    const handleOnPress = async (chainObj: TokenRegistryEntry) => {
+    const handleOnPress = async (tokenEntry: TokenRegistryEntry) => {
         if (type === 'receive') {
             navigation.navigate('Receive', {
-                screenTitle: `Receive ${chainObj.token.getSymbol()}`,
-                network: chainObj.chain.getName(),
+                screenTitle: `Receive ${tokenEntry.token.getSymbol()}`,
+                network: tokenEntry.chain.getName(),
             });
         } else if (type === 'send') {
-            const key = await keyStorage.findByName(chainObj.keyName, chainObj.chain);
+            const key = await getKeyOrNullFromChain(tokenEntry);
+
+            if (!key) {
+                debug(`handleOnPress() ${tokenEntry.keyName} key not found`);
+                return;
+            }
 
             navigation.navigate('Send', {
-                screenTitle: `Send ${chainObj.token.getSymbol()}`,
-                chain: chainObj.chain,
-                privateKey: key as IPrivateKey,
+                screenTitle: `Send ${tokenEntry.token.getSymbol()}`,
+                chain: tokenEntry.chain,
+                privateKey: key,
             });
         }
     };

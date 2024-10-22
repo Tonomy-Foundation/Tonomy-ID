@@ -30,19 +30,14 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
-import { tokenRegistry, getKeyFromChain } from '../utils/tokenRegistry';
+import {
+    eip155StringToChainId,
+    findEthereumTokenByChainId,
+    getKeyFromChain,
+    getKeyOrNullFromChain,
+} from '../utils/tokenRegistry';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
-
-export const findEthereumTokenByChainId = (chainId: string) => {
-    return tokenRegistry.find(
-        ({ chain }) => chain.getChainType() === ChainType.ETHEREUM && chain.getChainId() === chainId
-    );
-};
-
-const eip155StringToChainId = (eip155String: string) => {
-    return eip155String.split(':')[1];
-};
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -247,8 +242,7 @@ export default function CommunicationModule() {
                         return;
                     }
 
-                    // Step 2: find the accounts for the session
-                    let keyFound = false;
+                    // Step 2: Find the accounts for the session
                     const namespaces: SessionTypes.Namespaces = {};
                     const ethereumAccounts = accounts
                         .filter((account) => account !== null)
@@ -286,7 +280,7 @@ export default function CommunicationModule() {
                         const chainEntry = findEthereumTokenByChainId(chainId);
 
                         if (chainEntry) {
-                            const key = await keyStorage.findByName(chainEntry.keyName, chainEntry.chain);
+                            const key = await getKeyOrNullFromChain(chainEntry);
 
                             if (!key) {
                                 navigation.navigate('CreateEthereumKey', {
@@ -295,19 +289,15 @@ export default function CommunicationModule() {
                                     session,
                                 });
                                 return;
-                            } else {
-                                keyFound = true;
                             }
                         }
                     }
 
-                    if (keyFound) {
-                        navigation.navigate('WalletConnectLogin', {
-                            payload: proposal,
-                            platform: 'browser',
-                            session,
-                        });
-                    }
+                    navigation.navigate('WalletConnectLogin', {
+                        payload: proposal,
+                        platform: 'browser',
+                        session,
+                    });
                 }
             } catch (error) {
                 debug('session_proposal', error);
