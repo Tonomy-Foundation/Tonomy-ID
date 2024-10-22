@@ -216,7 +216,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
                 </ScrollView>
                 <View style={commonStyles.marginBottom}>
                     {submitting && (
-                        <View style={commonStyles.marginBottom}>
+                        <View style={[commonStyles.marginBottom, styles.proceedLoader]}>
                             <TSpinner />
                         </View>
                     )}
@@ -319,6 +319,10 @@ const styles = StyleSheet.create({
     flexCol: {
         flexDirection: 'column',
         gap: 15,
+    },
+    proceedLoader: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 
