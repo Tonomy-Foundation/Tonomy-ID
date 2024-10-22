@@ -17,7 +17,7 @@ import { chainRegistry } from '../utils/assetDetails';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
 
-const debug = Debug('tonomy-id:containers:MainContainer');
+const debug = Debug('tonomy-id:containers:AssetsContainer');
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const [isLoadingView, setIsLoadingView] = useState(false);
@@ -25,7 +25,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [total, setTotal] = useState<number>(0);
     const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
 
-    const { accountExists, initializeWalletAccount } = useWalletStore();
+    const { accountsInitialized, initializeWalletAccount } = useWalletStore();
 
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
@@ -37,7 +37,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            if (!accountExists) await initializeWalletAccount();
+            if (!accountsInitialized) await initializeWalletAccount();
             await connect();
 
             for (const chainEntry of chains) {
@@ -81,7 +81,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         } catch (error) {
             debug('fetchCryptoAssets() error', error);
         }
-    }, [accountExists, initializeWalletAccount, chains]);
+    }, [accountsInitialized, initializeWalletAccount, chains]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running

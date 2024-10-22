@@ -44,7 +44,7 @@ import { createUrl, getQueryParam } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import settings from '../../settings';
 import { EosioUtil } from '@tonomy/tonomy-id-sdk';
-import { ChainRegistryEntry } from '../assetDetails';
+import { ChainKeyName, ChainRegistryEntry } from '../assetDetails';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 
 const vestingContract = VestingContract.Instance;
@@ -516,13 +516,25 @@ async function addLocalChain() {
 export let activeAntelopeChainEntry: ChainRegistryEntry & { chain: AntelopeChain };
 
 if (settings.env === 'production') {
-    activeAntelopeChainEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: 'pangeaLeos' };
+    activeAntelopeChainEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: ChainKeyName.pangeaLeos };
 } else if (settings.env === 'testnet') {
-    activeAntelopeChainEntry = { token: LEOSTestnetToken, chain: PangeaTestnetChain, keyName: 'pangeaTestnetLeos' };
+    activeAntelopeChainEntry = {
+        token: LEOSTestnetToken,
+        chain: PangeaTestnetChain,
+        keyName: ChainKeyName.pangeaTestnetLeos,
+    };
 } else if (settings.env === 'staging' || settings.env === 'development') {
-    activeAntelopeChainEntry = { token: LEOSStagingToken, chain: PangeaStagingChain, keyName: 'pangeaStagingLeos' };
+    activeAntelopeChainEntry = {
+        token: LEOSStagingToken,
+        chain: PangeaStagingChain,
+        keyName: ChainKeyName.pangeaStagingLeos,
+    };
 } else {
-    activeAntelopeChainEntry = { token: LEOSLocalToken, chain: PangeaLocalChain, keyName: 'pangeaLocalLeos' };
+    activeAntelopeChainEntry = {
+        token: LEOSLocalToken,
+        chain: PangeaLocalChain,
+        keyName: ChainKeyName.pangeaLocalLeos,
+    };
     addLocalChain();
 }
 

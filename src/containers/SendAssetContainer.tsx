@@ -33,7 +33,7 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.chain.getName());
+            const assetData = await getAssetDetails(props.chain);
 
             setAsset(assetData);
             setLoading(false);

@@ -1,18 +1,12 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
 import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import {
-    EthereumPrivateKey,
-    EthereumAccount,
-    EthereumMainnetChain,
-    EthereumSepoliaChain,
-    EthereumPolygonChain,
-} from './chain/etherum';
+import { EthereumPrivateKey, EthereumAccount, EthereumSepoliaChain } from './chain/etherum';
 import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
-import { IPrivateKey, IChain } from '../utils/chain/types';
+import { IPrivateKey, IChain, ChainType } from '../utils/chain/types';
 import Debug from 'debug';
-import { activeAntelopeChainEntry, AntelopePrivateKey } from './chain/antelope';
+import { chainRegistry } from './assetDetails';
 
 const debug = Debug('tonomy-id:utils:keys');
 
@@ -114,17 +108,19 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     // Generate the seed data from the password and salt (computationally expensive)
     const seedData = await generateSeedFromPassword(passphrase, salt);
 
-    // Use the generated seed to derive private keys for different chains (computationally inexpensive)
-    const ethereumKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumMainnetChain);
-    const sepoliaKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumSepoliaChain);
-    const polygonKey = await generatePrivateKeyFromSeed(seedData.seed, EthereumPolygonChain);
-    const pangeaKey = activeAntelopeChainEntry.chain.createKeyFromSeed(seedData.seed);
+    for (const entry of chainRegistry) {
+        let key = await keyStorage.findByName(entry.keyName, entry.chain);
 
-    // Save the keys and seed to the storage
-    await keyStorage.emplaceKey('ethereum', ethereumKey);
-    await keyStorage.emplaceKey('ethereumTestnetSepolia', sepoliaKey);
-    await keyStorage.emplaceKey('ethereumPolygon', polygonKey);
-    await keyStorage.emplaceKey(activeAntelopeChainEntry.keyName, pangeaKey);
+        if (!key) {
+            if (entry.chain.getChainType() === ChainType.ETHEREUM) {
+                key = await generatePrivateKeyFromSeed(seedData.seed, entry.chain);
+            } else {
+                key = entry.chain.createKeyFromSeed(seedData.seed);
+            }
+
+            await keyStorage.emplaceKey(entry.keyName, key);
+        }
+    }
 
     await appStorage.setCryptoSeed(seedData.seed);
 }

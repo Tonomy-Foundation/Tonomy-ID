@@ -13,19 +13,15 @@ import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../util
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
-import { keyStorage } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
-import {
-    EthereumMainnetChain,
-    EthereumPolygonChain,
-    EthereumSepoliaChain,
-    WalletConnectSession,
-} from '../utils/chain/etherum';
+import { WalletConnectSession } from '../utils/chain/etherum';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import { SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { addNativeTokenToAssetStorage } from './LoginPassphraseContainer';
+import { getKeyFromChain } from '../utils/assetDetails';
+import { findEthChainEntryByChainId } from '../services/CommunicationModule';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
@@ -138,19 +134,14 @@ export default function CreateEthereumKeyContainer({
             } else if (requestType === 'transactionRequest') {
                 if (transaction) {
                     const chainId = transaction?.getChain().getChainId();
-                    let key;
+                    const chainEntry = findEthChainEntryByChainId(chainId);
 
-                    if (chainId === '11155111') {
-                        key = await keyStorage.findByName('ethereumTestnetSepolia', EthereumSepoliaChain);
-                    } else if (chainId === '1') {
-                        key = await keyStorage.findByName('ethereum', EthereumMainnetChain);
-                    } else if (chainId === '137') {
-                        key = await keyStorage.findByName('ethereumPolygon', EthereumPolygonChain);
-                    } else throw new Error('Unsupported chain');
+                    if (!chainEntry) throw new Error('Chain not found');
+                    const privateKey = await getKeyFromChain(chainEntry);
 
                     navigation.navigate('SignTransaction', {
                         transaction,
-                        privateKey: key,
+                        privateKey,
                         request: route.params.payload as Web3WalletTypes.SessionRequest,
                         session: walletsession,
                         origin: verifyContext?.verified?.origin,
