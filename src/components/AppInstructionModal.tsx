@@ -32,7 +32,7 @@ const AppInstructionModal = () => {
         {
             title: 'Scan QR codes',
             tabIndex: 2,
-            text: ['Login to web4 (Pangea) apps', 'Crypto transactions'],
+            text: ['Login to web4 (Pangea) apps', 'Crypto transactions', ''],
         },
         {
             title: 'Explore pangea',

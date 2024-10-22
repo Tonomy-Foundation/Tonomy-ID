@@ -60,7 +60,10 @@ export default function ExploreContainer() {
                     <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
                     <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/watch?v=d5b2gmJWKp4')}>
-                        <Image source={require('../assets/images/explore/explore-video.png')} />
+                        <Image
+                            style={{ width: '100%', borderRadius: 8 }}
+                            source={require('../assets/images/explore/explore-video.png')}
+                        />
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.subTitle}>Pangea links</Text>
