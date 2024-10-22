@@ -4,7 +4,7 @@ import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
+import { AccountDetails, getAssetDetails } from '../utils/tokenRegistry';
 import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
 import TSpinner from '../components/atoms/TSpinner';

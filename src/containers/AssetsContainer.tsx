@@ -13,7 +13,7 @@ import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { tokenRegistry } from '../utils/assetDetails';
+import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
 
@@ -33,29 +33,29 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     >([]);
     const { updateBalance } = useWalletStore();
 
-    const chains = useMemo(() => tokenRegistry, []);
+    const tokens = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
             if (!accountsInitialized) await initializeWalletAccount();
             await connect();
 
-            for (const chainEntry of chains) {
-                const asset = await assetStorage.findAssetByName(chainEntry.token);
+            for (const { chain, token } of tokens) {
+                const asset = await assetStorage.findAssetByName(token);
 
-                debug(`fetchCryptoAssets() fetching asset for ${chainEntry.chain.getName()}`);
+                debug(`fetchCryptoAssets() fetching asset for ${chain.getName()}`);
                 let account;
 
                 if (asset) {
                     account = {
-                        network: capitalizeFirstLetter(chainEntry.chain.getName()),
+                        network: capitalizeFirstLetter(chain.getName()),
                         accountName: asset.accountName,
                         balance: asset.balance,
                         usdBalance: asset.usdBalance,
                     };
                 } else {
                     account = {
-                        network: capitalizeFirstLetter(chainEntry.chain.getName()),
+                        network: capitalizeFirstLetter(chain.getName()),
                         accountName: null,
                         balance: '0',
                         usdBalance: 0,
@@ -81,7 +81,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         } catch (error) {
             debug('fetchCryptoAssets() error', error);
         }
-    }, [accountsInitialized, initializeWalletAccount, chains]);
+    }, [accountsInitialized, initializeWalletAccount, tokens]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -186,7 +186,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                         </View>
                         {!isAssetLoading ? (
                             <View style={styles.scrollContent}>
-                                {chains.map((chainObj, index) => {
+                                {tokens.map((chainObj, index) => {
                                     const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
                                     const accountData = findAccountByChain(chainName);

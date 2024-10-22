@@ -10,7 +10,7 @@ import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
-import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
+import { AccountDetails, getAssetDetails } from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
 import { debounce } from '../utils/network';

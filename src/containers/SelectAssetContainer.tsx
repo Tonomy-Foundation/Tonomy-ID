@@ -6,7 +6,7 @@ import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup
 import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
-import { ChainRegistryEntry, tokenRegistry } from '../utils/assetDetails';
+import { TokenRegistryEntry, tokenRegistry } from '../utils/tokenRegistry';
 import { IPrivateKey } from '../utils/chain/types';
 import useAppSettings from '../hooks/useAppSettings';
 
@@ -25,28 +25,28 @@ const SelectAssetContainer = ({
 
     const { developerMode } = useAppSettings();
 
-    const chains = useMemo(() => tokenRegistry, []);
+    const tokens = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
             await connect();
 
-            for (const chainObj of chains) {
-                const asset = await assetStorage.findAssetByName(chainObj.token);
+            for (const { chain, token } of tokens) {
+                const asset = await assetStorage.findAssetByName(token);
 
-                debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
+                debug(`fetchCryptoAssets() fetching asset for ${chain.getName()}`);
                 let account;
 
                 if (asset) {
                     account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        network: capitalizeFirstLetter(chain.getName()),
                         accountName: asset.accountName,
                         balance: asset.balance,
                         usdBalance: asset.usdBalance,
                     };
                 } else {
                     account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        network: capitalizeFirstLetter(chain.getName()),
                         accountName: null,
                         balance: '0',
                         usdBalance: 0,
@@ -72,7 +72,7 @@ const SelectAssetContainer = ({
         } catch (error) {
             debug('fetchCryptoAssets() error', error);
         }
-    }, [chains]);
+    }, [tokens]);
 
     useEffect(() => {
         fetchCryptoAssets();
@@ -87,7 +87,7 @@ const SelectAssetContainer = ({
         return { account, balance, usdBalance };
     };
 
-    const handleOnPress = async (chainObj: ChainRegistryEntry) => {
+    const handleOnPress = async (chainObj: TokenRegistryEntry) => {
         if (type === 'receive') {
             navigation.navigate('Receive', {
                 screenTitle: `Receive ${chainObj.token.getSymbol()}`,
@@ -110,7 +110,7 @@ const SelectAssetContainer = ({
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.screenTitle}>select a currency to {type}</Text>
                     <View style={{ marginTop: 20, flexDirection: 'column', gap: 14 }}>
-                        {chains.map((chainObj, index) => {
+                        {tokens.map((chainObj, index) => {
                             const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
                             const accountData = findAccountByChain(chainName);

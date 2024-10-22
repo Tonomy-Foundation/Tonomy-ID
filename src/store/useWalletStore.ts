@@ -9,7 +9,7 @@ import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import { tokenRegistry, ChainRegistryEntry, getAccountFromChain, getChainEntryByName } from '../utils/assetDetails';
+import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getChainEntryByName } from '../utils/tokenRegistry';
 import useUserStore from './userStore';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
@@ -104,11 +104,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
             await connect();
 
             const accountPromises = tokenRegistry.map(
-                async (chainEntry: ChainRegistryEntry): Promise<IAccount | null> => {
+                async (tokenEntry: TokenRegistryEntry): Promise<IAccount | null> => {
                     try {
                         const { user } = useUserStore();
 
-                        return getAccountFromChain(chainEntry, user);
+                        return getAccountFromChain(tokenEntry, user);
                     } catch (error) {
                         debug(`fetchAccountData() Error fetching account data`, error);
                         return null;

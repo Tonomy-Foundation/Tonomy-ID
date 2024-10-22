@@ -30,11 +30,11 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
-import { tokenRegistry, getKeyFromChain } from '../utils/assetDetails';
+import { tokenRegistry, getKeyFromChain } from '../utils/tokenRegistry';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
-export const findEthChainEntryByChainId = (chainId: string) => {
+export const findEthereumTokenByChainId = (chainId: string) => {
     return tokenRegistry.find(
         ({ chain }) => chain.getChainType() === ChainType.ETHEREUM && chain.getChainId() === chainId
     );
@@ -230,7 +230,7 @@ export default function CommunicationModule() {
                     const chainIds = activeNamespaces.eip155.chains?.map(eip155StringToChainId) || [];
 
                     // Step 1: find any of the chainIds that is not an Ethereum chain in the registry
-                    const unsupportedChain = chainIds.find((chainId) => !findEthChainEntryByChainId(chainId));
+                    const unsupportedChain = chainIds.find((chainId) => !findEthereumTokenByChainId(chainId));
 
                     if (unsupportedChain) {
                         errorStore.setError({
@@ -283,7 +283,7 @@ export default function CommunicationModule() {
 
                     // Step 3: Check for any missing keys
                     for (const chainId of chainIds) {
-                        const chainEntry = findEthChainEntryByChainId(chainId);
+                        const chainEntry = findEthereumTokenByChainId(chainId);
 
                         if (chainEntry) {
                             const key = await keyStorage.findByName(chainEntry.keyName, chainEntry.chain);
@@ -325,7 +325,7 @@ export default function CommunicationModule() {
                         case 'eth_sendTransaction': {
                             const transactionData = request.params[0];
 
-                            const chainEntry = findEthChainEntryByChainId(eip155StringToChainId(chainId));
+                            const chainEntry = findEthereumTokenByChainId(eip155StringToChainId(chainId));
 
                             if (!chainEntry) throw new Error('Chain not found');
                             const ethereumPrivateKey = (await getKeyFromChain(chainEntry)) as EthereumPrivateKey;

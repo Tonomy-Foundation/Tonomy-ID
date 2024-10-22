@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import CopyIcon from '../assets/icons/CopyIcon';
 import { ShareAndroidSolid } from 'iconoir-react-native';
-import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
+import { AccountDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 
 export type ReceiveAssetProps = {

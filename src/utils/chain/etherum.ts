@@ -35,7 +35,7 @@ import { getPriceCoinGecko } from './common';
 import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
-import { ChainRegistryEntry } from '../assetDetails';
+import { TokenRegistryEntry } from '../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 

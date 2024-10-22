@@ -20,8 +20,8 @@ import { SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { addNativeTokenToAssetStorage } from './LoginPassphraseContainer';
-import { getKeyFromChain } from '../utils/assetDetails';
-import { findEthChainEntryByChainId } from '../services/CommunicationModule';
+import { getKeyFromChain } from '../utils/tokenRegistry';
+import { findEthereumTokenByChainId } from '../services/CommunicationModule';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
@@ -134,7 +134,7 @@ export default function CreateEthereumKeyContainer({
             } else if (requestType === 'transactionRequest') {
                 if (transaction) {
                     const chainId = transaction?.getChain().getChainId();
-                    const chainEntry = findEthChainEntryByChainId(chainId);
+                    const chainEntry = findEthereumTokenByChainId(chainId);
 
                     if (!chainEntry) throw new Error('Chain not found');
                     const privateKey = await getKeyFromChain(chainEntry);

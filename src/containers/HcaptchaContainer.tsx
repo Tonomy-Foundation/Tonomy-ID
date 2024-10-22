@@ -16,7 +16,7 @@ import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
-import { activeAntelopeChainEntry } from '../utils/assetDetails';
+import { pangeaTokenEntry } from '../utils/tokenRegistry';
 import { addNativeTokenToAssetStorage } from './LoginPassphraseContainer';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
@@ -104,7 +104,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             await addNativeTokenToAssetStorage(user);
 
-            const url = activeAntelopeChainEntry.chain.getExplorerUrl({ accountName });
+            const url = pangeaTokenEntry.chain.getExplorerUrl({ accountName });
 
             setAccountUrl(url);
         } catch (e) {

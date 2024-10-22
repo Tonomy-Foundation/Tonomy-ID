@@ -15,7 +15,7 @@ import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { AntelopeAccount, AntelopePrivateKey } from '../utils/chain/antelope';
-import { activeAntelopeChainEntry } from '../utils/assetDetails';
+import { pangeaTokenEntry } from '../utils/tokenRegistry';
 import { Asset } from '../utils/chain/types';
 import { assetStorage, keyStorage } from '../utils/StorageManager/setup';
 import Debug from 'debug';
@@ -26,12 +26,12 @@ const tonomyContract = TonomyContract.Instance;
 
 export async function addNativeTokenToAssetStorage(user: IUserBase) {
     const accountName = await user.getAccountName();
-    const chain = activeAntelopeChainEntry.chain;
-    const privateKey = await keyStorage.findByName(activeAntelopeChainEntry.keyName, chain);
+    const chain = pangeaTokenEntry.chain;
+    const privateKey = await keyStorage.findByName(pangeaTokenEntry.keyName, chain);
 
     if (!privateKey) throw new Error(`Key not found for ${chain.getName()}`);
 
-    const asset = new Asset(activeAntelopeChainEntry.token, BigInt(0));
+    const asset = new Asset(pangeaTokenEntry.token, BigInt(0));
     const account = AntelopeAccount.fromAccountAndPrivateKey(chain, accountName, privateKey as AntelopePrivateKey);
 
     await assetStorage.createAsset(asset, account);

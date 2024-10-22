@@ -6,7 +6,7 @@ import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain, ChainType } from '../utils/chain/types';
 import Debug from 'debug';
-import { tokenRegistry } from './assetDetails';
+import { tokenRegistry } from './tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:keys');
 
@@ -108,17 +108,17 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     // Generate the seed data from the password and salt (computationally expensive)
     const seedData = await generateSeedFromPassword(passphrase, salt);
 
-    for (const entry of tokenRegistry) {
-        let key = await keyStorage.findByName(entry.keyName, entry.chain);
+    for (const { chain, keyName } of tokenRegistry) {
+        let key = await keyStorage.findByName(keyName, chain);
 
         if (!key) {
-            if (entry.chain.getChainType() === ChainType.ETHEREUM) {
-                key = await generatePrivateKeyFromSeed(seedData.seed, entry.chain);
+            if (chain.getChainType() === ChainType.ETHEREUM) {
+                key = await generatePrivateKeyFromSeed(seedData.seed, chain);
             } else {
-                key = entry.chain.createKeyFromSeed(seedData.seed);
+                key = chain.createKeyFromSeed(seedData.seed);
             }
 
-            await keyStorage.emplaceKey(entry.keyName, key);
+            await keyStorage.emplaceKey(keyName, key);
         }
     }
 
