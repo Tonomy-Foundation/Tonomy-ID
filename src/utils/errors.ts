@@ -1,10 +1,12 @@
 export class ApplicationError extends Error {
     code?: ApplicationErrors;
 
-    constructor(message: string) {
+    constructor(message: string, code?: ApplicationErrors) {
         super(message);
         // Ensure the name of this error is the same as the class name
         this.name = this.constructor.name;
+        this.code = code;
+
         // This clips the constructor invocation from the stack trace.
         // It's not absolutely essential, but it does make the stack trace a little nicer.
         //  @see Node.js reference (bottom)
@@ -16,7 +18,7 @@ export function throwError(message: string, code?: ApplicationErrors) {
     let error = new ApplicationError(message);
 
     if (code) {
-        error = new ApplicationError(code + ': ' + message);
+        error = new ApplicationError(message, code);
     }
 
     throw error;
@@ -30,6 +32,7 @@ enum ApplicationErrors {
     InvalidJwt = 'InvalidJwt',
     MissingParams = 'MissingParams',
     InvalidLinkAuthRequest = 'InvalidLinkAuthRequest',
+    NotEnoughCoins = 'NotEnoughCoins',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

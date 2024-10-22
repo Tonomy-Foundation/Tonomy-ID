@@ -37,6 +37,7 @@ const availableAppsData = [
         description:
             'Manage your LEOS tokens as easily as any neo-banking application. Full control without compromise.',
         isAvailable: false,
+        url: 'pangea.web4.world/technology/pangea-bankless',
     },
     {
         id: 5,
@@ -44,6 +45,7 @@ const availableAppsData = [
         title: 'Pangea DAO',
         description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
         isAvailable: false,
+        url: 'pangea.web4.world/technology/pangea-dao',
     },
     {
         id: 6,
@@ -51,6 +53,7 @@ const availableAppsData = [
         title: 'Pangea Gov+',
         description: 'Participate in the liquid democracy governance of the Pangea ecosystem.',
         isAvailable: false,
+        url: 'pangea.web4.world/technology/pangea-gov',
     },
     {
         id: 7,
@@ -59,6 +62,7 @@ const availableAppsData = [
         description:
             'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
         isAvailable: false,
+        url: 'pangea.web4.world/technology/pangea-build',
     },
 ];
 
@@ -114,7 +118,7 @@ export default function AppsContainer() {
                                 </View>
                                 <Text style={styles.pangeaAppHead}>{app.title}</Text>
                                 <Text style={styles.pangeaAppNotes}>{app.description}</Text>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => redirectToApp(app.url)}>
                                     <Text style={styles.appButton}>Learn more</Text>
                                 </TouchableOpacity>
                             </View>

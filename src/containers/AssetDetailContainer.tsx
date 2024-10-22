@@ -46,6 +46,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
         };
 
         fetchAssetDetails();
+
+        const interval = setInterval(fetchAssetDetails, 10000);
+
+        return () => clearInterval(interval);
     }, [props.network]);
 
     if (loading) {
@@ -57,6 +61,10 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
 
         if (asset.symbol === 'LEOS') {
             explorerUrl = `${settings.config.blockExplorerUrl}/account/${accountName}`;
+
+            if (settings.env === 'staging') {
+                explorerUrl += `?nodeUrl=${settings.config.blockchainUrl}`;
+            }
         } else {
             const explorerOptions: ExplorerOptions = {
                 accountName: asset.account,

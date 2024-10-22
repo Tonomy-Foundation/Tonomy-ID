@@ -133,7 +133,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                     <View style={styles.mainMenu}>
                         <TouchableOpacity
                             style={styles.menuItemContainer}
-                            onPress={() => props.navigation.navigate('Assets')}
+                            onPress={() => props.navigation.navigate('Citizenship')}
                         >
                             <View style={styles.menuItem}>
                                 <View style={styles.menuItemIconContainer}>

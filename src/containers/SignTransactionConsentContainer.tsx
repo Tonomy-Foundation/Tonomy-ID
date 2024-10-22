@@ -22,6 +22,7 @@ import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
+import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -68,8 +69,8 @@ export default function SignTransactionConsentContainer({
             if (type === TransactionType.TRANSFER) {
                 const to = chain.formatShortAccountName((await operation.getTo()).getName());
                 const value = await operation.getValue();
-
-                const amount = value.toString();
+                const precision = chain.getNativeToken().getPrecision();
+                const amount = value.toString(precision <= 4 ? 4 : 6).replace(/\.?0+$/, '');
 
                 const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 
@@ -216,12 +217,21 @@ export default function SignTransactionConsentContainer({
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
-            errorStore.setError({
-                title: 'Signing Error',
-                error,
-                expected: false,
-            });
-            navigation.navigate('Assets');
+
+            if (error instanceof ApplicationError && error.code === ApplicationErrors.NotEnoughCoins) {
+                errorStore.setError({
+                    title: 'Insufficient Balance',
+                    error: new Error('You do not have enough coins to complete this transaction.'),
+                    expected: true,
+                });
+            } else {
+                errorStore.setError({
+                    title: 'Signing Error',
+                    error,
+                    expected: false,
+                });
+                navigation.navigate('Assets');
+            }
 
             if (session) {
                 await session.rejectTransactionRequest(request);

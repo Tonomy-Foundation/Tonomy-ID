@@ -5,7 +5,6 @@ import useUserStore from '../store/userStore';
 import TModal from '../components/TModal';
 import theme from '../utils/theme';
 import { TButtonText } from '../components/atoms/TButton';
-import { appStorage, keyStorage } from '../utils/StorageManager/setup';
 import { Switch } from 'react-native-paper';
 import { BinMinusIn, Code, LogOut, NavArrowRight } from 'iconoir-react-native';
 import useAppSettings from '../hooks/useAppSettings';
@@ -29,17 +28,7 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
             <View>
                 <Text style={{ color: theme.colors.grey9 }}>Tools</Text>
                 <View style={styles.mainMenu}>
-                    <TouchableOpacity
-                        style={styles.menuItemContainer}
-                        onPress={async () => {
-                            await logout('Logout in settings menu');
-
-                            if (keyStorage && appStorage) {
-                                await keyStorage.deleteAll();
-                                await appStorage.deleteAll();
-                            }
-                        }}
-                    >
+                    <View style={styles.menuItemContainer}>
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
                                 <Code height={20} width={20} color={theme.colors.grey9} style={styles.menuItemIcon} />
@@ -52,12 +41,12 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                             </View>
                         </View>
                         <Switch
-                            style={{ flexShrink: 0 }}
+                            style={{ flexShrink: 0, marginBottom: 15 }}
                             value={developerMode}
                             onValueChange={onToggleSwitch}
                             color={theme.colors.success}
                         />
-                    </TouchableOpacity>
+                    </View>
                 </View>
             </View>
             <View style={{ marginTop: 50 }}>
@@ -67,11 +56,6 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                         style={styles.menuItemContainer}
                         onPress={async () => {
                             await logout('Logout in settings menu');
-
-                            if (keyStorage && appStorage) {
-                                await keyStorage.deleteAll();
-                                await appStorage.deleteAll();
-                            }
                         }}
                     >
                         <View style={styles.menuItem}>
