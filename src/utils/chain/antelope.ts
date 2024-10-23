@@ -43,6 +43,7 @@ import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
+import { ApplicationErrors, throwError } from '../errors';
 
 const vestingContract = VestingContract.Instance;
 
@@ -191,14 +192,21 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
-        const transaction = await this.signTransaction(data);
-
         try {
+            const transaction = await this.signTransaction(data);
+
             const receipt = await this.chain.getApiClient().v1.chain.push_transaction(transaction);
 
             return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
-            console.error('sendTransaction()', error, JSON.stringify(error, null, 2));
+            if (
+                error?.message?.includes(
+                    'Provided keys, permissions, and delays do not satisfy declared authorizations at'
+                )
+            ) {
+                throwError('Incorrect Transaction Authorization', ApplicationErrors.IncorrectTransactionAuthorization);
+            }
+
             throw error;
         }
     }

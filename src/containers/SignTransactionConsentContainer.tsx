@@ -22,6 +22,7 @@ import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
+import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -216,11 +217,26 @@ export default function SignTransactionConsentContainer({
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
-            errorStore.setError({
-                title: 'Signing Error',
-                error,
-                expected: false,
-            });
+
+            if (
+                error instanceof ApplicationError &&
+                error?.code === ApplicationErrors.IncorrectTransactionAuthorization
+            ) {
+                errorStore.setError({
+                    title: 'Authorization Error',
+                    error: new Error(
+                        'This transaction expected a different account or key to sign it. Please try login with another account.'
+                    ),
+                    expected: true,
+                });
+            } else {
+                errorStore.setError({
+                    title: 'Signing Error',
+                    error,
+                    expected: false,
+                });
+            }
+
             navigation.navigate('Assets');
 
             if (session) {
