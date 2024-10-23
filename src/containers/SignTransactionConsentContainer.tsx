@@ -234,8 +234,8 @@ export default function SignTransactionConsentContainer({
                     title: 'Authorization Error',
                     error: new Error(
                         'This transaction expected a different account or key to sign it. Please try login with another account.'
+                    ),
                     expected: true,
-
                 });
             } else {
                 errorStore.setError({
