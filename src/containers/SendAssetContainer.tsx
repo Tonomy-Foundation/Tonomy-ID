@@ -23,7 +23,7 @@ export type SendAssetProps = {
 };
 
 const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) => {
-    const [depositAccount, setScanQR] = useState<string>();
+    const [depositAccount, setDepositAccount] = useState<string>();
     const [balance, setBalance] = useState<string>();
     const [usdAmount, setUsdAmount] = useState<string>();
     const [asset, setAsset] = useState<AccountDetails | null>(null);
@@ -55,7 +55,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
         const content = await Clipboard.getString();
 
         if (chain.isValidAccountName(content)) {
-            setScanQR(content);
+            setDepositAccount(content);
         } else {
             errorStore.setError({
                 error: new Error('The account you entered is invalid!'),
@@ -75,6 +75,8 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     const onSendTransaction = async () => {
         setSubmitting(true);
 
+        if (!depositAccount) throw new Error('Deposit account is required');
+
         try {
             if (Number(asset.balance) < Number(balance) || Number(asset.balance) <= 0) {
                 errorStore.setError({
@@ -82,6 +84,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     expected: true,
                     title: 'Insufficient balance',
                 });
+                setSubmitting(false);
                 return;
             }
 
@@ -89,7 +92,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
 
             if (chain.getChainType() === ChainType.ETHEREUM) {
                 const transactionData = {
-                    to: depositAccount,
+                    to: depositAccount.toLowerCase(),
                     from: asset.account,
                     value: ethers.parseEther(balance ? balance.toString() : '0.00'),
                 };
@@ -111,7 +114,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     ],
                     data: {
                         from: asset.account,
-                        to: depositAccount,
+                        to: depositAccount.toLowerCase(),
                         quantity: Number(balance).toFixed(asset.token.getPrecision()) + ' ' + asset.symbol,
                         memo: '',
                     },
@@ -157,7 +160,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
 
     return (
         <View style={styles.container}>
-            <ReceiverAccountScanner onScanQR={setScanQR} chain={chain} refMessage={refMessage} />
+            <ReceiverAccountScanner onScanQR={setDepositAccount} chain={chain} refMessage={refMessage} />
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.flexCol}>
@@ -167,11 +170,11 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                                 style={styles.input}
                                 placeholder="Enter or scan the account"
                                 placeholderTextColor={theme.colors.tabGray}
-                                onChangeText={setScanQR}
+                                onChangeText={setDepositAccount}
                                 onEndEditing={(e) => {
                                     const account = e.nativeEvent.text;
 
-                                    if (!chain.isValidAccountName(account)) {
+                                    if (!chain.isValidAccountName(account.toLowerCase())) {
                                         errorStore.setError({
                                             error: new Error('The account you entered is invalid'),
                                             title: 'Invalid account',

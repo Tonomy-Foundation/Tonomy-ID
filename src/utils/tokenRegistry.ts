@@ -18,10 +18,10 @@ import {
     LEOSStagingToken,
     LEOSTestnetToken,
     LEOSToken,
-    PangeaLocalChain,
     PangeaMainnetChain,
-    PangeaStagingChain,
     PangeaTestnetChain,
+    TonomyStagingChain,
+    TonomyLocalChain,
 } from './chain/antelope';
 import { Asset, ChainType, IAccount, IChain, IPrivateKey, IToken } from './chain/types';
 import { appStorage, assetStorage, keyStorage } from './StorageManager/setup';
@@ -66,7 +66,7 @@ async function addLocalChain() {
     const chainId = (await (await EosioUtil.getApi()).v1.chain.get_info()).chain_id;
 
     // @ts-expect-error antelopeChainId is protected
-    PangeaLocalChain.antelopeChainId = chainId.toString();
+    TonomyLocalChain.antelopeChainId = chainId.toString();
     ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 }
 
@@ -85,14 +85,14 @@ if (settings.env === 'production') {
 } else if (settings.env === 'staging' || settings.env === 'development') {
     pangeaTokenEntry = {
         token: LEOSStagingToken,
-        chain: PangeaStagingChain,
+        chain: TonomyStagingChain,
         keyName: ChainKeyName.pangeaStagingLeos,
     };
     ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else {
     pangeaTokenEntry = {
         token: LEOSLocalToken,
-        chain: PangeaLocalChain,
+        chain: TonomyLocalChain,
         keyName: ChainKeyName.pangeaLocalLeos,
     };
     addLocalChain();

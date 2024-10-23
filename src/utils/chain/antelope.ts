@@ -293,7 +293,7 @@ export class AntelopeChain extends AbstractChain {
         return url;
     }
     isValidAccountName(account: string): boolean {
-        const regex = /^[a-z1-5.]{12}$/;
+        const regex = /^[a-z1-5.]{1,12}$/;
 
         return regex.test(account);
     }
@@ -423,7 +423,7 @@ export const PangeaTestnetChain = new AntelopeChain(
     true
 );
 
-export const PangeaStagingChain = new AntelopeChain(
+export const TonomyStagingChain = new AntelopeChain(
     'https://blockchain-api-staging.tonomy.foundation/',
     'Pangea Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
@@ -432,7 +432,7 @@ export const PangeaStagingChain = new AntelopeChain(
     true
 );
 
-export const PangeaLocalChain = new AntelopeChain(
+export const TonomyLocalChain = new AntelopeChain(
     'http://localhost:8888',
     'Pangea Localhost',
     'unknown chain id at this time',
@@ -453,8 +453,8 @@ export const LEOSToken = new PangeaVestedToken(
 
 export const LEOSTestnetToken = new PangeaVestedToken(
     PangeaTestnetChain,
-    'LEOS',
     'TestnetLEOS',
+    'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-testnet',
@@ -462,9 +462,9 @@ export const LEOSTestnetToken = new PangeaVestedToken(
 );
 
 export const LEOSStagingToken = new PangeaVestedToken(
-    PangeaStagingChain,
-    'LEOS',
+    TonomyStagingChain,
     'StagingLEOS',
+    'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-staging',
@@ -472,9 +472,9 @@ export const LEOSStagingToken = new PangeaVestedToken(
 );
 
 export const LEOSLocalToken = new PangeaVestedToken(
-    PangeaLocalChain,
-    'LEOS',
+    TonomyLocalChain,
     'LocalLEOS',
+    'LEOS',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-local',
@@ -502,8 +502,8 @@ export const EOSJungleToken = new AntelopeToken(
 EOSJungleChain.setNativeToken(EOSJungleToken);
 PangeaMainnetChain.setNativeToken(LEOSToken);
 PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
-PangeaStagingChain.setNativeToken(LEOSStagingToken);
-PangeaLocalChain.setNativeToken(LEOSLocalToken);
+TonomyStagingChain.setNativeToken(LEOSStagingToken);
+TonomyLocalChain.setNativeToken(LEOSLocalToken);
 
 export const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
 
@@ -698,8 +698,6 @@ export class AntelopeTransaction implements ITransaction {
 
 export class AntelopeAccount extends AbstractAccount implements IAccount {
     private privateKey?: AntelopePrivateKey;
-    // @ts-expect-error chain overridden
-    protected chain: AntelopeChain;
 
     private static getDidChainName(chain: AntelopeChain): string | null {
         switch (chain.getName()) {
@@ -760,7 +758,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
 
     async isContract(): Promise<boolean> {
         try {
-            const api = this.chain.getApiOrigin();
+            const api = (this.chain as AntelopeChain).getApiOrigin();
             const res = await fetch(`${api}/v1/chain/get_code`, {
                 method: 'POST',
                 headers: {
