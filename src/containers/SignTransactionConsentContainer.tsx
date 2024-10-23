@@ -224,6 +224,19 @@ export default function SignTransactionConsentContainer({
                     error: new Error('You do not have enough coins to complete this transaction.'),
                     expected: true,
                 });
+            }
+
+            if (
+                error instanceof ApplicationError &&
+                error?.code === ApplicationErrors.IncorrectTransactionAuthorization
+            ) {
+                errorStore.setError({
+                    title: 'Authorization Error',
+                    error: new Error(
+                        'This transaction expected a different account or key to sign it. Please try login with another account.'
+                    ),
+                    expected: true,
+                });
             } else {
                 errorStore.setError({
                     title: 'Signing Error',

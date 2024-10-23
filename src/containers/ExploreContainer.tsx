@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
         ...commonStyles.primaryFontFamily,
     },
     worldFristAutonomousImage: {
-        width: 344,
-        height: 197,
+        width: '100%',
+        height: 180,
         borderRadius: 8,
     },
     learnMoreButton: {

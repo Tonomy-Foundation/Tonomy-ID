@@ -30,9 +30,9 @@ const AppInstructionModal = () => {
         },
         { title: 'Assets', text: ['Send and receive LEOS, ETH and other cryptocurrencies'], tabIndex: 1 },
         {
-            title: 'Scan QR codes',
+            title: 'Scan QR codes for login and sign crypto transactions',
             tabIndex: 2,
-            text: ['Login to web4 (Pangea) apps', 'Crypto transactions'],
+            text: ['Pangea', 'WalletConnect', 'Anchor (Antelope)'],
         },
         {
             title: 'Explore pangea',
