@@ -17,6 +17,7 @@ export function throwError(message: string, code?: ApplicationErrors) {
 
     if (code) {
         error = new ApplicationError(code + ': ' + message);
+        error.code = code;
     }
 
     throw error;
@@ -30,6 +31,7 @@ enum ApplicationErrors {
     InvalidJwt = 'InvalidJwt',
     MissingParams = 'MissingParams',
     InvalidLinkAuthRequest = 'InvalidLinkAuthRequest',
+    IncorrectTransactionAuthorization = 'IncorrectTransactionAuthorization',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
