@@ -8,7 +8,6 @@ import Debug from 'debug';
 const debug = Debug('tonomy-id:components:ErrorHandlerProvider');
 
 export default function ErrorHandlerProvider() {
-    debug('ErrorHandlerProvider');
     const [showModal, setShowModal] = useState(false);
 
     const { onClose, unSetError } = useErrorStore();
