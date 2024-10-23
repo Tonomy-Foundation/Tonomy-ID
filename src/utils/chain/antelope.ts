@@ -397,7 +397,7 @@ class PangeaVestedToken extends AntelopeToken {
 
         const vestedBalance = await vestingContract.getBalance(lookupAccount.getName());
 
-        return new Asset(this, BigInt(vestedBalance));
+        return new Asset(this, BigInt(vestedBalance * 10 ** this.precision));
     }
 
     // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
