@@ -325,5 +325,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         position: 'relative',
         overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
