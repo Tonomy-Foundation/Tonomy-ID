@@ -301,7 +301,7 @@ export default function CommunicationModule() {
                     }
                 }
             } catch (error) {
-                console.error('session_proposal', error);
+                console.error('handleSessionProposal()', error);
             }
         };
 

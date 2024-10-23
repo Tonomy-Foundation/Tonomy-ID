@@ -43,6 +43,7 @@ import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
+import { ApplicationErrors, throwError } from '../errors';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -180,14 +181,16 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
-        const transaction = await this.signTransaction(data);
-
         try {
+            const transaction = await this.signTransaction(data);
+
             const receipt = await this.chain.getApiClient().v1.chain.push_transaction(transaction);
 
             return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
-            console.error('sendTransaction()', JSON.stringify(error, null, 2));
+            if (error?.message?.includes('Provided keys, permissions, and delays do not satisfy declared authorizations at')) {
+                throwError('Incorrect Transaction Authorization', ApplicationErrors.IncorrectTransactionAuthorization);
+            }
             throw error;
         }
     }

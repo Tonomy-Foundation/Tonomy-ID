@@ -1,5 +1,7 @@
 import Debug from 'debug';
 
+const originalConsoleError = console.error;
+
 // Use the output same stream as console.debug (stdout) instead of default (stderr)
 Debug.log = console.debug.bind(console);
 
@@ -13,3 +15,6 @@ console.log = (...args) => {
         console.warn('Use debug() instead of console.log()', ...args);
     }
 };
+
+// Ensure console.error retains its default behavior
+console.error = originalConsoleError;
