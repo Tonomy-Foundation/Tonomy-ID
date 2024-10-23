@@ -21,10 +21,7 @@ import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
-<<<<<<< HEAD
 import TSpinner from '../components/atoms/TSpinner';
-=======
->>>>>>> 14043f663523ac61b386170c23f70283580c747f
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
@@ -228,6 +225,7 @@ export default function SignTransactionConsentContainer({
                     expected: true,
                 });
             }
+
             if (
                 error instanceof ApplicationError &&
                 error?.code === ApplicationErrors.IncorrectTransactionAuthorization
@@ -235,11 +233,10 @@ export default function SignTransactionConsentContainer({
                 errorStore.setError({
                     title: 'Authorization Error',
                     error: new Error(
-                        'This transaction expected a different account or key to sign it. Please try login with another account.'),
-                        expected: true,
+                        'This transaction expected a different account or key to sign it. Please try login with another account.'
+                    expected: true,
 
                 });
-                    
             } else {
                 errorStore.setError({
                     title: 'Signing Error',
