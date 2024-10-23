@@ -407,4 +407,20 @@ export interface ISession {
     navigateToLoginScreen(request: ILoginRequest): Promise<void>;
     navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
 }
-//make abstract class and make handle ftns abstract
+
+export abstract class AbstractSession implements ISession {
+    chain: IChain;
+    constructor(chain: IChain) {
+        this.chain = chain;
+    }
+    async initialize(): Promise<void> {
+        // Implementation goes here
+    }
+    abstract onQrScan(data: string): Promise<void>;
+    abstract onLink(data: string): Promise<void>;
+    abstract onEvent(request: unknown): Promise<void>;
+    abstract handleLoginRequest(request: unknown): Promise<void>;
+    abstract handleTransactionRequest(request: unknown): Promise<void>;
+    abstract navigateToLoginScreen(request: ILoginRequest): Promise<void>;
+    abstract navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
+}
