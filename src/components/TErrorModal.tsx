@@ -30,8 +30,7 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     if (props.expected === false) {
-        // console.error('TErrorModal() unexpected error', props.error);
-        debug('Unexpected error', props.error, JSON.stringify(props.error, null, 2));
+        console.error('TErrorModal() unexpected error', props.error, JSON.stringify(props.error, null, 2));
         // Additional error handling or logging could be placed here
     }
 
