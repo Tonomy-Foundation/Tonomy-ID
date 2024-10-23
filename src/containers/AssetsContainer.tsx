@@ -16,6 +16,7 @@ import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
+import useUserStore from '../store/userStore';
 
 const debug = Debug('tonomy-id:containers:AssetsContainer');
 
@@ -32,56 +33,63 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         { network: string; accountName: string; balance: string; usdBalance: number }[]
     >([]);
     const { updateBalance } = useWalletStore();
+    const { user } = useUserStore();
 
     const tokens = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            if (!accountsInitialized) await initializeWalletAccount();
+            if (!accountsInitialized) await initializeWalletAccount(user);
             await connect();
 
             for (const { chain, token } of tokens) {
-                const asset = await assetStorage.findAssetByName(token);
+                try {
+                    const asset = await assetStorage.findAssetByName(token);
 
-                debug(`fetchCryptoAssets() fetching asset for ${chain.getName()}`);
-                let account;
+                    debug(
+                        `fetchCryptoAssets() fetching asset ${chain.getName()}: ${asset?.accountName}-${asset?.balance}`
+                    );
+                    let account;
 
-                if (asset) {
-                    account = {
-                        network: capitalizeFirstLetter(chain.getName()),
-                        accountName: asset.accountName,
-                        balance: asset.balance,
-                        usdBalance: asset.usdBalance,
-                    };
-                } else {
-                    account = {
-                        network: capitalizeFirstLetter(chain.getName()),
-                        accountName: null,
-                        balance: '0',
-                        usdBalance: 0,
-                    };
-                }
-
-                setAccounts((prevAccounts) => {
-                    // find index of the account in the array
-                    const index = prevAccounts.findIndex((acc) => acc.network === account.network);
-
-                    if (index !== -1) {
-                        // Update the existing asset
-                        const updatedAccounts = [...prevAccounts];
-
-                        updatedAccounts[index] = account;
-                        return updatedAccounts;
+                    if (asset) {
+                        account = {
+                            network: capitalizeFirstLetter(chain.getName()),
+                            accountName: asset.accountName,
+                            balance: asset.balance,
+                            usdBalance: asset.usdBalance,
+                        };
                     } else {
-                        // Add the new asset
-                        return [...prevAccounts, account];
+                        account = {
+                            network: capitalizeFirstLetter(chain.getName()),
+                            accountName: null,
+                            balance: '0',
+                            usdBalance: 0,
+                        };
                     }
-                });
+
+                    setAccounts((prevAccounts) => {
+                        // find index of the account in the array
+                        const index = prevAccounts.findIndex((acc) => acc.network === account.network);
+
+                        if (index !== -1) {
+                            // Update the existing asset
+                            const updatedAccounts = [...prevAccounts];
+
+                            updatedAccounts[index] = account;
+                            return updatedAccounts;
+                        } else {
+                            // Add the new asset
+                            return [...prevAccounts, account];
+                        }
+                    });
+                } catch (error) {
+                    debug(`fetchCryptoAssets() error fetching ${chain.getName()} asset`, error);
+                }
             }
         } catch (error) {
-            debug('fetchCryptoAssets() error', error);
+            console.error('fetchCryptoAssets() error', error);
         }
-    }, [accountsInitialized, initializeWalletAccount, tokens]);
+    }, [accountsInitialized, initializeWalletAccount, tokens, user]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -96,7 +104,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
             } else {
-                console.error('MainContainer() updateAllBalances() error', error);
+                console.error('AssetsContainer() updateAllBalances() error', error);
             }
         } finally {
             isUpdatingBalances.current = false;

@@ -28,12 +28,16 @@ import { appStorage, assetStorage, keyStorage } from './StorageManager/setup';
 import { AssetStorage } from './StorageManager/repositories/assetStorageManager';
 import { EosioUtil, IUser } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:tokenRegistry');
 
 export interface AccountDetails {
     network: string;
     account: string;
     balance: string;
     usdBalance: number;
+    token: IToken;
     icon: string;
     symbol: string;
     testnet: boolean;
@@ -58,35 +62,33 @@ export type TokenRegistryEntry = {
     keyName: string;
 };
 
-export const tokenRegistry: TokenRegistryEntry[] = [
-    { token: ETHToken, chain: EthereumMainnetChain, keyName: ChainKeyName.ethereum },
-    { token: ETHPolygonToken, chain: EthereumPolygonChain, keyName: ChainKeyName.ethereumPolygon },
-    { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: ChainKeyName.ethereumTestnetSepolia },
-];
-
 async function addLocalChain() {
     const chainId = (await (await EosioUtil.getApi()).v1.chain.get_info()).chain_id;
 
     // @ts-expect-error antelopeChainId is protected
     PangeaLocalChain.antelopeChainId = chainId.toString();
+    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 }
 
 export let pangeaTokenEntry: TokenRegistryEntry & { chain: AntelopeChain };
 
 if (settings.env === 'production') {
     pangeaTokenEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: ChainKeyName.pangeaLeos };
+    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else if (settings.env === 'testnet') {
     pangeaTokenEntry = {
         token: LEOSTestnetToken,
         chain: PangeaTestnetChain,
         keyName: ChainKeyName.pangeaTestnetLeos,
     };
+    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else if (settings.env === 'staging' || settings.env === 'development') {
     pangeaTokenEntry = {
         token: LEOSStagingToken,
         chain: PangeaStagingChain,
         keyName: ChainKeyName.pangeaStagingLeos,
     };
+    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else {
     pangeaTokenEntry = {
         token: LEOSLocalToken,
@@ -96,11 +98,15 @@ if (settings.env === 'production') {
     addLocalChain();
 }
 
-ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
+export const tokenRegistry: TokenRegistryEntry[] = [
+    { token: ETHToken, chain: EthereumMainnetChain, keyName: ChainKeyName.ethereum },
+    { token: ETHPolygonToken, chain: EthereumPolygonChain, keyName: ChainKeyName.ethereumPolygon },
+    { token: ETHSepoliaToken, chain: EthereumSepoliaChain, keyName: ChainKeyName.ethereumTestnetSepolia },
+];
 
 // Uncomment out these lines to test the chain easily:
-// pangeaTokenEntry.token.isTransferable = () => true;
-// pangeaTokenEntry.chain.isTestnet = () => false;
+pangeaTokenEntry.token.isTransferable = () => true;
+pangeaTokenEntry.chain.isTestnet = () => false;
 
 if (pangeaTokenEntry.chain.isTestnet()) {
     tokenRegistry.push(pangeaTokenEntry);
@@ -108,7 +114,7 @@ if (pangeaTokenEntry.chain.isTestnet()) {
     tokenRegistry.unshift(pangeaTokenEntry);
 }
 
-export async function getChainEntryByName(chain: string | IChain): Promise<TokenRegistryEntry> {
+export async function getTokenEntryByChain(chain: string | IChain): Promise<TokenRegistryEntry> {
     const chainName = typeof chain === 'string' ? chain : chain.getName();
     const chainEntry = tokenRegistry.find((c) => c.chain.getName() === chainName);
 
@@ -148,7 +154,7 @@ export async function getKeyOrNullFromChain(chainEntry: TokenRegistryEntry): Pro
 
 export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user: IUser): Promise<IAccount> {
     const { chain, token } = chainEntry;
-    const asset = await getAssetFromChain(chainEntry);
+    const asset = await assetStorage.findAssetByName(chainEntry.token);
     const key = await getKeyFromChain(chainEntry);
 
     let account: IAccount;
@@ -163,11 +169,15 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user: 
             await assetStorage.createAsset(new Asset(token, BigInt(0)), account);
         }
     } else {
+        debug(
+            `getAccountFromChain() fetching Antelope account for ${chain.getName()}: ${await user.getAccountName()}, ${await key.exportPrivateKey()}`
+        );
         account = await AntelopeAccount.fromAccountAndPrivateKey(
             chain as AntelopeChain,
             await user.getAccountName(),
             key as AntelopePrivateKey
         );
+        debug(`getAccountFromChain() account: ${account.getChain().getName()}`);
 
         if (!asset) {
             await assetStorage.createAsset(new Asset(token, BigInt(0)), account);
@@ -178,21 +188,24 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user: 
 }
 
 export const getAssetDetails = async (chainName: string | IChain): Promise<AccountDetails> => {
-    const chainRegistryEntry = await getChainEntryByName(chainName);
-    const asset = await getAssetFromChain(chainRegistryEntry);
-    const key = await getKeyFromChain(chainRegistryEntry);
+    const tokenRegistry = await getTokenEntryByChain(chainName);
+
+    debug(`getAssetDetails() fetching asset for ${tokenRegistry.chain.getName()}`);
+    const asset = await getAssetFromChain(tokenRegistry);
+    const privateKey = await getKeyFromChain(tokenRegistry);
 
     return {
-        network: chainRegistryEntry.chain.getName(),
+        network: tokenRegistry.chain.getName(),
         account: asset.accountName,
         balance: asset.balance,
         usdBalance: asset.usdBalance,
-        icon: chainRegistryEntry.token.getLogoUrl(),
-        symbol: chainRegistryEntry.token.getSymbol(),
-        testnet: chainRegistryEntry.token.getChain().isTestnet(),
-        isTransferable: chainRegistryEntry.token.isTransferable(),
-        privateKey: key,
-        chain: chainRegistryEntry.chain,
+        token: tokenRegistry.token,
+        icon: tokenRegistry.token.getLogoUrl(),
+        symbol: tokenRegistry.token.getSymbol(),
+        testnet: tokenRegistry.token.getChain().isTestnet(),
+        isTransferable: tokenRegistry.token.isTransferable(),
+        privateKey,
+        chain: tokenRegistry.chain,
     };
 };
 

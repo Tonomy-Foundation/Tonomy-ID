@@ -14,7 +14,6 @@ import { AccountDetails, getAssetDetails } from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
 import { debounce } from '../utils/network';
-import { EosioTokenContract } from '@tonomy/tonomy-id-sdk';
 import { AntelopeAccount, AntelopeChain, AntelopeTransaction } from '../utils/chain/antelope';
 
 export type SendAssetProps = {

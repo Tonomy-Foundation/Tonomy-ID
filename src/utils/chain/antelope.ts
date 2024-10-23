@@ -198,7 +198,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 
             return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
-            console.error('sendTransaction()', JSON.stringify(error, null, 2));
+            console.error('sendTransaction()', error, JSON.stringify(error, null, 2));
             throw error;
         }
     }
@@ -696,18 +696,19 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
     private static getDidChainName(chain: AntelopeChain): string | null {
         switch (chain.getName()) {
             case 'Pangea':
-                return 'pangea:';
+                return 'pangea';
+            case 'Pangea Testnet':
+                return 'pangea:testnet';
             default:
                 return null;
         }
     }
-    constructor(chain: AntelopeChain, account: NameType, privateKey?: AntelopePrivateKey) {
-        const nameString = Name.from(account).toString();
-        const chainName = AntelopeAccount.getDidChainName(chain) ?? '';
-        const did = `did:antelope:${chainName}${nameString}`;
+    constructor(chain: AntelopeChain, account: NameType) {
+        const accountName = Name.from(account).toString();
+        const chainSpecifier = AntelopeAccount.getDidChainName(chain) ?? chain.getAntelopeChainId();
+        const did = `did:antelope:${chainSpecifier}:${accountName}`;
 
-        super(nameString, did, chain);
-        this.privateKey = privateKey;
+        super(accountName, did, chain);
     }
 
     static fromAccount(chain: AntelopeChain, account: NameType): AntelopeAccount {
@@ -719,7 +720,10 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
         account: NameType,
         privateKey: AntelopePrivateKey
     ): AntelopeAccount {
-        return new AntelopeAccount(chain, account, privateKey);
+        const myAccount = new AntelopeAccount(chain, account);
+
+        myAccount.privateKey = privateKey;
+        return myAccount;
     }
 
     getDid(): string {
@@ -768,7 +772,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
                 return true;
             }
         } catch (error) {
-            console.log('error', error);
+            console.log('isContract() errror', error);
         }
 
         return false;

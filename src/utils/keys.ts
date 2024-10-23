@@ -100,16 +100,17 @@ export async function savePrivateKeyToStorage(passphrase: string, salt?: string)
     // Generate the seed data from the password and salt (computationally expensive)
     const { seed } = await generateSeedFromPassword(passphrase, salt);
 
+    await appStorage.setCryptoSeed(seed);
+
     for (const tokenEntry of tokenRegistry) {
         const { chain, keyName } = tokenEntry;
         let key = await getKeyOrNullFromChain(tokenEntry);
 
         if (!key) {
+            // Generate the key from seed data (computationally cheap)
             key = await chain.createKeyFromSeed(seed);
 
             await keyStorage.emplaceKey(keyName, key);
         }
     }
-
-    await appStorage.setCryptoSeed(seed);
 }

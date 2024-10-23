@@ -1,8 +1,12 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:utils:chain:types');
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
+
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
     toString(format?: KeyFormat): Promise<string>;

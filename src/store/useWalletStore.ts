@@ -9,8 +9,8 @@ import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getChainEntryByName } from '../utils/tokenRegistry';
-import useUserStore from './userStore';
+import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import { IUser } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
 
@@ -24,7 +24,7 @@ export interface WalletState {
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
     disconnectSession: () => Promise<void>;
-    initializeWalletAccount: () => Promise<void>;
+    initializeWalletAccount: (user: IUser) => Promise<void>;
 }
 
 const defaultState = {
@@ -93,11 +93,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
         }
     },
-
-    initializeWalletAccount: async () => {
+    initializeWalletAccount: async (user: IUser) => {
         try {
             if (get().accountsInitialized) {
-                debug('initializeWalletAccount() Account already exists');
+                debug('initializeWalletAccount() Account already initialized');
                 return;
             }
 
@@ -105,18 +104,23 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
             const accountPromises = tokenRegistry.map(
                 async (tokenEntry: TokenRegistryEntry): Promise<IAccount | null> => {
-                    try {
-                        const { user } = useUserStore();
+                    debug(`initializeWalletAccount() fetching ${tokenEntry.chain.getName()} account data`);
 
+                    try {
                         return getAccountFromChain(tokenEntry, user);
                     } catch (error) {
-                        debug(`fetchAccountData() Error fetching account data`, error);
+                        debug(
+                            `initializeWalletAccount() Error fetching ${tokenEntry.chain.getName()} account data`,
+                            error
+                        );
                         return null;
                     }
                 }
             );
 
             const accounts = await Promise.all(accountPromises);
+
+            debug(`initializeWalletAccount() accounts: ${accounts}`);
 
             set({
                 accounts,
@@ -130,7 +134,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
             }
         }
     },
-
     clearState: async () => {
         try {
             await connect();
@@ -151,20 +154,30 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         const { accounts, accountsInitialized } = get();
 
+        debug(`updateBalance() accountsInitialized: ${accountsInitialized}, ${accounts}`);
+
         if (accountsInitialized) {
             await connect();
+
             await Promise.all(
                 accounts.map(async (account: IAccount | null) => {
-                    if (!account) return;
-                    debug(`updateBalance() fetching account ${account.getChain().getName()} ${account.getName()}`);
-                    const chainRegistryEntry = await getChainEntryByName(account.getChain().getName());
-
                     try {
-                        const balance = await chainRegistryEntry.token.getBalance(account);
+                        if (!account) return;
+                        debug(`updateBalance() fetching account 0`);
+                        const chain = account.getChain();
 
-                        await assetStorage.updateAccountBalance(balance);
+                        debug(`updateBalance() fetching account ${chain.getName()}`);
+
+                        try {
+                            const { token } = await getTokenEntryByChain(chain);
+                            const balance = await token.getBalance(account);
+
+                            await assetStorage.updateAccountBalance(balance);
+                        } catch (error) {
+                            console.error(`updateBalance() Error fetching balance ${chain.getName()}:`, error);
+                        }
                     } catch (error) {
-                        debug('updateBalance() Error updating balance:', error);
+                        console.error(`updateBalance() Error updating balance:`, error);
                     }
                 })
             );
