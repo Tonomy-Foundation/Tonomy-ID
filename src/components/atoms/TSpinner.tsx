@@ -1,7 +1,28 @@
-import { ActivityIndicator } from 'react-native';
-import theme from '../../utils/theme';
-import { ActivityIndicatorProps } from 'react-native';
+import React from 'react';
+import LottieView from 'lottie-react-native';
+import { StyleSheet, View } from 'react-native';
 
-export default function TSpinner(props: ActivityIndicatorProps) {
-    return <ActivityIndicator {...props} color={theme.colors.primary} size={props.size ?? 'large'} />;
-}
+const TSpinner = ({ size = 70 }: { size?: number }) => {
+    return (
+        <View style={styles.animationContainer}>
+            <LottieView
+                style={{ width: size, height: size }}
+                source={require('../../assets/images/loading-gif.json')}
+                loop={true}
+                autoPlay={true}
+            />
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    animationContainer: {
+        flex: 1,
+        width: 30,
+        height: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});
+
+export default TSpinner;

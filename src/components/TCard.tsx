@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'react-native-paper';
 import TBadge from './atoms/TBadge';
-import { commonStyles, useAppTheme } from '../utils/theme';
+import { useAppTheme } from '../utils/theme';
 
 type TCardPropType = React.ComponentProps<typeof Card> & { style?: any };
 const radius = 5;

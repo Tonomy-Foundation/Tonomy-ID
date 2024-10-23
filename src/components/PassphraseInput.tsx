@@ -11,9 +11,10 @@ interface PassphraseInputProps {
     value: string[];
     onChange: (passphrase: string[]) => void;
     setNextDisabled: (boolean) => void;
+    disabled?: boolean;
 }
 
-const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setNextDisabled }) => {
+const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setNextDisabled, disabled }) => {
     const [passphrase, setPassphrase] = useState<string[]>(value);
 
     useEffect(() => {
@@ -50,6 +51,7 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setN
                             value={text}
                             onChange={(text) => onChangeWord(index, text)}
                             menuStyle={index < 2 ? styles.menuViewBottom : styles.menuViewTop}
+                            disabled={disabled}
                         />
                     </View>
                 ))}

@@ -14,6 +14,7 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import TSpinner from '../components/atoms/TSpinner';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -84,15 +85,15 @@ export default function LoginPassphraseContainer({
                         errorsStore.setError({ error: e, expected: false });
                 }
 
-                setNextDisabled(true);
-                setLoading(false);
                 return;
             } else {
                 errorsStore.setError({ error: e, expected: false });
-                setNextDisabled(true);
-                setLoading(false);
+
                 return;
             }
+        } finally {
+            setNextDisabled(true);
+            setLoading(false);
         }
     }
 
@@ -107,6 +108,7 @@ export default function LoginPassphraseContainer({
                                 value={passphrase}
                                 onChange={setPassphrase}
                                 setNextDisabled={setNextDisabled}
+                                disabled={loading}
                             />
                         </View>
                         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
@@ -127,7 +129,7 @@ export default function LoginPassphraseContainer({
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={nextDisabled || loading}>
-                                NEXT
+                                {loading ? <TSpinner size={50} /> : 'NEXT'}
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
