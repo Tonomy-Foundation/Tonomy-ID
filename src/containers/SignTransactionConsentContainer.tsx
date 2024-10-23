@@ -191,10 +191,16 @@ export default function SignTransactionConsentContainer({
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
-            if (error instanceof ApplicationError && error?.code === ApplicationErrors.IncorrectTransactionAuthorization) {
+
+            if (
+                error instanceof ApplicationError &&
+                error?.code === ApplicationErrors.IncorrectTransactionAuthorization
+            ) {
                 errorStore.setError({
                     title: 'Authorization Error',
-                    error: new Error('This transaction expected a different account or key to sign it. Please try login with another account.'),
+                    error: new Error(
+                        'This transaction expected a different account or key to sign it. Please try login with another account.'
+                    ),
                     expected: true,
                 });
             } else {
@@ -204,6 +210,7 @@ export default function SignTransactionConsentContainer({
                     expected: false,
                 });
             }
+
             navigation.navigate({ name: 'UserHome', params: {} });
             await session.rejectTransactionRequest(request);
         }

@@ -188,9 +188,14 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 
             return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
-            if (error?.message?.includes('Provided keys, permissions, and delays do not satisfy declared authorizations at')) {
+            if (
+                error?.message?.includes(
+                    'Provided keys, permissions, and delays do not satisfy declared authorizations at'
+                )
+            ) {
                 throwError('Incorrect Transaction Authorization', ApplicationErrors.IncorrectTransactionAuthorization);
             }
+
             throw error;
         }
     }
