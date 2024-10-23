@@ -68,6 +68,12 @@ const expo: ExpoConfig = {
         bundleIdentifier: identifier,
         infoPlist: {
             NSCameraUsageDescription: 'We need access to your camera to scan the QR code.',
+            LSApplicationQueriesSchemes: ['esr'],
+            CFBundleURLTypes: [
+                {
+                    CFBundleURLSchemes: ['esr'],
+                },
+            ],
         },
     },
     android: {
@@ -77,6 +83,17 @@ const expo: ExpoConfig = {
         },
         allowBackup: false,
         package: identifier,
+        intentFilters: [
+            {
+                action: 'VIEW',
+                data: [
+                    {
+                        scheme: 'esr',
+                    },
+                ],
+                category: ['BROWSABLE', 'DEFAULT'],
+            },
+        ],
     },
     web: {
         favicon: settings.config.images.logo48,
