@@ -32,18 +32,19 @@ import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:tokenRegistry');
 
-export interface AccountDetails {
-    network: string;
-    account: string;
-    balance: string;
-    usdBalance: number;
-    token: IToken;
-    icon: string;
-    symbol: string;
-    testnet: boolean;
-    isTransferable: boolean;
-    privateKey: IPrivateKey;
+export interface AccountTokenDetails {
     chain: IChain;
+    token: {
+        balance: string;
+        usdBalance: number;
+        icon: string;
+        symbol: string;
+        name: string;
+        isTransferable: boolean;
+        precision: number;
+    };
+    account: string;
+    privateKey: IPrivateKey;
 }
 
 export enum ChainKeyName {
@@ -187,25 +188,26 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user: 
     return account;
 }
 
-export const getAssetDetails = async (chainName: string | IChain): Promise<AccountDetails> => {
-    const tokenRegistry = await getTokenEntryByChain(chainName);
+export const getAssetDetails = async (chain: IChain): Promise<AccountTokenDetails> => {
+    const tokenRegistry = await getTokenEntryByChain(chain);
 
     debug(`getAssetDetails() fetching asset for ${tokenRegistry.chain.getName()}`);
     const asset = await getAssetFromChain(tokenRegistry);
     const privateKey = await getKeyFromChain(tokenRegistry);
 
     return {
-        network: tokenRegistry.chain.getName(),
-        account: asset.accountName,
-        balance: asset.balance,
-        usdBalance: asset.usdBalance,
-        token: tokenRegistry.token,
-        icon: tokenRegistry.token.getLogoUrl(),
-        symbol: tokenRegistry.token.getSymbol(),
-        testnet: tokenRegistry.token.getChain().isTestnet(),
-        isTransferable: tokenRegistry.token.isTransferable(),
-        privateKey,
         chain: tokenRegistry.chain,
+        token: {
+            balance: asset.balance,
+            usdBalance: asset.usdBalance,
+            icon: tokenRegistry.token.getLogoUrl(),
+            symbol: tokenRegistry.token.getSymbol(),
+            name: tokenRegistry.token.getName(),
+            isTransferable: tokenRegistry.token.isTransferable(),
+            precision: tokenRegistry.token.getPrecision(),
+        },
+        account: asset.accountName,
+        privateKey,
     };
 };
 

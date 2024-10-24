@@ -8,30 +8,31 @@ import { useEffect, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import CopyIcon from '../assets/icons/CopyIcon';
 import { ShareAndroidSolid } from 'iconoir-react-native';
-import { AccountDetails, getAssetDetails } from '../utils/tokenRegistry';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
+import { IChain } from '../utils/chain/types';
 
 export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
-    network: string;
+    chain: IChain;
 };
 
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
-    const [asset, setAsset] = useState<AccountDetails | null>(null);
+    const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const networkLogo = asset?.icon ? { uri: asset.icon } : Images.GetImage('logo1024');
+    const networkLogo = asset?.token.icon ? { uri: asset.token.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.network);
+            const assetData = await getAssetDetails(props.chain);
 
             setAsset(assetData);
             setLoading(false);
         };
 
         fetchAssetDetails();
-    }, [props.network]);
+    }, [props.chain]);
 
     if (loading || !asset || !asset.account) {
         return <TSpinner />;
@@ -61,12 +62,12 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.subHeading}>
                         {asset.account && asset.account !== ''
-                            ? `Only send ${asset.network} assets to this account. Please make sure you are using the ${asset.network} network before sending assets to this account`
+                            ? `Only send ${asset.chain.getName()} assets to this account. Please make sure you are using the ${asset.chain.getName()} network before sending assets to this account`
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>
                         <Image source={networkLogo} style={styles.faviconIcon} />
-                        <Text style={styles.networkTitleName}>{asset.network} Network</Text>
+                        <Text style={styles.networkTitleName}>{asset.chain.getName()} Network</Text>
                     </View>
                     <View style={styles.flexCenter}>
                         <View style={{ ...styles.qrView, flexDirection: 'column' }}>

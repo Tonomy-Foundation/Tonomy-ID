@@ -94,7 +94,7 @@ const SelectAssetContainer = ({
         if (type === 'receive') {
             navigation.navigate('Receive', {
                 screenTitle: `Receive ${tokenEntry.token.getSymbol()}`,
-                network: tokenEntry.chain.getName(),
+                chain: tokenEntry.chain,
             });
         } else if (type === 'send') {
             const key = await getKeyOrNullFromChain(tokenEntry);

@@ -4,24 +4,25 @@ import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { AccountDetails, getAssetDetails } from '../utils/tokenRegistry';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
 import TSpinner from '../components/atoms/TSpinner';
+import { IChain } from '../utils/chain/types';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
-    network: string;
+    chain: IChain;
 };
 
 const AssetDetailContainer = (props: AssetDetailProps) => {
-    const [asset, setAsset] = useState<AccountDetails | null>(null);
+    const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState(true);
-    const networkLogo = asset?.icon ? { uri: asset.icon } : Images.GetImage('logo1024');
+    const networkLogo = asset?.token.icon ? { uri: asset.token.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.network);
+            const assetData = await getAssetDetails(props.chain);
 
             setAsset(assetData);
             setLoading(false);
@@ -32,7 +33,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [props.network]);
+    }, [props.chain]);
 
     if (loading) {
         return <TSpinner />;
@@ -55,25 +56,27 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                             <View style={styles.networkHeading}>
                                 <Image source={networkLogo} style={styles.faviconIcon} />
                                 <View style={styles.assetsNetwork}>
-                                    <Text style={styles.assetsNetworkText}>{asset.network}</Text>
+                                    <Text style={styles.assetsNetworkText}>{asset.chain.getName()}</Text>
                                 </View>
-                                <Text style={styles.headerAssetsAmount}>{`${asset.balance} ${asset.symbol}`}</Text>
+                                <Text
+                                    style={styles.headerAssetsAmount}
+                                >{`${asset.token.balance} ${asset.token.symbol}`}</Text>
                                 <Text style={styles.headerAssetUSDAmount}>
-                                    ${formatCurrencyValue(asset.usdBalance, 2)} USD
+                                    ${formatCurrencyValue(asset.token.usdBalance, 2)} USD
                                 </Text>
                             </View>
 
-                            {!asset.isTransferable && (
+                            {!asset.token.isTransferable && (
                                 <View style={styles.warning}>
-                                    <Text>All {asset.symbol} is vested until the public sale</Text>
+                                    <Text>All {asset.token.symbol} is vested until the public sale</Text>
                                 </View>
                             )}
                             <View style={styles.flexRow}>
-                                {asset.isTransferable && (
+                                {asset.token.isTransferable && (
                                     <TouchableOpacity
                                         onPress={() =>
                                             props.navigation.navigate('Send', {
-                                                screenTitle: `Send ${asset.symbol}`,
+                                                screenTitle: `Send ${asset.token.symbol}`,
                                                 chain: asset.chain,
                                                 privateKey: asset.privateKey,
                                             })
@@ -94,8 +97,8 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                 <TouchableOpacity
                                     onPress={() =>
                                         props.navigation.navigate('Receive', {
-                                            screenTitle: `Receive ${asset.symbol}`,
-                                            network: asset.network,
+                                            screenTitle: `Receive ${asset.token.symbol}`,
+                                            chain: asset.chain,
                                         })
                                     }
                                     style={styles.flexCenter}

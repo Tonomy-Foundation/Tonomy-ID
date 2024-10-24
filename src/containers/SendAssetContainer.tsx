@@ -10,7 +10,7 @@ import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
-import { AccountDetails, getAssetDetails } from '../utils/tokenRegistry';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
 import { debounce } from '../utils/network';
@@ -26,12 +26,12 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     const [depositAccount, setDepositAccount] = useState<string>();
     const [balance, setBalance] = useState<string>();
     const [usdAmount, setUsdAmount] = useState<string>();
-    const [asset, setAsset] = useState<AccountDetails | null>(null);
+    const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const errorStore = useErrorStore();
     const [submitting, setSubmitting] = useState<boolean>(false);
-    const networkLogo = asset?.icon ? { uri: asset.icon } : Images.GetImage('logo1024');
+    const networkLogo = asset?.token.icon ? { uri: asset.token.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -67,9 +67,9 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     };
 
     const handleMaxAmount = () => {
-        if (asset.balance) {
-            setBalance(asset.balance);
-            setUsdAmount(asset.usdBalance ? asset.usdBalance.toString() : '0');
+        if (asset.token.balance) {
+            setBalance(asset.token.balance);
+            setUsdAmount(asset.token.usdBalance ? asset.token.usdBalance.toString() : '0');
         }
     };
 
@@ -79,7 +79,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
         if (!depositAccount) throw new Error('Deposit account is required');
 
         try {
-            if (Number(asset.balance) < Number(balance) || Number(asset.balance) <= 0) {
+            if (Number(asset.token.balance) < Number(balance) || Number(asset.token.balance) <= 0) {
                 errorStore.setError({
                     error: new Error('You do not have enough balance to perform transaction!'),
                     expected: true,
@@ -116,7 +116,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     data: {
                         from: asset.account,
                         to: depositAccount.toLowerCase(),
-                        quantity: Number(balance).toFixed(asset.token.getPrecision()) + ' ' + asset.symbol,
+                        quantity: Number(balance).toFixed(asset.token.precision) + ' ' + asset.token.symbol,
                         memo: '',
                     },
                 };
@@ -195,7 +195,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                         </View>
                         <View style={styles.networkContainer}>
                             <Image source={networkLogo} style={styles.favicon} />
-                            <Text style={styles.networkName}>{asset.network} network</Text>
+                            <Text style={styles.networkName}>{asset.chain.getName()} network</Text>
                         </View>
                         <View>
                             <View style={styles.inputContainer}>
@@ -208,7 +208,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                                 />
                                 <View style={{ flexDirection: 'row', gap: 8 }}>
                                     <TouchableOpacity style={styles.inputButton}>
-                                        <Text style={styles.currencyButtonText}>{asset.symbol}</Text>
+                                        <Text style={styles.currencyButtonText}>{asset.token.symbol}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
                                         <Text style={styles.inputButtonText}>MAX</Text>
