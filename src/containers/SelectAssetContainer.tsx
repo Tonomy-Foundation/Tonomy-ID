@@ -75,6 +75,10 @@ const SelectAssetContainer = ({
 
     useEffect(() => {
         fetchCryptoAssets();
+
+        const interval = setInterval(fetchCryptoAssets, 10000);
+
+        return () => clearInterval(interval);
     }, [fetchCryptoAssets]);
 
     const findAccountByChain = (chain: string) => {

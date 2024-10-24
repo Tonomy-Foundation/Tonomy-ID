@@ -18,6 +18,7 @@ import { AntelopeAccount, AntelopePrivateKey } from '../utils/chain/antelope';
 import { getKeyFromChain, pangeaTokenEntry } from '../utils/tokenRegistry';
 import { Asset } from '../utils/chain/types';
 import { assetStorage } from '../utils/StorageManager/setup';
+import TSpinner from '../components/atoms/TSpinner';
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:containers:LoginPassphraseContainer');
@@ -104,15 +105,15 @@ export default function LoginPassphraseContainer({
                         errorsStore.setError({ error: e, expected: false });
                 }
 
-                setNextDisabled(true);
-                setLoading(false);
                 return;
             } else {
                 errorsStore.setError({ error: e, expected: false });
-                setNextDisabled(true);
-                setLoading(false);
+
                 return;
             }
+        } finally {
+            setNextDisabled(true);
+            setLoading(false);
         }
     }
 
@@ -127,6 +128,7 @@ export default function LoginPassphraseContainer({
                                 value={passphrase}
                                 onChange={setPassphrase}
                                 setNextDisabled={setNextDisabled}
+                                disabled={loading}
                             />
                         </View>
                         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
@@ -147,7 +149,7 @@ export default function LoginPassphraseContainer({
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={nextDisabled || loading}>
-                                NEXT
+                                {loading ? <TSpinner size={50} /> : 'NEXT'}
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>

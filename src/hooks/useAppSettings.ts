@@ -1,18 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { appStorage } from '../utils/StorageManager/setup';
+import { useFocusEffect } from '@react-navigation/native';
 
 function useAppSettings() {
     const [developerMode, setDeveloperMode] = useState<boolean>(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const mode = await appStorage.getDeveloperMode();
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                const mode = await appStorage.getDeveloperMode();
 
-            setDeveloperMode(mode);
-        };
+                setDeveloperMode(mode);
+            };
 
-        fetchData();
-    }, []);
+            fetchData();
+        }, [])
+    );
 
     const setDeveloperModeSettings = async (mode: boolean) => {
         setDeveloperMode(mode);

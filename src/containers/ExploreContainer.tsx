@@ -1,6 +1,5 @@
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Props } from '../screens/ExploreScreen';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import LearnMoreAutonomous from '../components/LearnMoreAutonomous';
 import { useRef } from 'react';
 import { Images } from '../assets';
@@ -46,6 +45,21 @@ export default function ExploreContainer() {
         },
     ];
 
+    const openNews = [
+        {
+            title: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...',
+            subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
+            image: require('../assets/images/explore/news-1.png'),
+            url: 'https://pangea-web4-world.webflow.io/news/pangeas-leos-token-a-mica-compliant-pioneer-with-expert-legal-guidance-from-taylor-wessing',
+        },
+        {
+            title: 'Navigating the Future: Insights from Brightnodes Audit of LEOS...',
+            subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
+            image: require('../assets/images/explore/news-2.jpg'),
+            url: 'https://pangea-web4-world.webflow.io/news/navigating-the-future-insights-from-brightnodes-audit-of-leos-tokenomics',
+        },
+    ];
+
     return (
         <View style={styles.container}>
             <LearnMoreAutonomous onClose={onClose} refMessage={refMessage} />
@@ -59,7 +73,12 @@ export default function ExploreContainer() {
                 <View style={styles.worldFristAutonomous}>
                     <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
-                    <Image source={require('../assets/images/explore/earth-globe-network-connection.png')} />
+                    <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/watch?v=d5b2gmJWKp4')}>
+                        <Image
+                            style={styles.worldFristAutonomousImage}
+                            source={require('../assets/images/explore/explore-video.png')}
+                        />
+                    </TouchableOpacity>
                 </View>
                 <Text style={styles.subTitle}>Pangea links</Text>
                 <View style={styles.pangeaLinkButtonLayout}>
@@ -90,31 +109,19 @@ export default function ExploreContainer() {
                         </TouchableOpacity>
                     ))}
                 </View>
-
                 <Text style={styles.subTitle}>News</Text>
                 <View style={styles.newsFrameLayoutContainer}>
-                    <View style={styles.newsFrameLayout}>
-                        <Image source={require('../assets/images/explore/pangea-news.png')} />
-                        <View>
-                            <Text style={styles.newsFrameTitle}>
-                                Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...
-                            </Text>
-                            <Text style={styles.newsFrameNote}>
-                                The Pangea Virtual Nation and its LEOS token aim to revolutionize...
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={styles.newsFrameLayout}>
-                        <Image source={require('../assets/images/explore/pangea-news.png')} />
-                        <View>
-                            <Text style={styles.newsFrameTitle}>
-                                Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...
-                            </Text>
-                            <Text style={styles.newsFrameNote}>
-                                The Pangea Virtual Nation and its LEOS token aim to revolutionize...
-                            </Text>
-                        </View>
-                    </View>
+                    {openNews.map((news, index) => (
+                        <TouchableOpacity key={index} onPress={() => Linking.openURL(news.url)}>
+                            <View style={styles.newsFrameLayout}>
+                                <Image style={styles.newsFrameImage} source={news.image} />
+                                <View>
+                                    <Text style={styles.newsFrameTitle}>{news.title}</Text>
+                                    <Text style={styles.newsFrameNote}>{news.subtitle}</Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
                 </View>
             </ScrollView>
         </View>
@@ -131,13 +138,14 @@ const styles = StyleSheet.create({
     joinCommunityDiscordImage: {
         alignSelf: 'center',
         marginBottom: 22,
-        width: '100%',
+        height: 119,
+        width: 376,
         borderRadius: 8,
     },
     worldFristAutonomous: {
         borderWidth: 1,
         borderRadius: 8,
-        padding: 12,
+        padding: 16,
         borderColor: theme.colors.grey8,
     },
     worldFristAutonomousTitle: {
@@ -145,11 +153,18 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         lineHeight: 20.57,
         letterSpacing: 0.5,
+        ...commonStyles.primaryFontFamily,
     },
     worldFristAutonomousNotes: {
         fontSize: 12,
         fontWeight: '600',
         marginBottom: 8,
+        ...commonStyles.primaryFontFamily,
+    },
+    worldFristAutonomousImage: {
+        width: '100%',
+        height: 180,
+        borderRadius: 8,
     },
     learnMoreButton: {
         borderRadius: 4,
@@ -164,10 +179,11 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     subTitle: {
-        fontWeight: '600',
         fontSize: 16,
+        fontWeight: '600',
         marginTop: 26,
         paddingBottom: 8,
+        ...commonStyles.primaryFontFamily,
     },
     socialLinkButtonLayout: {
         flexDirection: 'row',
@@ -238,6 +254,11 @@ const styles = StyleSheet.create({
         letterSpacing: 0.15,
         width: 260,
         paddingEnd: 10,
+    },
+    newsFrameImage: {
+        width: 56,
+        height: 56,
+        borderRadius: 6,
     },
     newsFrameNote: {
         fontSize: 12,

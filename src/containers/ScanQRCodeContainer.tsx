@@ -9,7 +9,7 @@ import { ScanQRScreenProps } from '../screens/ScanQRScreen';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Images } from '../assets';
 import QRCodeScanner from '../components/QRCodeScanner';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
 import ABICache from '@wharfkit/abicache';
@@ -266,15 +266,21 @@ export default function ScanQRCodeContainer({
                     {isLoadingView ? <TSpinner /> : <QRCodeScanner onScan={onScan} />}
                 </View>
                 <View style={styles.bottomInstruction}>
-                    <Text style={{ fontWeight: '500' }}>QR scanner can be used for:</Text>
+                    <Text style={{ fontWeight: '500', ...commonStyles.primaryFontFamily }}>
+                        Login and sign crypto transactions using:
+                    </Text>
                     <View style={styles.flexCol}>
                         <View style={styles.flexRow}>
                             <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                            <Text>Login to Web4 (Pangea) apps</Text>
+                            <Text>Pangea</Text>
                         </View>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/crypto-transaction.png')} style={styles.favicon} />
-                            <Text>Crypto transactions</Text>
+                            <Text>WalletConnect</Text>
+                        </View>
+                        <View style={styles.flexRow}>
+                            <Image source={require('../assets/images/anchor-codes.png')} style={styles.favicon} />
+                            <Text>Anchor (Antelope)</Text>
                         </View>
                     </View>
                 </View>
@@ -302,6 +308,7 @@ const styles = StyleSheet.create({
     favicon: {
         width: 16,
         height: 16,
+        borderRadius: 16,
     },
     flexCol: {
         flexDirection: 'column',
@@ -318,5 +325,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         position: 'relative',
         overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
