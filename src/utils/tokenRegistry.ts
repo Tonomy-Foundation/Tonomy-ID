@@ -52,8 +52,8 @@ export enum ChainKeyName {
     ethereumTestnetSepolia = 'ethereumTestnetSepolia',
     pangeaLeos = 'pangeaLeos',
     pangeaTestnetLeos = 'pangeaTestnetLeos',
-    pangeaStagingLeos = 'pangeaStagingLeos',
-    pangeaLocalLeos = 'pangeaLocalLeos',
+    tonomyStagingLeos = 'tonomyStagingLeos',
+    tonomyLocalLeos = 'tonomyLocalLeos',
 }
 
 export type TokenRegistryEntry = {
@@ -86,14 +86,14 @@ if (settings.env === 'production') {
     pangeaTokenEntry = {
         token: LEOSStagingToken,
         chain: TonomyStagingChain,
-        keyName: ChainKeyName.pangeaStagingLeos,
+        keyName: ChainKeyName.tonomyStagingLeos,
     };
     ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else {
     pangeaTokenEntry = {
         token: LEOSLocalToken,
         chain: TonomyLocalChain,
-        keyName: ChainKeyName.pangeaLocalLeos,
+        keyName: ChainKeyName.tonomyLocalLeos,
     };
     addLocalChain();
 }
