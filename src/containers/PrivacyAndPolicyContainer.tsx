@@ -36,16 +36,20 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         />
                         <TList
                             bulletIcon="•"
+                            item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores or processes any personal information</Text> on our servers.</Text>}
+                        />
+                        {/* <TList
+                            bulletIcon="•"
                             item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores or processes any personal information</Text> on our servers with the following two exceptions:</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>If you agree below, {settings.config.appName} will collect your email for marketing purposes and share this information with XXXX.</Text>}
+                            item={<Text style={styles.listItemText}>If you agree below, {settings.config.appName} will collect your email for marketing purposes and share this information with Brevo.com.</Text>}
                         />
                         <TList
                             bulletIcon="•"
                             item={<Text style={styles.listItemText}>If you agree below, {settings.config.appName} will collect usage and analytics information as you use it, which we use to improve the user experience of the application and share this information with Matamo.</Text>}
-                        />
+                        /> */}
                         <TList bulletIcon="•" item={<Text style={styles.listItemText}>{settings.config.appName} is regulated under Dutch law.</Text>} />
                     </View>
                 </View>

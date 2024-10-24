@@ -47,7 +47,7 @@ const prefix = Linking.createURL('');
 
 export interface AssetsParamsScreen {
     screenTitle?: string;
-    network: string;
+    chain: IChain;
 }
 
 export type MainRouteStackParamList = {

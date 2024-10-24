@@ -5,16 +5,18 @@ import {
     AntelopePrivateKey,
     AntelopeTransaction,
     EOSJungleChain,
-    JUNGLEToken,
+    EOSJungleToken,
 } from '../../src/utils/chain/antelope';
-import { PrivateKey } from '@wharfkit/antelope';
+import { KeyType, PrivateKey } from '@wharfkit/antelope';
 import { TransactionType } from '../../src/utils/chain/types';
+import { generatePrivateKeyFromPassword, generateSeedFromPassword } from '../../src/utils/keys';
+import { hexToBytes, bytesToHex } from 'did-jwt';
 
 describe('AntelopeTransaction', () => {
     const jungleAccountName = 'mytest123tes';
     const privateKey = PrivateKey.from('PVT_K1_2Yn362S23hWaDuDjLawDB1ZByF8fqsZZXFUDPTHnk6tXX44D2R');
 
-    EOSJungleChain.setNativeToken(JUNGLEToken);
+    EOSJungleChain.setNativeToken(EOSJungleToken);
 
     const SIMPLE_ASSSET_CONTRACT_NAME = 'simpleassets';
 
@@ -103,4 +105,35 @@ describe('AntelopeTransaction', () => {
         expect(receipt2).toBeDefined();
         expect(receipt2.processed.receipt.status).toBe('executed');
     }, 30000);
+});
+
+describe('AntelopePrivateKey', () => {
+    it('Uint8Array conversion', async () => {
+        const array = new Uint8Array([1, 2, 3, 4, 5]);
+        const hexString = bytesToHex(array);
+        const newUint8Array = hexToBytes(hexString);
+
+        expect(newUint8Array).toEqual(array);
+    });
+
+    it('can export and import a key using hex string', async () => {
+        const privateKey = PrivateKey.generate(KeyType.K1);
+        const antelopePrivateKey = new AntelopePrivateKey(privateKey, EOSJungleChain);
+        const privateKeyHex = await antelopePrivateKey.exportPrivateKey();
+        const newAntelopePrivateKey = await AntelopePrivateKey.fromPrivateKeyHex(privateKeyHex, EOSJungleChain);
+
+        expect(antelopePrivateKey.toPrivateKey().toString()).toEqual(newAntelopePrivateKey.toPrivateKey().toString());
+    });
+});
+
+describe('AntelopeChain', () => {
+    it('createKeyFromSeed() creates the same key as generatePrivateKeyFromPassword()', async () => {
+        const passphrase = 'mysecretpassword';
+        const { privateKey, salt } = await generatePrivateKeyFromPassword(passphrase);
+
+        const { seed } = await generateSeedFromPassword(passphrase, salt.hexString);
+        const antelopePrivateKey = (await EOSJungleChain.createKeyFromSeed(seed)) as AntelopePrivateKey;
+
+        expect(privateKey.toString()).toEqual(antelopePrivateKey.toPrivateKey().toString());
+    });
 });

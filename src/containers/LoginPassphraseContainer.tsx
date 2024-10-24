@@ -8,15 +8,36 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract } from '@tonomy/tonomy-id-sdk';
+import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract, IUserBase } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { AntelopeAccount, AntelopePrivateKey } from '../utils/chain/antelope';
+import { getKeyFromChain, pangeaTokenEntry } from '../utils/tokenRegistry';
+import { Asset } from '../utils/chain/types';
+import { assetStorage } from '../utils/StorageManager/setup';
 import TSpinner from '../components/atoms/TSpinner';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:containers:LoginPassphraseContainer');
 
 const tonomyContract = TonomyContract.Instance;
+
+export async function addNativeTokenToAssetStorage(user: IUserBase) {
+    const accountName = await user.getAccountName();
+    const privateKey = await getKeyFromChain(pangeaTokenEntry);
+
+    const asset = new Asset(pangeaTokenEntry.token, BigInt(0));
+    const account = AntelopeAccount.fromAccountAndPrivateKey(
+        pangeaTokenEntry.chain,
+        accountName,
+        privateKey as AntelopePrivateKey
+    );
+
+    await assetStorage.createAsset(asset, account);
+}
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -55,7 +76,6 @@ export default function LoginPassphraseContainer({
             savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
             const result = await user.login(tonomyUsername, passphrase.join(' '), {
-                // @ts-ignore Checksum256 type error
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 

@@ -2,21 +2,14 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'rea
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { appStorage, assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
+import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
-import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
-import useUserStore from '../store/userStore';
 import { formatCurrencyValue } from '../utils/numbers';
-import { supportedChains } from '../utils/assetDetails';
-import { IPrivateKey } from '../utils/chain/types';
-import { Images } from '../assets';
-import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
+import { TokenRegistryEntry, getKeyOrNullFromChain, tokenRegistry } from '../utils/tokenRegistry';
 import useAppSettings from '../hooks/useAppSettings';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
-const vestingContract = VestingContract.Instance;
 
 const SelectAssetContainer = ({
     navigation,
@@ -25,46 +18,34 @@ const SelectAssetContainer = ({
     navigation: SelectAssetScreenNavigationProp['navigation'];
     type: string;
 }) => {
-    const userStore = useUserStore();
-    const user = userStore.user;
-    const [accountName, setAccountName] = useState('');
-    const [pangeaBalance, setPangeaBalance] = useState(0.0);
-
     const [accounts, setAccounts] = useState<
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
     >([]);
 
     const { developerMode } = useAppSettings();
 
-    const chains = useMemo(() => supportedChains, []);
+    const tokens = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            const accountName = (await user.getAccountName()).toString();
-
-            setAccountName(accountName);
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
-
-            setPangeaBalance(accountPangeaBalance);
-
             await connect();
 
-            for (const chainObj of chains) {
-                const asset = await assetStorage.findAssetByName(chainObj.token);
+            for (const { chain, token } of tokens) {
+                const asset = await assetStorage.findAssetByName(token);
 
-                debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
+                debug(`fetchCryptoAssets() fetching asset for ${chain.getName()}`);
                 let account;
 
                 if (asset) {
                     account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        network: capitalizeFirstLetter(chain.getName()),
                         accountName: asset.accountName,
                         balance: asset.balance,
                         usdBalance: asset.usdBalance,
                     };
                 } else {
                     account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
+                        network: capitalizeFirstLetter(chain.getName()),
                         accountName: null,
                         balance: '0',
                         usdBalance: 0,
@@ -90,7 +71,7 @@ const SelectAssetContainer = ({
         } catch (error) {
             debug('fetchCryptoAssets() error', error);
         }
-    }, [chains, user]);
+    }, [tokens]);
 
     useEffect(() => {
         fetchCryptoAssets();
@@ -109,19 +90,24 @@ const SelectAssetContainer = ({
         return { account, balance, usdBalance };
     };
 
-    const handleOnPress = async (chainObj) => {
+    const handleOnPress = async (tokenEntry: TokenRegistryEntry) => {
         if (type === 'receive') {
             navigation.navigate('Receive', {
-                screenTitle: `Receive ${chainObj.token.getSymbol()}`,
-                network: chainObj.chain.getName(),
+                screenTitle: `Receive ${tokenEntry.token.getSymbol()}`,
+                chain: tokenEntry.chain,
             });
         } else if (type === 'send') {
-            const key = await keyStorage.findByName(chainObj.keyName, chainObj.chain);
+            const key = await getKeyOrNullFromChain(tokenEntry);
+
+            if (!key) {
+                debug(`handleOnPress() ${tokenEntry.keyName} key not found`);
+                return;
+            }
 
             navigation.navigate('Send', {
-                screenTitle: `Send ${chainObj.token.getSymbol()}`,
-                chain: chainObj.chain,
-                privateKey: key as IPrivateKey,
+                screenTitle: `Send ${tokenEntry.token.getSymbol()}`,
+                chain: tokenEntry.chain,
+                privateKey: key,
             });
         }
     };
@@ -132,53 +118,12 @@ const SelectAssetContainer = ({
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <Text style={styles.screenTitle}>select a currency to {type}</Text>
                     <View style={{ marginTop: 20, flexDirection: 'column', gap: 14 }}>
-                        <TouchableOpacity
-                            style={styles.assetsView}
-                            onPress={() => {
-                                if (type === 'receive') {
-                                    navigation.navigate('Receive', {
-                                        screenTitle: `Receive LEOS`,
-                                        network: 'Pangea',
-                                    });
-                                } else {
-                                    navigation.navigate('AssetDetail', {
-                                        screenTitle: `LEOS`,
-                                        network: 'Pangea',
-                                    });
-                                }
-                            }}
-                        >
-                            <Image
-                                source={Images.GetImage('logo1024')}
-                                style={[styles.favicon, { resizeMode: 'contain' }]}
-                            />
-                            <View style={styles.assetContent}>
-                                <View style={styles.flexRowCenter}>
-                                    <View style={styles.flexRowCenter}>
-                                        <Text style={{ fontSize: 16 }}>LEOS</Text>
-                                        <View style={styles.assetsNetwork}>
-                                            <Text style={{ fontSize: 12 }}>Pangea</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                                <View style={styles.flexColEnd}>
-                                    <View style={styles.rowCenter}>
-                                        <Text style={{ fontSize: 16 }}>
-                                            {formatCurrencyValue(pangeaBalance, 4) || 0.0}
-                                        </Text>
-                                    </View>
-                                    <Text style={styles.secondaryColor}>
-                                        ${formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE, 3)}
-                                    </Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                        {chains.map((chainObj, index) => {
+                        {tokens.map((chainObj, index) => {
                             const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
                             const accountData = findAccountByChain(chainName);
 
-                            if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
+                            if (chainObj.chain.isTestnet() && !developerMode) {
                                 return null;
                             }
 
@@ -200,7 +145,7 @@ const SelectAssetContainer = ({
                                                     <Text style={{ fontSize: 12 }}> {chainName}</Text>
                                                 </View>
                                             </View>
-                                            {chainObj.chain.getChainId() === '11155111' && (
+                                            {chainObj.chain.isTestnet() && (
                                                 <View style={styles.assetsTestnetNetwork}>
                                                     <Text
                                                         style={{

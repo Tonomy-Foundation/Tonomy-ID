@@ -1,12 +1,11 @@
 import './mocks';
 import { EthereumAccount, EthereumPrivateKey, EthereumSepoliaChain } from '../../src/utils/chain/etherum';
 import { ethers, TransactionRequest } from 'ethers';
-import { generatePrivateKeyFromSeed } from '../../src/utils/keys';
 
 describe('Ethereum sign transaction', () => {
     //generate key and sign transaction
     it('generate private key and sign transaction', async () => {
-        const ethereumKey = await generatePrivateKeyFromSeed('test', EthereumSepoliaChain);
+        const ethereumKey = await EthereumSepoliaChain.createKeyFromSeed('test');
         const exportPrivateKey = await ethereumKey.exportPrivateKey();
         const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, EthereumSepoliaChain);
 
