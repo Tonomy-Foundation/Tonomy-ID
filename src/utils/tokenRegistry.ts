@@ -25,7 +25,6 @@ import {
 } from './chain/antelope';
 import { Asset, ChainType, IAccount, IChain, IPrivateKey, IToken } from './chain/types';
 import { appStorage, assetStorage, keyStorage } from './StorageManager/setup';
-import { AssetStorage } from './StorageManager/repositories/assetStorageManager';
 import { EosioUtil, IUser } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
 import Debug from 'debug';
@@ -123,13 +122,6 @@ export async function getTokenEntryByChain(chain: string | IChain): Promise<Toke
     return chainEntry;
 }
 
-export async function getAssetFromChain(chainEntry: TokenRegistryEntry): Promise<AssetStorage> {
-    const asset = await assetStorage.findAssetByName(chainEntry.token);
-
-    if (!asset) throw new Error(`Asset not found for ${chainEntry.chain.getName()}`);
-    return asset;
-}
-
 export async function getKeyFromChain({ chain, keyName }: TokenRegistryEntry): Promise<IPrivateKey> {
     let key = await keyStorage.findByName(keyName, chain);
 
@@ -192,7 +184,9 @@ export const getAssetDetails = async (chain: IChain): Promise<AccountTokenDetail
     const tokenRegistry = await getTokenEntryByChain(chain);
 
     debug(`getAssetDetails() fetching asset for ${tokenRegistry.chain.getName()}`);
-    const asset = await getAssetFromChain(tokenRegistry);
+    const asset = await assetStorage.findAssetByName(tokenRegistry.token);
+
+    if (!asset) throw new Error(`Asset not found for ${tokenRegistry.chain.getName()}`);
     const privateKey = await getKeyFromChain(tokenRegistry);
 
     return {

@@ -26,13 +26,12 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [refreshBalance, setRefreshBalance] = useState(false);
     const { developerMode } = useAppSettings();
 
-    const { accountsInitialized, initializeWalletAccount } = useWalletStore();
+    const { accountsInitialized, initializeWalletAccount, updateBalance } = useWalletStore();
 
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
         { network: string; accountName: string; balance: string; usdBalance: number }[]
     >([]);
-    const { updateBalance } = useWalletStore();
     const { user } = useUserStore();
 
     const tokens = useMemo(() => tokenRegistry, []);

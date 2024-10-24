@@ -4,12 +4,18 @@ import { Core } from '@walletconnect/core';
 import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
 import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
 import settings from '../settings';
-import { IAccount } from '../utils/chain/types';
+import { IAccount, IChain } from '../utils/chain/types';
 import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import {
+    tokenRegistry,
+    TokenRegistryEntry,
+    getAccountFromChain,
+    getTokenEntryByChain,
+    AccountTokenDetails,
+} from '../utils/tokenRegistry';
 import { IUser } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:store:useWalletStore');
@@ -27,16 +33,21 @@ export interface WalletState {
     initializeWalletAccount: (user: IUser) => Promise<void>;
 }
 
-const defaultState = {
+// Create a proper token store for assets, accounts and keys components can subscribe to
+// TODO:
+// change accounts to AccountTokenDetails
+// initialize on login / create account
+// CreateEthereumKeys screen
+// add getter functions to retrieve correct account based on chain
+// move cron job here
+// pangeaActive check where used and other tokenRegistry functions
+
+const useWalletStore = create<WalletState>((set, get) => ({
     initialized: false,
     accounts: [],
     accountsInitialized: false,
     web3wallet: null,
     core: null,
-};
-
-const useWalletStore = create<WalletState>((set, get) => ({
-    ...defaultState,
     initializeWalletState: async () => {
         if (get().initialized) {
             debug('initializeWalletState() Already initialized');
@@ -191,5 +202,22 @@ const useWalletStore = create<WalletState>((set, get) => ({
         });
     },
 }));
+
+interface ChainWalletStore {
+    account: IAccount | null;
+}
+
+export const createChainWalletStore = (chain: IChain) => {
+    return create<ChainWalletStore>(() => {
+        const { accounts } = useWalletStore();
+        const chainAccount = accounts.find((account) => account?.getChain() === chain);
+
+        if (!chainAccount) throw new Error(`Account not found for ${chain.getName()}`);
+
+        return {
+            account: chainAccount,
+        };
+    });
+};
 
 export default useWalletStore;

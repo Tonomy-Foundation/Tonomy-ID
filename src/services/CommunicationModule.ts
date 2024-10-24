@@ -44,7 +44,7 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { initialized, web3wallet, disconnectSession, initializeWalletState } = useWalletStore();
+    const { accounts, initialized, web3wallet, disconnectSession, initializeWalletState } = useWalletStore();
 
     // initializeWalletState() on mount with progressiveRetryOnNetworkError()
     useEffect(() => {
@@ -196,8 +196,6 @@ export default function CommunicationModule() {
             });
         }
     }
-
-    const { accounts } = useWalletStore();
 
     useEffect(() => {
         const handleSessionProposal = async (proposal: SignClientTypes.EventArguments['session_proposal']) => {

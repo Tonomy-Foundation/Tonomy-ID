@@ -9,20 +9,23 @@ import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
 import TSpinner from '../components/atoms/TSpinner';
 import { IChain } from '../utils/chain/types';
+import { createChainWalletStore } from '../store/useWalletStore';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
     chain: IChain;
 };
 
-const AssetDetailContainer = (props: AssetDetailProps) => {
+const AssetDetailContainer = ({ navigation, chain }: AssetDetailProps) => {
+    const useChainWalletStore = createChainWalletStore(chain);
     const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const networkLogo = asset?.token.icon ? { uri: asset.token.icon } : Images.GetImage('logo1024');
+    const { account } = useChainWalletStore();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.chain);
+            const assetData = await getAssetDetails(chain);
 
             setAsset(assetData);
             setLoading(false);
@@ -33,7 +36,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [props.chain]);
+    }, [chain]);
 
     if (loading) {
         return <TSpinner />;
@@ -75,7 +78,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                 {asset.token.isTransferable && (
                                     <TouchableOpacity
                                         onPress={() =>
-                                            props.navigation.navigate('Send', {
+                                            navigation.navigate('Send', {
                                                 screenTitle: `Send ${asset.token.symbol}`,
                                                 chain: asset.chain,
                                                 privateKey: asset.privateKey,
@@ -96,7 +99,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                                 )}
                                 <TouchableOpacity
                                     onPress={() =>
-                                        props.navigation.navigate('Receive', {
+                                        navigation.navigate('Receive', {
                                             screenTitle: `Receive ${asset.token.symbol}`,
                                             chain: asset.chain,
                                         })
