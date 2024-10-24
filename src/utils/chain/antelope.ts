@@ -325,13 +325,11 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     async getUsdPrice(): Promise<number> {
+        if (this.getChain().isTestnet()) return 0;
+
         switch (this.getChain().getName()) {
             case 'Pangea':
                 return LEOS_CURRENT_PRICE;
-            case 'Pangea Testnet':
-                return 0;
-            case 'EOS Jungle Testnet':
-                return 0;
             default:
                 throw new Error('Unsupported Antelope chain');
         }
@@ -425,7 +423,7 @@ export const PangeaTestnetChain = new AntelopeChain(
 
 export const TonomyStagingChain = new AntelopeChain(
     'https://blockchain-api-staging.tonomy.foundation/',
-    'Pangea Staging',
+    'Tonomy Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
@@ -434,7 +432,7 @@ export const TonomyStagingChain = new AntelopeChain(
 
 export const TonomyLocalChain = new AntelopeChain(
     'http://localhost:8888',
-    'Pangea Localhost',
+    'Tonomy Localhost',
     'unknown chain id at this time',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
@@ -507,8 +505,8 @@ TonomyLocalChain.setNativeToken(LEOSLocalToken);
 
 export const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
 
-ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
-ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
+// ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
+// ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
 ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
 
 export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {

@@ -18,9 +18,9 @@ export type ReceiveAssetProps = {
 
 const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
-
     const [asset, setAsset] = useState<AccountDetails | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const networkLogo = asset?.icon ? { uri: asset.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -65,7 +65,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>
-                        <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
+                        <Image source={networkLogo} style={styles.faviconIcon} />
                         <Text style={styles.networkTitleName}>{asset.network} Network</Text>
                     </View>
                     <View style={styles.flexCenter}>

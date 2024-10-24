@@ -31,6 +31,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const errorStore = useErrorStore();
     const [submitting, setSubmitting] = useState<boolean>(false);
+    const networkLogo = asset?.icon ? { uri: asset.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -193,7 +194,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                             </View>
                         </View>
                         <View style={styles.networkContainer}>
-                            <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.favicon} />
+                            <Image source={networkLogo} style={styles.favicon} />
                             <Text style={styles.networkName}>{asset.network} network</Text>
                         </View>
                         <View>

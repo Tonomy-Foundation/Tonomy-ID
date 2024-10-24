@@ -167,11 +167,9 @@ export class EthereumToken extends AbstractToken {
     }
 
     async getUsdPrice(): Promise<number> {
-        if (this.chain.getChainId() === '11155111') {
-            return 0;
-        } else {
-            return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
-        }
+        if (this.chain.isTestnet()) return 0;
+
+        return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
@@ -194,6 +192,7 @@ export class EthereumToken extends AbstractToken {
 
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
+
         return balance.getUsdValue();
     }
 }
