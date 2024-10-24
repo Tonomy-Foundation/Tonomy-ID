@@ -17,6 +17,7 @@ export type AssetDetailProps = {
 const AssetDetailContainer = (props: AssetDetailProps) => {
     const [asset, setAsset] = useState<AccountDetails | null>(null);
     const [loading, setLoading] = useState(true);
+    const networkLogo = asset?.icon ? { uri: asset.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -52,7 +53,7 @@ const AssetDetailContainer = (props: AssetDetailProps) => {
                     {asset && (
                         <View style={styles.header}>
                             <View style={styles.networkHeading}>
-                                <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.faviconIcon} />
+                                <Image source={networkLogo} style={styles.faviconIcon} />
                                 <View style={styles.assetsNetwork}>
                                     <Text style={styles.assetsNetworkText}>{asset.network}</Text>
                                 </View>
