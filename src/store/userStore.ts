@@ -15,6 +15,7 @@ import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
+import useWalletStore from './useWalletStore';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -44,7 +45,6 @@ setSettings({
 });
 
 const useUserStore = create<UserState>((set, get) => ({
-    // @ts-expect-error PublicKey library compatibility
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
     isAppInitialized: false,
@@ -73,6 +73,7 @@ const useUserStore = create<UserState>((set, get) => ({
     logout: async (reason: string) => {
         await get().user.logout();
         if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
+        useWalletStore.getState().clearState();
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {

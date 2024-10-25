@@ -4,7 +4,6 @@ import { SvgProps } from 'react-native-svg';
 import PrivacyIcon from '../assets/icons/PrivacyIcon';
 import SecurityIcon from '../assets/icons/SecurityIcon';
 import TransparencyIcon from '../assets/icons/TransparencyIcon';
-import TA from './atoms/TA';
 import { TP } from './atoms/THeadings';
 import theme from '../utils/theme';
 
