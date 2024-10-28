@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TextInput, HelperText } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 import theme from '../utils/theme';
 import { TCaption } from './atoms/THeadings';
 

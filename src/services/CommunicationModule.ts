@@ -40,7 +40,27 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const { initialized, web3wallet, disconnectSession } = useWalletStore();
+    const {
+        initialized,
+        web3wallet,
+        disconnectSession,
+        initializeWalletState,
+        accountExists,
+        initializeWalletAccount,
+    } = useWalletStore();
+
+    // initializeWalletState() on mount with progressiveRetryOnNetworkError()
+    useEffect(() => {
+        const initializeAccount = async () => {
+            if (!accountExists) await initializeWalletAccount();
+        };
+
+        if (!initialized) {
+            progressiveRetryOnNetworkError(initializeWalletState);
+        }
+
+        initializeAccount();
+    }, [initializeWalletState, initialized, accountExists, initializeWalletAccount]);
 
     /**
      *  Login to communication microservice
@@ -340,7 +360,7 @@ export default function CommunicationModule() {
                     }
                 }
             } catch (error) {
-                console.error('session_proposal', error);
+                console.error('handleSessionProposal()', error);
             }
         };
 
@@ -463,7 +483,7 @@ export default function CommunicationModule() {
                     }
                 }
             } catch (disconnectError) {
-                console.error('Failed to disconnect session:', disconnectError);
+                debug('Failed to disconnect session:', disconnectError);
             }
         }, 1000);
 

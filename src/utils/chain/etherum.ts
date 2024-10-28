@@ -4,7 +4,6 @@ import {
     TransactionResponse,
     TransactionRequest,
     JsonRpcProvider,
-    TransactionReceipt,
     computeAddress,
     Interface,
     ethers,
@@ -36,6 +35,7 @@ import { getPriceCoinGecko } from './common';
 import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
+import { ApplicationErrors, throwError } from '../errors';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -43,8 +43,6 @@ const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
 
 const INFURA_KEY = settings.config.infuraKey;
-
-export const USD_CONVERSION = 0.002;
 
 export class EthereumPublicKey extends AbstractPublicKey implements IPublicKey {
     async getAddress(): Promise<string> {
@@ -81,9 +79,17 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
-        const receipt = await this.wallet.sendTransaction(transaction);
+        try {
+            const receipt = await this.wallet.sendTransaction(transaction);
 
-        return new EthereumTransactionReceipt(this.chain, receipt);
+            return new EthereumTransactionReceipt(this.chain, receipt);
+        } catch (error) {
+            if (error?.code === 'INSUFFICIENT_FUNDS') {
+                throwError('Insufficient balance', ApplicationErrors.NotEnoughCoins);
+            }
+
+            throw error;
+        }
     }
 }
 
@@ -130,6 +136,11 @@ export class EthereumChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
+    isValidAccountName(account: string): boolean {
+        const regex = /^0x[a-fA-F0-9]{40}$/;
+
+        return regex.test(account);
+    }
 }
 
 export class EthereumToken extends AbstractToken {
@@ -148,7 +159,11 @@ export class EthereumToken extends AbstractToken {
     }
 
     async getUsdPrice(): Promise<number> {
-        return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
+        if (this.chain.getChainId() === '11155111') {
+            return 0;
+        } else {
+            return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
+        }
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
@@ -171,7 +186,6 @@ export class EthereumToken extends AbstractToken {
 
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
-
         return balance.getUsdValue();
     }
 }

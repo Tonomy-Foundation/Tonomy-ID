@@ -4,9 +4,6 @@ import HomeScreen from '../screens/HomeScreen';
 import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import MainSplashScreen from '../screens/MainSplashScreen';
-import SplashSecurityScreen from '../screens/SplashSecurityScreen';
-import SplashPrivacyScreen from '../screens/SplashPrivacyScreen';
-import SplashTransparencyScreen from '../screens/SplashTransparencyScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
 import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 import DrawerNavigation from './Drawer';
@@ -32,19 +29,29 @@ import SignTransactionConsentScreen from '../screens/SignTransactionConsentScree
 import SignTransactionConsentSuccessScreen from '../screens/SignTransactionConsentSuccessScreen';
 import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
-import { IChainSession, IPrivateKey, ITransaction, ITransactionReceipt, TransactionType } from '../utils/chain/types';
+import ReceiveScreen from '../screens/ReceiveAssetScreen';
+import SendScreen from '../screens/SendAssetScreen';
+import { IChain, IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import { OperationData } from '../components/Transaction';
+import AssetDetail from '../screens/AssetDetailScreen';
+import SelectAsset from '../screens/SelectAssetScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
+import AppInstructionModal from '../components/AppInstructionModal';
+
+const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
-export type RouteStackParamList = {
+export interface AssetsParamsScreen {
+    screenTitle?: string;
+    network: string;
+}
+
+export type MainRouteStackParamList = {
     Splash: undefined;
-    SplashSecurity: undefined;
-    SplashPrivacy: undefined;
-    SplashTransparency: undefined;
     Home: undefined;
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
@@ -55,11 +62,10 @@ export type RouteStackParamList = {
     LoginWithPin: { password: string };
     LoginUsername: undefined;
     LoginPassphrase: { username: string };
-    UserHome: { did?: string };
     Drawer: undefined;
     SetPassword: undefined;
     Settings: undefined;
-    QrScanner: undefined;
+    Support: undefined;
     SSO: { payload: string; platform?: 'mobile' | 'browser' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
@@ -70,8 +76,8 @@ export type RouteStackParamList = {
         transaction: ITransaction;
         privateKey: IPrivateKey;
         origin: string;
-        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest;
-        session: IChainSession;
+        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
+        session: IChainSession | null;
     };
     SignTransactionSuccess: {
         operations: OperationData[];
@@ -89,7 +95,40 @@ export type RouteStackParamList = {
         requestType?: string;
         session?: IChainSession;
     };
+    BottomTabs: undefined;
+
+    Assets: undefined;
+    AssetListing: {
+        screen: string;
+        params?: {
+            did?: string;
+            type: string;
+            screenTitle: string;
+        };
+    };
+    Onboarding: undefined;
+    Citizenship: undefined;
+    Explore: undefined;
+    Apps: undefined;
+    AssetDetail: AssetsParamsScreen;
+    Receive: AssetsParamsScreen;
+    Send: {
+        screenTitle?: string;
+        chain: IChain;
+        privateKey: IPrivateKey;
+    };
+    SelectAsset: { screenTitle?: string; type: string };
 };
+
+export type BottonNavigatorRouteStackParamList = {
+    Citizenship: undefined;
+    Assets: undefined;
+    Explore: undefined;
+    Apps: undefined;
+    ScanQR: { did?: string };
+};
+
+export type RouteStackParamList = MainRouteStackParamList & BottonNavigatorRouteStackParamList;
 
 const Stack = createNativeStackNavigator<RouteStackParamList>();
 
@@ -114,7 +153,8 @@ export default function RootNavigation() {
             backgroundColor: theme.colors.headerFooter,
         },
         headerTitleStyle: {
-            fontSize: 24,
+            fontSize: 16,
+            fontWeight: '500',
             color: theme.colors.text,
         },
         headerTitleAlign: 'center',
@@ -131,21 +171,8 @@ export default function RootNavigation() {
             {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
-                    <Stack.Screen
-                        name="SplashSecurity"
-                        options={noHeaderScreenOptions}
-                        component={SplashSecurityScreen}
-                    />
-                    <Stack.Screen
-                        name="SplashPrivacy"
-                        options={noHeaderScreenOptions}
-                        component={SplashPrivacyScreen}
-                    />
-                    <Stack.Screen
-                        name="SplashTransparency"
-                        options={noHeaderScreenOptions}
-                        component={SplashTransparencyScreen}
-                    />
+                    <Stack.Screen name="Onboarding" options={noHeaderScreenOptions} component={OnboardingScreen} />
+
                     <Stack.Screen
                         name="TermsAndCondition"
                         options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
@@ -201,7 +228,8 @@ export default function RootNavigation() {
                 <>
                     <NotificationModule />
                     <CommunicationModule />
-                    <Stack.Navigator initialRouteName={'UserHome'} screenOptions={defaultScreenOptions}>
+                    <AppInstructionModal />
+                    <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
                             component={DrawerNavigation}
@@ -241,6 +269,38 @@ export default function RootNavigation() {
                             options={{ headerBackTitleVisible: false, title: 'Generate key' }}
                             component={CreateEthereumKeyScreen}
                             initialParams={{}}
+                        />
+                        <Stack.Screen
+                            name="AssetDetail"
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'AssetDetail',
+                            })}
+                            component={AssetDetail}
+                        />
+                        <Stack.Screen
+                            name="Send"
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'Send',
+                            })}
+                            component={SendScreen}
+                        />
+                        <Stack.Screen
+                            name="Receive"
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'Receive',
+                            })}
+                            component={ReceiveScreen}
+                        />
+                        <Stack.Screen
+                            name="SelectAsset"
+                            options={({ route }) => ({
+                                headerBackTitleVisible: false,
+                                title: route.params?.screenTitle || 'Select Asset',
+                            })}
+                            component={SelectAsset}
                         />
                     </Stack.Navigator>
                 </>

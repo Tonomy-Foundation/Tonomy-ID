@@ -9,7 +9,7 @@ set +e
 
 # Get the latest version of the SDK for the correct npmjs tag based on branch
 if [ "${BRANCH}" == "master" ]; then
-    VERSION=$(npm view @tonomy/tonomy-id-sdk version)
+    VERSION=$(npm view @tonomy/tonomy-id-sdk@latest version)
 elif [ "${BRANCH}" == "testnet" ]; then
     VERSION=$(npm view @tonomy/tonomy-id-sdk@testnet version)
 elif [ "${BRANCH}" == "development" ]; then

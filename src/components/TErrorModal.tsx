@@ -23,7 +23,6 @@ export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
 };
 
 export default function TErrorModal(props: TErrorModalProps) {
-    debug('TErrorModal', props);
     const [expanded, setExpanded] = useState(false);
 
     function switchExpanded() {
@@ -31,8 +30,7 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     if (props.expected === false) {
-        console.error('TErrorModal() unexpected error', props.error);
-        debug('Unexpected error expansion', JSON.stringify(props.error, null, 2));
+        console.error('TErrorModal() unexpected error', props.error, JSON.stringify(props.error, null, 2));
         // Additional error handling or logging could be placed here
     }
 
@@ -101,18 +99,18 @@ export default function TErrorModal(props: TErrorModalProps) {
                 title={props.title ?? 'Something went wrong'}
                 iconColor={theme.colors.error}
             >
-                {/* {props.children} */}
+                {props.children}
                 {props?.error && (
                     <>
                         <View>
                             <TP size={1}>{props?.error?.message}</TP>
                         </View>
 
-                        {props?.expected === false && (
+                        {/* {props?.expected === false && (
                             <View>
                                 <Text>The Tonomy Foundation has been notified</Text>
                             </View>
-                        )}
+                        )} */}
 
                         {isExpandable() && (
                             <>

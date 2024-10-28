@@ -43,6 +43,7 @@ import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
+import { ApplicationErrors, throwError } from '../errors';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -180,14 +181,21 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
-        const transaction = await this.signTransaction(data);
-
         try {
+            const transaction = await this.signTransaction(data);
+
             const receipt = await this.chain.getApiClient().v1.chain.push_transaction(transaction);
 
             return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
-            console.error('sendTransaction()', JSON.stringify(error, null, 2));
+            if (
+                error?.message?.includes(
+                    'Provided keys, permissions, and delays do not satisfy declared authorizations at'
+                )
+            ) {
+                throwError('Incorrect Transaction Authorization', ApplicationErrors.IncorrectTransactionAuthorization);
+            }
+
             throw error;
         }
     }
@@ -257,11 +265,17 @@ export class AntelopeChain extends AbstractChain {
 
         return this.explorerOrigin;
     }
+    isValidAccountName(account: string): boolean {
+        const regex = /^[a-z1-5.]{12}$/;
+
+        return regex.test(account);
+    }
 }
 
-export const LEOS_SEED_ROUND_PRICE = 0.002;
-export const LEOS_SEED_LATE_ROUND_PRICE = 0.004;
-export const LEOS_PUBLIC_SALE_PRICE = 0.012;
+export const LEOS_SEED_ROUND_PRICE = 0.0002;
+export const LEOS_SEED_LATE_ROUND_PRICE = 0.0004;
+export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
+export const LEOS_CURRENT_PRICE = LEOS_SEED_ROUND_PRICE;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -451,7 +465,29 @@ export class AntelopeAction implements IOperation {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 const value = data[key];
 
-                args[key] = value.toString();
+                debug('getArguments()', key, value);
+
+                if (value === null) {
+                    args[key] = 'null';
+                } else if (value === undefined) {
+                    args[key] = 'undefined';
+                } else if (typeof value === 'object') {
+                    try {
+                        args[key] = JSON.stringify(value);
+                    } catch (error) {
+                        console.error('getArguments() object', error);
+                        args[key] = 'unpackable object';
+                    }
+                } else if (value.toString) {
+                    args[key] = value.toString();
+                } else {
+                    try {
+                        args[key] = JSON.stringify(value);
+                    } catch (error) {
+                        console.error('getArguments() value', error);
+                        args[key] = 'unpackable value';
+                    }
+                }
             }
         }
 
@@ -611,6 +647,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
             throw new Error('Account has no private key');
         }
 
+        //TODO catch overdraw balance error and throw application error NotEnoughCoins
         return await this.privateKey.sendTransaction(data);
     }
 
@@ -674,8 +711,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
     ): Promise<void> {
         const signedTransaction = receipt.getRawTransaction();
         const trxId = receipt.getTransactionHash();
-        // @ts-expect-error signatures type mismatch
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
+
+        debug('approveTransactionRequest() callbackParams', callbackParams);
 
         if (callbackParams) {
             const uid = getQueryParam(callbackParams.url, 'uid');
@@ -690,7 +728,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             // eslint-disable-next-line camelcase
             const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
 
-            debug('approveTransactionRequest() callback', newCallback, bodyObject);
+            debug('approveTransactionRequest() callback', new Date(), newCallback, bodyObject);
             const response = await fetch(newCallback, {
                 method: 'POST',
                 headers: {
@@ -709,9 +747,11 @@ export class AntelopeSigningRequestSession implements IChainSession {
 
     async rejectTransactionRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
         const callback = resolvedSigningRequest.request.data.callback;
-        const origin = new URL(callback).origin;
 
-        if (origin) {
+        debug('rejectTransactionRequest() callback', callback);
+
+        if (callback) {
+            const origin = new URL(callback).origin;
             const response = await fetch(origin, {
                 method: 'POST',
                 headers: {
@@ -722,11 +762,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error(`Failed to send callback: ${JSON.stringify(response)}`);
+            if (!response.ok || response.status !== 200) {
+                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
-        } else {
-            throw new Error('No origin found in callback URL');
         }
     }
 }
