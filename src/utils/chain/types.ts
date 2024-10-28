@@ -401,13 +401,9 @@ export interface ITransactionRequest {
 
 export interface ISession {
     initialize(): Promise<void>;
-    onQrScan(data: string): Promise<void>; //make this function static
-    onLink(data: string): Promise<void>; //make this function static
+    onQrScan(data: string): Promise<void>; // make this function static
+    onLink(data: string): Promise<void>; // make this function static
     onEvent(request: unknown): Promise<void>;
-    handleLoginRequest(request: unknown): Promise<void>;
-    handleTransactionRequest(request: unknown): Promise<void>;
-    navigateToLoginScreen(request: ILoginRequest): Promise<void>;
-    navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
 }
 
 export abstract class AbstractSession implements ISession {
@@ -421,8 +417,9 @@ export abstract class AbstractSession implements ISession {
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;
     abstract onEvent(request: unknown): Promise<void>;
-    abstract handleLoginRequest(request: unknown): Promise<void>;
-    abstract handleTransactionRequest(request: unknown): Promise<void>;
-    abstract navigateToLoginScreen(request: ILoginRequest): Promise<void>;
-    abstract navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
+
+    protected abstract handleLoginRequest(request: unknown): Promise<void>;
+    protected abstract handleTransactionRequest(request: unknown): Promise<void>;
+    protected abstract navigateToLoginScreen(request: ILoginRequest): Promise<void>;
+    protected abstract navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
 }
