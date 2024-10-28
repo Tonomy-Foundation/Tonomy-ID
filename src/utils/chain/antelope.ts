@@ -199,7 +199,10 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 
             if (error.response?.headers) {
                 if (error.response?.json) {
-                    throw new AntelopePushTransactionError({ ...error.response.json });
+                    const actions = data instanceof AntelopeTransaction ? await data.getData() : data;
+                    const contractName = actions[0]?.account; //contract account name
+
+                    throw new AntelopePushTransactionError({ ...error.response.json, actions, contract: contractName });
                 }
 
                 throw new HttpError(error);
