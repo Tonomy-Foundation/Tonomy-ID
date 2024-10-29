@@ -32,6 +32,8 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
+import { useSessionStore } from '../store/sessionStore';
+import { WalletConnectSession as WalletSession } from '../utils/session/walletConnect';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -176,11 +178,23 @@ export default function CommunicationModule() {
         }
     }
 
-    const walletSession = new EthereumSession();
+    async function initializeWalletConnect(): Promise<void> {
+        const { walletConnectSession, setWalletConnectSession } = useSessionStore.getState();
+
+        if (walletConnectSession && walletConnectSession.initialized) {
+            debug('initializeWalletState() Already initialized');
+            return;
+        }
+
+        const session = new WalletSession();
+
+        await session.initialize();
+        setWalletConnectSession(session);
+    }
 
     useEffect(() => {
         progressiveRetryOnNetworkError(loginToService);
-        progressiveRetryOnNetworkError(walletSession.initialize());
+        progressiveRetryOnNetworkError(initializeWalletConnect);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);

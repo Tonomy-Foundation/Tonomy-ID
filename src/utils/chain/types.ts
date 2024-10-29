@@ -406,10 +406,6 @@ export interface ISession {
 }
 
 export abstract class AbstractSession implements ISession {
-    protected chain: IChain;
-    constructor(chain: IChain) {
-        this.chain = chain;
-    }
     abstract initialize(): Promise<void>;
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;

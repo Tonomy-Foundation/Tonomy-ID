@@ -1,43 +1,12 @@
 import { create } from 'zustand';
-import Core from '@walletconnect/core';
-import Web3Wallet from '@walletconnect/web3wallet';
+import { WalletConnectSession } from '../utils/session/walletConnect';
 
-//Structure for WalletConnect protocol
-interface WalletConnectProtocol {
-    web3wallet: Web3Wallet | null;
-    core: Core | null;
-    initialized: boolean;
-    setWalletConnectState: (state: { web3wallet: Web3Wallet; core: Core; initialized: boolean }) => void;
+interface SessionState {
+    walletConnectSession: WalletConnectSession | null;
+    setWalletConnectSession: (session: WalletConnectSession) => void;
 }
 
-// Define the structure for the whole session store
-interface SessionStore {
-    protocols: {
-        WalletConnect: WalletConnectProtocol;
-        // Add additional protocols
-    };
-}
-const useSessionStore = create<SessionStore>((set) => ({
-    protocols: {
-        WalletConnect: {
-            web3wallet: null,
-            core: null,
-            initialized: false,
-            setWalletConnectState: ({ web3wallet, core, initialized }) =>
-                set((state) => ({
-                    protocols: {
-                        ...state.protocols,
-                        WalletConnect: {
-                            ...state.protocols.WalletConnect,
-                            web3wallet,
-                            core,
-                            initialized,
-                        },
-                    },
-                })),
-        },
-        // Additional protocols can be added here
-    },
+export const useSessionStore = create<SessionState>((set) => ({
+    walletConnectSession: null,
+    setWalletConnectSession: (session: WalletConnectSession) => set({ walletConnectSession: session }),
 }));
-
-export default useSessionStore;
