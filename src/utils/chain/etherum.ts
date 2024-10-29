@@ -28,9 +28,6 @@ import {
     AbstractTransactionReceipt,
     IAsset,
     ChainType,
-    AbstractSession,
-    ILoginRequest,
-    ITransactionRequest,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -39,7 +36,6 @@ import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 import { ApplicationErrors, throwError } from '../errors';
-import { WaalletConnectSession } from '../session/walletConnect';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 

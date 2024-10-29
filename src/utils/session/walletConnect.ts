@@ -10,9 +10,9 @@ import { AbstractSession, ILoginRequest, ITransactionRequest } from '../chain/ty
 const debug = Debug('tonomy-id:utils:session:walletConnect');
 
 export class WalletConnectSession extends AbstractSession {
-    protected core: ICore;
-    protected web3wallet: Web3Wallet;
-    protected initialized: boolean;
+    core: ICore;
+    web3wallet: Web3Wallet;
+    initialized: boolean;
 
     async initialize(): Promise<void> {
         const netInfoState = await NetInfo.fetch();
