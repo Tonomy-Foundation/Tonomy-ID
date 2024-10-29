@@ -1,6 +1,5 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
-import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -407,13 +406,11 @@ export interface ISession {
 }
 
 export abstract class AbstractSession implements ISession {
-    chain: IChain;
+    protected chain: IChain;
     constructor(chain: IChain) {
         this.chain = chain;
     }
-    async initialize(): Promise<void> {
-        // Implementation goes here
-    }
+    abstract initialize(): Promise<void>;
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;
     abstract onEvent(request: unknown): Promise<void>;

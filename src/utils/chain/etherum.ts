@@ -28,6 +28,9 @@ import {
     AbstractTransactionReceipt,
     IAsset,
     ChainType,
+    AbstractSession,
+    ILoginRequest,
+    ITransactionRequest,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -36,6 +39,7 @@ import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 import { ApplicationErrors, throwError } from '../errors';
+import { WaalletConnectSession } from '../session/walletConnect';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -186,6 +190,7 @@ export class EthereumToken extends AbstractToken {
 
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
+
         return balance.getUsdValue();
     }
 }
@@ -566,5 +571,47 @@ export class WalletConnectSession implements IChainSession {
             topic: request.topic,
             response,
         });
+    }
+}
+
+export class EthereumSession extends AbstractSession {
+    async initialize(): Promise<void> {
+        //TODO rename to WalletConnectSession after finalize and remove old class
+        await WaalletConnectSession();
+    }
+
+    async onQrScan(data: string): Promise<void> {
+        console.log(`QR code scanned with data: ${data}`);
+        // Handle QR code scan specific to Ethereum here
+    }
+
+    async onLink(data: string): Promise<void> {
+        console.log(`Link received with data: ${data}`);
+        // Handle link data specific to Ethereum here
+    }
+
+    async onEvent(request: unknown): Promise<void> {
+        console.log(`Event received with request:`, request);
+        // Handle generic event data for Ethereum
+    }
+
+    protected async handleLoginRequest(request: unknown): Promise<void> {
+        console.log(`Handling login request:`, request);
+        // Handle Ethereum-specific login request
+    }
+
+    protected async handleTransactionRequest(request: unknown): Promise<void> {
+        console.log(`Handling transaction request:`, request);
+        // Handle Ethereum-specific transaction request
+    }
+
+    protected async navigateToLoginScreen(request: ILoginRequest): Promise<void> {
+        console.log(`Navigating to login screen for user: ${request}`);
+        // Logic to navigate to the Ethereum login screen
+    }
+
+    protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
+        console.log(`Navigating to transaction screen with amount: ${request}`);
+        // Logic to navigate to the Ethereum transaction screen
     }
 }

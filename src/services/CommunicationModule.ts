@@ -176,8 +176,11 @@ export default function CommunicationModule() {
         }
     }
 
+    const walletSession = new EthereumSession();
+
     useEffect(() => {
         progressiveRetryOnNetworkError(loginToService);
+        progressiveRetryOnNetworkError(walletSession.initialize());
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
