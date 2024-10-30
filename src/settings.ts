@@ -56,6 +56,9 @@ type ConfigType = {
     infuraKey: string;
     etherscanApiKey: string;
     walletConnectProjectId: string;
+    sentryPublicKey: string;
+    sentrySecretKey: string;
+    sentryProjectId: string;
 };
 
 type SettingsType = {

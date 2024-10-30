@@ -15,7 +15,7 @@ import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
-
+import './src/utils/sentry';
 
 Debug.enable(process.env.DEBUG);
 
