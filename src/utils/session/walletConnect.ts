@@ -40,7 +40,6 @@ export class WalletConnectSession extends AbstractSession {
 
                 this.initialized = true;
             } catch (e) {
-                console.error('useWalletStore() error on Web3Wallet.init()', JSON.stringify(e, null, 2));
                 if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                 else throw e;
             }
@@ -48,7 +47,7 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onQrScan(data: string): Promise<void> {
-        debug(`QR code scanned with data: ${data}`);
+        debug(`onQrScan() data ${data}`);
         // Handle QR code scan specific to Ethereum here
     }
 

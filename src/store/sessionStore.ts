@@ -3,10 +3,15 @@ import { WalletConnectSession } from '../utils/session/walletConnect';
 
 interface SessionState {
     walletConnectSession: WalletConnectSession | null;
-    setWalletConnectSession: (session: WalletConnectSession) => void;
+    initializeSessions: () => void;
 }
 
 export const useSessionStore = create<SessionState>((set) => ({
     walletConnectSession: null,
-    setWalletConnectSession: (session: WalletConnectSession) => set({ walletConnectSession: session }),
+    initializeSessions: () => {
+        const walletConnectSession = new WalletConnectSession();
+
+        // Initialize other sessions here i.e antelope, pangea
+        set({ walletConnectSession });
+    },
 }));

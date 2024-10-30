@@ -50,7 +50,7 @@ export default function CommunicationModule() {
         accountExists,
         initializeWalletAccount,
     } = useWalletStore();
-    const { walletConnectSession, setWalletConnectSession } = useSessionStore.getState();
+    const { walletConnectSession, initializeSessions } = useSessionStore.getState();
 
     // initializeWalletState() on mount with progressiveRetryOnNetworkError()
     useEffect(() => {
@@ -188,7 +188,7 @@ export default function CommunicationModule() {
         const session = new WalletSession();
 
         await session.initialize();
-        setWalletConnectSession(session);
+        initializeSessions();
     }
 
     useEffect(() => {

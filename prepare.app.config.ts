@@ -71,7 +71,7 @@ const expo: ExpoConfig = {
             LSApplicationQueriesSchemes: ['esr'],
             CFBundleURLTypes: [
                 {
-                    CFBundleURLSchemes: ['esr', 'wc'],
+                    CFBundleURLSchemes: ['esr', 'wc', 'did'],
                 },
             ],
         },
@@ -92,6 +92,9 @@ const expo: ExpoConfig = {
                     },
                     {
                         scheme: 'wc',
+                    },
+                    {
+                        scheme: 'did',
                     },
                 ],
                 category: ['BROWSABLE', 'DEFAULT'],
