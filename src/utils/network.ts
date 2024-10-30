@@ -2,6 +2,7 @@ import settings from '../settings';
 import Debug from 'debug';
 import { sleep } from './sleep';
 import { isNetworkError } from './errors';
+import { logError } from './sentry';
 
 const debug = Debug('tonomy-id:utils:network');
 
@@ -41,7 +42,7 @@ export async function progressiveRetryOnNetworkError(
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {
                 // Non-network error, throw it
-                console.error('progressiveRetryOnNetworkError() Non-network error occurred. Stopping retry.', error);
+                logError('progressiveRetryOnNetworkError() Non-network error occurred. Stopping retry.', error);
                 throw error;
             }
         }

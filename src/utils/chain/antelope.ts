@@ -44,6 +44,7 @@ import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
 import { ApplicationErrors, throwError } from '../errors';
+import { logError } from '../sentry';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -475,7 +476,7 @@ export class AntelopeAction implements IOperation {
                     try {
                         args[key] = JSON.stringify(value);
                     } catch (error) {
-                        console.error('getArguments() object', error);
+                        logError('getArguments() object', error);
                         args[key] = 'unpackable object';
                     }
                 } else if (value.toString) {
@@ -484,7 +485,7 @@ export class AntelopeAction implements IOperation {
                     try {
                         args[key] = JSON.stringify(value);
                     } catch (error) {
-                        console.error('getArguments() value', error);
+                        logError('getArguments() value', error);
                         args[key] = 'unpackable value';
                     }
                 }
@@ -740,7 +741,10 @@ export class AntelopeSigningRequestSession implements IChainSession {
             debug('approveTransactionRequest() response status', response.status);
 
             if (!response.ok || response.status !== 200) {
-                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                logError(
+                    'approveTransactionRequest()',
+                    new Error(`Failed to send callback: ${JSON.stringify(response)}`)
+                );
             }
         }
     }
@@ -763,7 +767,10 @@ export class AntelopeSigningRequestSession implements IChainSession {
             });
 
             if (!response.ok || response.status !== 200) {
-                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                logError(
+                    'rejectTransactionRequest()',
+                    new Error(`Failed to send callback: ${JSON.stringify(response)}`)
+                );
             }
         }
     }

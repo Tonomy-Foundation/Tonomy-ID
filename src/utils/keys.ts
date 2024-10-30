@@ -13,6 +13,7 @@ import { appStorage, keyStorage } from './StorageManager/setup';
 import { IPrivateKey, IChain } from '../utils/chain/types';
 import settings from '../settings';
 import Debug from 'debug';
+import { logError } from './sentry';
 
 const debug = Debug('tonomy-id:utils:keys');
 
@@ -67,7 +68,7 @@ export async function testKeyGenerator() {
 
         debug('signedTransaction:', signedTransaction);
     } catch (e) {
-        console.error('testKeyGenerator()', e);
+        logError('testKeyGenerator()', e);
     }
 }
 

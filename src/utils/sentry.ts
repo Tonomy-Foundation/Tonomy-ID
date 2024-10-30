@@ -1,4 +1,4 @@
-import { init } from 'sentry-expo';
+import { init, Native } from 'sentry-expo';
 import settings from '../settings';
 
 init({
@@ -6,3 +6,13 @@ init({
     enableInExpoDevelopment: true,
     debug: !settings.isProduction(),
 });
+
+export function logError(message: string, error: Error) {
+    if (settings.isProduction()) {
+        Native.captureException(error);
+    } else {
+        console.log(message + ': verbose error', JSON.stringify(error, null, 2));
+    }
+
+    console.error(message, error);
+}

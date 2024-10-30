@@ -32,6 +32,7 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
+import { logError } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -321,7 +322,7 @@ export default function CommunicationModule() {
                     }
                 }
             } catch (error) {
-                console.error('handleSessionProposal()', error);
+                logError('handleSessionProposal()', error);
             }
         };
 

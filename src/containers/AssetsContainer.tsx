@@ -30,6 +30,7 @@ import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { supportedChains } from '../utils/assetDetails';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
+import { logError } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 const vestingContract = VestingContract.Instance;
@@ -141,7 +142,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
             } else {
-                console.error('MainContainer() updateAllBalances() error', error);
+                logError('MainContainer() updateAllBalances()', error);
             }
         } finally {
             isUpdatingBalances.current = false;

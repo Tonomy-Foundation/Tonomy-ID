@@ -8,6 +8,7 @@ import { TP } from './atoms/THeadings';
 import { HttpError, EosioUtil, CommunicationError, AntelopePushTransactionError } from '@tonomy/tonomy-id-sdk';
 import { Modal } from 'react-native';
 import Debug from 'debug';
+import { logError } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:components:TErrorModal');
 
@@ -30,8 +31,11 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     if (props.expected === false) {
-        console.error('TErrorModal() unexpected error', props.error, JSON.stringify(props.error, null, 2));
-        // Additional error handling or logging could be placed here
+        if (!props.error) {
+            logError('TErrorModal()', new Error('unexpected error: no error provided'));
+        } else {
+            logError('TErrorModal() unexpected error', props.error);
+        }
     }
 
     function isExpandableErrorType() {
@@ -131,7 +135,7 @@ export default function TErrorModal(props: TErrorModalProps) {
             </TModal>
         );
     } catch (error) {
-        console.error('TErrorModal() rendering', error);
+        logError('TErrorModal() rendering', error);
         return null;
     }
 }
