@@ -103,7 +103,19 @@ const expo: ExpoConfig = {
             },
         ],
         ['./android.manifest.plugin.js'],
+        ['sentry-expo'],
     ],
+    hooks: {
+        postPublish: [
+            {
+                file: 'sentry-expo/upload-sourcemaps',
+                config: {
+                    organization: 'tonomy-foundation-ba',
+                    project: settings.config.sentryProjectId,
+                },
+            },
+        ],
+    },
     extra: {
         eas: {
             projectId: settings.config.expoProjectId,
