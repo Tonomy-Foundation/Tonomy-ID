@@ -13,6 +13,8 @@ import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../util
 import useUserStore from '../store/userStore';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 import { Checksum256, PrivateKey } from '@wharfkit/antelope';
+import useErrorStore from '../store/errorStore';
+import TSpinner from '../components/atoms/TSpinner';
 
 export interface ILoginOptions {
     keyFromPasswordFn: KeyFromPasswordFn;
@@ -28,6 +30,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
     const { user } = useUserStore();
     const [loading, setLoading] = useState(false);
     const hasEffectRun = useRef(false);
+    const errorsStore = useErrorStore();
 
     useEffect(() => {
         if (!hasEffectRun.current) {
@@ -53,19 +56,25 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 
     async function onNext() {
         setLoading(true);
-        const passphrase = getPassphrase();
-        const { privateKey, salt } = await generatePrivateKeyFromPassword(passphrase);
 
-        const loginOptions: ILoginOptions = {
-            keyFromPasswordFn: async () => ({ privateKey, salt }),
-        };
+        try {
+            const passphrase = getPassphrase();
+            const { privateKey, salt } = await generatePrivateKeyFromPassword(passphrase);
 
-        // @ts-ignore Checksum256 type error
-        await user.savePassword(passphrase, loginOptions);
-        savePrivateKeyToStorage(passphrase, salt.toString());
+            const loginOptions: ILoginOptions = {
+                keyFromPasswordFn: async () => ({ privateKey, salt }),
+            };
 
-        setLoading(false);
-        navigation.navigate('ConfirmPassphrase', { index: 0 });
+            // @ts-ignore Checksum256 type error
+            await user.savePassword(passphrase, loginOptions);
+            savePrivateKeyToStorage(passphrase, salt.toString());
+
+            navigation.navigate('ConfirmPassphrase', { index: 0 });
+        } catch (e) {
+            errorsStore.setError({ error: e, expected: false });
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -113,7 +122,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={loading}>
-                                NEXT
+                                {loading ? <TSpinner size={50} /> : 'NEXT'}
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>

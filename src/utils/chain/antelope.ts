@@ -43,6 +43,8 @@ import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
+import { ApplicationErrors, throwError } from '../errors';
+import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -180,14 +182,32 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async sendTransaction(data: ActionData[] | AntelopeTransaction): Promise<AntelopeTransactionReceipt> {
-        const transaction = await this.signTransaction(data);
-
         try {
+            const transaction = await this.signTransaction(data);
+
             const receipt = await this.chain.getApiClient().v1.chain.push_transaction(transaction);
 
             return new AntelopeTransactionReceipt(this.chain, receipt, transaction);
         } catch (error) {
-            console.error('sendTransaction()', JSON.stringify(error, null, 2));
+            if (
+                error?.message?.includes(
+                    'Provided keys, permissions, and delays do not satisfy declared authorizations at'
+                )
+            ) {
+                throwError('Incorrect Transaction Authorization', ApplicationErrors.IncorrectTransactionAuthorization);
+            }
+
+            if (error.response?.headers) {
+                if (error.response?.json) {
+                    const actions = data instanceof AntelopeTransaction ? await data.getData() : data;
+                    const contractName = actions[0]?.account; //contract account name
+
+                    throw new AntelopePushTransactionError({ ...error.response.json, actions, contract: contractName });
+                }
+
+                throw new HttpError(error);
+            }
+
             throw error;
         }
     }
@@ -256,6 +276,11 @@ export class AntelopeChain extends AbstractChain {
         }
 
         return this.explorerOrigin;
+    }
+    isValidAccountName(account: string): boolean {
+        const regex = /^[a-z1-5.]{12}$/;
+
+        return regex.test(account);
     }
 }
 
@@ -634,6 +659,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
             throw new Error('Account has no private key');
         }
 
+        //TODO catch overdraw balance error and throw application error NotEnoughCoins
         return await this.privateKey.sendTransaction(data);
     }
 
@@ -697,7 +723,6 @@ export class AntelopeSigningRequestSession implements IChainSession {
     ): Promise<void> {
         const signedTransaction = receipt.getRawTransaction();
         const trxId = receipt.getTransactionHash();
-        // @ts-expect-error signatures type mismatch
         const callbackParams = request.getCallback(signedTransaction.signatures, 0);
 
         debug('approveTransactionRequest() callbackParams', callbackParams);

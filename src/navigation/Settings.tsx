@@ -20,8 +20,6 @@ export type SettingsStackParamList = {
     FaceIdSettings: undefined;
     FingerprintUpdate: { password: string };
     FingerprintSettings: undefined;
-    // ChangePin: { action: string };
-    // AddPin: { action: string };
 };
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
@@ -35,7 +33,7 @@ export default function SettingsNavigation() {
         return (
             // @ts-expect-error no overload matches this call
             // TODO fix type error
-            <TouchableOpacity onPress={() => navigation.navigate('UserHome')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Assets')}>
                 <IconButton
                     icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'}
                     size={Platform.OS === 'android' ? 26 : 38}
@@ -46,14 +44,9 @@ export default function SettingsNavigation() {
         );
     };
     const defaultScreenOptions: NativeStackNavigationOptions = {
-        headerShown: true,
-        headerBackTitleVisible: false,
-        headerStyle: {
-            // backgroundColor: theme.colors.,
-            backgroundColor: '#F9F9F9',
-        },
         headerTitleStyle: {
-            fontSize: 24,
+            fontSize: 16,
+            fontWeight: '500',
             color: theme.colors.text,
         },
         headerTitleAlign: 'center',

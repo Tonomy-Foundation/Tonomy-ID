@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
-import theme from '../utils/theme';
+import theme, { commonStyles } from '../utils/theme';
 import { TransactionType } from '../utils/chain/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
+import { QuestionMark } from 'iconoir-react-native';
 
 export type TransactionFeeData = {
     fee: string;
@@ -173,14 +174,16 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                         onClose={() => setToolTipVisible(false)}
                         contentStyle={{ backgroundColor: theme.colors.black }}
                     >
-                        <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                            <Text style={styles.secondaryColor}>(?)</Text>
+                        <TouchableOpacity style={styles.tooltipIcon} onPress={() => setToolTipVisible(true)}>
+                            <QuestionMark width={13} height={13} color={theme.colors.success} />
                         </TouchableOpacity>
                     </Tooltip>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text>{transactionFee.fee}</Text>
-                    <Text style={[styles.secondaryColor]}>${transactionFee.usdFee}</Text>
+                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
+                        (${transactionFee.usdFee})
+                    </Text>
                 </View>
             </View>
         </View>
@@ -215,11 +218,21 @@ const styles = StyleSheet.create({
     secondaryColor: {
         color: theme.colors.secondary2,
         marginLeft: 4,
+        fontSize: 14,
+        ...commonStyles.secondaryFontFamily,
     },
     actionText: {
         fontWeight: 'bold',
         textAlign: 'left',
         marginTop: 10,
         marginLeft: 2,
+    },
+    tooltipIcon: {
+        borderWidth: 1,
+        borderColor: theme.colors.success,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 5,
     },
 });
