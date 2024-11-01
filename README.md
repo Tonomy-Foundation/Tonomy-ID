@@ -85,6 +85,27 @@ This is now running in production mode connected to the staging environment.
 6. Connect your phone to the pc with a usb cable.
 7. Open the the react native app you want to debug.
 
+## Installing new packages
+
+```bash
+npx expo install expo-sqlite
+# install as devDependancy
+npx expo install typescript -- -D
+```
+
+To check or fix compatibility issues
+
+```bash
+npx expo install typescript --check
+npx expo install --fix
+```
+
+To check other expo issues
+
+```bash
+npx expo-doctor
+```
+
 ## How to test app upgrades on iOS with testflight
 
 1. iOS use testflight versions
@@ -100,7 +121,7 @@ This is now running in production mode connected to the staging environment.
 2. Install previous version use apk from the github action (Build Android APK) install it
 <https://github.com/Tonomy-Foundation/Tonomy-ID/actions/workflows/build-apk.yaml>
 4. Create account or login with the existing account
-5. Go to the latest version of the app from the github actions 
+5. Go to the latest version of the app from the github actions
 6. Test again and if face any error mention it in github issues with the replicate steps
 
 ## Update the Tonomy-ID-SDK version to the latest
