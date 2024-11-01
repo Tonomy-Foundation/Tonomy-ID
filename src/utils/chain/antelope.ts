@@ -44,6 +44,7 @@ import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
 import { createUrl, getQueryParam } from '../strings';
 import { ApplicationErrors, throwError } from '../errors';
+import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -194,6 +195,17 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
                 )
             ) {
                 throwError('Incorrect Transaction Authorization', ApplicationErrors.IncorrectTransactionAuthorization);
+            }
+
+            if (error.response?.headers) {
+                if (error.response?.json) {
+                    const actions = data instanceof AntelopeTransaction ? await data.getData() : data;
+                    const contractName = actions[0]?.account; //contract account name
+
+                    throw new AntelopePushTransactionError({ ...error.response.json, actions, contract: contractName });
+                }
+
+                throw new HttpError(error);
             }
 
             throw error;
