@@ -192,15 +192,16 @@ export default function CommunicationModule() {
             return;
         }
 
-        console.log('walletConnectSession', walletConnectSession);
-
         try {
             const session = new WalletConnectSession();
 
             await session.initialize();
             console.log('session', session.initialized);
+            session.onEvent();
             setWalletConnectSession(session);
         } catch (e) {
+            console.log('initializeWalletConnect() Error initializing WalletConnect:', e);
+
             if (isNetworkError(e)) {
                 throw e;
             } else {

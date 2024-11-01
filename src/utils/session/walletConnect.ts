@@ -139,8 +139,6 @@ export class WalletConnectSession extends AbstractSession {
                 });
 
                 this.initialized = true;
-
-                this.onEvent();
             } catch (e) {
                 console.log('Error initializing WalletConnect:', e);
                 if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
@@ -160,14 +158,9 @@ export class WalletConnectSession extends AbstractSession {
         // Handle link data specific to Ethereum here
     }
     async onEvent(): Promise<void> {
-        try {
-            this.web3wallet?.on('session_proposal', async (proposal) => {
-                await this.handleLoginRequest(proposal);
-            });
-        } catch (error) {
-            console.log(`onEvent() Error handling session proposal:`, error);
-            throw error;
-        }
+        this.web3wallet?.on('session_proposal', async (proposal) => {
+            await this.handleLoginRequest(proposal);
+        });
     }
 
     private async getChainAccount(chainIds: string[]): Promise<IAccount[]> {
@@ -221,7 +214,6 @@ export class WalletConnectSession extends AbstractSession {
 
             const accounts = await this.getChainAccount(chainIds);
 
-            console.log('accounts', accounts);
             Object.keys(activeNamespaces).forEach((key) => {
                 const accountsDetails: string[] = [];
 
@@ -240,7 +232,6 @@ export class WalletConnectSession extends AbstractSession {
                     events: activeNamespaces[key].events,
                 };
             });
-            console.log('namespaces', JSON.stringify(request?.params?.proposer?.metadata, null, 2));
             const { name, url, icons } = request?.params?.proposer?.metadata ?? {};
             const chains = accounts.map((account) => account.getChain());
 
