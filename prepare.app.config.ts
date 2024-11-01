@@ -51,7 +51,7 @@ const expo: ExpoConfig = {
     slug,
     version: myPackage.version,
     orientation: 'portrait',
-    icon: settings.config.images.logo1024,
+    icon: settings.config.images.logo48,
     userInterfaceStyle: 'light',
     splash: {
         image: settings.config.images.splash,
@@ -77,10 +77,6 @@ const expo: ExpoConfig = {
         },
     },
     android: {
-        adaptiveIcon: {
-            foregroundImage: settings.config.images.logo1024,
-            backgroundColor: '#FFFFFF',
-        },
         allowBackup: false,
         package: identifier,
         intentFilters: [

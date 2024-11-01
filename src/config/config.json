@@ -12,13 +12,13 @@
         "infoBackground": "#F6F9FB",
         "lightBackground": "#F6F9FB"
     },
-    "appLogoUrl": "./src/assets/pangea/favicon.png",
+    "appLogoUrl": "./src/assets/tonomy/android3.png",
     "appName": "Tonomy ID Development",
     "ecosystemName": "Tonomy Development",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/pangea/pangea-splash.png",
-        "logo48": "./src/assets/pangea/favicon.png",
+        "logo48": "./src/assets/tonomy/android3.png",
         "logo1024": "./src/assets/pangea/pangea-large-logo.png"
     },
     "links": {
