@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Image, StyleSheet, View, Text } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
@@ -8,51 +8,30 @@ import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { Props } from '../screens/WalletConnectLoginScreen';
-import { SignClientTypes } from '@walletconnect/types';
 import useErrorStore from '../store/errorStore';
-import { IChainSession, IAccount } from '../utils/chain/types';
+import { ILoginRequest } from '../utils/chain/types';
 
 export default function WalletConnectLoginContainer({
     navigation,
-    payload,
-    platform,
-    session,
+    loginRequest,
 }: {
     navigation: Props['navigation'];
-    payload: SignClientTypes.EventArguments['session_proposal'];
-    platform: 'mobile' | 'browser';
-    session: IChainSession;
+    loginRequest: ILoginRequest;
 }) {
-    const { name, url, icons } = payload?.params?.proposer?.metadata ?? {};
-    const parsedUrl = new URL(url);
+    console.log('WalletConnectLoginContainer -> request', loginRequest);
     const errorStore = useErrorStore();
-    const [accounts, setAccounts] = useState<IAccount[]>([]);
-
-    useEffect(() => {
-        const fetchActiveAccounts = async () => {
-            try {
-                const activeAccounts = await session.getActiveAccounts();
-
-                setAccounts(activeAccounts);
-            } catch (error) {
-                errorStore.setError({ title: 'Error', error, expected: false });
-            }
-        };
-
-        fetchActiveAccounts();
-    }, [session, errorStore]);
 
     const onCancel = async () => {
-        await session.cancelSessionRequest(payload);
+        await loginRequest.reject();
         navigation.navigate('Assets');
     };
 
     const handleAccept = async () => {
         try {
-            await session.createSession(payload);
+            await loginRequest.approve();
             navigation.navigate('Assets');
         } catch (e) {
-            await session.cancelSessionRequest(payload);
+            await loginRequest.reject();
             navigation.navigate('Assets');
 
             errorStore.setError({ title: 'Error', error: e, expected: false });
@@ -64,7 +43,7 @@ export default function WalletConnectLoginContainer({
             body={
                 <View style={styles.container}>
                     <View style={styles.marginTop}>
-                        {accounts?.map((account, index) => {
+                        {loginRequest.account?.map((account, index) => {
                             const chain = account.getChain();
                             const chainName = chain.getName();
                             const accountName = account.getName();
@@ -84,10 +63,10 @@ export default function WalletConnectLoginContainer({
                     </View>
 
                     <View style={[styles.appDialog, styles.marginTop]}>
-                        <Image style={styles.appDialogImage} source={{ uri: icons[0] }} />
-                        <TH1 style={commonStyles.textAlignCenter}>{name}</TH1>
+                        <Image style={styles.appDialogImage} source={{ uri: loginRequest.loginApp.getLogoUrl() }} />
+                        <TH1 style={commonStyles.textAlignCenter}>{loginRequest.loginApp.getName()}</TH1>
                         <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                        <TLink to={url}>{parsedUrl.origin}</TLink>
+                        <TLink to={loginRequest.loginApp.getUrl()}>{loginRequest.loginApp.getOrigin()}</TLink>
                     </View>
                 </View>
             }

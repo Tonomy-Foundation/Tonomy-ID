@@ -1,3 +1,4 @@
+import React from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useUserStore from '../store/userStore';
 import {
@@ -35,6 +36,13 @@ import { useSessionStore } from '../store/sessionStore';
 import { WalletConnectSession } from '../utils/session/walletConnect';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
+
+export const navigationRef = React.createRef<NavigationProp<RouteStackParamList>>();
+
+export function navigate(name: string, params?: any) {
+    console.log('navigate', name, params);
+    navigationRef.current?.navigate(name, params);
+}
 
 export default function CommunicationModule() {
     const { user, logout } = useUserStore();
@@ -185,11 +193,20 @@ export default function CommunicationModule() {
         }
 
         console.log('walletConnectSession', walletConnectSession);
-        const session = new WalletConnectSession();
 
-        await session.initialize();
-        console.log('session', session.initialized);
-        setWalletConnectSession(session);
+        try {
+            const session = new WalletConnectSession();
+
+            await session.initialize();
+            console.log('session', session.initialized);
+            setWalletConnectSession(session);
+        } catch (e) {
+            if (isNetworkError(e)) {
+                throw e;
+            } else {
+                errorStore.setError({ error: e, expected: false });
+            }
+        }
     }
 
     useEffect(() => {

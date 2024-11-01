@@ -6,12 +6,5 @@ import { RouteStackParamList } from '../navigation/Root';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'WalletConnectLogin'>;
 
 export default function WalletConnectLoginScreen(props: Props) {
-    return (
-        <WalletConnectLoginContainer
-            navigation={props.navigation}
-            payload={props.route.params.payload}
-            platform={props.route.params.platform ?? 'mobile'}
-            session={props.route.params.session}
-        />
-    );
+    return <WalletConnectLoginContainer navigation={props.navigation} loginRequest={props.route.params.loginRequest} />;
 }

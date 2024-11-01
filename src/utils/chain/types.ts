@@ -1,5 +1,6 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
+import Web3Wallet from '@walletconnect/web3wallet';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 export interface IPublicKey {
@@ -376,13 +377,14 @@ export interface ILoginApp {
     getName(): string;
     getChains(): IChain[];
     getOrigin(): string;
+    getUrl(): string;
 }
 
 export interface ILoginRequest {
     session?: ISession;
     loginApp: ILoginApp;
-    privateKey: IPrivateKey;
-    account: IAccount;
+    privateKey?: IPrivateKey;
+    account: IAccount[];
     request?: unknown;
     reject(): Promise<void>;
     approve(): Promise<void>;
@@ -395,10 +397,11 @@ export interface ITransactionRequest {
     account: IAccount;
     request?: unknown;
     reject(): Promise<void>;
-    approve(): Promise<ITransactionReceipt>;
+    approve(receipt?: ITransactionReceipt): Promise<ITransactionReceipt>;
 }
 
 export interface ISession {
+    web3wallet?: Web3Wallet;
     initialize(): Promise<void>;
     onQrScan(data: string): Promise<void>; // make this function static
     onLink(data: string): Promise<void>; // make this function static

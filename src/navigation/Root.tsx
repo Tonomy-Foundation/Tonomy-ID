@@ -31,7 +31,14 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import ReceiveScreen from '../screens/ReceiveAssetScreen';
 import SendScreen from '../screens/SendAssetScreen';
-import { IChain, IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import {
+    IChain,
+    IChainSession,
+    ILoginRequest,
+    IPrivateKey,
+    ITransaction,
+    ITransactionReceipt,
+} from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
@@ -40,6 +47,7 @@ import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
+import { navigationRef } from '../services/NavigationService';
 
 const debug = Debug('tonomy-id:navigation:root');
 
@@ -85,9 +93,7 @@ export type MainRouteStackParamList = {
         receipt: ITransactionReceipt;
     };
     WalletConnectLogin: {
-        payload: SignClientTypes.EventArguments['session_proposal'];
-        platform?: 'mobile' | 'browser';
-        session: IChainSession;
+        loginRequest: ILoginRequest;
     };
     CreateEthereumKey?: {
         transaction?: ITransaction;
@@ -167,7 +173,7 @@ export default function RootNavigation() {
     const { status } = useUserStore();
 
     return (
-        <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
+        <NavigationContainer ref={navigationRef} theme={CombinedDefaultTheme} linking={linking}>
             {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
