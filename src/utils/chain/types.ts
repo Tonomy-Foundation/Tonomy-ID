@@ -409,7 +409,7 @@ export abstract class AbstractSession implements ISession {
     abstract initialize(): Promise<void>;
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;
-    abstract onEvent(request: unknown): Promise<void>;
+    abstract onEvent(request?: unknown): Promise<void>;
 
     protected abstract handleLoginRequest(request: unknown): Promise<void>;
     protected abstract handleTransactionRequest(request: unknown): Promise<void>;

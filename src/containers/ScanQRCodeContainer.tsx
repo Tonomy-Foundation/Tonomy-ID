@@ -26,6 +26,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
 import TSpinner from '../components/atoms/TSpinner';
+import { useSessionStore } from '../store/sessionStore';
 
 const debug = Debug('tonomy-id:containers:ScanQRCodeContainer');
 
@@ -47,6 +48,7 @@ export default function ScanQRCodeContainer({
     const [isLoadingView, setIsLoadingView] = useState(false);
 
     const { web3wallet } = useWalletStore();
+    const { walletConnectSession } = useSessionStore.getState();
 
     const setUserName = useCallback(async () => {
         try {
@@ -122,7 +124,8 @@ export default function ScanQRCodeContainer({
 
         try {
             if (data.startsWith('wc:')) {
-                if (web3wallet) await web3wallet.core.pairing.pair({ uri: data });
+                if (walletConnectSession?.web3wallet)
+                    await walletConnectSession.web3wallet.core.pairing.pair({ uri: data });
             } else if (data.startsWith('esr:')) {
                 const signingRequestBasic = SigningRequest.from(data, { zlib });
 
