@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { Camera, FlashMode } from 'expo-camera';
+import { Camera, FlashMode } from 'expo-camera/legacy';
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';

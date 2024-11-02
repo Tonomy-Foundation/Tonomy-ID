@@ -8,7 +8,7 @@ const debug = Debug('tonomy-id:util:runtime-tests');
 
 const dataSource = new DataSource({
     type: 'expo',
-    driver: require('expo-sqlite'),
+    driver: require('expo-sqlite/legacy'),
     database: 'veramo.sqlite',
     migrations: migrations,
     migrationsRun: true,

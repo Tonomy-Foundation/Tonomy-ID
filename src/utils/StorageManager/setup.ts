@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { KeyStorage } from './entities/keyStorage';
 import { AppStorage } from './entities/appSettings';
-import * as ExpoSQLiteDriver from 'expo-sqlite';
+import * as ExpoSQLiteDriver from 'expo-sqlite/legacy';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
 import { AppStorageRepository } from './repositories/appStorageRepository';
