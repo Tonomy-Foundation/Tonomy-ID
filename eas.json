@@ -1,5 +1,6 @@
 {
     "cli": {
+        "version": "^12.6.2",
         "appVersionSource": "remote"
     },
     "build": {
@@ -9,7 +10,8 @@
                 "DEBUG": "tonomy-console*"
             },
             "autoIncrement": true,
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "testnet": {
             "env": {
@@ -17,7 +19,8 @@
                 "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "testnet-internal": {
             "env": {
@@ -25,7 +28,8 @@
                 "DEBUG": "tonomy*"
             },
             "distribution": "internal",
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "staging": {
             "env": {
@@ -33,7 +37,8 @@
                 "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "staging-internal": {
             "env": {
@@ -41,7 +46,8 @@
                 "DEBUG": "tonomy*"
             },
             "distribution": "internal",
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         },
         "development": {
             "env": {
@@ -50,7 +56,8 @@
             },
             "developmentClient": true,
             "distribution": "internal",
-            "node": "22.3.0"
+            "node": "22.3.0",
+            "yarn": "4.3.1"
         }
     },
     "submit": {
@@ -67,7 +74,7 @@
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309",
             }
         },
-        "productionTestnet": {
+        "appleTestnet": {
             "ios": {
                 "ascAppId": "6476114575",
                 "appleTeamId": "6BLD42QR78",
@@ -76,7 +83,7 @@
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         },
-        "productionMainnet": {
+        "appleProduction": {
             "ios": {
                 "ascAppId": "6482296993",
                 "appleTeamId": "6BLD42QR78",
