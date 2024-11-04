@@ -5,16 +5,10 @@ import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
 import ReceiverAccountScanner from '../components/ReceiverAccountScanner';
 import { useEffect, useRef, useState } from 'react';
-import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
-import {
-    AccountTokenDetails,
-    findEthereumTokenByChainId,
-    getAccountFromChain,
-    getAssetDetails,
-} from '../utils/tokenRegistry';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
 import { debounce } from '../utils/network';
@@ -102,21 +96,15 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     value: ethers.parseEther(balance ? balance.toString() : '0.00'),
                 };
 
-                transaction = await EthereumTransaction.fromTransaction(
-                    privateKey as EthereumPrivateKey,
+                const transactionRequest = await WalletTransactionRequest.fromTransaction(
                     transactionData,
-                    chain as EthereumChain
+                    privateKey,
+                    chain
                 );
-                const token = await findEthereumTokenByChainId(chain.getChainId());
 
-                if (token) {
-                    const account = await getAccountFromChain(token);
-                    const transactionRequest = new WalletTransactionRequest(transaction, privateKey, account);
-
-                    navigation.navigate('SignTransaction', {
-                        request: transactionRequest,
-                    });
-                }
+                navigation.navigate('SignTransaction', {
+                    request: transactionRequest,
+                });
             } else {
                 const action = {
                     account: 'eosio.token',

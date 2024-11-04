@@ -7,7 +7,6 @@ import { NETWORK_ERROR_MESSAGE } from '../../utils/errors';
 import settings from '../../settings';
 import {
     AbstractSession,
-    Asset,
     ChainType,
     IAccount,
     IChain,
@@ -21,20 +20,10 @@ import {
     LoginApp,
 } from '../chain/types';
 import { getSdkError } from '@walletconnect/utils';
-import { assetStorage, keyStorage } from '../StorageManager/setup';
-import {
-    EthereumAccount,
-    EthereumChain,
-    EthereumPrivateKey,
-    EthereumToken,
-    EthereumTransaction,
-    EthereumTransactionReceipt,
-} from '../chain/etherum';
+import { keyStorage } from '../StorageManager/setup';
+import { EthereumAccount, EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../chain/etherum';
 import { navigate } from '../../services/NavigationService';
-import { TransactionRequest } from 'ethers';
 import {
-    eip155StringToChainId,
-    findEthereumTokenByChainId,
     getAccountFromChain,
     getKeyFromChain,
     getKeyOrNullFromChain,
@@ -43,6 +32,16 @@ import {
 } from '../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:session:walletConnect');
+
+export const findEthereumTokenByChainId = (chainId: string) => {
+    return tokenRegistry.find(
+        ({ chain }) => chain.getChainType() === ChainType.ETHEREUM && chain.getChainId() === chainId
+    );
+};
+
+export const eip155StringToChainId = (eip155String: string) => {
+    return eip155String.split(':')[1];
+};
 
 export class WalletLoginRequest implements ILoginRequest {
     loginApp: ILoginApp;
@@ -143,6 +142,26 @@ export class WalletTransactionRequest implements ITransactionRequest {
         );
 
         return new WalletTransactionRequest(transaction, ethereumPrivateKey, account, session, request);
+    }
+
+    static async fromTransaction(
+        transactionData: {
+            from: string;
+            to: string;
+            value: bigint;
+        },
+        privateKey: IPrivateKey,
+        chain: IChain
+    ): Promise<WalletTransactionRequest> {
+        const transaction = await EthereumTransaction.fromTransaction(
+            privateKey as EthereumPrivateKey,
+            transactionData,
+            chain as EthereumChain
+        );
+        const token = await findEthereumTokenByChainId(chain.getChainId());
+        const account = await getAccountFromChain(token as TokenRegistryEntry);
+
+        return new WalletTransactionRequest(transaction, privateKey, account);
     }
 
     getOrigin(): string | null {

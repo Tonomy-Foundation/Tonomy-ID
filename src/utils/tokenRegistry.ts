@@ -207,16 +207,6 @@ export const getAssetDetails = async (chain: IChain): Promise<AccountTokenDetail
     };
 };
 
-export const findEthereumTokenByChainId = (chainId: string) => {
-    return tokenRegistry.find(
-        ({ chain }) => chain.getChainType() === ChainType.ETHEREUM && chain.getChainId() === chainId
-    );
-};
-
-export const eip155StringToChainId = (eip155String: string) => {
-    return eip155String.split(':')[1];
-};
-
 export async function addNativeTokenToAssetStorage(user: IUserBase) {
     const accountName = await user.getAccountName();
     const privateKey = await getKeyFromChain(pangeaTokenEntry);
