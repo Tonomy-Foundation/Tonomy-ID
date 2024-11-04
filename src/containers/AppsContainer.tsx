@@ -5,14 +5,14 @@ import { OpenNewWindow } from 'iconoir-react-native';
 
 const availableAppsData = [
     {
-        image: require('../assets/images/apps/sales-platform.png'),
+        image: require('../assets/images/apps/pangea-block-explorer.png'),
         title: 'Pangea DAO',
         description: 'Collaborate and make decisions within the Pangea ecosystem with other Pangeans.',
         url: 'https://pangea.hypha.earth/pangea-dao/',
         isAvailable: true,
     },
     {
-        image: require('../assets/images/apps/sales-platform.png'),
+        image: require('../assets/images/apps/hypha-logo.jpeg'),
         title: 'Hypha DAO Platform',
         description:
             'Harnes the power of team-driven decisions. Create proposals, vote, and manage your DAO with ease.',
