@@ -179,7 +179,6 @@ export class WalletConnectSession extends AbstractSession {
     web3wallet: Web3Wallet;
 
     async initialize(): Promise<void> {
-        console.log('initialize wallet connect session');
         const netInfoState = await NetInfo.fetch();
 
         if (!netInfoState.isConnected) {
@@ -205,7 +204,6 @@ export class WalletConnectSession extends AbstractSession {
 
                 this.initialized = true;
             } catch (e) {
-                console.log('Error initializing WalletConnect:', e);
                 if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                 else throw e;
             }

@@ -18,7 +18,6 @@ export default function WalletConnectLoginContainer({
     navigation: Props['navigation'];
     loginRequest: ILoginRequest;
 }) {
-    console.log('WalletConnectLoginContainer -> request', loginRequest);
     const errorStore = useErrorStore();
 
     const onCancel = async () => {

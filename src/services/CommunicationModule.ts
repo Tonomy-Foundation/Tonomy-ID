@@ -15,21 +15,11 @@ import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState } from 'react-native';
-import { keyStorage } from '../utils/StorageManager/setup';
-import { EthereumAccount, EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
-import { ChainType, ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
-import {
-    eip155StringToChainId,
-    findEthereumTokenByChainId,
-    getKeyFromChain,
-    getKeyOrNullFromChain,
-} from '../utils/tokenRegistry';
 import { useSessionStore } from '../store/sessionStore';
 import { WalletConnectSession } from '../utils/session/walletConnect';
 
@@ -40,16 +30,9 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    // const {
-    //     initialized,
-    //     web3wallet,
-    //     disconnectSession,
-    //     initializeWalletState,
-    //     accountExists,
-    //     initializeWalletAccount,
-    // } = useWalletStore();
+
     const { walletConnectSession, setWalletConnectSession } = useSessionStore.getState();
-    const { accounts, initialized, web3wallet, disconnectSession, initializeWalletState } = useWalletStore();
+    const { web3wallet, disconnectSession } = useWalletStore();
 
     async function initializeWalletConnect(): Promise<void> {
         if (walletConnectSession && walletConnectSession.initialized) {
@@ -61,12 +44,9 @@ export default function CommunicationModule() {
             const session = new WalletConnectSession();
 
             await session.initialize();
-            console.log('session', session.initialized);
             session.onEvent();
             setWalletConnectSession(session);
         } catch (e) {
-            console.log('initializeWalletConnect() Error initializing WalletConnect:', e);
-
             if (isNetworkError(e)) {
                 throw e;
             } else {
