@@ -5,70 +5,80 @@ import { OpenNewWindow } from 'iconoir-react-native';
 
 const availableAppsData = [
     {
-        id: 1,
-        image: require('../assets/images/apps/sales-platform.png'),
-        title: 'LEOS Sales platform',
-        description:
-            'Invest in Pangea, purchase LEOS tokens easily. LEOS customers are protected under Europe’s MICA regulation.',
-        url: 'sales.pangea.web4.world',
+        image: require('../assets/images/apps/pangea-block-explorer.png'),
+        title: 'Pangea DAO',
+        description: 'Collaborate and make decisions within the Pangea ecosystem with other Pangeans.',
+        url: 'https://pangea.hypha.earth/pangea-dao/',
         isAvailable: true,
     },
     {
-        id: 2,
+        image: require('../assets/images/apps/hypha-logo.jpeg'),
+        title: 'Hypha DAO Platform',
+        description:
+            'Harnes the power of team-driven decisions. Create proposals, vote, and manage your DAO with ease.',
+        url: 'https://pangea.hypha.earth',
+        isAvailable: true,
+    },
+    {
+        image: require('../assets/images/apps/sales-platform.png'),
+        title: 'LEOS Sales Platform',
+        description:
+            'Invest in Pangea, purchase LEOS tokens easily. LEOS customers are protected under Europe’s MICA regulation.',
+        url: 'https://sales.pangea.web4.world',
+        isAvailable: true,
+    },
+    {
         image: require('../assets/images/apps/pangea-block-explorer.png'),
         description: 'Search, view, and track your Pangea Blockchain transactions and activities in real-time.',
         title: 'Pangea Block Explorer',
-        url: 'explorer.pangea.web4.world',
+        url: 'https://explorer.pangea.web4.world',
         isAvailable: true,
     },
     {
-        id: 3,
         image: require('../assets/images/apps/pangea-block-explorer.png'),
         title: 'Pangea Developers Features Demo',
         description:
             'A website to demonstrate the flows and features available to developers in Pangea. See the  0.5s block time, easy data signing flows and simplified non-custodial crypto management.',
-        url: 'demo.pangea.web4.world',
+        url: 'https://demo.pangea.web4.world',
         isAvailable: true,
     },
     {
-        id: 4,
         image: require('../assets/images/apps/pangean-bankless.png'),
         title: 'Pangea Bankless',
         description:
             'Manage your LEOS tokens as easily as any neo-banking application. Full control without compromise.',
         isAvailable: false,
-        url: 'pangea.web4.world/technology/pangea-bankless',
+        url: 'https://pangea.web4.world/technology/pangea-bankless',
     },
     {
-        id: 5,
         image: require('../assets/images/apps/pangea-dao.png'),
         title: 'Pangea DAO',
         description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
         isAvailable: false,
-        url: 'pangea.web4.world/technology/pangea-dao',
+        url: 'https://pangea.web4.world/technology/pangea-dao',
     },
     {
-        id: 6,
         image: require('../assets/images/apps/pangea-gov.png'),
         title: 'Pangea Gov+',
         description: 'Participate in the liquid democracy governance of the Pangea ecosystem.',
         isAvailable: false,
-        url: 'pangea.web4.world/technology/pangea-gov',
+        url: 'https://pangea.web4.world/technology/pangea-gov',
     },
     {
-        id: 7,
         image: require('../assets/images/apps/pangea-build.png'),
         title: 'Pangea Build',
         description:
             'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
         isAvailable: false,
-        url: 'pangea.web4.world/technology/pangea-build',
+        url: 'https://pangea.web4.world/technology/pangea-build',
     },
 ];
 
-const redirectToApp = (url: string) => {
-    openURL(`https://${url}`);
-};
+function getUrlHost(url: string) {
+    const urlObject = new URL(url);
+
+    return urlObject.host;
+}
 
 export default function AppsContainer() {
     return (
@@ -78,17 +88,14 @@ export default function AppsContainer() {
                     <Text style={styles.headingText}>Available now</Text>
                     {availableAppsData
                         .filter((app) => app.isAvailable)
-                        .map((app) => (
-                            <View key={app.id} style={styles.pangeaApp}>
+                        .map((app, index) => (
+                            <View key={index} style={styles.pangeaApp}>
                                 <View style={styles.flexRow}>
                                     <Image source={app.image} />
                                     {app.url && (
-                                        <TouchableOpacity
-                                            style={styles.appWebUrl}
-                                            onPress={() => redirectToApp(app.url)}
-                                        >
+                                        <TouchableOpacity style={styles.appWebUrl} onPress={() => openURL(app.url)}>
                                             <View style={styles.textAndIconContainer}>
-                                                <Text style={styles.visitAppWebUrl}>{app.url}</Text>
+                                                <Text style={styles.visitAppWebUrl}>{getUrlHost(app.url)}</Text>
                                                 <OpenNewWindow
                                                     height={10}
                                                     width={12}
@@ -102,7 +109,7 @@ export default function AppsContainer() {
                                 <Text style={styles.pangeaAppHead}>{app.title}</Text>
                                 <Text style={styles.pangeaAppNotes}>{app.description}</Text>
                                 {app.url && (
-                                    <TouchableOpacity onPress={() => redirectToApp(app.url)}>
+                                    <TouchableOpacity onPress={() => openURL(app.url)}>
                                         <Text style={styles.appButton}>Visit app</Text>
                                     </TouchableOpacity>
                                 )}
@@ -111,14 +118,14 @@ export default function AppsContainer() {
                     <Text style={styles.headingText}>Coming soon</Text>
                     {availableAppsData
                         .filter((app) => !app.isAvailable)
-                        .map((app) => (
-                            <View key={app.id} style={styles.pangeaApp}>
+                        .map((app, index) => (
+                            <View key={index} style={styles.pangeaApp}>
                                 <View style={styles.flexRow}>
                                     <Image source={app.image} />
                                 </View>
                                 <Text style={styles.pangeaAppHead}>{app.title}</Text>
                                 <Text style={styles.pangeaAppNotes}>{app.description}</Text>
-                                <TouchableOpacity onPress={() => redirectToApp(app.url)}>
+                                <TouchableOpacity onPress={() => openURL(app.url)}>
                                     <Text style={styles.appButton}>Learn more</Text>
                                 </TouchableOpacity>
                             </View>
