@@ -413,6 +413,7 @@ export interface ITransactionRequest {
     privateKey: IPrivateKey;
     account: IAccount;
     request?: unknown;
+    getOrigin(): string;
     reject(): Promise<void>;
     approve(receipt?: ITransactionReceipt): Promise<ITransactionReceipt>;
 }

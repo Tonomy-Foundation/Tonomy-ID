@@ -4,20 +4,11 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import {
-    IOperation,
-    IPrivateKey,
-    ITransaction,
-    ITransactionReceipt,
-    ITransactionRequest,
-    TransactionType,
-} from '../utils/chain/types';
+import { IOperation, ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import { ResolvedSigningRequest } from '@wharfkit/signing-request';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
@@ -36,11 +27,12 @@ type TransactionTotalData = {
 
 export default function SignTransactionConsentContainer({
     navigation,
-    transaction,
+    request,
 }: {
     navigation: Props['navigation'];
-    transaction: ITransactionRequest;
+    request: ITransactionRequest;
 }) {
+    const transaction = request.transaction;
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
     const [operations, setOperations] = useState<OperationData[] | null>(null);
@@ -49,11 +41,11 @@ export default function SignTransactionConsentContainer({
     const [transactionTotalData, setTransactionTotalData] = useState<TransactionTotalData | null>(null);
     const topUpBalance = useRef<{ open: () => void; close: () => void }>(null);
 
-    const chain = transaction.getChain();
+    const chain = request.transaction.getChain();
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
-    const hostname = origin ? extractHostname(origin) : null;
+    const hostname = request.getOrigin() ? extractHostname(request.getOrigin()) : null;
     const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
 
     const getOperationData = useCallback(
@@ -171,9 +163,9 @@ export default function SignTransactionConsentContainer({
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
     async function onReject() {
-        if (session) {
+        if (request.session) {
             setTransactionLoading(true);
-            await session.rejectTransactionRequest(request);
+            await request.reject();
             setTransactionLoading(false);
         }
 
@@ -186,12 +178,12 @@ export default function SignTransactionConsentContainer({
             if (!operations) throw new Error('Operations not loaded');
             let receipt: ITransactionReceipt;
 
-            if (session) {
-                const transactionRequest = await session.createTransactionRequest(transaction);
+            if (request.session) {
+                // const transactionRequest = await request.createTransactionRequest(transaction);
 
-                receipt = await privateKey.sendTransaction(transactionRequest);
+                receipt = await request.privateKey.sendTransaction(transaction);
 
-                await session.approveTransactionRequest(request, receipt);
+                await request.approve(receipt);
             } else {
                 let transactionRequest: TransactionRequest | AntelopeTransaction;
 
@@ -206,7 +198,7 @@ export default function SignTransactionConsentContainer({
                     transactionRequest = transaction as AntelopeTransaction;
                 }
 
-                receipt = await privateKey.sendTransaction(transactionRequest);
+                receipt = await request.privateKey.sendTransaction(transactionRequest);
             }
 
             navigation.navigate('SignTransactionSuccess', {
@@ -246,8 +238,8 @@ export default function SignTransactionConsentContainer({
 
             navigation.navigate('Assets');
 
-            if (session) {
-                await session.rejectTransactionRequest(request);
+            if (request.session) {
+                await request.reject();
             }
         }
     }

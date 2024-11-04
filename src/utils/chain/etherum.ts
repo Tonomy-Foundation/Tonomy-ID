@@ -22,6 +22,7 @@ import {
     AbstractPrivateKey,
     IPrivateKey,
     Asset,
+    IChainSession,
     IOperation,
     ExplorerOptions,
     AbstractTransactionReceipt,
@@ -77,9 +78,16 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
         return this.wallet.populateTransaction(transaction);
     }
 
-    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
+    async sendTransaction(transaction: ITransaction): Promise<EthereumTransactionReceipt> {
         try {
-            const receipt = await this.wallet.sendTransaction(transaction);
+            const transactionRequest: TransactionRequest = {
+                to: (await transaction.getTo()).getName(),
+                from: (await transaction.getFrom()).getName(),
+                value: (await transaction.getValue()).getAmount(),
+                data: ((await transaction.getData()) as TransactionRequest).data,
+            };
+
+            const receipt = await this.wallet.sendTransaction(transactionRequest);
 
             return new EthereumTransactionReceipt(this.chain, receipt);
         } catch (error) {
@@ -497,5 +505,79 @@ export class EthereumAccount extends AbstractAccount {
         }
 
         return false;
+    }
+}
+
+export class WalletConnectSession implements IChainSession {
+    private wallet: IWeb3Wallet;
+    private namespaces: SessionTypes.Namespaces;
+    private accounts: EthereumAccount[];
+
+    constructor(wallet: IWeb3Wallet) {
+        this.wallet = wallet;
+    }
+
+    setNamespaces(namespaces: SessionTypes.Namespaces): void {
+        this.namespaces = namespaces;
+    }
+
+    getNamespaces(): SessionTypes.Namespaces {
+        return this.namespaces;
+    }
+
+    setActiveAccounts(accounts: EthereumAccount[]): void {
+        this.accounts = accounts;
+    }
+
+    async getActiveAccounts(): Promise<EthereumAccount[]> {
+        return this.accounts;
+    }
+
+    async createSession(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet.approveSession({
+            id: request.id,
+            namespaces: this.getNamespaces(),
+        });
+    }
+
+    async cancelSessionRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        await this.wallet.rejectSession({
+            id: request.id,
+            reason: getSdkError('USER_REJECTED'),
+        });
+    }
+
+    async createTransactionRequest(transaction: EthereumTransaction): Promise<TransactionRequest> {
+        const transactionRequest: TransactionRequest = {
+            to: (await transaction.getTo()).getName(),
+            from: (await transaction.getFrom()).getName(),
+            value: (await transaction.getValue()).getAmount(),
+            data: (await transaction.getData()).data,
+        };
+
+        return transactionRequest;
+    }
+
+    async approveTransactionRequest(
+        request: Web3WalletTypes.SessionRequest,
+        receipt: EthereumTransactionReceipt
+    ): Promise<void> {
+        const signedTransaction = receipt.getRawReceipt();
+        const response = { id: request.id, result: signedTransaction, jsonrpc: '2.0' };
+
+        await this.wallet.respondSessionRequest({ topic: request.topic, response });
+    }
+
+    async rejectTransactionRequest(request: Web3WalletTypes.SessionRequest): Promise<void> {
+        const response = {
+            id: request.id,
+            error: getSdkError('USER_REJECTED'),
+            jsonrpc: '2.0',
+        };
+
+        await this.wallet.respondSessionRequest({
+            topic: request.topic,
+            response,
+        });
     }
 }

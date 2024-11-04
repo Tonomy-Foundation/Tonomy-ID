@@ -123,6 +123,7 @@ export class WalletTransactionRequest implements ITransactionRequest {
     account: IAccount;
     request: SignClientTypes.EventArguments['session_request'];
     session: ISession;
+    origin: string;
 
     constructor(
         transaction: ITransaction,
@@ -136,6 +137,14 @@ export class WalletTransactionRequest implements ITransactionRequest {
         this.account = account;
         this.request = request;
         this.session = session;
+    }
+
+    setOrigin(origin: string): void {
+        this.origin = origin;
+    }
+
+    getOrigin(): string {
+        return this.origin;
     }
 
     async reject(): Promise<void> {
@@ -315,7 +324,7 @@ export class WalletConnectSession extends AbstractSession {
 
     protected async handleTransactionRequest(event: SignClientTypes.EventArguments['session_request']): Promise<void> {
         debug(`Handling transaction request:`, event);
-        const { topic, params, id } = event;
+        const { topic, params, id, verifyContext } = event;
         const { request, chainId } = params;
 
         switch (request.method) {
@@ -343,6 +352,8 @@ export class WalletConnectSession extends AbstractSession {
                         this,
                         event
                     );
+
+                    transactionRequest.setOrigin(verifyContext?.verified?.origin);
 
                     this.navigateToTransactionScreen(transactionRequest);
                 } else {

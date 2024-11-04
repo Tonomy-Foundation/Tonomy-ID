@@ -81,7 +81,7 @@ export type MainRouteStackParamList = {
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
     SignTransaction: {
-        transaction: ITransactionRequest;
+        request: ITransactionRequest;
     };
     SignTransactionSuccess: {
         operations: OperationData[];
