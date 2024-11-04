@@ -16,8 +16,7 @@ import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
-import { pangeaTokenEntry } from '../utils/tokenRegistry';
-import { addNativeTokenToAssetStorage } from './LoginPassphraseContainer';
+import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 

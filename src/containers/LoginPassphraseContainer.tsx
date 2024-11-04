@@ -25,20 +25,6 @@ const debug = Debug('tonomy-id:containers:LoginPassphraseContainer');
 
 const tonomyContract = TonomyContract.Instance;
 
-export async function addNativeTokenToAssetStorage(user: IUserBase) {
-    const accountName = await user.getAccountName();
-    const privateKey = await getKeyFromChain(pangeaTokenEntry);
-
-    const asset = new Asset(pangeaTokenEntry.token, BigInt(0));
-    const account = AntelopeAccount.fromAccountAndPrivateKey(
-        pangeaTokenEntry.chain,
-        accountName,
-        privateKey as AntelopePrivateKey
-    );
-
-    await assetStorage.createAsset(asset, account);
-}
-
 export default function LoginPassphraseContainer({
     navigation,
     username,

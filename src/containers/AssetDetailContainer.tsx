@@ -1,6 +1,5 @@
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
-import { Images } from '../assets';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
@@ -9,7 +8,6 @@ import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
 import TSpinner from '../components/atoms/TSpinner';
 import { IChain } from '../utils/chain/types';
-import { createChainWalletStore } from '../store/useWalletStore';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -17,11 +15,8 @@ export type AssetDetailProps = {
 };
 
 const AssetDetailContainer = ({ navigation, chain }: AssetDetailProps) => {
-    const useChainWalletStore = createChainWalletStore(chain);
     const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState(true);
-    const networkLogo = asset?.token.icon ? { uri: asset.token.icon } : Images.GetImage('logo1024');
-    const { account } = useChainWalletStore();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -57,7 +52,7 @@ const AssetDetailContainer = ({ navigation, chain }: AssetDetailProps) => {
                     {asset && (
                         <View style={styles.header}>
                             <View style={styles.networkHeading}>
-                                <Image source={networkLogo} style={styles.faviconIcon} />
+                                <Image source={{ uri: asset.token.icon }} style={styles.faviconIcon} />
                                 <View style={styles.assetsNetwork}>
                                     <Text style={styles.assetsNetworkText}>{asset.chain.getName()}</Text>
                                 </View>
