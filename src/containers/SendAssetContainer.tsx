@@ -10,11 +10,17 @@ import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
-import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
+import {
+    AccountTokenDetails,
+    findEthereumTokenByChainId,
+    getAccountFromChain,
+    getAssetDetails,
+} from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
 import { debounce } from '../utils/network';
 import { AntelopeAccount, AntelopeChain, AntelopeTransaction } from '../utils/chain/antelope';
+import { WalletTransactionRequest } from '../utils/session/walletConnect';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -103,6 +109,16 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     transactionData,
                     chain as EthereumChain
                 );
+                const token = await findEthereumTokenByChainId(chain.getChainId());
+
+                if (token) {
+                    const account = await getAccountFromChain(token);
+                    const transactionRequest = new WalletTransactionRequest(transaction, privateKey, account);
+
+                    navigation.navigate('SignTransaction', {
+                        request: transactionRequest,
+                    });
+                }
             } else {
                 const action = {
                     account: 'eosio.token',
@@ -127,14 +143,6 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account)
                 );
             }
-
-            navigation.navigate('SignTransaction', {
-                transaction,
-                privateKey,
-                session: null,
-                origin: '',
-                request: null,
-            });
         } catch (error) {
             errorStore.setError({
                 error,

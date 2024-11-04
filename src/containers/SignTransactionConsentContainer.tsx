@@ -6,7 +6,6 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import { IOperation, ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
-
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
@@ -14,8 +13,6 @@ import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
-import { AntelopeTransaction } from '../utils/chain/antelope';
-import { TransactionRequest } from 'ethers';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -33,6 +30,7 @@ export default function SignTransactionConsentContainer({
     request: ITransactionRequest;
 }) {
     const transaction = request.transaction;
+
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
     const [operations, setOperations] = useState<OperationData[] | null>(null);
@@ -179,26 +177,11 @@ export default function SignTransactionConsentContainer({
             let receipt: ITransactionReceipt;
 
             if (request.session) {
-                // const transactionRequest = await request.createTransactionRequest(transaction);
-
                 receipt = await request.privateKey.sendTransaction(transaction);
 
                 await request.approve(receipt);
             } else {
-                let transactionRequest: TransactionRequest | AntelopeTransaction;
-
-                if (transaction.getChain().getChainType() === 'ETHEREUM') {
-                    transactionRequest = {
-                        to: (await transaction.getTo()).getName(),
-                        from: (await transaction.getFrom()).getName(),
-                        value: (await transaction.getValue()).getAmount(),
-                        data: ((await transaction.getData()) as { data: string }).data,
-                    };
-                } else {
-                    transactionRequest = transaction as AntelopeTransaction;
-                }
-
-                receipt = await request.privateKey.sendTransaction(transactionRequest);
+                receipt = await request.privateKey.sendTransaction(transaction);
             }
 
             navigation.navigate('SignTransactionSuccess', {
@@ -249,7 +232,7 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        {origin ? (
+                        {request.getOrigin() ? (
                             <>
                                 <Image
                                     style={[styles.logo, commonStyles.marginBottom]}

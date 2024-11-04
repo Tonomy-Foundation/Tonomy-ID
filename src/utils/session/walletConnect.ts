@@ -121,16 +121,16 @@ export class WalletTransactionRequest implements ITransactionRequest {
     transaction: ITransaction;
     privateKey: IPrivateKey;
     account: IAccount;
-    request: SignClientTypes.EventArguments['session_request'];
-    session: ISession;
+    request?: SignClientTypes.EventArguments['session_request'];
+    session?: ISession;
     origin: string;
 
     constructor(
         transaction: ITransaction,
         privateKey: IPrivateKey,
         account: IAccount,
-        session: ISession,
-        request: SignClientTypes.EventArguments['session_request']
+        session?: ISession,
+        request?: SignClientTypes.EventArguments['session_request']
     ) {
         this.transaction = transaction;
         this.privateKey = privateKey;
@@ -139,8 +139,8 @@ export class WalletTransactionRequest implements ITransactionRequest {
         this.session = session;
     }
 
-    setOrigin(origin: string): void {
-        this.origin = origin;
+    setOrigin(origin: string | null): void {
+        this.origin = origin ?? '';
     }
 
     getOrigin(): string {
@@ -148,24 +148,28 @@ export class WalletTransactionRequest implements ITransactionRequest {
     }
 
     async reject(): Promise<void> {
-        const response = {
-            id: this.request.id,
-            error: getSdkError('USER_REJECTED'),
-            jsonrpc: '2.0',
-        };
+        if (this.request && this.session) {
+            const response = {
+                id: this.request.id,
+                error: getSdkError('USER_REJECTED'),
+                jsonrpc: '2.0',
+            };
 
-        await this.session.web3wallet?.respondSessionRequest({
-            topic: this.request.topic,
-            response,
-        });
+            await this.session.web3wallet?.respondSessionRequest({
+                topic: this.request.topic,
+                response,
+            });
+        } else throw new Error('Session or request is not defined');
     }
 
     async approve(receipt: ITransactionReceipt): Promise<ITransactionReceipt> {
-        const signedTransaction = receipt.getRawReceipt();
-        const response = { id: this.request.id, result: signedTransaction, jsonrpc: '2.0' };
+        if (this.request && this.session) {
+            const signedTransaction = receipt.getRawReceipt();
+            const response = { id: this.request.id, result: signedTransaction, jsonrpc: '2.0' };
 
-        await this.session.web3wallet?.respondSessionRequest({ topic: this.request.topic, response });
-        return receipt;
+            await this.session.web3wallet?.respondSessionRequest({ topic: this.request.topic, response });
+            return receipt;
+        } else throw new Error('Session or request is not defined');
     }
 }
 
@@ -221,6 +225,9 @@ export class WalletConnectSession extends AbstractSession {
     async onEvent(): Promise<void> {
         this.web3wallet?.on('session_proposal', async (proposal) => {
             await this.handleLoginRequest(proposal);
+        });
+        this.web3wallet?.on('session_request', async (proposal) => {
+            await this.handleTransactionRequest(proposal);
         });
     }
 
@@ -391,7 +398,7 @@ export class WalletConnectSession extends AbstractSession {
 
     protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
         navigate('SignTransaction', {
-            transaction: request,
+            request,
         });
     }
 

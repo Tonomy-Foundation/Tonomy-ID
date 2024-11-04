@@ -7,7 +7,7 @@ export function navigate(name: string, params: any) {
     console.log('Navigating to', name, 'with params', params);
 
     if (navigationRef.isReady()) {
-        console.log('Navigation is ready');
+        console.log('Navigation is ready', params);
         navigationRef.navigate(name, params);
     }
 }

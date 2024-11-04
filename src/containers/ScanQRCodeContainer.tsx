@@ -258,7 +258,7 @@ export default function ScanQRCodeContainer({
         } finally {
             setTimeout(() => {
                 setIsLoadingView(false);
-            }, 8000);
+            }, 7000);
         }
     }
 
