@@ -13,37 +13,41 @@ import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../util
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
-import useWalletStore from '../store/useWalletStore';
-import { WalletConnectSession } from '../utils/chain/etherum';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import { SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
-import { getKeyFromChain, addNativeTokenToAssetStorage, findEthereumTokenByChainId } from '../utils/tokenRegistry';
+import { addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
+import { useSessionStore } from '../store/sessionStore';
+import { ITransactionRequest } from '../utils/chain/types';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
 const tonomyContract = TonomyContract.Instance;
 
 export default function CreateEthereumKeyContainer({
-    route,
+    requestType,
+    request,
+    transaction,
     navigation,
 }: {
-    route: Props['route'];
+    requestType: string;
+    request:
+        | SignClientTypes.EventArguments['session_request']
+        | SignClientTypes.EventArguments['session_proposal']
+        | null;
+    transaction: ITransactionRequest | null;
     navigation: Props['navigation'];
 }) {
     const errorsStore = useErrorStore();
     const { user } = useUserStore();
-    const transaction = route.params?.transaction;
 
-    const { web3wallet } = useWalletStore();
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
     );
     const [nextDisabled, setNextDisabled] = useState(settings.isProduction() ? true : false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
-    const { verifyContext } = route.params?.payload as Web3WalletTypes.SessionRequest;
+    const { walletConnectSession } = useSessionStore();
 
     async function setUserName() {
         try {
@@ -118,32 +122,16 @@ export default function CreateEthereumKeyContainer({
     }
 
     const redirectFunc = async () => {
-        const requestType = route.params?.requestType;
-
-        if (web3wallet) {
-            const walletsession = new WalletConnectSession(web3wallet);
-
-            if (requestType === 'loginRequest' && route.params?.payload) {
-                navigation.navigate('WalletConnectLogin', {
-                    payload: route.params.payload as SignClientTypes.EventArguments['session_proposal'],
-                    platform: 'browser',
-                    session: walletsession,
-                });
+        if (walletConnectSession) {
+            if (requestType === 'loginRequest') {
+                await walletConnectSession.handleLoginRequest(
+                    request as SignClientTypes.EventArguments['session_proposal']
+                );
             } else if (requestType === 'transactionRequest') {
                 if (transaction) {
-                    const chainId = transaction?.getChain().getChainId();
-                    const chainEntry = findEthereumTokenByChainId(chainId);
-
-                    if (!chainEntry) throw new Error('Chain not found');
-                    const privateKey = await getKeyFromChain(chainEntry);
-
-                    navigation.navigate('SignTransaction', {
-                        transaction,
-                        privateKey,
-                        request: route.params.payload as Web3WalletTypes.SessionRequest,
-                        session: walletsession,
-                        origin: verifyContext?.verified?.origin,
-                    });
+                    await walletConnectSession.handleTransactionRequest(
+                        request as SignClientTypes.EventArguments['session_request']
+                    );
                 } else {
                     navigation.navigate('Assets');
                 }

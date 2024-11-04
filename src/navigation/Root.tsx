@@ -48,6 +48,7 @@ import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
 import { navigationRef } from '../services/NavigationService';
+import { WalletConnectSession } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:navigation:root');
 
@@ -91,9 +92,13 @@ export type MainRouteStackParamList = {
     WalletConnectLogin: {
         loginRequest: ILoginRequest;
     };
-    CreateEthereumKey?: {
-        transaction?: ITransactionRequest;
-        requestType?: string;
+    CreateEthereumKey: {
+        transaction?: ITransactionRequest | null;
+        requestType: string;
+        request:
+            | SignClientTypes.EventArguments['session_request']
+            | SignClientTypes.EventArguments['session_proposal']
+            | null;
     };
     BottomTabs: undefined;
 
