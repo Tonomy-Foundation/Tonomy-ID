@@ -1,7 +1,6 @@
 import { Image, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ReceiveAssetScreenNavigationProp } from '../screens/ReceiveAssetScreen';
 import theme from '../utils/theme';
-import { Images } from '../assets';
 import QRCode from 'react-native-qrcode-svg';
 import Popover from 'react-native-popover-view';
 import { useEffect, useState } from 'react';
@@ -21,7 +20,6 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [showPopover, setShowPopover] = useState(false);
     const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const networkLogo = asset?.token.icon ? { uri: asset.token.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -66,7 +64,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>
-                        <Image source={networkLogo} style={styles.faviconIcon} />
+                        <Image source={{ uri: asset.token.icon }} style={styles.faviconIcon} />
                         <Text style={styles.networkTitleName}>{asset.chain.getName()} Network</Text>
                     </View>
                     <View style={styles.flexCenter}>

@@ -19,9 +19,7 @@ import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import { SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
-import { addNativeTokenToAssetStorage } from './LoginPassphraseContainer';
-import { getKeyFromChain } from '../utils/tokenRegistry';
-import { findEthereumTokenByChainId } from '../utils/tokenRegistry';
+import { getKeyFromChain, addNativeTokenToAssetStorage, findEthereumTokenByChainId } from '../utils/tokenRegistry';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 

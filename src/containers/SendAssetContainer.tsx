@@ -5,7 +5,6 @@ import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
 import ReceiverAccountScanner from '../components/ReceiverAccountScanner';
 import { useEffect, useRef, useState } from 'react';
-import { Images } from '../assets';
 import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
@@ -37,7 +36,6 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const errorStore = useErrorStore();
     const [submitting, setSubmitting] = useState<boolean>(false);
-    const networkLogo = asset?.token.icon ? { uri: asset.token.icon } : Images.GetImage('logo1024');
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -202,7 +200,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                             </View>
                         </View>
                         <View style={styles.networkContainer}>
-                            <Image source={networkLogo} style={styles.favicon} />
+                            <Image source={{ uri: asset.token.icon }} style={styles.favicon} />
                             <Text style={styles.networkName}>{asset.chain.getName()} network</Text>
                         </View>
                         <View>

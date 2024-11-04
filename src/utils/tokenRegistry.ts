@@ -25,7 +25,7 @@ import {
 } from './chain/antelope';
 import { Asset, ChainType, IAccount, IChain, IPrivateKey, IToken } from './chain/types';
 import { appStorage, assetStorage, keyStorage } from './StorageManager/setup';
-import { EosioUtil, IUser } from '@tonomy/tonomy-id-sdk';
+import { EosioUtil, IUser, IUserBase } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
 import Debug from 'debug';
 
@@ -162,23 +162,20 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?:
             await assetStorage.createAsset(new Asset(token, BigInt(0)), account);
         }
     } else {
+        if (!user) throw new Error('User is required for Antelope chain to get account name');
         debug(
             `getAccountFromChain() fetching Antelope account for ${chain.getName()}: ${await user?.getAccountName()}, ${await key.exportPrivateKey()}`
         );
 
-        if (user) {
-            account = await AntelopeAccount.fromAccountAndPrivateKey(
-                chain as AntelopeChain,
-                await user.getAccountName(),
-                key as AntelopePrivateKey
-            );
-            debug(`getAccountFromChain() account: ${account.getChain().getName()}`);
+        account = await AntelopeAccount.fromAccountAndPrivateKey(
+            chain as AntelopeChain,
+            await user.getAccountName(),
+            key as AntelopePrivateKey
+        );
+        debug(`getAccountFromChain() account: ${account.getChain().getName()}`);
 
-            if (!asset) {
-                await assetStorage.createAsset(new Asset(token, BigInt(0)), account);
-            }
-        } else {
-            throw new Error('User is not defined');
+        if (!asset) {
+            await assetStorage.createAsset(new Asset(token, BigInt(0)), account);
         }
     }
 
@@ -219,3 +216,17 @@ export const findEthereumTokenByChainId = (chainId: string) => {
 export const eip155StringToChainId = (eip155String: string) => {
     return eip155String.split(':')[1];
 };
+
+export async function addNativeTokenToAssetStorage(user: IUserBase) {
+    const accountName = await user.getAccountName();
+    const privateKey = await getKeyFromChain(pangeaTokenEntry);
+
+    const asset = new Asset(pangeaTokenEntry.token, BigInt(0));
+    const account = AntelopeAccount.fromAccountAndPrivateKey(
+        pangeaTokenEntry.chain,
+        accountName,
+        privateKey as AntelopePrivateKey
+    );
+
+    await assetStorage.createAsset(asset, account);
+}
