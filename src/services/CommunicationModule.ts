@@ -176,13 +176,6 @@ export default function CommunicationModule() {
         }
     }
 
-    useEffect(() => {
-        progressiveRetryOnNetworkError(loginToService);
-        progressiveRetryOnNetworkError(initializeWalletConnect);
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigation, user]);
-
     const unsubscribeAll = useCallback(() => {
         for (const s of subscribers) {
             user.unsubscribeMessage(s);

@@ -18,6 +18,7 @@ import {
     ITransaction,
     ITransactionReceipt,
     ITransactionRequest,
+    LoginApp,
 } from '../chain/types';
 import { getSdkError } from '@walletconnect/utils';
 import { assetStorage, keyStorage } from '../StorageManager/setup';
@@ -30,6 +31,7 @@ import {
     EthereumTransactionReceipt,
 } from '../chain/etherum';
 import { navigate } from '../../services/NavigationService';
+import { TransactionRequest } from 'ethers';
 import {
     eip155StringToChainId,
     findEthereumTokenByChainId,
@@ -37,40 +39,10 @@ import {
     getKeyFromChain,
     getKeyOrNullFromChain,
     tokenRegistry,
+    TokenRegistryEntry,
 } from '../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:session:walletConnect');
-
-export class WalletConnectLoginApp implements ILoginApp {
-    name: string;
-    url: string;
-    icons: string;
-    chains: IChain[];
-    origin: string;
-
-    constructor(name: string, url: string, icons: string, chains: IChain[]) {
-        this.name = name;
-        this.url = url;
-        this.icons = icons;
-        this.chains = chains;
-        this.origin = new URL(url).origin;
-    }
-    getLogoUrl(): string {
-        return this.icons;
-    }
-    getName(): string {
-        return this.name;
-    }
-    getChains(): IChain[] {
-        return this.chains;
-    }
-    getOrigin(): string {
-        return this.origin;
-    }
-    getUrl(): string {
-        return this.url;
-    }
-}
 
 export class WalletLoginRequest implements ILoginRequest {
     loginApp: ILoginApp;
@@ -91,6 +63,21 @@ export class WalletLoginRequest implements ILoginRequest {
         this.request = request;
         this.session = session;
         this.namespaces = namespaces;
+    }
+
+    static async fromRequest(
+        accounts: IAccount[],
+        namespaces: SessionTypes.Namespaces,
+        session: WalletConnectSession,
+        request: SignClientTypes.EventArguments['session_proposal']
+    ): Promise<WalletLoginRequest> {
+        const { name, url, icons } = request?.params?.proposer?.metadata ?? {};
+
+        const chains = accounts.map((account) => account.getChain());
+
+        const loginApp = new LoginApp(name, url, icons?.[0], chains);
+
+        return new WalletLoginRequest(loginApp, accounts, request, session, namespaces);
     }
 
     getLoginApp(): ILoginApp {
@@ -123,7 +110,7 @@ export class WalletTransactionRequest implements ITransactionRequest {
     account: IAccount;
     request?: SignClientTypes.EventArguments['session_request'];
     session?: ISession;
-    origin: string;
+    origin: string | null;
 
     constructor(
         transaction: ITransaction,
@@ -139,11 +126,34 @@ export class WalletTransactionRequest implements ITransactionRequest {
         this.session = session;
     }
 
-    setOrigin(origin: string | null): void {
-        this.origin = origin ?? '';
+    static async fromRequest(
+        chainEntry: TokenRegistryEntry,
+        ethereumPrivateKey: EthereumPrivateKey,
+        request: SignClientTypes.EventArguments['session_request'],
+        session: WalletConnectSession
+    ): Promise<WalletTransactionRequest> {
+        const transactionData = request.params[0];
+
+        const account = await getAccountFromChain(chainEntry);
+
+        const transaction = await EthereumTransaction.fromTransaction(
+            ethereumPrivateKey,
+            transactionData,
+            chainEntry.chain as EthereumChain
+        );
+
+        return new WalletTransactionRequest(transaction, ethereumPrivateKey, account, session, request);
     }
 
-    getOrigin(): string {
+    getOrigin(): string | null {
+        if (this.request) {
+            const { verifyContext } = this.request;
+
+            this.origin = verifyContext?.verified?.origin ?? '';
+        } else {
+            this.origin = null;
+        }
+
         return this.origin;
     }
 
@@ -159,17 +169,24 @@ export class WalletTransactionRequest implements ITransactionRequest {
                 topic: this.request.topic,
                 response,
             });
-        } else throw new Error('Session or request is not defined');
+        }
     }
 
-    async approve(receipt: ITransactionReceipt): Promise<ITransactionReceipt> {
+    async approve(): Promise<ITransactionReceipt> {
+        let receipt: ITransactionReceipt;
+
         if (this.request && this.session) {
+            receipt = await this.privateKey.sendTransaction(this.transaction);
+
             const signedTransaction = receipt.getRawReceipt();
             const response = { id: this.request.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await this.session.web3wallet?.respondSessionRequest({ topic: this.request.topic, response });
-            return receipt;
-        } else throw new Error('Session or request is not defined');
+        } else {
+            receipt = await this.privateKey.sendTransaction(this.transaction);
+        }
+
+        return receipt;
     }
 }
 
@@ -220,6 +237,7 @@ export class WalletConnectSession extends AbstractSession {
         debug(`Link received with data: ${data}`);
         // Handle link data specific to Ethereum here
     }
+
     async onEvent(): Promise<void> {
         this.web3wallet?.on('session_proposal', async (proposal) => {
             await this.handleLoginRequest(proposal);
@@ -317,11 +335,7 @@ export class WalletConnectSession extends AbstractSession {
                 };
             });
 
-            const { name, url, icons } = request?.params?.proposer?.metadata ?? {};
-            const chains = accounts.map((account) => account.getChain());
-
-            const loginApp = new WalletConnectLoginApp(name, url, icons?.[0], chains);
-            const loginRequest = new WalletLoginRequest(loginApp, accounts, request, this, namespaces);
+            const loginRequest = await WalletLoginRequest.fromRequest(accounts, namespaces, this, request);
 
             this.navigateToLoginScreen(loginRequest);
         }
@@ -329,7 +343,7 @@ export class WalletConnectSession extends AbstractSession {
 
     protected async handleTransactionRequest(event: SignClientTypes.EventArguments['session_request']): Promise<void> {
         debug(`Handling transaction request:`, event);
-        const { topic, params, id, verifyContext } = event;
+        const { topic, params, id } = event;
         const { request, chainId } = params;
 
         switch (request.method) {
@@ -344,21 +358,12 @@ export class WalletConnectSession extends AbstractSession {
                 let transaction: ITransaction;
 
                 if (ethereumPrivateKey) {
-                    transaction = await EthereumTransaction.fromTransaction(
+                    const transactionRequest = await WalletTransactionRequest.fromRequest(
+                        chainEntry,
                         ethereumPrivateKey,
-                        transactionData,
-                        chainEntry.chain as EthereumChain
+                        event,
+                        this
                     );
-                    const account = await getAccountFromChain(chainEntry);
-                    const transactionRequest = new WalletTransactionRequest(
-                        transaction,
-                        ethereumPrivateKey,
-                        account,
-                        this,
-                        event
-                    );
-
-                    transactionRequest.setOrigin(verifyContext?.verified?.origin);
 
                     this.navigateToTransactionScreen(transactionRequest);
                 } else {
@@ -390,11 +395,11 @@ export class WalletConnectSession extends AbstractSession {
         }
     }
 
-    protected async navigateToLoginScreen(request: ILoginRequest): Promise<void> {
+    protected async navigateToLoginScreen(request: WalletLoginRequest): Promise<void> {
         navigate('WalletConnectLogin', { loginRequest: request });
     }
 
-    protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
+    protected async navigateToTransactionScreen(request: WalletTransactionRequest): Promise<void> {
         navigate('SignTransaction', {
             request,
         });

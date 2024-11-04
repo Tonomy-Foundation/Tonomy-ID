@@ -397,6 +397,37 @@ export interface ILoginApp {
     getUrl(): string;
 }
 
+export class LoginApp implements ILoginApp {
+    name: string;
+    url: string;
+    icons: string;
+    chains: IChain[];
+    origin: string;
+
+    constructor(name: string, url: string, icons: string, chains: IChain[]) {
+        this.name = name;
+        this.url = url;
+        this.icons = icons;
+        this.chains = chains;
+        this.origin = new URL(url).origin;
+    }
+    getLogoUrl(): string {
+        return this.icons;
+    }
+    getName(): string {
+        return this.name;
+    }
+    getChains(): IChain[] {
+        return this.chains;
+    }
+    getOrigin(): string {
+        return this.origin;
+    }
+    getUrl(): string {
+        return this.url;
+    }
+}
+
 export interface ILoginRequest {
     session?: ISession;
     loginApp: ILoginApp;
@@ -413,9 +444,9 @@ export interface ITransactionRequest {
     privateKey: IPrivateKey;
     account: IAccount;
     request?: unknown;
-    getOrigin(): string;
+    getOrigin(): string | null;
     reject(): Promise<void>;
-    approve(receipt?: ITransactionReceipt): Promise<ITransactionReceipt>;
+    approve(): Promise<ITransactionReceipt>;
 }
 
 export interface ISession {

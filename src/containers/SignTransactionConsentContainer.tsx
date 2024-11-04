@@ -29,8 +29,7 @@ export default function SignTransactionConsentContainer({
     navigation: Props['navigation'];
     request: ITransactionRequest;
 }) {
-    const transaction = request.transaction;
-
+    const { transaction } = request;
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
     const [operations, setOperations] = useState<OperationData[] | null>(null);
@@ -161,11 +160,10 @@ export default function SignTransactionConsentContainer({
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
     async function onReject() {
-        if (request.session) {
-            setTransactionLoading(true);
-            await request.reject();
-            setTransactionLoading(false);
-        }
+        setTransactionLoading(true);
+
+        await request.reject();
+        setTransactionLoading(false);
 
         navigation.navigate('Assets');
     }
@@ -174,15 +172,7 @@ export default function SignTransactionConsentContainer({
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-            let receipt: ITransactionReceipt;
-
-            if (request.session) {
-                receipt = await request.privateKey.sendTransaction(transaction);
-
-                await request.approve(receipt);
-            } else {
-                receipt = await request.privateKey.sendTransaction(transaction);
-            }
+            const receipt = await request.approve();
 
             navigation.navigate('SignTransactionSuccess', {
                 operations,
