@@ -10,8 +10,7 @@
                 "DEBUG": "tonomy-console*"
             },
             "autoIncrement": true,
-            "node": "22.3.0",
-            "yarn": "4.3.1"
+            "node": "22.3.0"
         },
         "testnet": {
             "env": {
@@ -19,8 +18,7 @@
                 "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "22.3.0",
-            "yarn": "4.3.1"
+            "node": "22.3.0"
         },
         "testnet-internal": {
             "env": {
@@ -28,8 +26,7 @@
                 "DEBUG": "tonomy*"
             },
             "distribution": "internal",
-            "node": "22.3.0",
-            "yarn": "4.3.1"
+            "node": "22.3.0"
         },
         "staging": {
             "env": {
@@ -37,8 +34,7 @@
                 "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
-            "node": "22.3.0",
-            "yarn": "4.3.1"
+            "node": "22.3.0"
         },
         "staging-internal": {
             "env": {
@@ -46,8 +42,7 @@
                 "DEBUG": "tonomy*"
             },
             "distribution": "internal",
-            "node": "22.3.0",
-            "yarn": "4.3.1"
+            "node": "22.3.0"
         },
         "development": {
             "env": {
@@ -56,8 +51,7 @@
             },
             "developmentClient": true,
             "distribution": "internal",
-            "node": "22.3.0",
-            "yarn": "4.3.1"
+            "node": "22.3.0"
         }
     },
     "submit": {
