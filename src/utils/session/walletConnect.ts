@@ -1,5 +1,3 @@
-import React from 'react';
-import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { Core } from '@walletconnect/core';
 import Web3Wallet from '@walletconnect/web3wallet';
 import NetInfo from '@react-native-community/netinfo';
@@ -10,25 +8,36 @@ import settings from '../../settings';
 import {
     AbstractSession,
     Asset,
+    ChainType,
     IAccount,
     IChain,
     ILoginApp,
     ILoginRequest,
+    IPrivateKey,
     ISession,
+    ITransaction,
+    ITransactionReceipt,
     ITransactionRequest,
 } from '../chain/types';
-import { getChainIds, hasUnsupportedChains } from './helper';
 import { getSdkError } from '@walletconnect/utils';
-import { supportedChains } from '../assetDetails';
 import { assetStorage, keyStorage } from '../StorageManager/setup';
 import {
     EthereumAccount,
     EthereumChain,
     EthereumPrivateKey,
     EthereumToken,
+    EthereumTransaction,
     EthereumTransactionReceipt,
 } from '../chain/etherum';
 import { navigate } from '../../services/NavigationService';
+import {
+    eip155StringToChainId,
+    findEthereumTokenByChainId,
+    getAccountFromChain,
+    getKeyFromChain,
+    getKeyOrNullFromChain,
+    tokenRegistry,
+} from '../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:session:walletConnect');
 
@@ -108,6 +117,49 @@ export class WalletLoginRequest implements ILoginRequest {
     }
 }
 
+export class WalletTransactionRequest implements ITransactionRequest {
+    transaction: ITransaction;
+    privateKey: IPrivateKey;
+    account: IAccount;
+    request: SignClientTypes.EventArguments['session_request'];
+    session: ISession;
+
+    constructor(
+        transaction: ITransaction,
+        privateKey: IPrivateKey,
+        account: IAccount,
+        session: ISession,
+        request: SignClientTypes.EventArguments['session_request']
+    ) {
+        this.transaction = transaction;
+        this.privateKey = privateKey;
+        this.account = account;
+        this.request = request;
+        this.session = session;
+    }
+
+    async reject(): Promise<void> {
+        const response = {
+            id: this.request.id,
+            error: getSdkError('USER_REJECTED'),
+            jsonrpc: '2.0',
+        };
+
+        await this.session.web3wallet?.respondSessionRequest({
+            topic: this.request.topic,
+            response,
+        });
+    }
+
+    async approve(receipt: ITransactionReceipt): Promise<ITransactionReceipt> {
+        const signedTransaction = receipt.getRawReceipt();
+        const response = { id: this.request.id, result: signedTransaction, jsonrpc: '2.0' };
+
+        await this.session.web3wallet?.respondSessionRequest({ topic: this.request.topic, response });
+        return receipt;
+    }
+}
+
 export class WalletConnectSession extends AbstractSession {
     core: ICore;
     initialized: boolean;
@@ -167,29 +219,18 @@ export class WalletConnectSession extends AbstractSession {
         const accounts: IAccount[] = [];
 
         for (const chainId of chainIds) {
-            const supportedChain = supportedChains.find(({ chain }) => chain.getChainId() === chainId);
+            const token = tokenRegistry.find((c) => c.chain.getChainId() === chainId);
 
-            if (!supportedChain) throw new Error('Chain not supported');
-            const key = await keyStorage.findByName(supportedChain.keyName, supportedChain.chain);
+            if (token) {
+                const key = await keyStorage.findByName(token.keyName, token.chain);
 
-            if (!key) throw new Error('Key not found');
+                const account = await EthereumAccount.fromPublicKey(
+                    token.chain as EthereumChain,
+                    await (key as EthereumPrivateKey).getPublicKey()
+                );
 
-            const asset = await assetStorage.findAssetByName(supportedChain.token);
-            let account: EthereumAccount;
-
-            if (!asset) {
-                const exportPrivateKey = await key.exportPrivateKey();
-                const privateKey = new EthereumPrivateKey(exportPrivateKey, supportedChain.chain);
-
-                account = await EthereumAccount.fromPublicKey(supportedChain.chain, await privateKey.getPublicKey());
-                const abstractAsset = new Asset(supportedChain.token, BigInt(0));
-
-                await assetStorage.createAsset(abstractAsset, account);
-            } else {
-                account = new EthereumAccount(supportedChain.chain, asset.accountName);
+                accounts.push(account);
             }
-
-            accounts.push(account);
         }
 
         return accounts;
@@ -201,37 +242,67 @@ export class WalletConnectSession extends AbstractSession {
             params: { requiredNamespaces, optionalNamespaces },
         } = request;
         const activeNamespaces = Object.keys(requiredNamespaces).length ? requiredNamespaces : optionalNamespaces;
-        const chainIds = getChainIds(activeNamespaces);
 
-        if (hasUnsupportedChains(chainIds)) {
+        const chainIds = activeNamespaces.eip155.chains?.map(eip155StringToChainId) || [];
+
+        // Step 1: find any of the chainIds that is not an Ethereum chain in the registry
+        const unsupportedChain = chainIds.find((chainId) => !findEthereumTokenByChainId(chainId));
+
+        if (unsupportedChain) {
             await this.web3wallet.rejectSession({
                 id: id,
                 reason: getSdkError('UNSUPPORTED_CHAINS'),
             });
             throw new Error('We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.');
         } else {
+            // Step 2: Check for any missing keys
+            for (const chainId of chainIds) {
+                const chainEntry = findEthereumTokenByChainId(chainId);
+
+                if (chainEntry) {
+                    const key = await getKeyOrNullFromChain(chainEntry);
+
+                    if (!key) {
+                        // navigation.navigate('CreateEthereumKey', {
+                        //     requestType: 'loginRequest',
+                        //     payload: proposal,
+                        //     session,
+                        // });
+                        // return;
+                    }
+                }
+            }
+
+            // Step 3: Find the accounts for the session
             const namespaces: SessionTypes.Namespaces = {};
 
             const accounts = await this.getChainAccount(chainIds);
 
+            const ethereumAccounts = accounts
+                .filter((account) => account !== null)
+                .filter((account) => account.getChain().getChainType() === ChainType.ETHEREUM) as EthereumAccount[];
+
             Object.keys(activeNamespaces).forEach((key) => {
-                const accountsDetails: string[] = [];
+                const accounts: string[] = [];
 
                 activeNamespaces[key].chains?.forEach((chain) => {
                     const chainId = chain.split(':')[1];
 
-                    const chainDetail = accounts?.find((account) => account.getChain().getChainId() === chainId);
+                    const ethereumAccount = ethereumAccounts.find(
+                        (account) => account.getChain().getChainId() === chainId
+                    );
 
-                    if (!chainDetail) throw new Error(`Account not found for chainId ${chainId}`);
-                    accountsDetails.push(`${chain}:${chainDetail.getName()}`);
+                    if (!ethereumAccount) throw new Error(`Account not found for chainId ${chainId}`);
+                    accounts.push(`${chain}:${ethereumAccount.getName()}`);
                 });
                 namespaces[key] = {
                     chains: activeNamespaces[key].chains,
-                    accounts: accountsDetails,
+                    accounts,
                     methods: activeNamespaces[key].methods,
                     events: activeNamespaces[key].events,
                 };
             });
+
             const { name, url, icons } = request?.params?.proposer?.metadata ?? {};
             const chains = accounts.map((account) => account.getChain());
 
@@ -242,11 +313,65 @@ export class WalletConnectSession extends AbstractSession {
         }
     }
 
-    protected async handleTransactionRequest(
-        request: SignClientTypes.EventArguments['session_request']
-    ): Promise<void> {
-        debug(`Handling transaction request:`, request);
-        // Handle Ethereum-specific transaction request
+    protected async handleTransactionRequest(event: SignClientTypes.EventArguments['session_request']): Promise<void> {
+        debug(`Handling transaction request:`, event);
+        const { topic, params, id } = event;
+        const { request, chainId } = params;
+
+        switch (request.method) {
+            case 'eth_sendTransaction': {
+                const transactionData = request.params[0];
+
+                const chainEntry = findEthereumTokenByChainId(eip155StringToChainId(chainId));
+
+                if (!chainEntry) throw new Error('Chain not found');
+                const ethereumPrivateKey = (await getKeyFromChain(chainEntry)) as EthereumPrivateKey;
+
+                let transaction: ITransaction;
+
+                if (ethereumPrivateKey) {
+                    transaction = await EthereumTransaction.fromTransaction(
+                        ethereumPrivateKey,
+                        transactionData,
+                        chainEntry.chain as EthereumChain
+                    );
+                    const account = await getAccountFromChain(chainEntry);
+                    const transactionRequest = new WalletTransactionRequest(
+                        transaction,
+                        ethereumPrivateKey,
+                        account,
+                        this,
+                        event
+                    );
+
+                    this.navigateToTransactionScreen(transactionRequest);
+                } else {
+                    transaction = new EthereumTransaction(transactionData, chainEntry.chain as EthereumChain);
+                    // navigation.navigate('CreateEthereumKey', {
+                    //     requestType: 'transactionRequest',
+                    //     payload: event,
+                    //     transaction: transaction,
+                    //     session,
+                    // });
+                }
+
+                break;
+            }
+
+            default: {
+                const response = {
+                    id: id,
+                    error: getSdkError('UNSUPPORTED_METHODS'),
+                    jsonrpc: '2.0',
+                };
+
+                await this.web3wallet?.respondSessionRequest({
+                    topic,
+                    response,
+                });
+                return;
+            }
+        }
     }
 
     protected async navigateToLoginScreen(request: ILoginRequest): Promise<void> {
@@ -254,8 +379,9 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
-        debug(`Navigating to transaction screen with amount: ${request}`);
-        // Logic to navigate to the Ethereum transaction screen
+        navigate('SignTransaction', {
+            transaction: request,
+        });
     }
 
     protected async navigateToGenerateKey(request: unknown): Promise<void> {

@@ -75,7 +75,6 @@ switch (env) {
     case 'local':
     case 'development':
         config = require('./config/config.json');
-
         break;
     case 'staging':
         config = require('./config/config.staging.json');
