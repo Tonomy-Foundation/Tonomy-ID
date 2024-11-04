@@ -164,7 +164,7 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?:
     } else {
         if (!user) throw new Error('User is required for Antelope chain to get account name');
         debug(
-            `getAccountFromChain() fetching Antelope account for ${chain.getName()}: ${await user?.getAccountName()}, ${await key.exportPrivateKey()}`
+            `getAccountFromChain() fetching Antelope account for ${chain.getName()}: ${await user.getAccountName()}, ${await key.exportPrivateKey()}`
         );
 
         account = await AntelopeAccount.fromAccountAndPrivateKey(
