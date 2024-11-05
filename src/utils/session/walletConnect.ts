@@ -270,9 +270,7 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onQrScan(data: string): Promise<void> {
-        debug(`onQrScan() data ${data}`);
-
-        // Handle QR code scan specific to Ethereum here
+        await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
     async onLink(data: string): Promise<void> {

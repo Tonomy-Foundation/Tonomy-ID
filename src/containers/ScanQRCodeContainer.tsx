@@ -124,8 +124,7 @@ export default function ScanQRCodeContainer({
 
         try {
             if (data.startsWith('wc:')) {
-                if (walletConnectSession?.web3wallet)
-                    await walletConnectSession.web3wallet.core.pairing.pair({ uri: data });
+                await walletConnectSession?.onQrScan(data);
             } else if (data.startsWith('esr:')) {
                 const signingRequestBasic = SigningRequest.from(data, { zlib });
 
