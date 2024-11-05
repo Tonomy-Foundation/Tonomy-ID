@@ -69,7 +69,10 @@ jobs:
           sudo du -sh ~/.yarn
           yarn cache clean
           sudo du -sh ~/.yarn
-      
+
+      - name: 🚀 Install eas globally
+        run: sudo npm install -g eas-cli --unsafe-perm=true --allow-root
+
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
