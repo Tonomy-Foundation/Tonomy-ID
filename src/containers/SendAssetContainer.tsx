@@ -12,8 +12,9 @@ import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
 import { debounce } from '../utils/network';
-import { AntelopeAccount, AntelopeChain, AntelopeTransaction } from '../utils/chain/antelope';
+import { AntelopeAccount, AntelopeChain, AntelopePrivateKey, AntelopeTransaction } from '../utils/chain/antelope';
 import { WalletTransactionRequest } from '../utils/session/walletConnect';
+import { AntelopeTransactionRequest } from '../utils/session/antelope';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -128,6 +129,15 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     chain as AntelopeChain,
                     AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account)
                 );
+
+                const transactionRequest = await AntelopeTransactionRequest.fromTransaction(
+                    transaction,
+                    privateKey as AntelopePrivateKey
+                );
+
+                navigation.navigate('SignTransaction', {
+                    request: transactionRequest,
+                });
             }
         } catch (error) {
             errorStore.setError({

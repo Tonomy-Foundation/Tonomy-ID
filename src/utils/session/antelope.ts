@@ -32,9 +32,12 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
     session?: ISession;
     origin: string | null;
 
-    constructor(transaction: ITransaction, privateKey: AntelopePrivateKey, account: IAccount) {
+    constructor(transaction: ITransaction, privateKey: AntelopePrivateKey) {
         this.transaction = transaction;
         this.privateKey = privateKey;
+    }
+
+    private setAccount(account: IAccount) {
         this.account = account;
     }
 
@@ -53,11 +56,19 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
         session: AntelopeSession,
         account: AntelopeAccount
     ): Promise<AntelopeTransactionRequest> {
-        const antelopeTransactionRequest = new AntelopeTransactionRequest(transaction, antelopeKey, account);
+        const antelopeTransactionRequest = new AntelopeTransactionRequest(transaction, antelopeKey);
 
         antelopeTransactionRequest.setSession(session);
         antelopeTransactionRequest.setRequest(request);
+        antelopeTransactionRequest.setAccount(account);
         return antelopeTransactionRequest;
+    }
+
+    static async fromTransaction(
+        transaction: ITransaction,
+        antelopeKey: AntelopePrivateKey
+    ): Promise<AntelopeTransactionRequest> {
+        return new AntelopeTransactionRequest(transaction, antelopeKey);
     }
 
     getOrigin(): string | null {
