@@ -90,8 +90,9 @@ This is now running in production mode connected to the staging environment.
 ## Installing new packages
 
 ```bash
+# install as dependency
 npx expo install expo-sqlite
-# install as devDependancy
+# install as devDependency
 npx expo install typescript -- -D
 ```
 
