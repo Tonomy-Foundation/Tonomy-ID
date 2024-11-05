@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { Camera, FlashMode } from 'expo-camera/legacy';
+import { BarCodeScannerResult } from 'expo-barcode-scanner';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
@@ -14,24 +14,21 @@ type CameraProps = {
     isFlashlightOn: boolean;
 };
 
-export const CameraView = ({ onBarCodeScanned, isFlashlightOn }: CameraProps) => {
+export const CameraBarcodeScanner = ({ onBarCodeScanned, isFlashlightOn }: CameraProps) => {
     return (
-        <Camera
-            flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
-            barCodeScannerSettings={{
-                barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        <CameraView
+            flash={isFlashlightOn ? 'on' : 'off'}
+            facing="front"
+            barcodeScannerSettings={{
+                barcodeTypes: ['qr'],
             }}
-            onBarCodeScanned={onBarCodeScanned}
+            onBarcodeScanned={onBarCodeScanned}
             style={StyleSheet.absoluteFill}
         />
     );
 };
 
-type PermissionProps = {
-    hasPermission: boolean | null;
-};
-
-export const PermissionStatus = ({ hasPermission }: PermissionProps) => {
+export const PermissionStatus = ({ hasPermission }: { hasPermission: boolean }) => {
     return (
         <View style={styles.container}>
             <ActivityIndicator animating={true} />
@@ -73,40 +70,39 @@ export type Props = {
 };
 
 export default function QRCodeScanner(props: Props) {
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [isFlashlightOn, setFlashLightOn] = useState(false);
+    const [permission, requestPermission] = useCameraPermissions();
     const errorStore = useErrorStore();
 
     useFocusEffect(
         useCallback(() => {
-            setHasPermission(null);
             setFlashLightOn(false);
 
             const getBarCodeScannerPermissions = async () => {
                 try {
-                    const { status } = await BarCodeScanner.requestPermissionsAsync();
-
-                    setHasPermission(status === 'granted');
+                    if (!permission?.granted) {
+                        requestPermission();
+                    }
                 } catch (e) {
                     errorStore.setError({ error: e, expected: false });
                 }
             };
 
             getBarCodeScannerPermissions();
-        }, [errorStore])
+        }, [errorStore, permission?.granted, requestPermission])
     );
 
     const toggleFlashLight = () => setFlashLightOn(!isFlashlightOn);
 
     return (
         <>
-            {hasPermission === true ? (
+            {permission?.granted ? (
                 <View style={styles.QRContainer}>
                     <ScannerOverlay isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
-                    <CameraView onBarCodeScanned={props.onScan} isFlashlightOn={isFlashlightOn} />
+                    <CameraBarcodeScanner onBarCodeScanned={props.onScan} isFlashlightOn={isFlashlightOn} />
                 </View>
             ) : (
-                <PermissionStatus hasPermission={hasPermission} />
+                <PermissionStatus hasPermission={permission?.granted ?? false} />
             )}
         </>
     );
