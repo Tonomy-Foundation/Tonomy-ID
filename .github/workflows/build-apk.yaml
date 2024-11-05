@@ -71,7 +71,7 @@ jobs:
           sudo du -sh ~/.yarn
 
       - name: Install eas globally
-        run: sudo npm install -g eas-cli
+        run: sudo npm install -g eas-cli@12.6.2
 
       - name: 🚀 Build Android .apk app
         run: |
