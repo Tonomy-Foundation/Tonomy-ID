@@ -10,19 +10,12 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     walletConnectSession: null,
 
     initializeSession: async () => {
-        const currentWalletSession = get().walletConnectSession;
+        const walletConnectSession = new WalletConnectSession();
 
-        // Create and configure the WalletConnectSession object
-        if (currentWalletSession && currentWalletSession.initialized) {
-            console.log('initializeWalletState() Already initialized');
-        } else {
-            const walletConnectSession = new WalletConnectSession();
+        await walletConnectSession.initialize();
+        walletConnectSession.onEvent();
 
-            await walletConnectSession.initialize();
-            walletConnectSession.onEvent();
-
-            // Set the session in the store
-            set({ walletConnectSession });
-        }
+        // Set the session in the store
+        set({ walletConnectSession });
     },
 }));

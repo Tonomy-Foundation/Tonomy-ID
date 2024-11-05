@@ -21,7 +21,6 @@ import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 import { useSessionStore } from '../store/sessionStore';
-import { WalletConnectSession } from '../utils/session/walletConnect';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -31,12 +30,16 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
 
-    const { initializeSession } = useSessionStore();
+    const { initializeSession, walletConnectSession } = useSessionStore();
     const { web3wallet, disconnectSession } = useWalletStore();
 
     useEffect(() => {
         progressiveRetryOnNetworkError(loginToService);
-        progressiveRetryOnNetworkError(initializeSession);
+        if (walletConnectSession && walletConnectSession.initialized) {
+            debug('initializeWalletState() Already initialized');
+
+            return;
+        } else progressiveRetryOnNetworkError(initializeSession);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
