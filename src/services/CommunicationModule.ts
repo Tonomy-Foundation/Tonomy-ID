@@ -18,20 +18,24 @@ import { AppState } from 'react-native';
 import { keyStorage } from '../utils/StorageManager/setup';
 import {
     EthereumAccount,
-    EthereumMainnetChain,
-    EthereumPolygonChain,
+    EthereumChain,
     EthereumPrivateKey,
-    EthereumSepoliaChain,
     EthereumTransaction,
     WalletConnectSession,
 } from '../utils/chain/etherum';
-import { IAccount, ITransaction } from '../utils/chain/types';
+import { ChainType, ITransaction } from '../utils/chain/types';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
+import {
+    eip155StringToChainId,
+    findEthereumTokenByChainId,
+    getKeyFromChain,
+    getKeyOrNullFromChain,
+} from '../utils/tokenRegistry';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -40,27 +44,14 @@ export default function CommunicationModule() {
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
-    const {
-        initialized,
-        web3wallet,
-        disconnectSession,
-        initializeWalletState,
-        accountExists,
-        initializeWalletAccount,
-    } = useWalletStore();
+    const { accounts, initialized, web3wallet, disconnectSession, initializeWalletState } = useWalletStore();
 
     // initializeWalletState() on mount with progressiveRetryOnNetworkError()
     useEffect(() => {
-        const initializeAccount = async () => {
-            if (!accountExists) await initializeWalletAccount();
-        };
-
         if (!initialized) {
             progressiveRetryOnNetworkError(initializeWalletState);
         }
-
-        initializeAccount();
-    }, [initializeWalletState, initialized, accountExists, initializeWalletAccount]);
+    }, [initializeWalletState, initialized]);
 
     /**
      *  Login to communication microservice
@@ -206,30 +197,6 @@ export default function CommunicationModule() {
         }
     }
 
-    const { ethereumAccount, sepoliaAccount, polygonAccount } = useWalletStore();
-
-    const getChainAccounts = useCallback(
-        (chainIds: string[]) => {
-            return chainIds?.map((chainId) => {
-                if (chainId === '11155111') {
-                    if (sepoliaAccount) return sepoliaAccount as EthereumAccount;
-                    else throw new Error('Sepolia account not found');
-                } else if (chainId === '1') {
-                    if (ethereumAccount) return ethereumAccount as EthereumAccount;
-                    else throw new Error('Ethereum account not found');
-                } else if (chainId === '137') {
-                    if (polygonAccount) return polygonAccount as EthereumAccount;
-                    else throw new Error('Polygon account not found');
-                } else {
-                    throw new Error(
-                        'Chain not supported. We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'
-                    );
-                }
-            });
-        },
-        [sepoliaAccount, ethereumAccount, polygonAccount]
-    );
-
     useEffect(() => {
         const handleSessionProposal = async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
             try {
@@ -240,13 +207,14 @@ export default function CommunicationModule() {
                         ? requiredNamespaces
                         : optionalNamespaces;
 
-                    const chainIds = activeNamespaces.eip155.chains?.map((chain) => chain.split(':')[1]) || [];
-                    const unsupportedChainIds =
-                        chainIds?.filter((chainId) => !['1', '11155111', '137'].includes(chainId)) || [];
+                    const chainIds = activeNamespaces.eip155.chains?.map(eip155StringToChainId) || [];
 
-                    if (unsupportedChainIds?.length > 0) {
+                    // Step 1: find any of the chainIds that is not an Ethereum chain in the registry
+                    const unsupportedChain = chainIds.find((chainId) => !findEthereumTokenByChainId(chainId));
+
+                    if (unsupportedChain) {
                         errorStore.setError({
-                            title: 'Unsupported Chains',
+                            title: `Unsupported Chain ${unsupportedChain}`,
                             error: new Error(
                                 'We currently support Ethereum Mainnet, Sepolia Testnet, and Polygon Mainnet.'
                             ),
@@ -257,68 +225,64 @@ export default function CommunicationModule() {
                             reason: getSdkError('UNSUPPORTED_CHAINS'),
                         });
                         return;
-                    } else {
-                        const supportedChains = {
-                            '1': { name: 'ethereum', chainObject: EthereumMainnetChain },
-                            '11155111': { name: 'ethereumTestnetSepolia', chainObject: EthereumSepoliaChain },
-                            '137': { name: 'ethereumPolygon', chainObject: EthereumPolygonChain },
-                        };
+                    }
 
-                        let keyFound = false;
-                        const namespaces: SessionTypes.Namespaces = {};
-                        const chainAccounts = await getChainAccounts(chainIds);
+                    // Step 2: Find the accounts for the session
+                    const namespaces: SessionTypes.Namespaces = {};
+                    const ethereumAccounts = accounts
+                        .filter((account) => account !== null)
+                        .filter(
+                            (account) => account.getChain().getChainType() === ChainType.ETHEREUM
+                        ) as EthereumAccount[];
 
-                        Object.keys(activeNamespaces).forEach((key) => {
-                            const accounts: string[] = [];
+                    Object.keys(activeNamespaces).forEach((key) => {
+                        const accounts: string[] = [];
 
-                            activeNamespaces[key].chains?.forEach((chain) => {
-                                const chainId = chain.split(':')[1];
+                        activeNamespaces[key].chains?.forEach((chain) => {
+                            const chainId = chain.split(':')[1];
 
-                                const chainDetail = chainAccounts?.find(
-                                    (account) => account.getChain().getChainId() === chainId
-                                );
+                            const ethereumAccount = ethereumAccounts.find(
+                                (account) => account.getChain().getChainId() === chainId
+                            );
 
-                                if (!chainDetail) throw new Error(`Account not found for chainId ${chainId}`);
-                                accounts.push(`${chain}:${chainDetail.getName()}`);
-                            });
-                            namespaces[key] = {
-                                chains: activeNamespaces[key].chains,
-                                accounts,
-                                methods: activeNamespaces[key].methods,
-                                events: activeNamespaces[key].events,
-                            };
+                            if (!ethereumAccount) throw new Error(`Account not found for chainId ${chainId}`);
+                            accounts.push(`${chain}:${ethereumAccount.getName()}`);
                         });
-                        const session = new WalletConnectSession(web3wallet);
+                        namespaces[key] = {
+                            chains: activeNamespaces[key].chains,
+                            accounts,
+                            methods: activeNamespaces[key].methods,
+                            events: activeNamespaces[key].events,
+                        };
+                    });
+                    const session = new WalletConnectSession(web3wallet);
 
-                        session.setNamespaces(namespaces);
-                        session.setActiveAccounts(chainAccounts);
+                    session.setNamespaces(namespaces);
+                    session.setActiveAccounts(ethereumAccounts);
 
-                        for (const chainId of chainIds) {
-                            if (supportedChains[chainId]) {
-                                const { name, chainObject } = supportedChains[chainId];
-                                const key = await keyStorage.findByName(name, chainObject);
+                    // Step 3: Check for any missing keys
+                    for (const chainId of chainIds) {
+                        const chainEntry = findEthereumTokenByChainId(chainId);
 
-                                if (!key) {
-                                    navigation.navigate('CreateEthereumKey', {
-                                        requestType: 'loginRequest',
-                                        payload: proposal,
-                                        session,
-                                    });
-                                    return;
-                                } else {
-                                    keyFound = true;
-                                }
+                        if (chainEntry) {
+                            const key = await getKeyOrNullFromChain(chainEntry);
+
+                            if (!key) {
+                                navigation.navigate('CreateEthereumKey', {
+                                    requestType: 'loginRequest',
+                                    payload: proposal,
+                                    session,
+                                });
+                                return;
                             }
                         }
-
-                        if (keyFound) {
-                            navigation.navigate('WalletConnectLogin', {
-                                payload: proposal,
-                                platform: 'browser',
-                                session,
-                            });
-                        }
                     }
+
+                    navigation.navigate('WalletConnectLogin', {
+                        payload: proposal,
+                        platform: 'browser',
+                        session,
+                    });
                 }
             } catch (error) {
                 console.error('handleSessionProposal()', error);
@@ -336,39 +300,31 @@ export default function CommunicationModule() {
                         case 'eth_sendTransaction': {
                             const transactionData = request.params[0];
 
-                            let key, chain;
+                            const chainEntry = findEthereumTokenByChainId(eip155StringToChainId(chainId));
 
-                            if (chainId === 'eip155:11155111') {
-                                chain = EthereumSepoliaChain;
-                                key = await keyStorage.findByName('ethereumTestnetSepolia', chain);
-                            } else if (chainId === 'eip155:1') {
-                                chain = EthereumMainnetChain;
-                                key = await keyStorage.findByName('ethereum', chain);
-                            } else if (chainId === 'eip155:137') {
-                                chain = EthereumPolygonChain;
-                                key = await keyStorage.findByName('ethereumPolygon', chain);
-                            } else throw new Error('Unsupported chains');
+                            if (!chainEntry) throw new Error('Chain not found');
+                            const ethereumPrivateKey = (await getKeyFromChain(chainEntry)) as EthereumPrivateKey;
 
                             let transaction: ITransaction;
 
-                            if (key) {
-                                const exportPrivateKey = await key.exportPrivateKey();
-                                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, chain);
-
+                            if (ethereumPrivateKey) {
                                 transaction = await EthereumTransaction.fromTransaction(
                                     ethereumPrivateKey,
                                     transactionData,
-                                    chain
+                                    chainEntry.chain as EthereumChain
                                 );
                                 navigation.navigate('SignTransaction', {
                                     transaction,
-                                    privateKey: key,
+                                    privateKey: ethereumPrivateKey,
                                     origin: verifyContext?.verified?.origin,
                                     request: event,
                                     session,
                                 });
                             } else {
-                                transaction = new EthereumTransaction(transactionData, chain);
+                                transaction = new EthereumTransaction(
+                                    transactionData,
+                                    chainEntry.chain as EthereumChain
+                                );
                                 navigation.navigate('CreateEthereumKey', {
                                     requestType: 'transactionRequest',
                                     payload: event,
@@ -414,16 +370,7 @@ export default function CommunicationModule() {
                 web3wallet.off('session_request', handleSessionRequest);
             }
         };
-    }, [web3wallet, initialized, errorStore, navigation, getChainAccounts]);
-
-    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
-        let timeout: ReturnType<typeof setTimeout>;
-
-        return (...args: Parameters<T>): void => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), wait);
-        };
-    };
+    }, [web3wallet, initialized, errorStore, navigation, accounts]);
 
     useEffect(() => {
         const handleSessionDelete = debounce(async (event) => {

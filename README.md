@@ -27,7 +27,7 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (for first time build only) `export EXPO_FIRST_TIME=true`
-3. (for every time after first time only) Change the value of `"projectId"` in `prepare.app.config.ts` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
+3. (for every time after first time only) Change the value of `"projectId"` in `./src/config/config.json` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
 4. (for IOS only) Run `yarn run build:ios:create` to create a device profile for your phone. Follow the steps below:
 
     If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
@@ -62,31 +62,6 @@ You NEED to follow the above `Pre-run build` steps above before you can start th
 DEBUG=tonomy* yarn run start
 ```
 
-### Run with the Staging / Testnet environment and build
-
-Testing Staging / Testnet Tonomy ID locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs inside Tonomy ID as it runs
-
-1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json` or `config.testnet.json`
-2. Run `DEBUG=tonomy* EXPO_NODE_ENV=staging yarn run start` or `DEBUG=tonomy* EXPO_NODE_ENV=testnet yarn run start`
-3. Connect via QR and bundle and load the app
-4. Scroll down >> "Open React Native dev men"
-5. Click "Settings"
-6. Turn ON "JS Minify"
-7. Turn OFF "JS Dev Mode"
-8. Reload
-
-This is now running in production mode connected to the staging environment.
-
-## Run Staging or Testnet and see debug logs (Android only)
-
-1. Install adb on your pc (<https://dl.google.com/android/repository/platform-tools-latest-windows.zip>)
-2. Put the location of the folder inside Path env system variable or you can navigate to the folder and call adb.exe directly
-3. Run `adb logcat *:S ReactNative:V ReactNativeJS:V` or `./adb.exe logcat*:S ReactNative:V ReactNativeJS:V` in the command line to catch debug messages of reactNative only. Try `adb logcat -s ReactNative:V ReactNativeJS:V` if that doesn't work.
-4. Enable developer mode on your phone.
-5. Enable USB debug on your phone.
-6. Connect your phone to the pc with a usb cable.
-7. Open the the react native app you want to debug.
-
 ## Installing new packages
 
 ```bash
@@ -109,25 +84,7 @@ To check other expo issues
 npx expo-doctor
 ```
 
-## How to test app upgrades on iOS with testflight
-
-1. iOS use testflight versions
-2. Delete the app storage from settings → General → iPhone Storage.
-3. Install previous version from the testflight
-4. Create account or login with the existing account
-5. Go to the testflight update the app to the latest version
-6. Test again and if face any error mention it in github issues with the replicate steps
-
-## How to test app upgrades on android
-
-1. Delete the app storage from settings
-2. Install previous version use apk from the github action (Build Android APK) install it
-<https://github.com/Tonomy-Foundation/Tonomy-ID/actions/workflows/build-apk.yaml>
-4. Create account or login with the existing account
-5. Go to the latest version of the app from the github actions
-6. Test again and if face any error mention it in github issues with the replicate steps
-
-## Update the Tonomy-ID-SDK version to the latest
+### Update Tonomy-ID-SDK package version to the latest
 
 ```bash
 yarn run updateSdkVersion development
@@ -137,11 +94,85 @@ yarn run updateSdkVersion master
 yarn run updateSdkVersion testnet
 ```
 
+## Run the production environment locally
+
+Run production (United Citizen Wallet), testnet (Pangea Testnet) or staging (Tonomy ID Staging) locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs as it runs
+
+Instructions for `staging`. Change to `testnet` or `production` below to change environment:
+
+1. Change to `"appName": "Tonomy ID Development"` in `config.staging.json`
+2. Run `DEBUG=tonomy* EXPO_NODE_ENV=staging yarn run start`
+3. Connect via QR and load the app
+
+To run it with the same building as production:
+
+1. Scroll down >> "Open React Native dev men"
+2. Click "Settings"
+3. Turn ON "JS Minify"
+4. Turn OFF "JS Dev Mode"
+5. Reload
+
+This is now running in production mode connected to the staging/testnet environment.
+
+## View debug logs of production apps installed from Google Play App Store, Apple App Store or Testflight
+
+### Android
+
+1. Install adb on your pc (<https://dl.google.com/android/repository/platform-tools-latest-windows.zip>)
+2. Put the location of the folder inside Path env system variable or you can navigate to the folder and call adb.exe directly
+3. Run `adb logcat *:S ReactNative:V ReactNativeJS:V` or `./adb.exe logcat*:S ReactNative:V ReactNativeJS:V` in the command line to catch debug messages of reactNative only. Try `adb logcat -s ReactNative:V ReactNativeJS:V` if that doesn't work.
+4. Enable developer mode on your phone.
+5. Enable USB debug on your phone.
+6. Connect your phone to the pc with a usb cable.
+7. Open the the react native app you want to debug.
+
+### iOS
+
+TODO
+
+## Testing app upgrades
+
+Check if upgrading from one app version to the next will break anything for users
+
+### Developer mode
+
+Note: this will NOT work if new expo/react-native packages have been installed in the upgrade
+
+```bash
+git checkout testnet
+yarn
+git checkout {{previousVersionCommitId}}
+DEBUG=tonomy* EXPO_NODE_ENV=testnet yarn run start
+# Then login or create an account, checkout assets and do a few other things.
+# Then stop the app
+git checkout testnet
+DEBUG=tonomy* EXPO_NODE_ENV=testnet yarn run start
+# See if you stay logged in, or if any other errors occure
+```
+
+### Android with built .apk files
+
+1. Delete the app storage from OS settings
+2. Install previous version using apk from the github action (Build Android APK) install it
+<https://github.com/Tonomy-Foundation/Tonomy-ID/actions/workflows/build-apk.yaml>
+3. Create account or login with the existing account
+4. Go to the latest version of the app from the github actions
+5. Test again and if face any error mention it in github issues with the replicate steps
+
+### iOS with Testflight
+
+1. iOS use testflight versions
+2. Delete the app storage from OS settings → General → iPhone Storage.
+3. Install previous version from the testflight
+4. Create account or login with the existing account
+5. Go to the testflight update the app to the latest version
+6. Test again and if face any error mention it in github issues with the replicate steps
+
 ## File structure of components
 
 [https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7](https://learn.habilelabs.io/best-folder-structure-for-react-native-project-a46405bdba7)
 
-### Configuration and environment variables
+## Configuration and environment variables
 
 Set the configuration variables in the desired file in `./src/config`
 
@@ -167,7 +198,7 @@ Other environment variables override the values in the config file:
 - SSO_WEBSITE_ORIGIN
 - VITE_COMMUNICATION_URL
 
-### Linting
+## Linting
 
 Linting is done with `eslint`. Install the recommended VS Code plugin to see markers in your code.
 
@@ -175,21 +206,13 @@ Linting is done with `eslint`. Install the recommended VS Code plugin to see mar
 yarn run lint
 ```
 
-### Error handling
+## Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
 
 ### Debugging
 
 Uses [debug](https://www.npmjs.com/package/debug) package. Use `export DEBUG="tonomy*"` to see all debug logs.
-
-### Common errors and how to fix
-
-`Origin not found`
-
-You might be running in stand-alone mode and trying to complete the SSO loin flow. This is not possible stand-alone mode.
-
-**FIX:** Run Tonomy ID using `./app.sh` with the Tonomy ID Integration repository.
 
 ## Releases
 
