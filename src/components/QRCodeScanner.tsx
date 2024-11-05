@@ -18,7 +18,6 @@ export const CameraBarcodeScanner = ({ onBarCodeScanned, isFlashlightOn }: Camer
     return (
         <CameraView
             flash={isFlashlightOn ? 'on' : 'off'}
-            facing="front"
             barcodeScannerSettings={{
                 barcodeTypes: ['qr'],
             }}
