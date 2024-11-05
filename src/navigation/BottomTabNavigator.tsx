@@ -5,7 +5,7 @@ import CitizenshipScreen from '../screens/CitizenshipScreen';
 import AssetListingScreen from '../screens/AssetListingScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import theme, { useAppTheme } from '../utils/theme';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ScanIcon from '../assets/icons/ScanIcon';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -73,7 +73,7 @@ function BottomTabNavigator(props) {
                     </TouchableOpacity>
                 ),
                 tabBarStyle: {
-                    height: 90,
+                    height: Platform.OS === 'android' ? 80 : 90,
                     borderTopWidth: 1,
                     borderTopColor: theme.colors.border,
                 },
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     tabLabel: {
         fontSize: 10,
         fontWeight: '500',
-        marginBottom: 5,
+        marginBottom: Platform.OS === 'android' ? 20 : 5,
     },
 });
 
