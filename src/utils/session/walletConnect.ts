@@ -43,6 +43,13 @@ export const eip155StringToChainId = (eip155String: string) => {
     return eip155String.split(':')[1];
 };
 
+interface NavigateParams {
+    requestType: string;
+    request: SignClientTypes.EventArguments['session_request'] | SignClientTypes.EventArguments['session_proposal'];
+    session: WalletConnectSession;
+    transaction?: ITransaction;
+}
+
 export class WalletLoginRequest implements ILoginRequest {
     loginApp: ILoginApp;
     account: IAccount[];
@@ -130,6 +137,14 @@ export class WalletTransactionRequest implements ITransactionRequest {
         this.session = session;
     }
 
+    private setSession(session: ISession) {
+        this.session = session;
+    }
+
+    private setRequest(request: SignClientTypes.EventArguments['session_request']) {
+        this.request = request;
+    }
+
     static async fromRequest(
         chainEntry: TokenRegistryEntry,
         ethereumPrivateKey: EthereumPrivateKey,
@@ -145,8 +160,11 @@ export class WalletTransactionRequest implements ITransactionRequest {
             transactionData,
             chainEntry.chain as EthereumChain
         );
+        const walletTransactionRequest = new WalletTransactionRequest(transaction, ethereumPrivateKey, account);
 
-        return new WalletTransactionRequest(transaction, ethereumPrivateKey, account, session, request);
+        walletTransactionRequest.setSession(session);
+        walletTransactionRequest.setRequest(request);
+        return walletTransactionRequest;
     }
 
     static async fromTransaction(
@@ -319,7 +337,11 @@ export class WalletConnectSession extends AbstractSession {
                     const key = await getKeyOrNullFromChain(chainEntry);
 
                     if (!key) {
-                        this.navigateToGenerateKey('loginRequest', this, request);
+                        this.navigateToGenerateKey({
+                            requestType: 'loginRequest',
+                            request: request,
+                            session: this,
+                        });
                         return;
                     }
                 }
@@ -388,7 +410,12 @@ export class WalletConnectSession extends AbstractSession {
                 } else {
                     const transaction = new EthereumTransaction(transactionData, chainEntry.chain as EthereumChain);
 
-                    this.navigateToGenerateKey('transactionRequest', this, event, transaction);
+                    this.navigateToGenerateKey({
+                        requestType: 'transactionRequest',
+                        request: event,
+                        session: this,
+                        transaction: transaction,
+                    });
                     return;
                 }
 
@@ -421,22 +448,7 @@ export class WalletConnectSession extends AbstractSession {
         });
     }
 
-    protected async navigateToGenerateKey(
-        requestType: string,
-        session: WalletConnectSession,
-        request: SignClientTypes.EventArguments['session_request'] | SignClientTypes.EventArguments['session_proposal'],
-        transaction?: ITransaction
-    ): Promise<void> {
-        const params = {
-            requestType,
-            request,
-            session,
-        };
-
-        if (transaction) {
-            params['transaction'] = transaction;
-        }
-
-        navigate('CreateEthereumKey', params);
+    protected async navigateToGenerateKey(request: NavigateParams): Promise<void> {
+        navigate('CreateEthereumKey', request);
     }
 }
