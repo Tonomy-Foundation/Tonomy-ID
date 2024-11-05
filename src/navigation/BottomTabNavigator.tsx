@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import MenuIcon from '../assets/icons/MenuIcon';
 import ScanQRScreen from '../screens/ScanQRScreen';
-import { ArrowLeft, Community, Compass, GridPlus, Wallet } from 'iconoir-react-native';
+import { ArrowLeft, Compass, GridPlus, UserCircle, Wallet, WalletSolid } from 'iconoir-react-native';
 import { BottonNavigatorRouteStackParamList, RouteStackParamList } from './Root';
 
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
@@ -58,7 +58,6 @@ function BottomTabNavigator() {
                 headerTitleStyle: {
                     fontSize: 16,
                     fontWeight: '500',
-                    color: theme.colors.text,
                 },
                 headerTitleAlign: 'center',
                 headerTintColor: theme.dark ? theme.colors.text : 'black',
@@ -85,7 +84,7 @@ function BottomTabNavigator() {
                         </Text>
                     ),
                     tabBarIcon: ({ focused }) => (
-                        <Community
+                        <UserCircle
                             width={28}
                             height={28}
                             color={!focused ? theme.colors.tabGray : theme.colors.black}
@@ -104,9 +103,12 @@ function BottomTabNavigator() {
                             Assets
                         </Text>
                     ),
-                    tabBarIcon: ({ focused }) => (
-                        <Wallet width={28} height={28} color={!focused ? theme.colors.tabGray : theme.colors.black} />
-                    ),
+                    tabBarIcon: ({ focused }) =>
+                        focused ? (
+                            <WalletSolid width={28} height={28} color={theme.colors.black} />
+                        ) : (
+                            <Wallet width={28} height={28} color={theme.colors.tabGray} />
+                        ),
                 }}
             />
             <Tab.Screen
