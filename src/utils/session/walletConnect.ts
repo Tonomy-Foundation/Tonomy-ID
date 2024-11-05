@@ -43,7 +43,7 @@ export const eip155StringToChainId = (eip155String: string) => {
     return eip155String.split(':')[1];
 };
 
-interface NavigateParams {
+interface NavigateGenerateKeyParams {
     requestType: string;
     request: SignClientTypes.EventArguments['session_request'] | SignClientTypes.EventArguments['session_proposal'];
     session: WalletConnectSession;
@@ -123,18 +123,10 @@ export class WalletTransactionRequest implements ITransactionRequest {
     session?: ISession;
     origin: string | null;
 
-    constructor(
-        transaction: ITransaction,
-        privateKey: IPrivateKey,
-        account: IAccount,
-        session?: ISession,
-        request?: SignClientTypes.EventArguments['session_request']
-    ) {
+    constructor(transaction: ITransaction, privateKey: IPrivateKey, account: IAccount) {
         this.transaction = transaction;
         this.privateKey = privateKey;
         this.account = account;
-        this.request = request;
-        this.session = session;
     }
 
     private setSession(session: ISession) {
@@ -274,8 +266,7 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onLink(data: string): Promise<void> {
-        debug(`Link received with data: ${data}`);
-        // Handle link data specific to Ethereum here
+        await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
     async onEvent(): Promise<void> {
@@ -446,7 +437,7 @@ export class WalletConnectSession extends AbstractSession {
         });
     }
 
-    protected async navigateToGenerateKey(request: NavigateParams): Promise<void> {
+    protected async navigateToGenerateKey(request: NavigateGenerateKeyParams): Promise<void> {
         navigate('CreateEthereumKey', request);
     }
 }
