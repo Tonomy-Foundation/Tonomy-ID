@@ -31,33 +31,12 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
 
-    const { walletConnectSession, setWalletConnectSession } = useSessionStore.getState();
+    const { initializeSession } = useSessionStore();
     const { web3wallet, disconnectSession } = useWalletStore();
-
-    async function initializeWalletConnect(): Promise<void> {
-        if (walletConnectSession && walletConnectSession.initialized) {
-            debug('initializeWalletState() Already initialized');
-            return;
-        }
-
-        try {
-            const session = new WalletConnectSession();
-
-            await session.initialize();
-            session.onEvent();
-            setWalletConnectSession(session);
-        } catch (e) {
-            if (isNetworkError(e)) {
-                throw e;
-            } else {
-                errorStore.setError({ error: e, expected: false });
-            }
-        }
-    }
 
     useEffect(() => {
         progressiveRetryOnNetworkError(loginToService);
-        progressiveRetryOnNetworkError(initializeWalletConnect);
+        progressiveRetryOnNetworkError(initializeSession);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
