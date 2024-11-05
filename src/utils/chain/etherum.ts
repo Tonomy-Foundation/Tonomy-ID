@@ -100,15 +100,23 @@ export class EthereumChain extends AbstractChain {
     protected explorerOrigin: string;
     private provider: JsonRpcProvider;
 
-    constructor(infuraUrl: string, name: string, chainId: string, logoUrl: string, explorerOrigin: string) {
-        super(name, chainId, logoUrl);
+    constructor(
+        infuraUrl: string,
+        name: string,
+        chainId: string,
+        logoUrl: string,
+        explorerOrigin: string,
+        testnet = false
+    ) {
+        super(name, chainId, logoUrl, testnet);
         this.infuraUrl = infuraUrl;
         this.provider = new JsonRpcProvider(this.infuraUrl);
         this.explorerOrigin = explorerOrigin;
     }
 
-    createKeyFromSeed(seed: string): IPrivateKey {
-        const wallet = new ethers.Wallet(seed);
+    createKeyFromSeed(seed: string): EthereumPrivateKey {
+        const chainSeed = this.generateUniqueSeed(seed);
+        const wallet = new ethers.Wallet(chainSeed);
 
         return new EthereumPrivateKey(wallet.privateKey, this);
     }
@@ -159,11 +167,9 @@ export class EthereumToken extends AbstractToken {
     }
 
     async getUsdPrice(): Promise<number> {
-        if (this.chain.getChainId() === '11155111') {
-            return 0;
-        } else {
-            return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
-        }
+        if (this.chain.isTestnet()) return 0;
+
+        return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
     }
     getContractAccount(): IAccount | undefined {
         return undefined;
@@ -186,26 +192,28 @@ export class EthereumToken extends AbstractToken {
 
     async getUsdValue(account?: IAccount): Promise<number> {
         const balance = await this.getBalance(account);
+
         return balance.getUsdValue();
     }
 }
 
-const EthereumMainnetChain = new EthereumChain(
+export const EthereumMainnetChain = new EthereumChain(
     `https://mainnet.infura.io/v3/${INFURA_KEY}`,
     'Ethereum',
     '1',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png',
     'https://etherscan.io'
 );
-const EthereumSepoliaChain = new EthereumChain(
+export const EthereumSepoliaChain = new EthereumChain(
     `https://sepolia.infura.io/v3/${INFURA_KEY}`,
     'sepolia',
     '11155111',
     'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    'https://sepolia.etherscan.io'
+    'https://sepolia.etherscan.io',
+    true
 );
 
-const EthereumPolygonChain = new EthereumChain(
+export const EthereumPolygonChain = new EthereumChain(
     `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
     'Polygon',
     '137',
@@ -213,7 +221,7 @@ const EthereumPolygonChain = new EthereumChain(
     'https://polygonscan.com'
 );
 
-const ETHToken = new EthereumToken(
+export const ETHToken = new EthereumToken(
     EthereumMainnetChain,
     'Ether',
     'ETH',
@@ -221,7 +229,7 @@ const ETHToken = new EthereumToken(
     'https://cryptologos.cc/logos/ethereum-eth-logo.png',
     'ethereum'
 );
-const ETHSepoliaToken = new EthereumToken(
+export const ETHSepoliaToken = new EthereumToken(
     EthereumSepoliaChain,
     'Ether',
     'SepoliaETH',
@@ -230,7 +238,7 @@ const ETHSepoliaToken = new EthereumToken(
     'ethereum'
 );
 
-const ETHPolygonToken = new EthereumToken(
+export const ETHPolygonToken = new EthereumToken(
     EthereumPolygonChain,
     'Polygon',
     'MATIC',
@@ -242,8 +250,6 @@ const ETHPolygonToken = new EthereumToken(
 EthereumMainnetChain.setNativeToken(ETHToken);
 EthereumSepoliaChain.setNativeToken(ETHSepoliaToken);
 EthereumPolygonChain.setNativeToken(ETHPolygonToken);
-
-export { EthereumMainnetChain, EthereumSepoliaChain, EthereumPolygonChain, ETHToken, ETHSepoliaToken, ETHPolygonToken };
 
 export class EthereumTransaction implements ITransaction {
     private transaction: TransactionRequest;

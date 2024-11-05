@@ -23,6 +23,8 @@ import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
+import { AntelopeTransaction } from '../utils/chain/antelope';
+import { TransactionRequest } from 'ethers';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -199,12 +201,18 @@ export default function SignTransactionConsentContainer({
 
                 await session.approveTransactionRequest(request, receipt);
             } else {
-                const transactionRequest = {
-                    to: (await transaction.getTo()).getName(),
-                    from: (await transaction.getFrom()).getName(),
-                    value: (await transaction.getValue()).getAmount(),
-                    data: ((await transaction.getData()) as { data: string }).data,
-                };
+                let transactionRequest: TransactionRequest | AntelopeTransaction;
+
+                if (transaction.getChain().getChainType() === 'ETHEREUM') {
+                    transactionRequest = {
+                        to: (await transaction.getTo()).getName(),
+                        from: (await transaction.getFrom()).getName(),
+                        value: (await transaction.getValue()).getAmount(),
+                        data: ((await transaction.getData()) as { data: string }).data,
+                    };
+                } else {
+                    transactionRequest = transaction as AntelopeTransaction;
+                }
 
                 receipt = await privateKey.sendTransaction(transactionRequest);
             }
@@ -224,9 +232,7 @@ export default function SignTransactionConsentContainer({
                     error: new Error('You do not have enough coins to complete this transaction.'),
                     expected: true,
                 });
-            }
-
-            if (
+            } else if (
                 error instanceof ApplicationError &&
                 error?.code === ApplicationErrors.IncorrectTransactionAuthorization
             ) {
@@ -245,6 +251,8 @@ export default function SignTransactionConsentContainer({
                 });
                 navigation.navigate('Assets');
             }
+
+            navigation.navigate('Assets');
 
             if (session) {
                 await session.rejectTransactionRequest(request);
