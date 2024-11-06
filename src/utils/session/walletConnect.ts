@@ -140,11 +140,13 @@ export class WalletTransactionRequest implements ITransactionRequest {
     static async fromRequest(
         chainEntry: TokenRegistryEntry,
         ethereumPrivateKey: EthereumPrivateKey,
-        request: SignClientTypes.EventArguments['session_request'],
+        event: SignClientTypes.EventArguments['session_request'],
         session: WalletConnectSession
     ): Promise<WalletTransactionRequest> {
-        const transactionData = request.params[0];
+        const { params } = event;
+        const { request } = params;
 
+        const transactionData = request.params[0];
         const account = await getAccountFromChain(chainEntry);
 
         const transaction = await EthereumTransaction.fromTransaction(
@@ -155,7 +157,7 @@ export class WalletTransactionRequest implements ITransactionRequest {
         const walletTransactionRequest = new WalletTransactionRequest(transaction, ethereumPrivateKey, account);
 
         walletTransactionRequest.setSession(session);
-        walletTransactionRequest.setRequest(request);
+        walletTransactionRequest.setRequest(event);
         return walletTransactionRequest;
     }
 
@@ -374,7 +376,6 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async handleTransactionRequest(event: SignClientTypes.EventArguments['session_request']): Promise<void> {
-        debug(`Handling transaction request:`, event);
         const { topic, params, id } = event;
         const { request, chainId } = params;
 

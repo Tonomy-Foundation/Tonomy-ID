@@ -30,6 +30,7 @@ export default function SignTransactionConsentContainer({
     request: ITransactionRequest;
 }) {
     const { transaction } = request;
+
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
     const [operations, setOperations] = useState<OperationData[] | null>(null);

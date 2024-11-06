@@ -47,7 +47,7 @@ export default function CommunicationModule() {
     useEffect(() => {
         // Function to handle incoming URLs
         const handleDeepLink = async ({ url }) => {
-            debug('Received URL:', url);
+            console.log('Received URL:', url);
             await walletConnectSession?.onLink(url);
         };
 
@@ -57,21 +57,10 @@ export default function CommunicationModule() {
         // Check if the app was opened from a deep link
         Linking.getInitialURL()
             .then((url) => {
-                debug('Initial URL:', url);
+                console.log('Initial URL:', url);
 
                 if (url && url.startsWith('esr')) {
                     handleDeepLink({ url });
-                }
-            })
-            .catch((err) => console.error('An error occurred', err));
-
-        // Check if the device can handle the esr URL scheme
-        Linking.canOpenURL('esr://')
-            .then((supported) => {
-                if (!supported) {
-                    console.error('Error', 'Cannot handle esr URL scheme');
-                } else {
-                    debug('Device can handle esr URL scheme');
                 }
             })
             .catch((err) => console.error('An error occurred', err));
