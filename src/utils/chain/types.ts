@@ -451,18 +451,23 @@ export interface ITransactionRequest {
 
 export interface ISession {
     web3wallet?: Web3Wallet;
+    platform: string;
     initialize(): Promise<void>;
     onQrScan(data: string): Promise<void>; // make this function static
     onLink(data: string): Promise<void>; // make this function static
     onEvent(request: unknown): Promise<void>;
+    redirectToMobileBrowser(url: string): void;
 }
 
 export abstract class AbstractSession implements ISession {
+    platform: 'mobile' | 'browser';
+
     abstract initialize(): Promise<void>;
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;
     abstract onEvent(request?: unknown): Promise<void>;
 
+    abstract redirectToMobileBrowser(url: string): Promise<void>;
     protected abstract handleLoginRequest(request: unknown): Promise<void>;
     protected abstract handleTransactionRequest(request: unknown): Promise<void>;
     protected abstract navigateToLoginScreen(request: ILoginRequest): Promise<void>;

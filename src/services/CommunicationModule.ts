@@ -47,8 +47,12 @@ export default function CommunicationModule() {
     useEffect(() => {
         // Function to handle incoming URLs
         const handleDeepLink = async ({ url }) => {
-            console.log('Received URL:', url);
-            await walletConnectSession?.onLink(url);
+            debug('Received URL:', url);
+
+            if (url.startsWith('wc')) {
+                debug('walletConnectSession?.initialized', walletConnectSession?.initialized);
+                await walletConnectSession?.onLink(url);
+            }
         };
 
         // Listen for deep links when the app is running
@@ -57,9 +61,7 @@ export default function CommunicationModule() {
         // Check if the app was opened from a deep link
         Linking.getInitialURL()
             .then((url) => {
-                console.log('Initial URL:', url);
-
-                if (url && url.startsWith('esr')) {
+                if (url) {
                     handleDeepLink({ url });
                 }
             })

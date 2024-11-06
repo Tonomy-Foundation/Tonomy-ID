@@ -30,6 +30,7 @@ import {
     tokenRegistry,
     TokenRegistryEntry,
 } from '../tokenRegistry';
+import { Linking } from 'react-native';
 
 const debug = Debug('tonomy-id:utils:session:walletConnect');
 
@@ -105,6 +106,7 @@ export class WalletLoginRequest implements ILoginRequest {
             id: this.request.id,
             reason: getSdkError('USER_REJECTED'),
         });
+        await this.session.redirectToMobileBrowser(this.loginApp.getUrl());
     }
 
     async approve(): Promise<void> {
@@ -112,6 +114,8 @@ export class WalletLoginRequest implements ILoginRequest {
             id: this.request.id,
             namespaces: this.namespaces,
         });
+
+        await this.session.redirectToMobileBrowser(this.loginApp.getUrl());
     }
 }
 
@@ -205,6 +209,7 @@ export class WalletTransactionRequest implements ITransactionRequest {
                 topic: this.request.topic,
                 response,
             });
+            if (this.origin) await this.session.redirectToMobileBrowser(this.origin);
         }
     }
 
@@ -218,6 +223,7 @@ export class WalletTransactionRequest implements ITransactionRequest {
             const response = { id: this.request.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await this.session.web3wallet?.respondSessionRequest({ topic: this.request.topic, response });
+            if (this.origin) await this.session.redirectToMobileBrowser(this.origin);
         } else {
             receipt = await this.privateKey.sendTransaction(this.transaction);
         }
@@ -256,6 +262,7 @@ export class WalletConnectSession extends AbstractSession {
                 });
 
                 this.initialized = true;
+                this.platform = 'browser';
             } catch (e) {
                 if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                 else throw e;
@@ -268,6 +275,7 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onLink(data: string): Promise<void> {
+        this.platform = 'mobile';
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
@@ -440,5 +448,11 @@ export class WalletConnectSession extends AbstractSession {
 
     protected async navigateToGenerateKey(request: NavigateGenerateKeyParams): Promise<void> {
         navigate('CreateEthereumKey', request);
+    }
+
+    async redirectToMobileBrowser(url: string) {
+        if (this.platform === 'mobile' && url) {
+            await Linking.openURL(url);
+        }
     }
 }
