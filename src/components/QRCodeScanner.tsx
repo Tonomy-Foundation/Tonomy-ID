@@ -15,7 +15,6 @@ type CameraProps = {
 };
 
 export const CameraBarcodeScanner = ({ onBarCodeScanned, enableTorch }: CameraProps) => {
-    console.log('CameraBarcodeScanner', enableTorch);
     return (
         <CameraView
             enableTorch={enableTorch}
