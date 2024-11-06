@@ -8,6 +8,7 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import PinSettingsScreen from '../screens/PinSettingsScreen';
 import FaceIdSettingsScreen from '../screens/FaceIdSettingsScreen';
 import FingerprintSettingsScreen from '../screens/FingerprintSettingsScreen';
+import { AppTheme } from '../utils/theme';
 // import PinScreen from '../screens/PinScreen';
 
 export type SettingsStackParamList = {
@@ -26,7 +27,7 @@ const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
 export default function SettingsNavigation() {
     // Setup styles
-    const theme = useTheme();
+    const theme = useTheme<AppTheme>();
 
     const navigation = useNavigation();
     const backButton = () => {

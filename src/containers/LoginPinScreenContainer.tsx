@@ -102,6 +102,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     InfoText: {
-        color: theme.colors.placeholder,
+        color: theme.colors.text,
     },
 });

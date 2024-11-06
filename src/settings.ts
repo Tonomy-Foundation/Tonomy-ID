@@ -15,7 +15,7 @@ type ConfigType = {
     blockchainUrl: string;
     theme: {
         primaryColor: string;
-        primaryColor2: string;
+        disabled: string;
         secondaryColor: string;
         secondaryColor2: string;
         tertiaryColor: string;

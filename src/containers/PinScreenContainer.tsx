@@ -172,6 +172,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     accountSecureText: {
-        color: theme.colors.placeholder,
+        color: theme.colors.text,
     },
 });

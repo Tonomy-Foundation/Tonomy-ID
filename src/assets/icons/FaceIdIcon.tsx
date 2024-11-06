@@ -1,6 +1,5 @@
 import React from 'react';
 import { SvgProps, SvgXml } from 'react-native-svg';
-import { customColors } from '../../utils/theme';
 
 export default function FaceIdIcon(props: SvgProps) {
     const xml = `
