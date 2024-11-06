@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { TH1 } from '../components/atoms/THeadings';
-import TPin from '../components/TPin';
-import useUserStore from '../store/userStore';
+import TButton, { TButtonContained, TButtonOutlined } from '../../components/atoms/TButton';
+import { TH1 } from '../../components/atoms/THeadings';
+import TPin from '../../components/TPin';
+import useUserStore from '../../store/userStore';
 import { HelperText } from 'react-native-paper';
-import LayoutComponent from '../components/layout';
-import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/LoginPinScreen';
+import LayoutComponent from '../../components/layout';
+import useErrorStore from '../../store/errorStore';
+// import { Props } from '../screens/LoginPinScreen';
 
-import theme from '../utils/theme';
+import theme from '../../utils/theme';
 
 export default function LoginPinScreenContainer({
-    navigation,
+    // navigation,
     password,
 }: {
-    navigation: Props['navigation'];
+    // navigation: Props['navigation'];
     password: string;
 }) {
     const [disabled, setDisabled] = useState(true);
@@ -35,7 +35,7 @@ export default function LoginPinScreenContainer({
 
     //  Navigated to Create Finger Print Screen on Skip
     function onSkip() {
-        navigation.navigate('CreateAccountFingerprint', { password });
+        // navigation.navigate('CreateAccountFingerprint', { password });
     }
 
     // When the Next button is removed then it will be called when the 5 digits are entered
@@ -51,7 +51,7 @@ export default function LoginPinScreenContainer({
                 return;
             }
 
-            navigation.navigate('CreateAccountFingerprint', { password });
+            // navigation.navigate('CreateAccountFingerprint', { password });
         } else {
             setErrorMessage('Wrong PIN');
             setPin('');

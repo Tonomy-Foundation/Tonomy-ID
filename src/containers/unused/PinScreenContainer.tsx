@@ -1,24 +1,24 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TButton, { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { TH1 } from '../components/atoms/THeadings';
-import TPin from '../components/TPin';
-import useUserStore from '../store/userStore';
+import TButton, { TButtonContained, TButtonOutlined } from '../../components/atoms/TButton';
+import { TH1 } from '../../components/atoms/THeadings';
+import TPin from '../../components/TPin';
+import useUserStore from '../../store/userStore';
 import { HelperText } from 'react-native-paper';
-import LayoutComponent from '../components/layout';
-import useErrorStore from '../store/errorStore';
-import { Props } from '../screens/PinScreen';
-import theme, { commonStyles } from '../utils/theme';
-import TInfoBox from '../components/TInfoBox';
-import settings from '../settings';
+import LayoutComponent from '../../components/layout';
+import useErrorStore from '../../store/errorStore';
+// import { Props } from '../screens/PinScreen';
+import theme, { commonStyles } from '../../utils/theme';
+import TInfoBox from '../../components/TInfoBox';
+import settings from '../../settings';
 
 export default function PinScreenContainer({
-    navigation,
+    // navigation,
     password,
     action,
 }: {
-    navigation: Props['navigation'];
+    // navigation: Props['navigation'];
     password?: string;
     action?: string;
 }) {
@@ -59,13 +59,13 @@ export default function PinScreenContainer({
                     if (action === 'CREATE_ACCOUNT' || action === 'LOGIN_ACCOUNT') {
                         await user.savePIN(confirmPin);
                         if (!password) throw new Error("Password can't be empty");
-                        navigation.navigate('CreateAccountFingerprint', { password });
+                        // navigation.navigate('CreateAccountFingerprint', { password });
                     } else if (action === 'ADD_PIN') {
                         await user.savePIN(confirmPin);
-                        navigation.goBack();
+                        // navigation.goBack();
                     } else if (action === 'CHANGE_PIN') {
                         await user.savePIN(confirmPin);
-                        navigation.goBack();
+                        // navigation.goBack();
                     }
                 } catch (e) {
                     errorStore.setError({ error: e, expected: false });
@@ -143,10 +143,12 @@ export default function PinScreenContainer({
                     {!confirming && (
                         <TButtonOutlined
                             onPress={() => {
-                                if (action === 'CHANGE_PIN') { navigation.goBack() }
+                                if (action === 'CHANGE_PIN') {
+                                    // navigation.goBack()
+                                }
                                 else {
                                     if (!password) throw new Error("Password can't be empty");
-                                    navigation.navigate('CreateAccountFingerprint', { password });
+                                    // navigation.navigate('CreateAccountFingerprint', { password });
                                 }
                             }}
                             style={styles.marginBottom}
