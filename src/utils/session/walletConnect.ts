@@ -236,7 +236,6 @@ export class WalletConnectSession extends AbstractSession {
     core: ICore;
     initialized: boolean;
     web3wallet: Web3Wallet;
-
     async initialize(): Promise<void> {
         const netInfoState = await NetInfo.fetch();
 
@@ -451,9 +450,9 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async redirectToMobileBrowser(url: string) {
-        console.log('redirecting to mobile browser', this.platform, url);
+        debug('redirecting to mobile browser', this.platform, url);
 
-        if (url) {
+        if (this.platform && url) {
             await Linking.openURL(url);
         }
     }
