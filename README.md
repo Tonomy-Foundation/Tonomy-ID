@@ -10,14 +10,14 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v20+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
-- [eas-cli](https://expo.dev) installed globally
+- [eas-cli](https://expo.dev) ^12.6.2 installed globally
 
 ## Install
 
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
-npm install -g eas-cli
+npm install -g eas-cli@12.6.2
 yarn
 ```
 
@@ -47,10 +47,6 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 5. Run `yarn run build:ios` (ios) or `yarn run build:android` (android) to build the app for your phone
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
 7. Install the created app on your phone.
-
-Having issues here or running the app? Checkout:
-
-<https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROUBLESHOOT.md>
 
 ## Run
 
