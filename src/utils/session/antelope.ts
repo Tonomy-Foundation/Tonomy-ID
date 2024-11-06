@@ -21,6 +21,7 @@ import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
 import Debug from 'debug';
+import { Linking } from 'react-native';
 
 const debug = Debug('tonomy-id:utils:session:antelope');
 
@@ -251,5 +252,11 @@ export class AntelopeSession extends AbstractSession {
         navigate('SignTransaction', {
             request,
         });
+    }
+
+    async redirectToMobileBrowser(url: string) {
+        if (this.platform === 'mobile' && url) {
+            await Linking.openURL(url);
+        }
     }
 }
