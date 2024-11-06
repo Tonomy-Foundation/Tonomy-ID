@@ -45,7 +45,7 @@
         "@walletconnect/utils": "^2.17.2",
         "@walletconnect/web3wallet": "^1.16.1",
         "@wharfkit/abicache": "^1.2.2",
-        "@wharfkit/antelope": "^1.0.13",
+        "@wharfkit/antelope": "^1.0.7",
         "@wharfkit/session": "^1.4.0",
         "@wharfkit/signing-request": "^3.2.0",
         "@wharfkit/wallet-plugin-privatekey": "^1.1.0",

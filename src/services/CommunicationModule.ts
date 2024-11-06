@@ -230,9 +230,8 @@ export default function CommunicationModule() {
                     // Step 2: Find the accounts for the session
                     const namespaces: SessionTypes.Namespaces = {};
                     const ethereumAccounts = accounts
-                        .filter((account) => account !== null)
                         .filter(
-                            (account) => account.getChain().getChainType() === ChainType.ETHEREUM
+                            (account) => account !== null && account.getChain().getChainType() === ChainType.ETHEREUM
                         ) as EthereumAccount[];
 
                     Object.keys(activeNamespaces).forEach((key) => {

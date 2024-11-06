@@ -52,7 +52,7 @@ export const ScannerOverlay = ({ isFlashlightOn, onPress }: ScannerOverlayProps)
                 <IconButton
                     icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
                     onPress={onPress}
-                    color={styles.colorWhite.color}
+                    iconColor={styles.colorWhite.color}
                     style={[styles.iconButton]}
                 ></IconButton>
             </View>

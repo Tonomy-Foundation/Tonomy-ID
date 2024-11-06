@@ -101,7 +101,7 @@ export default function TPin(props: { pin?: string; onChange: (pin: string) => v
                     <Text style={styles.text}>0</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.gridIcon} onPress={onDeletePress}>
-                    <IconButton icon={'backspace-outline'} color="black" style={styles.icon} />
+                    <IconButton icon={'backspace-outline'} iconColor="black" style={styles.icon} />
                 </TouchableOpacity>
             </View>
         </>

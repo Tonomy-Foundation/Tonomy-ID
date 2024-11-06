@@ -37,7 +37,7 @@ export default function SettingsNavigation() {
                 <IconButton
                     icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'}
                     size={Platform.OS === 'android' ? 26 : 38}
-                    color="black"
+                    iconColor="black"
                     style={Platform.OS === 'android' ? styles.androidIcon : styles.iosIcon}
                 />
             </TouchableOpacity>

@@ -5613,20 +5613,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wharfkit/antelope@npm:^1.0.13":
-  version: 1.0.13
-  resolution: "@wharfkit/antelope@npm:1.0.13"
-  dependencies:
-    bn.js: "npm:^4.11.9"
-    brorand: "npm:^1.1.0"
-    elliptic: "npm:^6.5.4"
-    hash.js: "npm:^1.0.0"
-    pako: "npm:^2.1.0"
-    tslib: "npm:^2.0.3"
-  checksum: 10c0/6a9f6aad1ec261158e25261277c33262312588c5a6a2b96ca6111a51623ea1b8896d038e2ab72421c28610fc018039cf1b5713e9e8dfae7c4651dee44576ac3c
-  languageName: node
-  linkType: hard
-
 "@wharfkit/common@npm:^1.2.0":
   version: 1.4.0
   resolution: "@wharfkit/common@npm:1.4.0"
@@ -17253,7 +17239,7 @@ __metadata:
     "@walletconnect/utils": "npm:^2.17.2"
     "@walletconnect/web3wallet": "npm:^1.16.1"
     "@wharfkit/abicache": "npm:^1.2.2"
-    "@wharfkit/antelope": "npm:^1.0.13"
+    "@wharfkit/antelope": "npm:^1.0.7"
     "@wharfkit/session": "npm:^1.4.0"
     "@wharfkit/signing-request": "npm:^3.2.0"
     "@wharfkit/wallet-plugin-privatekey": "npm:^1.1.0"

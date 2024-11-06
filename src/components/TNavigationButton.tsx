@@ -25,7 +25,7 @@ export default function TNavigationButton(props: NavigationButtonProps) {
         <TouchableOpacity onPress={props.onPress} style={[styles.button]} disabled={props.disabled}>
             {props.icon && typeof props.icon === 'string' && (
                 <View style={{ alignSelf: getAlignmentBasenOnDescription() }}>
-                    <IconButton color={props?.textColor} icon={props.icon} style={styles.icons} />
+                    <IconButton iconColor={props?.textColor} icon={props.icon} style={styles.icons} />
                 </View>
             )}
             {props.icon && typeof props.icon === 'object' && (
@@ -35,13 +35,12 @@ export default function TNavigationButton(props: NavigationButtonProps) {
             <View style={{ ...styles.titleContainer }}>
                 <TP
                     style={{
-                        color: `${
-                            props?.disabled
+                        color: `${props?.disabled
                                 ? theme.colors.textGray
                                 : props?.textColor
-                                ? props.textColor
-                                : theme.colors.text
-                        }`,
+                                    ? props.textColor
+                                    : theme.colors.text
+                            }`,
                     }}
                 >
                     {props.title}
