@@ -262,7 +262,6 @@ export class WalletConnectSession extends AbstractSession {
                 });
 
                 this.initialized = true;
-                this.platform = 'browser';
             } catch (e) {
                 if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                 else throw e;
@@ -271,6 +270,7 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onQrScan(data: string): Promise<void> {
+        this.platform = 'browser';
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
@@ -451,7 +451,9 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async redirectToMobileBrowser(url: string) {
-        if (this.platform === 'mobile' && url) {
+        console.log('redirecting to mobile browser', this.platform, url);
+
+        if (url) {
             await Linking.openURL(url);
         }
     }
