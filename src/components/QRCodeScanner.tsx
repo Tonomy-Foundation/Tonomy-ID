@@ -11,13 +11,14 @@ import useErrorStore from '../store/errorStore';
 
 type CameraProps = {
     onBarCodeScanned: (result: BarCodeScannerResult) => void;
-    isFlashlightOn: boolean;
+    enableTorch: boolean;
 };
 
-export const CameraBarcodeScanner = ({ onBarCodeScanned, isFlashlightOn }: CameraProps) => {
+export const CameraBarcodeScanner = ({ onBarCodeScanned, enableTorch }: CameraProps) => {
+    console.log('CameraBarcodeScanner', enableTorch);
     return (
         <CameraView
-            flash={isFlashlightOn ? 'on' : 'off'}
+            enableTorch={enableTorch}
             barcodeScannerSettings={{
                 barcodeTypes: ['qr'],
             }}
@@ -69,13 +70,13 @@ export type Props = {
 };
 
 export default function QRCodeScanner(props: Props) {
-    const [isFlashlightOn, setFlashLightOn] = useState(false);
+    const [torchOn, setTorchOn] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const errorStore = useErrorStore();
 
     useFocusEffect(
         useCallback(() => {
-            setFlashLightOn(false);
+            setTorchOn(false);
 
             const getBarCodeScannerPermissions = async () => {
                 try {
@@ -91,14 +92,14 @@ export default function QRCodeScanner(props: Props) {
         }, [errorStore, permission?.granted, requestPermission])
     );
 
-    const toggleFlashLight = () => setFlashLightOn(!isFlashlightOn);
+    const toggleFlashLight = () => setTorchOn(!torchOn);
 
     return (
         <>
             {permission?.granted ? (
                 <View style={styles.QRContainer}>
-                    <ScannerOverlay isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
-                    <CameraBarcodeScanner onBarCodeScanned={props.onScan} isFlashlightOn={isFlashlightOn} />
+                    <ScannerOverlay isFlashlightOn={torchOn} onPress={toggleFlashLight} />
+                    <CameraBarcodeScanner onBarCodeScanned={props.onScan} enableTorch={torchOn} />
                 </View>
             ) : (
                 <PermissionStatus hasPermission={permission?.granted ?? false} />
