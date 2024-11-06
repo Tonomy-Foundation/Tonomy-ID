@@ -36,11 +36,11 @@ type ExtendedMD2Colors = MD2Colors & {
     gold: string;
     blue1: string;
     blue2: string;
+};
 
-}
 type ExtendedMD2Theme = MD2Theme & {
     colors: ExtendedMD2Colors;
-}
+};
 
 // https://callstack.github.io/react-native-paper/4.0/theming.html
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

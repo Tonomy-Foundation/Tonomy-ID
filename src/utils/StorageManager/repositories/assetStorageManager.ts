@@ -35,6 +35,7 @@ export abstract class AssetStorageManager {
 
             try {
                 const usdBalance = await asset.getUsdValue();
+
                 if (usdBalance >= 0 && usdBalance !== existingAsset.usdBalance) {
                     existingAsset.usdBalance = usdBalance;
                 }

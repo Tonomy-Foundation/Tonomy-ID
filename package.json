@@ -19,7 +19,7 @@
         "deploy:production": "yarn run deploy:production:android && yarn run deploy:production:ios",
         "start": "NODE_ENV=development yarn run build:prepare && NODE_ENV=development npx expo start --dev-client --clear",
         "lint": "eslint src test --ext '[.ts, .tsx]' --resolve-plugins-relative-to .",
-        "lint:fix": "yarn run lint -- --fix",
+        "lint:fix": "yarn run lint --fix",
         "test": "jest",
         "testDebug": "jest -o --watch --coverage=false",
         "typeCheck": "tsc",
