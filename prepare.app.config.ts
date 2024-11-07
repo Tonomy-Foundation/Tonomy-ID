@@ -77,6 +77,10 @@ const expo: ExpoConfig = {
         },
     },
     android: {
+        adaptiveIcon: {
+            foregroundImage: settings.config.images.logo48,
+            backgroundColor: '#FFFFFF',
+        },
         allowBackup: false,
         package: identifier,
         intentFilters: [
