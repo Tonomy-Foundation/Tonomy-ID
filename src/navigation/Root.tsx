@@ -31,7 +31,14 @@ import WalletConnectLoginScreen from '../screens/WalletConnectLoginScreen';
 import CreateEthereumKeyScreen from '../screens/CreateEthereumKeyScreen';
 import ReceiveScreen from '../screens/ReceiveAssetScreen';
 import SendScreen from '../screens/SendAssetScreen';
-import { IChain, IChainSession, IPrivateKey, ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import {
+    IChain,
+    ILoginRequest,
+    IPrivateKey,
+    ITransaction,
+    ITransactionReceipt,
+    ITransactionRequest,
+} from '../utils/chain/types';
 import { ResolvedSigningRequest } from '@wharfkit/signing-request';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
@@ -40,6 +47,8 @@ import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
+import { navigationRef } from '../services/NavigationService';
+import { WalletConnectSession } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:navigation:root');
 
@@ -47,7 +56,7 @@ const prefix = Linking.createURL('');
 
 export interface AssetsParamsScreen {
     screenTitle?: string;
-    network: string;
+    chain: IChain;
 }
 
 export type MainRouteStackParamList = {
@@ -73,11 +82,7 @@ export type MainRouteStackParamList = {
     PrivacyAndPolicy: undefined;
     ProfilePreview: undefined;
     SignTransaction: {
-        transaction: ITransaction;
-        privateKey: IPrivateKey;
-        origin: string;
-        request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
-        session: IChainSession | null;
+        request: ITransactionRequest;
     };
     SignTransactionSuccess: {
         operations: OperationData[];
@@ -85,15 +90,15 @@ export type MainRouteStackParamList = {
         receipt: ITransactionReceipt;
     };
     WalletConnectLogin: {
-        payload: SignClientTypes.EventArguments['session_proposal'];
-        platform?: 'mobile' | 'browser';
-        session: IChainSession;
+        loginRequest: ILoginRequest;
     };
-    CreateEthereumKey?: {
-        transaction?: ITransaction;
-        payload?: Web3WalletTypes.SessionRequest | SignClientTypes.EventArguments['session_proposal'];
-        requestType?: string;
-        session?: IChainSession;
+    CreateEthereumKey: {
+        transaction?: ITransactionRequest | null;
+        requestType: string;
+        request:
+            | SignClientTypes.EventArguments['session_request']
+            | SignClientTypes.EventArguments['session_proposal']
+            | null;
     };
     BottomTabs: undefined;
 
@@ -167,7 +172,7 @@ export default function RootNavigation() {
     const { status } = useUserStore();
 
     return (
-        <NavigationContainer theme={CombinedDefaultTheme} linking={linking}>
+        <NavigationContainer ref={navigationRef} theme={CombinedDefaultTheme} linking={linking}>
             {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
                 <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
                     <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />

@@ -68,7 +68,7 @@ const expo: ExpoConfig = {
         bundleIdentifier: identifier,
         infoPlist: {
             NSCameraUsageDescription: 'We need access to your camera to scan the QR code.',
-            LSApplicationQueriesSchemes: ['esr'],
+            LSApplicationQueriesSchemes: ['esr', 'wc', 'did'],
             CFBundleURLTypes: [
                 {
                     CFBundleURLSchemes: ['esr', 'wc', 'did'],

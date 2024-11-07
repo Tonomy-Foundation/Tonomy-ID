@@ -5,14 +5,16 @@ import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
 import ReceiverAccountScanner from '../components/ReceiverAccountScanner';
 import { useEffect, useRef, useState } from 'react';
-import { Images } from '../assets';
-import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
-import { AccountDetails, getAssetDetails } from '../utils/assetDetails';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
+import { debounce } from '../utils/network';
+import { AntelopeAccount, AntelopeChain, AntelopePrivateKey, AntelopeTransaction } from '../utils/chain/antelope';
+import { WalletTransactionRequest } from '../utils/session/walletConnect';
+import { AntelopeTransactionRequest } from '../utils/session/antelope';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -20,11 +22,11 @@ export type SendAssetProps = {
     privateKey: IPrivateKey;
 };
 
-const SendAssetContainer = (props: SendAssetProps) => {
-    const [depositeAccount, onScanQR] = useState<string>();
-    const [amount, onChangeAmount] = useState<string>();
-    const [usdAmount, onChangeUSDAmount] = useState<string>();
-    const [asset, setAsset] = useState<AccountDetails | null>(null);
+const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) => {
+    const [depositAccount, setDepositAccount] = useState<string>();
+    const [balance, setBalance] = useState<string>();
+    const [usdAmount, setUsdAmount] = useState<string>();
+    const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const errorStore = useErrorStore();
@@ -32,14 +34,14 @@ const SendAssetContainer = (props: SendAssetProps) => {
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.chain.getName());
+            const assetData = await getAssetDetails(chain);
 
             setAsset(assetData);
             setLoading(false);
         };
 
         fetchAssetDetails();
-    }, [props.chain]);
+    }, [chain]);
 
     if (loading || !asset || !asset.account) {
         return <TSpinner />;
@@ -52,8 +54,8 @@ const SendAssetContainer = (props: SendAssetProps) => {
     const handlePaste = async () => {
         const content = await Clipboard.getString();
 
-        if (props.chain.isValidAccountName(content)) {
-            onScanQR(content);
+        if (chain.isValidAccountName(content)) {
+            setDepositAccount(content);
         } else {
             errorStore.setError({
                 error: new Error('The account you entered is invalid!'),
@@ -64,59 +66,78 @@ const SendAssetContainer = (props: SendAssetProps) => {
     };
 
     const handleMaxAmount = () => {
-        if (asset.balance) {
-            onChangeAmount(asset.balance);
-            onChangeUSDAmount(asset.usdBalance ? asset.usdBalance.toString() : '0');
+        if (asset.token.balance) {
+            setBalance(asset.token.balance);
+            setUsdAmount(asset.token.usdBalance ? asset.token.usdBalance.toString() : '0');
         }
     };
 
-    const handleSendTransaction = async () => {
+    const onSendTransaction = async () => {
         setSubmitting(true);
 
+        if (!depositAccount) throw new Error('Deposit account is required');
+
         try {
-            if (Number(asset.balance) < Number(amount) || Number(asset.balance) <= 0) {
+            if (Number(asset.token.balance) < Number(balance) || Number(asset.token.balance) <= 0) {
                 errorStore.setError({
                     error: new Error('You do not have enough balance to perform transaction!'),
                     expected: true,
                     title: 'Insufficient balance',
                 });
+                setSubmitting(false);
                 return;
             }
 
-            const key = props.privateKey;
-            const chain = props.chain;
-            const chainType = chain.getChainType();
-
-            let value;
-            const transactionData = {
-                to: depositeAccount,
-                from: asset.account,
-                value,
-            };
-
             let transaction: ITransaction;
 
-            if (chainType === ChainType.ETHEREUM) {
-                transactionData.value = ethers.parseEther(amount ? amount.toString() : '0.00');
-                const ethereumChain = props.chain as EthereumChain;
-                const exportPrivateKey = await key.exportPrivateKey();
-                const ethereumPrivateKey = new EthereumPrivateKey(exportPrivateKey, ethereumChain);
+            if (chain.getChainType() === ChainType.ETHEREUM) {
+                const transactionData = {
+                    to: depositAccount.toLowerCase(),
+                    from: asset.account,
+                    value: ethers.parseEther(balance ? balance.toString() : '0.00'),
+                };
 
-                transaction = await EthereumTransaction.fromTransaction(
-                    ethereumPrivateKey,
+                const transactionRequest = await WalletTransactionRequest.fromTransaction(
                     transactionData,
-                    ethereumChain
+                    privateKey,
+                    chain
                 );
-                //TODO move it after condition when implement other chains
-                props.navigation.navigate('SignTransaction', {
-                    transaction,
-                    privateKey: key,
-                    session: null,
-                    origin: '',
-                    request: null,
+
+                navigation.navigate('SignTransaction', {
+                    request: transactionRequest,
                 });
             } else {
-                throw new Error('Chain not supported');
+                const action = {
+                    account: 'eosio.token',
+                    name: 'transfer',
+                    authorization: [
+                        {
+                            actor: asset.account,
+                            permission: 'active',
+                        },
+                    ],
+                    data: {
+                        from: asset.account,
+                        to: depositAccount.toLowerCase(),
+                        quantity: Number(balance).toFixed(asset.token.precision) + ' ' + asset.token.symbol,
+                        memo: '',
+                    },
+                };
+
+                transaction = AntelopeTransaction.fromActions(
+                    [action],
+                    chain as AntelopeChain,
+                    AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account)
+                );
+
+                const transactionRequest = await AntelopeTransactionRequest.fromTransaction(
+                    transaction,
+                    privateKey as AntelopePrivateKey
+                );
+
+                navigation.navigate('SignTransaction', {
+                    request: transactionRequest,
+                });
             }
         } catch (error) {
             errorStore.setError({
@@ -127,52 +148,40 @@ const SendAssetContainer = (props: SendAssetProps) => {
             setSubmitting(false);
         }
     };
-    const fetchEthPrice = async (amount) => {
-        const ethPrice = await props.chain.getNativeToken().getUsdPrice();
+    const fetchPrice = async (amount) => {
+        const price = await chain.getNativeToken().getUsdPrice();
 
-        const usdAmount = Number(amount) * Number(ethPrice);
+        const usdAmount = Number(amount) * Number(price);
 
-        onChangeUSDAmount(usdAmount.toFixed(4));
+        setUsdAmount(usdAmount.toFixed(4));
     };
 
-    const debounce = (func, delay) => {
-        let timeoutId;
+    const debouncedSearch = debounce(fetchPrice, 500);
 
-        return (...args) => {
-            clearTimeout(timeoutId);
-
-            timeoutId = setTimeout(() => {
-                func.apply(this, args);
-            }, delay);
-        };
-    };
-
-    const debouncedSearch = debounce(fetchEthPrice, 500);
-
-    const handleAmountChange = async (amount) => {
-        onChangeAmount(amount);
+    const onAmountChange = async (amount) => {
+        setBalance(amount);
         debouncedSearch(amount);
     };
 
     return (
         <View style={styles.container}>
-            <ReceiverAccountScanner onScanQR={onScanQR} chain={props.chain} refMessage={refMessage} />
+            <ReceiverAccountScanner onScanQR={setDepositAccount} chain={chain} refMessage={refMessage} />
             <View style={styles.content}>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.flexCol}>
                         <View style={styles.inputContainer}>
                             <TextInput
-                                value={depositeAccount}
+                                value={depositAccount}
                                 style={styles.input}
                                 placeholder="Enter or scan the account"
                                 placeholderTextColor={theme.colors.tabGray}
-                                onChangeText={onScanQR}
+                                onChangeText={setDepositAccount}
                                 onEndEditing={(e) => {
                                     const account = e.nativeEvent.text;
 
-                                    if (!props.chain.isValidAccountName(account)) {
+                                    if (!chain.isValidAccountName(account.toLowerCase())) {
                                         errorStore.setError({
-                                            error: new Error('The account you entered is invalid!'),
+                                            error: new Error('The account you entered is invalid'),
                                             title: 'Invalid account',
                                             expected: true,
                                         });
@@ -189,21 +198,21 @@ const SendAssetContainer = (props: SendAssetProps) => {
                             </View>
                         </View>
                         <View style={styles.networkContainer}>
-                            <Image source={asset.icon || Images.GetImage('logo1024')} style={styles.favicon} />
-                            <Text style={styles.networkName}>{asset.network} network</Text>
+                            <Image source={{ uri: asset.token.icon }} style={styles.favicon} />
+                            <Text style={styles.networkName}>{asset.chain.getName()} network</Text>
                         </View>
                         <View>
                             <View style={styles.inputContainer}>
                                 <TextInput
-                                    defaultValue={amount}
+                                    defaultValue={balance}
                                     style={styles.input}
                                     placeholder="Enter amount"
                                     placeholderTextColor={theme.colors.tabGray}
-                                    onChangeText={handleAmountChange}
+                                    onChangeText={onAmountChange}
                                 />
                                 <View style={{ flexDirection: 'row', gap: 8 }}>
                                     <TouchableOpacity style={styles.inputButton}>
-                                        <Text style={styles.currencyButtonText}>{asset.symbol}</Text>
+                                        <Text style={styles.currencyButtonText}>{asset.token.symbol}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
                                         <Text style={styles.inputButtonText}>MAX</Text>
@@ -221,10 +230,10 @@ const SendAssetContainer = (props: SendAssetProps) => {
                         </View>
                     )}
                     <TButtonContained
-                        disabled={!depositeAccount || !amount || submitting}
+                        disabled={!depositAccount || !balance || submitting}
                         style={commonStyles.marginBottom}
                         size="large"
-                        onPress={handleSendTransaction}
+                        onPress={onSendTransaction}
                     >
                         Proceed
                     </TButtonContained>

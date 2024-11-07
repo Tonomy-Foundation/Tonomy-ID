@@ -4,20 +4,10 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import {
-    IChainSession,
-    IOperation,
-    IPrivateKey,
-    ITransaction,
-    ITransactionReceipt,
-    TransactionType,
-} from '../utils/chain/types';
+import { IOperation, ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
-
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import { ResolvedSigningRequest } from '@wharfkit/signing-request';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
@@ -34,19 +24,13 @@ type TransactionTotalData = {
 
 export default function SignTransactionConsentContainer({
     navigation,
-    transaction,
-    privateKey,
-    origin,
     request,
-    session,
 }: {
     navigation: Props['navigation'];
-    transaction: ITransaction;
-    privateKey: IPrivateKey;
-    origin: string;
-    request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
-    session: IChainSession | null;
+    request: ITransactionRequest;
 }) {
+    const { transaction } = request;
+
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
     const [operations, setOperations] = useState<OperationData[] | null>(null);
@@ -55,11 +39,11 @@ export default function SignTransactionConsentContainer({
     const [transactionTotalData, setTransactionTotalData] = useState<TransactionTotalData | null>(null);
     const topUpBalance = useRef<{ open: () => void; close: () => void }>(null);
 
-    const chain = transaction.getChain();
+    const chain = request.transaction.getChain();
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
-    const hostname = origin ? extractHostname(origin) : null;
+    const hostname = request.getOrigin() ? extractHostname(request.getOrigin()) : null;
     const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
 
     const getOperationData = useCallback(
@@ -177,11 +161,10 @@ export default function SignTransactionConsentContainer({
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
     async function onReject() {
-        if (session) {
-            setTransactionLoading(true);
-            await session.rejectTransactionRequest(request);
-            setTransactionLoading(false);
-        }
+        setTransactionLoading(true);
+
+        await request.reject();
+        setTransactionLoading(false);
 
         navigation.navigate('Assets');
     }
@@ -190,24 +173,7 @@ export default function SignTransactionConsentContainer({
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-            let receipt: ITransactionReceipt;
-
-            if (session) {
-                const transactionRequest = await session.createTransactionRequest(transaction);
-
-                receipt = await privateKey.sendTransaction(transactionRequest);
-
-                await session.approveTransactionRequest(request, receipt);
-            } else {
-                const transactionRequest = {
-                    to: (await transaction.getTo()).getName(),
-                    from: (await transaction.getFrom()).getName(),
-                    value: (await transaction.getValue()).getAmount(),
-                    data: ((await transaction.getData()) as { data: string }).data,
-                };
-
-                receipt = await privateKey.sendTransaction(transactionRequest);
-            }
+            const receipt = await request.approve();
 
             navigation.navigate('SignTransactionSuccess', {
                 operations,
@@ -224,9 +190,7 @@ export default function SignTransactionConsentContainer({
                     error: new Error('You do not have enough coins to complete this transaction.'),
                     expected: true,
                 });
-            }
-
-            if (
+            } else if (
                 error instanceof ApplicationError &&
                 error?.code === ApplicationErrors.IncorrectTransactionAuthorization
             ) {
@@ -246,8 +210,10 @@ export default function SignTransactionConsentContainer({
                 navigation.navigate('Assets');
             }
 
-            if (session) {
-                await session.rejectTransactionRequest(request);
+            navigation.navigate('Assets');
+
+            if (request.session) {
+                await request.reject();
             }
         }
     }
@@ -257,7 +223,7 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        {origin ? (
+                        {request.getOrigin() ? (
                             <>
                                 <Image
                                     style={[styles.logo, commonStyles.marginBottom]}

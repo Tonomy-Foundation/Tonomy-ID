@@ -1,12 +1,25 @@
 import { create } from 'zustand';
 import { WalletConnectSession } from '../utils/session/walletConnect';
+import { AntelopeSession } from '../utils/session/antelope';
 
 interface SessionState {
     walletConnectSession: WalletConnectSession | null;
-    setWalletConnectSession: (session: WalletConnectSession) => void;
+    antelopeSession: AntelopeSession | null;
+    initializeSession: () => Promise<void>;
 }
 
-export const useSessionStore = create<SessionState>((set) => ({
+export const useSessionStore = create<SessionState>((set, get) => ({
     walletConnectSession: null,
-    setWalletConnectSession: (session: WalletConnectSession) => set({ walletConnectSession: session }),
+    antelopeSession: null,
+    initializeSession: async () => {
+        const walletConnectSession = new WalletConnectSession();
+
+        await walletConnectSession.initialize();
+        walletConnectSession.onEvent();
+
+        const antelopeSession = new AntelopeSession();
+
+        // Set the session in the store
+        set({ walletConnectSession, antelopeSession });
+    },
 }));
