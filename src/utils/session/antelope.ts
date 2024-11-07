@@ -73,7 +73,9 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
     }
 
     getOrigin(): string | null {
-        return this.origin;
+        const callback = this.resolvedSigningRequest?.request.data.callback;
+
+        return callback ? new URL(callback).origin : null;
     }
 
     async reject(): Promise<void> {
