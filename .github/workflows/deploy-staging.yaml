@@ -36,6 +36,9 @@ jobs:
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
+      - name: Install eas globally
+        run: sudo npm install -g eas-cli@12.6.2
+
       - name: 🚀 Build and publish staging app
         uses: actions/setup-node@v4
         with:
