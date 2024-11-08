@@ -6,7 +6,7 @@ on:
       - testnet
 
 jobs:
-  deploy:
+  deploy-testnet:
     runs-on: ubuntu-20.04
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -27,6 +27,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.3.0
+      - run: npm install -g eas-cli@12.6.2
+      - run: node -v && npm -v && yarn -v && eas -v
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: yarn --immutable
