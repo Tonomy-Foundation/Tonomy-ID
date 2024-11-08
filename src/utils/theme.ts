@@ -35,6 +35,7 @@ const theme = {
         grey7: '#F6F9FB',
         grey8: '#D2DDEC',
         grey9: '#6E84A3',
+        gray10: '#3F3F40',
         shadow: '#4D4D4D',
         shadowDark: '#000',
         error: '#F44336',

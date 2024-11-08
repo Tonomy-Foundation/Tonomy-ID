@@ -26,7 +26,7 @@ export default function LayoutComponent(props: layoutProps) {
         };
     }, []);
     return (
-        <SafeAreaView style={layoutStyles.container}>
+        <View style={layoutStyles.container}>
             {props.body && <View style={[layoutStyles.body, { flex: keyboardStatusShown ? 2 : 3 }]}>{props.body}</View>}
             {props.footerHint && !keyboardStatusShown ? (
                 <View style={layoutStyles.footerHint}>{props.footerHint}</View>
@@ -40,7 +40,7 @@ export default function LayoutComponent(props: layoutProps) {
                 </>
             )}
             {props.footer && <View style={layoutStyles.footer}>{props.footer}</View>}
-        </SafeAreaView>
+        </View>
     );
 }
 

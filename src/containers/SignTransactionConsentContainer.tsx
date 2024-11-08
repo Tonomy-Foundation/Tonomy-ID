@@ -13,6 +13,8 @@ import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
+import { Images } from '../assets';
+import settings from '../settings';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -30,6 +32,9 @@ export default function SignTransactionConsentContainer({
     request: ITransactionRequest;
 }) {
     const { transaction } = request;
+
+    const [time, setTime] = useState(1120);
+    const [expired, setExpired] = useState(false);
 
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
@@ -218,51 +223,75 @@ export default function SignTransactionConsentContainer({
         }
     }
 
+    const renderSignTransactionOriginDetails = () => {
+        const origin = request.getOrigin();
+        const showLogo = origin ? chain.getNativeToken().getLogoUrl() : Images.GetImage('logo1024');
+        const appName = origin ? topLevelHostname : settings.config.appName;
+
+        if (!origin && request.request) {
+            return (
+                <View style={styles.sandingMain}>
+                    <Text style={[styles.sandingTitle, { textAlign: 'center' }]}>
+                        A third-party app wants you to sign a transaction
+                    </Text>
+                </View>
+            );
+        }
+
+        return (
+            <>
+                <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
+                <View style={commonStyles.alignItemsCenter}>
+                    <Text style={styles.applinkText}>{appName}</Text>
+                    <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
+                </View>
+            </>
+        );
+    };
+
+    const renderExpirationTimer = () => {
+        useEffect(() => {
+            if (time <= 0) {
+                setExpired(true);
+                return;
+            }
+            const intervalId = setInterval(() => {
+                setTime((prevTime) => prevTime - 1);
+            }, 1000);
+
+            return () => clearInterval(intervalId);
+        }, [time]);
+
+        const minutes = String(Math.floor(time / 60)).padStart(2, '0');
+        const seconds = String(time % 60).padStart(2, '0');
+
+        return !expired ? (
+            <View
+                style={{
+                    backgroundColor: theme.colors.grey7,
+                    width: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    marginBottom: 15,
+                    borderRadius: 6,
+                }}
+            >
+                <Text>Expiration time</Text>
+                <Text>{`${minutes}.${seconds}`}</Text>
+            </View>
+        ) : null;
+    };
+
     return (
         <LayoutComponent
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        {request.getOrigin() ? (
-                            <>
-                                <Image
-                                    style={[styles.logo, commonStyles.marginBottom]}
-                                    source={{ uri: chain.getNativeToken().getLogoUrl() }}
-                                ></Image>
-                                <View style={commonStyles.alignItemsCenter}>
-                                    <Text style={styles.applinkText}>{topLevelHostname}</Text>
-                                    <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
-                                </View>
-                            </>
-                        ) : (
-                            <View style={styles.sandingMain}>
-                                <Text style={styles.sandingTitle}>You are sending </Text>
-                                {operations && (
-                                    <View style={styles.sandingContent}>
-                                        <Text
-                                            style={{
-                                                fontSize: 24,
-                                                fontWeight: '600',
-                                                ...commonStyles.primaryFontFamily,
-                                            }}
-                                        >
-                                            {operations[0].amount
-                                                ? parseFloat(operations[0].amount).toFixed(4)
-                                                : '0.0000'}
-                                        </Text>
-                                        <Text
-                                            style={[
-                                                styles.secondaryColor,
-                                                commonStyles.secondaryFontFamily,
-                                                { fontSize: 22 },
-                                            ]}
-                                        >
-                                            (${operations[0].usdValue})
-                                        </Text>
-                                    </View>
-                                )}
-                            </View>
-                        )}
+                        {renderExpirationTimer()}
+                        {renderSignTransactionOriginDetails()}
                         <View style={styles.networkHeading}>
                             <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                             <Text style={styles.nameText}>{chainName} Network</Text>
@@ -371,11 +400,13 @@ const styles = StyleSheet.create({
         color: theme.colors.linkColor,
         margin: 0,
         padding: 2,
-        fontSize: 19,
+        fontSize: 24,
+        ...commonStyles.primaryFontFamily,
     },
     applinkContent: {
         marginLeft: 6,
-        fontSize: 19,
+        fontSize: 24,
+        ...commonStyles.primaryFontFamily,
     },
     sandingMain: {
         alignItems: 'center',
