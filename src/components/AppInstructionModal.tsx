@@ -79,7 +79,7 @@ const AppInstructionModal = () => {
         await appStorage.setAppInstruction(false);
     };
 
-    const bottomPosNormal = Platform.OS === 'ios' ? 80 : 45;
+    const bottomPosNormal = Platform.OS === 'ios' ? 70 : 40;
     const bottomPosScan = Platform.OS === 'ios' ? 110 : 80;
 
     return (
@@ -164,11 +164,11 @@ const styles = StyleSheet.create({
         color: theme.colors.white,
     },
     tipText: {
-        fontSize: 14,
+        fontSize: 15,
         color: theme.colors.white,
     },
     pagination: {
-        fontSize: 14,
+        fontSize: 15,
         color: theme.colors.white,
     },
     footer: {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     nextText: {
-        fontSize: 14,
+        fontSize: 15,
         color: theme.colors.white,
     },
 });
