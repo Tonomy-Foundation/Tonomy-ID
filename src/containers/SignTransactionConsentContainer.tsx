@@ -33,7 +33,7 @@ export default function SignTransactionConsentContainer({
 }) {
     const { transaction } = request;
 
-    const [time, setTime] = useState(1120);
+    const [time, setTime] = useState(5);
     const [expired, setExpired] = useState(false);
 
     const errorStore = useErrorStore();
@@ -228,7 +228,7 @@ export default function SignTransactionConsentContainer({
         const showLogo = origin ? chain.getNativeToken().getLogoUrl() : Images.GetImage('logo1024');
         const appName = origin ? topLevelHostname : settings.config.appName;
 
-        if (!origin && request.request) {
+        if (!origin && request.session) {
             return (
                 <View style={styles.sandingMain}>
                     <Text style={[styles.sandingTitle, { textAlign: 'center' }]}>
@@ -240,7 +240,11 @@ export default function SignTransactionConsentContainer({
 
         return (
             <>
-                <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
+                {!origin && !request.session ? (
+                    <Image style={[styles.logo, commonStyles.marginBottom]} source={showLogo} />
+                ) : (
+                    <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
+                )}
                 <View style={commonStyles.alignItemsCenter}>
                     <Text style={styles.applinkText}>{appName}</Text>
                     <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
@@ -251,7 +255,7 @@ export default function SignTransactionConsentContainer({
 
     const renderExpirationTimer = () => {
         useEffect(() => {
-            if (time <= 0) {
+            if (time <= 0 && request.session) {
                 setExpired(true);
                 return;
             }
@@ -260,12 +264,12 @@ export default function SignTransactionConsentContainer({
             }, 1000);
 
             return () => clearInterval(intervalId);
-        }, [time]);
+        }, [time, request]);
 
         const minutes = String(Math.floor(time / 60)).padStart(2, '0');
         const seconds = String(time % 60).padStart(2, '0');
 
-        return !expired ? (
+        return !expired && request.session ? (
             <View
                 style={{
                     backgroundColor: theme.colors.grey7,
@@ -328,14 +332,34 @@ export default function SignTransactionConsentContainer({
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained
-                        disabled={transactionLoading}
-                        onPress={() => onAccept()}
-                        style={commonStyles.marginBottom}
-                        size="large"
-                    >
-                        Sign Transaction
-                    </TButtonContained>
+                    {expired && (
+                        <View
+                            style={{
+                                backgroundColor: theme.colors.warning,
+                                padding: 16,
+                                borderRadius: 6,
+                                marginBottom: 15,
+                            }}
+                        >
+                            <Text style={{ fontSize: 16, ...commonStyles.primaryFontFamily, marginBottom: 5 }}>
+                                The transaction time has expired
+                            </Text>
+                            <Text>
+                                Some of the data might be outdated at the moment. Please tap Retry to receive relevant
+                                data
+                            </Text>
+                        </View>
+                    )}
+                    {!expired && (
+                        <TButtonContained
+                            disabled={transactionLoading}
+                            onPress={() => onAccept()}
+                            style={commonStyles.marginBottom}
+                            size="large"
+                        >
+                            Sign Transaction
+                        </TButtonContained>
+                    )}
                     <TButtonOutlined size="large" disabled={transactionLoading} onPress={() => onReject()}>
                         Cancel
                     </TButtonOutlined>

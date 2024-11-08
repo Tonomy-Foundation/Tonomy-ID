@@ -48,6 +48,7 @@ const theme = {
         gold: '#D9B701',
         blue1: '#00AEED',
         blue2: '#007BB5',
+        warning: '#FF96351A',
     },
 };
 

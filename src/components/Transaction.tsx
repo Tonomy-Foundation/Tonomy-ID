@@ -109,7 +109,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.secondaryColor}>Function:</Text>
-                {!operation.functionName ? (
+                {operation.functionName ? (
                     <Text style={{ color: theme.colors.secondary }}>{`${operation.functionName}()`}</Text>
                 ) : (
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>

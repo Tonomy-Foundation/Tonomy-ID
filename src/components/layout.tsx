@@ -49,7 +49,7 @@ const layoutStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
+        padding: 16,
         backgroundColor: '#FDFEFF',
     },
     body: { flex: 3 },
