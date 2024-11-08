@@ -79,8 +79,8 @@ const AppInstructionModal = () => {
         await appStorage.setAppInstruction(false);
     };
 
-    const bottomPosNormal = Platform.OS === 'ios' ? 70 : 40;
-    const bottomPosScan = Platform.OS === 'ios' ? 110 : 80;
+    const bottomPosNormal = Platform.OS === 'ios' ? 80 : 45;
+    const bottomPosScan = Platform.OS === 'ios' ? 115 : 80;
 
     return (
         showOnboarding && (
