@@ -4,7 +4,7 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IOperation, ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
+import { ChainType, IOperation, ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
@@ -33,7 +33,7 @@ export default function SignTransactionConsentContainer({
 }) {
     const { transaction } = request;
 
-    const [time, setTime] = useState(5);
+    const [time, setTime] = useState(120);
     const [expired, setExpired] = useState(false);
 
     const errorStore = useErrorStore();
@@ -255,7 +255,7 @@ export default function SignTransactionConsentContainer({
 
     const renderExpirationTimer = () => {
         useEffect(() => {
-            if (time <= 0 && request.session) {
+            if (time <= 0 && chain.getChainType() === ChainType.ANTELOPE) {
                 setExpired(true);
                 return;
             }
@@ -269,7 +269,7 @@ export default function SignTransactionConsentContainer({
         const minutes = String(Math.floor(time / 60)).padStart(2, '0');
         const seconds = String(time % 60).padStart(2, '0');
 
-        return !expired && request.session ? (
+        return !expired && chain.getChainType() === ChainType.ANTELOPE ? (
             <View
                 style={{
                     backgroundColor: theme.colors.grey7,
@@ -309,6 +309,7 @@ export default function SignTransactionConsentContainer({
                         {!transactionTotalData && <TSpinner />}
                         {transactionTotalData && (
                             <TransactionTotal
+                                symbol={chainSymbol}
                                 transactionTotal={transactionTotalData}
                                 onTopUp={() => {
                                     topUpBalance?.current?.open();
@@ -332,7 +333,7 @@ export default function SignTransactionConsentContainer({
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    {expired && (
+                    {expired && chain.getChainType() === ChainType.ANTELOPE && (
                         <View
                             style={{
                                 backgroundColor: theme.colors.warning,
@@ -344,15 +345,12 @@ export default function SignTransactionConsentContainer({
                             <Text style={{ fontSize: 16, ...commonStyles.primaryFontFamily, marginBottom: 5 }}>
                                 The transaction time has expired
                             </Text>
-                            <Text>
-                                Some of the data might be outdated at the moment. Please tap Retry to receive relevant
-                                data
-                            </Text>
+                            <Text>Please restart the transaction and try again.</Text>
                         </View>
                     )}
                     {!expired && (
                         <TButtonContained
-                            disabled={transactionLoading}
+                            disabled={transactionLoading || transactionTotalData?.balanceError}
                             onPress={() => onAccept()}
                             style={commonStyles.marginBottom}
                             size="large"
@@ -375,28 +373,36 @@ function TransactionAccount({ accountName }: { accountName: string }) {
 }
 
 function TransactionTotal({
+    symbol,
     transactionTotal,
     onTopUp,
 }: {
+    symbol: string;
     transactionTotal: TransactionTotalData;
     onTopUp: () => void;
 }) {
     return (
-        <View
-            style={[
-                styles.totalSection,
-                {
-                    backgroundColor: transactionTotal.balanceError ? theme.colors.errorBackground : theme.colors.info,
-                },
-            ]}
-        >
-            <View style={styles.totalView}>
-                <Text style={styles.totalTitle}>Total</Text>
-                <View style={styles.totalContentView}>
-                    <Text style={styles.totalContent}>{transactionTotal.total}</Text>
-                    <Text style={styles.secondaryColor}>(${transactionTotal.totalUsd})</Text>
+        <>
+            <View
+                style={[
+                    styles.totalSection,
+                    {
+                        backgroundColor: transactionTotal.balanceError
+                            ? theme.colors.errorBackground
+                            : theme.colors.info,
+                    },
+                ]}
+            >
+                <View style={styles.totalView}>
+                    <Text style={styles.totalTitle}>Total</Text>
+                    <View style={styles.totalContentView}>
+                        <Text style={styles.totalContent}>{transactionTotal.total}</Text>
+                        <Text style={styles.secondaryColor}>(${transactionTotal.totalUsd})</Text>
+                    </View>
                 </View>
-                {transactionTotal.balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
+                {transactionTotal.balanceError && (
+                    <Text style={styles.balanceError}>Not enough {symbol} on your balance</Text>
+                )}
             </View>
             {transactionTotal.balanceError && (
                 <View style={{ width: '100%', marginTop: 10 }}>
@@ -405,7 +411,7 @@ function TransactionTotal({
                     </TButtonContained>
                 </View>
             )}
-        </View>
+        </>
     );
 }
 
@@ -453,6 +459,7 @@ const styles = StyleSheet.create({
     totalTitle: {
         marginRight: 8,
         fontWeight: '600',
+        ...commonStyles.secondaryFontFamily,
     },
     totalContentView: {
         flexDirection: 'row',
