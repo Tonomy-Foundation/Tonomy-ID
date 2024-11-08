@@ -3,6 +3,7 @@ import { formatCurrencyValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
+import { navigate } from '../../services/NavigationService';
 
 const debug = Debug('tonomy-id:utils:chain:types');
 
@@ -109,6 +110,11 @@ export interface IChain {
 export enum ChainType {
     'ETHEREUM' = 'ETHEREUM',
     'ANTELOPE' = 'ANTELOPE',
+}
+
+export enum PlatformType {
+    'MOBILE' = 'MOBILE',
+    'BROWSER' = 'BROWSER',
 }
 
 export abstract class AbstractChain implements IChain {
@@ -451,24 +457,29 @@ export interface ITransactionRequest {
 
 export interface ISession {
     web3wallet?: Web3Wallet;
+    platform: PlatformType;
     initialize(): Promise<void>;
     onQrScan(data: string): Promise<void>; // make this function static
     onLink(data: string): Promise<void>; // make this function static
     onEvent(request: unknown): Promise<void>;
-    redirectToMobileBrowser(url: string): void;
 }
 
 export abstract class AbstractSession implements ISession {
-    platform: string;
-
+    platform: PlatformType;
     abstract initialize(): Promise<void>;
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;
     abstract onEvent(request?: unknown): Promise<void>;
 
-    abstract redirectToMobileBrowser(url: string): Promise<void>;
     protected abstract handleLoginRequest(request: unknown): Promise<void>;
     protected abstract handleTransactionRequest(request: unknown): Promise<void>;
-    protected abstract navigateToLoginScreen(request: ILoginRequest): Promise<void>;
-    protected abstract navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
+    protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
+        navigate('SignTransaction', {
+            request,
+        });
+    }
+
+    protected async navigateToLoginScreen(request: ILoginRequest): Promise<void> {
+        navigate('WalletConnectLogin', { loginRequest: request });
+    }
 }

@@ -30,7 +30,7 @@ import {
     tokenRegistry,
     TokenRegistryEntry,
 } from '../tokenRegistry';
-import { Linking } from 'react-native';
+import { PlatformType } from '../chain/types';
 
 const debug = Debug('tonomy-id:utils:session:walletConnect');
 
@@ -106,7 +106,6 @@ export class WalletLoginRequest implements ILoginRequest {
             id: this.request.id,
             reason: getSdkError('USER_REJECTED'),
         });
-        await this.session.redirectToMobileBrowser(this.loginApp.getUrl());
     }
 
     async approve(): Promise<void> {
@@ -114,8 +113,6 @@ export class WalletLoginRequest implements ILoginRequest {
             id: this.request.id,
             namespaces: this.namespaces,
         });
-
-        await this.session.redirectToMobileBrowser(this.loginApp.getUrl());
     }
 }
 
@@ -125,7 +122,7 @@ export class WalletTransactionRequest implements ITransactionRequest {
     account: IAccount;
     request?: SignClientTypes.EventArguments['session_request'];
     session?: ISession;
-    origin: string | null;
+    origin?: string;
 
     constructor(transaction: ITransaction, privateKey: IPrivateKey, account: IAccount) {
         this.transaction = transaction;
@@ -144,13 +141,13 @@ export class WalletTransactionRequest implements ITransactionRequest {
     static async fromRequest(
         chainEntry: TokenRegistryEntry,
         ethereumPrivateKey: EthereumPrivateKey,
-        event: SignClientTypes.EventArguments['session_request'],
+        request: SignClientTypes.EventArguments['session_request'],
         session: WalletConnectSession
     ): Promise<WalletTransactionRequest> {
-        const { params } = event;
-        const { request } = params;
+        const { params } = request;
+        const { request: requestParams } = params;
 
-        const transactionData = request.params[0];
+        const transactionData = requestParams.params[0];
         const account = await getAccountFromChain(chainEntry);
 
         const transaction = await EthereumTransaction.fromTransaction(
@@ -161,7 +158,7 @@ export class WalletTransactionRequest implements ITransactionRequest {
         const walletTransactionRequest = new WalletTransactionRequest(transaction, ethereumPrivateKey, account);
 
         walletTransactionRequest.setSession(session);
-        walletTransactionRequest.setRequest(event);
+        walletTransactionRequest.setRequest(request);
         return walletTransactionRequest;
     }
 
@@ -189,12 +186,10 @@ export class WalletTransactionRequest implements ITransactionRequest {
         if (this.request) {
             const { verifyContext } = this.request;
 
-            this.origin = verifyContext?.verified?.origin ?? '';
-        } else {
-            this.origin = null;
+            this.origin = verifyContext?.verified?.origin;
         }
 
-        return this.origin;
+        return this.origin ?? null;
     }
 
     async reject(): Promise<void> {
@@ -209,7 +204,6 @@ export class WalletTransactionRequest implements ITransactionRequest {
                 topic: this.request.topic,
                 response,
             });
-            if (this.origin) await this.session.redirectToMobileBrowser(this.origin);
         }
     }
 
@@ -223,7 +217,6 @@ export class WalletTransactionRequest implements ITransactionRequest {
             const response = { id: this.request.id, result: signedTransaction, jsonrpc: '2.0' };
 
             await this.session.web3wallet?.respondSessionRequest({ topic: this.request.topic, response });
-            if (this.origin) await this.session.redirectToMobileBrowser(this.origin);
         } else {
             receipt = await this.privateKey.sendTransaction(this.transaction);
         }
@@ -269,12 +262,12 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onQrScan(data: string): Promise<void> {
-        this.platform = 'browser';
+        this.platform = PlatformType.BROWSER;
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
     async onLink(data: string): Promise<void> {
-        this.platform = 'mobile';
+        this.platform = PlatformType.MOBILE;
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
@@ -435,25 +428,7 @@ export class WalletConnectSession extends AbstractSession {
         }
     }
 
-    protected async navigateToLoginScreen(request: WalletLoginRequest): Promise<void> {
-        navigate('WalletConnectLogin', { loginRequest: request });
-    }
-
-    protected async navigateToTransactionScreen(request: WalletTransactionRequest): Promise<void> {
-        navigate('SignTransaction', {
-            request,
-        });
-    }
-
     protected async navigateToGenerateKey(request: NavigateGenerateKeyParams): Promise<void> {
         navigate('CreateEthereumKey', request);
-    }
-
-    async redirectToMobileBrowser(url: string) {
-        debug('redirecting to mobile browser', this.platform, url);
-
-        if (this.platform && url) {
-            await Linking.openURL(url);
-        }
     }
 }

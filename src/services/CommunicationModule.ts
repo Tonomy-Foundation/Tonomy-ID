@@ -59,13 +59,17 @@ export default function CommunicationModule() {
         const listener = Linking.addEventListener('url', handleDeepLink);
 
         // Check if the app was opened from a deep link
-        Linking.getInitialURL()
-            .then((url) => {
+        (async () => {
+            try {
+                const url = await Linking.getInitialURL();
+
                 if (url) {
-                    handleDeepLink({ url });
+                    await handleDeepLink({ url });
                 }
-            })
-            .catch((err) => console.error('An error occurred', err));
+            } catch (err) {
+                console.error('An error occurred', err);
+            }
+        })();
 
         // Cleanup the event listener when the component unmounts
         return () => {
