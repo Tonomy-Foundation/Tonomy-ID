@@ -30,7 +30,7 @@ import {
     tokenRegistry,
     TokenRegistryEntry,
 } from '../tokenRegistry';
-import { PlatformType } from '../chain/types';
+import { redirectToMobileBrowser } from '../platform';
 
 const debug = Debug('tonomy-id:utils:session:walletConnect');
 
@@ -102,6 +102,9 @@ export class WalletLoginRequest implements ILoginRequest {
         return this.request;
     }
     async reject(): Promise<void> {
+        const origin = this.loginApp.getOrigin();
+
+        if (origin) await redirectToMobileBrowser(origin);
         await this.session.web3wallet?.rejectSession({
             id: this.request.id,
             reason: getSdkError('USER_REJECTED'),
@@ -109,6 +112,10 @@ export class WalletLoginRequest implements ILoginRequest {
     }
 
     async approve(): Promise<void> {
+        const origin = this.loginApp.getOrigin();
+
+        if (origin) await redirectToMobileBrowser(origin);
+
         await this.session.web3wallet?.approveSession({
             id: this.request.id,
             namespaces: this.namespaces,
@@ -200,6 +207,8 @@ export class WalletTransactionRequest implements ITransactionRequest {
                 jsonrpc: '2.0',
             };
 
+            if (this.origin) await redirectToMobileBrowser(this.origin);
+
             await this.session.web3wallet?.respondSessionRequest({
                 topic: this.request.topic,
                 response,
@@ -215,6 +224,8 @@ export class WalletTransactionRequest implements ITransactionRequest {
 
             const signedTransaction = receipt.getRawReceipt();
             const response = { id: this.request.id, result: signedTransaction, jsonrpc: '2.0' };
+
+            if (this.origin) await redirectToMobileBrowser(this.origin);
 
             await this.session.web3wallet?.respondSessionRequest({ topic: this.request.topic, response });
         } else {
@@ -241,6 +252,7 @@ export class WalletConnectSession extends AbstractSession {
                 projectId: settings.config.walletConnectProjectId,
                 relayUrl: 'wss://relay.walletconnect.com',
             });
+            console.log('thisss');
 
             try {
                 this.web3wallet = await Web3Wallet.init({
@@ -254,7 +266,9 @@ export class WalletConnectSession extends AbstractSession {
                 });
 
                 this.initialized = true;
+                console.log(this.initialized);
             } catch (e) {
+                console.log(e);
                 if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                 else throw e;
             }
@@ -262,12 +276,13 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onQrScan(data: string): Promise<void> {
-        this.platform = PlatformType.BROWSER;
+        console.log('data', data);
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
     async onLink(data: string): Promise<void> {
-        this.platform = PlatformType.MOBILE;
+        console.log('data', data);
+
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
@@ -302,6 +317,8 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async handleLoginRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
+        console.log('reuest', JSON.stringify(request, null, 2));
+        console.log('redirect', request.params.proposer.metadata);
         const {
             id,
             params: { requiredNamespaces, optionalNamespaces },

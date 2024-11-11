@@ -457,7 +457,6 @@ export interface ITransactionRequest {
 
 export interface ISession {
     web3wallet?: Web3Wallet;
-    platform: PlatformType;
     initialize(): Promise<void>;
     onQrScan(data: string): Promise<void>; // make this function static
     onLink(data: string): Promise<void>; // make this function static
@@ -465,7 +464,6 @@ export interface ISession {
 }
 
 export abstract class AbstractSession implements ISession {
-    platform: PlatformType;
     abstract initialize(): Promise<void>;
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;

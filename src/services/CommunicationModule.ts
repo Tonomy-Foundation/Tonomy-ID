@@ -10,7 +10,7 @@ import {
     SdkError,
     SdkErrors,
 } from '@tonomy/tonomy-id-sdk';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
@@ -21,6 +21,7 @@ import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 import { useSessionStore } from '../store/sessionStore';
+import * as Device from 'expo-device';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -33,25 +34,33 @@ export default function CommunicationModule() {
     const { initializeSession, walletConnectSession } = useSessionStore();
     const { web3wallet, disconnectSession } = useWalletStore();
 
+    const sessionRef = useRef(walletConnectSession);
+
+    useEffect(() => {
+        sessionRef.current = walletConnectSession;
+    }, [walletConnectSession]);
+
     useEffect(() => {
         progressiveRetryOnNetworkError(loginToService);
-        if (walletConnectSession && walletConnectSession.initialized) {
-            debug('initializeWalletState() Already initialized');
 
+        if (walletConnectSession && walletConnectSession.initialized) {
+            console.log('initializeWalletState() Already initialized');
             return;
-        } else progressiveRetryOnNetworkError(initializeSession);
+        }
+
+        progressiveRetryOnNetworkError(initializeSession);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
+    console.log('walletConnectSession?.initialized', walletConnectSession?.initialized);
 
     useEffect(() => {
         // Function to handle incoming URLs
         const handleDeepLink = async ({ url }) => {
-            debug('Received URL:', url);
+            console.log('Received URL:', navigator.userAgent, url, sessionRef.current?.initialized); // Use ref to access latest session state
 
             if (url.startsWith('wc')) {
-                debug('walletConnectSession?.initialized', walletConnectSession?.initialized);
-                await walletConnectSession?.onLink(url);
+                await sessionRef.current?.onLink(url); // Use ref to call onLink
             }
         };
 
@@ -76,6 +85,7 @@ export default function CommunicationModule() {
             if (listener) listener.remove();
         };
     }, []);
+    console.log('Device', Device.deviceType);
 
     /**
      *  Login to communication microservice

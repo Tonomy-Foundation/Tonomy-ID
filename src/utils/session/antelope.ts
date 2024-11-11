@@ -153,10 +153,7 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
         } catch (e) {
             console.error('Error approving transaction', e);
 
-            if (this.resolvedSigningRequest) {
-                await this.reject();
-            }
-
+            await this.reject();
             throw e;
         }
     }
@@ -180,9 +177,7 @@ export class AntelopeSession extends AbstractSession {
         this.chain = chain;
     }
 
-    async onQrScan(data: string): Promise<void> {
-        this.platform = PlatformType.BROWSER;
-
+    private async signRequest(data: string): Promise<void> {
         const signingRequestBasic = SigningRequest.from(data, { zlib });
 
         const chain: AntelopeChain = getChainFromAntelopeChainId(signingRequestBasic.getChainId().toString());
@@ -208,10 +203,12 @@ export class AntelopeSession extends AbstractSession {
         }
     }
 
-    async onLink(data: string): Promise<void> {
-        this.platform = PlatformType.MOBILE;
+    async onQrScan(data: string): Promise<void> {
+        await this.signRequest(data);
+    }
 
-        // Handle link data specific to Ethereum here
+    async onLink(data: string): Promise<void> {
+        await this.signRequest(data);
     }
 
     async onEvent(): Promise<void> {
