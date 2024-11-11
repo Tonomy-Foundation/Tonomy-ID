@@ -59,7 +59,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                     activeOpacity={0.5}
                 >
                     <View style={styles.leftContent}>
-                        <IconButton icon="file-document-outline" color={theme.colors.grey2}></IconButton>
+                        <IconButton icon="file-document-outline" iconColor={theme.colors.grey2}></IconButton>
                         <Text style={styles.fulltermText}>Full Terms of Service {'   '}</Text>
                     </View>
                     <View style={styles.leftContent}>
@@ -67,7 +67,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         <IconButton
                             style={styles.chevronIcon}
                             icon={fullTermsShow ? 'chevron-up' : 'chevron-down'}
-                            color={theme.colors.grey2}
+                            iconColor={theme.colors.grey2}
                         ></IconButton>
                     </View>
                 </TouchableOpacity>
