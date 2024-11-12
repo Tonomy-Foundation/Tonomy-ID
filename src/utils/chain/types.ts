@@ -3,6 +3,7 @@ import { formatCurrencyValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
+import { navigate } from '../../services/NavigationService';
 
 const debug = Debug('tonomy-id:utils:chain:types');
 
@@ -109,6 +110,11 @@ export interface IChain {
 export enum ChainType {
     'ETHEREUM' = 'ETHEREUM',
     'ANTELOPE' = 'ANTELOPE',
+}
+
+export enum PlatformType {
+    'MOBILE' = 'MOBILE',
+    'BROWSER' = 'BROWSER',
 }
 
 export abstract class AbstractChain implements IChain {
@@ -465,6 +471,13 @@ export abstract class AbstractSession implements ISession {
 
     protected abstract handleLoginRequest(request: unknown): Promise<void>;
     protected abstract handleTransactionRequest(request: unknown): Promise<void>;
-    protected abstract navigateToLoginScreen(request: ILoginRequest): Promise<void>;
-    protected abstract navigateToTransactionScreen(request: ITransactionRequest): Promise<void>;
+    protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
+        navigate('SignTransaction', {
+            request,
+        });
+    }
+
+    protected async navigateToLoginScreen(request: ILoginRequest): Promise<void> {
+        navigate('WalletConnectLogin', { loginRequest: request });
+    }
 }

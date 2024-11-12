@@ -105,8 +105,8 @@ export const tokenRegistry: TokenRegistryEntry[] = [
 ];
 
 // Uncomment out these lines to test the chain easily:
-pangeaTokenEntry.token.isTransferable = () => true;
-pangeaTokenEntry.chain.isTestnet = () => false;
+// pangeaTokenEntry.token.isTransferable = () => true;
+// pangeaTokenEntry.chain.isTestnet = () => true;
 
 if (pangeaTokenEntry.chain.isTestnet()) {
     tokenRegistry.push(pangeaTokenEntry);

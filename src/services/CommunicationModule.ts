@@ -10,17 +10,18 @@ import {
     SdkError,
     SdkErrors,
 } from '@tonomy/tonomy-id-sdk';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useErrorStore from '../store/errorStore';
 import { RouteStackParamList } from '../navigation/Root';
 import { scheduleNotificationAsync } from 'expo-notifications';
-import { AppState } from 'react-native';
+import { AppState, Linking } from 'react-native';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 import { useSessionStore } from '../store/sessionStore';
+import * as Device from 'expo-device';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -30,19 +31,62 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
 
-    const { initializeSession, walletConnectSession } = useSessionStore();
+    const { initializeSession, walletConnectSession, antelopeSession } = useSessionStore();
     const { web3wallet, disconnectSession } = useWalletStore();
+    const sessionRef = useRef({ walletConnectSession, antelopeSession });
+
+    useEffect(() => {
+        sessionRef.current = { walletConnectSession, antelopeSession };
+    }, [walletConnectSession, antelopeSession]);
 
     useEffect(() => {
         progressiveRetryOnNetworkError(loginToService);
+
         if (walletConnectSession && walletConnectSession.initialized) {
             debug('initializeWalletState() Already initialized');
-
             return;
-        } else progressiveRetryOnNetworkError(initializeSession);
+        }
+
+        progressiveRetryOnNetworkError(initializeSession);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
+
+    useEffect(() => {
+        // Function to handle incoming URLs
+        const handleDeepLink = async ({ url }) => {
+            debug('handleDeepLink() URL:', url);
+
+            if (url.startsWith('wc')) {
+                await sessionRef.current?.walletConnectSession?.onLink(url);
+            }
+
+            if (url.startsWith('esr')) {
+                await sessionRef.current?.antelopeSession?.onLink(url);
+            }
+        };
+
+        // Listen for deep links when the app is running
+        const listener = Linking.addEventListener('url', handleDeepLink);
+
+        // Check if the app was opened from a deep link
+        (async () => {
+            try {
+                const url = await Linking.getInitialURL();
+
+                if (url) {
+                    await handleDeepLink({ url });
+                }
+            } catch (err) {
+                console.error('An error occurred', err);
+            }
+        })();
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            if (listener) listener.remove();
+        };
+    }, []);
 
     /**
      *  Login to communication microservice

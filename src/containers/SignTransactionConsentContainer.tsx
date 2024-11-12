@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView, Linking } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IOperation, ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
+import { IOperation, PlatformType, ITransactionRequest, TransactionType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
@@ -30,6 +30,7 @@ export default function SignTransactionConsentContainer({
     request: ITransactionRequest;
 }) {
     const { transaction } = request;
+
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
     const [operations, setOperations] = useState<OperationData[] | null>(null);
@@ -42,7 +43,8 @@ export default function SignTransactionConsentContainer({
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
-    const hostname = request.getOrigin() ? extractHostname(request.getOrigin()) : null;
+    const origin = request.getOrigin();
+    const hostname = origin ? extractHostname(origin) : null;
     const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
 
     const getOperationData = useCallback(
@@ -159,12 +161,18 @@ export default function SignTransactionConsentContainer({
         fetchTransactionData();
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
+    const redirectToMobile = async () => {
+        if (origin && request?.session?.platform === PlatformType.MOBILE) {
+            await Linking.openURL(origin);
+        }
+    };
+
     async function onReject() {
         setTransactionLoading(true);
 
         await request.reject();
         setTransactionLoading(false);
-
+        await redirectToMobile();
         navigation.navigate('Assets');
     }
 
@@ -174,11 +182,13 @@ export default function SignTransactionConsentContainer({
             if (!operations) throw new Error('Operations not loaded');
             const receipt = await request.approve();
 
+            await redirectToMobile();
             navigation.navigate('SignTransactionSuccess', {
                 operations,
                 transaction,
                 receipt,
             });
+
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
@@ -222,7 +232,7 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        {request.getOrigin() ? (
+                        {origin ? (
                             <>
                                 <Image
                                     style={[styles.logo, commonStyles.marginBottom]}
