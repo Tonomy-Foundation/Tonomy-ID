@@ -1,11 +1,9 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
 import HomeScreen from '../screens/HomeScreen';
-import PinScreen from '../screens/PinScreen';
 import CreateAccountUsernameScreen from '../screens/CreateAccountUsernameScreen';
 import MainSplashScreen from '../screens/MainSplashScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import FingerprintUpdateScreen from '../screens/FingerprintUpdateScreen';
 import DrawerNavigation from './Drawer';
 import settings from '../settings';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
@@ -14,7 +12,6 @@ import { SignClientTypes } from '@walletconnect/types';
 import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
-import LoginPinScreen from '../screens/LoginPinScreen';
 import { useAppTheme } from '../utils/theme';
 import CommunicationModule from '../services/CommunicationModule';
 import NotificationModule from '../services/NotificationModule';
@@ -56,10 +53,7 @@ export type MainRouteStackParamList = {
     CreateAccountUsername: undefined;
     CreateAccountPassword: undefined;
     CreatePassphrase: undefined;
-    CreateAccountPin: { password: string; action: string };
-    CreateAccountFingerprint: { password: string };
     Hcaptcha: undefined;
-    LoginWithPin: { password: string };
     LoginUsername: undefined;
     LoginPassphrase: { username: string };
     Drawer: undefined;
@@ -96,7 +90,6 @@ export type MainRouteStackParamList = {
         session?: IChainSession;
     };
     BottomTabs: undefined;
-
     Assets: undefined;
     AssetListing: {
         screen: string;
@@ -204,13 +197,6 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
                         component={ConfirmPassphraseScreen}
                     />
-                    <Stack.Screen name="CreateAccountPin" options={{ title: 'PIN' }} component={PinScreen} />
-                    <Stack.Screen
-                        name="CreateAccountFingerprint"
-                        options={{ title: 'Fingerprint Registration' }}
-                        component={FingerprintUpdateScreen}
-                        initialParams={{ password: '' }}
-                    />
                     <Stack.Screen
                         name="LoginUsername"
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
@@ -221,8 +207,6 @@ export default function RootNavigation() {
                         options={{ headerBackTitleVisible: false, title: 'Login' }}
                         component={LoginPassphraseScreen}
                     />
-
-                    <Stack.Screen name="LoginWithPin" options={{ title: 'PIN' }} component={LoginPinScreen} />
                 </Stack.Navigator>
             ) : (
                 <>

@@ -25,7 +25,7 @@ export default function TNavigationButton(props: NavigationButtonProps) {
         <TouchableOpacity onPress={props.onPress} style={[styles.button]} disabled={props.disabled}>
             {props.icon && typeof props.icon === 'string' && (
                 <View style={{ alignSelf: getAlignmentBasenOnDescription() }}>
-                    <IconButton color={props?.textColor} icon={props.icon} style={styles.icons} />
+                    <IconButton iconColor={props?.textColor} icon={props.icon} style={styles.icons} />
                 </View>
             )}
             {props.icon && typeof props.icon === 'object' && (

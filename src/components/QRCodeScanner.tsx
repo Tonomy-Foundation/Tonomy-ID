@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { Camera, FlashMode } from 'expo-camera';
+import { BarCodeScannerResult } from 'expo-barcode-scanner';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
@@ -11,27 +11,23 @@ import useErrorStore from '../store/errorStore';
 
 type CameraProps = {
     onBarCodeScanned: (result: BarCodeScannerResult) => void;
-    isFlashlightOn: boolean;
+    enableTorch: boolean;
 };
 
-export const CameraView = ({ onBarCodeScanned, isFlashlightOn }: CameraProps) => {
+export const CameraBarcodeScanner = ({ onBarCodeScanned, enableTorch }: CameraProps) => {
     return (
-        <Camera
-            flashMode={isFlashlightOn ? FlashMode.torch : FlashMode.off}
-            barCodeScannerSettings={{
-                barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        <CameraView
+            enableTorch={enableTorch}
+            barcodeScannerSettings={{
+                barcodeTypes: ['qr'],
             }}
-            onBarCodeScanned={onBarCodeScanned}
+            onBarcodeScanned={onBarCodeScanned}
             style={StyleSheet.absoluteFill}
         />
     );
 };
 
-type PermissionProps = {
-    hasPermission: boolean | null;
-};
-
-export const PermissionStatus = ({ hasPermission }: PermissionProps) => {
+export const PermissionStatus = ({ hasPermission }: { hasPermission: boolean }) => {
     return (
         <View style={styles.container}>
             <ActivityIndicator animating={true} />
@@ -56,7 +52,7 @@ export const ScannerOverlay = ({ isFlashlightOn, onPress }: ScannerOverlayProps)
                 <IconButton
                     icon={isFlashlightOn ? 'flashlight-off' : 'flashlight'}
                     onPress={onPress}
-                    color={styles.colorWhite.color}
+                    iconColor={styles.colorWhite.color}
                     style={[styles.iconButton]}
                 ></IconButton>
             </View>
@@ -73,40 +69,39 @@ export type Props = {
 };
 
 export default function QRCodeScanner(props: Props) {
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-    const [isFlashlightOn, setFlashLightOn] = useState(false);
+    const [torchOn, setTorchOn] = useState(false);
+    const [permission, requestPermission] = useCameraPermissions();
     const errorStore = useErrorStore();
 
     useFocusEffect(
         useCallback(() => {
-            setHasPermission(null);
-            setFlashLightOn(false);
+            setTorchOn(false);
 
             const getBarCodeScannerPermissions = async () => {
                 try {
-                    const { status } = await BarCodeScanner.requestPermissionsAsync();
-
-                    setHasPermission(status === 'granted');
+                    if (!permission?.granted) {
+                        requestPermission();
+                    }
                 } catch (e) {
                     errorStore.setError({ error: e, expected: false });
                 }
             };
 
             getBarCodeScannerPermissions();
-        }, [errorStore])
+        }, [errorStore, permission?.granted, requestPermission])
     );
 
-    const toggleFlashLight = () => setFlashLightOn(!isFlashlightOn);
+    const toggleFlashLight = () => setTorchOn(!torchOn);
 
     return (
         <>
-            {hasPermission === true ? (
+            {permission?.granted ? (
                 <View style={styles.QRContainer}>
-                    <ScannerOverlay isFlashlightOn={isFlashlightOn} onPress={toggleFlashLight} />
-                    <CameraView onBarCodeScanned={props.onScan} isFlashlightOn={isFlashlightOn} />
+                    <ScannerOverlay isFlashlightOn={torchOn} onPress={toggleFlashLight} />
+                    <CameraBarcodeScanner onBarCodeScanned={props.onScan} enableTorch={torchOn} />
                 </View>
             ) : (
-                <PermissionStatus hasPermission={hasPermission} />
+                <PermissionStatus hasPermission={permission?.granted ?? false} />
             )}
         </>
     );

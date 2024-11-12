@@ -47,7 +47,7 @@ export default function TButton(props: ButtonProps) {
             {props.icon && (
                 <IconButton
                     icon={props.icon}
-                    color={textStyle.color}
+                    iconColor={textStyle.color}
                     size={textStyle.fontSize}
                     style={{ margin: 0, marginRight: 3 }}
                 ></IconButton>
@@ -61,7 +61,7 @@ export function TButtonContained(props: ButtonProps) {
     const theme = useAppTheme();
     const color = theme.colors.white;
     const style = {
-        backgroundColor: props.disabled ? theme.colors.primary2 : getColorBasedOnTheme(props.theme),
+        backgroundColor: props.disabled ? theme.colors.disabled : getColorBasedOnTheme(props.theme),
     };
     const shadowStyle = {
         shadowColor: theme.colors.shadowDark,
