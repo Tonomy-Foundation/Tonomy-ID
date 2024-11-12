@@ -22,6 +22,7 @@ type TransactionTotalData = {
     total: string;
     totalUsd: string;
     balanceError: boolean;
+    show: boolean;
 };
 
 export default function SignTransactionConsentContainer({
@@ -111,17 +112,39 @@ export default function SignTransactionConsentContainer({
     }, [transaction, getOperationData]);
 
     const fetchTransactionFee = useCallback(async () => {
-        const fee = await transaction.estimateTransactionFee();
+        const fee = await request.transaction.estimateTransactionFee();
         const usdFee = await fee.getUsdValue();
-        const transactionFee = { fee: fee.toString(4), usdFee: formatCurrencyValue(usdFee, 2) };
+
+        let transactionFee: TransactionFeeData = {
+            fee: fee.toString(4),
+            usdFee: formatCurrencyValue(usdFee, 2),
+            feeLabel: null,
+            show: true,
+        };
+
+        /**
+         *
+         *  1. !request.account && useFees === 0 then show "FREE" (Sending LEOS)
+         *  2. request.account && useFees === 0 then hide transaction fees and Total (hypa.earth login)
+         *  3. request.account && useFees > 0 & <= 0.0001 then show "Negligible" (wallet connect)
+         *  4. request.account && useFees >0  & > 0.0001 then show transaction fees and total (wallet connect)
+         */
+
+        if (!request.account && usdFee === 0) {
+            transactionFee.feeLabel = 'free';
+        } else if (request.account && usdFee === 0) {
+            transactionFee.show = false;
+        } else if (request.account && usdFee > 0) {
+            transactionFee.feeLabel = usdFee <= 0.001 ? 'negligible' : null;
+        }
 
         setTransactionFeeData(transactionFee);
         debug('fetchTransactionFee() done', transactionFee);
-    }, [transaction]);
+    }, [request]);
 
     const fetchTransactionTotal = useCallback(async () => {
-        const account = await transaction.getFrom();
-        const total = await transaction.estimateTransactionTotal();
+        const account = await request.transaction.getFrom();
+        const total = await request.transaction.estimateTransactionTotal();
         const usdTotal = await total.getUsdValue();
         let balanceError = false;
 
@@ -132,14 +155,30 @@ export default function SignTransactionConsentContainer({
         }
 
         const transactionTotal = {
+            show: true,
             total: total.toString(4),
             totalUsd: formatCurrencyValue(usdTotal, 2),
             balanceError,
         };
 
+        const fee = await request.transaction.estimateTransactionFee();
+        const usdFee = await fee.getUsdValue();
+
+        let transactionType;
+        try {
+            transactionType = await request.transaction.getType();
+        } catch (error) {
+            transactionType = null;
+        }
+
+        // request.account && useFees === 0 then hide transaction fees and Total (hypa.earth login)
+        if (transactionType !== TransactionType.TRANSFER && request.account && usdFee === 0) {
+            transactionTotal.show = false;
+        }
+
         setTransactionTotalData(transactionTotal);
         debug('fetchTransactionTotal() done', transactionTotal);
-    }, [transaction]);
+    }, [request]);
 
     useEffect(() => {
         async function fetchTransactionData() {
@@ -381,6 +420,9 @@ function TransactionTotal({
     transactionTotal: TransactionTotalData;
     onTopUp: () => void;
 }) {
+    if (!transactionTotal.show) {
+        return null;
+    }
     return (
         <>
             <View

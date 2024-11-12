@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
 import { TransactionType } from '../utils/chain/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { QuestionMark, WarningCircle } from 'iconoir-react-native';
+import NegligibleTransactionFees from './NegligibleTransactionFees';
 
 export type TransactionFeeData = {
     fee: string;
     usdFee: string;
+    feeLabel: null | string;
+    show: boolean;
 };
 
 export type OperationData = {
@@ -206,9 +209,16 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
 
 export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
-
+    if (!transactionFee.show) {
+        return null;
+    }
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
+    const onClose = () => {
+        refMessage.current?.close();
+    };
     return (
         <View style={styles.appDialog}>
+            <NegligibleTransactionFees transactionFee={transactionFee} onClose={onClose} refMessage={refMessage} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.secondaryColor}>Transaction fee:</Text>
@@ -229,10 +239,17 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                     </Tooltip>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text>{transactionFee.fee}</Text>
-                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                        (${transactionFee.usdFee})
-                    </Text>
+                    <Text>{transactionFee.feeLabel ?? transactionFee.fee}</Text>
+                    {transactionFee.feeLabel === null && (
+                        <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
+                            (${transactionFee.usdFee})
+                        </Text>
+                    )}
+                    {transactionFee.feeLabel === 'negligible' && (
+                        <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
+                            <WarningCircle width={15} height={15} color={theme.colors.success} />
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
         </View>
