@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Animated } from 'react-native';
 import theme from '../utils/theme';
 import CloseIcon from '../assets/icons/CloseIcon';
 import { appStorage } from '../utils/StorageManager/setup';
@@ -11,11 +11,11 @@ const tabWidth = width / numberOfTabs;
 const AppInstructionModal = () => {
     const [currentTip, setCurrentTip] = useState(0);
     const [showOnboarding, setShowOnboarding] = useState(false);
+    const opacity = useRef(new Animated.Value(1)).current;
 
     useEffect(() => {
         const fetchSettings = async () => {
             const showInstructions = await appStorage.getAppInstruction();
-
             setShowOnboarding(showInstructions);
         };
 
@@ -31,8 +31,8 @@ const AppInstructionModal = () => {
         { title: 'Assets', text: ['Send and receive LEOS, ETH and other cryptocurrencies'], tabIndex: 1 },
         {
             title: 'Scan QR codes for login and sign crypto transactions',
-            tabIndex: 2,
             text: ['Pangea', 'WalletConnect', 'Anchor (Antelope)'],
+            tabIndex: 2,
         },
         {
             title: 'Explore pangea',
@@ -46,12 +46,32 @@ const AppInstructionModal = () => {
         },
     ];
 
+    const fadeIn = () => {
+        Animated.timing(opacity, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const fadeOut = () => {
+        Animated.timing(opacity, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => {
+            // Update to the next tip and fade in
+            if (currentTip < tips.length - 1) {
+                setCurrentTip(currentTip + 1);
+                fadeIn();
+            } else {
+                onClose();
+            }
+        });
+    };
+
     const nextTip = () => {
-        if (currentTip < tips.length - 1) {
-            setCurrentTip(currentTip + 1);
-        } else {
-            onClose();
-        }
+        fadeOut();
     };
 
     const onClose = async () => {
@@ -60,11 +80,13 @@ const AppInstructionModal = () => {
     };
 
     const bottomPosNormal = Platform.OS === 'ios' ? 80 : 45;
-    const bottomPosScan = Platform.OS === 'ios' ? 110 : 80;
+    const bottomPosScan = Platform.OS === 'ios' ? 115 : 80;
 
     return (
         showOnboarding && (
-            <View style={[styles.modalContainer, { bottom: currentTip === 2 ? bottomPosScan : bottomPosNormal }]}>
+            <Animated.View
+                style={[styles.modalContainer, { opacity, bottom: currentTip === 2 ? bottomPosScan : bottomPosNormal }]}
+            >
                 <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
                     <CloseIcon />
                 </TouchableOpacity>
@@ -88,7 +110,7 @@ const AppInstructionModal = () => {
                     </View>
                 </View>
                 <View style={[styles.arrow, { left: tips[currentTip].tabIndex * tabWidth + tabWidth / 2 - 8 }]} />
-            </View>
+            </Animated.View>
         )
     );
 };
@@ -142,11 +164,11 @@ const styles = StyleSheet.create({
         color: theme.colors.white,
     },
     tipText: {
-        fontSize: 14,
+        fontSize: 15,
         color: theme.colors.white,
     },
     pagination: {
-        fontSize: 14,
+        fontSize: 15,
         color: theme.colors.white,
     },
     footer: {
@@ -164,7 +186,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     nextText: {
-        fontSize: 14,
+        fontSize: 15,
         color: theme.colors.white,
     },
 });
