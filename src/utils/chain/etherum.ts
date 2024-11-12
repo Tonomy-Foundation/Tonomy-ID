@@ -487,7 +487,7 @@ export class EthereumAccount extends AbstractAccount {
         return this.privateKey.signTransaction(transaction);
     }
 
-    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
+    async sendTransaction(transaction: ITransaction): Promise<EthereumTransactionReceipt> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }

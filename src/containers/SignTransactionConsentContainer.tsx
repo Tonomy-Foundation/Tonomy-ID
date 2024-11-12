@@ -161,18 +161,11 @@ export default function SignTransactionConsentContainer({
         fetchTransactionData();
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
-    const redirectToMobile = async () => {
-        if (origin && request?.session?.platform === PlatformType.MOBILE) {
-            await Linking.openURL(origin);
-        }
-    };
-
     async function onReject() {
         setTransactionLoading(true);
 
         await request.reject();
         setTransactionLoading(false);
-        await redirectToMobile();
         navigation.navigate('Assets');
     }
 
@@ -182,7 +175,6 @@ export default function SignTransactionConsentContainer({
             if (!operations) throw new Error('Operations not loaded');
             const receipt = await request.approve();
 
-            await redirectToMobile();
             navigation.navigate('SignTransactionSuccess', {
                 operations,
                 transaction,
