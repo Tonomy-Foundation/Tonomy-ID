@@ -164,7 +164,9 @@ export class AntelopeSession extends AbstractSession {
     chain: AntelopeChain;
     client: APIClient;
 
-    async initialize(): Promise<void> {}
+    async initialize(): Promise<void> {
+        debug('initialize()');
+    }
 
     async fromChain(chain: AntelopeChain): Promise<void> {
         const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
