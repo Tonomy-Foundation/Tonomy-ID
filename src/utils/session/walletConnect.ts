@@ -31,6 +31,7 @@ import {
     TokenRegistryEntry,
 } from '../tokenRegistry';
 import { redirectToMobileBrowser } from '../platform';
+import useErrorStore from '../../store/errorStore';
 
 const debug = Debug('tonomy-id:utils:session:walletConnect');
 
@@ -282,10 +283,20 @@ export class WalletConnectSession extends AbstractSession {
 
     async onEvent(): Promise<void> {
         this.web3wallet?.on('session_proposal', async (proposal) => {
-            await this.handleLoginRequest(proposal);
+            try {
+                await this.handleLoginRequest(proposal);
+            } catch (e) {
+                debug('onEvent() session_proposal error:', e);
+                useErrorStore.getState().setError({ error: e, title: '', expected: false });
+            }
         });
         this.web3wallet?.on('session_request', async (proposal) => {
-            await this.handleTransactionRequest(proposal);
+            try {
+                await this.handleTransactionRequest(proposal);
+            } catch (e) {
+                debug('onEvent() session_request error:', e);
+                useErrorStore.getState().setError({ error: e, expected: false });
+            }
         });
     }
 
