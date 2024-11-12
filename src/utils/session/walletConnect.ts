@@ -252,7 +252,6 @@ export class WalletConnectSession extends AbstractSession {
                 projectId: settings.config.walletConnectProjectId,
                 relayUrl: 'wss://relay.walletconnect.com',
             });
-            console.log('thisss');
 
             try {
                 this.web3wallet = await Web3Wallet.init({
@@ -266,9 +265,7 @@ export class WalletConnectSession extends AbstractSession {
                 });
 
                 this.initialized = true;
-                console.log(this.initialized);
             } catch (e) {
-                console.log(e);
                 if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                 else throw e;
             }
@@ -276,13 +273,10 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async onQrScan(data: string): Promise<void> {
-        console.log('data', data);
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
     async onLink(data: string): Promise<void> {
-        console.log('data', data);
-
         await this.web3wallet.core.pairing.pair({ uri: data });
     }
 
@@ -317,8 +311,6 @@ export class WalletConnectSession extends AbstractSession {
     }
 
     async handleLoginRequest(request: SignClientTypes.EventArguments['session_proposal']): Promise<void> {
-        console.log('reuest', JSON.stringify(request, null, 2));
-        console.log('redirect', request.params.proposer.metadata);
         const {
             id,
             params: { requiredNamespaces, optionalNamespaces },

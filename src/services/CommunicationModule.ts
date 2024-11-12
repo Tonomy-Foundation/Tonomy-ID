@@ -31,20 +31,19 @@ export default function CommunicationModule() {
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
 
-    const { initializeSession, walletConnectSession } = useSessionStore();
+    const { initializeSession, walletConnectSession, antelopeSession } = useSessionStore();
     const { web3wallet, disconnectSession } = useWalletStore();
-
-    const sessionRef = useRef(walletConnectSession);
+    const sessionRef = useRef({ walletConnectSession, antelopeSession });
 
     useEffect(() => {
-        sessionRef.current = walletConnectSession;
-    }, [walletConnectSession]);
+        sessionRef.current = { walletConnectSession, antelopeSession };
+    }, [walletConnectSession, antelopeSession]);
 
     useEffect(() => {
         progressiveRetryOnNetworkError(loginToService);
 
         if (walletConnectSession && walletConnectSession.initialized) {
-            console.log('initializeWalletState() Already initialized');
+            debug('initializeWalletState() Already initialized');
             return;
         }
 
@@ -52,15 +51,18 @@ export default function CommunicationModule() {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, user]);
-    console.log('walletConnectSession?.initialized', walletConnectSession?.initialized);
 
     useEffect(() => {
         // Function to handle incoming URLs
         const handleDeepLink = async ({ url }) => {
-            console.log('Received URL:', navigator.userAgent, url, sessionRef.current?.initialized); // Use ref to access latest session state
+            debug('handleDeepLink() URL:', url);
 
             if (url.startsWith('wc')) {
-                await sessionRef.current?.onLink(url); // Use ref to call onLink
+                await sessionRef.current?.walletConnectSession?.onLink(url);
+            }
+
+            if (url.startsWith('esr')) {
+                await sessionRef.current?.antelopeSession?.onLink(url);
             }
         };
 
@@ -85,7 +87,6 @@ export default function CommunicationModule() {
             if (listener) listener.remove();
         };
     }, []);
-    console.log('Device', Device.deviceType);
 
     /**
      *  Login to communication microservice
