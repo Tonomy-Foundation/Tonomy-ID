@@ -19,6 +19,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
         const antelopeSession = new AntelopeSession();
 
+        await antelopeSession.initialize();
         // Set the session in the store
         set({ walletConnectSession, antelopeSession });
     },
