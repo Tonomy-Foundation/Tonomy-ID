@@ -641,7 +641,7 @@ export class AntelopeTransaction implements ITransaction {
     protected account: AntelopeAccount;
     private expirationDate: Date | null = null;
 
-    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount, timeoutSeconds: number = 30) {
+    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount, timeoutSeconds: number = 120) {
         this.actions = actions;
         this.chain = chain;
         this.account = account;

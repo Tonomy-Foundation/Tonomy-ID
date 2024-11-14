@@ -6,11 +6,11 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { QuestionMark, WarningCircle } from 'iconoir-react-native';
 import NegligibleTransactionFees from './NegligibleTransactionFees';
+import { Action } from '@wharfkit/antelope';
 
 export type TransactionFeeData = {
     fee: string;
     usdFee: string;
-    feeLabel: null | string;
     show: boolean;
 };
 
@@ -67,23 +67,16 @@ export function TransferOperationDetails({ operation, date }: { operation: Opera
     return (
         <View style={styles.appDialog}>
             {date && (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={styles.appDialogView}>
                     <Text style={styles.secondaryColor}>Date:</Text>
                     <Text>{formattedDateString(date)}</Text>
                 </View>
             )}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.appDialogView}>
                 <Text style={styles.secondaryColor}>Recipient:</Text>
                 <Text>{operation.to}</Text>
             </View>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                }}
-            >
+            <View style={styles.appDialogAmountView}>
                 <Text style={styles.secondaryColor}>Amount:</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Text>{operation.amount}</Text>
@@ -101,16 +94,16 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     return (
         <View style={styles.actionDialog}>
             {date && (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={styles.actionDialogView}>
                     <Text style={styles.secondaryColor}>Date:</Text>
                     <Text>{formattedDateString(date)}</Text>
                 </View>
             )}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.actionDialogView}>
                 <Text style={styles.secondaryColor}>Smart Contract:</Text>
                 <Text>{operation.contractName}</Text>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.actionDialogView}>
                 <Text style={styles.secondaryColor}>Function:</Text>
                 {operation.functionName ? (
                     <Text style={{ color: theme.colors.secondary }}>{`${operation.functionName}()`}</Text>
@@ -122,7 +115,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                         <Tooltip
                             isVisible={funToolTipVisible}
                             content={
-                                <Text style={{ color: theme.colors.white, fontSize: 13 }}>
+                                <Text style={styles.tooltipText}>
                                     Function arguments are unknown. Make sure you trust this app
                                 </Text>
                             }
@@ -138,15 +131,8 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                     </View>
                 )}
             </View>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}
-            >
+            <View style={styles.transactionDetailsView}>
                 <Text style={styles.secondaryColor}>Transaction details:</Text>
-
                 {operation.args ? (
                     <TouchableOpacity onPress={() => setShowActionDetails(!showActionDetails)}>
                         {!showActionDetails ? (
@@ -171,7 +157,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                         <Tooltip
                             isVisible={tranToolTipVisible}
                             content={
-                                <Text style={{ color: theme.colors.white, fontSize: 13 }}>
+                                <Text style={styles.tooltipText}>
                                     Transaction details are unknown. Make sure you trust this app
                                 </Text>
                             }
@@ -209,13 +195,18 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
 
 export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
+    const usdFeeFloat = parseFloat(transactionFee.usdFee);
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
+    const isNegligible = usdFeeFloat <= 0.001 && usdFeeFloat > 0;
+    const isFree = usdFeeFloat === 0;
+
     if (!transactionFee.show) {
         return null;
     }
-    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const onClose = () => {
         refMessage.current?.close();
     };
+
     return (
         <View style={styles.appDialog}>
             <NegligibleTransactionFees transactionFee={transactionFee} onClose={onClose} refMessage={refMessage} />
@@ -225,7 +216,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                     <Tooltip
                         isVisible={toolTipVisible}
                         content={
-                            <Text style={{ color: theme.colors.white, fontSize: 13 }}>
+                            <Text style={styles.tooltipText}>
                                 This fee is paid to operators of the network to process this transaction
                             </Text>
                         }
@@ -239,16 +230,18 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                     </Tooltip>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text>{transactionFee.feeLabel ?? transactionFee.fee}</Text>
-                    {transactionFee.feeLabel === null && (
+                    {!isFree && !isNegligible && <Text>{transactionFee.fee}</Text>}
+                    {isFree && <Text>free</Text>}
+                    {isNegligible && (
+                        <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
+                            <Text>negligible</Text>
+                            <WarningCircle width={15} height={15} color={theme.colors.success} />
+                        </TouchableOpacity>
+                    )}
+                    {!isNegligible && (
                         <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
                             (${transactionFee.usdFee})
                         </Text>
-                    )}
-                    {transactionFee.feeLabel === 'negligible' && (
-                        <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
-                            <WarningCircle width={15} height={15} color={theme.colors.success} />
-                        </TouchableOpacity>
                     )}
                 </View>
             </View>
@@ -266,6 +259,16 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 20,
     },
+    appDialogView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    appDialogAmountView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 12,
+    },
     actionDialog: {
         borderWidth: 1,
         borderColor: theme.colors.grey5,
@@ -275,6 +278,10 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 20,
         gap: 15,
+    },
+    actionDialogView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     detailSection: {
         backgroundColor: theme.colors.info,
@@ -288,6 +295,15 @@ const styles = StyleSheet.create({
         marginLeft: 4,
         fontSize: 14,
         ...commonStyles.secondaryFontFamily,
+    },
+    tooltipText: {
+        color: theme.colors.white,
+        fontSize: 13,
+    },
+    transactionDetailsView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     actionText: {
         fontWeight: 'bold',

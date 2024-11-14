@@ -35,6 +35,7 @@ export default function SignTransactionConsentContainer({
     const { transaction } = request;
 
     const [expired, setExpired] = useState(false);
+    const [remainingTime, setRemainingTime] = useState('00:00');
 
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
@@ -114,27 +115,14 @@ export default function SignTransactionConsentContainer({
         const fee = await request.transaction.estimateTransactionFee();
         const usdFee = await fee.getUsdValue();
 
-        let transactionFee: TransactionFeeData = {
+        const transactionFee: TransactionFeeData = {
             fee: fee.toString(4),
             usdFee: formatCurrencyValue(usdFee, 2),
-            feeLabel: null,
             show: true,
         };
 
-        /**
-         *
-         *  1. !request.account && useFees === 0 then show "FREE" (Sending LEOS)
-         *  2. request.account && useFees === 0 then hide transaction fees and Total (hypa.earth login)
-         *  3. request.account && useFees > 0 & <= 0.0001 then show "Negligible" (wallet connect)
-         *  4. request.account && useFees >0  & > 0.0001 then show transaction fees and total (wallet connect)
-         */
-
-        if (!request.account && usdFee === 0) {
-            transactionFee.feeLabel = 'free';
-        } else if (request.account && usdFee === 0) {
+        if (request.account && request.transaction.getExpiration()) {
             transactionFee.show = false;
-        } else if (request.account && usdFee > 0) {
-            transactionFee.feeLabel = usdFee <= 0.001 ? 'negligible' : null;
         }
 
         setTransactionFeeData(transactionFee);
@@ -160,18 +148,7 @@ export default function SignTransactionConsentContainer({
             balanceError,
         };
 
-        const fee = await request.transaction.estimateTransactionFee();
-        const usdFee = await fee.getUsdValue();
-
-        let transactionType;
-        try {
-            transactionType = await request.transaction.getType();
-        } catch (error) {
-            transactionType = null;
-        }
-
-        // request.account && useFees === 0 then hide transaction fees and Total (hypa.earth login)
-        if (transactionType !== TransactionType.TRANSFER && request.account && usdFee === 0) {
+        if (request.account && request.transaction.getExpiration()) {
             transactionTotal.show = false;
         }
 
@@ -291,32 +268,32 @@ export default function SignTransactionConsentContainer({
         );
     };
 
-    const renderExpirationTimer = () => {
-        const [remainingTime, setRemainingTime] = useState('00:00');
-        useEffect(() => {
-            const intervalId = setInterval(() => {
-                const expiration = transaction.getExpiration ? transaction.getExpiration() : null;
-                if (!expiration) {
-                    clearInterval(intervalId);
-                    return;
-                }
-                const now = new Date().getTime();
-                const expirationTime = expiration.getTime();
-                const timeDiff = expirationTime - now;
-                if (timeDiff <= 0) {
-                    setRemainingTime('00:00');
-                    setExpired(true);
-                    clearInterval(intervalId);
-                } else {
-                    const minutes = Math.floor(timeDiff / 1000 / 60);
-                    const seconds = Math.floor((timeDiff / 1000) % 60);
-                    setRemainingTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-                }
-            }, 1000);
-            return () => clearInterval(intervalId);
-        }, [transaction]);
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const expiration =
+                request.transaction.getExpiration() && request.account ? request.transaction.getExpiration() : null;
+            if (!expiration) {
+                clearInterval(intervalId);
+                return;
+            }
+            const now = new Date().getTime();
+            const expirationTime = expiration.getTime();
+            const timeDiff = expirationTime - now;
+            if (timeDiff <= 0) {
+                setRemainingTime('00:00');
+                setExpired(true);
+                clearInterval(intervalId);
+            } else {
+                const minutes = Math.floor(timeDiff / 1000 / 60);
+                const seconds = Math.floor((timeDiff / 1000) % 60);
+                setRemainingTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+            }
+        }, 1000);
+        return () => clearInterval(intervalId);
+    }, [request]);
 
-        return !expired ? (
+    const renderExpirationTimer = () => {
+        return !expired && request.account && transaction.getExpiration() ? (
             <View style={styles.expirationContainer}>
                 <Text>Expiration time</Text>
                 <Text>{remainingTime}</Text>
