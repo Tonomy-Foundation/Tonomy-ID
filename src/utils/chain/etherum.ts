@@ -392,6 +392,10 @@ export class EthereumTransaction implements ITransaction {
             'Ethereum transactions have no operations, call getTo() and other functions on EthereumTransaction instead'
         );
     }
+
+    getExpiration(): Date | null {
+        return null;
+    }
 }
 
 export class EthereumTransactionReceipt extends AbstractTransactionReceipt {

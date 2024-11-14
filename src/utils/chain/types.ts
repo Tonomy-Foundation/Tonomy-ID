@@ -335,6 +335,7 @@ export interface ITransaction extends IOperation {
     // Antelope = ActionData[]
     // Ethereum = TransactionRequest
     getData(): Promise<unknown>;
+    getExpiration(): Date | null;
 }
 
 export abstract class AbstractAccount implements IAccount {

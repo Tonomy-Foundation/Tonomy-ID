@@ -34,7 +34,6 @@ export default function SignTransactionConsentContainer({
 }) {
     const { transaction } = request;
 
-    const [time, setTime] = useState(120);
     const [expired, setExpired] = useState(false);
 
     const errorStore = useErrorStore();
@@ -293,37 +292,34 @@ export default function SignTransactionConsentContainer({
     };
 
     const renderExpirationTimer = () => {
+        const [remainingTime, setRemainingTime] = useState('00:00');
         useEffect(() => {
-            if (time <= 0 && chain.getChainType() === ChainType.ANTELOPE) {
-                setExpired(true);
-                return;
-            }
             const intervalId = setInterval(() => {
-                setTime((prevTime) => prevTime - 1);
+                const expiration = transaction.getExpiration ? transaction.getExpiration() : null;
+                if (!expiration) {
+                    clearInterval(intervalId);
+                    return;
+                }
+                const now = new Date().getTime();
+                const expirationTime = expiration.getTime();
+                const timeDiff = expirationTime - now;
+                if (timeDiff <= 0) {
+                    setRemainingTime('00:00');
+                    setExpired(true);
+                    clearInterval(intervalId);
+                } else {
+                    const minutes = Math.floor(timeDiff / 1000 / 60);
+                    const seconds = Math.floor((timeDiff / 1000) % 60);
+                    setRemainingTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+                }
             }, 1000);
-
             return () => clearInterval(intervalId);
-        }, [time, request]);
+        }, [transaction]);
 
-        const minutes = String(Math.floor(time / 60)).padStart(2, '0');
-        const seconds = String(time % 60).padStart(2, '0');
-
-        return !expired && chain.getChainType() === ChainType.ANTELOPE ? (
-            <View
-                style={{
-                    backgroundColor: theme.colors.grey7,
-                    width: '100%',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    marginBottom: 15,
-                    borderRadius: 6,
-                }}
-            >
+        return !expired ? (
+            <View style={styles.expirationContainer}>
                 <Text>Expiration time</Text>
-                <Text>{`${minutes}.${seconds}`}</Text>
+                <Text>{remainingTime}</Text>
             </View>
         ) : null;
     };
@@ -547,5 +543,16 @@ const styles = StyleSheet.create({
         marginTop: 5,
         color: theme.colors.error,
         fontSize: 13,
+    },
+    expirationContainer: {
+        backgroundColor: theme.colors.grey7,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        marginBottom: 15,
+        borderRadius: 6,
     },
 });

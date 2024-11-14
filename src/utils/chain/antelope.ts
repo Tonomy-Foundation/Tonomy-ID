@@ -639,11 +639,13 @@ export class AntelopeTransaction implements ITransaction {
     private actions: ActionData[];
     protected chain: AntelopeChain;
     protected account: AntelopeAccount;
+    private expirationDate: Date | null = null;
 
-    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount) {
+    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount, timeoutSeconds: number = 30) {
         this.actions = actions;
         this.chain = chain;
         this.account = account;
+        this.setExpiration(timeoutSeconds);
     }
     getChain(): AntelopeChain {
         return this.chain;
@@ -703,6 +705,13 @@ export class AntelopeTransaction implements ITransaction {
     }
     async getOperations(): Promise<IOperation[]> {
         return this.actions.map((action) => new AntelopeAction(action, this.chain));
+    }
+    private setExpiration(timeoutSeconds: number) {
+        const now = new Date();
+        this.expirationDate = new Date(now.getTime() + timeoutSeconds * 1000);
+    }
+    getExpiration(): Date | null {
+        return this.expirationDate;
     }
 }
 
