@@ -5,7 +5,6 @@ import {
     SigningRequestEncodingOptions,
 } from '@wharfkit/signing-request';
 import zlib from 'pako';
-import { navigate } from '../../services/NavigationService';
 import {
     AbstractSession,
     IAccount,
@@ -19,6 +18,7 @@ import {
     AntelopeAccount,
     AntelopeChain,
     AntelopePrivateKey,
+    AntelopePublicKey,
     AntelopeTransaction,
     AntelopeTransactionReceipt,
     getChainFromAntelopeChainId,
@@ -28,6 +28,8 @@ import ABICache from '@wharfkit/abicache';
 import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
+import { v4 as uuidv4 } from 'uuid';
+
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:session:antelope');
@@ -163,9 +165,13 @@ export class AntelopeSession extends AbstractSession {
     privateKey: AntelopePrivateKey;
     chain: AntelopeChain;
     client: APIClient;
+    publicKey: AntelopePublicKey;
+    receiveCh: string;
+    accountName: string;
 
     async initialize(): Promise<void> {
         debug('initialize()');
+        await this.getAccountName();
     }
 
     async fromChain(chain: AntelopeChain): Promise<void> {
@@ -176,7 +182,18 @@ export class AntelopeSession extends AbstractSession {
         const antelopeKey = new AntelopePrivateKey(PrivateKey.from(privateKey), chain);
 
         this.privateKey = antelopeKey;
+        this.publicKey = await antelopeKey.getPublicKey();
         this.chain = chain;
+        const receiveChUUID = uuidv4();
+        const forwarderAddress = 'https://pangea.web4.world';
+
+        this.receiveCh = `${forwarderAddress}/${receiveChUUID}`;
+    }
+
+    private async getAccountName(): Promise<void> {
+        const user = useUserStore.getState().user;
+
+        this.accountName = (await user.getAccountName()).toString();
     }
 
     private async signRequest(data: string): Promise<void> {
@@ -197,15 +214,28 @@ export class AntelopeSession extends AbstractSession {
         await this.fromChain(chain);
 
         this.client = client;
+        const abis = await signingRequest.fetchAbis();
+
+        const authorization = {
+            actor: this.accountName,
+            permission: 'active',
+        };
+
+        const info = await this.client.v1.chain.get_info();
+        const header = info.getTransactionHeader();
+
+        // Resolve the transaction using the supplied data
+        const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
 
         if (isIdentity) {
-            throw new Error('Identity request not supported yet');
+            this.handleLoginRequest(resolvedSigningRequest);
         } else {
-            this.handleTransactionRequest(signingRequest);
+            this.handleTransactionRequest(resolvedSigningRequest);
         }
     }
 
     async onQrScan(data: string): Promise<void> {
+        console.log('onQrScan', data);
         await this.signRequest(data);
     }
 
@@ -217,26 +247,16 @@ export class AntelopeSession extends AbstractSession {
         //TODO when implement listen antelope events
     }
 
-    async handleLoginRequest(request: unknown): Promise<void> {
+    async handleLoginRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
         //TODO when implement handle identity request
+
+        const proof = resolvedSigningRequest.getIdentityProof();
+        const callback = resolvedSigningRequest.request.data.callback;
+
+        console.log('sessionConfig', resolvedSigningRequest);
     }
 
-    async handleTransactionRequest(signingRequest: SigningRequest): Promise<void> {
-        const abis = await signingRequest.fetchAbis();
-
-        const user = useUserStore.getState().user;
-        const accountName = (await user.getAccountName()).toString();
-        const authorization = {
-            actor: accountName,
-            permission: 'active',
-        };
-
-        const info = await this.client.v1.chain.get_info();
-        const header = info.getTransactionHeader();
-
-        // Resolve the transaction using the supplied data
-        const resolvedSigningRequest = await signingRequest.resolve(abis, authorization, header);
-
+    async handleTransactionRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
         const actions = resolvedSigningRequest.resolvedTransaction.actions.map((action) => ({
             account: action.account.toString(),
             name: action.name.toString(),
@@ -246,7 +266,7 @@ export class AntelopeSession extends AbstractSession {
             })),
             data: action.data,
         }));
-        const account = AntelopeAccount.fromAccount(this.chain, accountName);
+        const account = AntelopeAccount.fromAccount(this.chain, this.accountName);
         const transaction = AntelopeTransaction.fromActions(actions, this.chain, account);
 
         const callback = resolvedSigningRequest.request.data.callback;
