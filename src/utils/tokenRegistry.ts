@@ -105,8 +105,8 @@ export const tokenRegistry: TokenRegistryEntry[] = [
 ];
 
 // Uncomment out these lines to test the chain easily:
-pangeaTokenEntry.token.isTransferable = () => true;
-pangeaTokenEntry.chain.isTestnet = () => false;
+// pangeaTokenEntry.token.isTransferable = () => true;
+// pangeaTokenEntry.chain.isTestnet = () => true;
 
 if (pangeaTokenEntry.chain.isTestnet()) {
     tokenRegistry.push(pangeaTokenEntry);
@@ -205,16 +205,6 @@ export const getAssetDetails = async (chain: IChain): Promise<AccountTokenDetail
         account: asset.accountName,
         privateKey,
     };
-};
-
-export const findEthereumTokenByChainId = (chainId: string) => {
-    return tokenRegistry.find(
-        ({ chain }) => chain.getChainType() === ChainType.ETHEREUM && chain.getChainId() === chainId
-    );
-};
-
-export const eip155StringToChainId = (eip155String: string) => {
-    return eip155String.split(':')[1];
 };
 
 export async function addNativeTokenToAssetStorage(user: IUserBase) {

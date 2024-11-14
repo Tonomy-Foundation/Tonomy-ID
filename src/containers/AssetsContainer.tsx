@@ -238,7 +238,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                                 <View>
                                                     <TouchableOpacity
                                                         onPress={() => {
-                                                            navigation.navigate('CreateEthereumKey');
+                                                            navigation.navigate('CreateEthereumKey', {
+                                                                requestType: 'createKey',
+                                                                request: null,
+                                                                transaction: null,
+                                                            });
                                                         }}
                                                     >
                                                         <Text style={{ fontSize: 13 }}>Not connected</Text>

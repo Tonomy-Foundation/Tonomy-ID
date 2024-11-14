@@ -8873,6 +8873,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-device@npm:~6.0.2":
+  version: 6.0.2
+  resolution: "expo-device@npm:6.0.2"
+  dependencies:
+    ua-parser-js: "npm:^0.7.33"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/f1a83e765d06a2f82e4567bb9007db083f7f8bba14c617d3dad5d948d8b57e3eca2b97e98edd168fa8cefbf6eea4953cff6aa131df96e15954cfa34e023541ac
+  languageName: node
+  linkType: hard
+
 "expo-file-system@npm:~17.0.1":
   version: 17.0.1
   resolution: "expo-file-system@npm:17.0.1"
@@ -9037,6 +9048,15 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/b54d80cdd76ebf5421556821310b348a5479e41c30caf0bb5ee6ccfd3436d2d81d3880e508a7a2023ccd85b63db25c5f701e5baa0945484d5b5e7bb695c6db70
+  languageName: node
+  linkType: hard
+
+"expo-web-browser@npm:^13.0.3":
+  version: 13.0.3
+  resolution: "expo-web-browser@npm:13.0.3"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/b1c28a80c90c2bec8a3b95330d5c7c3d22235492189dab4f27f747c33f492c87c1ced7b19963c8ed8655621ef1d4b3bcd10753aea96b89cb744835ee3319f51c
   languageName: node
   linkType: hard
 
@@ -16706,6 +16726,7 @@ __metadata:
     expo-build-properties: "npm:^0.12.5"
     expo-camera: "npm:^15.0.16"
     expo-dev-client: "npm:~4.0.29"
+    expo-device: "npm:~6.0.2"
     expo-font: "npm:^12.0.10"
     expo-linking: "npm:^6.3.1"
     expo-local-authentication: "npm:^14.0.1"
@@ -16714,6 +16735,7 @@ __metadata:
     expo-sharing: "npm:^12.0.1"
     expo-sqlite: "npm:^14.0.6"
     expo-status-bar: "npm:^1.12.1"
+    expo-web-browser: "npm:^13.0.3"
     iconoir-react-native: "npm:^7.9.0"
     jest: "npm:^29.7.0"
     jest-expo: "npm:^51.0.4"
@@ -17105,6 +17127,15 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/1d0a5f4ce496c42caa9a30e659c467c5686eae15d54b027ee7866744952547f1be1262f2d40de911618c242b510029d51d43ff605dba8fb740ec85ca2d3f9500
+  languageName: node
+  linkType: hard
+
+"ua-parser-js@npm:^0.7.33":
+  version: 0.7.39
+  resolution: "ua-parser-js@npm:0.7.39"
+  bin:
+    ua-parser-js: script/cli.js
+  checksum: 10c0/5d28deda5e04589c90e67e033136c2ecec38ac6e89e32fd5eab9ef7255af5839c4310c5bbf7361020bba17e85ac56dcb094077be7b6d45a8d776cd3ffe148a8c
   languageName: node
   linkType: hard
 

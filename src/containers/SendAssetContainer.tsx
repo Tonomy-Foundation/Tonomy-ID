@@ -5,7 +5,6 @@ import { TButtonContained } from '../components/atoms/TButton';
 import ScanIcon from '../assets/icons/ScanIcon';
 import ReceiverAccountScanner from '../components/ReceiverAccountScanner';
 import { useEffect, useRef, useState } from 'react';
-import { EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../utils/chain/etherum';
 import { ChainType, IChain, IPrivateKey, ITransaction } from '../utils/chain/types';
 import { ethers } from 'ethers';
 import useErrorStore from '../store/errorStore';
@@ -13,7 +12,9 @@ import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TSpinner from '../components/atoms/TSpinner';
 import { debounce } from '../utils/network';
-import { AntelopeAccount, AntelopeChain, AntelopeTransaction } from '../utils/chain/antelope';
+import { AntelopeAccount, AntelopeChain, AntelopePrivateKey, AntelopeTransaction } from '../utils/chain/antelope';
+import { WalletTransactionRequest } from '../utils/session/walletConnect';
+import { AntelopeTransactionRequest } from '../utils/session/antelope';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -96,11 +97,15 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     value: ethers.parseEther(balance ? balance.toString() : '0.00'),
                 };
 
-                transaction = await EthereumTransaction.fromTransaction(
-                    privateKey as EthereumPrivateKey,
+                const transactionRequest = await WalletTransactionRequest.fromTransaction(
                     transactionData,
-                    chain as EthereumChain
+                    privateKey,
+                    chain
                 );
+
+                navigation.navigate('SignTransaction', {
+                    request: transactionRequest,
+                });
             } else {
                 const action = {
                     account: 'eosio.token',
@@ -124,15 +129,16 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     chain as AntelopeChain,
                     AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account)
                 );
-            }
 
-            navigation.navigate('SignTransaction', {
-                transaction,
-                privateKey,
-                session: null,
-                origin: '',
-                request: null,
-            });
+                const transactionRequest = await AntelopeTransactionRequest.fromTransaction(
+                    transaction,
+                    privateKey as AntelopePrivateKey
+                );
+
+                navigation.navigate('SignTransaction', {
+                    request: transactionRequest,
+                });
+            }
         } catch (error) {
             errorStore.setError({
                 error,

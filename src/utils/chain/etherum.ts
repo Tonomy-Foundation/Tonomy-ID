@@ -78,9 +78,16 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
         return this.wallet.populateTransaction(transaction);
     }
 
-    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
+    async sendTransaction(transaction: ITransaction): Promise<EthereumTransactionReceipt> {
         try {
-            const receipt = await this.wallet.sendTransaction(transaction);
+            const transactionRequest: TransactionRequest = {
+                to: (await transaction.getTo()).getName(),
+                from: (await transaction.getFrom()).getName(),
+                value: (await transaction.getValue()).getAmount(),
+                data: ((await transaction.getData()) as TransactionRequest).data,
+            };
+
+            const receipt = await this.wallet.sendTransaction(transactionRequest);
 
             return new EthereumTransactionReceipt(this.chain, receipt);
         } catch (error) {
@@ -480,7 +487,7 @@ export class EthereumAccount extends AbstractAccount {
         return this.privateKey.signTransaction(transaction);
     }
 
-    async sendTransaction(transaction: TransactionRequest): Promise<EthereumTransactionReceipt> {
+    async sendTransaction(transaction: ITransaction): Promise<EthereumTransactionReceipt> {
         if (!this.privateKey) {
             throw new Error('Account has no private key');
         }

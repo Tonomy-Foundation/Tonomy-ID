@@ -1,7 +1,9 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
+import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
+import { navigate } from '../../services/NavigationService';
 
 const debug = Debug('tonomy-id:utils:chain:types');
 
@@ -108,6 +110,11 @@ export interface IChain {
 export enum ChainType {
     'ETHEREUM' = 'ETHEREUM',
     'ANTELOPE' = 'ANTELOPE',
+}
+
+export enum PlatformType {
+    'MOBILE' = 'MOBILE',
+    'BROWSER' = 'BROWSER',
 }
 
 export abstract class AbstractChain implements IChain {
@@ -386,4 +393,91 @@ export interface IChainSession {
     approveTransactionRequest(request: unknown, transaction: ITransactionReceipt): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;
+}
+
+export interface ILoginApp {
+    getLogoUrl(): string;
+    getName(): string;
+    getChains(): IChain[];
+    getOrigin(): string;
+    getUrl(): string;
+}
+
+export class LoginApp implements ILoginApp {
+    name: string;
+    url: string;
+    icons: string;
+    chains: IChain[];
+    origin: string;
+
+    constructor(name: string, url: string, icons: string, chains: IChain[]) {
+        this.name = name;
+        this.url = url;
+        this.icons = icons;
+        this.chains = chains;
+        this.origin = new URL(url).origin;
+    }
+    getLogoUrl(): string {
+        return this.icons;
+    }
+    getName(): string {
+        return this.name;
+    }
+    getChains(): IChain[] {
+        return this.chains;
+    }
+    getOrigin(): string {
+        return this.origin;
+    }
+    getUrl(): string {
+        return this.url;
+    }
+}
+
+export interface ILoginRequest {
+    session?: ISession;
+    loginApp: ILoginApp;
+    privateKey?: IPrivateKey;
+    account: IAccount[];
+    request?: unknown;
+    reject(): Promise<void>;
+    approve(): Promise<void>;
+}
+
+export interface ITransactionRequest {
+    session?: ISession;
+    transaction: ITransaction;
+    privateKey: IPrivateKey;
+    account: IAccount;
+    request?: unknown;
+    getOrigin(): string | null;
+    reject(): Promise<void>;
+    approve(): Promise<ITransactionReceipt>;
+}
+
+export interface ISession {
+    web3wallet?: Web3Wallet;
+    initialize(): Promise<void>;
+    onQrScan(data: string): Promise<void>; // make this function static
+    onLink(data: string): Promise<void>; // make this function static
+    onEvent(request: unknown): Promise<void>;
+}
+
+export abstract class AbstractSession implements ISession {
+    abstract initialize(): Promise<void>;
+    abstract onQrScan(data: string): Promise<void>;
+    abstract onLink(data: string): Promise<void>;
+    abstract onEvent(request?: unknown): Promise<void>;
+
+    protected abstract handleLoginRequest(request: unknown): Promise<void>;
+    protected abstract handleTransactionRequest(request: unknown): Promise<void>;
+    protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
+        navigate('SignTransaction', {
+            request,
+        });
+    }
+
+    protected async navigateToLoginScreen(request: ILoginRequest): Promise<void> {
+        navigate('WalletConnectLogin', { loginRequest: request });
+    }
 }
