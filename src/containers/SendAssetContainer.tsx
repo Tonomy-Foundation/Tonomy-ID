@@ -295,6 +295,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 48,
+        width: '100%',
         padding: 10,
         fontSize: 15,
         flexShrink: 1,
