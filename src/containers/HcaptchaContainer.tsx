@@ -172,21 +172,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }, 2000);
     };
 
-    // const onPressCheckbox = async () => {
-
-    //     setSuccess(!success);
-    //     setLoading(true);
-
-    //     if (captchaFormRef.current) {
-    //         debug('showing hcaptcha');
-    //         captchaFormRef.current.show();
-    //     }
-
-    //     setTimeout(() => {
-    //         setLoading(false);
-    //     }, 2000);
-    // };
-
     return (
         <>
             <LayoutComponent
