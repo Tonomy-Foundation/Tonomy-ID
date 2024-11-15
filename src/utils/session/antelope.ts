@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {
     AbiProvider,
     ResolvedSigningRequest,
@@ -26,7 +27,7 @@ import {
     AntelopeTransactionReceipt,
     getChainFromAntelopeChainId,
 } from '../chain/antelope';
-import { APIClient, PrivateKey, Signature } from '@wharfkit/antelope';
+import { APIClient, PrivateKey } from '@wharfkit/antelope';
 import ABICache from '@wharfkit/abicache';
 import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
@@ -105,7 +106,6 @@ export class AntelopeLoginRequest implements ILoginRequest {
             }));
             const chain = this.loginApp.getChains()[0] as AntelopeChain;
             const account = AntelopeAccount.fromAccount(chain, this.account[0].getName());
-            // const transaction = AntelopeTransaction.fromActions(actions, chain, account);
             const transaction = await this.privateKey.signTransaction(actions);
 
             const callbackParams = this.request.getCallback(transaction.signatures, 0);
@@ -113,7 +113,7 @@ export class AntelopeLoginRequest implements ILoginRequest {
             if (!callbackParams) throw new Error('Callback URL is missing from the request');
 
             // Generate the identity proof signature
-            const publicKey = await this.privateKey.getPublicKey();
+            const publicKey = await (await this.privateKey.getPublicKey()).toString();
             const receiveChUUID = uuidv4();
             const forwarderAddress = 'https://pangea.web4.world';
             const signature = await this.request.getIdentityProof(transaction.signatures[0]);
@@ -121,20 +121,20 @@ export class AntelopeLoginRequest implements ILoginRequest {
             const receiveCh = `${forwarderAddress}/${receiveChUUID}`;
 
             // Construct the payload
-            const payload = {
-                account: account.getName(),
-                publicKey: publicKey,
-                proof: signature,
-                chainId: chain.getChainId(),
-                receiveCh,
-            };
+            const bodyObject = callbackParams.payload;
+
+            bodyObject.account = account.getName();
+            bodyObject.link_key = publicKey;
+            bodyObject.proof = signature.toString();
+            bodyObject.chainId = chain.getChainId();
+            bodyObject.link_ch = receiveCh;
 
             const response = await fetch(callbackParams.url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(payload),
+                body: JSON.stringify(bodyObject),
             });
 
             if (!response.ok || response.status !== 200) {
