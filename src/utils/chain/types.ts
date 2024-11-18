@@ -1,7 +1,14 @@
 import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
+import Web3Wallet from '@walletconnect/web3wallet';
+import { sha256 } from '@tonomy/tonomy-id-sdk';
+import Debug from 'debug';
+import { navigate } from '../../services/NavigationService';
+
+const debug = Debug('tonomy-id:utils:chain:types');
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
+
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
     toString(format?: KeyFormat): Promise<string>;
@@ -97,11 +104,17 @@ export interface IChain {
     formatShortAccountName(account: string): string;
     getExplorerUrl(options?: ExplorerOptions): string;
     isValidAccountName(account: string): boolean;
+    isTestnet(): boolean;
 }
 
 export enum ChainType {
     'ETHEREUM' = 'ETHEREUM',
     'ANTELOPE' = 'ANTELOPE',
+}
+
+export enum PlatformType {
+    'MOBILE' = 'MOBILE',
+    'BROWSER' = 'BROWSER',
 }
 
 export abstract class AbstractChain implements IChain {
@@ -110,11 +123,13 @@ export abstract class AbstractChain implements IChain {
     protected chainId: string;
     protected logoUrl: string;
     protected nativeToken?: IToken;
+    protected testnet = false;
 
-    constructor(name: string, chainId: string, logoUrl: string) {
+    constructor(name: string, chainId: string, logoUrl: string, testnet = false) {
         this.name = name;
         this.chainId = chainId;
         this.logoUrl = logoUrl;
+        this.testnet = testnet;
     }
     setNativeToken(token: IToken): void {
         this.nativeToken = token;
@@ -135,6 +150,12 @@ export abstract class AbstractChain implements IChain {
     getChainType(): ChainType {
         return this.chainType;
     }
+    isTestnet(): boolean {
+        return this.testnet;
+    }
+    protected generateUniqueSeed(seed: string): string {
+        return sha256(seed + this.getChainId());
+    }
     abstract createKeyFromSeed(seed: string): IPrivateKey;
     abstract formatShortAccountName(account: string): string;
     abstract getExplorerUrl(options?: ExplorerOptions): string;
@@ -148,13 +169,13 @@ export interface IAsset {
     getSymbol(): string;
     getPrecision(): number;
     toString(precision?: number): string;
+    add(other: IAsset): IAsset;
     /*
     gt(other: IAsset): boolean;
     gte(other: IAsset): boolean;
     lt(other: IAsset): boolean;
     lte(other: IAsset): boolean;
     eq(other: IAsset): boolean;
-    add(other: IAsset): IAsset;
     sub(other: IAsset): IAsset;
     mul(other: IAsset): IAsset;
     div(other: IAsset): IAsset;
@@ -171,31 +192,23 @@ export abstract class AbstractAsset implements IAsset {
     getAmount(): bigint {
         return this.amount;
     }
-
+    add(other: IAsset): IAsset {
+        if (!this.token.eq(other.getToken())) throw new Error('Different tokens');
+        return new Asset(this.token, this.amount + other.getAmount());
+    }
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
 
         if (price) {
-            // Use a higher precision for the multiplier to ensure small values are accurately represented
-            const precisionMultiplier = BigInt(10) ** BigInt(18); // Adjusted precision
+            const precision = this.token.getPrecision();
+            const precisionMultiplier = BigInt(10) ** BigInt(precision);
 
-            const tokenPrecisionMultiplier = BigInt(10) ** BigInt(this.token.getPrecision());
+            const priceMultiplier = 10 ** 4; // $ price assumed to have maximum 4 decimal places
+            const priceBigInt = BigInt(price * priceMultiplier);
 
-            // Convert price to a BigInteger without losing precision
-            const priceBigInt = BigInt(Math.round(price * parseFloat((BigInt(10) ** BigInt(18)).toString()))); // Use consistent high precision
+            const usdValueBigInt = (this.amount * priceBigInt) / precisionMultiplier;
 
-            // Adjust the amount to match the high precision multiplier
-
-            const adjustedAmount = (BigInt(this.amount) * precisionMultiplier) / tokenPrecisionMultiplier;
-
-            // Calculate usdValue using BigInt for accurate arithmetic operations
-            const usdValueBigInt = (adjustedAmount * priceBigInt) / precisionMultiplier;
-
-            // Convert the result back to a floating-point number with controlled precision
-            const usdValue = parseFloat(usdValueBigInt.toString()) / parseFloat(precisionMultiplier.toString());
-
-            // Ensure the result is formatted to a fixed number of decimal places without rounding issues
-            return parseFloat(usdValue.toFixed(10));
+            return parseFloat(usdValueBigInt.toString()) / priceMultiplier;
         } else {
             return 0;
         }
@@ -215,16 +228,13 @@ export abstract class AbstractAsset implements IAsset {
 
         return formatCurrencyValue(value, precision ?? this.getPrecision());
     }
-
     toString(precision?: number): string {
         return `${this.printValue(precision)} ${this.token.getSymbol()}`;
     }
 }
 
 export interface IToken {
-    // initialize with an account to easily get balance and usd value
     setAccount(account: IAccount): IToken;
-
     getName(): string;
     getSymbol(): string;
     getPrecision(): number;
@@ -235,6 +245,8 @@ export interface IToken {
     getAccount(): IAccount | undefined;
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
+    isTransferable(): boolean;
+    eq(other: IToken): boolean;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -244,13 +256,15 @@ export abstract class AbstractToken implements IToken {
     protected precision: number;
     protected chain: IChain;
     protected logoUrl: string;
+    protected transferable = true;
 
-    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string) {
+    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string, transferable = true) {
         this.name = name;
         this.symbol = symbol;
         this.precision = precision;
         this.chain = chain;
         this.logoUrl = logoUrl;
+        this.transferable = transferable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -276,6 +290,16 @@ export abstract class AbstractToken implements IToken {
     }
     getAccount(): IAccount | undefined {
         return this.account;
+    }
+    isTransferable(): boolean {
+        return this.transferable;
+    }
+    eq(other: IToken): boolean {
+        return (
+            this.getName() === other.getName() &&
+            this.getSymbol() === other.getSymbol() &&
+            this.getPrecision() === other.getPrecision()
+        );
     }
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
@@ -369,4 +393,91 @@ export interface IChainSession {
     approveTransactionRequest(request: unknown, transaction: ITransactionReceipt): Promise<void>;
     rejectTransactionRequest(request: unknown): Promise<void>;
     getActiveAccounts(): Promise<IAccount[]>;
+}
+
+export interface ILoginApp {
+    getLogoUrl(): string;
+    getName(): string;
+    getChains(): IChain[];
+    getOrigin(): string;
+    getUrl(): string;
+}
+
+export class LoginApp implements ILoginApp {
+    name: string;
+    url: string;
+    icons: string;
+    chains: IChain[];
+    origin: string;
+
+    constructor(name: string, url: string, icons: string, chains: IChain[]) {
+        this.name = name;
+        this.url = url;
+        this.icons = icons;
+        this.chains = chains;
+        this.origin = new URL(url).origin;
+    }
+    getLogoUrl(): string {
+        return this.icons;
+    }
+    getName(): string {
+        return this.name;
+    }
+    getChains(): IChain[] {
+        return this.chains;
+    }
+    getOrigin(): string {
+        return this.origin;
+    }
+    getUrl(): string {
+        return this.url;
+    }
+}
+
+export interface ILoginRequest {
+    session?: ISession;
+    loginApp: ILoginApp;
+    privateKey?: IPrivateKey;
+    account: IAccount[];
+    request?: unknown;
+    reject(): Promise<void>;
+    approve(): Promise<void>;
+}
+
+export interface ITransactionRequest {
+    session?: ISession;
+    transaction: ITransaction;
+    privateKey: IPrivateKey;
+    account: IAccount;
+    request?: unknown;
+    getOrigin(): string | null;
+    reject(): Promise<void>;
+    approve(): Promise<ITransactionReceipt>;
+}
+
+export interface ISession {
+    web3wallet?: Web3Wallet;
+    initialize(): Promise<void>;
+    onQrScan(data: string): Promise<void>; // make this function static
+    onLink(data: string): Promise<void>; // make this function static
+    onEvent(request: unknown): Promise<void>;
+}
+
+export abstract class AbstractSession implements ISession {
+    abstract initialize(): Promise<void>;
+    abstract onQrScan(data: string): Promise<void>;
+    abstract onLink(data: string): Promise<void>;
+    abstract onEvent(request?: unknown): Promise<void>;
+
+    protected abstract handleLoginRequest(request: unknown): Promise<void>;
+    protected abstract handleTransactionRequest(request: unknown): Promise<void>;
+    protected async navigateToTransactionScreen(request: ITransactionRequest): Promise<void> {
+        navigate('SignTransaction', {
+            request,
+        });
+    }
+
+    protected async navigateToLoginScreen(request: ILoginRequest): Promise<void> {
+        navigate('WalletConnectLogin', { loginRequest: request });
+    }
 }

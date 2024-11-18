@@ -6,5 +6,12 @@ import { RouteStackParamList } from '../navigation/Root';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'CreateEthereumKey'>;
 
 export default function CreateEthereumKeyScreen(props: Props) {
-    return <CreateEthereumKeyContainer route={props.route} navigation={props.navigation}></CreateEthereumKeyContainer>;
+    return (
+        <CreateEthereumKeyContainer
+            requestType={props.route.params.requestType}
+            request={props.route.params.request ?? null}
+            transaction={props.route.params?.transaction ?? null}
+            navigation={props.navigation}
+        ></CreateEthereumKeyContainer>
+    );
 }

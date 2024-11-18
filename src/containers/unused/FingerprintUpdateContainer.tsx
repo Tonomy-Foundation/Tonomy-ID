@@ -1,19 +1,19 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { TH1, TP } from '../components/atoms/THeadings';
-import FingerprintIcon from '../assets/icons/FingerprintIcon';
-import LayoutComponent from '../components/layout';
-import useUserStore, { UserStatus } from '../store/userStore';
-import { commonStyles } from '../utils/theme';
+import { TButtonContained, TButtonOutlined } from '../../components/atoms/TButton';
+import { TH1, TP } from '../../components/atoms/THeadings';
+import FingerprintIcon from '../../assets/icons/FingerprintIcon';
+import LayoutComponent from '../../components/layout';
+import useUserStore, { UserStatus } from '../../store/userStore';
+import { commonStyles } from '../../utils/theme';
 import * as LocalAuthentication from 'expo-local-authentication';
-import TModal from '../components/TModal';
-import useErrorStore from '../store/errorStore';
+import TModal from '../../components/TModal';
+import useErrorStore from '../../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
-import FaceIdIcon from '../assets/icons/FaceIdIcon';
-import TInfoBox from '../components/TInfoBox';
-import settings from '../settings';
+import FaceIdIcon from '../../assets/icons/FaceIdIcon';
+import TInfoBox from '../../components/TInfoBox';
+import settings from '../../settings';
 
 export default function CreateAccountContainer({ password }: { password: string }) {
     const [showModal, setShowModal] = useState(false);
