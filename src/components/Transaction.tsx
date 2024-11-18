@@ -64,6 +64,7 @@ function formattedDateString(date: Date) {
 }
 
 export function TransferOperationDetails({ operation, date }: { operation: OperationData; date?: Date }) {
+
     return (
         <View style={styles.appDialog}>
             {date && (
@@ -111,23 +112,21 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <TouchableOpacity onPress={() => setFunToolTipVisible(true)}>
                             <Text style={{ color: theme.colors.grey9 }}>unknown</Text>
+                            <Tooltip
+                                isVisible={funToolTipVisible}
+                                content={
+                                    <Text style={styles.tooltipText}>
+                                        Function arguments are unknown. Make sure you trust this app
+                                    </Text>
+                                }
+                                disableShadow
+                                placement="top"
+                                onClose={() => setFunToolTipVisible(false)}
+                                contentStyle={{ backgroundColor: theme.colors.gray10 }}
+                            >
+                                <WarningCircle style={{ marginLeft : 2 }} width={15} height={15} color={theme.colors.gold} />
+                            </Tooltip>
                         </TouchableOpacity>
-                        <Tooltip
-                            isVisible={funToolTipVisible}
-                            content={
-                                <Text style={styles.tooltipText}>
-                                    Function arguments are unknown. Make sure you trust this app
-                                </Text>
-                            }
-                            disableShadow
-                            placement="top"
-                            onClose={() => setFunToolTipVisible(false)}
-                            contentStyle={{ backgroundColor: theme.colors.gray10 }}
-                        >
-                            <TouchableOpacity style={{ marginLeft: 2 }} onPress={() => setFunToolTipVisible(true)}>
-                                <WarningCircle width={15} height={15} color={theme.colors.gold} />
-                            </TouchableOpacity>
-                        </Tooltip>
                     </View>
                 )}
             </View>
@@ -153,23 +152,21 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <TouchableOpacity onPress={() => setTranToolTipVisible(true)}>
                             <Text style={{ color: theme.colors.grey9 }}>unknown</Text>
+                            <Tooltip
+                                isVisible={tranToolTipVisible}
+                                content={
+                                    <Text style={styles.tooltipText}>
+                                        Transaction details are unknown. Make sure you trust this app
+                                    </Text>
+                                }
+                                disableShadow
+                                placement="top"
+                                onClose={() => setTranToolTipVisible(false)}
+                                contentStyle={{ backgroundColor: theme.colors.gray10 }}
+                            >
+                                <WarningCircle style={{marginLeft:2}} width={15} height={15} color={theme.colors.gold} />
+                            </Tooltip>
                         </TouchableOpacity>
-                        <Tooltip
-                            isVisible={tranToolTipVisible}
-                            content={
-                                <Text style={styles.tooltipText}>
-                                    Transaction details are unknown. Make sure you trust this app
-                                </Text>
-                            }
-                            disableShadow
-                            placement="top"
-                            onClose={() => setTranToolTipVisible(false)}
-                            contentStyle={{ backgroundColor: theme.colors.gray10 }}
-                        >
-                            <TouchableOpacity style={{ marginLeft: 2 }} onPress={() => setTranToolTipVisible(true)}>
-                                <WarningCircle width={15} height={15} color={theme.colors.gold} />
-                            </TouchableOpacity>
-                        </Tooltip>
                     </View>
                 )}
             </View>
@@ -199,7 +196,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const isNegligible = usdFeeFloat <= 0.001 && usdFeeFloat > 0;
     const isFree = usdFeeFloat === 0;
-
+     
     if (!transactionFee.show) {
         return null;
     }
@@ -231,14 +228,13 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     {!isFree && !isNegligible && <Text>{transactionFee.fee}</Text>}
-                    {isFree && <Text>free</Text>}
-                    {isNegligible && (
+                    {isFree && <Text>free</Text>}       
+                    {isNegligible ? (
                         <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
                             <Text>negligible</Text>
                             <WarningCircle width={15} height={15} color={theme.colors.success} />
                         </TouchableOpacity>
-                    )}
-                    {!isNegligible && (
+                   ): (
                         <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
                             (${transactionFee.usdFee})
                         </Text>

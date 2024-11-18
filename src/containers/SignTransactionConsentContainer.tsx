@@ -92,7 +92,7 @@ export default function SignTransactionConsentContainer({
 
     const fetchAccountName = useCallback(async () => {
         const account = await transaction.getFrom();
-        const accountName = chain.formatShortAccountName(account.getName());        
+        const accountName = chain.formatShortAccountName(account.getName());
 
         setAccountName(accountName);
         debug('fetchAccountName() done', accountName);
@@ -271,9 +271,9 @@ export default function SignTransactionConsentContainer({
     };
 
     useEffect(() => {
+        const expiration =
+            request.transaction.getExpiration() && request.account ? request.transaction.getExpiration() : null;
         const intervalId = setInterval(() => {
-            const expiration =
-                request.transaction.getExpiration() && request.account ? request.transaction.getExpiration() : null;
             if (!expiration) {
                 clearInterval(intervalId);
                 return;
@@ -369,9 +369,7 @@ export default function SignTransactionConsentContainer({
                 <View style={{ marginTop: 30 }}>
                     {expired && chain.getChainType() === ChainType.ANTELOPE && (
                         <View style={styles.transactionExpiredView}>
-                            <Text style={styles.transactionExpiredText}>
-                                The transaction time has expired
-                            </Text>
+                            <Text style={styles.transactionExpiredText}>The transaction time has expired</Text>
                             <Text>Please restart the transaction and try again.</Text>
                         </View>
                     )}
@@ -470,6 +468,7 @@ const styles = StyleSheet.create({
         ...commonStyles.primaryFontFamily,
     },
     applinkContent: {
+        textAlign:'center', 
         marginLeft: 6,
         fontSize: 24,
         ...commonStyles.primaryFontFamily,
