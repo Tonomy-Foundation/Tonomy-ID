@@ -15,6 +15,7 @@ import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 import { Images } from '../assets';
 import settings from '../settings';
+import useAppSettings from '../hooks/useAppSettings';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -51,6 +52,7 @@ export default function SignTransactionConsentContainer({
     const chainSymbol = chain.getNativeToken().getSymbol();
     const hostname = request.getOrigin() ? extractHostname(request.getOrigin()) : null;
     const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
+    const { developerMode } = useAppSettings();
 
     const getOperationData = useCallback(
         async (operation: IOperation) => {
@@ -90,7 +92,7 @@ export default function SignTransactionConsentContainer({
 
     const fetchAccountName = useCallback(async () => {
         const account = await transaction.getFrom();
-        const accountName = chain.formatShortAccountName(account.getName());
+        const accountName = chain.formatShortAccountName(account.getName());        
 
         setAccountName(accountName);
         debug('fetchAccountName() done', accountName);
@@ -341,20 +343,33 @@ export default function SignTransactionConsentContainer({
                             onClose={() => topUpBalance?.current?.close()}
                         />
                     )}
+                    {(operations?.[0]?.contractName === 'eosio' || operations?.[0]?.contractName === 'tonomy') && (
+                        <View style={{ marginTop: 16 }}>
+                            {developerMode ? (
+                                <View style={styles.developerModeOffView}>
+                                    <Text style={styles.developerModeTitle}>Warning: This is a dangerous action</Text>
+                                    <Text style={styles.developerModeContent}>
+                                        Only sign the transaction if you understand the effect it will have on your
+                                        account.
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View style={styles.developerModeOnView}>
+                                    <Text style={styles.developerModeTitle}>Blocked due to a security risk</Text>
+                                    <Text style={styles.developerModeContent}>
+                                        Enable developer mode in settings and to sign this transaction.
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    )}
                 </ScrollView>
             }
             footer={
                 <View style={{ marginTop: 30 }}>
                     {expired && chain.getChainType() === ChainType.ANTELOPE && (
-                        <View
-                            style={{
-                                backgroundColor: theme.colors.warning,
-                                padding: 16,
-                                borderRadius: 6,
-                                marginBottom: 15,
-                            }}
-                        >
-                            <Text style={{ fontSize: 16, ...commonStyles.primaryFontFamily, marginBottom: 5 }}>
+                        <View style={styles.transactionExpiredView}>
+                            <Text style={styles.transactionExpiredText}>
                                 The transaction time has expired
                             </Text>
                             <Text>Please restart the transaction and try again.</Text>
@@ -362,7 +377,13 @@ export default function SignTransactionConsentContainer({
                     )}
                     {!expired && (
                         <TButtonContained
-                            disabled={transactionLoading || transactionTotalData?.balanceError}
+                            disabled={
+                                transactionLoading ||
+                                transactionTotalData?.balanceError ||
+                                ((operations?.[0]?.contractName === 'eosio' ||
+                                    operations?.[0]?.contractName === 'tonomy') &&
+                                    !developerMode)
+                            }
                             onPress={() => onAccept()}
                             style={commonStyles.marginBottom}
                             size="large"
@@ -420,7 +441,7 @@ function TransactionTotal({
                 )}
             </View>
             {transactionTotal.balanceError && (
-                <View style={{ width: '100%', marginTop: 10 }}>
+                <View style={styles.topupView}>
                     <TButtonContained onPress={onTopUp} style={commonStyles.marginBottom} size="medium">
                         Top Up
                     </TButtonContained>
@@ -531,5 +552,44 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         marginBottom: 15,
         borderRadius: 6,
+    },
+    developerModeOnView: {
+        padding: 16,
+        borderRadius: 6,
+        gap: 4,
+        backgroundColor: theme.colors.errorBackground,
+    },
+    developerModeOffView: {
+        padding: 16,
+        borderRadius: 6,
+        gap: 4,
+        backgroundColor: theme.colors.warning,
+    },
+    developerModeTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        lineHeight: 19.36,
+        letterSpacing: 0.16,
+    },
+    developerModeContent: {
+        fontSize: 14,
+        fontWeight: '400',
+        letterSpacing: 0.16,
+        lineHeight: 18,
+    },
+    transactionExpiredView: {
+        backgroundColor: theme.colors.warning,
+        padding: 16,
+        borderRadius: 6,
+        marginBottom: 15,
+    },
+    transactionExpiredText: {
+        fontSize: 16,
+        ...commonStyles.primaryFontFamily,
+        marginBottom: 5,
+    },
+    topupView: {
+        width: '100%',
+        marginTop: 10,
     },
 });
