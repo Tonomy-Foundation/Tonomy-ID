@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
 import { TransactionType } from '../utils/chain/types';
@@ -64,7 +64,6 @@ function formattedDateString(date: Date) {
 }
 
 export function TransferOperationDetails({ operation, date }: { operation: OperationData; date?: Date }) {
-
     return (
         <View style={styles.appDialog}>
             {date && (
@@ -124,7 +123,12 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                                 onClose={() => setFunToolTipVisible(false)}
                                 contentStyle={{ backgroundColor: theme.colors.gray10 }}
                             >
-                                <WarningCircle style={{ marginLeft : 2 }} width={15} height={15} color={theme.colors.gold} />
+                                <WarningCircle
+                                    style={{ marginLeft: 2 }}
+                                    width={15}
+                                    height={15}
+                                    color={theme.colors.gold}
+                                />
                             </Tooltip>
                         </TouchableOpacity>
                     </View>
@@ -164,7 +168,12 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                                 onClose={() => setTranToolTipVisible(false)}
                                 contentStyle={{ backgroundColor: theme.colors.gray10 }}
                             >
-                                <WarningCircle style={{marginLeft:2}} width={15} height={15} color={theme.colors.gold} />
+                                <WarningCircle
+                                    style={{ marginLeft: 2 }}
+                                    width={15}
+                                    height={15}
+                                    color={theme.colors.gold}
+                                />
                             </Tooltip>
                         </TouchableOpacity>
                     </View>
@@ -196,7 +205,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const isNegligible = usdFeeFloat <= 0.001 && usdFeeFloat > 0;
     const isFree = usdFeeFloat === 0;
-     
+
     if (!transactionFee.show) {
         return null;
     }
@@ -228,13 +237,13 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     {!isFree && !isNegligible && <Text>{transactionFee.fee}</Text>}
-                    {isFree && <Text>free</Text>}       
+                    {isFree && <Text>free</Text>}
                     {isNegligible ? (
                         <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
                             <Text>negligible</Text>
                             <WarningCircle width={15} height={15} color={theme.colors.success} />
                         </TouchableOpacity>
-                   ): (
+                    ) : (
                         <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
                             (${transactionFee.usdFee})
                         </Text>

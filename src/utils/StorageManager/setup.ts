@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { KeyStorage } from './entities/keyStorage';
 import { AppStorage } from './entities/appSettings';
-import * as ExpoSQLiteDriver from 'expo-sqlite';
+import * as ExpoSQLite from 'expo-sqlite/legacy';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
 import { AppStorageRepository } from './repositories/appStorageRepository';
@@ -16,7 +16,7 @@ const debug = Debug('tonomy-id:storageManager:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
-    driver: ExpoSQLiteDriver,
+    driver: ExpoSQLite,
     entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
 });

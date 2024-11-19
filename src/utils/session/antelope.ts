@@ -6,7 +6,15 @@ import {
 } from '@wharfkit/signing-request';
 import zlib from 'pako';
 import { navigate } from '../../services/NavigationService';
-import { AbstractSession, IAccount, ISession, ITransaction, ITransactionRequest, LoginApp } from '../chain/types';
+import {
+    AbstractSession,
+    IAccount,
+    ISession,
+    ITransaction,
+    ITransactionRequest,
+    LoginApp,
+    PlatformType,
+} from '../chain/types';
 import {
     AntelopeAccount,
     AntelopeChain,
@@ -21,7 +29,6 @@ import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
 import Debug from 'debug';
-import { Linking } from 'react-native';
 
 const debug = Debug('tonomy-id:utils:session:antelope');
 
@@ -31,7 +38,7 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
     account: IAccount;
     resolvedSigningRequest?: ResolvedSigningRequest;
     session?: ISession;
-    origin: string | null;
+    origin?: string;
 
     constructor(transaction: ITransaction, privateKey: AntelopePrivateKey) {
         this.transaction = transaction;
@@ -102,49 +109,53 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
     }
 
     async approve(): Promise<AntelopeTransactionReceipt> {
-        let receipt: AntelopeTransactionReceipt;
+        try {
+            const receipt = await this.privateKey.sendTransaction(this.transaction as AntelopeTransaction);
 
-        if (this.session && this.resolvedSigningRequest) {
-            receipt = await this.privateKey.sendTransaction(this.transaction as AntelopeTransaction);
-            const signedTransaction = receipt.getRawTransaction();
-            const trxId = receipt.getTransactionHash();
-            const callbackParams = this.resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
+            if (this.session && this.resolvedSigningRequest) {
+                const signedTransaction = receipt.getRawTransaction();
+                const trxId = receipt.getTransactionHash();
+                const callbackParams = this.resolvedSigningRequest.getCallback(signedTransaction.signatures, 0);
 
-            debug('approveTransactionRequest() callbackParams', callbackParams);
+                debug('approveTransactionRequest() callbackParams', callbackParams);
 
-            if (callbackParams) {
-                const uid = getQueryParam(callbackParams.url, 'uid');
+                if (callbackParams) {
+                    const uid = getQueryParam(callbackParams.url, 'uid');
 
-                const bodyObject = callbackParams.payload;
+                    const bodyObject = callbackParams.payload;
 
-                bodyObject.tx = trxId;
-                // eslint-disable-next-line camelcase
-                bodyObject.tx_id = trxId;
-                bodyObject.uid = uid;
+                    bodyObject.tx = trxId;
+                    // eslint-disable-next-line camelcase
+                    bodyObject.tx_id = trxId;
+                    bodyObject.uid = uid;
 
-                // eslint-disable-next-line camelcase
-                const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
+                    // eslint-disable-next-line camelcase
+                    const newCallback = createUrl(callbackParams.url, { uid, tx_id: trxId });
 
-                debug('approveTransactionRequest() callback', new Date(), newCallback, bodyObject);
-                const response = await fetch(newCallback, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(bodyObject),
-                });
+                    debug('approveTransactionRequest() callback', new Date(), newCallback, bodyObject);
+                    const response = await fetch(newCallback, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(bodyObject),
+                    });
 
-                debug('approveTransactionRequest() response status', response.status);
+                    debug('approveTransactionRequest() response status', response.status);
 
-                if (!response.ok || response.status !== 200) {
-                    console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                    if (!response.ok || response.status !== 200) {
+                        console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                    }
                 }
             }
-        } else {
-            receipt = await this.privateKey.sendTransaction(this.transaction as AntelopeTransaction);
-        }
 
-        return receipt;
+            return receipt;
+        } catch (e) {
+            console.error('Error approving transaction', e);
+
+            await this.reject();
+            throw e;
+        }
     }
 }
 
@@ -153,7 +164,9 @@ export class AntelopeSession extends AbstractSession {
     chain: AntelopeChain;
     client: APIClient;
 
-    async initialize(): Promise<void> {}
+    async initialize(): Promise<void> {
+        debug('initialize()');
+    }
 
     async fromChain(chain: AntelopeChain): Promise<void> {
         const privateKey = await SecureStore.getItemAsync('tonomy.id.key.PASSWORD');
@@ -166,7 +179,7 @@ export class AntelopeSession extends AbstractSession {
         this.chain = chain;
     }
 
-    async onQrScan(data: string): Promise<void> {
+    private async signRequest(data: string): Promise<void> {
         const signingRequestBasic = SigningRequest.from(data, { zlib });
 
         const chain: AntelopeChain = getChainFromAntelopeChainId(signingRequestBasic.getChainId().toString());
@@ -192,8 +205,12 @@ export class AntelopeSession extends AbstractSession {
         }
     }
 
+    async onQrScan(data: string): Promise<void> {
+        await this.signRequest(data);
+    }
+
     async onLink(data: string): Promise<void> {
-        // Handle link data specific to Ethereum here
+        await this.signRequest(data);
     }
 
     async onEvent(): Promise<void> {
@@ -233,7 +250,8 @@ export class AntelopeSession extends AbstractSession {
         const transaction = AntelopeTransaction.fromActions(actions, this.chain, account);
 
         const callback = resolvedSigningRequest.request.data.callback;
-        const loginApp = new LoginApp('', callback, '', [this.chain]);
+
+        new LoginApp('', callback, '', [this.chain]);
 
         const transactionRequest = await AntelopeTransactionRequest.fromRequest(
             transaction,
@@ -244,21 +262,5 @@ export class AntelopeSession extends AbstractSession {
         );
 
         this.navigateToTransactionScreen(transactionRequest);
-    }
-
-    protected async navigateToLoginScreen(request: unknown): Promise<void> {
-        //TODO when implement handle identity request
-    }
-
-    protected async navigateToTransactionScreen(request: AntelopeTransactionRequest): Promise<void> {
-        navigate('SignTransaction', {
-            request,
-        });
-    }
-
-    async redirectToMobileBrowser(url: string) {
-        if (this.platform === 'mobile' && url) {
-            await Linking.openURL(url);
-        }
     }
 }

@@ -289,9 +289,9 @@ export class AntelopeChain extends AbstractChain {
 
         if (options) {
             if (options.transactionHash) {
-                url += `${this.explorerOrigin}/transaction/${options.transactionHash}`;
+                url += `/transaction/${options.transactionHash}`;
             } else if (options.accountName) {
-                url += `${this.explorerOrigin}/account/${options.accountName}`;
+                url += `/account/${options.accountName}`;
             }
         }
 
@@ -641,12 +641,13 @@ export class AntelopeTransaction implements ITransaction {
     protected account: AntelopeAccount;
     private expirationDate: Date | null = null;
 
-    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount, timeoutSeconds: number = 120) {
+    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount, timeoutSeconds = 120) {
         this.actions = actions;
         this.chain = chain;
         this.account = account;
         this.setExpiration(timeoutSeconds);
     }
+
     getChain(): AntelopeChain {
         return this.chain;
     }

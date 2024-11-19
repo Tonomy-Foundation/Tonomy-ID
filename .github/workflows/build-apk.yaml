@@ -8,6 +8,8 @@ name: Build Android APK
 #   export EXPO_FIRST_TIME=true
 #   yarn run build:android
 #   echo "Set the value of `expoProjectId` in src/config/config.testnet.json"
+#   echo "Get an access token from https://expo.dev/accounts/[account]/settings/access-tokens"
+#   export EXPO_TOKEN=rtsB...
 # RUN:
 #   act -j build-android -s EXPO_TOKEN="${EXPO_TOKEN}"
 
@@ -67,7 +69,10 @@ jobs:
           sudo du -sh ~/.yarn
           yarn cache clean
           sudo du -sh ~/.yarn
-      
+
+      - name: Install eas globally
+        run: sudo npm install -g eas-cli@12.6.2
+
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare

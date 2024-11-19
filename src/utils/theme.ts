@@ -1,17 +1,57 @@
 import { Platform, StyleSheet } from 'react-native';
-import { DefaultTheme, useTheme } from 'react-native-paper';
-
+import { MD2LightTheme as DefaultTheme, MD2Theme, useTheme } from 'react-native-paper';
 import settings from '../settings';
+import { MD2Colors } from 'react-native-paper/lib/typescript/types';
+
+type ExtendedMD2Colors = MD2Colors & {
+    secondary: string;
+    secondary2: string;
+    accent: string;
+    accent2: string;
+    textGray: string;
+    linkColor: string;
+    info: string;
+    lightBg: string;
+    white: string;
+    black: string;
+    headerFooter: string;
+    grey: string;
+    grey1: string;
+    grey2: string;
+    grey3: string;
+    grey4: string;
+    grey5: string;
+    grey6: string;
+    grey7: string;
+    grey8: string;
+    grey9: string;
+    shadow: string;
+    shadowDark: string;
+    success: string;
+    errorBackground: string;
+    backgroundGray: string;
+    tabGray: string;
+    border: string;
+    blue: string;
+    gold: string;
+    blue1: string;
+    blue2: string;
+    warning: string;
+};
+
+type ExtendedMD2Theme = MD2Theme & {
+    colors: ExtendedMD2Colors;
+};
 
 // https://callstack.github.io/react-native-paper/4.0/theming.html
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const theme = {
+const theme: ExtendedMD2Theme = {
     ...DefaultTheme,
     dark: false, // as we are using light theme this should be false
     colors: {
         ...DefaultTheme.colors,
         primary: settings.config.theme.primaryColor,
-        primary2: settings.config.theme.primaryColor2,
+        disabled: settings.config.theme.disabled,
         secondary: settings.config.theme.secondaryColor,
         secondary2: settings.config.theme.secondaryColor2,
         accent: settings.config.theme.tertiaryColor,
@@ -49,16 +89,12 @@ const theme = {
         blue1: '#00AEED',
         blue2: '#007BB5',
         warning: '#FF96351A',
-    },
+    } as ExtendedMD2Colors,
 };
 
-export type AppTheme = typeof theme;
+export type AppTheme = ExtendedMD2Theme;
 
 export const useAppTheme = () => useTheme() as AppTheme;
-
-export const customColors = {
-    success: '#4CAF50',
-};
 
 export const commonStyles = StyleSheet.create({
     alignItemsCenter: {

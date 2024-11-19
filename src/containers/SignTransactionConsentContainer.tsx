@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView, Linking } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { ChainType, IOperation, ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
+import { IOperation, PlatformType, ITransactionRequest, TransactionType, ChainType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
@@ -50,7 +50,8 @@ export default function SignTransactionConsentContainer({
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
-    const hostname = request.getOrigin() ? extractHostname(request.getOrigin()) : null;
+    const origin = request.getOrigin();
+    const hostname = origin ? extractHostname(origin) : null;
     const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
     const { developerMode } = useAppSettings();
 
@@ -187,7 +188,6 @@ export default function SignTransactionConsentContainer({
 
         await request.reject();
         setTransactionLoading(false);
-
         navigation.navigate('Assets');
     }
 
@@ -202,6 +202,7 @@ export default function SignTransactionConsentContainer({
                 transaction,
                 receipt,
             });
+
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
@@ -468,7 +469,7 @@ const styles = StyleSheet.create({
         ...commonStyles.primaryFontFamily,
     },
     applinkContent: {
-        textAlign:'center', 
+        textAlign: 'center',
         marginLeft: 6,
         fontSize: 24,
         ...commonStyles.primaryFontFamily,

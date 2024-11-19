@@ -10,12 +10,14 @@ MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 - Linux debian distribution (Ubuntu 20.0.4 LTS used)
 - [Nodejs](https://nodejs.org) v20+ suggested installed with [nvm](https://github.com/nvm-sh/nvm)
+- [eas-cli](https://expo.dev) ^12.6.2 installed globally
 
 ## Install
 
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
 
 ```bash
+npm install -g eas-cli@12.6.2
 yarn
 ```
 
@@ -46,10 +48,6 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 6. Return to [https://expo.dev/](https://expo.dev/) and click on the Tonomy ID project build and download the App.
 7. Install the created app on your phone.
 
-Having issues here or running the app? Checkout:
-
-<https://github.com/Tonomy-Foundation/Tonomy-ID-Integration/blob/development/TROUBLESHOOT.md>
-
 ## Run
 
 MAKE SURE YOU ARE WORKING FROM THE `DEVELOPMENT` BRANCH!!!
@@ -60,7 +58,39 @@ You NEED to follow the above `Pre-run build` steps above before you can start th
 DEBUG=tonomy* yarn run start
 ```
 
-### Run the production environment locally
+## Installing new packages
+
+```bash
+# install as dependency
+npx expo install expo-sqlite
+# install as devDependency
+npx expo install typescript -- -D
+```
+
+To check or fix compatibility issues
+
+```bash
+npx expo install typescript --check
+npx expo install --fix
+```
+
+To check other expo issues
+
+```bash
+npx expo-doctor
+```
+
+### Update Tonomy-ID-SDK package version to the latest
+
+```bash
+yarn run updateSdkVersion development
+# or
+yarn run updateSdkVersion master
+# or 
+yarn run updateSdkVersion testnet
+```
+
+## Run the production environment locally
 
 Run production (United Citizen Wallet), testnet (Pangea Testnet) or staging (Tonomy ID Staging) locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs as it runs
 
@@ -133,16 +163,6 @@ DEBUG=tonomy* EXPO_NODE_ENV=testnet yarn run start
 4. Create account or login with the existing account
 5. Go to the testflight update the app to the latest version
 6. Test again and if face any error mention it in github issues with the replicate steps
-
-## Update Tonomy-ID-SDK package version to the latest
-
-```bash
-yarn run updateSdkVersion development
-# or
-yarn run updateSdkVersion master
-# or 
-yarn run updateSdkVersion testnet
-```
 
 ## File structure of components
 
