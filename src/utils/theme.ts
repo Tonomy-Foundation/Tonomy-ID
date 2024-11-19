@@ -25,6 +25,7 @@ type ExtendedMD2Colors = MD2Colors & {
     grey7: string;
     grey8: string;
     grey9: string;
+    gray10: string;
     shadow: string;
     shadowDark: string;
     success: string;

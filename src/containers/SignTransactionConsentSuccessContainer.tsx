@@ -28,7 +28,7 @@ export default function SignTransactionConsentSuccessContainer({
     receipt: ITransactionReceipt;
 }) {
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
-    const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
+    const [fee, setFee] = useState<{ fee: string; usdFee: string; show: boolean } | null>(null);
     const [date, setDate] = useState<Date | null>(null);
 
     const errorStore = useErrorStore();
@@ -64,7 +64,7 @@ export default function SignTransactionConsentSuccessContainer({
                 const feeString = fee.toString(4);
                 const usdFeeString = formatCurrencyValue(usdFee);
 
-                setFee({ fee: feeString, usdFee: usdFeeString });
+                setFee({ fee: feeString, usdFee: usdFeeString, show: true });
             } catch (e) {
                 errorStore.setError({
                     title: 'Error fetching total',
