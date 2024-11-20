@@ -5,6 +5,7 @@ import { sha256 } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
 import { navigate } from '../../services/NavigationService';
 import BuoySession from 'buoy';
+import { Listener } from '@greymass/buoy';
 
 const debug = Debug('tonomy-id:utils:chain:types');
 
@@ -458,19 +459,19 @@ export interface ITransactionRequest {
 
 export interface ISession {
     web3wallet?: Web3Wallet;
-    buoySession?: BuoySession;
+    listener?: Listener;
     sessionUUID?: string;
     initialize(): Promise<void>;
     onQrScan(data: string): Promise<void>; // make this function static
     onLink(data: string): Promise<void>; // make this function static
-    onEvent(request: unknown): Promise<void>;
+    onEvent(): Promise<void>;
 }
 
 export abstract class AbstractSession implements ISession {
     abstract initialize(): Promise<void>;
     abstract onQrScan(data: string): Promise<void>;
     abstract onLink(data: string): Promise<void>;
-    abstract onEvent(request?: unknown): Promise<void>;
+    abstract onEvent(): Promise<void>;
 
     protected abstract handleLoginRequest(request: unknown): Promise<void>;
     protected abstract handleTransactionRequest(request: unknown): Promise<void>;

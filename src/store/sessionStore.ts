@@ -23,7 +23,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
         if (!antelopeSession.initialized) {
             await antelopeSession.initialize();
-            antelopeSession.onEvent();
+            // antelopeSession.onEvent();
         }
 
         // Set the session in the store

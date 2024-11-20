@@ -34,9 +34,20 @@ import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
 import { v4 as uuidv4 } from 'uuid';
 import Debug from 'debug';
-import { BuoySession } from 'buoy';
+import BuoyService from 'buoy';
+import { Listener, ListenerEncoding } from '@greymass/buoy';
+import WebSocket from 'react-native-websocket';
 
 const debug = Debug('tonomy-id:utils:session:antelope');
+
+export const events: Record<string, string> = {
+    SESSION_ADD: 'SESSION_ADD',
+    SESSION_ADD_IDENTITY: 'SESSION_ADD_IDENTITY',
+    SESSION_CONFIG: 'SESSION_CONFIG',
+    SESSION_REMOVE: 'SESSION_REMOVE',
+};
+
+export default events;
 
 export class AntelopeLoginRequest implements ILoginRequest {
     loginApp: ILoginApp;
@@ -114,52 +125,17 @@ export class AntelopeLoginRequest implements ILoginRequest {
 
             // Generate the identity proof signature
             const publicKey = await (await this.privateKey.getPublicKey()).toString();
-            const receiveChUUID = this.session.sessionUUID;
-            const forwarderAddress = 'ws://cb.anchor.link';
+
             const signature = await this.request.getIdentityProof(transaction.signatures[0]);
 
-            const receiveCh = `${forwarderAddress}/${receiveChUUID}`;
-            const socketUrl = callbackParams.url.replace(/^https/, 'ws');
-
-            console.log('receiveCh', receiveCh);
-            // Construct the payload
             const bodyObject = callbackParams.payload;
 
             bodyObject.account = account.getName();
             bodyObject.link_key = publicKey;
             bodyObject.id_proof = signature.toString();
             bodyObject.chainId = chain.getChainId();
-            bodyObject.link_ch = socketUrl;
-            // const socketUrl = callbackParams.url.replace(/^https/, 'ws');
-
-            console.log('socketUrl', socketUrl);
-
-            const socket = new WebSocket(socketUrl);
-
-            socket.addEventListener('open', () => {
-                console.log('WebSocket connection opened.');
-                socket.send(
-                    JSON.stringify({
-                        type: 'login_response',
-                        data: bodyObject,
-                    })
-                );
-            });
-            socket.addEventListener('message', (event) => {
-                console.log('Buoy Message12:', event.data);
-            });
-
-            socket.onmessage = (event) => {
-                console.log('Buoy Message1:', event.data);
-            };
-
-            socket.send(
-                JSON.stringify({
-                    type: 'login_response',
-                    data: bodyObject,
-                })
-            );
-            // this.session.buoySession.send(JSON.stringify({ type: 'login_response', data: bodyObject }));
+            bodyObject.link_ch = 'wss://cb.anchor.link/' + this.session.sessionUUID;
+            console.log('approveLoginRequest() callback', bodyObject);
             const response = await fetch(callbackParams.url, {
                 method: 'POST',
                 headers: {
@@ -264,7 +240,7 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
                 const trxId = receipt.getTransactionHash();
                 const callbackParams = this.request.getCallback(signedTransaction.signatures, 0);
 
-                debug('approveTransactionRequest() callbackParams', callbackParams);
+                console.log('approveTransactionRequest() callbackParams', callbackParams);
 
                 if (callbackParams) {
                     const uid = getQueryParam(callbackParams.url, 'uid');
@@ -313,7 +289,7 @@ export class AntelopeSession extends AbstractSession {
     publicKey: AntelopePublicKey;
     accountName: string;
     initialized: boolean;
-    buoySession: any;
+    listener: Listener;
     sessionUUID: string;
 
     async initialize(): Promise<void> {
@@ -325,6 +301,25 @@ export class AntelopeSession extends AbstractSession {
             return;
         }
 
+        // const service = new BuoyService();
+
+        // this.buoySession = service;
+        // console.log('service', service);
+        // service.on('message', (message: string) => {
+        //     console.log('Buoy Message:', message);
+        // });
+
+        this.sessionUUID = uuidv4();
+
+        this.listener = new Listener({ service: 'https://cb.anchor.link', channel: this.sessionUUID });
+        this.listener.on('message', (message) => {
+            console.log('message', message);
+        });
+
+        // make sure to subscribe to the error event or they will be thrown
+        this.listener.on('error', (error) => {
+            console.warn('listener error', error);
+        });
         // const forwarderAddress = 'ws://cb.anchor.link';
 
         // // Create a unique session URL
@@ -430,29 +425,37 @@ export class AntelopeSession extends AbstractSession {
 
     async onEvent(): Promise<void> {
         //TODO when implement listen antelope events
-        console.log('onEvent()', this.buoySession, this.initialized);
+        console.log('onEvent()', this.listener);
+        this.listener.on('message', (message) => {
+            console.log('message', message);
+        });
+
+        // make sure to subscribe to the error event or they will be thrown
+        this.listener.on('error', (error) => {
+            console.warn('listener error', error);
+        });
     }
 
-    private handleBuoyMessage(message: string): void {
-        try {
-            const parsedMessage = JSON.parse(message);
+    // private handleBuoyMessage(message: string): void {
+    //     try {
+    //         const parsedMessage = JSON.parse(message);
 
-            console.log('Received message from Buoy:', parsedMessage);
+    //         console.log('Received message from Buoy:', parsedMessage);
 
-            switch (parsedMessage.type) {
-                case 'login_request':
-                    this.handleLoginRequest(parsedMessage.data);
-                    break;
-                case 'transaction_request':
-                    this.handleTransactionRequest(parsedMessage.data);
-                    break;
-                default:
-                    console.log('Unknown Buoy message type:', parsedMessage.type);
-            }
-        } catch (error) {
-            console.error('Failed to handle Buoy message:', error);
-        }
-    }
+    //         switch (parsedMessage.type) {
+    //             case 'login_request':
+    //                 this.handleLoginRequest(parsedMessage.data);
+    //                 break;
+    //             case 'transaction_request':
+    //                 this.handleTransactionRequest(parsedMessage.data);
+    //                 break;
+    //             default:
+    //                 console.log('Unknown Buoy message type:', parsedMessage.type);
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to handle Buoy message:', error);
+    //     }
+    // }
 
     async handleLoginRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
         //TODO when implement handle identity request
