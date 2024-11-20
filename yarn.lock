@@ -2072,6 +2072,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@greymass/buoy@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@greymass/buoy@npm:1.0.4"
+  dependencies:
+    eventemitter3: "npm:^4.0.7"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/97d0092b29cc3edf0869a69999be980e2a6f95c9a10c8a8a966fe9e9b13347bff6ce6daff5a71e83f3394437b975d127ff93e4290d785625ca875e7c74fb3141
+  languageName: node
+  linkType: hard
+
 "@hapi/hoek@npm:^9.0.0, @hapi/hoek@npm:^9.3.0":
   version: 9.3.0
   resolution: "@hapi/hoek@npm:9.3.0"
@@ -6191,6 +6201,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"backyard@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "backyard@npm:0.1.0"
+  checksum: 10c0/0567208d23df04799727db2d100c6148584469053b1dbb399abbfcffa8482ba2f84f931bd4e7ecb34d3604b88ad93d4e3f258bc36d19aad97ebd23d8a7252ce4
+  languageName: node
+  linkType: hard
+
 "badgin@npm:^1.1.5":
   version: 1.2.3
   resolution: "badgin@npm:1.2.3"
@@ -6519,6 +6536,25 @@ __metadata:
   version: 1.0.3
   resolution: "builtins@npm:1.0.3"
   checksum: 10c0/493afcc1db0a56d174cc85bebe5ca69144f6fdd0007d6cbe6b2434185314c79d83cb867e492b56aa5cf421b4b8a8135bf96ba4c3ce71994cf3da154d1ea59747
+  languageName: node
+  linkType: hard
+
+"buoy-js@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "buoy-js@npm:1.2.1"
+  dependencies:
+    ramda: "npm:^0.18.0"
+  checksum: 10c0/207ee4d6a7d313835b600fa51aab8228b04a24b3845c2ce6417447f841b6d2571ecc67bab89b8f7fe6d548986e30d6f9d7ba5620cbc7d3642bf6801b9c145756
+  languageName: node
+  linkType: hard
+
+"buoy@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "buoy@npm:1.0.0"
+  dependencies:
+    backyard: "npm:^0.1.0"
+    stations: "npm:^1.0.0"
+  checksum: 10c0/a1fda2552d6c9b0a4c9e567c49775c292e5c25ef55fd02c30ddd755456411e9d5daa6ed2396c0f0e21e0c6011a45664134a68bc591db249d31845ee0bff70bbb
   languageName: node
   linkType: hard
 
@@ -8650,6 +8686,13 @@ __metadata:
   version: 5.0.1
   resolution: "event-target-shim@npm:5.0.1"
   checksum: 10c0/0255d9f936215fd206156fd4caa9e8d35e62075d720dc7d847e89b417e5e62cf1ce6c9b4e0a1633a9256de0efefaf9f8d26924b1f3c8620cffb9db78e7d3076b
+  languageName: node
+  linkType: hard
+
+"eventemitter3@npm:^4.0.7":
+  version: 4.0.7
+  resolution: "eventemitter3@npm:4.0.7"
+  checksum: 10c0/5f6d97cbcbac47be798e6355e3a7639a84ee1f7d9b199a07017f1d2f1e2fe236004d14fa5dfaeba661f94ea57805385e326236a6debbc7145c8877fbc0297c6b
   languageName: node
   linkType: hard
 
@@ -14522,6 +14565,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ramda@npm:^0.18.0":
+  version: 0.18.0
+  resolution: "ramda@npm:0.18.0"
+  checksum: 10c0/d6d7015b318b697e6e12ff3c42572183cd3fbbd0357e571e708b5dbb49bd5f274247547a22e5fdf11eab9059011547c4ec2e3ae6a148462b5b49b00d7f6c7513
+  languageName: node
+  linkType: hard
+
 "randombytes@npm:^2.0.0, randombytes@npm:^2.0.1, randombytes@npm:^2.0.5, randombytes@npm:^2.1.0":
   version: 2.1.0
   resolution: "randombytes@npm:2.1.0"
@@ -16048,6 +16098,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stations@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "stations@npm:1.0.0"
+  checksum: 10c0/30f94bf147dd9f0b13c68383358f062c4c1faf533428e120f51a0591a3ce93a1db449628b4c81afb5f4fa58a81b9980967f49d434187e087776a0c74b081c99a
+  languageName: node
+  linkType: hard
+
 "statuses@npm:2.0.1":
   version: 2.0.1
   resolution: "statuses@npm:2.0.1"
@@ -16677,6 +16734,7 @@ __metadata:
     "@babel/plugin-transform-react-jsx-source": "npm:^7.25.9"
     "@ethersproject/shims": "npm:^5.7.0"
     "@expo-google-fonts/roboto": "npm:^0.2.3"
+    "@greymass/buoy": "npm:^1.0.4"
     "@hcaptcha/react-native-hcaptcha": "npm:^1.7.2"
     "@json-rpc-tools/utils": "npm:^1.7.6"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
@@ -16711,6 +16769,8 @@ __metadata:
     babel-plugin-transform-inline-environment-variables: "npm:^0.4.4"
     babel-plugin-transform-typescript-metadata: "npm:^0.3.2"
     big-integer: "npm:^1.6.52"
+    buoy: "npm:^1.0.0"
+    buoy-js: "npm:^1.2.1"
     cross-fetch: "npm:^4.0.0"
     crypto-browserify: "npm:^3.12.1"
     deepmerge: "npm:^4.3.1"

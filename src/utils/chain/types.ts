@@ -4,6 +4,7 @@ import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
 import { navigate } from '../../services/NavigationService';
+import BuoySession from 'buoy';
 
 const debug = Debug('tonomy-id:utils:chain:types');
 
@@ -457,6 +458,8 @@ export interface ITransactionRequest {
 
 export interface ISession {
     web3wallet?: Web3Wallet;
+    buoySession?: BuoySession;
+    sessionUUID?: string;
     initialize(): Promise<void>;
     onQrScan(data: string): Promise<void>; // make this function static
     onLink(data: string): Promise<void>; // make this function static

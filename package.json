@@ -28,6 +28,7 @@
     "dependencies": {
         "@ethersproject/shims": "^5.7.0",
         "@expo-google-fonts/roboto": "^0.2.3",
+        "@greymass/buoy": "^1.0.4",
         "@hcaptcha/react-native-hcaptcha": "^1.7.2",
         "@json-rpc-tools/utils": "^1.7.6",
         "@react-native-async-storage/async-storage": "1.23.1",
@@ -50,6 +51,8 @@
         "@wharfkit/signing-request": "^3.2.0",
         "@wharfkit/wallet-plugin-privatekey": "^1.1.0",
         "big-integer": "^1.6.52",
+        "buoy": "^1.0.0",
+        "buoy-js": "^1.2.1",
         "cross-fetch": "^4.0.0",
         "crypto-browserify": "^3.12.1",
         "deepmerge": "^4.3.1",
