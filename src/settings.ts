@@ -1,7 +1,7 @@
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:settings');
-const env = process.env.EXPO_NODE_ENV ?? 'development';
+const env = process.env.EXPO_NODE_ENV ?? 'testnet';
 
 const settingsInputs = {
     nodeEnv: process.env.NODE_ENV, // This is set by expo with webpack https://github.com/expo/expo/issues/20360

@@ -14,12 +14,18 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     initializeSession: async () => {
         const walletConnectSession = new WalletConnectSession();
 
-        await walletConnectSession.initialize();
-        walletConnectSession.onEvent();
+        if (!walletConnectSession.initialized) {
+            await walletConnectSession.initialize();
+            walletConnectSession.onEvent();
+        }
 
         const antelopeSession = new AntelopeSession();
 
-        await antelopeSession.initialize();
+        if (!antelopeSession.initialized) {
+            await antelopeSession.initialize();
+            // antelopeSession.onEvent();
+        }
+
         // Set the session in the store
         set({ walletConnectSession, antelopeSession });
     },
