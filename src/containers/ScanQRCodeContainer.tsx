@@ -27,6 +27,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
 import TSpinner from '../components/atoms/TSpinner';
 import { useSessionStore } from '../store/sessionStore';
+import { useFocusEffect } from '@react-navigation/native';
 
 const debug = Debug('tonomy-id:containers:ScanQRCodeContainer');
 
@@ -46,6 +47,7 @@ export default function ScanQRCodeContainer({
     const errorStore = useErrorStore();
     const [accountName, setAccountName] = useState('');
     const [isLoadingView, setIsLoadingView] = useState(false);
+    const [invalidQrCodeError, setInvalidQrCodeError] = useState<string | boolean>(false);
 
     const { walletConnectSession, antelopeSession } = useSessionStore.getState();
 
@@ -110,12 +112,22 @@ export default function ScanQRCodeContainer({
 
     // setUserName() on mount
     useEffect(() => {
+        console.log('harsh bro :  use effect is running');
+
+        setInvalidQrCodeError(false);
+
         setUserName();
 
         if (did) {
             onUrlOpen(did);
         }
     }, [setUserName, did, onUrlOpen]);
+
+    useFocusEffect(
+        useCallback(() => {
+            setInvalidQrCodeError(false);
+        }, [])
+    );
 
     async function onScan({ data }: BarCodeScannerResult) {
         debug('onScan() data:', data);
@@ -144,19 +156,20 @@ export default function ScanQRCodeContainer({
             } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
                 debug('onScan() Invalid QR Code', JSON.stringify(e, null, 2));
 
-                if (e.message === 'QR schema does not match app') {
-                    errorStore.setError({
-                        title: 'Invalid QR Code',
-                        error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
-                        expected: true,
-                    });
-                } else {
-                    errorStore.setError({
-                        title: 'Invalid QR Code',
-                        error: e,
-                        expected: false,
-                    });
-                }
+                // if (e.message === 'QR schema does not match app') {
+                //     errorStore.setError({
+                //         title: 'Invalid QR Code',
+                //         error: new Error(`This QR code cannot be used with ${settings.config.appName}`),
+                //         expected: true,
+                //     });
+                // } else {
+                //     errorStore.setError({
+                //         title: 'Invalid QR Code',
+                //         error: e,
+                //         expected: false,
+                //     });
+                // }
+                setInvalidQrCodeError('qr code does not match');
             } else if (e instanceof CommunicationError) {
                 debug('onScan() CommunicationError QR Code', JSON.stringify(e, null, 2));
                 errorStore.setError({
@@ -180,25 +193,38 @@ export default function ScanQRCodeContainer({
                 <View style={styles.QRContainer}>
                     {isLoadingView ? <TSpinner /> : <QRCodeScanner onScan={onScan} />}
                 </View>
-                <View style={styles.bottomInstruction}>
-                    <Text style={{ fontWeight: '500', ...commonStyles.primaryFontFamily }}>
-                        Login and sign crypto transactions using:
-                    </Text>
-                    <View style={styles.flexCol}>
-                        <View style={styles.flexRow}>
-                            <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                            <Text>Pangea</Text>
-                        </View>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/crypto-transaction.png')} style={styles.favicon} />
-                            <Text>WalletConnect</Text>
-                        </View>
-                        <View style={styles.flexRow}>
-                            <Image source={require('../assets/images/anchor-codes.png')} style={styles.favicon} />
-                            <Text>Anchor (Antelope)</Text>
+                {invalidQrCodeError === 'qr code does not match' && (
+                    <View style={styles.invalidQrCodeWarning}>
+                        <Text style={styles.invalidQrCodeText}>We couldn’t find the app</Text>
+                        <Text style={styles.invalidQrCodeSubText}>
+                            The app developers have not registered this application.
+                        </Text>
+                    </View>
+                )}
+                {!invalidQrCodeError && (
+                    <View style={styles.bottomInstruction}>
+                        <Text style={{ fontWeight: '500', ...commonStyles.primaryFontFamily }}>
+                            Login and sign crypto transactions using:
+                        </Text>
+                        <View style={styles.flexCol}>
+                            <View style={styles.flexRow}>
+                                <Image source={Images.GetImage('logo48')} style={styles.favicon} />
+                                <Text>Pangea</Text>
+                            </View>
+                            <View style={styles.flexRow}>
+                                <Image
+                                    source={require('../assets/images/crypto-transaction.png')}
+                                    style={styles.favicon}
+                                />
+                                <Text>WalletConnect</Text>
+                            </View>
+                            <View style={styles.flexRow}>
+                                <Image source={require('../assets/images/anchor-codes.png')} style={styles.favicon} />
+                                <Text>Anchor (Antelope)</Text>
+                            </View>
                         </View>
                     </View>
-                </View>
+                )}
             </ScrollView>
         </View>
     );
@@ -242,5 +268,19 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    invalidQrCodeWarning: {
+        marginTop: 15,
+        padding: 16,
+        marginBottom: 40,
+        backgroundColor: theme.colors.backgroundColorWarning,
+        borderRadius: 16,
+    },
+    invalidQrCodeText: {
+        fontSize: 16,
+        ...commonStyles.primaryFontFamily,
+    },
+    invalidQrCodeSubText: {
+        fontSize: 14,
     },
 });

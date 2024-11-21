@@ -83,6 +83,7 @@ const theme: ExtendedMD2Theme = {
         success: '#4CAF50',
         errorBackground: '#F443361A',
         backgroundGray: '#EDF2F9',
+        backgroundColorWarning: '#FC55551A',
         tabGray: '#607EAA',
         border: '#E6ECF4',
         blue: '#007BFF',
