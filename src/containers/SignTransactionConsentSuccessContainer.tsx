@@ -10,7 +10,7 @@ import { TH1 } from '../components/atoms/THeadings';
 import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
-import { ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import { ITransaction, ITransactionReceipt, ITransactionRequest } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
 import { OperationData, Operations, TransactionFee } from '../components/Transaction';
 
@@ -21,11 +21,13 @@ export default function SignTransactionConsentSuccessContainer({
     operations,
     transaction,
     receipt,
+    request,
 }: {
     navigation: Props['navigation'];
     operations: OperationData[];
     transaction: ITransaction;
     receipt: ITransactionReceipt;
+    request: ITransactionRequest;
 }) {
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
     const [fee, setFee] = useState<{ fee: string; usdFee: string; show: boolean } | null>(null);
@@ -64,7 +66,11 @@ export default function SignTransactionConsentSuccessContainer({
                 const feeString = fee.toString(4);
                 const usdFeeString = formatCurrencyValue(usdFee);
 
-                setFee({ fee: feeString, usdFee: usdFeeString, show: true });
+                if (request.account && request.transaction.getExpiration()) {
+                    setFee({ fee: feeString, usdFee: usdFeeString, show: false });
+                } else {
+                    setFee({ fee: feeString, usdFee: usdFeeString, show: true });
+                }
             } catch (e) {
                 errorStore.setError({
                     title: 'Error fetching total',

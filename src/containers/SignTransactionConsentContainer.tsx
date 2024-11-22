@@ -201,6 +201,7 @@ export default function SignTransactionConsentContainer({
                 operations,
                 transaction,
                 receipt,
+                request
             });
 
             setTransactionLoading(false);

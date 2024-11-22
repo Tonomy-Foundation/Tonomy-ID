@@ -12,6 +12,7 @@ export default function SignTransactionConsentSuccessScreen(props: Props) {
             transaction={props.route.params.transaction}
             receipt={props.route.params.receipt}
             navigation={props.navigation}
+            request={props.route.params.request}
         />
     );
 }

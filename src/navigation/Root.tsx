@@ -82,6 +82,7 @@ export type MainRouteStackParamList = {
         operations: OperationData[];
         transaction: ITransaction;
         receipt: ITransactionReceipt;
+        request: ITransactionRequest;
     };
     WalletConnectLogin: {
         loginRequest: ILoginRequest;
