@@ -709,6 +709,7 @@ export class AntelopeTransaction implements ITransaction {
     }
     private setExpiration(timeoutSeconds: number) {
         const now = new Date();
+
         this.expirationDate = new Date(now.getTime() + timeoutSeconds * 1000);
     }
     getExpiration(): Date | null {

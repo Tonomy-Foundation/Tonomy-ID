@@ -201,7 +201,7 @@ export default function SignTransactionConsentContainer({
                 operations,
                 transaction,
                 receipt,
-                request
+                request,
             });
 
             setTransactionLoading(false);
@@ -280,9 +280,11 @@ export default function SignTransactionConsentContainer({
                 clearInterval(intervalId);
                 return;
             }
+
             const now = new Date().getTime();
             const expirationTime = expiration.getTime();
             const timeDiff = expirationTime - now;
+
             if (timeDiff <= 0) {
                 setRemainingTime('00:00');
                 setExpired(true);
@@ -290,9 +292,11 @@ export default function SignTransactionConsentContainer({
             } else {
                 const minutes = Math.floor(timeDiff / 1000 / 60);
                 const seconds = Math.floor((timeDiff / 1000) % 60);
+
                 setRemainingTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
             }
         }, 1000);
+
         return () => clearInterval(intervalId);
     }, [request]);
 
@@ -417,6 +421,7 @@ function TransactionTotal({
     if (!transactionTotal.show) {
         return null;
     }
+
     return (
         <>
             <View

@@ -16,6 +16,7 @@ const AppInstructionModal = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             const showInstructions = await appStorage.getAppInstruction();
+
             setShowOnboarding(showInstructions);
         };
 
