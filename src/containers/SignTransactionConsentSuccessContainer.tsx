@@ -19,13 +19,11 @@ import TSpinner from '../components/atoms/TSpinner';
 export default function SignTransactionConsentSuccessContainer({
     navigation,
     operations,
-    transaction,
     receipt,
     request,
 }: {
     navigation: Props['navigation'];
     operations: OperationData[];
-    transaction: ITransaction;
     receipt: ITransactionReceipt;
     request: ITransactionRequest;
 }) {
@@ -52,7 +50,7 @@ export default function SignTransactionConsentSuccessContainer({
 
                 setDate(date);
 
-                const total = await transaction.estimateTransactionTotal();
+                const total = await request.transaction.estimateTransactionTotal();
                 const usdTotal = await total.getUsdValue();
 
                 const totalString = total.toString(4);
@@ -81,7 +79,7 @@ export default function SignTransactionConsentSuccessContainer({
         }
 
         fetchTransactionDetail();
-    }, [errorStore, receipt, transaction]);
+    }, [errorStore, receipt, request.transaction]);
 
     return (
         <LayoutComponent
