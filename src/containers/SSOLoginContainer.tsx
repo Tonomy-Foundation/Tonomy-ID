@@ -71,7 +71,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         }
     }
 
-    async function onNext() {
+    async function onLogin() {
         try {
             setNextLoading(true);
             if (!responsesManager) throw new Error('Responses manager is not set');
@@ -211,8 +211,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             }
             footer={
                 <View>
-                    <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onNext}>
-                        Next
+                    <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onLogin}>
+                        Login
                     </TButtonContained>
                     <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
                         Cancel

@@ -54,7 +54,7 @@ const config: Config = {
         '^ipfs-unixfs$': '<rootDir>/node_modules/ipfs-unixfs/dist/src/index.js',
         '^protons-runtime$': '<rootDir>/node_modules/protons-runtime/dist/src/index.js',
         '^uint8-varint$': '<rootDir>/node_modules/uint8-varint/dist/src/index.js',
-        '^uint8arrays$': '<rootDir>/node_modules/uint8arrays/dist/src/index.js',
+        '^uint8arrays$': '<rootDir>/node_modules/uint8arrays/index.js',
     },
 };
 

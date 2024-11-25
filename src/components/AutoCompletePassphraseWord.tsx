@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
     },
     input: {
         color: 'white',
-        visibility: 'hidden',
         zIndex: 0,
         opacity: 0,
         width: '100%',

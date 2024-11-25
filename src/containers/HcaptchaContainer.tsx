@@ -16,6 +16,7 @@ import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
@@ -28,8 +29,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     const [accountUrl, setAccountUrl] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showUsernameErrorModal, setShowUsernameErrorModal] = useState(false);
-    const userStore = useUserStore();
-    const user = userStore.user;
+    const { user, setStatus } = useUserStore();
     const siteKey = settings.config.captchaSiteKey;
     const { getPassphrase, unsetPassphraseList, unsetConfirmPassphraseWord } = usePassphraseStore();
 
@@ -70,7 +70,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         }
     };
 
-    async function setUserName() {
+    async function fetchAndSetUsername() {
         try {
             const username = await user.getUsername();
 
@@ -98,21 +98,12 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             unsetPassphraseList();
             unsetConfirmPassphraseWord();
 
-            await setUserName();
-            let url;
+            await fetchAndSetUsername();
             const accountName = (await user.getAccountName()).toString();
 
-            if (settings.env === 'staging' || settings.env === 'development') {
-                url =
-                    settings.config.blockExplorerUrl +
-                    '/account/' +
-                    accountName +
-                    '?nodeUrl=' +
-                    settings.config.blockchainUrl +
-                    '&coreSymbol=LEOS&corePrecision=6';
-            } else {
-                url = settings.config.blockExplorerUrl + '/account/' + accountName;
-            }
+            await addNativeTokenToAssetStorage(user);
+
+            const url = pangeaTokenEntry.chain.getExplorerUrl({ accountName });
 
             setAccountUrl(url);
         } catch (e) {
@@ -153,7 +144,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
     }
 
     async function onModalPress() {
-        userStore.setStatus(UserStatus.LOGGED_IN);
+        setStatus(UserStatus.LOGGED_IN);
         setShowModal(false);
     }
 
