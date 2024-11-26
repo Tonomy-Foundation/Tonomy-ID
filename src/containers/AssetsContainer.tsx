@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import { TButtonOutlined } from '../components/atoms/TButton';
-import { TP } from '../components/atoms/THeadings';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useIsFocused } from '@react-navigation/native';
 import theme, { commonStyles } from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
@@ -11,12 +7,11 @@ import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
-import useUserStore from '../store/userStore';
+import useAssets from '../hooks/useAssets';
 
 const debug = Debug('tonomy-id:containers:AssetsContainer');
 
@@ -25,70 +20,13 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
     const [refreshBalance, setRefreshBalance] = useState(false);
     const { developerMode } = useAppSettings();
+    const { accounts } = useAssets();
 
-    const { accountsInitialized, initializeWalletAccount, updateBalance } = useWalletStore();
+    const { updateBalance } = useWalletStore();
 
     const isUpdatingBalances = useRef(false);
-    const [accounts, setAccounts] = useState<
-        { network: string; accountName: string; balance: string; usdBalance: number }[]
-    >([]);
-    const { user } = useUserStore();
 
     const tokens = useMemo(() => tokenRegistry, []);
-
-    const fetchCryptoAssets = useCallback(async () => {
-        try {
-            if (!accountsInitialized) await initializeWalletAccount(user);
-            await connect();
-
-            for (const { chain, token } of tokens) {
-                try {
-                    const asset = await assetStorage.findAssetByName(token);
-
-                    debug(
-                        `fetchCryptoAssets() fetching asset ${chain.getName()}: ${asset?.accountName}-${asset?.balance}`
-                    );
-                    let account;
-
-                    if (asset) {
-                        account = {
-                            network: capitalizeFirstLetter(chain.getName()),
-                            accountName: asset.accountName,
-                            balance: asset.balance,
-                            usdBalance: asset.usdBalance,
-                        };
-                    } else {
-                        account = {
-                            network: capitalizeFirstLetter(chain.getName()),
-                            accountName: null,
-                            balance: '0',
-                            usdBalance: 0,
-                        };
-                    }
-
-                    setAccounts((prevAccounts) => {
-                        // find index of the account in the array
-                        const index = prevAccounts.findIndex((acc) => acc.network === account.network);
-
-                        if (index !== -1) {
-                            // Update the existing asset
-                            const updatedAccounts = [...prevAccounts];
-
-                            updatedAccounts[index] = account;
-                            return updatedAccounts;
-                        } else {
-                            // Add the new asset
-                            return [...prevAccounts, account];
-                        }
-                    });
-                } catch (error) {
-                    debug(`fetchCryptoAssets() error fetching ${chain.getName()} asset`, error);
-                }
-            }
-        } catch (error) {
-            console.error('fetchCryptoAssets() error', error);
-        }
-    }, [accountsInitialized, initializeWalletAccount, tokens, user]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -97,7 +35,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         try {
             debug('updateAllBalances()');
             await updateBalance();
-            await fetchCryptoAssets();
             setAssetLoading(false);
         } catch (error) {
             if (isNetworkError(error)) {
@@ -108,7 +45,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         } finally {
             isUpdatingBalances.current = false;
         }
-    }, [updateBalance, fetchCryptoAssets]);
+    }, [updateBalance]);
 
     const onRefresh = useCallback(async () => {
         try {

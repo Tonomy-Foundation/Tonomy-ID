@@ -13,12 +13,14 @@ import { appStorage, connect } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
 import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/network';
+import useAssets from '../hooks/useAssets';
 
 const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
     const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
+    const { fetchCryptoAssets } = useAssets();
 
     useFonts({
         Roboto: require('../assets/fonts/Roboto-Regular.ttf'),
@@ -60,6 +62,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     case UserStatus.LOGGED_IN:
                         try {
                             await user.getUsername();
+                            await fetchCryptoAssets();
                         } catch (e) {
                             if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
                                 logout("Invalid data in user's storage");
