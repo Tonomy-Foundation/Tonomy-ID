@@ -8,6 +8,7 @@ import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { TokenRegistryEntry, getKeyOrNullFromChain, tokenRegistry } from '../utils/tokenRegistry';
 import useAppSettings from '../hooks/useAppSettings';
+import useAssets from '../hooks/useAssets';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 
@@ -18,68 +19,13 @@ const SelectAssetContainer = ({
     navigation: SelectAssetScreenNavigationProp['navigation'];
     type: string;
 }) => {
-    const [accounts, setAccounts] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-    >([]);
+    const { accounts } = useAssets();
+
+    console.log('accounts', accounts);
 
     const { developerMode } = useAppSettings();
 
     const tokens = useMemo(() => tokenRegistry, []);
-
-    const fetchCryptoAssets = useCallback(async () => {
-        try {
-            await connect();
-
-            for (const { chain, token } of tokens) {
-                const asset = await assetStorage.findAssetByName(token);
-
-                debug(`fetchCryptoAssets() fetching asset for ${chain.getName()}`);
-                let account;
-
-                if (asset) {
-                    account = {
-                        network: capitalizeFirstLetter(chain.getName()),
-                        accountName: asset.accountName,
-                        balance: asset.balance,
-                        usdBalance: asset.usdBalance,
-                    };
-                } else {
-                    account = {
-                        network: capitalizeFirstLetter(chain.getName()),
-                        accountName: null,
-                        balance: '0',
-                        usdBalance: 0,
-                    };
-                }
-
-                setAccounts((prevAccounts) => {
-                    // find index of the account in the array
-                    const index = prevAccounts.findIndex((acc) => acc.network === account.network);
-
-                    if (index !== -1) {
-                        // Update the existing asset
-                        const updatedAccounts = [...prevAccounts];
-
-                        updatedAccounts[index] = account;
-                        return updatedAccounts;
-                    } else {
-                        // Add the new asset
-                        return [...prevAccounts, account];
-                    }
-                });
-            }
-        } catch (error) {
-            debug('fetchCryptoAssets() error', error);
-        }
-    }, [tokens]);
-
-    useEffect(() => {
-        fetchCryptoAssets();
-
-        const interval = setInterval(fetchCryptoAssets, 10000);
-
-        return () => clearInterval(interval);
-    }, [fetchCryptoAssets]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);

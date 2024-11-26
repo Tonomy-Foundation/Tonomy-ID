@@ -1,77 +1,48 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
-import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
-import { isNetworkError } from '../utils/errors';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
 import useAssets from '../hooks/useAssets';
+import useUpdateBalances from '../hooks/useUpdateBalances';
+import { useFocusEffect } from '@react-navigation/native';
 
 const debug = Debug('tonomy-id:containers:AssetsContainer');
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const [total, setTotal] = useState<number>(0);
-    const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
-    const [refreshBalance, setRefreshBalance] = useState(false);
+
     const { developerMode } = useAppSettings();
-    const { accounts } = useAssets();
-
-    const { updateBalance } = useWalletStore();
-
-    const isUpdatingBalances = useRef(false);
+    const { accounts, loading, fetchCryptoAssets } = useAssets();
+    const { refreshBalance, onRefresh, updateAllBalances } = useUpdateBalances();
 
     const tokens = useMemo(() => tokenRegistry, []);
 
-    const updateAllBalances = useCallback(async () => {
-        if (isUpdatingBalances.current) return; // Prevent re-entry if already running
-        isUpdatingBalances.current = true;
-
-        try {
-            debug('updateAllBalances()');
-            await updateBalance();
-            setAssetLoading(false);
-        } catch (error) {
-            if (isNetworkError(error)) {
-                debug('updateAllBalances() Error updating account detail network error:');
-            } else {
-                console.error('AssetsContainer() updateAllBalances() error', error);
-            }
-        } finally {
-            isUpdatingBalances.current = false;
-        }
-    }, [updateBalance]);
-
-    const onRefresh = useCallback(async () => {
-        try {
-            setRefreshBalance(true);
-            await updateAllBalances();
-        } finally {
-            setRefreshBalance(false);
-        }
-    }, [updateAllBalances]);
-
-    // updateAllBalances() on mount and every 20 seconds
-    useEffect(() => {
-        updateAllBalances();
-
-        const interval = setInterval(updateAllBalances, 10000);
-
-        return () => clearInterval(interval);
-    }, [updateAllBalances]);
-
+    console.log('Accounts updated:', accounts);
     useEffect(() => {
         const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
             return previousValue + currentValue.usdBalance;
         }, 0);
 
         setTotal(totalAssetsUSDBalance);
-    }, [accounts]);
+    }, [accounts, updateAllBalances]);
+
+    useFocusEffect(
+        useCallback(() => {
+            const initializeAssets = async () => {
+                await fetchCryptoAssets();
+                await updateAllBalances();
+            };
+
+            initializeAssets();
+        }, [fetchCryptoAssets, updateAllBalances])
+    );
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
@@ -117,7 +88,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                         </TouchableOpacity>
                     </View>
                 </View>
-                {!isAssetLoading ? (
+                {!loading ? (
                     <View style={styles.scrollContent}>
                         {tokens.map((chainObj, index) => {
                             const chainName = capitalizeFirstLetter(chainObj.chain.getName());
@@ -162,30 +133,47 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                             )}
                                         </View>
                                         <View style={styles.flexColEnd}>
-                                            {accountData.account ? (
-                                                <View style={styles.flexColEnd}>
-                                                    <View style={styles.flexRowCenter}>
-                                                        <Text style={{ fontSize: 15 }}>{accountData.balance}</Text>
-                                                    </View>
-                                                    <Text style={styles.secondaryColor}>
-                                                        ${formatCurrencyValue(accountData.usdBalance ?? 0)}
-                                                    </Text>
+                                            {refreshBalance ? (
+                                                <View
+                                                    style={{
+                                                        flex: 1,
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        paddingVertical: 10,
+                                                    }}
+                                                >
+                                                    <TSpinner size={60} />
                                                 </View>
                                             ) : (
-                                                <View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            navigation.navigate('CreateEthereumKey', {
-                                                                requestType: 'createKey',
-                                                                request: null,
-                                                                transaction: null,
-                                                            });
-                                                        }}
-                                                    >
-                                                        <Text style={{ fontSize: 13 }}>Not connected</Text>
-                                                        <Text style={styles.generateKey}>Generate key</Text>
-                                                    </TouchableOpacity>
-                                                </View>
+                                                <>
+                                                    {accountData.account ? (
+                                                        <View style={styles.flexColEnd}>
+                                                            <View style={styles.flexRowCenter}>
+                                                                <Text style={{ fontSize: 15 }}>
+                                                                    {accountData.balance}
+                                                                </Text>
+                                                            </View>
+                                                            <Text style={styles.secondaryColor}>
+                                                                ${formatCurrencyValue(accountData.usdBalance ?? 0)}
+                                                            </Text>
+                                                        </View>
+                                                    ) : (
+                                                        <View>
+                                                            <TouchableOpacity
+                                                                onPress={() => {
+                                                                    navigation.navigate('CreateEthereumKey', {
+                                                                        requestType: 'createKey',
+                                                                        request: null,
+                                                                        transaction: null,
+                                                                    });
+                                                                }}
+                                                            >
+                                                                <Text style={{ fontSize: 13 }}>Not connected</Text>
+                                                                <Text style={styles.generateKey}>Generate key</Text>
+                                                            </TouchableOpacity>
+                                                        </View>
+                                                    )}
+                                                </>
                                             )}
                                         </View>
                                     </View>
@@ -194,8 +182,15 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                         })}
                     </View>
                 ) : (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <TSpinner />
+                    <View
+                        style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingVertical: 10,
+                        }}
+                    >
+                        <TSpinner size={60} />
                     </View>
                 )}
             </ScrollView>
