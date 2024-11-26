@@ -457,6 +457,7 @@ export interface ITransactionRequest {
 
 export interface ISession {
     web3wallet?: Web3Wallet;
+    receiveCh?: string;
     initialize(): Promise<void>;
     onQrScan(data: string): Promise<void>; // make this function static
     onLink(data: string): Promise<void>; // make this function static

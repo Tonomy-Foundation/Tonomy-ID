@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {
     AbiProvider,
     ResolvedSigningRequest,
@@ -27,12 +26,13 @@ import {
     AntelopeTransactionReceipt,
     getChainFromAntelopeChainId,
 } from '../chain/antelope';
-import { APIClient, PrivateKey } from '@wharfkit/antelope';
+import { APIClient, PrivateKey, Signature } from '@wharfkit/antelope';
 import ABICache from '@wharfkit/abicache';
 import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
 import { v4 as uuidv4 } from 'uuid';
+import WebSocket from 'react-native-websocket';
 
 import Debug from 'debug';
 
@@ -113,21 +113,21 @@ export class AntelopeLoginRequest implements ILoginRequest {
             if (!callbackParams) throw new Error('Callback URL is missing from the request');
 
             // Generate the identity proof signature
-            const publicKey = await (await this.privateKey.getPublicKey()).toString();
-            const receiveChUUID = uuidv4();
-            const forwarderAddress = 'https://pangea.web4.world';
+            const publicKey = await this.privateKey.getPublicKey();
+
+            console.log('publicKey', publicKey.toPublicKey(), publicKey.toString(), publicKey.toPublicKey().toString());
             const signature = await this.request.getIdentityProof(transaction.signatures[0]);
 
-            const receiveCh = `${forwarderAddress}/${receiveChUUID}`;
+            console.log('signature', signature.signature, signature.signature.toString());
 
             // Construct the payload
             const bodyObject = callbackParams.payload;
 
             bodyObject.account = account.getName();
-            bodyObject.link_key = publicKey;
-            bodyObject.proof = signature.toString();
+            bodyObject.link_key = publicKey.toPublicKey().toString();
+            bodyObject.proof = signature.signature.toString();
             bodyObject.chainId = chain.getChainId();
-            bodyObject.link_ch = receiveCh;
+            bodyObject.link_ch = this.session.receiveCh;
 
             const response = await fetch(callbackParams.url, {
                 method: 'POST',
@@ -140,6 +140,9 @@ export class AntelopeLoginRequest implements ILoginRequest {
             if (!response.ok || response.status !== 200) {
                 console.error(`Failed to send callback: ${JSON.stringify(response)}`);
             }
+
+            // Establish WebSocket connection after approval
+            this.session.onEvent();
         } catch (e) {
             console.error('Error approving transaction', e);
             await this.reject();
@@ -281,10 +284,21 @@ export class AntelopeSession extends AbstractSession {
     client: APIClient;
     publicKey: AntelopePublicKey;
     accountName: string;
+    initialized: boolean;
+    receiveCh: string;
+    ws: WebSocket;
 
     async initialize(): Promise<void> {
         debug('initialize()');
         await this.getAccountName();
+
+        if (!this.initialized) {
+            const forwarderAddress = 'https://cb.anchor.link';
+
+            this.receiveCh = `${forwarderAddress}/${uuidv4()}`;
+            console.log('receiveCh', this.receiveCh);
+            this.initialized = true;
+        }
     }
 
     async fromChain(chain: AntelopeChain): Promise<void> {
@@ -352,11 +366,57 @@ export class AntelopeSession extends AbstractSession {
     }
 
     async onEvent(): Promise<void> {
-        //TODO when implement listen antelope events
+        // Set up WebSocket connection
+        this.log('Connecting to WebSocket', this.receiveCh);
+        this.ws = new WebSocket(this.receiveCh);
+        this.ws.connect();
+        console.log('WebSocket', this.ws);
+        this.ws.on('open', () => {
+            this.log('WebSocket connection opened');
+        });
+
+        this.ws.onopen = () => {
+            this.log('WebSocket connection opened');
+        };
+
+        this.ws.on('SIGNER_SIGN_TRANSACTION', (data: any) => {
+            this.log('SIGNER_SIGN_TRANSACTION', data);
+        });
+        this.ws.on('SIGNER_SIGN_DIGEST', (data: any) => {
+            this.log('SIGNER_SIGN_DIGEST', data);
+        });
+
+        this.ws.on('message', (data: any) => {
+            this.log('message', data);
+        });
+
+        this.ws.onmessage = async (event: MessageEvent) => {
+            this.log('WebSocket message received', event);
+            const encryptedMessage = JSON.parse(event.data);
+
+            this.log('encryptedMessage', encryptedMessage);
+        };
+
+        this.ws.onclose = () => {
+            this.log('WebSocket connection closed');
+        };
+
+        this.ws.onerror = (error: Event) => {
+            this.logError('WebSocket error', error);
+        };
+    }
+
+    private log(...args: any[]): void {
+        // Replace with your logging mechanism
+        console.log(...args);
+    }
+
+    private logError(...args: any[]): void {
+        // Replace with your logging mechanism
+        console.error(...args);
     }
 
     async handleLoginRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
-        //TODO when implement handle identity request
         const callback = resolvedSigningRequest.request.data.callback;
         const loginApp = new LoginApp(this.chain.getName(), callback, this.chain.getLogoUrl(), [this.chain]);
         const account = AntelopeAccount.fromAccount(this.chain, this.accountName);
@@ -370,6 +430,9 @@ export class AntelopeSession extends AbstractSession {
         );
 
         this.navigateToLoginScreen(loginRequest);
+
+        // Establish WebSocket connection after login
+        this.onEvent();
     }
 
     async handleTransactionRequest(resolvedSigningRequest: ResolvedSigningRequest): Promise<void> {
