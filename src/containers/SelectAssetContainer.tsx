@@ -109,9 +109,8 @@ const SelectAssetContainer = ({
                                             {refreshBalance ? (
                                                 <View
                                                     style={{
-                                                        flex: 1,
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-end',
                                                         paddingVertical: 10,
                                                     }}
                                                 >
