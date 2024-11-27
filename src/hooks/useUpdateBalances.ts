@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { isNetworkError } from '../utils/errors';
 import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
@@ -6,21 +6,18 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const debug = Debug('tonomy-id:hooks:useUpdateBalances');
 
-const useUpdateBalances = () => {
+const useUpdateBalances = ({ fetchCryptoAssets, setRefreshBalance }) => {
     const { updateBalance } = useWalletStore();
 
     const isUpdatingBalances = useRef(false);
-    const [refreshBalance, setIsRefreshing] = useState(false);
-    const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
-        setAssetLoading(true);
         isUpdatingBalances.current = true;
 
         try {
-            console.log('useAsset: updateAllBalances()');
             await updateBalance();
+            await fetchCryptoAssets();
         } catch (error) {
             if (isNetworkError(error)) {
                 debug('useAsset: Error updating account detail due to network error');
@@ -29,31 +26,30 @@ const useUpdateBalances = () => {
             }
         } finally {
             isUpdatingBalances.current = false;
-            setAssetLoading(false);
         }
-    }, [updateBalance]);
+    }, [updateBalance, fetchCryptoAssets]);
 
     const onRefresh = useCallback(async () => {
-        setIsRefreshing(true);
+        setRefreshBalance(true);
 
         try {
             await updateAllBalances();
         } finally {
-            setIsRefreshing(false);
+            setRefreshBalance(false);
         }
-    }, [updateAllBalances]);
+    }, [updateAllBalances, setRefreshBalance]);
 
     useFocusEffect(
         useCallback(() => {
             updateAllBalances();
 
-            const interval = setInterval(updateAllBalances, 10000);
+            const interval = setInterval(updateAllBalances, 8000);
 
             return () => clearInterval(interval);
-        }, [])
+        }, [updateAllBalances])
     );
 
-    return { updateAllBalances, onRefresh, refreshBalance, isAssetLoading };
+    return { updateAllBalances, onRefresh };
 };
 
 export default useUpdateBalances;

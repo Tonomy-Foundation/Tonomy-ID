@@ -19,12 +19,23 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [total, setTotal] = useState<number>(0);
 
     const { developerMode } = useAppSettings();
-    const { accounts, loading, fetchCryptoAssets } = useAssets();
-    const { refreshBalance, onRefresh, updateAllBalances } = useUpdateBalances();
+    const [isAssetLoading, setAssetLoading] = useState(true);
+    const [refreshBalance, setRefreshBalance] = useState(false);
+    const [accounts, setAccounts] = useState<
+        { network: string; accountName: string; balance: string; usdBalance: number }[]
+    >([]);
+    const { fetchCryptoAssets } = useAssets({
+        setAccounts,
+        setAssetLoading,
+    });
+
+    const { updateAllBalances, onRefresh } = useUpdateBalances({
+        fetchCryptoAssets,
+        setRefreshBalance,
+    });
 
     const tokens = useMemo(() => tokenRegistry, []);
 
-    console.log('Accounts updated:', accounts);
     useEffect(() => {
         const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
             return previousValue + currentValue.usdBalance;
@@ -32,17 +43,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
         setTotal(totalAssetsUSDBalance);
     }, [accounts, updateAllBalances]);
-
-    useFocusEffect(
-        useCallback(() => {
-            const initializeAssets = async () => {
-                await fetchCryptoAssets();
-                await updateAllBalances();
-            };
-
-            initializeAssets();
-        }, [fetchCryptoAssets, updateAllBalances])
-    );
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
@@ -88,7 +88,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                         </TouchableOpacity>
                     </View>
                 </View>
-                {!loading ? (
+                {!isAssetLoading ? (
                     <View style={styles.scrollContent}>
                         {tokens.map((chainObj, index) => {
                             const chainName = capitalizeFirstLetter(chainObj.chain.getName());

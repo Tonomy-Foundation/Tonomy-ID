@@ -9,19 +9,13 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const debug = Debug('tonomy-id:hooks:useAssets');
 
-const useCryptoAssets = () => {
+const useCryptoAssets = ({ setAccounts, setAssetLoading }) => {
     const { accountsInitialized, initializeWalletAccount } = useWalletStore();
     const { user } = useUserStore();
 
     const tokens = useMemo(() => tokenRegistry, []);
 
-    const [accounts, setAccounts] = useState<
-        { network: string; accountName: string; balance: string; usdBalance: number }[]
-    >([]);
-    const [loading, setLoading] = useState(false);
-
     const fetchCryptoAssets = useCallback(async () => {
-        setLoading(true);
         console.log('useCryptoAssets: fetchCryptoAssets()');
 
         try {
@@ -33,7 +27,7 @@ const useCryptoAssets = () => {
                 try {
                     const asset = await assetStorage.findAssetByName(token);
 
-                    console.log(
+                    debug(
                         `fetchCryptoAssets() fetching asset ${chain.getName()}: ${asset?.accountName}-${asset?.balance}`
                     );
                     let account;
@@ -75,18 +69,16 @@ const useCryptoAssets = () => {
             }
         } catch (fetchError) {
             console.error('Error fetching crypto assets:', fetchError);
-        } finally {
-            setLoading(false);
         }
-    }, [initializeWalletAccount, tokens, user, accountsInitialized]);
+    }, [initializeWalletAccount, tokens, user, accountsInitialized, setAccounts]);
 
     useFocusEffect(
         useCallback(() => {
-            fetchCryptoAssets();
-        }, [])
+            fetchCryptoAssets().then(() => setAssetLoading(false));
+        }, [fetchCryptoAssets, setAssetLoading])
     );
 
-    return { accounts, fetchCryptoAssets, loading };
+    return { fetchCryptoAssets };
 };
 
 export default useCryptoAssets;
