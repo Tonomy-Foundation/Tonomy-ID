@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import useWalletStore from '../store/useWalletStore';
@@ -9,7 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const debug = Debug('tonomy-id:hooks:useAssets');
 
-const useCryptoAssets = ({ setAccounts, setAssetLoading }) => {
+const useFetchCrytpoAccount = ({ setAccounts, setAssetLoading }) => {
     const { accountsInitialized, initializeWalletAccount } = useWalletStore();
     const { user } = useUserStore();
 
@@ -79,4 +79,4 @@ const useCryptoAssets = ({ setAccounts, setAssetLoading }) => {
     return { fetchCryptoAssets };
 };
 
-export default useCryptoAssets;
+export default useFetchCrytpoAccount;

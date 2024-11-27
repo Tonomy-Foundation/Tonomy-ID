@@ -9,8 +9,7 @@ import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
-import useAssets from '../hooks/useAssets';
-import useUpdateBalances from '../hooks/useUpdateBalances';
+import useAssetManager from '../hooks/useAssetManager';
 
 const debug = Debug('tonomy-id:containers:AssetsContainer');
 
@@ -18,20 +17,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     const [total, setTotal] = useState<number>(0);
 
     const { developerMode } = useAppSettings();
-    const [isAssetLoading, setAssetLoading] = useState(true);
-    const [refreshBalance, setRefreshBalance] = useState(false);
-    const [accounts, setAccounts] = useState<
-        { network: string; accountName: string; balance: string; usdBalance: number }[]
-    >([]);
-    const { fetchCryptoAssets } = useAssets({
-        setAccounts,
-        setAssetLoading,
-    });
-
-    const { updateAllBalances, onRefresh } = useUpdateBalances({
-        fetchCryptoAssets,
-        setRefreshBalance,
-    });
+    const { isAssetLoading, accounts, onRefresh, refreshBalance } = useAssetManager();
 
     const tokens = useMemo(() => tokenRegistry, []);
 
@@ -41,7 +27,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         }, 0);
 
         setTotal(totalAssetsUSDBalance);
-    }, [accounts, updateAllBalances]);
+    }, [accounts]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);

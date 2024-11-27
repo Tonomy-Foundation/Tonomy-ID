@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { isNetworkError } from '../utils/errors';
 import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
