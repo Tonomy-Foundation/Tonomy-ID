@@ -1,13 +1,14 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, RefreshControl } from 'react-native';
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
+import { useMemo } from 'react';
 import { capitalizeFirstLetter } from '../utils/strings';
 import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { TokenRegistryEntry, getKeyOrNullFromChain, tokenRegistry } from '../utils/tokenRegistry';
 import useAppSettings from '../hooks/useAppSettings';
+import useAssetManager from '../hooks/useAssetManager';
+import TSpinner from '../components/atoms/TSpinner';
 
 const debug = Debug('tonomy-id:containers:MainContainer');
 
@@ -18,68 +19,11 @@ const SelectAssetContainer = ({
     navigation: SelectAssetScreenNavigationProp['navigation'];
     type: string;
 }) => {
-    const [accounts, setAccounts] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
-    >([]);
+    const { isAssetLoading, accounts, onRefresh, refreshBalance } = useAssetManager();
 
     const { developerMode } = useAppSettings();
 
     const tokens = useMemo(() => tokenRegistry, []);
-
-    const fetchCryptoAssets = useCallback(async () => {
-        try {
-            await connect();
-
-            for (const { chain, token } of tokens) {
-                const asset = await assetStorage.findAssetByName(token);
-
-                debug(`fetchCryptoAssets() fetching asset for ${chain.getName()}`);
-                let account;
-
-                if (asset) {
-                    account = {
-                        network: capitalizeFirstLetter(chain.getName()),
-                        accountName: asset.accountName,
-                        balance: asset.balance,
-                        usdBalance: asset.usdBalance,
-                    };
-                } else {
-                    account = {
-                        network: capitalizeFirstLetter(chain.getName()),
-                        accountName: null,
-                        balance: '0',
-                        usdBalance: 0,
-                    };
-                }
-
-                setAccounts((prevAccounts) => {
-                    // find index of the account in the array
-                    const index = prevAccounts.findIndex((acc) => acc.network === account.network);
-
-                    if (index !== -1) {
-                        // Update the existing asset
-                        const updatedAccounts = [...prevAccounts];
-
-                        updatedAccounts[index] = account;
-                        return updatedAccounts;
-                    } else {
-                        // Add the new asset
-                        return [...prevAccounts, account];
-                    }
-                });
-            }
-        } catch (error) {
-            debug('fetchCryptoAssets() error', error);
-        }
-    }, [tokens]);
-
-    useEffect(() => {
-        fetchCryptoAssets();
-
-        const interval = setInterval(fetchCryptoAssets, 10000);
-
-        return () => clearInterval(interval);
-    }, [fetchCryptoAssets]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
@@ -115,62 +59,90 @@ const SelectAssetContainer = ({
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                <ScrollView
+                    contentContainerStyle={styles.scrollViewContent}
+                    refreshControl={<RefreshControl refreshing={refreshBalance} onRefresh={onRefresh} />}
+                >
                     <Text style={styles.screenTitle}>select a currency to {type}</Text>
-                    <View style={{ marginTop: 20, flexDirection: 'column', gap: 14 }}>
-                        {tokens.map((chainObj, index) => {
-                            const chainName = capitalizeFirstLetter(chainObj.chain.getName());
+                    {!isAssetLoading ? (
+                        <View style={{ marginTop: 20, flexDirection: 'column', gap: 14 }}>
+                            {tokens.map((chainObj, index) => {
+                                const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
-                            const accountData = findAccountByChain(chainName);
+                                const accountData = findAccountByChain(chainName);
 
-                            if (chainObj.chain.isTestnet() && !developerMode) {
-                                return null;
-                            }
+                                if (chainObj.chain.isTestnet() && !developerMode) {
+                                    return null;
+                                }
 
-                            return (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={styles.assetsView}
-                                    onPress={() => handleOnPress(chainObj)}
-                                >
-                                    <Image
-                                        source={{ uri: chainObj.token.getLogoUrl() }}
-                                        style={[styles.favicon, { resizeMode: 'contain' }]}
-                                    />
-                                    <View style={styles.assetContent}>
-                                        <View style={styles.flexRowCenter}>
+                                return (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={styles.assetsView}
+                                        onPress={() => handleOnPress(chainObj)}
+                                    >
+                                        <Image
+                                            source={{ uri: chainObj.token.getLogoUrl() }}
+                                            style={[styles.favicon, { resizeMode: 'contain' }]}
+                                        />
+                                        <View style={styles.assetContent}>
                                             <View style={styles.flexRowCenter}>
-                                                <Text style={{ fontSize: 16 }}>{chainObj.token.getSymbol()}</Text>
-                                                <View style={styles.assetsNetwork}>
-                                                    <Text style={{ fontSize: 12 }}> {chainName}</Text>
+                                                <View style={styles.flexRowCenter}>
+                                                    <Text style={{ fontSize: 16 }}>{chainObj.token.getSymbol()}</Text>
+                                                    <View style={styles.assetsNetwork}>
+                                                        <Text style={{ fontSize: 12 }}> {chainName}</Text>
+                                                    </View>
                                                 </View>
+                                                {chainObj.chain.isTestnet() && (
+                                                    <View style={styles.assetsTestnetNetwork}>
+                                                        <Text
+                                                            style={{
+                                                                fontSize: 10,
+                                                                color: theme.colors.white,
+                                                            }}
+                                                        >
+                                                            Testnet
+                                                        </Text>
+                                                    </View>
+                                                )}
                                             </View>
-                                            {chainObj.chain.isTestnet() && (
-                                                <View style={styles.assetsTestnetNetwork}>
-                                                    <Text
-                                                        style={{
-                                                            fontSize: 10,
-                                                            color: theme.colors.white,
-                                                        }}
-                                                    >
-                                                        Testnet
+                                            {refreshBalance ? (
+                                                <View
+                                                    style={{
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-end',
+                                                        paddingVertical: 10,
+                                                    }}
+                                                >
+                                                    <TSpinner size={60} />
+                                                </View>
+                                            ) : (
+                                                <View style={styles.flexColEnd}>
+                                                    <View style={styles.rowCenter}>
+                                                        <Text style={{ fontSize: 16 }}>{accountData.balance}</Text>
+                                                    </View>
+                                                    <Text style={styles.secondaryColor}>
+                                                        ${formatCurrencyValue(accountData.usdBalance ?? 0)}
                                                     </Text>
                                                 </View>
                                             )}
                                         </View>
-                                        <View style={styles.flexColEnd}>
-                                            <View style={styles.rowCenter}>
-                                                <Text style={{ fontSize: 16 }}>{accountData.balance}</Text>
-                                            </View>
-                                            <Text style={styles.secondaryColor}>
-                                                ${formatCurrencyValue(accountData.usdBalance ?? 0)}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    ) : (
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                paddingVertical: 10,
+                            }}
+                        >
+                            <TSpinner size={60} />
+                        </View>
+                    )}
                 </ScrollView>
             </View>
         </View>

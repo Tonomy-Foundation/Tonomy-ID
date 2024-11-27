@@ -183,6 +183,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                             const { token } = await getTokenEntryByChain(chain);
                             const balance = await token.getBalance(account);
 
+                            debug(`updateBalance() ${chain.getName()} balance:`, await balance.toString(4));
                             await assetStorage.updateAccountBalance(balance);
                         } catch (error) {
                             console.error(`updateBalance() Error fetching balance ${chain.getName()}:`, error);
