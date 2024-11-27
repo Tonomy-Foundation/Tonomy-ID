@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
@@ -11,7 +11,6 @@ import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
 import useAssets from '../hooks/useAssets';
 import useUpdateBalances from '../hooks/useUpdateBalances';
-import { useFocusEffect } from '@react-navigation/native';
 
 const debug = Debug('tonomy-id:containers:AssetsContainer');
 

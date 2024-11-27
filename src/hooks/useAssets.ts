@@ -16,8 +16,6 @@ const useCryptoAssets = ({ setAccounts, setAssetLoading }) => {
     const tokens = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
-        console.log('useCryptoAssets: fetchCryptoAssets()');
-
         try {
             // Ensure accounts are initialized
             if (!accountsInitialized) await initializeWalletAccount(user);
