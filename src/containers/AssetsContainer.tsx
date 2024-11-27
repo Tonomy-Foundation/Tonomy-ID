@@ -195,10 +195,15 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 <TouchableOpacity
                                     key={index}
                                     onPress={() => {
-                                        navigation.navigate('AssetDetail', {
-                                            screenTitle: chainName,
-                                            chain: chainObj.chain,
-                                        });
+                                        if (chainObj.token.getSymbol() === 'LEOS') {
+                                            navigation.navigate('LeosAssetManager');
+                                            return;
+                                        } else {
+                                            navigation.navigate('AssetDetail', {
+                                                screenTitle: chainName,
+                                                chain: chainObj.chain,
+                                            });
+                                        }
                                     }}
                                     style={styles.assetsView}
                                 >
@@ -329,14 +334,7 @@ const styles = StyleSheet.create({
     scrollView: {
         marginRight: -20,
     },
-    appDialog: {
-        backgroundColor: theme.colors.lightBg,
-        borderStyle: 'solid',
-        borderRadius: 7,
-        padding: 10,
-        width: '100%',
-        marginTop: 5,
-    },
+
     networkTitle: {
         color: theme.colors.secondary2,
         fontSize: 12,
