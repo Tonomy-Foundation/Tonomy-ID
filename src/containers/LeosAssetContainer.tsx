@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight } from 'iconoir-react-native';
@@ -11,7 +11,6 @@ const LeosAssetContainer = ({ navigation }: AssetDetailProps) => {
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total assets</Text>
-            {/* <Image source={require('../assets/images/vesting/bg1.png')} resizeMode="cover" /> */}
             <ImageBackground
                 source={require('../assets/images/vesting/bg1.png')}
                 style={styles.imageBackground}
@@ -77,15 +76,15 @@ const styles = StyleSheet.create({
 
     textContainer: {
         flex: 1,
-        justifyContent: 'center', // Centers the text vertically
-        alignItems: 'center', // Centers the text horizontally
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     text: {
         fontSize: 22,
         color: 'black',
         fontWeight: 'bold',
-        textAlign: 'center', // Ensures text alignment for multi-line text
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional background for better text visibility
+        textAlign: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: 35,
         borderRadius: 10,
     },
