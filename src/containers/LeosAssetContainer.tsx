@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight } from 'iconoir-react-native';
@@ -10,17 +10,18 @@ export type AssetDetailProps = {
 const LeosAssetContainer = ({ navigation }: AssetDetailProps) => {
     return (
         <View style={styles.container}>
-            {/* <ImageBackground
-                source={{ uri: 'https://example.com/your-image.jpg' }} // Replace with your image URL or local asset
+            <Text style={styles.subTitle}>Total assets</Text>
+            {/* <Image source={require('../assets/images/vesting/bg1.png')} resizeMode="cover" /> */}
+            <ImageBackground
+                source={require('../assets/images/vesting/bg1.png')}
                 style={styles.imageBackground}
+                imageStyle={{ borderRadius: 10 }}
                 resizeMode="cover"
             >
-                <View style={styles.textContainer}>
-                    <Text style={styles.text}>Welcome to React Native!</Text>
-                </View>
-            </ImageBackground> */}
-            <Text style={styles.subTitle}>Total assets</Text>
-
+                <Text style={styles.imageNetworkText}>Pangea Network</Text>
+                <Text style={styles.imageText}>69,023.35 LEOS</Text>
+                <Text style={styles.imageUsdText}>= $3273.1</Text>
+            </ImageBackground>
             <Text style={styles.subTitle}>Available assets</Text>
 
             <View style={styles.availableAssetView}>
@@ -71,17 +72,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        margin: 15,
+        marginHorizontal: 15,
     },
-    imageBackground: {
-        width: '100%',
-        height: '10%', // Adjust the height of the section as needed
-    },
-    overlay: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for text visibility
-        padding: 10,
-        borderRadius: 5,
-    },
+
     textContainer: {
         flex: 1,
         justifyContent: 'center', // Centers the text vertically
@@ -159,6 +152,30 @@ const styles = StyleSheet.create({
     flexColEnd: {
         flexDirection: 'column',
         alignItems: 'flex-end',
+    },
+    imageBackground: {
+        width: '100%',
+        height: 170,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+    },
+    imageText: {
+        color: theme.colors.white,
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    imageUsdText: {
+        color: theme.colors.white,
+        fontSize: 15,
+        fontWeight: '500',
+    },
+    imageNetworkText: {
+        color: theme.colors.white,
+        fontSize: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        padding: 4,
+        borderRadius: 5,
     },
 });
 
