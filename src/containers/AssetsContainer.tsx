@@ -98,7 +98,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             debug('updateAllBalances()');
             await updateBalance();
             await fetchCryptoAssets();
-            setAssetLoading(false);
         } catch (error) {
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
@@ -119,10 +118,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         }
     }, [updateAllBalances]);
 
-    // updateAllBalances() on mount and every 20 seconds
     useEffect(() => {
-        updateAllBalances();
+        fetchCryptoAssets().then(() => setAssetLoading(false));
+    }, [fetchCryptoAssets, setAssetLoading]);
 
+    useEffect(() => {
         const interval = setInterval(updateAllBalances, 10000);
 
         return () => clearInterval(interval);
