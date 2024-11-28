@@ -123,7 +123,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
     }, [fetchCryptoAssets, setAssetLoading]);
 
     useEffect(() => {
-        const interval = setInterval(updateAllBalances, 10000);
+        const interval = setInterval(updateAllBalances, 8000);
 
         return () => clearInterval(interval);
     }, [updateAllBalances]);
