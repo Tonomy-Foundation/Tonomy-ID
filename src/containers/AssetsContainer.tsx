@@ -38,7 +38,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            if (!accountsInitialized) await initializeWalletAccount(user);
+            if (!accountsInitialized) {
+                await initializeWalletAccount(user);
+                await updateBalance();
+            }
+
             await connect();
 
             for (const { chain, token } of tokens) {
@@ -88,7 +92,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         } catch (error) {
             console.error('fetchCryptoAssets() error', error);
         }
-    }, [accountsInitialized, initializeWalletAccount, tokens, user]);
+    }, [accountsInitialized, initializeWalletAccount, tokens, user, updateBalance]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -98,6 +102,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             debug('updateAllBalances()');
             await updateBalance();
             await fetchCryptoAssets();
+            setAssetLoading(false);
         } catch (error) {
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
@@ -118,12 +123,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         }
     }, [updateAllBalances]);
 
+    // updateAllBalances() on mount and every 20 seconds
     useEffect(() => {
-        fetchCryptoAssets().then(() => setAssetLoading(false));
-    }, [fetchCryptoAssets, setAssetLoading]);
+        updateAllBalances();
 
-    useEffect(() => {
-        const interval = setInterval(updateAllBalances, 8000);
+        const interval = setInterval(updateAllBalances, 10000);
 
         return () => clearInterval(interval);
     }, [updateAllBalances]);
@@ -195,10 +199,15 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 <TouchableOpacity
                                     key={index}
                                     onPress={() => {
-                                        navigation.navigate('AssetDetail', {
-                                            screenTitle: chainName,
-                                            chain: chainObj.chain,
-                                        });
+                                        if (chainObj.token.getSymbol() === 'LEOS') {
+                                            navigation.navigate('LeosAssetManager');
+                                            return;
+                                        } else {
+                                            navigation.navigate('AssetDetail', {
+                                                screenTitle: chainName,
+                                                chain: chainObj.chain,
+                                            });
+                                        }
                                     }}
                                     style={styles.assetsView}
                                 >
