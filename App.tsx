@@ -15,7 +15,7 @@ import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
-import * as Sentry from '@sentry/react-native';
+import { wrap } from '@sentry/react-native';
 
 import './src/utils/sentry';
 
@@ -40,4 +40,4 @@ function App() {
     );
 }
 
-export default Sentry.wrap(App);
+export default wrap(App);
