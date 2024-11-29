@@ -1,17 +1,16 @@
-import { init, Native } from 'sentry-expo';
+import { init } from '@sentry/react-native';
 import settings from '../settings';
 
 init({
     dsn: `https://${settings.config.sentryPublicKey}@${settings.config.sentrySecretKey}.ingest.de.sentry.io/${settings.config.sentryProjectId}`,
-    enableInExpoDevelopment: false,
-    debug: !settings.isProduction(),
+    debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
 });
 
 export function logError(message: string, error: Error) {
     if (settings.isProduction()) {
         Native.captureException(error);
     } else {
-        console.log(message + ': verbose error', JSON.stringify(error, null, 2));
+        console.log('Error:' + message + ': ', error, '\n', JSON.stringify(error, null, 2));
     }
 
     console.error(message, error);
