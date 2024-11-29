@@ -185,7 +185,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                             await assetStorage.updateAccountBalance(balance);
                         } catch (error) {
-                            console.error(`updateBalance() Error fetching balance ${chain.getName()}:`, error);
+                            if (isNetworkError(error)) {
+                                debug(`updateBalance() Network error fetching balance ${chain.getName()}`);
+                            } else {
+                                console.error(`updateBalance() Error fetching balance ${chain.getName()}:`, error);
+                            }
                         }
                     } catch (error) {
                         console.error(`updateBalance() Error updating balance:`, error);
