@@ -1,5 +1,8 @@
 import { init, captureException } from '@sentry/react-native';
 import settings from '../settings';
+import Debug from 'debug';
+
+const debug = new Debug('tonomy-id:utils:sentry');
 
 init({
     dsn: `https://${settings.config.sentryPublicKey}@${settings.config.sentrySecretKey}.ingest.de.sentry.io/${settings.config.sentryProjectId}`,
@@ -9,6 +12,7 @@ init({
 export function logError(message: string, error: Error) {
     if (settings.isProduction()) {
         // TODO: attach last 100 debug logs to the error
+        console.log('Sending error to sentry');
         captureException(error);
     } else {
         console.log('Error: ' + message + ': ', error, '\n', JSON.stringify(error, null, 2));

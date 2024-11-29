@@ -24,6 +24,7 @@ jobs:
       EXPO_PLATFORM: android
       NODE_VERSION: 22.3.0
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      SENTRY_AUTH_TOKEN : ${{ secrets.SENTRY_AUTH_TOKEN }}
       # https://expo.dev/accounts/[account]/settings/access-tokens
     container:
       image: cimg/android:2024.01-ndk
