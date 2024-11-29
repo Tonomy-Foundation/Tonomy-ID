@@ -1,7 +1,7 @@
 {
     "theme": {
         "primaryColor": "#000000",
-        "primaryColor2": "#939393",
+        "disabled": "#939393",
         "secondaryColor": "#4CAF50",
         "secondaryColor2": "#6E84A3",
         "tertiaryColor": "#7660E7",
@@ -13,7 +13,7 @@
         "lightBackground": "#F6F9FB"
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
-    "appName": "Pangea Testnet",
+    "appName":"Pangea Testnet",
     "ecosystemName": "Pangea Testnet",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {

@@ -1,7 +1,7 @@
 {
     "theme": {
         "primaryColor": "#67D7ED",
-        "primaryColor2": "#D2F3FA",
+        "disabled": "#D2F3FA",
         "secondaryColor": "#FF505F",
         "secondaryColor2": "#6E84A3",
         "tertiaryColor": "#7660E7",

@@ -1,28 +1,21 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView, Linking } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import {
-    IChainSession,
-    IOperation,
-    IPrivateKey,
-    ITransaction,
-    ITransactionReceipt,
-    TransactionType,
-} from '../utils/chain/types';
+import { IOperation, PlatformType, ITransactionRequest, TransactionType, ChainType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
-
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import { ResolvedSigningRequest } from '@wharfkit/signing-request';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
+import { Images } from '../assets';
+import settings from '../settings';
+import useAppSettings from '../hooks/useAppSettings';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -30,23 +23,21 @@ type TransactionTotalData = {
     total: string;
     totalUsd: string;
     balanceError: boolean;
+    show: boolean;
 };
 
 export default function SignTransactionConsentContainer({
     navigation,
-    transaction,
-    privateKey,
-    origin,
     request,
-    session,
 }: {
     navigation: Props['navigation'];
-    transaction: ITransaction;
-    privateKey: IPrivateKey;
-    origin: string;
-    request: Web3WalletTypes.SessionRequest | ResolvedSigningRequest | null;
-    session: IChainSession | null;
+    request: ITransactionRequest;
 }) {
+    const { transaction } = request;
+
+    const [expired, setExpired] = useState(false);
+    const [remainingTime, setRemainingTime] = useState('00:00');
+
     const errorStore = useErrorStore();
     const [transactionLoading, setTransactionLoading] = useState(true);
     const [operations, setOperations] = useState<OperationData[] | null>(null);
@@ -55,12 +46,14 @@ export default function SignTransactionConsentContainer({
     const [transactionTotalData, setTransactionTotalData] = useState<TransactionTotalData | null>(null);
     const topUpBalance = useRef<{ open: () => void; close: () => void }>(null);
 
-    const chain = transaction.getChain();
+    const chain = request.transaction.getChain();
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
+    const origin = request.getOrigin();
     const hostname = origin ? extractHostname(origin) : null;
     const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
+    const { developerMode } = useAppSettings();
 
     const getOperationData = useCallback(
         async (operation: IOperation) => {
@@ -122,17 +115,26 @@ export default function SignTransactionConsentContainer({
     }, [transaction, getOperationData]);
 
     const fetchTransactionFee = useCallback(async () => {
-        const fee = await transaction.estimateTransactionFee();
+        const fee = await request.transaction.estimateTransactionFee();
         const usdFee = await fee.getUsdValue();
-        const transactionFee = { fee: fee.toString(4), usdFee: formatCurrencyValue(usdFee, 2) };
+
+        const transactionFee: TransactionFeeData = {
+            fee: fee.toString(4),
+            usdFee: formatCurrencyValue(usdFee, 2),
+            show: true,
+        };
+
+        if (request.account && request.transaction.getExpiration()) {
+            transactionFee.show = false;
+        }
 
         setTransactionFeeData(transactionFee);
         debug('fetchTransactionFee() done', transactionFee);
-    }, [transaction]);
+    }, [request]);
 
     const fetchTransactionTotal = useCallback(async () => {
-        const account = await transaction.getFrom();
-        const total = await transaction.estimateTransactionTotal();
+        const account = await request.transaction.getFrom();
+        const total = await request.transaction.estimateTransactionTotal();
         const usdTotal = await total.getUsdValue();
         let balanceError = false;
 
@@ -143,14 +145,19 @@ export default function SignTransactionConsentContainer({
         }
 
         const transactionTotal = {
+            show: true,
             total: total.toString(4),
             totalUsd: formatCurrencyValue(usdTotal, 2),
             balanceError,
         };
 
+        if (request.account && request.transaction.getExpiration()) {
+            transactionTotal.show = false;
+        }
+
         setTransactionTotalData(transactionTotal);
         debug('fetchTransactionTotal() done', transactionTotal);
-    }, [transaction]);
+    }, [request]);
 
     useEffect(() => {
         async function fetchTransactionData() {
@@ -177,12 +184,10 @@ export default function SignTransactionConsentContainer({
     }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
 
     async function onReject() {
-        if (session) {
-            setTransactionLoading(true);
-            await session.rejectTransactionRequest(request);
-            setTransactionLoading(false);
-        }
+        setTransactionLoading(true);
 
+        await request.reject();
+        setTransactionLoading(false);
         navigation.navigate('Assets');
     }
 
@@ -190,30 +195,14 @@ export default function SignTransactionConsentContainer({
         try {
             setTransactionLoading(true);
             if (!operations) throw new Error('Operations not loaded');
-            let receipt: ITransactionReceipt;
-
-            if (session) {
-                const transactionRequest = await session.createTransactionRequest(transaction);
-
-                receipt = await privateKey.sendTransaction(transactionRequest);
-
-                await session.approveTransactionRequest(request, receipt);
-            } else {
-                const transactionRequest = {
-                    to: (await transaction.getTo()).getName(),
-                    from: (await transaction.getFrom()).getName(),
-                    value: (await transaction.getValue()).getAmount(),
-                    data: ((await transaction.getData()) as { data: string }).data,
-                };
-
-                receipt = await privateKey.sendTransaction(transactionRequest);
-            }
+            const receipt = await request.approve();
 
             navigation.navigate('SignTransactionSuccess', {
                 operations,
                 transaction,
                 receipt,
             });
+
             setTransactionLoading(false);
         } catch (error) {
             setTransactionLoading(false);
@@ -224,9 +213,7 @@ export default function SignTransactionConsentContainer({
                     error: new Error('You do not have enough coins to complete this transaction.'),
                     expected: true,
                 });
-            }
-
-            if (
+            } else if (
                 error instanceof ApplicationError &&
                 error?.code === ApplicationErrors.IncorrectTransactionAuthorization
             ) {
@@ -246,57 +233,84 @@ export default function SignTransactionConsentContainer({
                 navigation.navigate('Assets');
             }
 
-            if (session) {
-                await session.rejectTransactionRequest(request);
+            navigation.navigate('Assets');
+
+            if (request.session) {
+                await request.reject();
             }
         }
     }
+
+    const renderSignTransactionOriginDetails = () => {
+        const origin = request.getOrigin();
+        const showLogo = origin ? chain.getNativeToken().getLogoUrl() : Images.GetImage('logo1024');
+        const appName = origin ? topLevelHostname : settings.config.appName;
+
+        if (!origin && request.session) {
+            return (
+                <View style={styles.sandingMain}>
+                    <Text style={[styles.sandingTitle, { textAlign: 'center' }]}>
+                        A third-party app wants you to sign a transaction
+                    </Text>
+                </View>
+            );
+        }
+
+        return (
+            <>
+                {!origin && !request.session ? (
+                    <Image style={[styles.logo, commonStyles.marginBottom]} source={showLogo} />
+                ) : (
+                    <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
+                )}
+                <View style={commonStyles.alignItemsCenter}>
+                    <Text style={styles.applinkText}>{appName}</Text>
+                    <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
+                </View>
+            </>
+        );
+    };
+
+    useEffect(() => {
+        const expiration =
+            request.transaction.getExpiration() && request.account ? request.transaction.getExpiration() : null;
+        const intervalId = setInterval(() => {
+            if (!expiration) {
+                clearInterval(intervalId);
+                return;
+            }
+            const now = new Date().getTime();
+            const expirationTime = expiration.getTime();
+            const timeDiff = expirationTime - now;
+            if (timeDiff <= 0) {
+                setRemainingTime('00:00');
+                setExpired(true);
+                clearInterval(intervalId);
+            } else {
+                const minutes = Math.floor(timeDiff / 1000 / 60);
+                const seconds = Math.floor((timeDiff / 1000) % 60);
+                setRemainingTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+            }
+        }, 1000);
+        return () => clearInterval(intervalId);
+    }, [request]);
+
+    const renderExpirationTimer = () => {
+        return !expired && request.account && transaction.getExpiration() ? (
+            <View style={styles.expirationContainer}>
+                <Text>Expiration time</Text>
+                <Text>{remainingTime}</Text>
+            </View>
+        ) : null;
+    };
 
     return (
         <LayoutComponent
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        {origin ? (
-                            <>
-                                <Image
-                                    style={[styles.logo, commonStyles.marginBottom]}
-                                    source={{ uri: chain.getNativeToken().getLogoUrl() }}
-                                ></Image>
-                                <View style={commonStyles.alignItemsCenter}>
-                                    <Text style={styles.applinkText}>{topLevelHostname}</Text>
-                                    <Text style={{ marginLeft: 6, fontSize: 19 }}>wants you to sign a transaction</Text>
-                                </View>
-                            </>
-                        ) : (
-                            <View style={styles.sandingMain}>
-                                <Text style={styles.sandingTitle}>You are sending </Text>
-                                {operations && (
-                                    <View style={styles.sandingContent}>
-                                        <Text
-                                            style={{
-                                                fontSize: 24,
-                                                fontWeight: '600',
-                                                ...commonStyles.primaryFontFamily,
-                                            }}
-                                        >
-                                            {operations[0].amount
-                                                ? parseFloat(operations[0].amount).toFixed(4)
-                                                : '0.0000'}
-                                        </Text>
-                                        <Text
-                                            style={[
-                                                styles.secondaryColor,
-                                                commonStyles.secondaryFontFamily,
-                                                { fontSize: 22 },
-                                            ]}
-                                        >
-                                            (${operations[0].usdValue})
-                                        </Text>
-                                    </View>
-                                )}
-                            </View>
-                        )}
+                        {renderExpirationTimer()}
+                        {renderSignTransactionOriginDetails()}
                         <View style={styles.networkHeading}>
                             <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                             <Text style={styles.nameText}>{chainName} Network</Text>
@@ -310,6 +324,7 @@ export default function SignTransactionConsentContainer({
                         {!transactionTotalData && <TSpinner />}
                         {transactionTotalData && (
                             <TransactionTotal
+                                symbol={chainSymbol}
                                 transactionTotal={transactionTotalData}
                                 onTopUp={() => {
                                     topUpBalance?.current?.open();
@@ -329,18 +344,52 @@ export default function SignTransactionConsentContainer({
                             onClose={() => topUpBalance?.current?.close()}
                         />
                     )}
+                    {(operations?.[0]?.contractName === 'eosio' || operations?.[0]?.contractName === 'tonomy') && (
+                        <View style={{ marginTop: 16 }}>
+                            {developerMode ? (
+                                <View style={styles.developerModeOffView}>
+                                    <Text style={styles.developerModeTitle}>Warning: This is a dangerous action</Text>
+                                    <Text style={styles.developerModeContent}>
+                                        Only sign the transaction if you understand the effect it will have on your
+                                        account.
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View style={styles.developerModeOnView}>
+                                    <Text style={styles.developerModeTitle}>Blocked due to a security risk</Text>
+                                    <Text style={styles.developerModeContent}>
+                                        Enable developer mode in settings and to sign this transaction.
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    )}
                 </ScrollView>
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained
-                        disabled={transactionLoading}
-                        onPress={() => onAccept()}
-                        style={commonStyles.marginBottom}
-                        size="large"
-                    >
-                        Sign Transaction
-                    </TButtonContained>
+                    {expired && chain.getChainType() === ChainType.ANTELOPE && (
+                        <View style={styles.transactionExpiredView}>
+                            <Text style={styles.transactionExpiredText}>The transaction time has expired</Text>
+                            <Text>Please restart the transaction and try again.</Text>
+                        </View>
+                    )}
+                    {!expired && (
+                        <TButtonContained
+                            disabled={
+                                transactionLoading ||
+                                transactionTotalData?.balanceError ||
+                                ((operations?.[0]?.contractName === 'eosio' ||
+                                    operations?.[0]?.contractName === 'tonomy') &&
+                                    !developerMode)
+                            }
+                            onPress={() => onAccept()}
+                            style={commonStyles.marginBottom}
+                            size="large"
+                        >
+                            Sign Transaction
+                        </TButtonContained>
+                    )}
                     <TButtonOutlined size="large" disabled={transactionLoading} onPress={() => onReject()}>
                         Cancel
                     </TButtonOutlined>
@@ -356,37 +405,48 @@ function TransactionAccount({ accountName }: { accountName: string }) {
 }
 
 function TransactionTotal({
+    symbol,
     transactionTotal,
     onTopUp,
 }: {
+    symbol: string;
     transactionTotal: TransactionTotalData;
     onTopUp: () => void;
 }) {
+    if (!transactionTotal.show) {
+        return null;
+    }
     return (
-        <View
-            style={[
-                styles.totalSection,
-                {
-                    backgroundColor: transactionTotal.balanceError ? theme.colors.errorBackground : theme.colors.info,
-                },
-            ]}
-        >
-            <View style={styles.totalView}>
-                <Text style={styles.totalTitle}>Total</Text>
-                <View style={styles.totalContentView}>
-                    <Text style={styles.totalContent}>{transactionTotal.total}</Text>
-                    <Text style={styles.secondaryColor}>(${transactionTotal.totalUsd})</Text>
+        <>
+            <View
+                style={[
+                    styles.totalSection,
+                    {
+                        backgroundColor: transactionTotal.balanceError
+                            ? theme.colors.errorBackground
+                            : theme.colors.info,
+                    },
+                ]}
+            >
+                <View style={styles.totalView}>
+                    <Text style={styles.totalTitle}>Total</Text>
+                    <View style={styles.totalContentView}>
+                        <Text style={styles.totalContent}>{transactionTotal.total}</Text>
+                        <Text style={styles.secondaryColor}>(${transactionTotal.totalUsd})</Text>
+                    </View>
                 </View>
-                {transactionTotal.balanceError && <Text style={styles.balanceError}>Not enough balance</Text>}
+                {transactionTotal.balanceError && (
+                    <Text style={styles.balanceError}>Not enough {symbol} on your balance</Text>
+                )}
             </View>
             {transactionTotal.balanceError && (
-                <View style={{ width: '100%', marginTop: 10 }}>
+                <View style={styles.topupView}>
                     <TButtonContained onPress={onTopUp} style={commonStyles.marginBottom} size="medium">
                         Top Up
                     </TButtonContained>
                 </View>
             )}
-        </View>
+        </>
     );
 }
 
@@ -405,11 +465,14 @@ const styles = StyleSheet.create({
         color: theme.colors.linkColor,
         margin: 0,
         padding: 2,
-        fontSize: 19,
+        fontSize: 24,
+        ...commonStyles.primaryFontFamily,
     },
     applinkContent: {
+        textAlign: 'center',
         marginLeft: 6,
-        fontSize: 19,
+        fontSize: 24,
+        ...commonStyles.primaryFontFamily,
     },
     sandingMain: {
         alignItems: 'center',
@@ -432,6 +495,7 @@ const styles = StyleSheet.create({
     totalTitle: {
         marginRight: 8,
         fontWeight: '600',
+        ...commonStyles.secondaryFontFamily,
     },
     totalContentView: {
         flexDirection: 'row',
@@ -477,5 +541,55 @@ const styles = StyleSheet.create({
         marginTop: 5,
         color: theme.colors.error,
         fontSize: 13,
+    },
+    expirationContainer: {
+        backgroundColor: theme.colors.grey7,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        marginBottom: 15,
+        borderRadius: 6,
+    },
+    developerModeOnView: {
+        padding: 16,
+        borderRadius: 6,
+        gap: 4,
+        backgroundColor: theme.colors.errorBackground,
+    },
+    developerModeOffView: {
+        padding: 16,
+        borderRadius: 6,
+        gap: 4,
+        backgroundColor: theme.colors.warning,
+    },
+    developerModeTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        lineHeight: 19.36,
+        letterSpacing: 0.16,
+    },
+    developerModeContent: {
+        fontSize: 14,
+        fontWeight: '400',
+        letterSpacing: 0.16,
+        lineHeight: 18,
+    },
+    transactionExpiredView: {
+        backgroundColor: theme.colors.warning,
+        padding: 16,
+        borderRadius: 6,
+        marginBottom: 15,
+    },
+    transactionExpiredText: {
+        fontSize: 16,
+        ...commonStyles.primaryFontFamily,
+        marginBottom: 5,
+    },
+    topupView: {
+        width: '100%',
+        marginTop: 10,
     },
 });

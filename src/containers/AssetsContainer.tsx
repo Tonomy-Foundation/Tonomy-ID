@@ -1,24 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-    StyleSheet,
-    View,
-    Image,
-    Text,
-    TouchableOpacity,
-    ImageSourcePropType,
-    ScrollView,
-    RefreshControl,
-} from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { TButtonOutlined } from '../components/atoms/TButton';
 import { TP } from '../components/atoms/THeadings';
-import useUserStore from '../store/userStore';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import theme, { commonStyles } from '../utils/theme';
-import { Images } from '../assets';
-import { VestingContract } from '@tonomy/tonomy-id-sdk';
-import { LEOS_SEED_ROUND_PRICE } from '../utils/chain/antelope';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
 import Debug from 'debug';
@@ -27,106 +13,83 @@ import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { supportedChains } from '../utils/assetDetails';
+import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
 import { logError } from '../utils/sentry';
+import useUserStore from '../store/userStore';
 
-const debug = Debug('tonomy-id:containers:MainContainer');
-const vestingContract = VestingContract.Instance;
+const debug = Debug('tonomy-id:containers:AssetsContainer');
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
-    const userStore = useUserStore();
-    const user = userStore.user;
-    const [pangeaBalance, setPangeaBalance] = useState(0.0);
-    const [accountName, setAccountName] = useState('');
+    const [total, setTotal] = useState<number>(0);
+    const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
     const [refreshBalance, setRefreshBalance] = useState(false);
     const { developerMode } = useAppSettings();
 
-    const { accountExists, initializeWalletAccount } = useWalletStore();
+    const { accountsInitialized, initializeWalletAccount, updateBalance } = useWalletStore();
 
     const isUpdatingBalances = useRef(false);
     const [accounts, setAccounts] = useState<
-        { network: string; accountName: string | null; balance: string; usdBalance: number }[]
+        { network: string; accountName: string; balance: string; usdBalance: number }[]
     >([]);
-    const { updateBalance: updateCryptoBalance } = useWalletStore((state) => ({
-        updateBalance: state.updateBalance,
-    }));
-    const [total, setTotal] = useState<number>(0);
+    const { user } = useUserStore();
 
-    const [isAssetLoading, setAssetLoading] = useState<boolean>(true);
-
-    const chains = useMemo(() => supportedChains, []);
-
-    const updateLeosBalance = useCallback(async () => {
-        try {
-            debug('updateLeosBalance() fetching LEOS balance');
-            if (accountExists) await updateCryptoBalance();
-
-            const accountPangeaBalance = await vestingContract.getBalance(accountName);
-
-            if (pangeaBalance !== accountPangeaBalance) {
-                setPangeaBalance(accountPangeaBalance);
-            }
-        } catch (error) {
-            debug('updateLeosBalance() error', error);
-
-            if (isNetworkError(error)) {
-                debug('updateLeosBalance() network error');
-            }
-        }
-    }, [accountExists, updateCryptoBalance, accountName, pangeaBalance]);
+    const tokens = useMemo(() => tokenRegistry, []);
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            const accountName = (await user.getAccountName()).toString();
-
-            setAccountName(accountName);
-            if (!accountExists) await initializeWalletAccount();
+            if (!accountsInitialized) await initializeWalletAccount(user);
             await connect();
 
-            for (const chainObj of chains) {
-                const asset = await assetStorage.findAssetByName(chainObj.token);
+            for (const { chain, token } of tokens) {
+                try {
+                    const asset = await assetStorage.findAssetByName(token);
 
-                debug(`fetchCryptoAssets() fetching asset for ${chainObj.chain.getName()}`);
-                let account;
+                    debug(
+                        `fetchCryptoAssets() fetching asset ${chain.getName()}: ${asset?.accountName}-${asset?.balance}`
+                    );
+                    let account;
 
-                if (asset) {
-                    account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
-                        accountName: asset.accountName,
-                        balance: asset.balance,
-                        usdBalance: asset.usdBalance,
-                    };
-                } else {
-                    account = {
-                        network: capitalizeFirstLetter(chainObj.chain.getName()),
-                        accountName: null,
-                        balance: '0',
-                        usdBalance: 0,
-                    };
-                }
-
-                setAccounts((prevAccounts) => {
-                    // find index of the account in the array
-                    const index = prevAccounts.findIndex((acc) => acc.network === account.network);
-
-                    if (index !== -1) {
-                        // Update the existing asset
-                        const updatedAccounts = [...prevAccounts];
-
-                        updatedAccounts[index] = account;
-                        return updatedAccounts;
+                    if (asset) {
+                        account = {
+                            network: capitalizeFirstLetter(chain.getName()),
+                            accountName: asset.accountName,
+                            balance: asset.balance,
+                            usdBalance: asset.usdBalance,
+                        };
                     } else {
-                        // Add the new asset
-                        return [...prevAccounts, account];
+                        account = {
+                            network: capitalizeFirstLetter(chain.getName()),
+                            accountName: null,
+                            balance: '0',
+                            usdBalance: 0,
+                        };
                     }
-                });
+
+                    setAccounts((prevAccounts) => {
+                        // find index of the account in the array
+                        const index = prevAccounts.findIndex((acc) => acc.network === account.network);
+
+                        if (index !== -1) {
+                            // Update the existing asset
+                            const updatedAccounts = [...prevAccounts];
+
+                            updatedAccounts[index] = account;
+                            return updatedAccounts;
+                        } else {
+                            // Add the new asset
+                            return [...prevAccounts, account];
+                        }
+                    });
+                } catch (error) {
+                    debug(`fetchCryptoAssets() error fetching ${chain.getName()} asset`, error);
+                }
             }
         } catch (error) {
-            debug('fetchCryptoAssets() error', error);
+            console.error('fetchCryptoAssets() error', error);
         }
-    }, [accountExists, initializeWalletAccount, chains, user]);
+    }, [accountsInitialized, initializeWalletAccount, tokens, user]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -134,20 +97,19 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
         try {
             debug('updateAllBalances()');
-            await updateLeosBalance();
-            await updateCryptoBalance();
+            await updateBalance();
             await fetchCryptoAssets();
             setAssetLoading(false);
         } catch (error) {
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
             } else {
-                logError('MainContainer() updateAllBalances()', error);
+                logError('AssetsContainer() updateAllBalances()', error);
             }
         } finally {
             isUpdatingBalances.current = false;
         }
-    }, [updateCryptoBalance, fetchCryptoAssets, updateLeosBalance]);
+    }, [updateBalance, fetchCryptoAssets]);
 
     const onRefresh = useCallback(async () => {
         try {
@@ -171,18 +133,18 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         const totalAssetsUSDBalance = accounts.reduce((previousValue, currentValue) => {
             return previousValue + currentValue.usdBalance;
         }, 0);
-        const totalPangeaUSDBalance = pangeaBalance * LEOS_SEED_ROUND_PRICE;
 
-        setTotal(totalAssetsUSDBalance + totalPangeaUSDBalance);
-    }, [accounts, pangeaBalance]);
+        setTotal(totalAssetsUSDBalance);
+    }, [accounts]);
 
     const findAccountByChain = (chain: string) => {
         const accountExists = accounts.find((account) => account.network === chain);
-        const balance = accountExists?.balance;
-        const usdBalance = accountExists?.usdBalance;
-        const account = accountExists?.accountName;
 
-        return { account, balance, usdBalance };
+        return {
+            account: accountExists?.accountName,
+            balance: accountExists?.balance,
+            usdBalance: accountExists?.usdBalance,
+        };
     };
 
     return (
@@ -221,52 +183,12 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                 </View>
                 {!isAssetLoading ? (
                     <View style={styles.scrollContent}>
-                        <TouchableOpacity
-                            onPress={() => {
-                                const accountDetail = {
-                                    symbol: 'LEOS',
-                                    name: 'Pangea',
-                                    account: accountName,
-                                    icon: Images.GetImage('logo48'),
-                                };
-
-                                navigation.navigate('AssetDetail', {
-                                    screenTitle: `${accountDetail.symbol}`,
-                                    network: 'Pangea',
-                                });
-                            }}
-                            style={styles.assetsView}
-                        >
-                            <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
-                            <View style={styles.assetContent}>
-                                <View style={styles.flexRowCenter}>
-                                    <Text style={{ fontSize: 15 }}>LEOS</Text>
-                                    <View style={styles.assetsNetwork}>
-                                        <Text style={{ fontSize: 11 }}>Pangea</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.flexColEnd}>
-                                    <View style={styles.flexCenter}>
-                                        <Text style={{ fontSize: 16 }}>
-                                            {formatCurrencyValue(pangeaBalance, 4) || 0}
-                                        </Text>
-                                    </View>
-                                    <Text style={styles.secondaryColor}>
-                                        ${' '}
-                                        {pangeaBalance
-                                            ? formatCurrencyValue(pangeaBalance * LEOS_SEED_ROUND_PRICE)
-                                            : 0.0}
-                                    </Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-
-                        {chains.map((chainObj, index) => {
+                        {tokens.map((chainObj, index) => {
                             const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
                             const accountData = findAccountByChain(chainName);
 
-                            if (chainObj.chain.getChainId() === '11155111' && !developerMode) {
+                            if (chainObj.chain.isTestnet() && !developerMode) {
                                 return null;
                             }
 
@@ -276,7 +198,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                     onPress={() => {
                                         navigation.navigate('AssetDetail', {
                                             screenTitle: chainName,
-                                            network: chainObj.chain.getName(),
+                                            chain: chainObj.chain,
                                         });
                                     }}
                                     style={styles.assetsView}
@@ -297,7 +219,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                                     {chainName}
                                                 </Text>
                                             </View>
-                                            {chainObj.chain.getChainId() === '11155111' && (
+                                            {chainObj.chain.isTestnet() && (
                                                 <View style={styles.assetsTestnetNetwork}>
                                                     <Text style={styles.assetTestnetText}>Testnet</Text>
                                                 </View>
@@ -317,7 +239,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                                 <View>
                                                     <TouchableOpacity
                                                         onPress={() => {
-                                                            navigation.navigate('CreateEthereumKey');
+                                                            navigation.navigate('CreateEthereumKey', {
+                                                                requestType: 'createKey',
+                                                                request: null,
+                                                                transaction: null,
+                                                            });
                                                         }}
                                                     >
                                                         <Text style={{ fontSize: 13 }}>Not connected</Text>

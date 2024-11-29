@@ -4,7 +4,7 @@ import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:storage:assetStorageManager');
 
-interface AccountStorage {
+export interface AssetStorage {
     accountName: string;
     balance: string;
     usdBalance: number;
@@ -35,6 +35,7 @@ export abstract class AssetStorageManager {
 
             try {
                 const usdBalance = await asset.getUsdValue();
+
                 if (usdBalance >= 0 && usdBalance !== existingAsset.usdBalance) {
                     existingAsset.usdBalance = usdBalance;
                 }
@@ -50,7 +51,7 @@ export abstract class AssetStorageManager {
         }
     }
 
-    public async findAssetByName(token: IToken): Promise<AccountStorage | null> {
+    public async findAssetByName(token: IToken): Promise<AssetStorage | null> {
         const name = token.getChain().getName() + '-' + token.getSymbol();
 
         const existingAsset = await this.repository.findAssetByName(name);

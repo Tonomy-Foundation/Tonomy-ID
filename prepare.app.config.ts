@@ -68,15 +68,34 @@ const expo: ExpoConfig = {
         bundleIdentifier: identifier,
         infoPlist: {
             NSCameraUsageDescription: 'We need access to your camera to scan the QR code.',
+            LSApplicationQueriesSchemes: ['esr', 'wc', 'did'],
+            CFBundleURLTypes: [
+                {
+                    CFBundleURLSchemes: ['esr', 'wc', 'did'],
+                },
+            ],
         },
     },
     android: {
-        adaptiveIcon: {
-            foregroundImage: settings.config.images.logo1024,
-            backgroundColor: '#FFFFFF',
-        },
         allowBackup: false,
         package: identifier,
+        intentFilters: [
+            {
+                action: 'VIEW',
+                data: [
+                    {
+                        scheme: 'esr',
+                    },
+                    {
+                        scheme: 'wc',
+                    },
+                    {
+                        scheme: 'did',
+                    },
+                ],
+                category: ['BROWSABLE', 'DEFAULT'],
+            },
+        ],
     },
     web: {
         favicon: settings.config.images.logo48,
