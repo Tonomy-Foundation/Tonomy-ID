@@ -38,11 +38,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            if (!accountsInitialized) {
-                await initializeWalletAccount(user);
-                await updateBalance();
-            }
-
             await connect();
 
             for (const { chain, token } of tokens) {
@@ -92,7 +87,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         } catch (error) {
             console.error('fetchCryptoAssets() error', error);
         }
-    }, [accountsInitialized, initializeWalletAccount, tokens, user, updateBalance]);
+    }, [tokens]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -100,6 +95,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
         try {
             debug('updateAllBalances()');
+
+            if (!accountsInitialized) {
+                await initializeWalletAccount(user);
+            }
+
             await updateBalance();
             await fetchCryptoAssets();
             setAssetLoading(false);
@@ -112,7 +112,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         } finally {
             isUpdatingBalances.current = false;
         }
-    }, [updateBalance, fetchCryptoAssets]);
+    }, [updateBalance, fetchCryptoAssets, accountsInitialized, initializeWalletAccount, user]);
 
     const onRefresh = useCallback(async () => {
         try {

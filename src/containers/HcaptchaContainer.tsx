@@ -15,8 +15,9 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
-import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
+import NetInfo from '@react-native-community/netinfo';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
@@ -148,7 +149,15 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
-    const onPressCheckbox = () => {
+    const onPressCheckbox = async () => {
+        const netInfo = await NetInfo.fetch();
+
+        if (!netInfo.isConnected) {
+            setErrorMsg(NETWORK_ERROR_MESSAGE);
+            return;
+        }
+
+        setErrorMsg(null);
         setSuccess(!success);
         setLoading(true);
 
