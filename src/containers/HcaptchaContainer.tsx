@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import ConfirmHcaptcha from '@hcaptcha/react-native-hcaptcha';
+import NetInfo from '@react-native-community/netinfo';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
@@ -15,7 +16,7 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
-import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
@@ -148,11 +149,21 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
-    const onPressCheckbox = () => {
+    const onPressCheckbox = async () => {
+        setErrorMsg(null);
         setSuccess(!success);
         setLoading(true);
 
+        const netInfo = await NetInfo.fetch();
+
+        if (!netInfo.isConnected) {
+            setLoading(false);
+            setErrorMsg(NETWORK_ERROR_MESSAGE);
+            return;
+        }
+
         if (captchaFormRef.current) {
+            debug('Showing hCaptcha');
             captchaFormRef.current.show();
         }
 
