@@ -14,10 +14,6 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
-import { AntelopeAccount, AntelopePrivateKey } from '../utils/chain/antelope';
-import { getKeyFromChain, pangeaTokenEntry } from '../utils/tokenRegistry';
-import { Asset } from '../utils/chain/types';
-import { assetStorage } from '../utils/StorageManager/setup';
 import TSpinner from '../components/atoms/TSpinner';
 import Debug from 'debug';
 
@@ -135,7 +131,7 @@ export default function LoginPassphraseContainer({
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained onPress={onNext} disabled={nextDisabled || loading}>
-                                {loading ? <TSpinner size={50} /> : 'NEXT'}
+                                {loading ? <TSpinner size={40} /> : 'NEXT'}
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
