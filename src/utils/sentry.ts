@@ -8,6 +8,7 @@ init({
 
 export function logError(message: string, error: Error) {
     if (settings.isProduction()) {
+        // TODO: attach last 100 debug logs to the error
         captureException(error);
     } else {
         console.log('Error: ' + message + ': ', error, '\n', JSON.stringify(error, null, 2));
