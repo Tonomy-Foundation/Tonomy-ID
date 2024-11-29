@@ -1,4 +1,4 @@
-import { init } from '@sentry/react-native';
+import { init, captureException } from '@sentry/react-native';
 import settings from '../settings';
 
 init({
@@ -8,9 +8,9 @@ init({
 
 export function logError(message: string, error: Error) {
     if (settings.isProduction()) {
-        Native.captureException(error);
+        captureException(error);
     } else {
-        console.log('Error:' + message + ': ', error, '\n', JSON.stringify(error, null, 2));
+        console.log('Error: ' + message + ': ', error, '\n', JSON.stringify(error, null, 2));
     }
 
     console.error(message, error);
