@@ -2011,7 +2011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/spawn-async@npm:^1.7.2":
+"@expo/spawn-async@npm:^1.7.0, @expo/spawn-async@npm:^1.7.2":
   version: 1.7.2
   resolution: "@expo/spawn-async@npm:1.7.2"
   dependencies:
@@ -3491,6 +3491,144 @@ __metadata:
     component-type: "npm:^1.2.1"
     join-component: "npm:^1.1.0"
   checksum: 10c0/c083c70c5f0a42a2bc5b685f82830b968d01b5b8de2a9a1c362a3952c6bb33ffbdfcf8196c8ce110a5050f78ff9dcf395832eb55687843c80dc77dfe659b0803
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/tracing@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry-internal/tracing@npm:7.69.0"
+  dependencies:
+    "@sentry/core": "npm:7.69.0"
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+    tslib: "npm:^2.4.1 || ^1.9.3"
+  checksum: 10c0/6bdce13cfef9a0176a44657e09fb906e1dad442a719c8c08c2c3296f3c506313053f129630acf20c24f6426c260757f8d1c0d910a2f03459e8ae9d3bb3ddea42
+  languageName: node
+  linkType: hard
+
+"@sentry/browser@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/browser@npm:7.69.0"
+  dependencies:
+    "@sentry-internal/tracing": "npm:7.69.0"
+    "@sentry/core": "npm:7.69.0"
+    "@sentry/replay": "npm:7.69.0"
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+    tslib: "npm:^2.4.1 || ^1.9.3"
+  checksum: 10c0/33fdc1ec8c1b8521e9011906d225657d2c364b0813a160f27a081513ad86ade184ed0ab72c347dc6597d43ec1c3d1c6fc0a473bf8374f8a267a4a9851893a970
+  languageName: node
+  linkType: hard
+
+"@sentry/cli@npm:2.20.7":
+  version: 2.20.7
+  resolution: "@sentry/cli@npm:2.20.7"
+  dependencies:
+    https-proxy-agent: "npm:^5.0.0"
+    node-fetch: "npm:^2.6.7"
+    progress: "npm:^2.0.3"
+    proxy-from-env: "npm:^1.1.0"
+    which: "npm:^2.0.2"
+  bin:
+    sentry-cli: bin/sentry-cli
+  checksum: 10c0/f94ec2517924db53e676ac8bd5731a6fc90a1f460bf1fd46cb2ccaad2e2cbdf62857d42716b6429a7e4b5502ed9dd5fa752170d5a245ed462d5bab3ee92b2541
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/core@npm:7.69.0"
+  dependencies:
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+    tslib: "npm:^2.4.1 || ^1.9.3"
+  checksum: 10c0/d922a5d36637c0a5b17bcd7ccbfdb11b3a2996ef318bbdb265591c376fdf53c932d115e1d8e77e1c0bf8e4ae1fb0329d5b3f10373b3cfd21d1e4379a595f59cd
+  languageName: node
+  linkType: hard
+
+"@sentry/hub@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/hub@npm:7.69.0"
+  dependencies:
+    "@sentry/core": "npm:7.69.0"
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+    tslib: "npm:^2.4.1 || ^1.9.3"
+  checksum: 10c0/848d71ba1e4ac229ed7e244dbaf7dcefcfa194fd934582436dc4820f096d5266647ce99acb691b0502e23823ff3168f9241998062d34bac4f0080f5608baa84b
+  languageName: node
+  linkType: hard
+
+"@sentry/integrations@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/integrations@npm:7.69.0"
+  dependencies:
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+    localforage: "npm:^1.8.1"
+    tslib: "npm:^2.4.1 || ^1.9.3"
+  checksum: 10c0/195e7a2cb61614c4245982a2f3a7a08d376cf6b204189aec288f1aaa64d60823527c7c258ded84d37fa788c4e7f6f77b1cb937bc7a90c3be65552231f4ea143f
+  languageName: node
+  linkType: hard
+
+"@sentry/react-native@npm:5.10.0":
+  version: 5.10.0
+  resolution: "@sentry/react-native@npm:5.10.0"
+  dependencies:
+    "@sentry/browser": "npm:7.69.0"
+    "@sentry/cli": "npm:2.20.7"
+    "@sentry/core": "npm:7.69.0"
+    "@sentry/hub": "npm:7.69.0"
+    "@sentry/integrations": "npm:7.69.0"
+    "@sentry/react": "npm:7.69.0"
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+  peerDependencies:
+    react: ">=17.0.0"
+    react-native: ">=0.65.0"
+  checksum: 10c0/9b45be50f14c6530e609681c0aad546216a55b905185cd0d9c7ffb414b114eee3aae8f2a39042ceba8d40ec5d73aeb75d30ab1b879d6923756bb9e61d8395cb9
+  languageName: node
+  linkType: hard
+
+"@sentry/react@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/react@npm:7.69.0"
+  dependencies:
+    "@sentry/browser": "npm:7.69.0"
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+    hoist-non-react-statics: "npm:^3.3.2"
+    tslib: "npm:^2.4.1 || ^1.9.3"
+  peerDependencies:
+    react: 15.x || 16.x || 17.x || 18.x
+  checksum: 10c0/27226f90dfd5867b7ea7a2b5d569da662807aa9746aec1f7198b98611f42b95fb7bef97f338432addb349c80910ef755c4cf34aa803ee60c0b3d66a49feaffda
+  languageName: node
+  linkType: hard
+
+"@sentry/replay@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/replay@npm:7.69.0"
+  dependencies:
+    "@sentry/core": "npm:7.69.0"
+    "@sentry/types": "npm:7.69.0"
+    "@sentry/utils": "npm:7.69.0"
+  checksum: 10c0/42b13ba0ff96c1495cdcafbaaac1945ad5c96cd4cf4654fd08d0f0ec891ae9167b2ffe814a642838a6e422e555a39c777e0cc691e76257d10029bd7102a29c10
+  languageName: node
+  linkType: hard
+
+"@sentry/types@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/types@npm:7.69.0"
+  checksum: 10c0/b79d8ad29d0d01701842dfa40018bac9ccac2603a8d6806c39ea70fd05c3987f4bad2f55bcda1d28e9d518969765782ce71dfeccb5f38a848769e7409cea03b4
+  languageName: node
+  linkType: hard
+
+"@sentry/utils@npm:7.69.0":
+  version: 7.69.0
+  resolution: "@sentry/utils@npm:7.69.0"
+  dependencies:
+    "@sentry/types": "npm:7.69.0"
+    tslib: "npm:^2.4.1 || ^1.9.3"
+  checksum: 10c0/cb0272c5e0a2ea397994b265cd64e4983254b28236574265fc097c6ef04f52dbc6e7ae68cac782457281ce7b13daa6a8e9be5bf2f876b4189e2725b12730296d
   languageName: node
   linkType: hard
 
@@ -12035,6 +12173,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lie@npm:3.1.1":
+  version: 3.1.1
+  resolution: "lie@npm:3.1.1"
+  dependencies:
+    immediate: "npm:~3.0.5"
+  checksum: 10c0/d62685786590351b8e407814acdd89efe1cb136f05cb9236c5a97b2efdca1f631d2997310ad2d565c753db7596799870140e4777c9c9b8c44a0f6bf42d1804a1
+  languageName: node
+  linkType: hard
+
 "lighthouse-logger@npm:^1.0.0":
   version: 1.4.2
   resolution: "lighthouse-logger@npm:1.4.2"
@@ -15610,6 +15757,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sentry-expo@npm:~7.1.0":
+  version: 7.1.1
+  resolution: "sentry-expo@npm:7.1.1"
+  dependencies:
+    "@expo/spawn-async": "npm:^1.7.0"
+    "@sentry/integrations": "npm:7.69.0"
+    "@sentry/react": "npm:7.69.0"
+    "@sentry/react-native": "npm:5.10.0"
+    "@sentry/types": "npm:7.69.0"
+    mkdirp: "npm:^1.0.4"
+    rimraf: "npm:^3.0.2"
+  peerDependencies:
+    expo: ">=47.0.0"
+    expo-application: "*"
+    expo-constants: "*"
+    expo-device: "*"
+  checksum: 10c0/906aa8b41a8ef099413401a7db542deb496074ced8514c2967368dc99a7373f4d676e4984b8942398abf788a9b0958ae92940f3c1601a70c72c11ece46db63ba
+  languageName: node
+  linkType: hard
+
 "serialize-error@npm:^2.1.0":
   version: 2.1.0
   resolution: "serialize-error@npm:2.1.0"
@@ -16934,7 +17101,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.5.0, tslib@npm:^2.6.1, tslib@npm:^2.6.2, tslib@npm:^2.7.0":
+"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.4.1 || ^1.9.3, tslib@npm:^2.5.0, tslib@npm:^2.6.1, tslib@npm:^2.6.2, tslib@npm:^2.7.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -17184,15 +17351,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/1d0a5f4ce496c42caa9a30e659c467c5686eae15d54b027ee7866744952547f1be1262f2d40de911618c242b510029d51d43ff605dba8fb740ec85ca2d3f9500
-  languageName: node
-  linkType: hard
-
-"ua-parser-js@npm:^0.7.33":
-  version: 0.7.39
-  resolution: "ua-parser-js@npm:0.7.39"
-  bin:
-    ua-parser-js: script/cli.js
-  checksum: 10c0/5d28deda5e04589c90e67e033136c2ecec38ac6e89e32fd5eab9ef7255af5839c4310c5bbf7361020bba17e85ac56dcb094077be7b6d45a8d776cd3ffe148a8c
   languageName: node
   linkType: hard
 
