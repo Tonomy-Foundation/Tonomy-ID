@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
 import useWalletStore from './useWalletStore';
+import { setUser } from '@sentry/react-native';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -74,6 +75,7 @@ const useUserStore = create<UserState>((set, get) => ({
         await get().user.logout();
         if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         useWalletStore.getState().clearState();
+        setUser(null);
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {

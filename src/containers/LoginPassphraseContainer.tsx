@@ -20,6 +20,7 @@ import { Asset } from '../utils/chain/types';
 import { assetStorage } from '../utils/StorageManager/setup';
 import TSpinner from '../components/atoms/TSpinner';
 import Debug from 'debug';
+import { setUser } from '@sentry/react-native';
 
 const debug = Debug('tonomy-id:containers:LoginPassphraseContainer');
 
@@ -66,6 +67,10 @@ export default function LoginPassphraseContainer({
             });
 
             if (result?.account_name !== undefined) {
+                setUser({
+                    id: result.account_name.toString(),
+                    username: tonomyUsername.getBaseUsername(),
+                });
                 setPassphrase(['', '', '', '', '', '']);
                 setNextDisabled(false);
                 setErrorMessage('');

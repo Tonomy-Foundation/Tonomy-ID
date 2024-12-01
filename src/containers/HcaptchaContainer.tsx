@@ -17,6 +17,7 @@ import usePassphraseStore from '../store/passphraseStore';
 import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
+import { setUser } from '@sentry/react-native';
 
 const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
@@ -91,6 +92,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
+            setUser({
+                id: (await user.getAccountName()).toString(),
+                username: (await user.getUsername()).getBaseUsername(),
+            });
 
             await user.saveLocal();
             await user.updateKeys(getPassphrase());
