@@ -122,6 +122,9 @@ if (process.env.SENTRY_SECRET_KEY) {
     config.sentrySecretKey = process.env.SENTRY_SECRET_KEY;
 }
 
+config.sentryPublicKey = '49c8103bafbb9ebd792b3e3db9f91e76';
+config.sentryProjectId = '4508392816705616';
+
 settings.config = config;
 
 export default settings;
