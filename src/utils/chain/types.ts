@@ -4,6 +4,7 @@ import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
 import { navigate } from '../../services/NavigationService';
+import { KeyValue } from '../strings';
 
 const debug = Debug('tonomy-id:utils:chain:types');
 
@@ -328,7 +329,7 @@ export interface IOperation {
     getTo(): Promise<IAccount>;
     getValue(): Promise<IAsset>;
     getFunction(): Promise<string>;
-    getArguments(): Promise<Record<string, string>>;
+    getArguments(): Promise<KeyValue>;
 }
 
 export interface ITransaction extends IOperation {

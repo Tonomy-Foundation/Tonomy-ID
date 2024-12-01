@@ -11,7 +11,7 @@ export function getQueryParam(url: string, name: string): string {
     return param;
 }
 
-export function createUrl(baseUrl: string, params: Record<string, string>): string {
+export function createUrl(baseUrl: string, params: KeyValue): string {
     const url = new URL(baseUrl);
 
     Object.entries(params).forEach(([key, value]) => {
@@ -20,3 +20,5 @@ export function createUrl(baseUrl: string, params: Record<string, string>): stri
 
     return url.toString();
 }
+
+export type KeyValue = Record<string, string>;

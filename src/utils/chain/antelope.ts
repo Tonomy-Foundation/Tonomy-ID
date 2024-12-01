@@ -40,7 +40,7 @@ import {
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from 'debug';
-import { createUrl, getQueryParam } from '../strings';
+import { createUrl, getQueryParam, KeyValue } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -565,9 +565,9 @@ export class AntelopeAction implements IOperation {
             return AntelopeAccount.fromAccount(this.chain, this.action.authorization[0].actor);
         }
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         const data = this.action.data;
-        const args: Record<string, string> = {};
+        const args: KeyValue = {};
 
         for (const key in data) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
@@ -669,7 +669,7 @@ export class AntelopeTransaction implements ITransaction {
     async getFunction(): Promise<string> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getValue(): Promise<Asset> {
@@ -868,10 +868,10 @@ export class AntelopeSigningRequestSession implements IChainSession {
             debug('approveTransactionRequest() response status', response.status);
 
             if (!response.ok || response.status !== 200) {
-                captureError(
-                    'approveTransactionRequest()',
-                    new Error(`Failed to send callback: ${JSON.stringify(response)}`)
-                );
+                const error = new Error(`Failed to send callback`);
+
+                error.response = response;
+                captureError('approveTransactionRequest()', error);
             }
         }
     }

@@ -32,6 +32,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
             errorStore.setError({ error: e, title: 'Unexpected JS Error', expected: false });
         }
     }, false);
+    
     setNativeExceptionHandler((errorString) => {
         errorStore.setError({ error: new Error(errorString), title: 'Unexpected Native Error', expected: false });
     });

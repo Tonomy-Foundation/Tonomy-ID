@@ -36,6 +36,7 @@ import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 import { ApplicationErrors, throwError } from '../errors';
+import { KeyValue } from '../strings';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -340,7 +341,7 @@ export class EthereumTransaction implements ITransaction {
         if (!decodedData?.name) throw new Error('Failed to decode function name');
         return decodedData.name;
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         const abi = await this.fetchAbi();
 
         if (!this.transaction.data) throw new Error('Transaction has no data');
