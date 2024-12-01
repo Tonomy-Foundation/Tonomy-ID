@@ -19,7 +19,7 @@ if (settings.isProduction()) {
         // TODO: set to false
         debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
         environment: settings.env,
-        release: '@tonomy/tonomy-id@' + process.env.npm_package_version,
+        release: "tonomy-id@" + process.env.npm_package_version,
     });
 }
 
@@ -30,8 +30,6 @@ export function captureError(message: string, error: Error) {
         console.log('Sending error to sentry', message);
         captureException(error);
     } else {
-        console.log('Error: ' + message + ': ', JSON.stringify(error, null, 2));
+        console.error('Error: ' + message + ': ', error);
     }
-
-    console.error(message, error);
 }

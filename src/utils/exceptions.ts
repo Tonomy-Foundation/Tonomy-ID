@@ -4,6 +4,8 @@ import Debug from 'debug';
 
 const debug = Debug('tonomy-id:utils:exceptions');
 
+// TODO: perhaps we can remove some of this is Sentry handles it for us?
+
 export default function setErrorHandlers(errorStore: ErrorState) {
     global.onunhandlPedrejection = function (error) {
         // Warning: when running in "remote debug" mode (JS environment is Chrome browser),
@@ -26,11 +28,10 @@ export default function setErrorHandlers(errorStore: ErrorState) {
                 debug('Ignoring WalletConnect Core Relay error', e);
                 return;
             }
-
+            
             errorStore.setError({ error: e, title: 'Unexpected JS Error', expected: false });
         }
     }, false);
-
     setNativeExceptionHandler((errorString) => {
         errorStore.setError({ error: new Error(errorString), title: 'Unexpected Native Error', expected: false });
     });
