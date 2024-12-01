@@ -1,6 +1,7 @@
-// IMPORTANT: The following 2 packages should be imported in this order:
+// IMPORTANT: The following 3 packages should be imported in this order:
 import 'reflect-metadata';
 import './src/utils/polyfill';
+import './src/utils/sentry';
 // NOTE: The rest can be imported in any order
 import '@walletconnect/react-native-compat';
 import React from 'react';
@@ -16,7 +17,6 @@ import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
 import { wrap } from '@sentry/react-native';
-import './src/utils/sentry';
 
 Debug.enable(process.env.DEBUG);
 
