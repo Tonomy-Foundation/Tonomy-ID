@@ -117,6 +117,11 @@ if (process.env.HCAPTCHA_SITE_KEY) {
     config.captchaSiteKey = process.env.HCAPTCHA_SITE_KEY;
 }
 
+if (process.env.SENTRY_SECRET_KEY) {
+    debug(`Using Sentry secret key from env: ${process.env.SENTRY_SECRET_KEY}`);
+    config.sentrySecretKey = process.env.SENTRY_SECRET_KEY;
+}
+
 settings.config = config;
 
 export default settings;

@@ -4,10 +4,12 @@ import Debug from 'debug';
 
 const debug = new Debug('tonomy-id:utils:sentry');
 
-init({
-    dsn: `https://${settings.config.sentryPublicKey}@${settings.config.sentrySecretKey}.ingest.de.sentry.io/${settings.config.sentryProjectId}`,
-    debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
-});
+if (settings.isProduction()) {
+    init({
+        dsn: `https://${settings.config.sentryPublicKey}@${settings.config.sentrySecretKey}.ingest.de.sentry.io/${settings.config.sentryProjectId}`,
+        debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+    });
+}
 
 export function logError(message: string, error: Error) {
     if (settings.isProduction()) {
