@@ -16,7 +16,7 @@ import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
-import { logError } from '../utils/sentry';
+import { captureError } from '../utils/sentry';
 import useUserStore from '../store/userStore';
 
 const debug = Debug('tonomy-id:containers:AssetsContainer');
@@ -104,7 +104,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
             } else {
-                logError('AssetsContainer() updateAllBalances()', error);
+                captureError('AssetsContainer() updateAllBalances()', error);
             }
         } finally {
             isUpdatingBalances.current = false;

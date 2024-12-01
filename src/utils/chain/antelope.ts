@@ -44,7 +44,7 @@ import { createUrl, getQueryParam } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
-import { logError } from '../sentry';
+import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
@@ -583,7 +583,7 @@ export class AntelopeAction implements IOperation {
                     try {
                         args[key] = JSON.stringify(value);
                     } catch (error) {
-                        logError('getArguments() object', error);
+                        captureError('getArguments() object', error);
                         args[key] = 'unpackable object';
                     }
                 } else if (value.toString) {
@@ -592,7 +592,7 @@ export class AntelopeAction implements IOperation {
                     try {
                         args[key] = JSON.stringify(value);
                     } catch (error) {
-                        logError('getArguments() value', error);
+                        captureError('getArguments() value', error);
                         args[key] = 'unpackable value';
                     }
                 }
@@ -868,7 +868,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             debug('approveTransactionRequest() response status', response.status);
 
             if (!response.ok || response.status !== 200) {
-                logError(
+                captureError(
                     'approveTransactionRequest()',
                     new Error(`Failed to send callback: ${JSON.stringify(response)}`)
                 );
@@ -894,7 +894,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             });
 
             if (!response.ok || response.status !== 200) {
-                logError(
+                captureError(
                     'rejectTransactionRequest()',
                     new Error(`Failed to send callback: ${JSON.stringify(response)}`)
                 );

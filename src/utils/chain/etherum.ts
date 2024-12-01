@@ -36,7 +36,6 @@ import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
 import Debug from 'debug';
 import { ApplicationErrors, throwError } from '../errors';
-import { logError } from '../sentry';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -501,14 +500,9 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     async isContract(): Promise<boolean> {
-        try {
-            const code = await (this.chain as EthereumChain).getProvider().getCode(this.name);
+        const code = await (this.chain as EthereumChain).getProvider().getCode(this.name);
 
-            if (code !== '0x') return true;
-        } catch (error) {
-            logError('EthereumAccount.isContract()', error);
-        }
-
+        if (code !== '0x') return true;
         return false;
     }
 }

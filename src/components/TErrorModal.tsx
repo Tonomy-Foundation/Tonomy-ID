@@ -8,7 +8,7 @@ import { TP } from './atoms/THeadings';
 import { HttpError, EosioUtil, CommunicationError, AntelopePushTransactionError } from '@tonomy/tonomy-id-sdk';
 import { Modal } from 'react-native';
 import Debug from 'debug';
-import { logError } from '../utils/sentry';
+import { captureError } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:components:TErrorModal');
 
@@ -32,9 +32,9 @@ export default function TErrorModal(props: TErrorModalProps) {
 
     if (props.expected === false) {
         if (!props.error) {
-            logError('TErrorModal()', new Error('unexpected error: no error provided'));
+            captureError('TErrorModal()', new Error('unexpected error: no error provided'));
         } else {
-            logError('TErrorModal() unexpected error', props.error);
+            captureError('TErrorModal() unexpected error', props.error);
         }
     }
 
@@ -135,7 +135,7 @@ export default function TErrorModal(props: TErrorModalProps) {
             </TModal>
         );
     } catch (error) {
-        logError('TErrorModal() rendering', error);
+        captureError('TErrorModal() rendering', error);
         return null;
     }
 }

@@ -9,7 +9,7 @@ import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import { logError } from '../utils/sentry';
+import { captureError } from '../utils/sentry';
 import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import { IUser } from '@tonomy/tonomy-id-sdk';
 
@@ -65,7 +65,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         relayUrl: 'wss://relay.walletconnect.com',
                     });
                 } catch (e) {
-                    logError('useWalletStore() error when constructing Core', e);
+                    captureError('useWalletStore() error when constructing Core', e);
                     if (!(e instanceof Error)) {
                         throw new Error(JSON.stringify(e));
                     } else throw e;
@@ -84,7 +84,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         },
                     });
                 } catch (e) {
-                    logError('useWalletStore() error on Web3Wallet.init()', e);
+                    captureError('useWalletStore() error on Web3Wallet.init()', e);
                     if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                     else throw e;
                 }
@@ -95,7 +95,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     core,
                 });
             } catch (e) {
-                logError('useWalletStore() initializeWalletState()', e);
+                captureError('useWalletStore() initializeWalletState()', e);
             }
         }
     },

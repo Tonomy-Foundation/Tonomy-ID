@@ -5,7 +5,7 @@ import { EthereumPrivateKey, EthereumAccount, EthereumSepoliaChain } from './cha
 import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import Debug from 'debug';
-import { logError } from './sentry';
+import { captureError } from './sentry';
 import { getKeyOrNullFromChain, tokenRegistry } from './tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:keys');
@@ -61,7 +61,7 @@ export async function testKeyGenerator() {
 
         debug('signedTransaction:', signedTransaction);
     } catch (e) {
-        logError('testKeyGenerator()', e);
+        captureError('testKeyGenerator()', e);
     }
 }
 
