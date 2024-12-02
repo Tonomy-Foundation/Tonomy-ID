@@ -199,8 +199,8 @@ export default function SignTransactionConsentContainer({
 
             navigation.navigate('SignTransactionSuccess', {
                 operations,
-                transaction,
                 receipt,
+                request,
             });
 
             setTransactionLoading(false);
