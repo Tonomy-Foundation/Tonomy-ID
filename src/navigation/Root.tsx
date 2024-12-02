@@ -80,8 +80,9 @@ export type MainRouteStackParamList = {
     };
     SignTransactionSuccess: {
         operations: OperationData[];
-        transaction: ITransaction;
+        transaction?: ITransaction;
         receipt: ITransactionReceipt;
+        request: ITransactionRequest;
     };
     WalletConnectLogin: {
         loginRequest: ILoginRequest;

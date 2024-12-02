@@ -91,6 +91,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     const [showActionDetails, setShowActionDetails] = useState(false);
     const [funToolTipVisible, setFunToolTipVisible] = useState(false);
     const [tranToolTipVisible, setTranToolTipVisible] = useState(false);
+
     return (
         <View style={styles.actionDialog}>
             {date && (
@@ -209,6 +210,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
     if (!transactionFee.show) {
         return null;
     }
+
     const onClose = () => {
         refMessage.current?.close();
     };
