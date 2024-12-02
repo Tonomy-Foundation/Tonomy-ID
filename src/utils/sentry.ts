@@ -3,6 +3,7 @@ import settings from '../settings';
 import { ExclusiveEventHintOrCaptureContext } from '@sentry/core/types/utils/prepareEvent';
 import { SeverityLevel } from '@sentry/types/types/severity';
 import { debugLog } from './debug';
+import { serializeAny } from './strings';
 
 // TODO:
 // setup with https://docs.sentry.io/platforms/react-native/tracing/instrumentation/react-navigation/
@@ -12,16 +13,17 @@ import { debugLog } from './debug';
 if (settings.isProduction()) {
     init({
         dsn: `https://${settings.config.sentryPublicKey}@${settings.config.sentrySecretKey}.ingest.de.sentry.io/${settings.config.sentryProjectId}`,
-        // TODO: set to false
-        debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+        debug: false,
         environment: settings.env,
         release: 'tonomy-id@' + process.env.npm_package_version,
     });
 }
 
-export function captureError(message: string, error: Error, level: SeverityLevel = 'error'): string {
+export function captureError(message: string, error: any, level: SeverityLevel = 'error'): string {
+    const errorObject = error instanceof Error ? error : new Error(serializeAny(error));
+
     if (settings.isProduction()) {
-        return sendToSentry(message, error, level);
+        return sendToSentry(message, errorObject, level);
     } else {
         console.error('Error: ' + message + ': ', error);
         return 'sentry-not-active';

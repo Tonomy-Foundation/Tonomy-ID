@@ -2,19 +2,20 @@ import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-e
 import { ErrorState } from '../store/errorStore';
 import DebugAndLog from '../utils/debug';
 import { captureError } from './sentry';
+import Bluebird from 'bluebird';
+import { serializeAny } from './strings';
+
+// @ts-expect-error Promise library type mismatch
+global.Promise = Bluebird;
 
 const debug = DebugAndLog('tonomy-id:utils:exceptions');
 
-// TODO: perhaps we can remove some of this is Sentry handles it for us?
-
 export default function setErrorHandlers(errorStore: ErrorState) {
-    global.onunhandlPedrejection = function (error) {
-        // Warning: when running in "remote debug" mode (JS environment is Chrome browser),
-        // this handler is called a second time by Bluebird with a custom "dom-event".
-        // We need to filter this case out:
-        if (error instanceof Error) {
-            errorStore.setError({ error, title: 'Unhandled Promise Rejection Error', expected: false });
-        }
+    // https://stackoverflow.com/a/68633267/28145757
+    global.onunhandledrejection = function (reason: any) {
+        const errorObject = reason instanceof Error ? reason : new Error(serializeAny(reason));
+
+        errorStore.setError({ error: errorObject, title: 'Unhandled Promise Rejection Error', expected: false });
     };
 
     setJSExceptionHandler((e: Error, isFatal) => {
@@ -28,6 +29,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
             if (e?.context?.startsWith('core') && e?.time && e?.level) {
                 // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
                 debug('Ignoring WalletConnect Core Relay error', e);
+                captureError('WalletConnect Core Relay Error', e, 'debug');
                 return;
             }
 
@@ -35,7 +37,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         }
     }, false);
 
-    setNativeExceptionHandler((errorString) => {
+    setNativeExceptionHandler((errorString: string) => {
         captureError('Native Exception Handler', new Error(errorString), 'fatal');
     });
 }

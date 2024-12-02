@@ -1,7 +1,8 @@
-// IMPORTANT: The following 3 packages should be imported in this order:
+// IMPORTANT: The following 4 packages should be imported in this order:
 import 'reflect-metadata';
 import './src/utils/polyfill';
 import './src/utils/sentry';
+import './src/utils/exceptions';
 // NOTE: The rest can be imported in any order
 import '@walletconnect/react-native-compat';
 import React from 'react';

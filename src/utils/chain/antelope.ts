@@ -578,6 +578,7 @@ export class AntelopeAction implements IOperation {
                 try {
                     args[key] = serializeAny(value);
                 } catch (error) {
+                    args[key] = 'unserializable';
                     captureError(`getArguments() serialize arg`, error);
                 }
             }
