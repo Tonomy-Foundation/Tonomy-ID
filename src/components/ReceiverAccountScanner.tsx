@@ -4,12 +4,12 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import QRCodeScanner from './QRCodeScanner';
 import { ChainType, IChain } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
 
-const debug = Debug('tonomy-id:components:ReceiverAccountScanner');
+const debug = DebugAndLog('tonomy-id:components:ReceiverAccountScanner');
 
 export type ReceiverAccountScannerProps = {
     refMessage: React.RefObject<{ open: () => void; close: () => void }>;

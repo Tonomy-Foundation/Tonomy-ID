@@ -39,8 +39,8 @@ import {
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
-import Debug from 'debug';
-import { createUrl, getQueryParam, KeyValue } from '../strings';
+import DebugAndLog from '../debug';
+import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -49,7 +49,7 @@ import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
 
-const debug = Debug('tonomy-id:utils:chain:antelope');
+const debug = DebugAndLog('tonomy-id:utils:chain:antelope');
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;
@@ -575,26 +575,10 @@ export class AntelopeAction implements IOperation {
 
                 debug('getArguments()', key, value);
 
-                if (value === null) {
-                    args[key] = 'null';
-                } else if (value === undefined) {
-                    args[key] = 'undefined';
-                } else if (typeof value === 'object') {
-                    try {
-                        args[key] = JSON.stringify(value);
-                    } catch (error) {
-                        captureError('getArguments() object', error);
-                        args[key] = 'unpackable object';
-                    }
-                } else if (value.toString) {
-                    args[key] = value.toString();
-                } else {
-                    try {
-                        args[key] = JSON.stringify(value);
-                    } catch (error) {
-                        captureError('getArguments() value', error);
-                        args[key] = 'unpackable value';
-                    }
+                try {
+                    args[key] = serializeAny(value);
+                } catch (error) {
+                    captureError(`getArguments() serialize arg`, error);
                 }
             }
         }

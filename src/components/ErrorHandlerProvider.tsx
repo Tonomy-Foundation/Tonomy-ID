@@ -3,9 +3,9 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from './TErrorModal';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 
-const debug = Debug('tonomy-id:components:ErrorHandlerProvider');
+const debug = DebugAndLog('tonomy-id:components:ErrorHandlerProvider');
 
 export default function ErrorHandlerProvider() {
     const [showModal, setShowModal] = useState(false);

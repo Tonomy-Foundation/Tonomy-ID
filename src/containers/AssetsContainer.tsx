@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshCon
 import theme, { commonStyles } from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
@@ -15,7 +15,7 @@ import useAppSettings from '../hooks/useAppSettings';
 import { captureError } from '../utils/sentry';
 import useUserStore from '../store/userStore';
 
-const debug = Debug('tonomy-id:containers:AssetsContainer');
+const debug = DebugAndLog('tonomy-id:containers:AssetsContainer');
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const [total, setTotal] = useState<number>(0);

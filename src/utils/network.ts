@@ -1,10 +1,10 @@
 import settings from '../settings';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { sleep } from './sleep';
 import { isNetworkError } from './errors';
 import { captureError } from './sentry';
 
-const debug = Debug('tonomy-id:utils:network');
+const debug = DebugAndLog('tonomy-id:utils:network');
 
 export function extractHostname(url): string {
     const urlObject = new URL(url);

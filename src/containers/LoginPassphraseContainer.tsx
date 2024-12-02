@@ -14,15 +14,8 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
-import { AntelopeAccount, AntelopePrivateKey } from '../utils/chain/antelope';
-import { getKeyFromChain, pangeaTokenEntry } from '../utils/tokenRegistry';
-import { Asset } from '../utils/chain/types';
-import { assetStorage } from '../utils/StorageManager/setup';
 import TSpinner from '../components/atoms/TSpinner';
-import Debug from 'debug';
 import { setUser } from '@sentry/react-native';
-
-const debug = Debug('tonomy-id:containers:LoginPassphraseContainer');
 
 const tonomyContract = TonomyContract.Instance;
 

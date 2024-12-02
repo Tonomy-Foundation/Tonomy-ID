@@ -14,12 +14,12 @@ import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import { setUser } from '@sentry/react-native';
 
-const debug = Debug('tonomy-id:containers:HcaptchaContainer');
+const debug = DebugAndLog('tonomy-id:containers:HcaptchaContainer');
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);

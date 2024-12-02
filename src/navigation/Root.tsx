@@ -36,15 +36,12 @@ import {
     ITransactionReceipt,
     ITransactionRequest,
 } from '../utils/chain/types';
-import Debug from 'debug';
 import { OperationData } from '../components/Transaction';
 import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
 import { navigationRef } from '../services/NavigationService';
-
-const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
@@ -87,9 +84,9 @@ export type MainRouteStackParamList = {
         transaction?: ITransactionRequest | null;
         requestType: string;
         request:
-            | SignClientTypes.EventArguments['session_request']
-            | SignClientTypes.EventArguments['session_proposal']
-            | null;
+        | SignClientTypes.EventArguments['session_request']
+        | SignClientTypes.EventArguments['session_proposal']
+        | null;
     };
     BottomTabs: undefined;
     Assets: undefined;

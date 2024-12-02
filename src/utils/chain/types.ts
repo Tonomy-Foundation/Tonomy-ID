@@ -2,11 +2,8 @@ import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
-import Debug from 'debug';
 import { navigate } from '../../services/NavigationService';
 import { KeyValue } from '../strings';
-
-const debug = Debug('tonomy-id:utils:chain:types');
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 

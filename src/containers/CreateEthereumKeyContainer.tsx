@@ -14,13 +14,13 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { SignClientTypes } from '@walletconnect/types';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import { useSessionStore } from '../store/sessionStore';
 import { ITransactionRequest } from '../utils/chain/types';
 
-const debug = Debug('tonomy-id:containers:CreateEthereunKey');
+const debug = DebugAndLog('tonomy-id:containers:CreateEthereunKey');
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -32,9 +32,9 @@ export default function CreateEthereumKeyContainer({
 }: {
     requestType: string;
     request:
-        | SignClientTypes.EventArguments['session_request']
-        | SignClientTypes.EventArguments['session_proposal']
-        | null;
+    | SignClientTypes.EventArguments['session_request']
+    | SignClientTypes.EventArguments['session_proposal']
+    | null;
     transaction: ITransactionRequest | null;
     navigation: Props['navigation'];
 }) {

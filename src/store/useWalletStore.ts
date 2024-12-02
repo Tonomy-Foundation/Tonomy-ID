@@ -5,7 +5,7 @@ import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
 import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
 import settings from '../settings';
 import { IAccount, IChain } from '../utils/chain/types';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
@@ -13,7 +13,7 @@ import { captureError } from '../utils/sentry';
 import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import { IUser } from '@tonomy/tonomy-id-sdk';
 
-const debug = Debug('tonomy-id:store:useWalletStore');
+const debug = DebugAndLog('tonomy-id:store:useWalletStore');
 
 export interface WalletState {
     initialized: boolean;

@@ -21,4 +21,28 @@ export function createUrl(baseUrl: string, params: KeyValue): string {
     return url.toString();
 }
 
+export function serializeAny(value: any): string {
+    if (value === null) {
+        return 'null';
+    } else if (value === undefined) {
+        return 'undefined';
+    } else if (Array.isArray(value)) {
+        return '[' + value.map(serializeAny).join(', ') + ']';
+    } else if (typeof value === 'object') {
+        try {
+            return JSON.stringify(value);
+        } catch (e) {
+            return '[Circular]';
+        }
+    } else if (value.toString) {
+        return value.toString();
+    } else {
+        try {
+            return JSON.stringify(value);
+        } catch (e) {
+            return '[Circular]';
+        }
+    }
+}
+
 export type KeyValue = Record<string, string>;

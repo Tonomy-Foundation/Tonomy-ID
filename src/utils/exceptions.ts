@@ -1,9 +1,9 @@
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { ErrorState } from '../store/errorStore';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { captureError } from './sentry';
 
-const debug = Debug('tonomy-id:utils:exceptions');
+const debug = DebugAndLog('tonomy-id:utils:exceptions');
 
 // TODO: perhaps we can remove some of this is Sentry handles it for us?
 

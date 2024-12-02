@@ -14,11 +14,11 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import useWalletStore from './useWalletStore';
 import { setUser } from '@sentry/react-native';
 
-const debug = Debug('tonomy-id:store:userStore');
+const debug = DebugAndLog('tonomy-id:store:userStore');
 
 export enum UserStatus {
     NONE = 'NONE',

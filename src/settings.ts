@@ -1,6 +1,6 @@
-import Debug from 'debug';
+import DebugAndLog from './utils/debug';
 
-const debug = Debug('tonomy-id:settings');
+const debug = DebugAndLog('tonomy-id:settings');
 const env = process.env.EXPO_NODE_ENV ?? 'development';
 
 const settingsInputs = {
@@ -118,7 +118,7 @@ if (process.env.HCAPTCHA_SITE_KEY) {
 }
 
 if (process.env.SENTRY_SECRET_KEY) {
-    debug(`Using Sentry secret key from env: ${process.env.SENTRY_SECRET_KEY}`);
+    debug(`Using Sentry secret key from env: ************`);
     config.sentrySecretKey = process.env.SENTRY_SECRET_KEY;
 }
 

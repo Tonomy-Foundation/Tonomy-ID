@@ -7,8 +7,13 @@ import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { Props } from '../screens/HomeScreen';
 import { Images } from '../assets';
+import DebugAndLog, { debugLog } from '../utils/debug';
+
+const debug = DebugAndLog('HomeScreenContainer');
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
+    debug('HomeScreenContainer5');
+    console.log('debugLog', debugLog);
     return (
         <LayoutComponent
             body={

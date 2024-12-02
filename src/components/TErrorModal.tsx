@@ -7,10 +7,7 @@ import { TButtonText } from './atoms/TButton';
 import { TP } from './atoms/THeadings';
 import { HttpError, EosioUtil, CommunicationError, AntelopePushTransactionError } from '@tonomy/tonomy-id-sdk';
 import { Modal } from 'react-native';
-import Debug from 'debug';
 import { captureError } from '../utils/sentry';
-
-const debug = Debug('tonomy-id:components:TErrorModal');
 
 export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
     onPress: () => void;
