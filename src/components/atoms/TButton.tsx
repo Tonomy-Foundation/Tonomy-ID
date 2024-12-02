@@ -1,6 +1,6 @@
-import React, { Children, useEffect } from 'react';
+import React from 'react';
 import theme, { commonStyles, useAppTheme } from '../../utils/theme';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, ViewStyle } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
 type CustomButtonProps = {
@@ -60,7 +60,7 @@ export default function TButton(props: ButtonProps) {
 export function TButtonContained(props: ButtonProps) {
     const theme = useAppTheme();
     const color = theme.colors.white;
-    const style = {
+    const style: ViewStyle = {
         backgroundColor: props.disabled ? theme.colors.disabled : getColorBasedOnTheme(props.theme),
         height: 48,
         justifyContent: 'center',
