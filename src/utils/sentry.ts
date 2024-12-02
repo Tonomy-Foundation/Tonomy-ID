@@ -1,5 +1,7 @@
 import { init, captureException } from '@sentry/react-native';
 import settings from '../settings';
+import { ExclusiveEventHintOrCaptureContext } from '@sentry/core/types/utils/prepareEvent';
+import { SeverityLevel } from '@sentry/types/types/severity';
 
 // TODO:
 // change the way Debug works so that we can see last 100 logs in the attachments
@@ -17,18 +19,17 @@ if (settings.isProduction()) {
     });
 }
 
-export function captureError(message: string, error: Error): string {
+export function captureError(message: string, error: Error, level: SeverityLevel = 'error'): string {
     if (settings.isProduction()) {
-        return sendToSentry(message, error);
+        return sendToSentry(message, error, level);
     } else {
         console.error('Error: ' + message + ': ', error);
         return 'sentry-not-active';
     }
 }
 
-function sendToSentry(message: string, error: Error): string {
-    // https://docs.sentry.io/platforms/javascript/enriching-events/context/#passing-context-directly
-    const hint = {
+function sendToSentry(message: string, error: Error, level: SeverityLevel): string {
+    const hint: ExclusiveEventHintOrCaptureContext = {
         extra: {
             // NOTE: For the following line to work, in the Sentry project settings,
             // under "Data Scrubbing", we need to add "error" as a "safe field" to not scrub
@@ -37,6 +38,7 @@ function sendToSentry(message: string, error: Error): string {
         tags: {
             message,
         },
+        level,
     };
 
     return captureException(error, hint);

@@ -32,10 +32,8 @@ export default function TErrorModal(props: TErrorModalProps) {
 
     if (props.expected === false) {
         if (!props.error) {
-            // TODO: set as medium priority
-            captureError('TErrorModal()', new Error('unexpected error: no error provided'));
+            captureError('TErrorModal()', new Error('unexpected error: no error provided'), 'warning');
         } else {
-            // TODO: set as high priority
             captureError('TErrorModal() unexpected error', props.error);
         }
     }

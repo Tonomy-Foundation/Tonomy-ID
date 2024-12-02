@@ -19,7 +19,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
 
     setJSExceptionHandler((e: Error, isFatal) => {
         if (isFatal) {
-            // TODO: set as high priority + handled: false
+            captureError('JS Exception Handler', e, 'fatal');
             errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
             debug('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
@@ -36,7 +36,6 @@ export default function setErrorHandlers(errorStore: ErrorState) {
     }, false);
 
     setNativeExceptionHandler((errorString) => {
-        // TODO: set as high priority + handled: false
-        captureError('Native Exception Handler', new Error(errorString));
+        captureError('Native Exception Handler', new Error(errorString), 'fatal');
     });
 }

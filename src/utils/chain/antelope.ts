@@ -808,6 +808,14 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
     }
 }
 
+class ErrorWithResponse extends Error {
+    response: Response;
+    constructor(message: string, response: Response) {
+        super(message);
+        this.response = response;
+    }
+}
+
 export class AntelopeSigningRequestSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
@@ -868,9 +876,8 @@ export class AntelopeSigningRequestSession implements IChainSession {
             debug('approveTransactionRequest() response status', response.status);
 
             if (!response.ok || response.status !== 200) {
-                const error = new Error(`Failed to send callback`);
+                const error = new ErrorWithResponse(`Failed to send callback`, response);
 
-                error.response = response;
                 captureError('approveTransactionRequest()', error);
             }
         }
@@ -894,10 +901,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
             });
 
             if (!response.ok || response.status !== 200) {
-                captureError(
-                    'rejectTransactionRequest()',
-                    new Error(`Failed to send callback: ${JSON.stringify(response)}`)
-                );
+                const error = new ErrorWithResponse(`Failed to send callback`, response);
+
+                captureError('rejectTransactionRequest()', error);
             }
         }
     }

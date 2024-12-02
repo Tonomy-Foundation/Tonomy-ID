@@ -94,7 +94,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             await user.createPerson();
             setUser({
                 id: (await user.getAccountName()).toString(),
-                username: (await user.getUsername()).getBaseUsername(),
+                username: '@' + (await user.getUsername()).getBaseUsername(),
             });
 
             await user.saveLocal();

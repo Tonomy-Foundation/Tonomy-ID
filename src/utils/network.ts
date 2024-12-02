@@ -41,8 +41,7 @@ export async function progressiveRetryOnNetworkError(
                 await sleep(delay);
                 delay = Math.min(delay * 2, maxDelay); // Exponential backoff
             } else {
-                // Non-network error, throw it
-                captureError('progressiveRetryOnNetworkError() Non-network error occurred. Stopping retry.', error);
+                captureError(`progressiveRetryOnNetworkError() Non-network error occurred: ${fn.name}`, error);
                 throw error;
             }
         }

@@ -69,7 +69,7 @@ export default function LoginPassphraseContainer({
             if (result?.account_name !== undefined) {
                 setUser({
                     id: result.account_name.toString(),
-                    username: tonomyUsername.getBaseUsername(),
+                    username: '@' + tonomyUsername.getBaseUsername(),
                 });
                 setPassphrase(['', '', '', '', '', '']);
                 setNextDisabled(false);

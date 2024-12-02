@@ -88,12 +88,13 @@ const useUserStore = create<UserState>((set, get) => ({
 
         try {
             debug('initializeStatusFromStorage() try');
-            const user = get().user
+            const user = get().user;
+
             await user.initializeFromStorage();
             setUser({
                 id: (await user.getAccountName()).toString(),
-                username: (await user.getUsername()).getBaseUsername(),
-            })
+                username: '@' + (await user.getUsername()).getBaseUsername(),
+            });
             set({ isAppInitialized: true });
         } catch (e) {
             debug('initializeStatusFromStorage() catch', e, typeof e);
