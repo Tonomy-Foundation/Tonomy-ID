@@ -18,12 +18,23 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         if (isFatal) {
             errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
-            debug('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
+            console.log('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
 
             // @ts-expect-error context does not exist on Error
             if (e?.context?.startsWith('core') && e?.time && e?.level) {
                 // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
                 debug('Ignoring WalletConnect Core Relay error', e);
+                return;
+            }
+
+            if (
+                // @ts-expect-error context does not exist on Error
+                e?.context === 'client' ||
+                e.message.includes('No matching key') ||
+                e.message.includes('Missing or invalid.')
+            ) {
+                // Getting error with the WalletConnect Core client. it throws an error when the client is not connected/proposal expire or invalid.
+                debug('Ignoring WalletConnect Core Client error', e);
                 return;
             }
 
