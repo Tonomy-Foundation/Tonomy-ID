@@ -84,9 +84,9 @@ export type MainRouteStackParamList = {
         transaction?: ITransactionRequest | null;
         requestType: string;
         request:
-        | SignClientTypes.EventArguments['session_request']
-        | SignClientTypes.EventArguments['session_proposal']
-        | null;
+            | SignClientTypes.EventArguments['session_request']
+            | SignClientTypes.EventArguments['session_proposal']
+            | null;
     };
     BottomTabs: undefined;
     Assets: undefined;

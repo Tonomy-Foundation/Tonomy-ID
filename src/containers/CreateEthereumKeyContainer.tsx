@@ -32,9 +32,9 @@ export default function CreateEthereumKeyContainer({
 }: {
     requestType: string;
     request:
-    | SignClientTypes.EventArguments['session_request']
-    | SignClientTypes.EventArguments['session_proposal']
-    | null;
+        | SignClientTypes.EventArguments['session_request']
+        | SignClientTypes.EventArguments['session_proposal']
+        | null;
     transaction: ITransactionRequest | null;
     navigation: Props['navigation'];
 }) {

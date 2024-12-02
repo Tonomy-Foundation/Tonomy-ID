@@ -1,19 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
-import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/TButton';
+import { StyleSheet, View, Image } from 'react-native';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import LayoutComponent from '../components/layout';
 import { TH1, TH4 } from '../components/atoms/THeadings';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { Props } from '../screens/HomeScreen';
 import { Images } from '../assets';
-import DebugAndLog, { debugLog } from '../utils/debug';
-
-const debug = DebugAndLog('HomeScreenContainer');
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
-    debug('HomeScreenContainer5');
-    console.log('debugLog', debugLog);
     return (
         <LayoutComponent
             body={
