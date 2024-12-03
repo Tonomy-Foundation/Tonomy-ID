@@ -1,12 +1,14 @@
-name: Deployment - production
+name: Deployment
 
 on:
   push:
     branches:
       - master
+      - testnet
+      - development
 
 jobs:
-  deploy-production:
+  deploy:
     runs-on: ubuntu-20.04
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -19,11 +21,14 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
+        with:
+          token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+          # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
       
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
-      - name: 🚀 Build and publish demo app
+      - name: 🚀 Build and publish staging app
         uses: actions/setup-node@v4
         with:
           node-version: 22.3.0
@@ -32,4 +37,21 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: yarn --immutable
-      - run: yarn run deploy:production
+      - run: yarn release
+      - run: |
+          if [[ ${GITHUB_REF#refs/*/} == "master" ]]; then
+            echo "Branch is 'master'"
+            yarn run deploy:production
+          fi
+
+          if [[ ${GITHUB_REF#refs/*/} == "testnet" ]]; then
+            echo "Branch is 'testnet'"
+            yarn run deploy:testnet
+          fi
+
+          if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
+            echo "Branch is 'development'"
+            yarn run deploy:staging
+          fi
+        env:
+          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
