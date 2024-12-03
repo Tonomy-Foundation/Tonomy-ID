@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - development
+      - feature/sentry-socket-error
 
 jobs:
   deploy-staging:
