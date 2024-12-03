@@ -4,12 +4,12 @@ import theme from '../utils/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { assetStorage, connect } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { TokenRegistryEntry, getKeyOrNullFromChain, tokenRegistry } from '../utils/tokenRegistry';
 import useAppSettings from '../hooks/useAppSettings';
 
-const debug = Debug('tonomy-id:containers:MainContainer');
+const debug = DebugAndLog('tonomy-id:containers:MainContainer');
 
 const SelectAssetContainer = ({
     navigation,

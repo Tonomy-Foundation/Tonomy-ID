@@ -6,7 +6,7 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { QuestionMark, WarningCircle } from 'iconoir-react-native';
 import NegligibleTransactionFees from './NegligibleTransactionFees';
-import { Action } from '@wharfkit/antelope';
+import { KeyValue } from '../utils/strings';
 
 export type TransactionFeeData = {
     fee: string;
@@ -21,7 +21,7 @@ export type OperationData = {
     usdValue?: string;
     contractName?: string;
     functionName?: string;
-    args?: Record<string, string>;
+    args?: KeyValue;
 };
 
 export function Operations({ operations, date }: { operations: OperationData[]; date?: Date }) {

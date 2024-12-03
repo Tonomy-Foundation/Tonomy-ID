@@ -39,16 +39,17 @@ import {
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
-import Debug from 'debug';
-import { createUrl, getQueryParam } from '../strings';
+import DebugAndLog from '../debug';
+import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
+import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
 
-const debug = Debug('tonomy-id:utils:chain:antelope');
+const debug = DebugAndLog('tonomy-id:utils:chain:antelope');
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;
@@ -564,9 +565,9 @@ export class AntelopeAction implements IOperation {
             return AntelopeAccount.fromAccount(this.chain, this.action.authorization[0].actor);
         }
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         const data = this.action.data;
-        const args: Record<string, string> = {};
+        const args: KeyValue = {};
 
         for (const key in data) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
@@ -574,26 +575,11 @@ export class AntelopeAction implements IOperation {
 
                 debug('getArguments()', key, value);
 
-                if (value === null) {
-                    args[key] = 'null';
-                } else if (value === undefined) {
-                    args[key] = 'undefined';
-                } else if (typeof value === 'object') {
-                    try {
-                        args[key] = JSON.stringify(value);
-                    } catch (error) {
-                        console.error('getArguments() object', error);
-                        args[key] = 'unpackable object';
-                    }
-                } else if (value.toString) {
-                    args[key] = value.toString();
-                } else {
-                    try {
-                        args[key] = JSON.stringify(value);
-                    } catch (error) {
-                        console.error('getArguments() value', error);
-                        args[key] = 'unpackable value';
-                    }
+                try {
+                    args[key] = serializeAny(value);
+                } catch (error) {
+                    args[key] = 'unserializable';
+                    captureError(`getArguments() serialize arg`, error);
                 }
             }
         }
@@ -668,7 +654,7 @@ export class AntelopeTransaction implements ITransaction {
     async getFunction(): Promise<string> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getValue(): Promise<Asset> {
@@ -807,6 +793,14 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
     }
 }
 
+class ErrorWithResponse extends Error {
+    response: Response;
+    constructor(message: string, response: Response) {
+        super(message);
+        this.response = response;
+    }
+}
+
 export class AntelopeSigningRequestSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
@@ -867,7 +861,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
             debug('approveTransactionRequest() response status', response.status);
 
             if (!response.ok || response.status !== 200) {
-                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                const error = new ErrorWithResponse(`Failed to send callback`, response);
+
+                captureError('approveTransactionRequest()', error);
             }
         }
     }
@@ -890,7 +886,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
             });
 
             if (!response.ok || response.status !== 200) {
-                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                const error = new ErrorWithResponse(`Failed to send callback`, response);
+
+                captureError('rejectTransactionRequest()', error);
             }
         }
     }

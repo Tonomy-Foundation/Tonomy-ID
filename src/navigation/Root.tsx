@@ -36,18 +36,12 @@ import {
     ITransactionReceipt,
     ITransactionRequest,
 } from '../utils/chain/types';
-import { ResolvedSigningRequest } from '@wharfkit/signing-request';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
-import Debug from 'debug';
 import { OperationData } from '../components/Transaction';
 import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
 import { navigationRef } from '../services/NavigationService';
-import { WalletConnectSession } from '../utils/chain/etherum';
-
-const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 

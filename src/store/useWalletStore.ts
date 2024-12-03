@@ -5,20 +5,15 @@ import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
 import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
 import settings from '../settings';
 import { IAccount, IChain } from '../utils/chain/types';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { ICore } from '@walletconnect/types';
 import NetInfo from '@react-native-community/netinfo';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import {
-    tokenRegistry,
-    TokenRegistryEntry,
-    getAccountFromChain,
-    getTokenEntryByChain,
-    AccountTokenDetails,
-} from '../utils/tokenRegistry';
+import { captureError } from '../utils/sentry';
+import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import { IUser } from '@tonomy/tonomy-id-sdk';
 
-const debug = Debug('tonomy-id:store:useWalletStore');
+const debug = DebugAndLog('tonomy-id:store:useWalletStore');
 
 export interface WalletState {
     initialized: boolean;
@@ -70,7 +65,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         relayUrl: 'wss://relay.walletconnect.com',
                     });
                 } catch (e) {
-                    console.error('useWalletStore() error when constructing Core', e);
+                    captureError('useWalletStore() error when constructing Core', e);
                     if (!(e instanceof Error)) {
                         throw new Error(JSON.stringify(e));
                     } else throw e;
@@ -89,7 +84,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                         },
                     });
                 } catch (e) {
-                    console.error('useWalletStore() error on Web3Wallet.init()', JSON.stringify(e, null, 2));
+                    captureError('useWalletStore() error on Web3Wallet.init()', e);
                     if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
                     else throw e;
                 }
@@ -100,7 +95,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                     core,
                 });
             } catch (e) {
-                console.error('useWalletStore() initializeWalletState()', e);
+                captureError('useWalletStore() initializeWalletState()', e);
             }
         }
     },

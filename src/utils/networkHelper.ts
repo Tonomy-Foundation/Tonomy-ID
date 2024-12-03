@@ -1,9 +1,9 @@
 import NetInfo from '@react-native-community/netinfo';
 import { useEffect, useState } from 'react';
 import useWalletStore from '../store/useWalletStore';
-import Debug from 'debug';
+import DebugAndLog from './debug';
 
-const debug = Debug('tonomy-id:utils:NetworkHelper');
+const debug = DebugAndLog('tonomy-id:utils:NetworkHelper');
 
 export const useNetworkStatus = () => {
     const [isConnected, setIsConnected] = useState<boolean>(true);
