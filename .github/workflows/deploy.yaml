@@ -1,15 +1,15 @@
-name: Deployment - Staging
+name: Deployment
 
 on:
   push:
     branches:
+      - master
+      - testnet
       - development
 
 jobs:
-  deploy-staging:
+  deploy:
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       # https://expo.dev/accounts/[account]/settings/access-tokens
@@ -25,14 +25,6 @@ jobs:
           token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
           # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
       
-      # TODO replace this with using semantic-release to do git bump
-      - name: "Automated Version Bump"
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
-        with:
-          commit-message: "ci: bumps version to {{version}} [skip ci]"
-      
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
@@ -45,4 +37,21 @@ jobs:
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
       - run: yarn --immutable
-      - run: yarn run deploy:staging
+      - run: yarn release
+      - run: |
+          if [[ ${GITHUB_REF#refs/*/} == "master" ]]; then
+            echo "Branch is 'master'"
+            yarn run deploy:production
+          fi
+
+          if [[ ${GITHUB_REF#refs/*/} == "testnet" ]]; then
+            echo "Branch is 'testnet'"
+            yarn run deploy:testnet
+          fi
+
+          if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
+            echo "Branch is 'development'"
+            yarn run deploy:staging
+          fi
+        env:
+          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
