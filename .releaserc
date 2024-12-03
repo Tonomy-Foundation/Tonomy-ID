@@ -12,10 +12,6 @@
     {
       "name": "development",
       "prerelease": "development"
-    },
-    {
-      "name": "feature/sentry-socket-error",
-      "prerelease": "testingsemanticrelease"
     }
   ],
   "plugins": [
