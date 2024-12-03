@@ -7,15 +7,13 @@ import { serializeAny } from './strings';
 
 // TODO:
 // setup with https://docs.sentry.io/platforms/react-native/tracing/instrumentation/react-navigation/
-// attach source maps to release
-// connect Sentry with Github for extra insights
+// check how to set release version with commit hash
 
 if (settings.isProduction()) {
     init({
         dsn: `https://${settings.config.sentryPublicKey}@${settings.config.sentrySecretKey}.ingest.de.sentry.io/${settings.config.sentryProjectId}`,
         debug: false,
         environment: settings.env,
-        release: 'tonomy-id@' + process.env.npm_package_version,
     });
 }
 
