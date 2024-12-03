@@ -18,7 +18,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         if (isFatal) {
             errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
-            console.error('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
+            debug('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
 
             // @ts-expect-error context does not exist on Error
             if (e?.context?.startsWith('core') && e?.time && e?.level) {
@@ -29,9 +29,8 @@ export default function setErrorHandlers(errorStore: ErrorState) {
 
             if (
                 // @ts-expect-error context does not exist on Error
-                e?.context === 'client' ||
-                e.message.includes('No matching key') ||
-                e.message.includes('Missing or invalid.')
+                e?.context === 'client' &&
+                (e.message.includes('No matching key') || e.message.includes('Missing or invalid'))
             ) {
                 // Getting error with the WalletConnect Core client. it throws an error when the client is not connected/proposal expire or invalid.
                 debug('Ignoring WalletConnect Core Client error', e);
