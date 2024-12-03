@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 
-const debug = Debug('tonomy-id:store:errorStore');
+const debug = DebugAndLog('tonomy-id:store:errorStore');
 
 export interface ErrorState {
     error?: Error;

@@ -3,9 +3,9 @@ import { testKeyGenerator } from './keys';
 import { dbConnection, setupDatabase, veramo, veramo2 } from '@tonomy/tonomy-id-sdk';
 import { Entities, migrations } from '@veramo/data-store';
 import * as SQLite from 'expo-sqlite/legacy';
-import Debug from 'debug';
+import DebugAndLog from './debug';
 
-const debug = Debug('tonomy-id:util:runtime-tests');
+const debug = DebugAndLog('tonomy-id:util:runtime-tests');
 
 //@ts-expect-error openDatabase does not exist
 SQLite.openDatabase = SQLite.openDatabaseSync;

@@ -4,11 +4,11 @@ import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
 import { EthereumPrivateKey, EthereumAccount, EthereumSepoliaChain } from './chain/etherum';
 import { ethers, TransactionRequest, Wallet } from 'ethers';
 import { appStorage, keyStorage } from './StorageManager/setup';
-import { IPrivateKey, IChain, ChainType } from '../utils/chain/types';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
+import { captureError } from './sentry';
 import { getKeyOrNullFromChain, tokenRegistry } from './tokenRegistry';
 
-const debug = Debug('tonomy-id:utils:keys');
+const debug = DebugAndLog('tonomy-id:utils:keys');
 
 /**
  * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
@@ -61,7 +61,7 @@ export async function testKeyGenerator() {
 
         debug('signedTransaction:', signedTransaction);
     } catch (e) {
-        console.error('testKeyGenerator()', e);
+        captureError('testKeyGenerator()', e);
     }
 }
 

@@ -34,10 +34,11 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getPriceCoinGecko } from './common';
 import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
-import Debug from 'debug';
+import DebugAndLog from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
+import { KeyValue } from '../strings';
 
-const debug = Debug('tonomy-id:utils:chain:ethereum');
+const debug = DebugAndLog('tonomy-id:utils:chain:ethereum');
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;
@@ -340,7 +341,7 @@ export class EthereumTransaction implements ITransaction {
         if (!decodedData?.name) throw new Error('Failed to decode function name');
         return decodedData.name;
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         const abi = await this.fetchAbi();
 
         if (!this.transaction.data) throw new Error('Transaction has no data');
@@ -391,6 +392,10 @@ export class EthereumTransaction implements ITransaction {
         throw new Error(
             'Ethereum transactions have no operations, call getTo() and other functions on EthereumTransaction instead'
         );
+    }
+
+    getExpiration(): Date | null {
+        return null;
     }
 }
 
@@ -496,14 +501,9 @@ export class EthereumAccount extends AbstractAccount {
     }
 
     async isContract(): Promise<boolean> {
-        try {
-            const code = await (this.chain as EthereumChain).getProvider().getCode(this.name);
+        const code = await (this.chain as EthereumChain).getProvider().getCode(this.name);
 
-            if (code !== '0x') return true;
-        } catch (error) {
-            console.error('EthereumAccount.isContract()', error);
-        }
-
+        if (code !== '0x') return true;
         return false;
     }
 }

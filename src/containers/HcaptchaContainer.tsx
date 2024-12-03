@@ -14,12 +14,13 @@ import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
-import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import NetInfo from '@react-native-community/netinfo';
+import DebugAndLog from '../utils/debug';
+import { setUser } from '@sentry/react-native';
 
-const debug = Debug('tonomy-id:containers:HcaptchaContainer');
+const debug = DebugAndLog('tonomy-id:containers:HcaptchaContainer');
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);
@@ -92,6 +93,10 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         try {
             await user.saveCaptchaToken(code);
             await user.createPerson();
+            setUser({
+                id: (await user.getAccountName()).toString(),
+                username: '@' + (await user.getUsername()).getBaseUsername(),
+            });
 
             await user.saveLocal();
             await user.updateKeys(getPassphrase());

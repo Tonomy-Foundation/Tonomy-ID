@@ -28,9 +28,9 @@ import ABICache from '@wharfkit/abicache';
 import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
-import Debug from 'debug';
+import DebugAndLog from '../debug';
 
-const debug = Debug('tonomy-id:utils:session:antelope');
+const debug = DebugAndLog('tonomy-id:utils:session:antelope');
 
 export class AntelopeTransactionRequest implements ITransactionRequest {
     transaction: ITransaction;

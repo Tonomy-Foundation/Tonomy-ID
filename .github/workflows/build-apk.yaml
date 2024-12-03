@@ -25,6 +25,8 @@ jobs:
       NODE_VERSION: 22.3.0
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       # https://expo.dev/accounts/[account]/settings/access-tokens
+      SENTRY_AUTH_TOKEN : ${{ secrets.SENTRY_AUTH_TOKEN }}
+      # https://sentry.io/orgredirect/organizations/:orgslug/settings/auth-tokens/
     container:
       image: cimg/android:2024.01-ndk
       # See https://circleci.com/developer/images/image/cimg/android#image-tags

@@ -1,0 +1,43 @@
+{
+  "tagFormat": "${version}",
+  "branches": [
+    {
+      "name": "master",
+      "prerelease": false
+    },
+    {
+      "name": "testnet",
+      "prerelease": "rc"
+    },
+    {
+      "name": "development",
+      "prerelease": "development"
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "angular"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md",
+          "package.json",
+          "yarn.lock"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
