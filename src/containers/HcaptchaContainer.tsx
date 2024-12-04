@@ -14,9 +14,10 @@ import TModal from '../components/TModal';
 import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
-import DebugAndLog from '../utils/debug';
-import { createNetworkErrorState, isNetworkError } from '../utils/errors';
+import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
+import NetInfo from '@react-native-community/netinfo';
+import DebugAndLog from '../utils/debug';
 import { setUser } from '@sentry/react-native';
 
 const debug = DebugAndLog('tonomy-id:containers:HcaptchaContainer');
@@ -48,11 +49,11 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             if (event && event.nativeEvent.data) {
                 if (['cancel'].includes(event.nativeEvent.data)) {
                     hideHcaptcha();
-                    setCode(event.nativeEvent.data);
                     setErrorMsg('You cancelled the challenge. Please try again.');
+                    setCode(null);
                 } else if (['error', 'expired'].includes(event.nativeEvent.data)) {
                     hideHcaptcha();
-                    setCode(event.nativeEvent.data);
+                    setCode(null);
                     setErrorMsg('Challenge expired or some error occured. Please try again.');
                 } else if (event.nativeEvent.data === 'open') {
                     debug('Visual challenge opened');
@@ -114,7 +115,6 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         } catch (e) {
             if (isNetworkError(e)) {
                 errorStore.setError(createNetworkErrorState());
-                setLoading(false);
                 return;
             } else if (e instanceof SdkError) {
                 switch (e.code) {
@@ -124,14 +124,12 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                     default:
                         errorStore.setError({ title: 'Error', error: e, expected: false });
                 }
-
-                setLoading(false);
-                return;
             } else {
                 errorStore.setError({ title: 'Error', error: e, expected: false });
-                setLoading(false);
-                return;
             }
+        } finally {
+            setCode(null);
+            setLoading(false);
         }
 
         setLoading(false);
@@ -153,7 +151,15 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
         setShowModal(false);
     }
 
-    const onPressCheckbox = () => {
+    const onPressCheckbox = async () => {
+        const netInfo = await NetInfo.fetch();
+
+        if (!netInfo.isConnected) {
+            setErrorMsg(NETWORK_ERROR_MESSAGE);
+            return;
+        }
+
+        setErrorMsg(null);
         setSuccess(!success);
         setLoading(true);
 
