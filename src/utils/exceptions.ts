@@ -18,25 +18,24 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         errorStore.setError({ error: errorObject, title: 'Unhandled Promise Rejection Error', expected: false });
     };
 
-    setJSExceptionHandler((e: Error, isFatal) => {
-        if (isFatal) {
-            captureError('JS Exception Handler', e, 'fatal');
-            errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
-        } else {
-            debug('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
+    setJSExceptionHandler((e: any, isFatal) => {
+        const error = e instanceof Error ? e : new Error(serializeAny(e));
 
-            // @ts-expect-error context does not exist on Error
+        if (isFatal) {
+            captureError('JS Exception Handler', error, 'fatal');
+            errorStore.setError({ error: error, title: 'Unexpected Fatal JS Error', expected: false });
+        } else {
+            debug('Unexpected JS Error Logs', error, typeof error, JSON.stringify(error, null, 2));
+
             if (e?.context?.startsWith('core') && e?.time && e?.level) {
                 // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
-                debug('Ignoring WalletConnect Core Relay error', e);
-                captureError('WalletConnect Core Relay Error', e, 'debug');
+                debug('Ignoring WalletConnect Core Relay error', error);
+                captureError('WalletConnect Core Relay Error', error, 'debug');
                 return;
             }
 
-            if (
-                // @ts-expect-error context does not exist on Error
-                e?.context === 'client'
-            ) {
+            if (e?.context === 'client') {
+                debug('Ignoring WalletConnect Core Client error', error);
                 // getting async error throw by the WalletConnect Core client. when the key is MISSING_OR_INVALID or NO_MATCHING_KEY
                 // https://github.com/WalletConnect/walletconnect-monorepo/blob/v2.0/packages/core/src/controllers/store.ts#L160
                 captureError('Ignoring WalletConnect Core Client error', e, 'debug');

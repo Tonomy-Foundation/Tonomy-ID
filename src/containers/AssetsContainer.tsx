@@ -82,7 +82,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                 }
             }
         } catch (error) {
-            console.error('fetchCryptoAssets() error', error);
+            captureError('fetchCryptoAssets()', error, 'debug');
         }
     }, [tokens]);
 
