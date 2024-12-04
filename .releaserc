@@ -28,12 +28,6 @@
       }
     ],
     [
-      "@semantic-release/exec",
-      {
-        "prepareCmd": "node ./create-version-tag.js ${nextRelease.version} ${branch.name}"
-      }
-    ],
-    [
       "@semantic-release/git",
       {
         "assets": [
