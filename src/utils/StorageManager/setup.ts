@@ -80,7 +80,6 @@ export async function connect() {
 
         // If the tables don't exist, synchronize the schema
         if (!appTableExists || !keyTableExists || !assetTableExists) {
-            await dataSource.dropDatabase(); // Drop all tables
             await dataSource.synchronize();
         }
 
