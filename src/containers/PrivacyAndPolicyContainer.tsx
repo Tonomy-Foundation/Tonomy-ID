@@ -109,7 +109,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
 
                         <TP style={{ fontWeight: 'bold' }}>4. Information Sharing</TP>
                         <TP style={styles.scrollView}>
-                            a. {settings.config.appName} does not share your information with third parties, except as described under "Data Collection and Usage."
+                            a. {settings.config.appName} does not share your information with third parties, except as described under &quot;Data Collection and Usage.&quot;
                         </TP>
                         <TP style={styles.scrollView}>
                             b. Sentry.io processes only the information necessary to resolve application errors.
