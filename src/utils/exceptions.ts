@@ -33,6 +33,16 @@ export default function setErrorHandlers(errorStore: ErrorState) {
                 return;
             }
 
+            if (
+                // @ts-expect-error context does not exist on Error
+                e?.context === 'client'
+            ) {
+                // getting async error throw by the WalletConnect Core client. when the key is MISSING_OR_INVALID or NO_MATCHING_KEY
+                // https://github.com/WalletConnect/walletconnect-monorepo/blob/v2.0/packages/core/src/controllers/store.ts#L160
+                captureError('Ignoring WalletConnect Core Client error', e, 'debug');
+                return;
+            }
+
             errorStore.setError({ error: e, title: 'Unexpected JS Error', expected: false });
         }
     }, false);

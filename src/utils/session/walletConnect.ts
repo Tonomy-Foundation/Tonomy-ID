@@ -32,6 +32,7 @@ import {
 } from '../tokenRegistry';
 import { redirectToMobileBrowser } from '../platform';
 import useErrorStore from '../../store/errorStore';
+import { captureError } from '../../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:utils:session:walletConnect');
 
