@@ -21,7 +21,6 @@ export interface WalletState {
     core: ICore | null;
     accounts: (IAccount | null)[];
     accountsInitialized: boolean;
-    initializeWalletState: () => Promise<void>;
     clearState: () => Promise<void>;
     updateBalance: () => Promise<void>;
     disconnectSession: () => Promise<void>;
@@ -43,62 +42,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     accountsInitialized: false,
     web3wallet: null,
     core: null,
-    initializeWalletState: async () => {
-        if (get().initialized) {
-            debug('initializeWalletState() Already initialized');
-            return;
-        }
-
-        const netInfoState = await NetInfo.fetch();
-
-        if (!netInfoState.isConnected) {
-            throw new Error(NETWORK_ERROR_MESSAGE);
-        }
-
-        if (!get().initialized && !get().web3wallet) {
-            try {
-                let core: ICore;
-
-                try {
-                    core = new Core({
-                        projectId: settings.config.walletConnectProjectId,
-                        relayUrl: 'wss://relay.walletconnect.com',
-                    });
-                } catch (e) {
-                    captureError('useWalletStore() error when constructing Core', e);
-                    if (!(e instanceof Error)) {
-                        throw new Error(JSON.stringify(e));
-                    } else throw e;
-                }
-
-                let web3walletInstance: IWeb3Wallet;
-
-                try {
-                    web3walletInstance = await Web3Wallet.init({
-                        core,
-                        metadata: {
-                            name: settings.config.appName,
-                            description: settings.config.ecosystemName,
-                            url: 'https://walletconnect.com/',
-                            icons: [settings.config.images.logo48],
-                        },
-                    });
-                } catch (e) {
-                    captureError('useWalletStore() error on Web3Wallet.init()', e);
-                    if (e.msg && e.msg.includes('No internet connection')) throw new Error(NETWORK_ERROR_MESSAGE);
-                    else throw e;
-                }
-
-                set({
-                    initialized: true,
-                    web3wallet: web3walletInstance,
-                    core,
-                });
-            } catch (e) {
-                captureError('useWalletStore() initializeWalletState()', e);
-            }
-        }
-    },
     initializeWalletAccount: async (user: IUser) => {
         try {
             if (get().accountsInitialized) {
