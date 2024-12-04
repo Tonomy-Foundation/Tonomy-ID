@@ -250,17 +250,10 @@ export class WalletConnectSession extends AbstractSession {
         }
 
         if (!this.initialized && !this.web3wallet) {
-            try {
-                this.core = new Core({
-                    projectId: settings.config.walletConnectProjectId,
-                    relayUrl: 'wss://relay.walletconnect.com',
-                });
-            } catch (e) {
-                captureError('useWalletStore() error when constructing Core', e);
-                if (!(e instanceof Error)) {
-                    throw new Error(JSON.stringify(e));
-                } else throw e;
-            }
+            this.core = new Core({
+                projectId: settings.config.walletConnectProjectId,
+                relayUrl: 'wss://relay.walletconnect.com',
+            });
 
             try {
                 this.web3wallet = await Web3Wallet.init({

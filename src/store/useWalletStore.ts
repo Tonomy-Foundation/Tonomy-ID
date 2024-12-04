@@ -126,7 +126,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
                             if (isNetworkError(error)) {
                                 debug(`updateBalance() Network error fetching balance ${chain.getName()}`);
                             } else {
-                                console.error(`updateBalance() Error fetching balance ${chain.getName()}:`, error);
+                                captureError(
+                                    `updateBalance() Error fetching balance ${chain.getName()}:`,
+                                    error,
+                                    'warning'
+                                );
                             }
                         }
                     } catch (error) {
