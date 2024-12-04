@@ -138,9 +138,13 @@ export default function CommunicationModule() {
 
                 // did:key is used for the initial login request so is allowed
                 if (method !== 'key' && id !== parseDid(await user.getDid()).id) {
-                    debug('LoginRequestsMessage sender did not match user did', senderDid, await user.getDid());
+                    debug(`LoginRequestsMessage() sender ${senderDid} did not match ${await user.getDid()}`);
+                    captureError(
+                        'LoginRequestsMessage() user DOS',
+                        new Error(`Sender ${senderDid} did not match ${await user.getDid()}`),
+                        'info'
+                    );
                     // Drop message. It came from a different account and we are not interested in it here.
-                    // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
                 }
 
@@ -165,13 +169,13 @@ export default function CommunicationModule() {
                 const senderDid = message.getSender().split('#')[0];
 
                 if (senderDid !== (await user.getDid())) {
-                    debug(
-                        'linkAuthRequestSubscriber() LinkAuthRequestMessage sender did not match user did',
-                        senderDid,
-                        await user.getDid()
+                    debug(`linkAuthRequestSubscriber() sender ${senderDid} did not match ${await user.getDid()}`);
+                    captureError(
+                        'linkAuthRequestSubscriber() user DOS',
+                        new Error(`Sender ${senderDid} did not match ${await user.getDid()}`),
+                        'info'
                     );
                     // Drop message. It came from a different account and we are not interested in it here.
-                    // TODO: low priority: handle this case in a better way as it does present a DOS vector.
                     return;
                 }
 
