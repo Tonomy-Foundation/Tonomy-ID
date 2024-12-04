@@ -21,6 +21,7 @@ import DebugAndLog from '../utils/debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 import { useSessionStore } from '../store/sessionStore';
+import { captureError } from '../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:services:CommunicationModule');
 
@@ -76,8 +77,8 @@ export default function CommunicationModule() {
                 if (url) {
                     await handleDeepLink({ url });
                 }
-            } catch (err) {
-                console.error('An error occurred', err);
+            } catch (error) {
+                captureError('CommunicationModule() getInitialURL error', error, 'warning');
             }
         })();
 

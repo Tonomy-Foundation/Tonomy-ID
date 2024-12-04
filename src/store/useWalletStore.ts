@@ -180,10 +180,10 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
                             await assetStorage.updateAccountBalance(balance);
                         } catch (error) {
-                            console.error(`updateBalance() Error fetching balance ${chain.getName()}:`, error);
+                            captureError(`updateBalance() Error fetching balance ${chain.getName()}`, error, 'warning');
                         }
                     } catch (error) {
-                        console.error(`updateBalance() Error updating balance:`, error);
+                        captureError(`updateBalance() Error updating balance:`, error);
                     }
                 })
             );

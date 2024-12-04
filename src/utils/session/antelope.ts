@@ -21,6 +21,7 @@ import {
     AntelopePrivateKey,
     AntelopeTransaction,
     AntelopeTransactionReceipt,
+    ErrorWithResponse,
     getChainFromAntelopeChainId,
 } from '../chain/antelope';
 import { APIClient, PrivateKey } from '@wharfkit/antelope';
@@ -29,6 +30,7 @@ import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
 import DebugAndLog from '../debug';
+import { captureError } from '../sentry';
 
 const debug = DebugAndLog('tonomy-id:utils:session:antelope');
 
@@ -102,7 +104,7 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
                 });
 
                 if (!response.ok || response.status !== 200) {
-                    console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                    captureError('Failed to send callback', new ErrorWithResponse(`Failed to send callback`, response));
                 }
             }
         }
@@ -144,15 +146,16 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
                     debug('approveTransactionRequest() response status', response.status);
 
                     if (!response.ok || response.status !== 200) {
-                        console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                        captureError(
+                            'Failed to send callback',
+                            new ErrorWithResponse(`Failed to send callback`, response)
+                        );
                     }
                 }
             }
 
             return receipt;
         } catch (e) {
-            console.error('Error approving transaction', e);
-
             await this.reject();
             throw e;
         }

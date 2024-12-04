@@ -793,7 +793,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
     }
 }
 
-class ErrorWithResponse extends Error {
+export class ErrorWithResponse extends Error {
     response: Response;
     constructor(message: string, response: Response) {
         super(message);
@@ -886,9 +886,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             });
 
             if (!response.ok || response.status !== 200) {
-                const error = new ErrorWithResponse(`Failed to send callback`, response);
-
-                captureError('rejectTransactionRequest()', error);
+                captureError('rejectTransactionRequest()', new ErrorWithResponse(`Failed to send callback`, response));
             }
         }
     }
