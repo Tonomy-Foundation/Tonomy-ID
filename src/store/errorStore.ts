@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import DebugAndLog from '../utils/debug';
+import { serializeAny } from '../utils/strings';
 
 const debug = DebugAndLog('tonomy-id:store:errorStore');
 
@@ -50,7 +51,7 @@ const useErrorStore = create<ErrorState>((set, get) => ({
         let newError: Error;
 
         if (!(error instanceof Error)) {
-            newError = new Error(JSON.stringify(error));
+            newError = new Error(serializeAny(error));
         } else {
             newError = error;
         }
