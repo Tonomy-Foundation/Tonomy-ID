@@ -35,10 +35,10 @@ export default function setErrorHandlers(errorStore: ErrorState) {
 
             if (
                 // @ts-expect-error context does not exist on Error
-                e?.context?.startsWith('client') &&
-                (e.message.includes('No matching key') || e.message.includes('Missing or invalid'))
+                e?.context === 'client'
             ) {
-                // Getting error with the WalletConnect Core client. it throws an error when the client is not connected/proposal expire or invalid.
+                // getting async error throw by the WalletConnect Core client. when the key is MISSING_OR_INVALID or NO_MATCHING_KEY
+                // https://github.com/WalletConnect/walletconnect-monorepo/blob/v2.0/packages/core/src/controllers/store.ts#L160
                 debug('Ignoring WalletConnect Core Client error', e);
                 return;
             }

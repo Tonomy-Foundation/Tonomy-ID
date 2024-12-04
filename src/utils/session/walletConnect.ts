@@ -32,6 +32,7 @@ import {
 } from '../tokenRegistry';
 import { redirectToMobileBrowser } from '../platform';
 import useErrorStore from '../../store/errorStore';
+import { captureError } from '../../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:utils:session:walletConnect');
 
@@ -249,10 +250,17 @@ export class WalletConnectSession extends AbstractSession {
         }
 
         if (!this.initialized && !this.web3wallet) {
-            this.core = new Core({
-                projectId: settings.config.walletConnectProjectId,
-                relayUrl: 'wss://relay.walletconnect.com',
-            });
+            try {
+                this.core = new Core({
+                    projectId: settings.config.walletConnectProjectId,
+                    relayUrl: 'wss://relay.walletconnect.com',
+                });
+            } catch (e) {
+                captureError('useWalletStore() error when constructing Core', e);
+                if (!(e instanceof Error)) {
+                    throw new Error(JSON.stringify(e));
+                } else throw e;
+            }
 
             try {
                 this.web3wallet = await Web3Wallet.init({
