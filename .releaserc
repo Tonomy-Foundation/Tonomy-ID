@@ -7,11 +7,11 @@
     },
     {
       "name": "testnet",
-      "prerelease": "rc"
+      "prerelease": false
     },
     {
       "name": "development",
-      "prerelease": "development"
+      "prerelease": false
     }
   ],
   "plugins": [
@@ -25,6 +25,12 @@
       "@semantic-release/npm",
       {
         "npmPublish": false
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "node ./create-version-tag.js ${nextRelease.version} ${branch.name}"
       }
     ],
     [
