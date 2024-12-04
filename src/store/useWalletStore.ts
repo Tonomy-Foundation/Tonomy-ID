@@ -134,7 +134,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                             }
                         }
                     } catch (error) {
-                        console.error(`updateBalance() Error updating balance:`, error);
+                        captureError(`updateBalance() Error updating balance:`, error);
                     }
                 })
             );
