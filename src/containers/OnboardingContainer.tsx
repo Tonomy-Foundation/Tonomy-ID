@@ -11,7 +11,7 @@ import { appStorage } from '../utils/StorageManager/setup';
 const { height: screenHeight } = Dimensions.get('window');
 
 const pictureAndSliderHeight = screenHeight * 0.69;
-const textHeight = screenHeight * 0.24;
+const textHeight = screenHeight * 0.22;
 const buttonsHeight = screenHeight * 0.07;
 
 function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
