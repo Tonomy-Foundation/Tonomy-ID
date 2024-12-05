@@ -10,9 +10,9 @@ import { appStorage } from '../utils/StorageManager/setup';
 
 const { height: screenHeight } = Dimensions.get('window');
 
-const pictureAndSliderHeight = screenHeight * 0.56;
-const textHeight = screenHeight * 0.33;
-const buttonsHeight = screenHeight * 0.1;
+const pictureAndSliderHeight = screenHeight * 0.69;
+const textHeight = screenHeight * 0.24;
+const buttonsHeight = screenHeight * 0.07;
 
 function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -118,8 +118,6 @@ const styles = StyleSheet.create({
     pictureAndSlider: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 6,
     },
     slide: {
         flex: 1,
@@ -127,10 +125,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     image: {
-        width: '100%',
-        height: '93%',
+        width: '90%',
+        height: '85%',
         resizeMode: 'contain',
-        marginTop: 30,
     },
     dot: {
         backgroundColor: 'rgba(0,0,0,.24)',
@@ -150,19 +147,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingBottom: 10,
-        paddingHorizontal: 8,
+        paddingHorizontal: 6,
     },
     content: {
         gap: 10,
         flexDirection: 'column',
         width: '100%',
-        paddingHorizontal: 15,
-        paddingVertical: 5,
+        paddingHorizontal: 13,
+        paddingBottom: 5,
     },
     title: {
         fontSize: 25,
         fontWeight: 'bold',
-        lineHeight: 36,
+        lineHeight: 32,
         ...commonStyles.primaryFontFamily,
     },
     text: {
