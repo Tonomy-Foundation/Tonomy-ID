@@ -2,26 +2,24 @@ import { DataSource } from 'typeorm';
 import { testKeyGenerator } from './keys';
 import { dbConnection, setupDatabase, veramo, veramo2 } from '@tonomy/tonomy-id-sdk';
 import { Entities, migrations } from '@veramo/data-store';
-import * as SQLite from 'expo-sqlite/legacy';
+import * as ExpoSQLite from 'expo-sqlite/legacy';
 import DebugAndLog from './debug';
 
 const debug = DebugAndLog('tonomy-id:util:runtime-tests');
 
-//@ts-expect-error openDatabase does not exist
-SQLite.openDatabase = SQLite.openDatabaseSync;
-
-const dataSource = new DataSource({
-    type: 'expo',
-    driver: SQLite,
-    database: 'veramo.sqlite',
-    migrations: migrations,
-    migrationsRun: true,
-    logging: ['error', 'info', 'warn'],
-    entities: Entities,
-});
-
 async function testVeramo() {
     debug('testVeramo() called');
+    const dataSource = new DataSource({
+        type: 'expo',
+        driver: ExpoSQLite,
+        database: 'veramo.sqlite',
+        migrations: migrations,
+        migrationsRun: true,
+        logging: ['error', 'info', 'warn'],
+        entities: Entities,
+    });
+
+    debug('DataSource created');
     await setupDatabase(dataSource);
     debug('Database setup');
     await veramo();
