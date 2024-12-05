@@ -8,6 +8,7 @@ import DebugAndLog from '../utils/debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { TokenRegistryEntry, getKeyOrNullFromChain, tokenRegistry } from '../utils/tokenRegistry';
 import useAppSettings from '../hooks/useAppSettings';
+import useErrorStore from '../store/errorStore';
 
 const debug = DebugAndLog('tonomy-id:containers:MainContainer');
 
@@ -22,6 +23,7 @@ const SelectAssetContainer = ({
         { network: string; accountName: string | null; balance: string; usdBalance: number }[]
     >([]);
 
+    const errorStore = useErrorStore();
     const { developerMode } = useAppSettings();
 
     const tokens = useMemo(() => tokenRegistry, []);
@@ -91,24 +93,28 @@ const SelectAssetContainer = ({
     };
 
     const handleOnPress = async (tokenEntry: TokenRegistryEntry) => {
-        if (type === 'receive') {
-            navigation.navigate('Receive', {
-                screenTitle: `Receive ${tokenEntry.token.getSymbol()}`,
-                chain: tokenEntry.chain,
-            });
-        } else if (type === 'send') {
-            const key = await getKeyOrNullFromChain(tokenEntry);
+        try {
+            if (type === 'receive') {
+                navigation.navigate('Receive', {
+                    screenTitle: `Receive ${tokenEntry.token.getSymbol()}`,
+                    chain: tokenEntry.chain,
+                });
+            } else if (type === 'send') {
+                const key = await getKeyOrNullFromChain(tokenEntry);
 
-            if (!key) {
-                debug(`handleOnPress() ${tokenEntry.keyName} key not found`);
-                return;
+                if (!key) {
+                    debug(`handleOnPress() ${tokenEntry.keyName} key not found`);
+                    return;
+                }
+
+                navigation.navigate('Send', {
+                    screenTitle: `Send ${tokenEntry.token.getSymbol()}`,
+                    chain: tokenEntry.chain,
+                    privateKey: key,
+                });
             }
-
-            navigation.navigate('Send', {
-                screenTitle: `Send ${tokenEntry.token.getSymbol()}`,
-                chain: tokenEntry.chain,
-                privateKey: key,
-            });
+        } catch (error) {
+            errorStore.setError({ error, expected: false });
         }
     };
 

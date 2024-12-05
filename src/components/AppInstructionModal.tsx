@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Animate
 import theme from '../utils/theme';
 import CloseIcon from '../assets/icons/CloseIcon';
 import { appStorage } from '../utils/StorageManager/setup';
+import useErrorStore from '../store/errorStore';
 
 const { width } = Dimensions.get('window');
 const numberOfTabs = 5;
@@ -13,11 +14,17 @@ const AppInstructionModal = () => {
     const [showOnboarding, setShowOnboarding] = useState(false);
     const opacity = useRef(new Animated.Value(1)).current;
 
+    const errorStore = useErrorStore();
+
     useEffect(() => {
         const fetchSettings = async () => {
-            const showInstructions = await appStorage.getAppInstruction();
+            try {
+                const showInstructions = await appStorage.getAppInstruction();
 
-            setShowOnboarding(showInstructions);
+                setShowOnboarding(showInstructions);
+            } catch (error) {
+                errorStore.setError({ error, expected: false });
+            }
         };
 
         fetchSettings();
@@ -76,8 +83,12 @@ const AppInstructionModal = () => {
     };
 
     const onClose = async () => {
-        setShowOnboarding(false);
-        await appStorage.setAppInstruction(false);
+        try {
+            setShowOnboarding(false);
+            await appStorage.setAppInstruction(false);
+        } catch (error) {
+            errorStore.setError({ error, expected: false });
+        }
     };
 
     const bottomPosNormal = Platform.OS === 'ios' ? 80 : 45;

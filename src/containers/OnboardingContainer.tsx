@@ -7,9 +7,11 @@ import ArrowForwardIcon from '../assets/icons/ArrowForwardIcon';
 import { Props } from '../screens/OnboardingScreen';
 import { StackActions } from '@react-navigation/native';
 import { appStorage } from '../utils/StorageManager/setup';
+import useErrorStore from '../store/errorStore';
 
 export default function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
+    const errorStore = useErrorStore();
 
     const slides = [
         {
@@ -45,8 +47,12 @@ export default function OnboardingContainer({ navigation }: { navigation: Props[
     ];
 
     const onFinish = async () => {
-        await appStorage.setSplashOnboarding(false);
-        navigation.dispatch(StackActions.replace('Home'));
+        try {
+            await appStorage.setSplashOnboarding(false);
+            navigation.dispatch(StackActions.replace('Home'));
+        } catch (error) {
+            errorStore.setError({ error, expected: false });
+        }
     };
 
     const onNext = () => {

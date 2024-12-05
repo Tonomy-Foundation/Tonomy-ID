@@ -1,25 +1,35 @@
 import { useState, useCallback } from 'react';
 import { appStorage } from '../utils/StorageManager/setup';
 import { useFocusEffect } from '@react-navigation/native';
+import useErrorStore from '../store/errorStore';
 
 function useAppSettings() {
     const [developerMode, setDeveloperMode] = useState<boolean>(false);
+    const errorStore = useErrorStore();
 
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
-                const mode = await appStorage.getDeveloperMode();
+                try {
+                    const mode = await appStorage.getDeveloperMode();
 
-                setDeveloperMode(mode);
+                    setDeveloperMode(mode);
+                } catch (error) {
+                    errorStore.setError({ error, expected: false });
+                }
             };
 
             fetchData();
-        }, [])
+        }, [errorStore])
     );
 
     const setDeveloperModeSettings = async (mode: boolean) => {
-        setDeveloperMode(mode);
-        await appStorage.setDeveloperMode(mode);
+        try {
+            setDeveloperMode(mode);
+            await appStorage.setDeveloperMode(mode);
+        } catch (error) {
+            errorStore.setError({ error, expected: false });
+        }
     };
 
     return { developerMode, setDeveloperModeSettings };
