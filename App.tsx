@@ -21,11 +21,7 @@ import { wrap } from '@sentry/react-native';
 
 Debug.enable(process.env.DEBUG);
 
-if (!settings.isProduction()) {
-    runTests();
-}
-
-function App() {
+function MainApp() {
     const errorStore = useErrorStore();
 
     setErrorHandlers(errorStore);
@@ -40,4 +36,12 @@ function App() {
     );
 }
 
-export default wrap(App);
+let App: React.ComponentType = MainApp;
+
+if (settings.isProduction()) {
+    App = wrap(MainApp);
+} else {
+    runTests();
+}
+
+export default App;
