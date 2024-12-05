@@ -1,4 +1,4 @@
-import { init, captureException } from '@sentry/react-native';
+import { init, captureException, wrap as sentryWrap, setUser as sentrySetUser, User, Hub } from '@sentry/react-native';
 import settings from '../settings';
 import { ExclusiveEventHintOrCaptureContext } from '@sentry/core/types/utils/prepareEvent';
 import { SeverityLevel } from '@sentry/types/types/severity';
@@ -25,6 +25,22 @@ export function captureError(message: string, error: any, level: SeverityLevel =
     } else {
         console[level]('Error: ' + message + ': ', error);
         return 'sentry-not-active';
+    }
+}
+
+export function wrap(component: React.ComponentType): React.ComponentType {
+    if (settings.isProduction()) {
+        return sentryWrap(component);
+    } else {
+        return component;
+    }
+}
+
+export function setUser(user: User | null): ReturnType<Hub['setUser']> | null {
+    if (settings.isProduction()) {
+        return sentrySetUser(user);
+    } else {
+        return null;
     }
 }
 

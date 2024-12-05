@@ -17,11 +17,15 @@ import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
-import { wrap } from '@sentry/react-native';
+import { wrap } from './src/utils/sentry';
 
 Debug.enable(process.env.DEBUG);
 
-function MainApp() {
+if (!settings.isProduction()) {
+    runTests();
+}
+
+function App() {
     const errorStore = useErrorStore();
 
     setErrorHandlers(errorStore);
@@ -36,12 +40,4 @@ function MainApp() {
     );
 }
 
-let App: React.ComponentType = MainApp;
-
-if (settings.isProduction()) {
-    App = wrap(MainApp);
-} else {
-    runTests();
-}
-
-export default App;
+export default wrap(App);

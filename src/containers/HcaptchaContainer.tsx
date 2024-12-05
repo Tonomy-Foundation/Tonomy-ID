@@ -18,7 +18,7 @@ import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import NetInfo from '@react-native-community/netinfo';
 import DebugAndLog from '../utils/debug';
-import { setUser } from '@sentry/react-native';
+import { setUser } from '../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:containers:HcaptchaContainer');
 

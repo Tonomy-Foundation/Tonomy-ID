@@ -15,7 +15,7 @@ import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import TSpinner from '../components/atoms/TSpinner';
-import { setUser } from '@sentry/react-native';
+import { setUser } from '../utils/sentry';
 
 const tonomyContract = TonomyContract.Instance;
 

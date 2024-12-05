@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import DebugAndLog from '../utils/debug';
 import useWalletStore from './useWalletStore';
-import { setUser } from '@sentry/react-native';
+import { setUser } from '../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:store:userStore');
 
