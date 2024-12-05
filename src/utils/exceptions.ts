@@ -18,7 +18,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         errorStore.setError({ error: errorObject, title: 'Unhandled Promise Rejection Error', expected: false });
     };
 
-    setJSExceptionHandler((e: any, isFatal) => {
+    setJSExceptionHandler((e: any, isFatal: boolean) => {
         const error = e instanceof Error ? e : new Error(serializeAny(e));
 
         if (isFatal) {
