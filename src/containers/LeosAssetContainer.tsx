@@ -1,13 +1,46 @@
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
-import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking } from 'react-native';
+import { LeosAssetsScreenNavigationProp } from '../screens/LeosAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight } from 'iconoir-react-native';
+import { IChain } from '../utils/chain/types';
+import { useEffect, useState } from 'react';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type AssetDetailProps = {
-    navigation: AssetDetailScreenNavigationProp['navigation'];
+    navigation: LeosAssetsScreenNavigationProp['navigation'];
+    chain: IChain;
 };
 
-const LeosAssetContainer = ({ navigation }: AssetDetailProps) => {
+const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
+    const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAssetDetails = async () => {
+            const assetData = await getAssetDetails(chain);
+
+            setAsset(assetData);
+            setLoading(false);
+        };
+
+        fetchAssetDetails();
+
+        const interval = setInterval(fetchAssetDetails, 10000);
+
+        return () => clearInterval(interval);
+    }, [chain]);
+
+    if (loading) {
+        return <TSpinner />;
+    }
+
+    const redirectToCheckExplorer = () => {
+        const explorerUrl = asset.chain.getExplorerUrl({ accountName: asset.account });
+
+        Linking.openURL(explorerUrl);
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total assets</Text>
@@ -29,19 +62,34 @@ const LeosAssetContainer = ({ navigation }: AssetDetailProps) => {
                     <Text style={styles.headerUSDAmount}>{`= $3273.1`}</Text>
 
                     <View style={styles.sendReceiveButtons}>
-                        <TouchableOpacity style={styles.flexCenter}>
+                        <TouchableOpacity
+                            style={styles.flexCenter}
+                            onPress={() =>
+                                navigation.navigate('Send', {
+                                    chain: asset.chain,
+                                    privateKey: asset.privateKey,
+                                })
+                            }
+                        >
                             <View style={styles.headerButton}>
                                 <ArrowUp height={18} width={18} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Send</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.flexCenter}>
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate('Receive', {
+                                    chain: asset.chain,
+                                })
+                            }
+                            style={styles.flexCenter}
+                        >
                             <View style={styles.headerButton}>
                                 <ArrowDown height={18} width={18} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Receive</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.flexCenter}>
+                        <TouchableOpacity style={styles.flexCenter} onPress={redirectToCheckExplorer}>
                             <View style={styles.headerButton}>
                                 <Clock height={18} width={18} color={theme.colors.black} strokeWidth={2} />
                             </View>
@@ -52,12 +100,15 @@ const LeosAssetContainer = ({ navigation }: AssetDetailProps) => {
             </View>
 
             <Text style={styles.subTitle}>More</Text>
-            <View style={styles.moreView}>
-                <Text style={{ fontWeight: '600' }}>Vested assets</Text>
-                <View style={styles.flexColEnd}>
-                    <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+            <TouchableOpacity onPressIn={() => navigation.navigate('VestedAssets')}>
+                <View style={styles.moreView}>
+                    <Text style={{ fontWeight: '600' }}>Vested assets</Text>
+                    <View style={styles.flexColEnd}>
+                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
                 </View>
-            </View>
+            </TouchableOpacity>
+
             <View style={styles.moreView}>
                 <Text style={{ fontWeight: '600' }}>Staking</Text>
                 <View style={styles.flexColEnd}>
@@ -130,11 +181,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 8,
-        padding: 20,
+        paddingVertical: 26,
+        paddingHorizontal: 20,
     },
     subTitle: {
-        marginTop: 15,
-        marginBottom: 5,
+        marginTop: 20,
+        marginBottom: 10,
         fontSize: 16,
         ...commonStyles.primaryFontFamily,
     },

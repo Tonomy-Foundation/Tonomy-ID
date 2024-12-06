@@ -196,7 +196,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                     key={index}
                                     onPress={() => {
                                         if (chainObj.token.getSymbol() === 'LEOS') {
-                                            navigation.navigate('LeosAssetManager');
+                                            navigation.navigate('LeosAssetManager', {
+                                                chain: chainObj.chain,
+                                            });
                                             return;
                                         } else {
                                             navigation.navigate('AssetDetail', {
