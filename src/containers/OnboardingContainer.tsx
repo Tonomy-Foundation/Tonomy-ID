@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { TButtonContained } from '../components/atoms/TButton';
 import theme, { commonStyles } from '../utils/theme';
@@ -9,7 +9,13 @@ import { StackActions } from '@react-navigation/native';
 import { appStorage } from '../utils/StorageManager/setup';
 import useErrorStore from '../store/errorStore';
 
-export default function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
+const { height: screenHeight } = Dimensions.get('window');
+
+const pictureAndSliderHeight = screenHeight * 0.69;
+const textHeight = screenHeight * 0.22;
+const buttonsHeight = screenHeight * 0.07;
+
+function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const errorStore = useErrorStore();
 
@@ -65,71 +71,69 @@ export default function OnboardingContainer({ navigation }: { navigation: Props[
 
     return (
         <View style={styles.container}>
-            <Swiper
-                loop={false}
-                index={activeIndex}
-                onIndexChanged={(index) => setActiveIndex(index)}
-                showsPagination={true}
-                dotStyle={styles.dot}
-                activeDotStyle={styles.activeDot}
-                containerStyle={{ flex: 0.7 }}
-            >
-                {slides.map((slide, index) => (
-                    <View style={styles.slide} key={slide.id}>
-                        <Image source={slide.image} style={styles.image} />
-                    </View>
-                ))}
-            </Swiper>
+            <View style={[styles.pictureAndSlider, { height: pictureAndSliderHeight }]}>
+                <Swiper
+                    loop={false}
+                    index={activeIndex}
+                    onIndexChanged={(index) => setActiveIndex(index)}
+                    showsPagination={true}
+                    dotStyle={styles.dot}
+                    activeDotStyle={styles.activeDot}
+                >
+                    {slides.map((slide) => (
+                        <View style={styles.slide} key={slide.id}>
+                            <Image source={slide.image} style={styles.image} />
+                        </View>
+                    ))}
+                </Swiper>
+            </View>
 
-            {/* Title and Text */}
-            <View style={styles.main}>
-                <View style={styles.content}>
+            <View style={[styles.textContainer, { height: textHeight }]}>
+                <ScrollView contentContainerStyle={styles.content}>
                     <Text style={styles.title}>{slides[activeIndex].title}</Text>
                     <Text style={styles.text}>{slides[activeIndex].text}</Text>
-                </View>
-                <View style={styles.buttonContainer}>
-                    {activeIndex < slides.length - 1 && (
-                        <TouchableOpacity onPress={onFinish}>
-                            <Text style={styles.skipButton}>Skip</Text>
-                        </TouchableOpacity>
-                    )}
-                    {activeIndex < slides.length - 1 && (
-                        <TouchableOpacity onPress={onNext} style={styles.nextButton}>
-                            <ArrowForwardIcon color={theme.colors.white} />
-                        </TouchableOpacity>
-                    )}
-                    {activeIndex === slides.length - 1 && (
-                        <TButtonContained size="large" style={{ width: '100%' }} onPress={onFinish}>
-                            PROCEED
-                        </TButtonContained>
-                    )}
-                </View>
+                </ScrollView>
+            </View>
+
+            <View style={[styles.buttonContainer, { height: buttonsHeight }]}>
+                {activeIndex < slides.length - 1 && (
+                    <TouchableOpacity onPress={onFinish}>
+                        <Text style={styles.skipButton}>Skip</Text>
+                    </TouchableOpacity>
+                )}
+                {activeIndex < slides.length - 1 && (
+                    <TouchableOpacity onPress={onNext} style={styles.nextButton}>
+                        <ArrowForwardIcon color={theme.colors.white} />
+                    </TouchableOpacity>
+                )}
+                {activeIndex === slides.length - 1 && (
+                    <TButtonContained size="large" style={{ width: '100%' }} onPress={onFinish}>
+                        PROCEED
+                    </TButtonContained>
+                )}
             </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    main: {
-        flex: 0.3,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    pictureAndSlider: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     slide: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
     },
     image: {
-        width: '100%',
-        height: '100%',
+        width: '90%',
+        height: '85%',
         resizeMode: 'contain',
-        marginTop: 30,
     },
     dot: {
         backgroundColor: 'rgba(0,0,0,.24)',
@@ -145,16 +149,23 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginHorizontal: 5,
     },
+    textContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 10,
+        paddingHorizontal: 6,
+    },
     content: {
         gap: 10,
         flexDirection: 'column',
         width: '100%',
-        padding: 16,
+        paddingHorizontal: 13,
+        paddingBottom: 5,
     },
     title: {
-        fontSize: 26,
+        fontSize: 25,
         fontWeight: 'bold',
-        lineHeight: 36,
+        lineHeight: 32,
         ...commonStyles.primaryFontFamily,
     },
     text: {
@@ -166,19 +177,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 16,
+        paddingHorizontal: 25,
+        paddingBottom: 30,
         width: '100%',
-        marginBottom: 40,
     },
     skipButton: {
         fontSize: 16,
     },
     nextButton: {
-        width: 60,
-        height: 60,
+        width: 40,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: theme.colors.primary,
         borderRadius: 40,
     },
 });
+
+export default OnboardingContainer;
