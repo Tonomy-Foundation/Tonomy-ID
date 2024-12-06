@@ -196,10 +196,15 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 <TouchableOpacity
                                     key={index}
                                     onPress={() => {
-                                        navigation.navigate('AssetDetail', {
-                                            screenTitle: chainName,
-                                            chain: chainObj.chain,
-                                        });
+                                        if (chainObj.token.getSymbol() === 'LEOS') {
+                                            navigation.navigate('LeosAssetManager');
+                                            return;
+                                        } else {
+                                            navigation.navigate('AssetDetail', {
+                                                screenTitle: chainName,
+                                                chain: chainObj.chain,
+                                            });
+                                        }
                                     }}
                                     style={styles.assetsView}
                                 >

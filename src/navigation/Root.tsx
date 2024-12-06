@@ -42,6 +42,7 @@ import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
 import { navigationRef } from '../services/NavigationService';
+import LeosAssetScreen from '../screens/LeosAssetScreen';
 
 const prefix = Linking.createURL('');
 
@@ -111,6 +112,7 @@ export type MainRouteStackParamList = {
         privateKey: IPrivateKey;
     };
     SelectAsset: { screenTitle?: string; type: string };
+    LeosAssetManager: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -261,6 +263,12 @@ export default function RootNavigation() {
                                 title: route.params?.screenTitle || 'AssetDetail',
                             })}
                             component={AssetDetail}
+                        />
+
+                        <Stack.Screen
+                            name="LeosAssetManager"
+                            options={{ headerBackTitleVisible: false, title: 'LEOS' }}
+                            component={LeosAssetScreen}
                         />
                         <Stack.Screen
                             name="Send"
