@@ -1,14 +1,11 @@
 // useWalletStore.js
 import { create } from 'zustand';
-import { Core } from '@walletconnect/core';
-import Web3Wallet, { IWeb3Wallet } from '@walletconnect/web3wallet';
-import { assetStorage, connect, keyStorage } from '../utils/StorageManager/setup';
-import settings from '../settings';
+import { IWeb3Wallet } from '@walletconnect/web3wallet';
+import { assetStorage, keyStorage } from '../utils/StorageManager/setup';
 import { IAccount, IChain } from '../utils/chain/types';
 import DebugAndLog from '../utils/debug';
 import { ICore } from '@walletconnect/types';
-import NetInfo from '@react-native-community/netinfo';
-import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
+import { isNetworkError } from '../utils/errors';
 import { captureError } from '../utils/sentry';
 import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import { IUser } from '@tonomy/tonomy-id-sdk';
@@ -49,8 +46,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 return;
             }
 
-            await connect();
-
             const accountPromises = tokenRegistry.map(
                 async (tokenEntry: TokenRegistryEntry): Promise<IAccount | null> => {
                     debug(`initializeWalletAccount() fetching ${tokenEntry.chain.getName()} account data`);
@@ -85,8 +80,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
     clearState: async () => {
         try {
-            await connect();
-
             await keyStorage.deleteAll();
             await assetStorage.deleteAll();
             set({
@@ -106,8 +99,6 @@ const useWalletStore = create<WalletState>((set, get) => ({
         debug(`updateBalance() accountsInitialized: ${accountsInitialized}, ${accounts}`);
 
         if (accountsInitialized) {
-            await connect();
-
             await Promise.all(
                 accounts.map(async (account: IAccount | null) => {
                     try {

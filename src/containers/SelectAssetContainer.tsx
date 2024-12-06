@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'rea
 import { SelectAssetScreenNavigationProp } from '../screens/SelectAssetScreen';
 import theme from '../utils/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
+import { assetStorage } from '../utils/StorageManager/setup';
 import { capitalizeFirstLetter } from '../utils/strings';
 import DebugAndLog from '../utils/debug';
 import { formatCurrencyValue } from '../utils/numbers';
@@ -30,8 +30,6 @@ const SelectAssetContainer = ({
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            await connect();
-
             for (const { chain, token } of tokens) {
                 const asset = await assetStorage.findAssetByName(token);
 

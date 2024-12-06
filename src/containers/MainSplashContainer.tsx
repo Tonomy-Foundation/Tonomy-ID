@@ -9,7 +9,7 @@ import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
-import { appStorage, connect } from '../utils/StorageManager/setup';
+import { appStorage } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
 import DebugAndLog from '../utils/debug';
 import { progressiveRetryOnNetworkError } from '../utils/network';
@@ -34,7 +34,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                     progressiveRetryOnNetworkError(initializeStatusFromStorage);
                 }
 
-                await connect();
                 const status = await getStatus();
 
                 debug('splash screen status: ', status);

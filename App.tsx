@@ -18,6 +18,7 @@ import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
 import { wrap } from './src/utils/sentry';
+import { connect } from './src/utils/StorageManager/setup';
 
 Debug.enable(process.env.DEBUG);
 
@@ -29,6 +30,8 @@ function App() {
     const errorStore = useErrorStore();
 
     setErrorHandlers(errorStore);
+
+    connect();
 
     return (
         <PaperProvider theme={theme}>

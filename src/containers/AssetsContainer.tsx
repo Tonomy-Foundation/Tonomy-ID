@@ -7,7 +7,7 @@ import DebugAndLog from '../utils/debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
+import { assetStorage } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
@@ -35,8 +35,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            await connect();
-
             for (const { chain, token } of tokens) {
                 try {
                     const asset = await assetStorage.findAssetByName(token);
