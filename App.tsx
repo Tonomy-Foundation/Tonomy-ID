@@ -1,6 +1,8 @@
-// IMPORTANT: The following 2 packages should be imported in this order:
+// IMPORTANT: The following 4 packages should be imported in this order:
 import 'reflect-metadata';
 import './src/utils/polyfill';
+import './src/utils/sentry';
+import './src/utils/exceptions';
 // NOTE: The rest can be imported in any order
 import '@walletconnect/react-native-compat';
 import React from 'react';
@@ -15,7 +17,7 @@ import useErrorStore from './src/store/errorStore';
 import settings from './src/settings';
 import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
-
+import { wrap } from '@sentry/react-native';
 
 Debug.enable(process.env.DEBUG);
 
@@ -23,7 +25,7 @@ if (!settings.isProduction()) {
     runTests();
 }
 
-export default function App() {
+function App() {
     const errorStore = useErrorStore();
 
     setErrorHandlers(errorStore);
@@ -37,3 +39,5 @@ export default function App() {
         </PaperProvider>
     );
 }
+
+export default wrap(App);

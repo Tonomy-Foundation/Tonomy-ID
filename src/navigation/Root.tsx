@@ -36,9 +36,6 @@ import {
     ITransactionReceipt,
     ITransactionRequest,
 } from '../utils/chain/types';
-import { ResolvedSigningRequest } from '@wharfkit/signing-request';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
-import Debug from 'debug';
 import { OperationData } from '../components/Transaction';
 import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
@@ -46,8 +43,6 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
 import { navigationRef } from '../services/NavigationService';
 import LeosAssetScreen from '../screens/LeosAssetScreen';
-
-const debug = Debug('tonomy-id:navigation:root');
 
 const prefix = Linking.createURL('');
 
@@ -80,8 +75,9 @@ export type MainRouteStackParamList = {
     };
     SignTransactionSuccess: {
         operations: OperationData[];
-        transaction: ITransaction;
+        transaction?: ITransaction;
         receipt: ITransactionReceipt;
+        request: ITransactionRequest;
     };
     WalletConnectLogin: {
         loginRequest: ILoginRequest;

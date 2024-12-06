@@ -1,29 +1,44 @@
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { ErrorState } from '../store/errorStore';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
+import { captureError } from './sentry';
+import Bluebird from 'bluebird';
+import { serializeAny } from './strings';
 
-const debug = Debug('tonomy-id:utils:exceptions');
+// @ts-expect-error Promise library type mismatch
+global.Promise = Bluebird;
+
+const debug = DebugAndLog('tonomy-id:utils:exceptions');
 
 export default function setErrorHandlers(errorStore: ErrorState) {
-    global.onunhandlPedrejection = function (error) {
-        // Warning: when running in "remote debug" mode (JS environment is Chrome browser),
-        // this handler is called a second time by Bluebird with a custom "dom-event".
-        // We need to filter this case out:
-        if (error instanceof Error) {
-            errorStore.setError({ error, title: 'Unhandled Promise Rejection Error', expected: false });
-        }
+    // https://stackoverflow.com/a/68633267/28145757
+    global.onunhandledrejection = function (reason: any) {
+        const errorObject = reason instanceof Error ? reason : new Error(serializeAny(reason));
+
+        errorStore.setError({ error: errorObject, title: 'Unhandled Promise Rejection Error', expected: false });
     };
 
-    setJSExceptionHandler((e: Error, isFatal) => {
-        if (isFatal) {
-            errorStore.setError({ error: e, title: 'Unexpected Fatal JS Error', expected: false });
-        } else {
-            debug('Unexpected JS Error Logs', e, typeof e, JSON.stringify(e, null, 2));
+    setJSExceptionHandler((e: any, isFatal) => {
+        const error = e instanceof Error ? e : new Error(serializeAny(e));
 
-            // @ts-expect-error context does not exist on Error
+        if (isFatal) {
+            captureError('JS Exception Handler', error, 'fatal');
+            errorStore.setError({ error: error, title: 'Unexpected Fatal JS Error', expected: false });
+        } else {
+            debug('Unexpected JS Error Logs', error, typeof error, JSON.stringify(error, null, 2));
+
             if (e?.context?.startsWith('core') && e?.time && e?.level) {
                 // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
-                debug('Ignoring WalletConnect Core Relay error', e);
+                debug('Ignoring WalletConnect Core Relay error', error);
+                captureError('WalletConnect Core Relay Error', error, 'debug');
+                return;
+            }
+
+            if (e?.context === 'client') {
+                debug('Ignoring WalletConnect Core Client error', error);
+                // getting async error throw by the WalletConnect Core client. when the key is MISSING_OR_INVALID or NO_MATCHING_KEY
+                // https://github.com/WalletConnect/walletconnect-monorepo/blob/v2.0/packages/core/src/controllers/store.ts#L160
+                captureError('Ignoring WalletConnect Core Client error', e, 'debug');
                 return;
             }
 
@@ -31,7 +46,7 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         }
     }, false);
 
-    setNativeExceptionHandler((errorString) => {
-        errorStore.setError({ error: new Error(errorString), title: 'Unexpected Native Error', expected: false });
+    setNativeExceptionHandler((errorString: string) => {
+        captureError('Native Exception Handler', new Error(errorString), 'fatal');
     });
 }

@@ -1,13 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import { TButtonOutlined } from '../components/atoms/TButton';
-import { TP } from '../components/atoms/THeadings';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useIsFocused } from '@react-navigation/native';
 import theme, { commonStyles } from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
@@ -16,9 +12,10 @@ import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import useAppSettings from '../hooks/useAppSettings';
+import { captureError } from '../utils/sentry';
 import useUserStore from '../store/userStore';
 
-const debug = Debug('tonomy-id:containers:AssetsContainer');
+const debug = DebugAndLog('tonomy-id:containers:AssetsContainer');
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const [total, setTotal] = useState<number>(0);
@@ -38,7 +35,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            if (!accountsInitialized) await initializeWalletAccount(user);
             await connect();
 
             for (const { chain, token } of tokens) {
@@ -86,9 +82,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                 }
             }
         } catch (error) {
-            console.error('fetchCryptoAssets() error', error);
+            captureError('fetchCryptoAssets()', error, 'debug');
         }
-    }, [accountsInitialized, initializeWalletAccount, tokens, user]);
+    }, [tokens]);
 
     const updateAllBalances = useCallback(async () => {
         if (isUpdatingBalances.current) return; // Prevent re-entry if already running
@@ -96,6 +92,11 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
         try {
             debug('updateAllBalances()');
+
+            if (!accountsInitialized) {
+                await initializeWalletAccount(user);
+            }
+
             await updateBalance();
             await fetchCryptoAssets();
             setAssetLoading(false);
@@ -103,12 +104,12 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
             } else {
-                console.error('AssetsContainer() updateAllBalances() error', error);
+                captureError('AssetsContainer() updateAllBalances()', error);
             }
         } finally {
             isUpdatingBalances.current = false;
         }
-    }, [updateBalance, fetchCryptoAssets]);
+    }, [updateBalance, fetchCryptoAssets, accountsInitialized, initializeWalletAccount, user]);
 
     const onRefresh = useCallback(async () => {
         try {

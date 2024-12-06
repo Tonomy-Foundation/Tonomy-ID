@@ -1,6 +1,5 @@
 // platform.ts
 import { Linking, Platform } from 'react-native';
-import * as Device from 'expo-device';
 
 export async function redirectToMobileBrowser(url: string): Promise<void> {
     // Detect if the user is on an iOS or Android device using React Native's Platform module

@@ -9,10 +9,10 @@ import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
-import Debug from 'debug';
+import DebugAndLog from '../debug';
 import { isNetworkError } from '../errors';
 
-const debug = Debug('tonomy-id:storageManager:setup');
+const debug = DebugAndLog('tonomy-id:storageManager:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
@@ -53,10 +53,17 @@ export const assetStorage = new ConcreteAssetManager(assetStorageRepository);
 
 async function checkTableExists(dataSource, tableName) {
     const queryRunner = dataSource.createQueryRunner();
-    const result = await queryRunner.query(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName]);
 
-    await queryRunner.release();
-    return result.length > 0;
+    try {
+        const result = await queryRunner.query(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [
+            tableName,
+        ]);
+
+        debug(`Table check result for ${tableName}:`, result);
+        return result.length > 0;
+    } finally {
+        await queryRunner.release();
+    }
 }
 
 //initialize the data source
