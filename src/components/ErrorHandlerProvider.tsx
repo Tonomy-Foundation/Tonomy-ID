@@ -3,9 +3,6 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from './TErrorModal';
-import DebugAndLog from '../utils/debug';
-
-const debug = DebugAndLog('tonomy-id:components:ErrorHandlerProvider');
 
 export default function ErrorHandlerProvider() {
     const [showModal, setShowModal] = useState(false);
@@ -25,8 +22,6 @@ export default function ErrorHandlerProvider() {
 
     useEffect(() => {
         const unsubscribe = useErrorStore.subscribe((state) => {
-            debug('errorStore.subscribe', state, errorRef.current);
-
             // Only update the modal if there's a change in the error state
             if (JSON.stringify(state.error) === JSON.stringify(errorRef.current.error)) return;
 

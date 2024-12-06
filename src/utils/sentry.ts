@@ -23,7 +23,7 @@ export function captureError(message: string, error: any, level: SeverityLevel =
     if (settings.isProduction()) {
         return sendToSentry(message, errorObject, level);
     } else {
-        console[level]('Error: ' + message + ': ', error);
+        console[level](`captureError(): ${message}`, errorObject.stack || errorObject);
         return 'sentry-not-active';
     }
 }

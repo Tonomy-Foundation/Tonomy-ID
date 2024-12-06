@@ -11,22 +11,28 @@ global.Promise = Bluebird;
 const debug = DebugAndLog('tonomy-id:utils:exceptions');
 
 export default function setErrorHandlers(errorStore: ErrorState) {
-    // https://stackoverflow.com/a/68633267/28145757
+    // http://bluebirdjs.com/docs/api/error-management-configuration.html#global-rejection-events
     global.onunhandledrejection = function (reason: any) {
+        debug(
+            'Unhandled Promise Rejection Error',
+            reason,
+            typeof reason,
+            reason instanceof Error,
+            serializeAny(reason, true)
+        );
         const errorObject = reason instanceof Error ? reason : new Error(serializeAny(reason));
 
         errorStore.setError({ error: errorObject, title: 'Unhandled Promise Rejection Error', expected: false });
     };
 
     setJSExceptionHandler((e: any, isFatal: boolean) => {
+        debug('Unexpected JS Error Logs', isFatal, e, typeof e, e instanceof Error, serializeAny(e, true));
         const error = e instanceof Error ? e : new Error(serializeAny(e));
 
         if (isFatal) {
             captureError('JS Exception Handler', error, 'fatal');
-            errorStore.setError({ error: error, title: 'Unexpected Fatal JS Error', expected: false });
+            errorStore.setError({ error, title: 'Unexpected Fatal JS Error', expected: false });
         } else {
-            debug('Unexpected JS Error Logs', error, typeof error, JSON.stringify(error, null, 2));
-
             if (e?.context?.startsWith('core') && e?.time && e?.level) {
                 // Network connection issue with the WalletConnect Core Relay. It will resolve again once internet returns.
                 debug('Ignoring WalletConnect Core Relay error', error);
@@ -47,6 +53,13 @@ export default function setErrorHandlers(errorStore: ErrorState) {
     }, false);
 
     setNativeExceptionHandler((errorString: string) => {
+        debug(
+            'Native Exception Handler',
+            typeof errorString,
+            // @ts-expect-error errorString is a string not Error
+            errorString instanceof Error,
+            serializeAny(errorString, true)
+        );
         captureError('Native Exception Handler', new Error(errorString), 'fatal');
     });
 }
