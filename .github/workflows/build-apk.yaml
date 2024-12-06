@@ -25,6 +25,10 @@ jobs:
       NODE_VERSION: 22.3.0
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       # https://expo.dev/accounts/[account]/settings/access-tokens
+      SENTRY_AUTH_TOKEN : ${{ secrets.SENTRY_AUTH_TOKEN }}
+      # https://sentry.io/orgredirect/organizations/:orgslug/settings/auth-tokens/
+      SENTRY_SECRET_KEY : ${{ secrets.SENTRY_SECRET_KEY }}
+      # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
     container:
       image: cimg/android:2024.01-ndk
       # See https://circleci.com/developer/images/image/cimg/android#image-tags
@@ -77,7 +81,9 @@ jobs:
         run: |
           yarn run build:prepare
           npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
-      
+        env:
+          SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
+        
       - name: Find APK file and rename it so it can be added as an artifact
         run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk" \;
 

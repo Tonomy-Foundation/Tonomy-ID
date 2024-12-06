@@ -6,7 +6,7 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { QuestionMark, WarningCircle } from 'iconoir-react-native';
 import NegligibleTransactionFees from './NegligibleTransactionFees';
-import { Action } from '@wharfkit/antelope';
+import { KeyValue } from '../utils/strings';
 
 export type TransactionFeeData = {
     fee: string;
@@ -21,7 +21,7 @@ export type OperationData = {
     usdValue?: string;
     contractName?: string;
     functionName?: string;
-    args?: Record<string, string>;
+    args?: KeyValue;
 };
 
 export function Operations({ operations, date }: { operations: OperationData[]; date?: Date }) {
@@ -91,6 +91,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     const [showActionDetails, setShowActionDetails] = useState(false);
     const [funToolTipVisible, setFunToolTipVisible] = useState(false);
     const [tranToolTipVisible, setTranToolTipVisible] = useState(false);
+
     return (
         <View style={styles.actionDialog}>
             {date && (
@@ -209,6 +210,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
     if (!transactionFee.show) {
         return null;
     }
+
     const onClose = () => {
         refMessage.current?.close();
     };

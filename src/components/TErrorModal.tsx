@@ -7,9 +7,7 @@ import { TButtonText } from './atoms/TButton';
 import { TP } from './atoms/THeadings';
 import { HttpError, EosioUtil, CommunicationError, AntelopePushTransactionError } from '@tonomy/tonomy-id-sdk';
 import { Modal } from 'react-native';
-import Debug from 'debug';
-
-const debug = Debug('tonomy-id:components:TErrorModal');
+import { captureError } from '../utils/sentry';
 
 export type TErrorModalProps = React.ComponentProps<typeof Modal> & {
     onPress: () => void;
@@ -30,8 +28,11 @@ export default function TErrorModal(props: TErrorModalProps) {
     }
 
     if (props.expected === false) {
-        console.error('TErrorModal() unexpected error', props.error, JSON.stringify(props.error, null, 2));
-        // Additional error handling or logging could be placed here
+        if (!props.error) {
+            captureError('TErrorModal()', new Error('unexpected error: no error provided'), 'warning');
+        } else {
+            captureError('TErrorModal() unexpected error', props.error);
+        }
     }
 
     function isExpandableErrorType() {
@@ -131,7 +132,7 @@ export default function TErrorModal(props: TErrorModalProps) {
             </TModal>
         );
     } catch (error) {
-        console.error('TErrorModal() rendering', error);
+        captureError('TErrorModal() rendering', error);
         return null;
     }
 }

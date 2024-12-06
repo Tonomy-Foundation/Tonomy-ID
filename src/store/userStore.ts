@@ -14,10 +14,11 @@ import {
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import useWalletStore from './useWalletStore';
+import { setUser } from '@sentry/react-native';
 
-const debug = Debug('tonomy-id:store:userStore');
+const debug = DebugAndLog('tonomy-id:store:userStore');
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -74,6 +75,7 @@ const useUserStore = create<UserState>((set, get) => ({
         await get().user.logout();
         if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         useWalletStore.getState().clearState();
+        setUser(null);
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
@@ -86,8 +88,13 @@ const useUserStore = create<UserState>((set, get) => ({
 
         try {
             debug('initializeStatusFromStorage() try');
-            await get().user.initializeFromStorage();
-            // get().setStatus(UserStatus.LOGGED_IN); // REDUNDANT: DELETE ME
+            const user = get().user;
+
+            await user.initializeFromStorage();
+            setUser({
+                id: (await user.getAccountName()).toString(),
+                username: '@' + (await user.getUsername()).getBaseUsername(),
+            });
             set({ isAppInitialized: true });
         } catch (e) {
             debug('initializeStatusFromStorage() catch', e, typeof e);

@@ -8,7 +8,7 @@ import { IOperation, PlatformType, ITransactionRequest, TransactionType, ChainTy
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
@@ -17,7 +17,7 @@ import { Images } from '../assets';
 import settings from '../settings';
 import useAppSettings from '../hooks/useAppSettings';
 
-const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
+const debug = DebugAndLog('tonomy-id:components:SignTransactionConsentContainer');
 
 type TransactionTotalData = {
     total: string;
@@ -199,8 +199,8 @@ export default function SignTransactionConsentContainer({
 
             navigation.navigate('SignTransactionSuccess', {
                 operations,
-                transaction,
                 receipt,
+                request,
             });
 
             setTransactionLoading(false);
@@ -279,9 +279,11 @@ export default function SignTransactionConsentContainer({
                 clearInterval(intervalId);
                 return;
             }
+
             const now = new Date().getTime();
             const expirationTime = expiration.getTime();
             const timeDiff = expirationTime - now;
+
             if (timeDiff <= 0) {
                 setRemainingTime('00:00');
                 setExpired(true);
@@ -289,9 +291,11 @@ export default function SignTransactionConsentContainer({
             } else {
                 const minutes = Math.floor(timeDiff / 1000 / 60);
                 const seconds = Math.floor((timeDiff / 1000) % 60);
+
                 setRemainingTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
             }
         }, 1000);
+
         return () => clearInterval(intervalId);
     }, [request]);
 
@@ -416,6 +420,7 @@ function TransactionTotal({
     if (!transactionTotal.show) {
         return null;
     }
+
     return (
         <>
             <View

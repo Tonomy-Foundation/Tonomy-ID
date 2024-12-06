@@ -32,11 +32,15 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                     <View>
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores or processes your passphrase or private keys on</Text> our servers.</Text>}
+                            item={<Text style={styles.listItemText}><Text style={{ fontWeight: 'bold' }}>{settings.config.appName}</Text> does not store or process your passphrase, private keys, or any sensitive personal data on our servers.</Text>}
                         />
                         <TList
                             bulletIcon="•"
-                            item={<Text style={styles.listItemText}>{settings.config.appName} <Text style={{ fontWeight: 'bold' }}>never stores or processes any personal information</Text> on our servers.</Text>}
+                            item={<Text style={styles.listItemText}>The app operates under the principles of <Text style={{ fontWeight: 'bold' }}>self-sovereign identity</Text>, giving you complete control over your personal information and its usage.</Text>}
+                        />
+                        <TList
+                            bulletIcon="•"
+                            item={<Text style={styles.listItemText}><Text style={{ fontWeight: 'bold' }}>Sentry.io</Text> is the only third-party data processor used for the app, strictly for debugging and error resolution purposes.</Text>}
                         />
                         {/* <TList
                             bulletIcon="•"
@@ -74,54 +78,51 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 {fullTermsShow && (
                     <View>
                         <TP style={styles.scrollView}>
-                            This Privacy Notice explains how we handle your information and data as you use our
-                            self-sovereign identity wallet services. Please review this notice carefully to understand
-                            our practices.
+                            This Privacy Notice explains how we handle your information and data as you use our self-sovereign identity wallet services. Please review this notice carefully to understand our practices.
                         </TP>
+
                         <TP style={{ fontWeight: 'bold' }}>1. Data Collection and Usage</TP>
                         <TP style={styles.scrollView}>
-                            a. {settings.config.appName} operates on the principle of self-sovereign identity. We do not store or
-                            process any personal information, including your passphrase, private keys, or
-                            identity-related data.
+                            a. {settings.config.appName} operates on the principle of self-sovereign identity. We do not store or process any personal information, including your passphrase, private keys, or identity-related data.
                         </TP>
                         <TP style={styles.scrollView}>
-                            b. Any data shared through your Self-Sovereign Identity Wallet is under your control. You
-                            determine when and with whom to share your data.
+                            b. Exception: We use Sentry.io as a data processor for exception and debug logs. This helps us identify and resolve technical issues. The following information may be transmitted to Sentry.io:
+                            <TList bulletIcon="-" item={<Text style={styles.listItemText}>Device information.</Text>} />
+                            <TList bulletIcon="-" item={<Text style={styles.listItemText}>Account name and username.</Text>} />
                         </TP>
+                        <TP style={styles.scrollView}>
+                            c. Any data shared through your Self-Sovereign Identity Wallet remains under your control. You determine when and with whom to share your data.
+                        </TP>
+
                         <TP style={{ fontWeight: 'bold' }}>2. Passphrase and Private Keys</TP>
                         <TP style={styles.scrollView}>
-                            a. {settings.config.appName} does not store your passphrase or private keys on our servers. This enhances
-                            security by minimizing the risk of unauthorized access.
+                            a. {settings.config.appName} does not store your passphrase or private keys on our servers. This enhances security by minimizing the risk of unauthorized access.
                         </TP>
                         <TP style={styles.scrollView}>
-                            b. It is essential to keep your passphrase and private keys secure. Losing this information
-                            may result in the permanent loss of access to your identity and data.
+                            b. It is essential to keep your passphrase and private keys secure. Losing this information may result in the permanent loss of access to your identity and data.
                         </TP>
+
                         <TP style={{ fontWeight: 'bold' }}>3. Data Security</TP>
                         <TP style={styles.scrollView}>
-                            While we do not store personal information, we employ industry-standard security measures to
-                            protect our platform. However, no online service can guarantee absolute security. You are
-                            responsible for safeguarding your account information.
+                            While we do not store personal information, we employ industry-standard security measures to protect our platform. However, no online service can guarantee absolute security. You are responsible for safeguarding your account information.
                         </TP>
+
                         <TP style={{ fontWeight: 'bold' }}>4. Information Sharing</TP>
                         <TP style={styles.scrollView}>
-                            a. {settings.config.appName} does not share your information with third parties, as we do not collect or
-                            store personal data.
+                            a. {settings.config.appName} does not share your information with third parties, except as described under &quot;Data Collection and Usage.&quot;
                         </TP>
                         <TP style={styles.scrollView}>
-                            b. Your data sharing choices within the Self-Sovereign Identity Wallet are entirely under
-                            your control.
+                            b. Sentry.io processes only the information necessary to resolve application errors.
                         </TP>
+
                         <TP style={{ fontWeight: 'bold' }}>5. Changes to Privacy Notice</TP>
                         <TP style={styles.scrollView}>
-                            {settings.config.appName} reserves the right to update this Privacy Notice. Any significant changes will be
-                            communicated to you. Your continued use of our services after such changes implies your
-                            consent to the revised Privacy Notice.
+                            {settings.config.appName} reserves the right to update this Privacy Notice. Any significant changes will be communicated to you. Your continued use of our services after such changes implies your consent to the revised Privacy Notice.
                         </TP>
+
                         <TP style={{ fontWeight: 'bold' }}>6. Contact Us</TP>
                         <TP style={styles.scrollView}>
-                            If you have any questions, concerns, or requests related to your privacy and data security,
-                            please contact our support team at contact@tonomy.foundation.
+                            If you have any questions, concerns, or requests related to your privacy and data security, please contact our support team at contact@tonomy.foundation.
                         </TP>
                     </View>
                 )}

@@ -2,7 +2,7 @@ import { Core } from '@walletconnect/core';
 import Web3Wallet from '@walletconnect/web3wallet';
 import NetInfo from '@react-native-community/netinfo';
 import { ICore, SessionTypes, SignClientTypes } from '@walletconnect/types';
-import Debug from 'debug';
+import DebugAndLog from '../debug';
 import { NETWORK_ERROR_MESSAGE } from '../../utils/errors';
 import settings from '../../settings';
 import {
@@ -32,8 +32,9 @@ import {
 } from '../tokenRegistry';
 import { redirectToMobileBrowser } from '../platform';
 import useErrorStore from '../../store/errorStore';
+import { captureError } from '../../utils/sentry';
 
-const debug = Debug('tonomy-id:utils:session:walletConnect');
+const debug = DebugAndLog('tonomy-id:utils:session:walletConnect');
 
 export const findEthereumTokenByChainId = (chainId: string) => {
     return tokenRegistry.find(

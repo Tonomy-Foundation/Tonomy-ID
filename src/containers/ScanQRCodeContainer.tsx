@@ -1,9 +1,8 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
-import useWalletStore from '../store/useWalletStore';
 import settings from '../settings';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
 import useErrorStore from '../store/errorStore';
 import { ScanQRScreenProps } from '../screens/ScanQRScreen';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -11,24 +10,11 @@ import { Images } from '../assets';
 import QRCodeScanner from '../components/QRCodeScanner';
 import theme, { commonStyles } from '../utils/theme';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
-import { AbiProvider, SigningRequest, SigningRequestEncodingOptions } from '@wharfkit/signing-request';
-import ABICache from '@wharfkit/abicache';
-import { APIClient, PrivateKey } from '@wharfkit/antelope';
-import zlib from 'pako';
-import {
-    AntelopeAccount,
-    AntelopeChain,
-    AntelopePrivateKey,
-    AntelopeSigningRequestSession,
-    AntelopeTransaction,
-    getChainFromAntelopeChainId,
-} from '../utils/chain/antelope';
-import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
 import TSpinner from '../components/atoms/TSpinner';
 import { useSessionStore } from '../store/sessionStore';
 
-const debug = Debug('tonomy-id:containers:ScanQRCodeContainer');
+const debug = DebugAndLog('tonomy-id:containers:ScanQRCodeContainer');
 
 export type ScanQRContainerProps = {
     did;
