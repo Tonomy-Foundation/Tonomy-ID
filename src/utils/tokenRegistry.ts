@@ -95,7 +95,6 @@ if (settings.env === 'production') {
         chain: TonomyLocalChain,
         keyName: ChainKeyName.tonomyLocalLeos,
     };
-    // TODO: this is probably causing the error when running locally
     addLocalChain();
 }
 

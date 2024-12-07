@@ -1,3 +1,4 @@
+import { setSettings } from '@tonomy/tonomy-id-sdk';
 import DebugAndLog from './utils/debug';
 
 const debug = DebugAndLog('tonomy-id:settings');
@@ -127,5 +128,14 @@ config.sentryPublicKey = '49c8103bafbb9ebd792b3e3db9f91e76';
 config.sentryProjectId = '4508392816705616';
 
 settings.config = config;
+
+setSettings({
+    blockchainUrl: settings.config.blockchainUrl,
+    accountSuffix: settings.config.accountSuffix,
+    communicationUrl: settings.config.communicationUrl,
+    tonomyIdSchema: settings.config.tonomyIdSlug,
+    accountsServiceUrl: settings.config.accountsServiceUrl,
+    ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
+});
 
 export default settings;
