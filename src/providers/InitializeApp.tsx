@@ -27,7 +27,6 @@ const InitializeAppProvider: React.FC = () => {
                 const { default: Root } = await import('../navigation/Root');
 
                 debug('Root navigation loaded');
-                console.log('Root:', Root);
 
                 setRootNavigation(() => Root);
             } catch (error) {
