@@ -1,43 +1,37 @@
-// IMPORTANT: The following 4 packages should be imported in this order:
+// IMPORTANT: The following 2 packages should be imported in this order:
 import 'reflect-metadata';
 import './src/utils/polyfill';
-import './src/utils/sentry';
-import './src/utils/exceptions';
 // NOTE: The rest can be imported in any order
-import '@walletconnect/react-native-compat';
 import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import RootNavigation from './src/navigation/Root';
 import 'expo-dev-client';
 import theme from './src/utils/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import setErrorHandlers from './src/utils/exceptions';
-import ErrorHandlerContainer from './src/components/ErrorHandlerProvider';
-import useErrorStore from './src/store/errorStore';
+import ErrorHandlerProvider from './src/components/ErrorHandlerProvider';
 import settings from './src/settings';
-import { runTests } from './src/utils/runtime-tests';
 import Debug from 'debug';
 import { wrap } from './src/utils/sentry';
-import { connect } from './src/utils/StorageManager/setup';
+import { setSettings } from '@tonomy/tonomy-id-sdk';
+import InitializeAppProvider from './src/providers/InitializeApp';
 
 Debug.enable(process.env.DEBUG);
+console.log('DEBUG:', process.env.DEBUG);
 
-if (!settings.isProduction()) {
-    runTests();
-}
+setSettings({
+    blockchainUrl: settings.config.blockchainUrl,
+    accountSuffix: settings.config.accountSuffix,
+    communicationUrl: settings.config.communicationUrl,
+    tonomyIdSchema: settings.config.tonomyIdSlug,
+    accountsServiceUrl: settings.config.accountsServiceUrl,
+    ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
+});
 
 function App() {
-    const errorStore = useErrorStore();
-
-    setErrorHandlers(errorStore);
-
-    connect();
-
     return (
         <PaperProvider theme={theme}>
             <SafeAreaProvider>
-                <ErrorHandlerContainer />
-                <RootNavigation />
+                <ErrorHandlerProvider />
+                <InitializeAppProvider />
             </SafeAreaProvider>
         </PaperProvider>
     );

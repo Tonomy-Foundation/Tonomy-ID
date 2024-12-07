@@ -3,11 +3,15 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
 import TErrorModal from './TErrorModal';
+import setErrorHandlers from '../utils/exceptions';
 
 export default function ErrorHandlerProvider() {
     const [showModal, setShowModal] = useState(false);
 
-    const { onClose, unSetError } = useErrorStore();
+    const errorStore = useErrorStore();
+    const { onClose, unSetError } = errorStore;
+
+    setErrorHandlers(errorStore);
 
     const onModalPress = useCallback(async () => {
         const oldOnClose = onClose;
