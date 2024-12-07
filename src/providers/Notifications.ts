@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 
-export default function NotificationModule() {
+export default function NotificationsProvider() {
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
             shouldShowAlert: true,

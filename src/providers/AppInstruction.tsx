@@ -9,7 +9,7 @@ const { width } = Dimensions.get('window');
 const numberOfTabs = 5;
 const tabWidth = width / numberOfTabs;
 
-const AppInstructionModal = () => {
+const AppInstructionProvider = () => {
     const [currentTip, setCurrentTip] = useState(0);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const opacity = useRef(new Animated.Value(1)).current;
@@ -203,4 +203,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AppInstructionModal;
+export default AppInstructionProvider;

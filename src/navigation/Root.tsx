@@ -13,8 +13,8 @@ import * as Linking from 'expo-linking';
 import SSOLoginScreen from '../screens/SSOLoginScreen';
 import LoginUsernameScreen from '../screens/LoginUsernameScreen';
 import { useAppTheme } from '../utils/theme';
-import CommunicationModule from '../services/CommunicationModule';
-import NotificationModule from '../services/NotificationModule';
+import CommunicationProvider from '../providers/Communication';
+import NotificationsProvider from '../providers/Notifications';
 import CreatePassphraseScreen from '../screens/CreatePassphraseScreen';
 import HcaptchaScreen from '../screens/HcaptchaScreen';
 import LoginPassphraseScreen from '../screens/LoginPassphraseScreen';
@@ -40,7 +40,7 @@ import { OperationData } from '../components/Transaction';
 import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
-import AppInstructionModal from '../components/AppInstructionModal';
+import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
 
 const prefix = Linking.createURL('');
@@ -85,9 +85,9 @@ export type MainRouteStackParamList = {
         transaction?: ITransactionRequest | null;
         requestType: string;
         request:
-            | SignClientTypes.EventArguments['session_request']
-            | SignClientTypes.EventArguments['session_proposal']
-            | null;
+        | SignClientTypes.EventArguments['session_request']
+        | SignClientTypes.EventArguments['session_proposal']
+        | null;
     };
     BottomTabs: undefined;
     Assets: undefined;
@@ -210,9 +210,9 @@ export default function RootNavigation() {
                 </Stack.Navigator>
             ) : (
                 <>
-                    <NotificationModule />
-                    <CommunicationModule />
-                    <AppInstructionModal />
+                    <NotificationsProvider />
+                    <CommunicationProvider />
+                    <AppInstructionProvider />
                     <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
