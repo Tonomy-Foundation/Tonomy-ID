@@ -2,11 +2,7 @@ import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-e
 import { ErrorState } from '../store/errorStore';
 import DebugAndLog from '../utils/debug';
 import { captureError } from './sentry';
-import Bluebird from 'bluebird';
 import { serializeAny } from './strings';
-
-// @ts-expect-error Promise library type mismatch
-global.Promise = Bluebird;
 
 const debug = DebugAndLog('tonomy-id:utils:exceptions');
 

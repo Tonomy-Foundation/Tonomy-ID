@@ -5,7 +5,12 @@
 import '@sinonjs/text-encoding';
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
+import '@walletconnect/react-native-compat';
+import Bluebird from 'bluebird';
 import { NETWORK_ERROR_MESSAGE } from './errors';
+
+// @ts-expect-error Promise library type mismatch
+global.Promise = Bluebird;
 
 // required for @tonomy/antelope-did-resolver update
 // https://github.com/Tonomy-Foundation/Tonomy-ID/pull/757/
