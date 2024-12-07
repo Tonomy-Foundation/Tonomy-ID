@@ -7,7 +7,7 @@ import theme from '../utils/theme';
 import { TButtonText } from '../components/atoms/TButton';
 import { Switch } from 'react-native-paper';
 import { BinMinusIn, Code, LogOut, NavArrowRight } from 'iconoir-react-native';
-import useAppSettings from '../hooks/useAppSettings';
+import useAppSettings from '../store/useAppSettings';
 import useErrorStore from '../store/errorStore';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {

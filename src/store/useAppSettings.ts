@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { appStorage } from '../utils/StorageManager/setup';
 import { useFocusEffect } from '@react-navigation/native';
-import useErrorStore from '../store/errorStore';
+import useErrorStore from './errorStore';
 
 function useAppSettings() {
     const [developerMode, setDeveloperMode] = useState<boolean>(false);

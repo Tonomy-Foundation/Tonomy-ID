@@ -11,7 +11,7 @@ import { assetStorage } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
-import useAppSettings from '../hooks/useAppSettings';
+import useAppSettings from '../store/useAppSettings';
 import { captureError } from '../utils/sentry';
 import useUserStore from '../store/userStore';
 

@@ -7,7 +7,7 @@ import { capitalizeFirstLetter } from '../utils/strings';
 import DebugAndLog from '../utils/debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { TokenRegistryEntry, getKeyOrNullFromChain, tokenRegistry } from '../utils/tokenRegistry';
-import useAppSettings from '../hooks/useAppSettings';
+import useAppSettings from '../store/useAppSettings';
 import useErrorStore from '../store/errorStore';
 
 const debug = DebugAndLog('tonomy-id:containers:MainContainer');
