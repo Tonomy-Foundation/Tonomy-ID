@@ -1,7 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
 import { useEffect, useState } from 'react';
 import useWalletStore from '../store/useWalletStore';
-import DebugAndLog from './debug';
+import DebugAndLog from '../utils/debug';
 
 const debug = DebugAndLog('tonomy-id:utils:NetworkHelper');
 

@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
 import { StackActions } from '@react-navigation/native';
 import LayoutComponent from '../components/layout';
-import { sleep } from '../utils/sleep';
+import { sleep } from '../utils/time';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
 import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';

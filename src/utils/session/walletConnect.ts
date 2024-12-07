@@ -30,7 +30,7 @@ import {
     tokenRegistry,
     TokenRegistryEntry,
 } from '../tokenRegistry';
-import { redirectToMobileBrowser } from '../platform';
+import { redirectToMobileBrowser } from '../navigate';
 import useErrorStore from '../../store/errorStore';
 
 const debug = DebugAndLog('tonomy-id:utils:session:walletConnect');
