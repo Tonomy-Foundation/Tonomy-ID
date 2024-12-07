@@ -28,7 +28,7 @@ const AppInstructionModal = () => {
         };
 
         fetchSettings();
-    }, []);
+    }, [errorStore]);
 
     const tips = [
         {
@@ -43,7 +43,7 @@ const AppInstructionModal = () => {
             tabIndex: 2,
         },
         {
-            title: 'Explore pangea',
+            title: 'Explore Pangea',
             text: ["Get involved in Pangea's community and learn about its ecosystem"],
             tabIndex: 3,
         },

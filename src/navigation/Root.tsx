@@ -41,7 +41,7 @@ import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionModal from '../components/AppInstructionModal';
-import { navigationRef } from '../services/NavigationService';
+import { navigationRef } from '../utils/navigate';
 
 const prefix = Linking.createURL('');
 
@@ -85,9 +85,9 @@ export type MainRouteStackParamList = {
         transaction?: ITransactionRequest | null;
         requestType: string;
         request:
-            | SignClientTypes.EventArguments['session_request']
-            | SignClientTypes.EventArguments['session_proposal']
-            | null;
+        | SignClientTypes.EventArguments['session_request']
+        | SignClientTypes.EventArguments['session_proposal']
+        | null;
     };
     BottomTabs: undefined;
     Assets: undefined;

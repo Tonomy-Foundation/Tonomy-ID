@@ -7,7 +7,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import 'expo-dev-client';
 import theme from './src/utils/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ErrorHandlerProvider from './src/components/ErrorHandlerProvider';
+import ErrorHandlerProvider from './src/providers/ErrorHandler';
 import settings from './src/settings';
 import Debug from 'debug';
 import { wrap } from './src/utils/sentry';

@@ -22,7 +22,7 @@ import {
 import { getSdkError } from '@walletconnect/utils';
 import { keyStorage } from '../StorageManager/setup';
 import { EthereumAccount, EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../chain/etherum';
-import { navigate } from '../../services/NavigationService';
+import { navigate } from '../navigate';
 import {
     getAccountFromChain,
     getKeyFromChain,

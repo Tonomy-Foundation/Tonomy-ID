@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
-import TErrorModal from './TErrorModal';
+import TErrorModal from '../components/TErrorModal';
 import setErrorHandlers from '../utils/exceptions';
 
 export default function ErrorHandlerProvider() {
