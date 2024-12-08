@@ -129,13 +129,4 @@ config.sentryProjectId = '4508392816705616';
 
 settings.config = config;
 
-setSettings({
-    blockchainUrl: settings.config.blockchainUrl,
-    accountSuffix: settings.config.accountSuffix,
-    communicationUrl: settings.config.communicationUrl,
-    tonomyIdSchema: settings.config.tonomyIdSlug,
-    accountsServiceUrl: settings.config.accountsServiceUrl,
-    ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
-});
-
 export default settings;

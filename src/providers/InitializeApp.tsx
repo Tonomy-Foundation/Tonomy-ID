@@ -5,7 +5,7 @@ import { connect } from '../utils/StorageManager/setup';
 import TSpinner from '../components/atoms/TSpinner';
 import useErrorStore from '../store/errorStore';
 import settings from '../settings';
-import { runTests } from '../utils/runtime-tests';
+import { runTests } from '../utils/runtimeTests';
 
 const debug = DebugAndLog('tonomy-id:providers:InitializeApp');
 
@@ -45,7 +45,7 @@ const InitializeAppProvider: React.FC = () => {
             } catch (error) {
                 setError({
                     error,
-                    title: 'Runtime Tests Failed',
+                    title: 'Runtime Test Failed',
                     expected: false,
                 });
             }

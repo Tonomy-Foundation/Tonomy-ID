@@ -1,6 +1,6 @@
 // IMPORTANT: The following 2 packages should be imported in this order:
 import './src/utils/polyfill';
-import './src/settings';
+import './src/utils/setSettings';
 // NOTE: The rest can be imported in any order
 import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
