@@ -5,7 +5,7 @@ import {
     SigningRequestEncodingOptions,
 } from '@wharfkit/signing-request';
 import zlib from 'pako';
-import { navigate } from '../../services/NavigationService';
+import { navigate } from '../navigate';
 import {
     AbstractSession,
     IAccount,

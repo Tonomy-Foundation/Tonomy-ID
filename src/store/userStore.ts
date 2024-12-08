@@ -1,10 +1,8 @@
 import { create } from 'zustand';
 import RNKeyManager, { KEY_STORAGE_NAMESPACE } from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
-import settings from '../settings';
 import {
     createUserObject,
-    setSettings,
     SdkErrors,
     STORAGE_NAMESPACE,
     SdkError,
@@ -16,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import DebugAndLog from '../utils/debug';
 import useWalletStore from './useWalletStore';
-import { setUser } from '@sentry/react-native';
+import { setUser } from '../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:store:userStore');
 
@@ -35,15 +33,6 @@ export interface UserState {
     logout(reason: string): Promise<void>;
     isAppInitialized: boolean;
 }
-
-setSettings({
-    blockchainUrl: settings.config.blockchainUrl,
-    accountSuffix: settings.config.accountSuffix,
-    communicationUrl: settings.config.communicationUrl,
-    tonomyIdSchema: settings.config.tonomyIdSlug,
-    accountsServiceUrl: settings.config.accountsServiceUrl,
-    ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
-});
 
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),

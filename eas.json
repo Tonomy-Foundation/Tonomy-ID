@@ -6,8 +6,7 @@
     "build": {
         "production": {
             "env": {
-                "EXPO_NODE_ENV": "production",
-                "DEBUG": "tonomy-console*"
+                "EXPO_NODE_ENV": "production"
             },
             "autoIncrement": true,
             "node": "22.3.0"

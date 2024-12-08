@@ -22,7 +22,7 @@ import {
 import { getSdkError } from '@walletconnect/utils';
 import { keyStorage } from '../StorageManager/setup';
 import { EthereumAccount, EthereumChain, EthereumPrivateKey, EthereumTransaction } from '../chain/etherum';
-import { navigate } from '../../services/NavigationService';
+import { navigate } from '../navigate';
 import {
     getAccountFromChain,
     getKeyFromChain,
@@ -30,9 +30,8 @@ import {
     tokenRegistry,
     TokenRegistryEntry,
 } from '../tokenRegistry';
-import { redirectToMobileBrowser } from '../platform';
+import { redirectToMobileBrowser } from '../navigate';
 import useErrorStore from '../../store/errorStore';
-import { captureError } from '../../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:utils:session:walletConnect');
 

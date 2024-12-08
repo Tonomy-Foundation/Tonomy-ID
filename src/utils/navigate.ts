@@ -1,5 +1,13 @@
-// platform.ts
 import { Linking, Platform } from 'react-native';
+import { createNavigationContainerRef, ParamListBase } from '@react-navigation/native';
+
+export const navigationRef = createNavigationContainerRef<ParamListBase>();
+
+export function navigate(name: string, params: any) {
+    if (navigationRef.isReady()) {
+        navigationRef.navigate(name, params);
+    }
+}
 
 export async function redirectToMobileBrowser(url: string): Promise<void> {
     // Detect if the user is on an iOS or Android device using React Native's Platform module

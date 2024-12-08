@@ -34,14 +34,21 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(chain);
+            try {
+                const assetData = await getAssetDetails(chain);
 
-            setAsset(assetData);
-            setLoading(false);
+                setAsset(assetData);
+                setLoading(false);
+            } catch (error) {
+                errorStore.setError({
+                    error,
+                    expected: false,
+                });
+            }
         };
 
         fetchAssetDetails();
-    }, [chain]);
+    }, [chain, errorStore]);
 
     if (loading || !asset || !asset.account) {
         return <TSpinner />;

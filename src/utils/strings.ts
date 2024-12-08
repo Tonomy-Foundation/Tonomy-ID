@@ -21,13 +21,24 @@ export function createUrl(baseUrl: string, params: KeyValue): string {
     return url.toString();
 }
 
-export function serializeAny(value: any): string {
+export function serializeAny(value: any, verbose = false): string {
     if (value === null) {
         return 'null';
     } else if (value === undefined) {
         return 'undefined';
+    } else if (value instanceof Error) {
+        let res = value.message || value.toString();
+
+        if (verbose) {
+            res += value.stack ? '\n' + value.stack : '';
+            const object = JSON.stringify(value, null, 2);
+
+            res += object === '{}' ? '' : '\n' + object;
+        }
+
+        return res;
     } else if (Array.isArray(value)) {
-        return '[' + value.map(serializeAny).join(', ') + ']';
+        return '[' + value.map((x) => serializeAny(x, verbose)).join(', ') + ']';
     } else if (typeof value === 'object') {
         try {
             return JSON.stringify(value);
