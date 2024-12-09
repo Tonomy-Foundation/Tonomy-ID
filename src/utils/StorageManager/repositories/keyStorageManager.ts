@@ -2,7 +2,6 @@ import { KeyStorageRepository } from './KeyStorageRepository';
 import { ChainType, IChain, IPrivateKey } from '../../chain/types';
 import { EthereumChain, EthereumPrivateKey } from '../../chain/etherum';
 import { AntelopeChain, AntelopePrivateKey } from '../../chain/antelope';
-import { PrivateKey } from '@wharfkit/antelope';
 
 export abstract class KeyManager {
     protected repository: KeyStorageRepository;

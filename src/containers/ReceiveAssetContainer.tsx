@@ -10,6 +10,7 @@ import { ShareAndroidSolid } from 'iconoir-react-native';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { IChain } from '../utils/chain/types';
+import useErrorStore from '../store/errorStore';
 
 export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
@@ -21,16 +22,22 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
+    const errorStore = useErrorStore();
+
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(props.chain);
+            try {
+                const assetData = await getAssetDetails(props.chain);
 
-            setAsset(assetData);
-            setLoading(false);
+                setAsset(assetData);
+                setLoading(false);
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            }
         };
 
         fetchAssetDetails();
-    }, [props.chain]);
+    }, [errorStore, props.chain]);
 
     if (loading || !asset || !asset.account) {
         return <TSpinner />;

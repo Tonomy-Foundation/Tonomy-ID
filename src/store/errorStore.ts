@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import Debug from 'debug';
+import DebugAndLog from '../utils/debug';
+import { serializeAny } from '../utils/strings';
 
-const debug = Debug('tonomy-id:store:errorStore');
+const debug = DebugAndLog('tonomy-id:store:errorStore');
 
 export interface ErrorState {
     error?: Error;
@@ -38,7 +39,7 @@ const useErrorStore = create<ErrorState>((set, get) => ({
         expected?: boolean;
         onClose?: () => Promise<void>;
     }) => {
-        debug('setError', error);
+        debug('setError', error instanceof Error ? error.message : error);
         const currentState = get();
 
         // Only show an error if it is not already shown
@@ -47,13 +48,7 @@ const useErrorStore = create<ErrorState>((set, get) => ({
             return;
         }
 
-        let newError: Error;
-
-        if (!(error instanceof Error)) {
-            newError = new Error(JSON.stringify(error));
-        } else {
-            newError = error;
-        }
+        const newError = error instanceof Error ? error : new Error(serializeAny(error));
 
         set((state) => {
             if (

@@ -15,9 +15,7 @@ import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import TSpinner from '../components/atoms/TSpinner';
-import Debug from 'debug';
-
-const debug = Debug('tonomy-id:containers:LoginPassphraseContainer');
+import { setUser } from '../utils/sentry';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -55,13 +53,17 @@ export default function LoginPassphraseContainer({
             const idData = await tonomyContract.getPerson(tonomyUsername);
             const salt = idData.password_salt;
 
-            savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
+            await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
 
             const result = await user.login(tonomyUsername, passphrase.join(' '), {
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
             if (result?.account_name !== undefined) {
+                setUser({
+                    id: result.account_name.toString(),
+                    username: '@' + tonomyUsername.getBaseUsername(),
+                });
                 setPassphrase(['', '', '', '', '', '']);
                 setNextDisabled(false);
                 setErrorMessage('');
