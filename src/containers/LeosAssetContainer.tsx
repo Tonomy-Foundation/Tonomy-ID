@@ -100,7 +100,13 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
             </View>
 
             <Text style={styles.subTitle}>More</Text>
-            <TouchableOpacity onPressIn={() => navigation.navigate('VestedAssets')}>
+            <TouchableOpacity
+                onPressIn={() =>
+                    navigation.navigate('VestedAssets', {
+                        chain: asset.chain,
+                    })
+                }
+            >
                 <View style={styles.moreView}>
                     <Text style={{ fontWeight: '600' }}>Vested assets</Text>
                     <View style={styles.flexColEnd}>

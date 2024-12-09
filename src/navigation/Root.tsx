@@ -44,6 +44,7 @@ import AppInstructionModal from '../components/AppInstructionModal';
 import { navigationRef } from '../services/NavigationService';
 import LeosAssetScreen from '../screens/LeosAssetScreen';
 import VestedAssetsScreen from '../screens/VestedAssetsScreen';
+import SuccessLeosWithDrawScreen from '../screens/SuccessLeosWithDrawScreen';
 
 const prefix = Linking.createURL('');
 
@@ -114,7 +115,8 @@ export type MainRouteStackParamList = {
     };
     SelectAsset: { screenTitle?: string; type: string };
     LeosAssetManager: AssetsParamsScreen;
-    VestedAssets: undefined;
+    VestedAssets: { chain: IChain };
+    VestedWithDrawSuccess: { chain: IChain };
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -276,6 +278,11 @@ export default function RootNavigation() {
                             name="VestedAssets"
                             options={{ headerBackTitleVisible: false, title: 'Vested assets' }}
                             component={VestedAssetsScreen}
+                        />
+                        <Stack.Screen
+                            name="VestedWithDrawSuccess"
+                            options={{ headerBackTitleVisible: false, title: 'Success' }}
+                            component={SuccessLeosWithDrawScreen}
                         />
                         <Stack.Screen
                             name="Send"

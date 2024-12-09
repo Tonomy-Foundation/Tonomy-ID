@@ -2,12 +2,14 @@ import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import { VestedAssetscreenNavigationProp } from '../screens/VestedAssetsScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
+import { IChain } from '../utils/chain/types';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
+    chain: IChain;
 };
 
-const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
+const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total vested assets</Text>
@@ -29,7 +31,16 @@ const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
                     <Text style={styles.headerUSDAmount}>{`= $3273.1`}</Text>
 
                     <View style={styles.sendReceiveButtons}>
-                        <TButtonContained style={styles.fullWidthButton}>Withdraw</TButtonContained>
+                        <TButtonContained
+                            style={styles.fullWidthButton}
+                            onPress={() =>
+                                navigation.navigate('VestedWithDrawSuccess', {
+                                    chain: chain,
+                                })
+                            }
+                        >
+                            Withdraw
+                        </TButtonContained>
                     </View>
                 </View>
             </View>
