@@ -7,6 +7,7 @@ import ArrowForwardIcon from '../assets/icons/ArrowForwardIcon';
 import { Props } from '../screens/OnboardingScreen';
 import { StackActions } from '@react-navigation/native';
 import { appStorage } from '../utils/StorageManager/setup';
+import useErrorStore from '../store/errorStore';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -16,6 +17,7 @@ const buttonsHeight = screenHeight * 0.07;
 
 function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
+    const errorStore = useErrorStore();
 
     const slides = [
         {
@@ -51,8 +53,12 @@ function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }
     ];
 
     const onFinish = async () => {
-        await appStorage.setSplashOnboarding(false);
-        navigation.dispatch(StackActions.replace('Home'));
+        try {
+            await appStorage.setSplashOnboarding(false);
+            navigation.dispatch(StackActions.replace('Home'));
+        } catch (error) {
+            errorStore.setError({ error, expected: false });
+        }
     };
 
     const onNext = () => {

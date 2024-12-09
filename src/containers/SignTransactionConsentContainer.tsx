@@ -15,7 +15,7 @@ import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 import { Images } from '../assets';
 import settings from '../settings';
-import useAppSettings from '../hooks/useAppSettings';
+import useAppSettings from '../store/useAppSettings';
 
 const debug = DebugAndLog('tonomy-id:components:SignTransactionConsentContainer');
 

@@ -1,6 +1,6 @@
 import settings from '../settings';
 import DebugAndLog from '../utils/debug';
-import { sleep } from './sleep';
+import { sleep } from './time';
 import { isNetworkError } from './errors';
 import { captureError } from './sentry';
 

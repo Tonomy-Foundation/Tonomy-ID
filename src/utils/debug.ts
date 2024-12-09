@@ -15,7 +15,7 @@ const DebugAndLog = (namespace: string) => {
     const debug = Debug(namespace);
 
     return (...args: any[]) => {
-        debugLog.push({ dateTime: new Date(), namespace, message: args.map(serializeAny).join(' ') });
+        debugLog.push({ dateTime: new Date(), namespace, message: args.map((x) => serializeAny(x, true)).join(' ') });
 
         while (debugLog.length > MAX_LOG_ENTRIES) {
             debugLog.shift();

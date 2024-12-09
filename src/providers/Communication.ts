@@ -25,7 +25,7 @@ import { captureError } from '../utils/sentry';
 
 const debug = DebugAndLog('tonomy-id:services:CommunicationModule');
 
-export default function CommunicationModule() {
+export default function CommunicationProvider() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
