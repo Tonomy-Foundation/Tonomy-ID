@@ -3,6 +3,7 @@ import { ErrorState } from '../store/errorStore';
 import Debug from 'debug';
 import { captureError } from './sentry';
 import { serializeAny } from './strings';
+import { ErrorInfo } from 'react';
 
 const debug = Debug('tonomy-id:utils:exceptions');
 
@@ -58,4 +59,12 @@ export default function setErrorHandlers(errorStore: ErrorState) {
         );
         captureError('Native Exception Handler', new Error(errorString), 'fatal');
     });
+}
+
+export function logErrorBoundaryError(error: Error, info: ErrorInfo) {
+    debug('ErrorBoundary Error', error, info);
+
+    // @ts-expect-error info is not a property of Error
+    error.info = info;
+    captureError('ErrorBoundary', error, 'fatal');
 }
