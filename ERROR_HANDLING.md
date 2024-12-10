@@ -204,14 +204,14 @@ const MyComponent = () => {
 
 ## Use Debug for Logging Important Information
 
-Use the `DebugAndLog` utility for logging application events. Do not log sensitive information such as personal information or private/secret keys.
+Use the `Debug` utility for logging application events. Do not log sensitive information such as personal information or private/secret keys.
 
 ### Example
 
 ```jsx
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 
-const debug = DebugAndLog('tonomy-id:containers:CreateEthereumKey');
+const debug = Debug('tonomy-id:MyComponent');
 
 const MyComponent = () => {
   debug('MyComponent() rendered');

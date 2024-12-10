@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { connect } from '../utils/StorageManager/setup';
 import TSpinner from '../components/atoms/TSpinner';
 import useErrorStore from '../store/errorStore';
 import settings from '../settings';
 import { runTests } from '../utils/runtimeTests';
 
-const debug = DebugAndLog('tonomy-id:providers:InitializeApp');
+const debug = Debug('tonomy-id:providers:InitializeApp');
 
 const InitializeAppProvider: React.FC = () => {
     const [RootNavigation, setRootNavigation] = useState<React.ComponentType | null>(null);
