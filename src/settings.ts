@@ -1,7 +1,7 @@
 import { setSettings } from '@tonomy/tonomy-id-sdk';
-import DebugAndLog from './utils/debug';
+import Debug from 'debug';
 
-const debug = DebugAndLog('tonomy-id:settings');
+const debug = Debug('tonomy-id:settings');
 const env = process.env.EXPO_NODE_ENV ?? 'development';
 
 const settingsInputs = {

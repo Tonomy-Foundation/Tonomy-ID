@@ -1,8 +1,8 @@
 import { IAccount, IAsset, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
-import DebugAndLog from '../../debug';
+import Debug from '../../debug';
 
-const debug = DebugAndLog('tonomy-id:utils:storage:assetStorageManager');
+const debug = Debug('tonomy-id:utils:storage:assetStorageManager');
 
 export interface AssetStorage {
     accountName: string;

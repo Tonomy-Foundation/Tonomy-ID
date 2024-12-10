@@ -3,14 +3,14 @@ import { create } from 'zustand';
 import { IWeb3Wallet } from '@walletconnect/web3wallet';
 import { assetStorage, keyStorage } from '../utils/StorageManager/setup';
 import { IAccount, IChain } from '../utils/chain/types';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
 import { isNetworkError } from '../utils/errors';
 import { captureError } from '../utils/sentry';
 import { tokenRegistry, TokenRegistryEntry, getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import { IUser } from '@tonomy/tonomy-id-sdk';
 
-const debug = DebugAndLog('tonomy-id:store:useWalletStore');
+const debug = Debug('tonomy-id:store:useWalletStore');
 
 export interface WalletState {
     initialized: boolean;

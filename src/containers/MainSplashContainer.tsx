@@ -11,10 +11,10 @@ import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import { appStorage } from '../utils/StorageManager/setup';
 import { useFonts } from 'expo-font';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { progressiveRetryOnNetworkError } from '../utils/network';
 
-const debug = DebugAndLog('tonomy-id:container:mainSplashScreen');
+const debug = Debug('tonomy-id:container:mainSplashScreen');
 
 export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();

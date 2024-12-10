@@ -29,10 +29,10 @@ import ABICache from '@wharfkit/abicache';
 import * as SecureStore from 'expo-secure-store';
 import useUserStore from '../../store/userStore';
 import { createUrl, getQueryParam } from '../strings';
-import DebugAndLog from '../debug';
+import Debug from '../debug';
 import { captureError } from '../sentry';
 
-const debug = DebugAndLog('tonomy-id:utils:session:antelope');
+const debug = Debug('tonomy-id:utils:session:antelope');
 
 export class AntelopeTransactionRequest implements ITransactionRequest {
     transaction: ITransaction;
