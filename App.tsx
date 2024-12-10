@@ -11,25 +11,16 @@ import ErrorHandlerProvider from './src/providers/ErrorHandler';
 import Debug from 'debug';
 import { wrap } from './src/utils/sentry';
 import InitializeAppProvider from './src/providers/InitializeApp';
-import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
+import { ErrorBoundary } from 'react-error-boundary';
 import { logErrorBoundaryError } from './src/utils/exceptions';
+import ErrorFallbackProvider from './src/providers/ErrorFallback';
 
 Debug.enable(process.env.DEBUG);
 console.log('DEBUG:', process.env.DEBUG);
 
-function FallbackComponent({ error, resetErrorBoundary }: FallbackProps) {
-    return (
-        <div role="alert">
-            <p>Something went wrong:</p>
-            <pre>{error.message}</pre>
-            <button onClick={resetErrorBoundary}>Try again</button>
-        </div>
-    );
-}
-
 function App() {
     return (
-        <ErrorBoundary FallbackComponent={FallbackComponent} onError={logErrorBoundaryError}>
+        <ErrorBoundary FallbackComponent={ErrorFallbackProvider} onError={logErrorBoundaryError}>
             <PaperProvider theme={theme}>
                 <SafeAreaProvider>
                     <ErrorHandlerProvider />
