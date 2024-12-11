@@ -21,9 +21,9 @@ import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 
-const debug = DebugAndLog('tonomy-id:containers:SSOLoginContainer');
+const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();

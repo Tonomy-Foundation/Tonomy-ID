@@ -5,10 +5,10 @@ import * as ExpoSQLite from 'expo-sqlite/legacy';
 import { Checksum256 } from '@wharfkit/antelope';
 import { EthereumPrivateKey, EthereumAccount, EthereumSepoliaChain } from './chain/etherum';
 import { ethers, TransactionRequest, Wallet } from 'ethers';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { generatePrivateKeyFromPassword } from './keys';
 
-const debug = DebugAndLog('tonomy-id:util:runtime-tests');
+const debug = Debug('tonomy-id:util:runtime-tests');
 
 async function testVeramo() {
     debug('testVeramo() called');

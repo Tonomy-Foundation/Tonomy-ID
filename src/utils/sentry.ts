@@ -47,17 +47,25 @@ export function setUser(user: User | null): ReturnType<Hub['setUser']> | null {
 /**
  * Creates a readable text blog from the debug logs and sends it to Sentry
  */
-function createBlobFromDebugLogs(): string {
+export function createBlobFromDebugLogs(): string {
     const now = new Date();
-    let blob = '';
+    const blobs: string[] = [];
 
+    // Get log strings
     debugLog.forEach((log) => {
         const diff = now.getTime() - log.dateTime.getTime();
+        const blobString =
+            log.dateTime.toISOString() + `(-${diff / 1000}s)` + ' ' + log.namespace + ': ' + log.message + '\n';
 
-        blob += log.dateTime.toISOString() + `(-${diff / 1000}s)` + ' ' + log.namespace + ': ' + log.message + '\n';
+        blobs.push(blobString);
     });
 
-    return blob;
+    // Truncate to 16kB (16267 characters) as per size limit in sentry
+    while (blobs.join('').length > 16267) {
+        blobs.shift();
+    }
+
+    return blobs.join('');
 }
 
 function sendToSentry(message: string, error: Error, level: SeverityLevel): string {

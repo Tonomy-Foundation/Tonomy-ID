@@ -9,11 +9,11 @@ import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
-import DebugAndLog from '../debug';
+import Debug from '../debug';
 import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
 
-const debug = DebugAndLog('tonomy-id:storageManager:setup');
+const debug = Debug('tonomy-id:storageManager:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
