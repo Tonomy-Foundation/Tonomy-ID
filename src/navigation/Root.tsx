@@ -42,6 +42,9 @@ import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallbackProvider from '../providers/ErrorFallback';
+import { logErrorBoundaryError } from '../utils/exceptions';
 
 const prefix = Linking.createURL('');
 
@@ -85,9 +88,9 @@ export type MainRouteStackParamList = {
         transaction?: ITransactionRequest | null;
         requestType: string;
         request:
-            | SignClientTypes.EventArguments['session_request']
-            | SignClientTypes.EventArguments['session_proposal']
-            | null;
+        | SignClientTypes.EventArguments['session_request']
+        | SignClientTypes.EventArguments['session_proposal']
+        | null;
     };
     BottomTabs: undefined;
     Assets: undefined;
@@ -161,134 +164,136 @@ export default function RootNavigation() {
 
     return (
         <NavigationContainer ref={navigationRef} theme={CombinedDefaultTheme} linking={linking}>
-            {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
-                <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
-                    <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
-                    <Stack.Screen name="Onboarding" options={noHeaderScreenOptions} component={OnboardingScreen} />
+            <ErrorBoundary FallbackComponent={ErrorFallbackProvider} onError={logErrorBoundaryError}>
+                {status === UserStatus.NONE || status === UserStatus.NOT_LOGGED_IN ? (
+                    <Stack.Navigator initialRouteName={'Splash'} screenOptions={defaultScreenOptions}>
+                        <Stack.Screen name="Splash" options={noHeaderScreenOptions} component={MainSplashScreen} />
+                        <Stack.Screen name="Onboarding" options={noHeaderScreenOptions} component={OnboardingScreen} />
 
-                    <Stack.Screen
-                        name="TermsAndCondition"
-                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
-                        component={TermsAndConditionScreen}
-                    />
-                    <Stack.Screen
-                        name="PrivacyAndPolicy"
-                        options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
-                        component={PrivacyAndPolicyScreen}
-                    />
-                    <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
-                    <Stack.Screen
-                        name="CreateAccountUsername"
-                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
-                        component={CreateAccountUsernameScreen}
-                    />
-                    <Stack.Screen
-                        name="CreatePassphrase"
-                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
-                        component={CreatePassphraseScreen}
-                    />
-                    <Stack.Screen
-                        name="Hcaptcha"
-                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
-                        component={HcaptchaScreen}
-                    />
-                    <Stack.Screen
-                        name="ConfirmPassphrase"
-                        options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
-                        component={ConfirmPassphraseScreen}
-                    />
-                    <Stack.Screen
-                        name="LoginUsername"
-                        options={{ headerBackTitleVisible: false, title: 'Login' }}
-                        component={LoginUsernameScreen}
-                    />
-                    <Stack.Screen
-                        name="LoginPassphrase"
-                        options={{ headerBackTitleVisible: false, title: 'Login' }}
-                        component={LoginPassphraseScreen}
-                    />
-                </Stack.Navigator>
-            ) : (
-                <>
-                    <NotificationsProvider />
-                    <CommunicationProvider />
-                    <AppInstructionProvider />
-                    <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
-                            name="Drawer"
-                            component={DrawerNavigation}
-                            options={{ headerShown: false, title: settings.config.appName }}
+                            name="TermsAndCondition"
+                            options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
+                            component={TermsAndConditionScreen}
                         />
                         <Stack.Screen
-                            name="SSO"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
-                            component={SSOLoginScreen}
+                            name="PrivacyAndPolicy"
+                            options={{ headerBackTitleVisible: false, title: 'Terms and Conditions' }}
+                            component={PrivacyAndPolicyScreen}
+                        />
+                        <Stack.Screen name="Home" options={noHeaderScreenOptions} component={HomeScreen} />
+                        <Stack.Screen
+                            name="CreateAccountUsername"
+                            options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
+                            component={CreateAccountUsernameScreen}
                         />
                         <Stack.Screen
-                            name="ProfilePreview"
-                            options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
-                            component={ProfilePreviewScreen}
+                            name="CreatePassphrase"
+                            options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
+                            component={CreatePassphraseScreen}
                         />
                         <Stack.Screen
-                            name="SignTransaction"
-                            options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
-                            component={SignTransactionConsentScreen}
+                            name="Hcaptcha"
+                            options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
+                            component={HcaptchaScreen}
                         />
                         <Stack.Screen
-                            name="SignTransactionSuccess"
-                            options={{
-                                headerBackTitleVisible: false,
-                                title: 'Transfer',
-                                headerBackVisible: false,
-                            }}
-                            component={SignTransactionConsentSuccessScreen}
+                            name="ConfirmPassphrase"
+                            options={{ headerBackTitleVisible: false, title: 'Create New Account' }}
+                            component={ConfirmPassphraseScreen}
                         />
                         <Stack.Screen
-                            name="WalletConnectLogin"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
-                            component={WalletConnectLoginScreen}
+                            name="LoginUsername"
+                            options={{ headerBackTitleVisible: false, title: 'Login' }}
+                            component={LoginUsernameScreen}
                         />
                         <Stack.Screen
-                            name="CreateEthereumKey"
-                            options={{ headerBackTitleVisible: false, title: 'Generate key' }}
-                            component={CreateEthereumKeyScreen}
-                            initialParams={{}}
-                        />
-                        <Stack.Screen
-                            name="AssetDetail"
-                            options={({ route }) => ({
-                                headerBackTitleVisible: false,
-                                title: route.params?.screenTitle || 'AssetDetail',
-                            })}
-                            component={AssetDetail}
-                        />
-                        <Stack.Screen
-                            name="Send"
-                            options={({ route }) => ({
-                                headerBackTitleVisible: false,
-                                title: route.params?.screenTitle || 'Send',
-                            })}
-                            component={SendScreen}
-                        />
-                        <Stack.Screen
-                            name="Receive"
-                            options={({ route }) => ({
-                                headerBackTitleVisible: false,
-                                title: route.params?.screenTitle || 'Receive',
-                            })}
-                            component={ReceiveScreen}
-                        />
-                        <Stack.Screen
-                            name="SelectAsset"
-                            options={({ route }) => ({
-                                headerBackTitleVisible: false,
-                                title: route.params?.screenTitle || 'Select Asset',
-                            })}
-                            component={SelectAsset}
+                            name="LoginPassphrase"
+                            options={{ headerBackTitleVisible: false, title: 'Login' }}
+                            component={LoginPassphraseScreen}
                         />
                     </Stack.Navigator>
-                </>
-            )}
+                ) : (
+                    <>
+                        <NotificationsProvider />
+                        <CommunicationProvider />
+                        <AppInstructionProvider />
+                        <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
+                            <Stack.Screen
+                                name="Drawer"
+                                component={DrawerNavigation}
+                                options={{ headerShown: false, title: settings.config.appName }}
+                            />
+                            <Stack.Screen
+                                name="SSO"
+                                options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                                component={SSOLoginScreen}
+                            />
+                            <Stack.Screen
+                                name="ProfilePreview"
+                                options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
+                                component={ProfilePreviewScreen}
+                            />
+                            <Stack.Screen
+                                name="SignTransaction"
+                                options={{ headerBackTitleVisible: false, title: 'Transaction Request' }}
+                                component={SignTransactionConsentScreen}
+                            />
+                            <Stack.Screen
+                                name="SignTransactionSuccess"
+                                options={{
+                                    headerBackTitleVisible: false,
+                                    title: 'Transfer',
+                                    headerBackVisible: false,
+                                }}
+                                component={SignTransactionConsentSuccessScreen}
+                            />
+                            <Stack.Screen
+                                name="WalletConnectLogin"
+                                options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                                component={WalletConnectLoginScreen}
+                            />
+                            <Stack.Screen
+                                name="CreateEthereumKey"
+                                options={{ headerBackTitleVisible: false, title: 'Generate key' }}
+                                component={CreateEthereumKeyScreen}
+                                initialParams={{}}
+                            />
+                            <Stack.Screen
+                                name="AssetDetail"
+                                options={({ route }) => ({
+                                    headerBackTitleVisible: false,
+                                    title: route.params?.screenTitle || 'AssetDetail',
+                                })}
+                                component={AssetDetail}
+                            />
+                            <Stack.Screen
+                                name="Send"
+                                options={({ route }) => ({
+                                    headerBackTitleVisible: false,
+                                    title: route.params?.screenTitle || 'Send',
+                                })}
+                                component={SendScreen}
+                            />
+                            <Stack.Screen
+                                name="Receive"
+                                options={({ route }) => ({
+                                    headerBackTitleVisible: false,
+                                    title: route.params?.screenTitle || 'Receive',
+                                })}
+                                component={ReceiveScreen}
+                            />
+                            <Stack.Screen
+                                name="SelectAsset"
+                                options={({ route }) => ({
+                                    headerBackTitleVisible: false,
+                                    title: route.params?.screenTitle || 'Select Asset',
+                                })}
+                                component={SelectAsset}
+                            />
+                        </Stack.Navigator>
+                    </>
+                )}
+            </ErrorBoundary>
         </NavigationContainer>
     );
 }

@@ -11,18 +11,23 @@ import ErrorHandlerProvider from './src/providers/ErrorHandler';
 import Debug from 'debug';
 import { wrap } from './src/utils/sentry';
 import InitializeAppProvider from './src/providers/InitializeApp';
+import { ErrorBoundary } from 'react-error-boundary';
+import { logErrorBoundaryError } from './src/utils/exceptions';
+import ErrorFallbackProvider from './src/providers/ErrorFallback';
 
 Debug.enable(process.env.DEBUG);
 console.log('DEBUG:', process.env.DEBUG);
 
 function App() {
     return (
-        <PaperProvider theme={theme}>
-            <SafeAreaProvider>
-                <ErrorHandlerProvider />
-                <InitializeAppProvider />
-            </SafeAreaProvider>
-        </PaperProvider>
+        <ErrorBoundary FallbackComponent={ErrorFallbackProvider} onError={logErrorBoundaryError}>
+            <PaperProvider theme={theme}>
+                <SafeAreaProvider>
+                    <ErrorHandlerProvider />
+                    <InitializeAppProvider />
+                </SafeAreaProvider>
+            </PaperProvider>
+        </ErrorBoundary>
     );
 }
 

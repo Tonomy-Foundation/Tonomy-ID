@@ -229,3 +229,7 @@ const MyComponent = () => {
   return <div>Component Loaded</div>;
 };
 ```
+
+## TODO
+
+- Go through and action: <https://chatgpt.com/share/e/675853cb-9098-8013-8cc0-f61a4ea1be06>
