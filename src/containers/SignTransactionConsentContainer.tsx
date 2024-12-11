@@ -10,7 +10,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
-import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
+import { OperationData, Operations, showFee, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 import { Images } from '../assets';
@@ -120,13 +120,9 @@ export default function SignTransactionConsentContainer({
 
         const transactionFee: TransactionFeeData = {
             fee: fee.toString(4),
-            usdFee: formatCurrencyValue(usdFee, 2),
-            show: true,
+            usdFee: usdFee,
+            show: request.account && request.transaction.getExpiration() ? false : showFee(operations, usdFee),
         };
-
-        if (request.account && request.transaction.getExpiration()) {
-            transactionFee.show = false;
-        }
 
         setTransactionFeeData(transactionFee);
         debug('fetchTransactionFee() done', transactionFee);
@@ -157,7 +153,7 @@ export default function SignTransactionConsentContainer({
 
         setTransactionTotalData(transactionTotal);
         debug('fetchTransactionTotal() done', transactionTotal);
-    }, [request]);
+    }, [chain, request.account, request.transaction]);
 
     useEffect(() => {
         async function fetchTransactionData() {
