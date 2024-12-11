@@ -52,7 +52,6 @@ export default function SignTransactionConsentContainer({
     const chainSymbol = chain.getNativeToken().getSymbol();
     const origin = request.getOrigin();
     const hostname = origin ? extractHostname(origin) : null;
-    const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
     const { developerMode } = useAppSettings();
 
     const getOperationData = useCallback(
@@ -242,7 +241,9 @@ export default function SignTransactionConsentContainer({
 
     const renderSignTransactionOriginDetails = () => {
         const origin = request.getOrigin();
+        // TODO: this should be the logo of the app - the URL is fetched from the origin favicon?
         const showLogo = origin ? chain.getNativeToken().getLogoUrl() : Images.GetImage('logo1024');
+        const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
         const appName = origin ? topLevelHostname : settings.config.appName;
 
         if (!origin && request.session) {
