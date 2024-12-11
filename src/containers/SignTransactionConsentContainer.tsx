@@ -99,72 +99,75 @@ export default function SignTransactionConsentContainer({
         debug('fetchAccountName() done', accountName);
     }, [transaction, chain]);
 
+    const fetchTransactionFee = useCallback(
+        async (operations: OperationData[]) => {
+            const fee = await request.transaction.estimateTransactionFee();
+            const usdFee = await fee.getUsdValue();
+
+            const transactionFee: TransactionFeeData = {
+                fee: fee.toString(4),
+                usdFee: usdFee,
+                show: showFee(operations, usdFee),
+            };
+
+            setTransactionFeeData(transactionFee);
+            debug('fetchTransactionFee() done', transactionFee);
+        },
+        [request]
+    );
+
+    const fetchTransactionTotal = useCallback(
+        async (operations: OperationData[]) => {
+            const account = await request.transaction.getFrom();
+            const total = await request.transaction.estimateTransactionTotal();
+            const usdTotal = await total.getUsdValue();
+            let balanceError = false;
+
+            const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
+
+            if (accountBalance < total.getAmount()) {
+                balanceError = true;
+            }
+
+            const transactionTotal = {
+                show: true,
+                total: total.toString(4),
+                totalUsd: formatCurrencyValue(usdTotal, 2),
+                balanceError,
+            };
+
+            // TODO: update this should be shown if the total > 0 or if any of the operations are an asset transfer
+            if (request.account && request.transaction.getExpiration()) {
+                transactionTotal.show = false;
+            }
+
+            setTransactionTotalData(transactionTotal);
+            debug('fetchTransactionTotal() done', transactionTotal);
+        },
+        [chain, request.account, request.transaction]
+    );
+
     const fetchOperations = useCallback(async () => {
+        let syncedOperations: OperationData[];
+
         if (transaction.hasMultipleOperations()) {
             const operations = await transaction.getOperations();
-            const syncedOperations: OperationData[] = await Promise.all(operations.map(getOperationData));
 
-            setOperations(syncedOperations);
-            debug('fetchOperations() done', syncedOperations);
+            syncedOperations = await Promise.all(operations.map(getOperationData));
         } else {
-            const syncedOperations: OperationData[] = [await getOperationData(transaction)];
-
-            setOperations(syncedOperations);
-            debug('fetchOperations() done', syncedOperations);
-        }
-    }, [transaction, getOperationData]);
-
-    const fetchTransactionFee = useCallback(async () => {
-        const fee = await request.transaction.estimateTransactionFee();
-        const usdFee = await fee.getUsdValue();
-
-        const transactionFee: TransactionFeeData = {
-            fee: fee.toString(4),
-            usdFee: usdFee,
-            show: request.account && request.transaction.getExpiration() ? false : showFee(operations, usdFee),
-        };
-
-        setTransactionFeeData(transactionFee);
-        debug('fetchTransactionFee() done', transactionFee);
-    }, [request]);
-
-    const fetchTransactionTotal = useCallback(async () => {
-        const account = await request.transaction.getFrom();
-        const total = await request.transaction.estimateTransactionTotal();
-        const usdTotal = await total.getUsdValue();
-        let balanceError = false;
-
-        const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
-
-        if (accountBalance < total.getAmount()) {
-            balanceError = true;
+            syncedOperations = [await getOperationData(transaction)];
         }
 
-        const transactionTotal = {
-            show: true,
-            total: total.toString(4),
-            totalUsd: formatCurrencyValue(usdTotal, 2),
-            balanceError,
-        };
-
-        if (request.account && request.transaction.getExpiration()) {
-            transactionTotal.show = false;
-        }
-
-        setTransactionTotalData(transactionTotal);
-        debug('fetchTransactionTotal() done', transactionTotal);
-    }, [chain, request.account, request.transaction]);
+        setOperations(syncedOperations);
+        debug('fetchOperations() done', syncedOperations);
+        await Promise.all([fetchTransactionFee(syncedOperations), fetchTransactionTotal(syncedOperations)]);
+    }, [transaction, getOperationData, fetchTransactionFee, fetchTransactionTotal]);
 
     useEffect(() => {
         async function fetchTransactionData() {
             try {
                 setTransactionLoading(true);
-                await Promise.all([
-                    fetchAccountName(),
-                    fetchOperations(),
-                    fetchTransactionFee(),
-                    fetchTransactionTotal(),
-                ]);
+                await Promise.all([fetchAccountName(), fetchOperations()]);
             } catch (error) {
                 errorStore.setError({
                     title: 'Error fetching transaction details',
@@ -177,7 +180,7 @@ export default function SignTransactionConsentContainer({
         }
 
         fetchTransactionData();
-    }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
+    }, [fetchAccountName, fetchOperations, errorStore]);
 
     async function onReject() {
         setTransactionLoading(true);

@@ -201,23 +201,23 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     );
 }
 
-// shows the fee only if the transaction does not contain asset transfers, and is not free
+// shows the fee only if the transaction does not contain asset transfers, or is not free
 export function showFee(operations: OperationData[] | unknown, usdFee: number): boolean {
-    if (!operations) return false;
+    if (!Array.isArray(operations)) return false;
 
-    // @ts-expect-error some does not exist on unknown
-    const onlySmartContractOperations = !operations.some(
-        (operation) => operation.type === TransactionType.TRANSFER || operation.type === TransactionType.BOTH
-    );
+    const onlySmartContractOperations =
+        operations.filter((operation) => operation.type === TransactionType.CONTRACT).length === operations.length;
     const isFree = usdFee === 0;
 
     return !(onlySmartContractOperations && isFree);
 }
 
+const NEGLIGIBLE_FEE_USD = 0.001;
+
 export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
-    const isNegligible = transactionFee.usdFee <= 0.001 && transactionFee.usdFee > 0;
+    const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD && transactionFee.usdFee > 0;
     const isFree = transactionFee.usdFee === 0;
 
     if (!transactionFee.show) {

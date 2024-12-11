@@ -63,12 +63,7 @@ export default function SignTransactionConsentSuccessContainer({
 
                 const feeString = fee.toString(4);
 
-                if (request.account && request.transaction.getExpiration()) {
-                    // why this condition? why does expiration here matter?
-                    setFee({ fee: feeString, usdFee, show: false });
-                } else {
-                    setFee({ fee: feeString, usdFee, show: true });
-                }
+                setFee({ fee: feeString, usdFee, show: showFee(operations, usdFee) });
             } catch (e) {
                 errorStore.setError({
                     title: 'Error fetching total',
