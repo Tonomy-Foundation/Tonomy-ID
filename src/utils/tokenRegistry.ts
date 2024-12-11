@@ -27,7 +27,7 @@ import { Asset, ChainType, IAccount, IChain, IPrivateKey, IToken } from './chain
 import { appStorage, assetStorage, keyStorage } from './StorageManager/setup';
 import { EosioUtil, IUser, IUserBase } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
-import Debug from 'debug';
+import Debug from './debug';
 
 const debug = Debug('tonomy-id:utils:tokenRegistry');
 

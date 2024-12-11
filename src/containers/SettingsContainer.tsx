@@ -7,11 +7,13 @@ import theme from '../utils/theme';
 import { TButtonText } from '../components/atoms/TButton';
 import { Switch } from 'react-native-paper';
 import { BinMinusIn, Code, LogOut, NavArrowRight } from 'iconoir-react-native';
-import useAppSettings from '../hooks/useAppSettings';
+import useAppSettings from '../store/useAppSettings';
+import useErrorStore from '../store/errorStore';
 
 export default function SettingsContainer({ navigation }: { navigation: Props['navigation'] }) {
     const { logout } = useUserStore();
     const [showModal, setShowModal] = useState(false);
+    const errorStore = useErrorStore();
 
     async function onModalPress() {
         setShowModal(false);
@@ -21,6 +23,14 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
 
     const onToggleSwitch = async () => {
         setDeveloperModeSettings(!developerMode);
+    };
+
+    const onLogout = async () => {
+        try {
+            await logout('Logout in settings menu');
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
     };
 
     return (
@@ -52,12 +62,7 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
             <View style={{ marginTop: 50 }}>
                 <Text style={{ color: theme.colors.grey9 }}>Account</Text>
                 <View style={styles.mainMenu}>
-                    <TouchableOpacity
-                        style={styles.menuItemContainer}
-                        onPress={async () => {
-                            await logout('Logout in settings menu');
-                        }}
-                    >
+                    <TouchableOpacity style={styles.menuItemContainer} onPress={onLogout}>
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
                                 <LogOut height={20} width={20} color={theme.colors.grey9} style={styles.menuItemIcon} />

@@ -2,15 +2,16 @@ import React, { useCallback, useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import useErrorStore from '../store/errorStore';
-import TErrorModal from './TErrorModal';
-import Debug from 'debug';
-
-const debug = Debug('tonomy-id:components:ErrorHandlerProvider');
+import TErrorModal from '../components/TErrorModal';
+import setErrorHandlers from '../utils/exceptions';
 
 export default function ErrorHandlerProvider() {
     const [showModal, setShowModal] = useState(false);
 
-    const { onClose, unSetError } = useErrorStore();
+    const errorStore = useErrorStore();
+    const { onClose, unSetError } = errorStore;
+
+    setErrorHandlers(errorStore);
 
     const onModalPress = useCallback(async () => {
         const oldOnClose = onClose;
@@ -25,8 +26,6 @@ export default function ErrorHandlerProvider() {
 
     useEffect(() => {
         const unsubscribe = useErrorStore.subscribe((state) => {
-            debug('errorStore.subscribe', state, errorRef.current);
-
             // Only update the modal if there's a change in the error state
             if (JSON.stringify(state.error) === JSON.stringify(errorRef.current.error)) return;
 

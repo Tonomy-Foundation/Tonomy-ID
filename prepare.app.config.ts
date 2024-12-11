@@ -122,6 +122,14 @@ const expo: ExpoConfig = {
             },
         ],
         ['./android.manifest.plugin.js'],
+        [
+            '@sentry/react-native/expo',
+            {
+                organization: 'tonomy-foundation-ba',
+                project: settings.config.sentryProjectId,
+                url: 'https://sentry.io/',
+            },
+        ],
     ],
     extra: {
         eas: {

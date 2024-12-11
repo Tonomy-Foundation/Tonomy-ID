@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { formatCurrencyValue } from '../utils/numbers';
 import TSpinner from '../components/atoms/TSpinner';
 import { IChain } from '../utils/chain/types';
+import useErrorStore from '../store/errorStore';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
@@ -18,12 +19,18 @@ const AssetDetailContainer = ({ navigation, chain }: AssetDetailProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const errorStore = useErrorStore();
+
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(chain);
+            try {
+                const assetData = await getAssetDetails(chain);
 
-            setAsset(assetData);
-            setLoading(false);
+                setAsset(assetData);
+                setLoading(false);
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            }
         };
 
         fetchAssetDetails();

@@ -193,6 +193,7 @@ Other environment variables override the values in the config file:
 - BLOCKCHAIN_URL
 - SSO_WEBSITE_ORIGIN
 - VITE_COMMUNICATION_URL
+- SENTRY_SECRET_KEY which **must be set** on any production environments
 
 ## Linting
 

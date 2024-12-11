@@ -6,6 +6,7 @@ import useUserStore from '../store/userStore';
 import { useAppTheme } from '../utils/theme';
 
 import { HeadsetHelp, HomeSimple, LogOut, NavArrowRight, ProfileCircle, Settings } from 'iconoir-react-native';
+import useErrorStore from '../store/errorStore';
 
 export default function CustomDrawer(props: DrawerContentComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -14,6 +15,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
 
     const [username, setUsername] = useState<string>('');
     const [greeting, setGreeting] = useState<string>('Good morning');
+    const errorStore = useErrorStore();
 
     useEffect(() => {
         const currentHour = new Date().getHours(); // Get current hour from device time
@@ -29,15 +31,27 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
 
     useEffect(() => {
         const fetchUsername = async () => {
-            const u = await user.getUsername();
+            try {
+                const u = await user.getUsername();
 
-            setUsername(u.getBaseUsername());
+                setUsername(u.getBaseUsername());
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            }
         };
 
         if (user) {
             fetchUsername();
         }
-    }, [user]);
+    }, [errorStore, user]);
+
+    const onLogout = async () => {
+        try {
+            await userStore.logout('Logout in main menu');
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    };
 
     const theme = useAppTheme();
     const styles = StyleSheet.create({
@@ -191,12 +205,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
                         </View>
                         <NavArrowRight width={25} height={30} color={theme.colors.grey9} />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.menuItemContainer}
-                        onPress={async () => {
-                            await userStore.logout('Logout in main menu');
-                        }}
-                    >
+                    <TouchableOpacity style={styles.menuItemContainer} onPress={onLogout}>
                         <View style={styles.menuItem}>
                             <View style={styles.menuItemIconContainer}>
                                 <LogOut height={20} width={20} color={theme.colors.grey9} style={styles.menuItemIcon} />
