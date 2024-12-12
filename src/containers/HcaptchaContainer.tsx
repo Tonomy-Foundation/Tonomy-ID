@@ -17,10 +17,10 @@ import usePassphraseStore from '../store/passphraseStore';
 import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import NetInfo from '@react-native-community/netinfo';
-import DebugAndLog from '../utils/debug';
-import { setUser } from '@sentry/react-native';
+import Debug from 'debug';
+import { setUser } from '../utils/sentry';
 
-const debug = DebugAndLog('tonomy-id:containers:HcaptchaContainer');
+const debug = Debug('tonomy-id:containers:HcaptchaContainer');
 
 export default function HcaptchaContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [code, setCode] = useState<string | null>(null);

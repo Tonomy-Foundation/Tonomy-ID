@@ -29,9 +29,9 @@ export default function TErrorModal(props: TErrorModalProps) {
 
     if (props.expected === false) {
         if (!props.error) {
-            captureError('TErrorModal()', new Error('unexpected error: no error provided'), 'warning');
+            captureError(`TErrorModal() ${props.title}`, new Error('unexpected error: no error provided'), 'warning');
         } else {
-            captureError('TErrorModal() unexpected error', props.error);
+            captureError(`TErrorModal() unexpected error: ${props.title}`, props.error);
         }
     }
 

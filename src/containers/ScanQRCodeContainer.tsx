@@ -2,7 +2,7 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner';
 import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import useErrorStore from '../store/errorStore';
 import { ScanQRScreenProps } from '../screens/ScanQRScreen';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -14,7 +14,7 @@ import { useCallback, useEffect, useState } from 'react';
 import TSpinner from '../components/atoms/TSpinner';
 import { useSessionStore } from '../store/sessionStore';
 
-const debug = DebugAndLog('tonomy-id:containers:ScanQRCodeContainer');
+const debug = Debug('tonomy-id:containers:ScanQRCodeContainer');
 
 export type ScanQRContainerProps = {
     did;

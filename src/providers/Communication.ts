@@ -17,15 +17,15 @@ import { scheduleNotificationAsync } from 'expo-notifications';
 import { AppState, Linking } from 'react-native';
 import useWalletStore from '../store/useWalletStore';
 import { getSdkError } from '@walletconnect/utils';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 import { useSessionStore } from '../store/sessionStore';
 import { captureError } from '../utils/sentry';
 
-const debug = DebugAndLog('tonomy-id:services:CommunicationModule');
+const debug = Debug('tonomy-id:services:CommunicationModule');
 
-export default function CommunicationModule() {
+export default function CommunicationProvider() {
     const { user, logout } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();

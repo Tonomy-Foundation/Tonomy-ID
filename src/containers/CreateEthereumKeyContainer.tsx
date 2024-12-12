@@ -14,13 +14,13 @@ import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { SignClientTypes } from '@walletconnect/types';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import { useSessionStore } from '../store/sessionStore';
 import { ITransactionRequest } from '../utils/chain/types';
 
-const debug = DebugAndLog('tonomy-id:containers:CreateEthereunKey');
+const debug = Debug('tonomy-id:containers:CreateEthereunKey');
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -61,7 +61,7 @@ export default function CreateEthereumKeyContainer({
 
     useEffect(() => {
         setUserName();
-    }, []);
+    }, [setUserName]);
 
     useEffect(() => {
         const isValid = passphrase.every(util.isKeyword);
@@ -93,7 +93,7 @@ export default function CreateEthereumKeyContainer({
             setNextDisabled(false);
             setLoading(false);
 
-            redirectFunc();
+            await redirectFunc();
         } catch (e) {
             debug('onNext() function error', e);
 

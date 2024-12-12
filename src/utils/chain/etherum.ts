@@ -34,11 +34,11 @@ import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getPriceCoinGecko } from './common';
 import { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { getSdkError } from '@walletconnect/utils';
-import DebugAndLog from '../debug';
+import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
 
-const debug = DebugAndLog('tonomy-id:utils:chain:ethereum');
+const debug = Debug('tonomy-id:utils:chain:ethereum');
 
 const ETHERSCAN_API_KEY = settings.config.etherscanApiKey;
 const ETHERSCAN_URL = `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`;

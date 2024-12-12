@@ -2,7 +2,7 @@ import { TKeyType } from '@veramo/core';
 import { formatCurrencyValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
-import { navigate } from '../../services/NavigationService';
+import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';

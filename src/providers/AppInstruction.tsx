@@ -3,25 +3,32 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Animate
 import theme from '../utils/theme';
 import CloseIcon from '../assets/icons/CloseIcon';
 import { appStorage } from '../utils/StorageManager/setup';
+import useErrorStore from '../store/errorStore';
 
 const { width } = Dimensions.get('window');
 const numberOfTabs = 5;
 const tabWidth = width / numberOfTabs;
 
-const AppInstructionModal = () => {
+const AppInstructionProvider = () => {
     const [currentTip, setCurrentTip] = useState(0);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const opacity = useRef(new Animated.Value(1)).current;
 
+    const errorStore = useErrorStore();
+
     useEffect(() => {
         const fetchSettings = async () => {
-            const showInstructions = await appStorage.getAppInstruction();
+            try {
+                const showInstructions = await appStorage.getAppInstruction();
 
-            setShowOnboarding(showInstructions);
+                setShowOnboarding(showInstructions);
+            } catch (error) {
+                errorStore.setError({ error, expected: false });
+            }
         };
 
         fetchSettings();
-    }, []);
+    }, [errorStore]);
 
     const tips = [
         {
@@ -36,7 +43,7 @@ const AppInstructionModal = () => {
             tabIndex: 2,
         },
         {
-            title: 'Explore pangea',
+            title: 'Explore Pangea',
             text: ["Get involved in Pangea's community and learn about its ecosystem"],
             tabIndex: 3,
         },
@@ -76,8 +83,12 @@ const AppInstructionModal = () => {
     };
 
     const onClose = async () => {
-        setShowOnboarding(false);
-        await appStorage.setAppInstruction(false);
+        try {
+            setShowOnboarding(false);
+            await appStorage.setAppInstruction(false);
+        } catch (error) {
+            errorStore.setError({ error, expected: false });
+        }
     };
 
     const bottomPosNormal = Platform.OS === 'ios' ? 80 : 45;
@@ -192,4 +203,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AppInstructionModal;
+export default AppInstructionProvider;
