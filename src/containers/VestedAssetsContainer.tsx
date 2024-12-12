@@ -1,14 +1,21 @@
-import { StyleSheet, Text, View, ImageBackground, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import { VestedAssetscreenNavigationProp } from '../screens/VestedAssetsScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
+import { useRef, useState } from 'react';
+import AllocationDetails from '../components/AllocationDetails';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
 };
 
 const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
+    const onClose = () => {
+        refMessage.current?.close();
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total vested assets</Text>
@@ -25,7 +32,7 @@ const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
             </ImageBackground>
             <ScrollView>
                 <View style={{ marginTop: 12 }}>
-                    <View style={styles.allocationView}>
+                    <TouchableOpacity style={styles.allocationView} onPress={() => refMessage.current?.open()}>
                         <Text style={{ fontWeight: '700' }}>3,000.00 LEOS</Text>
                         <View style={styles.flexColEnd}>
                             <Text style={styles.allocMulti}>
@@ -33,7 +40,8 @@ const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
                             </Text>
                             <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                         </View>
-                    </View>
+                    </TouchableOpacity>
+
                     <View style={styles.allocationView}>
                         <Text style={{ fontWeight: '700' }}>3,000.00 LEOS</Text>
                         <View style={styles.flexColEnd}>
@@ -66,6 +74,7 @@ const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
                     </Text>
                 </View>
             </ScrollView>
+            <AllocationDetails onClose={onClose} refMessage={refMessage} />
         </View>
     );
 };
@@ -197,13 +206,13 @@ const styles = StyleSheet.create({
         color: theme.colors.grey9,
     },
     lockedParagraph: {
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: '400',
         color: theme.colors.black,
         marginTop: 6,
     },
     unlockhead: {
-        fontSize: 17,
+        fontSize: 16,
         fontWeight: '700',
         alignItems: 'flex-start',
     },
