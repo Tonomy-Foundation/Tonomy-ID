@@ -75,7 +75,7 @@ export class AntelopeTransactionRequest implements ITransactionRequest {
     }
 
     static async fromTransaction(
-        transaction: ITransaction,
+        transaction: AntelopeTransaction,
         antelopeKey: AntelopePrivateKey
     ): Promise<AntelopeTransactionRequest> {
         return new AntelopeTransactionRequest(transaction, antelopeKey);
