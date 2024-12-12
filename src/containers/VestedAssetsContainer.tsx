@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, ScrollView } from 'react-native';
 import { VestedAssetscreenNavigationProp } from '../screens/VestedAssetsScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
+import { NavArrowRight } from 'iconoir-react-native';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -20,32 +21,51 @@ const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
                 <Text style={styles.imageNetworkText}>Pangea Network</Text>
                 <Text style={styles.imageText}>69,023.35 LEOS</Text>
                 <Text style={styles.imageUsdText}>= $3273.1</Text>
+                <Text style={styles.averageMultiplier}>Average multiplier: x4.5</Text>
             </ImageBackground>
-            <Text style={styles.subTitle}>Unlockable coins</Text>
-
-            <View style={styles.availableAssetView}>
-                <View style={styles.header}>
-                    <Text style={styles.headerAssetsAmount}>{`69,023.35 LEOS`}</Text>
-                    <Text style={styles.headerUSDAmount}>{`= $3273.1`}</Text>
-
-                    <View style={styles.sendReceiveButtons}>
-                        <TButtonContained style={styles.fullWidthButton}>Withdraw</TButtonContained>
+            <ScrollView>
+                <View style={{ marginTop: 12 }}>
+                    <View style={styles.allocationView}>
+                        <Text style={{ fontWeight: '700' }}>3,000.00 LEOS</Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>
+                                Multiplier: <Text style={{ color: theme.colors.success }}>x3</Text>
+                            </Text>
+                            <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                        </View>
+                    </View>
+                    <View style={styles.allocationView}>
+                        <Text style={{ fontWeight: '700' }}>3,000.00 LEOS</Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>
+                                Multiplier: <Text style={{ color: theme.colors.success }}>x3</Text>
+                            </Text>
+                            <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                        </View>
                     </View>
                 </View>
-            </View>
+                <Text style={styles.subTitle}>Unlockable coins</Text>
 
-            <Text style={styles.subTitle}>Locked coins</Text>
+                <View style={styles.availableAssetView}>
+                    <View style={styles.header}>
+                        <Text style={styles.lockedCoinsAmount}>{`69,023.35 LEOS`}</Text>
+                        <Text style={styles.lockedUSDAmount}>{`= $3273.1`}</Text>
 
-            <View style={styles.availableAssetView}>
-                <View style={styles.header}>
-                    <Text style={styles.lockedCoinsAmount}>{`69,023.35 LEOS`}</Text>
-                    <Text style={styles.lockedUSDAmount}>{`= $3273.1`}</Text>
-
-                    <View style={styles.sendReceiveButtons}>
-                        <Text style={styles.lockedPercentage}>{`50% of your total assets`}</Text>
+                        <View style={styles.sendReceiveButtons}>
+                            <TButtonContained style={styles.fullWidthButton}>Withdraw</TButtonContained>
+                        </View>
                     </View>
                 </View>
-            </View>
+
+                <View style={styles.unlockAssetView}>
+                    <Text style={styles.unlockhead}>When can I unlock coins?</Text>
+
+                    <Text style={styles.lockedParagraph}>
+                        These coins are locked under a vesting period and will unlock gradually over time based on the
+                        agreed terms
+                    </Text>
+                </View>
+            </ScrollView>
         </View>
     );
 };
@@ -54,6 +74,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         marginHorizontal: 15,
+        marginTop: 10,
     },
 
     textContainer: {
@@ -83,19 +104,6 @@ const styles = StyleSheet.create({
         textShadowRadius: 1.4,
         ...commonStyles.secondaryFontFamily,
     },
-    headerUSDAmount: {
-        fontSize: 15,
-        fontWeight: '400',
-        color: theme.colors.grey9,
-    },
-    headerButton: {
-        backgroundColor: theme.colors.backgroundGray,
-        width: 35,
-        height: 35,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 30,
-    },
     sendReceiveButtons: {
         flexDirection: 'row',
         gap: 30,
@@ -116,12 +124,19 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 8,
-        paddingVertical: 26,
-        paddingHorizontal: 20,
+        paddingVertical: 20,
+        paddingHorizontal: 18,
+    },
+    unlockAssetView: {
+        alignItems: 'flex-start',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        backgroundColor: theme.colors.grey7,
+        marginTop: 15,
+        borderRadius: 8,
     },
     subTitle: {
-        marginTop: 20,
-        marginBottom: 10,
+        marginBottom: 8,
         fontSize: 16,
         ...commonStyles.primaryFontFamily,
     },
@@ -136,8 +151,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     flexColEnd: {
-        flexDirection: 'column',
-        alignItems: 'flex-end',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: 4,
     },
     imageBackground: {
         width: '100%',
@@ -164,27 +181,51 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     fullWidthButton: {
-        marginTop: 10,
+        marginTop: 2,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
     },
     lockedCoinsAmount: {
-        fontSize: 22,
-        fontWeight: '500',
+        fontSize: 21,
+        fontWeight: '700',
         ...commonStyles.secondaryFontFamily,
     },
     lockedUSDAmount: {
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: '400',
         color: theme.colors.grey9,
     },
-    lockedPercentage: {
-        fontSize: 14,
+    lockedParagraph: {
+        fontSize: 13,
         fontWeight: '400',
-        color: theme.colors.grey9,
-        marginTop: 8,
+        color: theme.colors.black,
+        marginTop: 6,
     },
+    unlockhead: {
+        fontSize: 17,
+        fontWeight: '700',
+        alignItems: 'flex-start',
+    },
+    averageMultiplier: {
+        backgroundColor: theme.colors.success,
+        color: theme.colors.white,
+        paddingHorizontal: 9,
+        paddingVertical: 3,
+        borderRadius: 5,
+        marginTop: 12,
+        fontSize: 13,
+    },
+    allocationView: {
+        backgroundColor: theme.colors.grey7,
+        borderRadius: 12,
+        paddingHorizontal: 13,
+        paddingVertical: 7,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 11,
+    },
+    allocMulti: { color: theme.colors.grey9, fontWeight: '500' },
 });
 
 export default VestedAssetsContainer;
