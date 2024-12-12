@@ -129,16 +129,11 @@ export default function SignTransactionConsentContainer({
             }
 
             const transactionTotal = {
-                show: true,
+                show: showFee(operations, usdTotal),
                 total: total.toString(4),
                 totalUsd: formatCurrencyValue(usdTotal, 2),
                 balanceError,
             };
-
-            // TODO: update this should be shown if the total > 0 or if any of the operations are an asset transfer
-            if (request.account && request.transaction.getExpiration()) {
-                transactionTotal.show = false;
-            }
 
             setTransactionTotalData(transactionTotal);
             debug('fetchTransactionTotal() done', transactionTotal);
@@ -241,8 +236,7 @@ export default function SignTransactionConsentContainer({
 
     const renderSignTransactionOriginDetails = () => {
         const origin = request.getOrigin();
-        // TODO: this should be the logo of the app - the URL is fetched from the origin favicon?
-        const showLogo = origin ? chain.getNativeToken().getLogoUrl() : Images.GetImage('logo1024');
+        const showLogo = chain.getNativeToken().getLogoUrl();
         const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
         const appName = origin ? topLevelHostname : settings.config.appName;
 
@@ -258,11 +252,7 @@ export default function SignTransactionConsentContainer({
 
         return (
             <>
-                {!origin && !request.session ? (
-                    <Image style={[styles.logo, commonStyles.marginBottom]} source={showLogo} />
-                ) : (
-                    <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
-                )}
+                <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
                 <View style={commonStyles.alignItemsCenter}>
                     <Text style={styles.applinkText}>{appName}</Text>
                     <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
