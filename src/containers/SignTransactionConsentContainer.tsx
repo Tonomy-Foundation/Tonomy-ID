@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView, Linking } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IOperation, PlatformType, ITransactionRequest, TransactionType, ChainType } from '../utils/chain/types';
+import { IOperation, ITransactionRequest, TransactionType, ChainType } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
@@ -13,7 +13,7 @@ import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, showFee, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
-import { Images } from '../assets';
+
 import settings from '../settings';
 import useAppSettings from '../store/useAppSettings';
 
@@ -236,10 +236,11 @@ export default function SignTransactionConsentContainer({
 
     const renderSignTransactionOriginDetails = () => {
         const origin = request.getOrigin();
+
         const showLogo = chain.getNativeToken().getLogoUrl();
         const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
         const appName = origin ? topLevelHostname : settings.config.appName;
-
+        const websiteURL = `https://${appName}`;
         if (!origin && request.session) {
             return (
                 <View style={styles.sandingMain}>
@@ -252,7 +253,14 @@ export default function SignTransactionConsentContainer({
 
         return (
             <>
-                <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
+                {origin ? (
+                    <Image
+                        style={[styles.logo, commonStyles.marginBottom]}
+                        source={{ uri: `https://logo.clearbit.com/${websiteURL}` }}
+                    />
+                ) : (
+                    <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
+                )}
                 <View style={commonStyles.alignItemsCenter}>
                     <Text style={styles.applinkText}>{appName}</Text>
                     <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
@@ -455,6 +463,8 @@ const styles = StyleSheet.create({
     logo: {
         width: 50,
         height: 50,
+        borderRadius: 50,
+        backgroundColor: theme.colors.grey5
     },
     applinkText: {
         color: theme.colors.linkColor,
