@@ -25,4 +25,17 @@ const DebugAndLog = (namespace: string) => {
     };
 };
 
+DebugAndLog.enable = Debug.enable;
+DebugAndLog.enabled = Debug.enabled;
+DebugAndLog.log = Debug.log;
+DebugAndLog.formatArgs = Debug.formatArgs;
+DebugAndLog.save = Debug.save;
+DebugAndLog.load = Debug.load;
+DebugAndLog.useColors = Debug.useColors;
+DebugAndLog.colors = Debug.colors;
+DebugAndLog.disable = Debug.disable;
+DebugAndLog.disabled = Debug.disabled;
+DebugAndLog.storage = Debug.storage;
+DebugAndLog.destroy = Debug.destroy;
+
 export default DebugAndLog;

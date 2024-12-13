@@ -1,10 +1,10 @@
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 import { ErrorState } from '../store/errorStore';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { captureError } from './sentry';
 import { serializeAny } from './strings';
 
-const debug = DebugAndLog('tonomy-id:utils:exceptions');
+const debug = Debug('tonomy-id:utils:exceptions');
 
 export default function setErrorHandlers(errorStore: ErrorState) {
     // http://bluebirdjs.com/docs/api/error-management-configuration.html#global-rejection-events

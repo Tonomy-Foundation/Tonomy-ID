@@ -39,7 +39,7 @@ import {
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
-import DebugAndLog from '../debug';
+import Debug from '../debug';
 import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
@@ -49,7 +49,7 @@ import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
 
-const debug = DebugAndLog('tonomy-id:utils:chain:antelope');
+const debug = Debug('tonomy-id:utils:chain:antelope');
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;

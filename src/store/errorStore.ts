@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { serializeAny } from '../utils/strings';
 
-const debug = DebugAndLog('tonomy-id:store:errorStore');
+const debug = Debug('tonomy-id:store:errorStore');
 
 export interface ErrorState {
     error?: Error;

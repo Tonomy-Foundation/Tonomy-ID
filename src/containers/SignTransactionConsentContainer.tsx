@@ -8,7 +8,7 @@ import { IOperation, PlatformType, ITransactionRequest, TransactionType, ChainTy
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
 import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
@@ -17,7 +17,7 @@ import { Images } from '../assets';
 import settings from '../settings';
 import useAppSettings from '../store/useAppSettings';
 
-const debug = DebugAndLog('tonomy-id:components:SignTransactionConsentContainer');
+const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
 type TransactionTotalData = {
     total: string;
