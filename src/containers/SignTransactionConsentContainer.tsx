@@ -16,6 +16,7 @@ import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
 import settings from '../settings';
 import useAppSettings from '../store/useAppSettings';
+import { captureError } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -50,8 +51,6 @@ export default function SignTransactionConsentContainer({
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
-    const origin = request.getOrigin();
-    const hostname = origin ? extractHostname(origin) : null;
     const { developerMode } = useAppSettings();
 
     const getOperationData = useCallback(
@@ -234,37 +233,59 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    const renderSignTransactionOriginDetails = () => {
+    const SignTransactionOriginDetails = () => {
+        const chainLogo = chain.getNativeToken().getLogoUrl();
         const origin = request.getOrigin();
+        const hostname = origin ? extractHostname(origin) : null;
 
-        const showLogo = chain.getNativeToken().getLogoUrl();
-        const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
-        const appName = origin ? topLevelHostname : settings.config.appName;
-        const websiteURL = `https://${appName}`;
-        if (!origin && request.session) {
-            return (
-                <View style={styles.sandingMain}>
-                    <Text style={[styles.sandingTitle, { textAlign: 'center' }]}>
-                        A third-party app wants you to sign a transaction
-                    </Text>
-                </View>
-            );
+        function Logo() {
+            if (!origin) {
+                return <Image style={styles.logo} source={{ uri: chainLogo }} />;
+            } else {
+                try {
+                    return (
+                        <Image
+                            style={[styles.logo, commonStyles.marginBottom]}
+                            source={{ uri: `https://logo.clearbit.com/${hostname}` }}
+                        />
+                    );
+                } catch (error) {
+                    captureError(`Failed to load logo for hostname ${hostname}`, error);
+                    return <Image style={styles.logo} source={{ uri: chainLogo }} />;
+                }
+            }
+        }
+
+        function Message() {
+            if (!origin && request.session) {
+                return (
+                    <>
+                        <View style={styles.sandingMain}>
+                            <Text style={[styles.sandingTitle, { textAlign: 'center' }]}>
+                                A third-party app wants you to sign a transaction
+                            </Text>
+                        </View>
+                    </>
+                );
+            } else {
+                const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
+                const appName = origin ? topLevelHostname : settings.config.appName;
+
+                return (
+                    <>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <Text style={styles.applinkText}>{appName}</Text>
+                            <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
+                        </View>
+                    </>
+                );
+            }
         }
 
         return (
             <>
-                {origin ? (
-                    <Image
-                        style={[styles.logo, commonStyles.marginBottom]}
-                        source={{ uri: `https://logo.clearbit.com/${websiteURL}` }}
-                    />
-                ) : (
-                    <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
-                )}
-                <View style={commonStyles.alignItemsCenter}>
-                    <Text style={styles.applinkText}>{appName}</Text>
-                    <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
-                </View>
+                <Logo />
+                <Message />
             </>
         );
     };
@@ -297,7 +318,7 @@ export default function SignTransactionConsentContainer({
         return () => clearInterval(intervalId);
     }, [request]);
 
-    const renderExpirationTimer = () => {
+    const ExpirationTimer = () => {
         return !expired && request.account && transaction.getExpiration() ? (
             <View style={styles.expirationContainer}>
                 <Text>Expiration time</Text>
@@ -311,8 +332,8 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        {renderExpirationTimer()}
-                        {renderSignTransactionOriginDetails()}
+                        <ExpirationTimer />
+                        <SignTransactionOriginDetails />
                         <View style={styles.networkHeading}>
                             <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                             <Text style={styles.nameText}>{chainName} Network</Text>
@@ -464,7 +485,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 50,
-        backgroundColor: theme.colors.grey5
+        backgroundColor: theme.colors.grey5,
     },
     applinkText: {
         color: theme.colors.linkColor,
