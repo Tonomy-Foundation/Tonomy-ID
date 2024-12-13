@@ -234,25 +234,18 @@ export default function SignTransactionConsentContainer({
     }
 
     const SignTransactionOriginDetails = () => {
-        const chainLogo = chain.getNativeToken().getLogoUrl();
         const origin = request.getOrigin();
         const hostname = origin ? extractHostname(origin) : null;
 
         function Logo() {
-            if (!origin) {
-                return <Image style={styles.logo} source={{ uri: chainLogo }} />;
-            } else {
-                try {
-                    return (
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={{ uri: `https://logo.clearbit.com/${hostname}` }}
-                        />
-                    );
-                } catch (error) {
-                    captureError(`Failed to load logo for hostname ${hostname}`, error);
-                    return <Image style={styles.logo} source={{ uri: chainLogo }} />;
-                }
+            // https://clearbit.com/blog/logo
+            const logo = origin ? `https://logo.clearbit.com/${hostname}` : chain.getNativeToken().getLogoUrl();
+
+            try {
+                return <Image style={styles.logo} source={{ uri: logo }} />;
+            } catch (error) {
+                captureError(`Failed to load logo: ${logo}`, error);
+                return null;
             }
         }
 
