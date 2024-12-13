@@ -15,7 +15,7 @@ const AllocationDetails = (props: Props) => {
             ref={props.refMessage}
             openDuration={150}
             closeDuration={100}
-            height={400}
+            height={470}
             customStyles={{ container: { paddingHorizontal: 10 } }}
         >
             <View style={styles.vestHead}>
@@ -23,6 +23,45 @@ const AllocationDetails = (props: Props) => {
                 <TouchableOpacity onPress={props.onClose}>
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} size={17} />
                 </TouchableOpacity>
+            </View>
+            <View style={styles.vestingDetailView}>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Total allocation</Text>
+                    <View style={styles.flexColCenter}>
+                        <Text style={styles.allocMulti}>3,000.00 LEOS</Text>
+                        <Text style={styles.usdBalance}>$2357.2</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Locked</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>30% of total</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Vesting start</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>30 March 2024</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Vesting period</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>2 years</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Unlock at vesting start</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>10%</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Price multiplier</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>6x</Text>
+                    </View>
+                </View>
             </View>
             <View style={styles.howView}>
                 <Text style={styles.howHead}>How multiplier works</Text>
@@ -39,14 +78,14 @@ const AllocationDetails = (props: Props) => {
 const styles = StyleSheet.create({
     vestHead: {
         paddingHorizontal: 5,
-        paddingVertical: 10,
+        paddingVertical: 13,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
     },
     drawerHead: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: '700',
         marginTop: 8,
     },
     howView: {
@@ -54,7 +93,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 15,
         backgroundColor: theme.colors.grey7,
-        marginTop: 15,
+        marginTop: 17,
         borderRadius: 8,
     },
     howHead: {
@@ -67,6 +106,35 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: theme.colors.black,
         marginTop: 5,
+    },
+    vestingDetailView: {
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: theme.colors.grey8,
+        paddingHorizontal: 13,
+        paddingBottom: 20,
+        paddingTop: 3,
+    },
+    allocationView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 17,
+    },
+    allocMulti: { color: theme.colors.black, fontWeight: '500', fontSize: 13 },
+    usdBalance: { color: theme.colors.grey9, fontWeight: '400', fontSize: 12 },
+    flexColEnd: {
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    flexColCenter: {
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    allocTitle: { fontWeight: '500', color: theme.colors.grey9, fontSize: 14 },
+    flexRowCenter: {
+        flexDirection: 'row',
+        gap: 7,
+        alignItems: 'flex-end',
     },
 });
 
