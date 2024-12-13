@@ -7,10 +7,11 @@ import { IconButton } from 'react-native-paper';
 import { QuestionMark, WarningCircle } from 'iconoir-react-native';
 import NegligibleTransactionFees from './NegligibleTransactionFees';
 import { KeyValue } from '../utils/strings';
+import { formatCurrencyValue } from '../utils/numbers';
 
 export type TransactionFeeData = {
     fee: string;
-    usdFee: string;
+    usdFee: number;
     show: boolean;
 };
 
@@ -200,12 +201,24 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     );
 }
 
+// shows the fee only if the transaction does not contain asset transfers, or is not free
+export function showFee(operations: OperationData[] | unknown, usdFee: number): boolean {
+    if (!Array.isArray(operations)) return false;
+
+    const onlySmartContractOperations =
+        operations.filter((operation) => operation.type === TransactionType.CONTRACT).length === operations.length;
+    const isFree = usdFee === 0;
+
+    return !(onlySmartContractOperations && isFree);
+}
+
+const NEGLIGIBLE_FEE_USD = 0.001;
+
 export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
-    const usdFeeFloat = parseFloat(transactionFee.usdFee);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
-    const isNegligible = usdFeeFloat <= 0.001 && usdFeeFloat > 0;
-    const isFree = usdFeeFloat === 0;
+    const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD && transactionFee.usdFee > 0;
+    const isFree = transactionFee.usdFee === 0;
 
     if (!transactionFee.show) {
         return null;
@@ -247,7 +260,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                         </TouchableOpacity>
                     ) : (
                         <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                            (${transactionFee.usdFee})
+                            (${formatCurrencyValue(transactionFee.usdFee, 2)})
                         </Text>
                     )}
                 </View>
