@@ -14,8 +14,8 @@ const SuccessLeosWithDrawContainer = ({ navigation, chain }: VestedAssetSuccessP
     return (
         <View style={styles.container}>
             <Image source={require('../assets/images/vesting/vested-success.png')} />
-            <TH1 style={styles.vestedHead}>Vested And Rested</TH1>
-            <TP style={styles.vestedSubHead}>Your coins have been successfully withdrawn!</TP>
+            <TH1 style={styles.vestedHead}>Top financial management!</TH1>
+            <TP style={styles.vestedSubHead}>Your money is now working for you!</TP>
             <View style={styles.bottomView}>
                 <TButton
                     style={styles.backBtn}
@@ -39,11 +39,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 15,
     },
-    vestedHead: { marginTop: 10, marginBottom: 0 },
-    vestedSubHead: { paddingHorizontal: 55, textAlign: 'center', marginTop: 8 },
+    vestedHead: { marginTop: 8, marginBottom: 0, paddingHorizontal: 20 },
+    vestedSubHead: { paddingHorizontal: 25, textAlign: 'center', marginTop: 7 },
     bottomView: {
         position: 'absolute',
-        bottom: 60,
+        bottom: 20,
         width: '100%',
         alignItems: 'center',
     },
