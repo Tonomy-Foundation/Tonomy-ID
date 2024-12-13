@@ -228,6 +228,27 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
         refMessage.current?.close();
     };
 
+    function FeeValue() {
+        if (isFree) return <Text>free</Text>;
+        else if (isNegligible) {
+            return (
+                <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
+                    <Text>negligible</Text>
+                    <WarningCircle width={15} height={15} color={theme.colors.success} />
+                </TouchableOpacity>
+            );
+        } else {
+            return (
+                <>
+                    <Text>{transactionFee.fee}</Text>
+                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
+                        (${formatCurrencyValue(transactionFee.usdFee, 2)})
+                    </Text>
+                </>
+            );
+        }
+    }
+
     return (
         <View style={styles.appDialog}>
             <NegligibleTransactionFees transactionFee={transactionFee} onClose={onClose} refMessage={refMessage} />
@@ -250,20 +271,8 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                         </TouchableOpacity>
                     </Tooltip>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {!isFree && !isNegligible && <Text>{transactionFee.fee}</Text>}
-                    {isFree && <Text>free</Text>}
-                    {isNegligible ? (
-                        <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
-                            <Text>negligible</Text>
-                            <WarningCircle width={15} height={15} color={theme.colors.success} />
-                        </TouchableOpacity>
-                    ) : (
-                        <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                            (${formatCurrencyValue(transactionFee.usdFee, 2)})
-                        </Text>
-                    )}
-                </View>
+                <FeeValue />
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}></View>
             </View>
         </View>
     );
