@@ -105,7 +105,7 @@ export default function SignTransactionConsentContainer({
             const transactionFee: TransactionFeeData = {
                 fee: fee.toString(4),
                 usdFee: usdFee,
-                show: showFee(operations, usdFee),
+                show: showFee(operations, fee, usdFee),
             };
 
             setTransactionFeeData(transactionFee);
@@ -128,7 +128,7 @@ export default function SignTransactionConsentContainer({
             }
 
             const transactionTotal = {
-                show: showFee(operations, usdTotal),
+                show: showFee(operations, total, usdTotal),
                 total: total.toString(4),
                 totalUsd: formatCurrencyValue(usdTotal, 2),
                 balanceError,

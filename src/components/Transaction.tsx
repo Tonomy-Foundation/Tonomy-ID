@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
-import { TransactionType } from '../utils/chain/types';
+import { IAsset, TransactionType } from '../utils/chain/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { QuestionMark, WarningCircle } from 'iconoir-react-native';
@@ -202,12 +202,12 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
 }
 
 // shows the fee only if the transaction does not contain asset transfers, or is not free
-export function showFee(operations: OperationData[] | unknown, usdFee: number): boolean {
+export function showFee(operations: OperationData[] | unknown, asset: IAsset, usdFee: number): boolean {
     if (!Array.isArray(operations)) return false;
 
     const onlySmartContractOperations =
         operations.filter((operation) => operation.type === TransactionType.CONTRACT).length === operations.length;
-    const isFree = usdFee === 0;
+    const isFree = asset.getAmount() === 0n && usdFee === 0;
 
     return !(onlySmartContractOperations && isFree);
 }

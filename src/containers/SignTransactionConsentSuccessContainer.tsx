@@ -63,7 +63,7 @@ export default function SignTransactionConsentSuccessContainer({
 
                 const feeString = fee.toString(4);
 
-                setFee({ fee: feeString, usdFee, show: showFee(operations, usdFee) });
+                setFee({ fee: feeString, usdFee, show: showFee(operations, fee, usdFee) });
             } catch (e) {
                 errorStore.setError({
                     title: 'Error fetching total',
@@ -76,8 +76,6 @@ export default function SignTransactionConsentSuccessContainer({
         fetchTransactionDetail();
     }, [errorStore, receipt, request.account, request.transaction]);
 
-    const showFeeSummary = fee && fee.show && showFee(operations, fee.usdFee);
-
     return (
         <LayoutComponent
             body={
@@ -86,7 +84,7 @@ export default function SignTransactionConsentSuccessContainer({
                         <TransactionSuccessIcon />
                         <View style={styles.transactionView}>
                             <TH1>Transaction successful</TH1>
-                            <Text style={{ fontSize: 20, opacity: showFeeSummary ? 1 : 0 }}>
+                            <Text style={{ fontSize: 20, opacity: fee && fee.show ? 1 : 0 }}>
                                 {`${total?.total} `}
                                 <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
                                     (${total?.totalUsd})
