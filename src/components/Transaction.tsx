@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
-import { TransactionType } from '../utils/chain/types';
+import { IAsset, TransactionType } from '../utils/chain/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
 import { QuestionMark, WarningCircle } from 'iconoir-react-native';
@@ -13,6 +13,7 @@ export type TransactionFeeData = {
     fee: string;
     usdFee: number;
     show: boolean;
+    isFree: boolean;
 };
 
 export type OperationData = {
@@ -201,15 +202,18 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     );
 }
 
+export function isFree(asset: IAsset, usdFee: number): boolean {
+    return asset.getAmount() === BigInt(0) && usdFee === 0;
+}
+
 // shows the fee only if the transaction does not contain asset transfers, or is not free
-export function showFee(operations: OperationData[] | unknown, usdFee: number): boolean {
+export function showFee(operations: OperationData[] | unknown, asset: IAsset, usdFee: number): boolean {
     if (!Array.isArray(operations)) return false;
 
     const onlySmartContractOperations =
         operations.filter((operation) => operation.type === TransactionType.CONTRACT).length === operations.length;
-    const isFree = usdFee === 0;
 
-    return !(onlySmartContractOperations && isFree);
+    return !(onlySmartContractOperations && isFree(asset, usdFee));
 }
 
 const NEGLIGIBLE_FEE_USD = 0.001;
@@ -217,8 +221,7 @@ const NEGLIGIBLE_FEE_USD = 0.001;
 export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
-    const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD && transactionFee.usdFee > 0;
-    const isFree = transactionFee.usdFee === 0;
+    const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD;
 
     if (!transactionFee.show) {
         return null;
@@ -227,6 +230,27 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
     const onClose = () => {
         refMessage.current?.close();
     };
+
+    function FeeValue() {
+        if (transactionFee.isFree) return <Text>free</Text>;
+        else if (isNegligible) {
+            return (
+                <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
+                    <Text>negligible</Text>
+                    <WarningCircle width={15} height={15} color={theme.colors.success} />
+                </TouchableOpacity>
+            );
+        } else {
+            return (
+                <>
+                    <Text>{transactionFee.fee}</Text>
+                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
+                        (${formatCurrencyValue(transactionFee.usdFee, 2)})
+                    </Text>
+                </>
+            );
+        }
+    }
 
     return (
         <View style={styles.appDialog}>
@@ -251,18 +275,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                     </Tooltip>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {!isFree && !isNegligible && <Text>{transactionFee.fee}</Text>}
-                    {isFree && <Text>free</Text>}
-                    {isNegligible ? (
-                        <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
-                            <Text>negligible</Text>
-                            <WarningCircle width={15} height={15} color={theme.colors.success} />
-                        </TouchableOpacity>
-                    ) : (
-                        <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                            (${formatCurrencyValue(transactionFee.usdFee, 2)})
-                        </Text>
-                    )}
+                    <FeeValue />
                 </View>
             </View>
         </View>
