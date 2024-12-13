@@ -13,6 +13,7 @@ export type TransactionFeeData = {
     fee: string;
     usdFee: number;
     show: boolean;
+    isFree: boolean;
 };
 
 export type OperationData = {
@@ -201,15 +202,18 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     );
 }
 
+export function isFree(asset: IAsset, usdFee: number): boolean {
+    return asset.getAmount() === BigInt(0) && usdFee === 0;
+}
+
 // shows the fee only if the transaction does not contain asset transfers, or is not free
 export function showFee(operations: OperationData[] | unknown, asset: IAsset, usdFee: number): boolean {
     if (!Array.isArray(operations)) return false;
 
     const onlySmartContractOperations =
         operations.filter((operation) => operation.type === TransactionType.CONTRACT).length === operations.length;
-    const isFree = asset.getAmount() === BigInt(0) && usdFee === 0;
 
-    return !(onlySmartContractOperations && isFree);
+    return !(onlySmartContractOperations && isFree(asset, usdFee));
 }
 
 const NEGLIGIBLE_FEE_USD = 0.001;
@@ -218,8 +222,6 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD;
-    const amount = parseFloat(transactionFee.fee.split(' ')[0]);
-    const isFree = amount === 0 && transactionFee.usdFee === 0;
 
     if (!transactionFee.show) {
         return null;
@@ -230,7 +232,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
     };
 
     function FeeValue() {
-        if (isFree) return <Text>free</Text>;
+        if (transactionFee.isFree) return <Text>free</Text>;
         else if (isNegligible) {
             return (
                 <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>

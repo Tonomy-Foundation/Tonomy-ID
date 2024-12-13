@@ -10,9 +10,16 @@ import { TH1 } from '../components/atoms/THeadings';
 import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
-import { ITransactionReceipt, ITransactionRequest, TransactionType } from '../utils/chain/types';
+import { ITransactionReceipt, ITransactionRequest } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
-import { OperationData, Operations, showFee, TransactionFee } from '../components/Transaction';
+import {
+    isFree,
+    OperationData,
+    Operations,
+    showFee,
+    TransactionFee,
+    TransactionFeeData,
+} from '../components/Transaction';
 
 import TSpinner from '../components/atoms/TSpinner';
 
@@ -28,7 +35,7 @@ export default function SignTransactionConsentSuccessContainer({
     request: ITransactionRequest;
 }) {
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
-    const [fee, setFee] = useState<{ fee: string; usdFee: number; show: boolean } | null>(null);
+    const [fee, setFee] = useState<TransactionFeeData | null>(null);
     const [date, setDate] = useState<Date | null>(null);
 
     const errorStore = useErrorStore();
@@ -63,7 +70,7 @@ export default function SignTransactionConsentSuccessContainer({
 
                 const feeString = fee.toString(4);
 
-                setFee({ fee: feeString, usdFee, show: showFee(operations, fee, usdFee) });
+                setFee({ fee: feeString, usdFee, show: showFee(operations, fee, usdFee), isFree: isFree(fee, usdFee) });
             } catch (e) {
                 errorStore.setError({
                     title: 'Error fetching total',

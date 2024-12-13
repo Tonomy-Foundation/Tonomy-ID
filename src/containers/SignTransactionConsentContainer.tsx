@@ -4,19 +4,27 @@ import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IOperation, ITransactionRequest, TransactionType, ChainType } from '../utils/chain/types';
+import { IOperation, ITransactionRequest, TransactionType, ChainType, Asset } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
-import { OperationData, Operations, showFee, TransactionFee, TransactionFeeData } from '../components/Transaction';
+import {
+    isFree,
+    OperationData,
+    Operations,
+    showFee,
+    TransactionFee,
+    TransactionFeeData,
+} from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 
 import settings from '../settings';
 import useAppSettings from '../store/useAppSettings';
 import { captureError } from '../utils/sentry';
+import { ETHSepoliaToken, ETHToken } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -106,6 +114,7 @@ export default function SignTransactionConsentContainer({
                 fee: fee.toString(4),
                 usdFee: usdFee,
                 show: showFee(operations, fee, usdFee),
+                isFree: isFree(fee, usdFee),
             };
 
             setTransactionFeeData(transactionFee);
