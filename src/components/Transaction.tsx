@@ -207,7 +207,7 @@ export function showFee(operations: OperationData[] | unknown, asset: IAsset, us
 
     const onlySmartContractOperations =
         operations.filter((operation) => operation.type === TransactionType.CONTRACT).length === operations.length;
-    const isFree = asset.getAmount() === 0n && usdFee === 0;
+    const isFree = asset.getAmount() === BigInt(0) && usdFee === 0;
 
     return !(onlySmartContractOperations && isFree);
 }
@@ -217,8 +217,9 @@ const NEGLIGIBLE_FEE_USD = 0.001;
 export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
-    const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD && transactionFee.usdFee > 0;
-    const isFree = transactionFee.usdFee === 0;
+    const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD;
+    const amount = parseFloat(transactionFee.fee.split(' ')[0]);
+    const isFree = amount === 0 && transactionFee.usdFee === 0;
 
     if (!transactionFee.show) {
         return null;
@@ -271,8 +272,9 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                         </TouchableOpacity>
                     </Tooltip>
                 </View>
-                <FeeValue />
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}></View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <FeeValue />
+                </View>
             </View>
         </View>
     );
