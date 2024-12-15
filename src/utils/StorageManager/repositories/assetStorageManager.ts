@@ -1,6 +1,6 @@
 import { IAccount, IAsset, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
-import Debug from 'debug';
+import Debug from '../../debug';
 
 const debug = Debug('tonomy-id:utils:storage:assetStorageManager');
 

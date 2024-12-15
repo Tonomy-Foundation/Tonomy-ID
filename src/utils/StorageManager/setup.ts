@@ -9,8 +9,9 @@ import { AppStorageManager } from './repositories/appStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
-import Debug from 'debug';
+import Debug from '../debug';
 import { isNetworkError } from '../errors';
+import { captureError } from '../sentry';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
@@ -53,10 +54,17 @@ export const assetStorage = new ConcreteAssetManager(assetStorageRepository);
 
 async function checkTableExists(dataSource, tableName) {
     const queryRunner = dataSource.createQueryRunner();
-    const result = await queryRunner.query(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName]);
 
-    await queryRunner.release();
-    return result.length > 0;
+    try {
+        const result = await queryRunner.query(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [
+            tableName,
+        ]);
+
+        debug(`Table check result for ${tableName}:`, result);
+        return result.length > 0;
+    } finally {
+        await queryRunner.release();
+    }
 }
 
 //initialize the data source
@@ -81,7 +89,7 @@ export async function connect() {
         if (isNetworkError(error)) {
             debug('Network error occurred. Retrying...');
         } else {
-            debug('StorageManager.connect() error', error);
+            captureError('StorageManager.connect() error', error);
         }
     }
 }

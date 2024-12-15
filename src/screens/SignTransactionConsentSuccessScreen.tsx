@@ -9,9 +9,9 @@ export default function SignTransactionConsentSuccessScreen(props: Props) {
     return (
         <SignTransactionConsentSuccessContainer
             operations={props.route.params.operations}
-            transaction={props.route.params.transaction}
             receipt={props.route.params.receipt}
             navigation={props.navigation}
+            request={props.route.params.request}
         />
     );
 }

@@ -1,10 +1,8 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
-const { getDefaultConfig } = require('expo/metro-config');
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const path = require('path');
-const Debug = require('debug');
 
-const debug = Debug('tonomy-id:metro.config');
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 
 // Needed to resolve pure ESM packages that are within Tonomy-ID-SDK
 config.resolver.unstable_enablePackageExports = true;
@@ -26,6 +24,28 @@ if (process.env.EXPO_NODE_ENV === 'local') {
     config.resolver.extraNodeModules['stream-browserify'] = path.resolve(__dirname);
 }
 
-debug('Metro config resolver', config.resolver);
+const debugModulePath = path.resolve(__dirname, 'src/utils/debug.ts');
+
+// For all app code, and imported libraries
+// if they import the "debug" package
+// this should be instead use the ./src/utils/debugAndLog.ts
+// so that we can send the logs to Sentry
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+    // if the module is debug and not importing from the src/utils/debug.ts file
+    if (moduleName === 'debug') {
+        console.log(`Resolving debug module from ${context.originModulePath}`);
+
+        if (context.originModulePath !== debugModulePath) {
+            return context.resolveRequest(context, debugModulePath, platform);
+        } else {
+            console.log(`>> Skipping debug module resolution from ${context.originModulePath}`);
+        }
+    }
+
+    return context.resolveRequest(context, moduleName, platform);
+};
+// config.resolver.extraNodeModules.debug = path.resolve(__dirname, 'src/utils/debugAndLog.ts');
+
+console.log('Metro config resolver', config.resolver);
 
 module.exports = config;

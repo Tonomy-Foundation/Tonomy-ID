@@ -1,3 +1,4 @@
+import { setSettings } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:settings');
@@ -6,6 +7,7 @@ const env = process.env.EXPO_NODE_ENV ?? 'development';
 const settingsInputs = {
     nodeEnv: process.env.NODE_ENV, // This is set by expo with webpack https://github.com/expo/expo/issues/20360
     expoNodeEnv: process.env.EXPO_NODE_ENV,
+    debug: process.env.DEBUG,
     env,
 };
 
@@ -56,6 +58,9 @@ type ConfigType = {
     infuraKey: string;
     etherscanApiKey: string;
     walletConnectProjectId: string;
+    sentryPublicKey: string;
+    sentrySecretKey: string;
+    sentryProjectId: string;
 };
 
 type SettingsType = {
@@ -113,6 +118,14 @@ if (process.env.HCAPTCHA_SITE_KEY) {
     debug(`Using hCaptcha site key from env: ${process.env.HCAPTCHA_SITE_KEY}`);
     config.captchaSiteKey = process.env.HCAPTCHA_SITE_KEY;
 }
+
+if (process.env.SENTRY_SECRET_KEY) {
+    debug(`Using Sentry secret key from env: ************`);
+    config.sentrySecretKey = process.env.SENTRY_SECRET_KEY;
+}
+
+config.sentryPublicKey = '49c8103bafbb9ebd792b3e3db9f91e76';
+config.sentryProjectId = '4508392816705616';
 
 settings.config = config;
 

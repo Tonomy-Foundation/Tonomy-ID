@@ -25,6 +25,7 @@ type ExtendedMD2Colors = MD2Colors & {
     grey7: string;
     grey8: string;
     grey9: string;
+    gray10: string;
     shadow: string;
     shadowDark: string;
     success: string;
@@ -36,6 +37,7 @@ type ExtendedMD2Colors = MD2Colors & {
     gold: string;
     blue1: string;
     blue2: string;
+    warning: string;
 };
 
 type ExtendedMD2Theme = MD2Theme & {
@@ -74,6 +76,7 @@ const theme: ExtendedMD2Theme = {
         grey7: '#F6F9FB',
         grey8: '#D2DDEC',
         grey9: '#6E84A3',
+        gray10: '#3F3F40',
         shadow: '#4D4D4D',
         shadowDark: '#000',
         error: '#F44336',
@@ -86,6 +89,7 @@ const theme: ExtendedMD2Theme = {
         gold: '#D9B701',
         blue1: '#00AEED',
         blue2: '#007BB5',
+        warning: '#FF96351A',
     } as ExtendedMD2Colors,
 };
 

@@ -61,7 +61,7 @@ export default function CreateEthereumKeyContainer({
 
     useEffect(() => {
         setUserName();
-    }, []);
+    }, [setUserName]);
 
     useEffect(() => {
         const isValid = passphrase.every(util.isKeyword);
@@ -93,7 +93,7 @@ export default function CreateEthereumKeyContainer({
             setNextDisabled(false);
             setLoading(false);
 
-            redirectFunc();
+            await redirectFunc();
         } catch (e) {
             debug('onNext() function error', e);
 
