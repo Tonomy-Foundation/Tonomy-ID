@@ -22,6 +22,7 @@ import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
 import Debug from 'debug';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -192,11 +193,12 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <Image
-                        style={[styles.logo, commonStyles.marginBottom]}
-                        source={Images.GetImage('logo1024')}
-                    ></Image>
-
+                    <SafeAreaView>
+                        <Image
+                            style={[styles.logo, commonStyles.marginBottom]}
+                            source={Images.GetImage('logo1024')}
+                        ></Image>
+                    </SafeAreaView>
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 
                     {ssoApp && (
