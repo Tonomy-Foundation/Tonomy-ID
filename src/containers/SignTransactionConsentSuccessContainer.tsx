@@ -10,25 +10,32 @@ import { TH1 } from '../components/atoms/THeadings';
 import TransactionSuccessIcon from '../assets/icons/TransactionSuccess';
 
 import { formatCurrencyValue } from '../utils/numbers';
-import { ITransaction, ITransactionReceipt } from '../utils/chain/types';
+import { ITransactionReceipt, ITransactionRequest } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
-import { OperationData, Operations, TransactionFee } from '../components/Transaction';
+import {
+    isFree,
+    OperationData,
+    Operations,
+    showFee,
+    TransactionFee,
+    TransactionFeeData,
+} from '../components/Transaction';
 
 import TSpinner from '../components/atoms/TSpinner';
 
 export default function SignTransactionConsentSuccessContainer({
     navigation,
     operations,
-    transaction,
     receipt,
+    request,
 }: {
     navigation: Props['navigation'];
     operations: OperationData[];
-    transaction: ITransaction;
     receipt: ITransactionReceipt;
+    request: ITransactionRequest;
 }) {
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
-    const [fee, setFee] = useState<{ fee: string; usdFee: string } | null>(null);
+    const [fee, setFee] = useState<TransactionFeeData | null>(null);
     const [date, setDate] = useState<Date | null>(null);
 
     const errorStore = useErrorStore();
@@ -50,7 +57,7 @@ export default function SignTransactionConsentSuccessContainer({
 
                 setDate(date);
 
-                const total = await transaction.estimateTransactionTotal();
+                const total = await request.transaction.estimateTransactionTotal();
                 const usdTotal = await total.getUsdValue();
 
                 const totalString = total.toString(4);
@@ -62,9 +69,8 @@ export default function SignTransactionConsentSuccessContainer({
                 const usdFee = await fee.getUsdValue();
 
                 const feeString = fee.toString(4);
-                const usdFeeString = formatCurrencyValue(usdFee);
 
-                setFee({ fee: feeString, usdFee: usdFeeString });
+                setFee({ fee: feeString, usdFee, show: showFee(operations, fee, usdFee), isFree: isFree(fee, usdFee) });
             } catch (e) {
                 errorStore.setError({
                     title: 'Error fetching total',
@@ -75,7 +81,7 @@ export default function SignTransactionConsentSuccessContainer({
         }
 
         fetchTransactionDetail();
-    }, [errorStore, receipt, transaction]);
+    }, [errorStore, receipt, request.account, request.transaction]);
 
     return (
         <LayoutComponent
@@ -85,14 +91,12 @@ export default function SignTransactionConsentSuccessContainer({
                         <TransactionSuccessIcon />
                         <View style={styles.transactionView}>
                             <TH1>Transaction successful</TH1>
-                            {fee && (
-                                <Text style={{ fontSize: 20 }}>
-                                    {`${total?.total} `}
-                                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                                        (${total?.totalUsd})
-                                    </Text>
+                            <Text style={{ fontSize: 20, opacity: fee && fee.show ? 1 : 0 }}>
+                                {`${total?.total} `}
+                                <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
+                                    (${total?.totalUsd})
                                 </Text>
-                            )}
+                            </Text>
                         </View>
                         {date ? (
                             <Operations operations={operations} date={date} />

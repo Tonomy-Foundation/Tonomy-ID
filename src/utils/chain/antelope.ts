@@ -39,11 +39,12 @@ import {
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
-import Debug from 'debug';
-import { createUrl, getQueryParam } from '../strings';
+import Debug from '../debug';
+import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
+import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
@@ -148,6 +149,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 
     async signTransaction(data: ActionData[] | AntelopeTransaction): Promise<SignedTransaction> {
         const actions: ActionData[] = data instanceof AntelopeTransaction ? await data.getData() : data;
+
         // Get the ABI(s) of all contracts
 
         // Create the action data
@@ -175,8 +177,12 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         // Construct the transaction
         const info = await this.chain.getChainInfo();
         const header = info.getTransactionHeader();
+        const defaultExpiration = new Date(new Date().getTime() + ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS);
+        const expiration: Date =
+            data instanceof AntelopeTransaction ? data.getExpiration() ?? defaultExpiration : defaultExpiration;
         const transaction = Transaction.from({
             ...header,
+            expiration,
             actions: actionData,
         });
 
@@ -564,9 +570,9 @@ export class AntelopeAction implements IOperation {
             return AntelopeAccount.fromAccount(this.chain, this.action.authorization[0].actor);
         }
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         const data = this.action.data;
-        const args: Record<string, string> = {};
+        const args: KeyValue = {};
 
         for (const key in data) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
@@ -574,26 +580,11 @@ export class AntelopeAction implements IOperation {
 
                 debug('getArguments()', key, value);
 
-                if (value === null) {
-                    args[key] = 'null';
-                } else if (value === undefined) {
-                    args[key] = 'undefined';
-                } else if (typeof value === 'object') {
-                    try {
-                        args[key] = JSON.stringify(value);
-                    } catch (error) {
-                        console.error('getArguments() object', error);
-                        args[key] = 'unpackable object';
-                    }
-                } else if (value.toString) {
-                    args[key] = value.toString();
-                } else {
-                    try {
-                        args[key] = JSON.stringify(value);
-                    } catch (error) {
-                        console.error('getArguments() value', error);
-                        args[key] = 'unpackable value';
-                    }
+                try {
+                    args[key] = serializeAny(value);
+                } catch (error) {
+                    args[key] = 'unserializable';
+                    captureError(`getArguments() serialize arg`, error);
                 }
             }
         }
@@ -635,16 +626,26 @@ function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     return new Asset(token, amount);
 }
 
+export const ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS = 120;
+
 export class AntelopeTransaction implements ITransaction {
     private actions: ActionData[];
     protected chain: AntelopeChain;
     protected account: AntelopeAccount;
+    private expirationDate: Date | null = null;
 
-    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount) {
+    constructor(
+        actions: ActionData[],
+        chain: AntelopeChain,
+        account: AntelopeAccount,
+        timeoutSeconds = ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS
+    ) {
         this.actions = actions;
         this.chain = chain;
         this.account = account;
+        this.setExpiration(timeoutSeconds);
     }
+
     getChain(): AntelopeChain {
         return this.chain;
     }
@@ -665,7 +666,7 @@ export class AntelopeTransaction implements ITransaction {
     async getFunction(): Promise<string> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
-    async getArguments(): Promise<Record<string, string>> {
+    async getArguments(): Promise<KeyValue> {
         throw new Error('Antelope transactions have multiple operations, call getOperations()');
     }
     async getValue(): Promise<Asset> {
@@ -703,6 +704,14 @@ export class AntelopeTransaction implements ITransaction {
     }
     async getOperations(): Promise<IOperation[]> {
         return this.actions.map((action) => new AntelopeAction(action, this.chain));
+    }
+    private setExpiration(timeoutSeconds: number) {
+        const now = new Date();
+
+        this.expirationDate = new Date(now.getTime() + timeoutSeconds * 1000);
+    }
+    getExpiration(): Date | null {
+        return this.expirationDate;
     }
 }
 
@@ -796,6 +805,14 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
     }
 }
 
+export class ErrorWithResponse extends Error {
+    response: Response;
+    constructor(message: string, response: Response) {
+        super(message);
+        this.response = response;
+    }
+}
+
 export class AntelopeSigningRequestSession implements IChainSession {
     private transaction: AntelopeTransaction;
     private account: AntelopeAccount;
@@ -856,7 +873,9 @@ export class AntelopeSigningRequestSession implements IChainSession {
             debug('approveTransactionRequest() response status', response.status);
 
             if (!response.ok || response.status !== 200) {
-                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                const error = new ErrorWithResponse(`Failed to send callback`, response);
+
+                captureError('approveTransactionRequest()', error);
             }
         }
     }
@@ -879,7 +898,7 @@ export class AntelopeSigningRequestSession implements IChainSession {
             });
 
             if (!response.ok || response.status !== 200) {
-                console.error(`Failed to send callback: ${JSON.stringify(response)}`);
+                captureError('rejectTransactionRequest()', new ErrorWithResponse(`Failed to send callback`, response));
             }
         }
     }

@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import theme, { commonStyles } from '../utils/theme';
-import { TransactionType } from '../utils/chain/types';
+import { IAsset, TransactionType } from '../utils/chain/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { IconButton } from 'react-native-paper';
-import { QuestionMark } from 'iconoir-react-native';
+import { QuestionMark, WarningCircle } from 'iconoir-react-native';
+import NegligibleTransactionFees from './NegligibleTransactionFees';
+import { KeyValue } from '../utils/strings';
+import { formatCurrencyValue } from '../utils/numbers';
 
 export type TransactionFeeData = {
     fee: string;
-    usdFee: string;
+    usdFee: number;
+    show: boolean;
+    isFree: boolean;
 };
 
 export type OperationData = {
@@ -18,7 +23,7 @@ export type OperationData = {
     usdValue?: string;
     contractName?: string;
     functionName?: string;
-    args?: Record<string, string>;
+    args?: KeyValue;
 };
 
 export function Operations({ operations, date }: { operations: OperationData[]; date?: Date }) {
@@ -64,23 +69,16 @@ export function TransferOperationDetails({ operation, date }: { operation: Opera
     return (
         <View style={styles.appDialog}>
             {date && (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={styles.appDialogView}>
                     <Text style={styles.secondaryColor}>Date:</Text>
                     <Text>{formattedDateString(date)}</Text>
                 </View>
             )}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.appDialogView}>
                 <Text style={styles.secondaryColor}>Recipient:</Text>
                 <Text>{operation.to}</Text>
             </View>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                }}
-            >
+            <View style={styles.appDialogAmountView}>
                 <Text style={styles.secondaryColor}>Amount:</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Text>{operation.amount}</Text>
@@ -93,46 +91,96 @@ export function TransferOperationDetails({ operation, date }: { operation: Opera
 
 export function ContractOperationDetails({ operation, date }: { operation: OperationData; date?: Date }) {
     const [showActionDetails, setShowActionDetails] = useState(false);
+    const [funToolTipVisible, setFunToolTipVisible] = useState(false);
+    const [tranToolTipVisible, setTranToolTipVisible] = useState(false);
 
     return (
         <View style={styles.actionDialog}>
             {date && (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={styles.actionDialogView}>
                     <Text style={styles.secondaryColor}>Date:</Text>
                     <Text>{formattedDateString(date)}</Text>
                 </View>
             )}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.actionDialogView}>
                 <Text style={styles.secondaryColor}>Smart Contract:</Text>
                 <Text>{operation.contractName}</Text>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+            <View style={styles.actionDialogView}>
                 <Text style={styles.secondaryColor}>Function:</Text>
-                <Text>{operation.functionName}</Text>
+                {operation.functionName ? (
+                    <Text style={{ color: theme.colors.secondary }}>{`${operation.functionName}()`}</Text>
+                ) : (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TouchableOpacity onPress={() => setFunToolTipVisible(true)}>
+                            <Text style={{ color: theme.colors.grey9 }}>unknown</Text>
+                            <Tooltip
+                                isVisible={funToolTipVisible}
+                                content={
+                                    <Text style={styles.tooltipText}>
+                                        Function arguments are unknown. Make sure you trust this app
+                                    </Text>
+                                }
+                                disableShadow
+                                placement="top"
+                                onClose={() => setFunToolTipVisible(false)}
+                                contentStyle={{ backgroundColor: theme.colors.gray10 }}
+                            >
+                                <WarningCircle
+                                    style={{ marginLeft: 2 }}
+                                    width={15}
+                                    height={15}
+                                    color={theme.colors.gold}
+                                />
+                            </Tooltip>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: 3,
-                }}
-            >
+            <View style={styles.transactionDetailsView}>
                 <Text style={styles.secondaryColor}>Transaction details:</Text>
-
-                <TouchableOpacity onPress={() => setShowActionDetails(!showActionDetails)}>
-                    {!showActionDetails ? (
-                        <IconButton
-                            icon={Platform.OS === 'android' ? 'chevron-down' : 'chevron-down'}
-                            size={Platform.OS === 'android' ? 18 : 22}
-                        />
-                    ) : (
-                        <IconButton
-                            icon={Platform.OS === 'android' ? 'chevron-up' : 'chevron-up'}
-                            size={Platform.OS === 'android' ? 18 : 22}
-                        />
-                    )}
-                </TouchableOpacity>
+                {operation.args ? (
+                    <TouchableOpacity onPress={() => setShowActionDetails(!showActionDetails)}>
+                        {!showActionDetails ? (
+                            <IconButton
+                                style={{ height: 20 }}
+                                icon={Platform.OS === 'android' ? 'chevron-down' : 'chevron-down'}
+                                size={Platform.OS === 'android' ? 18 : 22}
+                            />
+                        ) : (
+                            <IconButton
+                                style={{ height: 20 }}
+                                icon={Platform.OS === 'android' ? 'chevron-up' : 'chevron-up'}
+                                size={Platform.OS === 'android' ? 18 : 22}
+                            />
+                        )}
+                    </TouchableOpacity>
+                ) : (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TouchableOpacity onPress={() => setTranToolTipVisible(true)}>
+                            <Text style={{ color: theme.colors.grey9 }}>unknown</Text>
+                            <Tooltip
+                                isVisible={tranToolTipVisible}
+                                content={
+                                    <Text style={styles.tooltipText}>
+                                        Transaction details are unknown. Make sure you trust this app
+                                    </Text>
+                                }
+                                disableShadow
+                                placement="top"
+                                onClose={() => setTranToolTipVisible(false)}
+                                contentStyle={{ backgroundColor: theme.colors.gray10 }}
+                            >
+                                <WarningCircle
+                                    style={{ marginLeft: 2 }}
+                                    width={15}
+                                    height={15}
+                                    color={theme.colors.gold}
+                                />
+                            </Tooltip>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
             {showActionDetails && operation.args && (
                 <View style={styles.detailSection}>
@@ -142,7 +190,6 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
                             style={{
                                 flexDirection: 'row',
                                 justifyContent: 'space-between',
-                                marginBottom: 7,
                             }}
                         >
                             <Text style={[styles.secondaryColor, { fontSize: 13 }]}>{key}:</Text>
@@ -155,18 +202,66 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
     );
 }
 
+export function isFree(asset: IAsset, usdFee: number): boolean {
+    return asset.getAmount() === BigInt(0) && usdFee === 0;
+}
+
+// shows the fee only if the transaction does not contain asset transfers, or is not free
+export function showFee(operations: OperationData[] | unknown, asset: IAsset, usdFee: number): boolean {
+    if (!Array.isArray(operations)) return false;
+
+    const onlySmartContractOperations =
+        operations.filter((operation) => operation.type === TransactionType.CONTRACT).length === operations.length;
+
+    return !(onlySmartContractOperations && isFree(asset, usdFee));
+}
+
+const NEGLIGIBLE_FEE_USD = 0.001;
+
 export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
+    const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD;
+
+    if (!transactionFee.show) {
+        return null;
+    }
+
+    const onClose = () => {
+        refMessage.current?.close();
+    };
+
+    function FeeValue() {
+        if (transactionFee.isFree) return <Text>free</Text>;
+        else if (isNegligible) {
+            return (
+                <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
+                    <Text>negligible</Text>
+                    <WarningCircle width={15} height={15} color={theme.colors.success} />
+                </TouchableOpacity>
+            );
+        } else {
+            return (
+                <>
+                    <Text>{transactionFee.fee}</Text>
+                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
+                        (${formatCurrencyValue(transactionFee.usdFee, 2)})
+                    </Text>
+                </>
+            );
+        }
+    }
 
     return (
         <View style={styles.appDialog}>
+            <NegligibleTransactionFees transactionFee={transactionFee} onClose={onClose} refMessage={refMessage} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.secondaryColor}>Transaction fee:</Text>
                     <Tooltip
                         isVisible={toolTipVisible}
                         content={
-                            <Text style={{ color: theme.colors.white, fontSize: 13 }}>
+                            <Text style={styles.tooltipText}>
                                 This fee is paid to operators of the network to process this transaction
                             </Text>
                         }
@@ -174,16 +269,13 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
                         onClose={() => setToolTipVisible(false)}
                         contentStyle={{ backgroundColor: theme.colors.black }}
                     >
-                        <TouchableOpacity style={styles.tooltipIcon} onPress={() => setToolTipVisible(true)}>
+                        <TouchableOpacity style={styles.tooltipIconQue} onPress={() => setToolTipVisible(true)}>
                             <QuestionMark width={13} height={13} color={theme.colors.success} />
                         </TouchableOpacity>
                     </Tooltip>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text>{transactionFee.fee}</Text>
-                    <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                        (${transactionFee.usdFee})
-                    </Text>
+                    <FeeValue />
                 </View>
             </View>
         </View>
@@ -200,6 +292,16 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 20,
     },
+    appDialogView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    appDialogAmountView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 12,
+    },
     actionDialog: {
         borderWidth: 1,
         borderColor: theme.colors.grey5,
@@ -207,13 +309,19 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         padding: 16,
         width: '100%',
-        marginTop: 8,
+        marginTop: 20,
+        gap: 15,
+    },
+    actionDialogView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     detailSection: {
         backgroundColor: theme.colors.info,
         padding: 10,
         width: '100%',
         borderRadius: 7,
+        gap: 8,
     },
     secondaryColor: {
         color: theme.colors.secondary2,
@@ -221,15 +329,32 @@ const styles = StyleSheet.create({
         fontSize: 14,
         ...commonStyles.secondaryFontFamily,
     },
+    tooltipText: {
+        color: theme.colors.white,
+        fontSize: 13,
+    },
+    transactionDetailsView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     actionText: {
         fontWeight: 'bold',
         textAlign: 'left',
         marginTop: 10,
         marginLeft: 2,
     },
-    tooltipIcon: {
+    tooltipIconQue: {
         borderWidth: 1,
         borderColor: theme.colors.success,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 5,
+    },
+    tooltipIcon: {
+        borderWidth: 1,
+        borderColor: theme.colors.gold,
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',

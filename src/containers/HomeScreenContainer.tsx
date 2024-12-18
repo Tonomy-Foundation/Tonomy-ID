@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
-import { TButtonContained, TButtonOutlined, TButtonText } from '../components/atoms/TButton';
+import { StyleSheet, View, Image } from 'react-native';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import LayoutComponent from '../components/layout';
 import { TH1, TH4 } from '../components/atoms/THeadings';
 import { commonStyles } from '../utils/theme';

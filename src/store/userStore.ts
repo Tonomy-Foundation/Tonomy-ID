@@ -1,10 +1,8 @@
 import { create } from 'zustand';
 import RNKeyManager, { KEY_STORAGE_NAMESPACE } from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
-import settings from '../settings';
 import {
     createUserObject,
-    setSettings,
     SdkErrors,
     STORAGE_NAMESPACE,
     SdkError,
@@ -16,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
 import useWalletStore from './useWalletStore';
+import { setUser } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -34,15 +33,6 @@ export interface UserState {
     logout(reason: string): Promise<void>;
     isAppInitialized: boolean;
 }
-
-setSettings({
-    blockchainUrl: settings.config.blockchainUrl,
-    accountSuffix: settings.config.accountSuffix,
-    communicationUrl: settings.config.communicationUrl,
-    tonomyIdSchema: settings.config.tonomyIdSlug,
-    accountsServiceUrl: settings.config.accountsServiceUrl,
-    ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
-});
 
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
@@ -74,6 +64,7 @@ const useUserStore = create<UserState>((set, get) => ({
         await get().user.logout();
         if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         useWalletStore.getState().clearState();
+        setUser(null);
         await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
@@ -86,8 +77,13 @@ const useUserStore = create<UserState>((set, get) => ({
 
         try {
             debug('initializeStatusFromStorage() try');
-            await get().user.initializeFromStorage();
-            // get().setStatus(UserStatus.LOGGED_IN); // REDUNDANT: DELETE ME
+            const user = get().user;
+
+            await user.initializeFromStorage();
+            setUser({
+                id: (await user.getAccountName()).toString(),
+                username: '@' + (await user.getUsername()).getBaseUsername(),
+            });
             set({ isAppInitialized: true });
         } catch (e) {
             debug('initializeStatusFromStorage() catch', e, typeof e);

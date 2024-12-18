@@ -8,7 +8,6 @@ const packagesRegexToTransform = [
     '@expo-google-fonts',
     '@react-navigation',
     '@unimodules',
-    'sentry-expo',
     'native-base',
     'react-native-svg',
     'argon2',
@@ -56,6 +55,7 @@ const config: Config = {
         '^uint8-varint$': '<rootDir>/node_modules/uint8-varint/dist/src/index.js',
         '^uint8arrays$': '<rootDir>/node_modules/uint8arrays/index.js',
     },
+    setupFiles: ['./jest.setup.js'],
 };
 
 export default config;

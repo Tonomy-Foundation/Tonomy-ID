@@ -22,3 +22,7 @@ export function formatDateTime(date: Date): string {
 
     return `${day} ${month} ${year}, ${hours}:${minutes}`;
 }
+
+export function sleep(milliseconds: number) {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}

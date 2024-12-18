@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import { TButtonOutlined } from '../components/atoms/TButton';
-import { TP } from '../components/atoms/THeadings';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useIsFocused } from '@react-navigation/native';
 import theme, { commonStyles } from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
@@ -11,11 +7,12 @@ import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
+import { assetStorage } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
-import useAppSettings from '../hooks/useAppSettings';
+import useAppSettings from '../store/useAppSettings';
+import { captureError } from '../utils/sentry';
 import useUserStore from '../store/userStore';
 
 const debug = Debug('tonomy-id:containers:AssetsContainer');
@@ -38,8 +35,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            await connect();
-
             for (const { chain, token } of tokens) {
                 try {
                     const asset = await assetStorage.findAssetByName(token);
@@ -85,7 +80,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                 }
             }
         } catch (error) {
-            console.error('fetchCryptoAssets() error', error);
+            captureError('fetchCryptoAssets()', error, 'debug');
         }
     }, [tokens]);
 
@@ -107,7 +102,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
             if (isNetworkError(error)) {
                 debug('updateAllBalances() Error updating account detail network error:');
             } else {
-                console.error('AssetsContainer() updateAllBalances() error', error);
+                captureError('AssetsContainer() updateAllBalances()', error);
             }
         } finally {
             isUpdatingBalances.current = false;
