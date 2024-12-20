@@ -212,7 +212,6 @@ export default function RootNavigation() {
                 <>
                     <NotificationsProvider />
                     <CommunicationProvider />
-                    <AppInstructionProvider />
                     <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
                         <Stack.Screen
                             name="Drawer"
