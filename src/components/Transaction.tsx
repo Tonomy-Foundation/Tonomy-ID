@@ -236,8 +236,10 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
         else if (isNegligible) {
             return (
                 <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
-                    <Text>negligible</Text>
-                    <WarningCircle width={15} height={15} color={theme.colors.success} />
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text>negligible </Text>
+                        <WarningCircle width={15} height={15} color={theme.colors.success} />
+                    </View>
                 </TouchableOpacity>
             );
         } else {
