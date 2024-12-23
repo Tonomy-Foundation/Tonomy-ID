@@ -386,7 +386,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 }
 
-class PangeaVestedToken extends AntelopeToken {
+export class PangeaVestedToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
         const vestedBalance = await this.getVestedTotalBalance(account);

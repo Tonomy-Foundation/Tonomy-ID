@@ -6,6 +6,8 @@ import { IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
+import { formatCurrencyValue } from '../utils/numbers';
+import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
 
 export type AssetDetailProps = {
     navigation: LeosAssetsScreenNavigationProp['navigation'];
@@ -14,11 +16,33 @@ export type AssetDetailProps = {
 
 const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
+    const [balance, setBalance] = useState({
+        totalBalance: '',
+        totalBalanceUsd: 0,
+        availableBalance: '',
+        availableBalanceUsd: 0,
+        vestedBalance: '',
+    });
     const [loading, setLoading] = useState(true);
+    const token = chain.getNativeToken() as PangeaVestedToken;
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
             const assetData = await getAssetDetails(chain);
+            const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
+            const totalBalance = await token.getBalance(account);
+            const totalBalanceUsd = await totalBalance.getUsdValue();
+            const availableBalance = await token.getAvailableBalance(account);
+            const availableBalanceUsd = await availableBalance.getUsdValue();
+            const vestedBalance = await token.getVestedTotalBalance(account);
+
+            setBalance({
+                totalBalance: totalBalance.toString(),
+                availableBalance: availableBalance.toString(),
+                vestedBalance: vestedBalance.toString(),
+                totalBalanceUsd,
+                availableBalanceUsd,
+            });
 
             setAsset(assetData);
             setLoading(false);
@@ -29,7 +53,7 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [chain]);
+    }, [chain, token]);
 
     if (loading) {
         return (
@@ -55,13 +79,13 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
                 resizeMode="cover"
             >
                 <Text style={styles.imageNetworkText}>Pangea Network</Text>
-                <Text style={styles.imageText}>69,023.35 LEOS</Text>
-                <Text style={styles.imageUsdText}>= $3273.1</Text>
+                <Text style={styles.imageText}>{balance.totalBalance}</Text>
+                <Text style={styles.imageUsdText}>= ${formatCurrencyValue(balance.totalBalanceUsd ?? 0)}</Text>
             </ImageBackground>
             <TouchableOpacity style={styles.vestedView} onPress={() => navigation.navigate('VestedAssets')}>
                 <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
                 <View style={styles.allocationView}>
-                    <Text style={{ fontWeight: '700', fontSize: 12 }}>3,000.00 LEOS</Text>
+                    <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
                     <View style={styles.flexColEnd}>
                         <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                     </View>
@@ -71,8 +95,10 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
 
             <View style={styles.availableAssetView}>
                 <View style={styles.header}>
-                    <Text style={styles.headerAssetsAmount}>{`69,023.35 LEOS`}</Text>
-                    <Text style={styles.headerUSDAmount}>{`= $3273.1`}</Text>
+                    <Text style={styles.headerAssetsAmount}>{balance.availableBalance}</Text>
+                    <Text style={styles.headerUSDAmount}>
+                        = ${formatCurrencyValue(balance.availableBalanceUsd ?? 0)}
+                    </Text>
 
                     <View style={styles.sendReceiveButtons}>
                         <TouchableOpacity
@@ -121,13 +147,13 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
                     </View>
                 </View>
             </TouchableOpacity>
-
-            <View style={styles.moreView}>
+            {/* Uncomment when implementing staking */}
+            {/* <View style={styles.moreView}>
                 <Text style={{ fontWeight: '600' }}>Staking</Text>
                 <View style={styles.flexColEnd}>
                     <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
                 </View>
-            </View>
+            </View> */}
         </View>
     );
 };
@@ -244,7 +270,6 @@ const styles = StyleSheet.create({
     allocationView: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 11,
         marginTop: 2,
     },
     vestedView: {
@@ -252,7 +277,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginTop: 15,
         paddingHorizontal: 14,
-        paddingVertical: 5,
+        paddingVertical: 7,
     },
 });
 

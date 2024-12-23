@@ -52,28 +52,28 @@ const VestedAssetsContainer = ({ navigation }: VestedAssetProps) => {
                         </View>
                     </View>
                 </View>
-                <Text style={styles.subTitle}>Unlockable coins</Text>
+                {/* Uncomment when implementing withdraw  */}
+
+                {/* <Text style={styles.subTitle}>Unlockable coins</Text>
 
                 <View style={styles.availableAssetView}>
                     <View style={styles.header}>
                         <Text style={styles.lockedCoinsAmount}>{`69,023.35 LEOS`}</Text>
                         <Text style={styles.lockedUSDAmount}>{`= $3273.1`}</Text>
-
                         <View style={styles.sendReceiveButtons}>
                             <TButtonContained style={styles.fullWidthButton}>Withdraw</TButtonContained>
                         </View>
                     </View>
-                </View>
-
-                <View style={styles.unlockAssetView}>
-                    <Text style={styles.unlockhead}>When can I unlock coins?</Text>
-
-                    <Text style={styles.lockedParagraph}>
-                        These coins are locked under a vesting period and will unlock gradually over time based on the
-                        agreed terms
-                    </Text>
-                </View>
+                </View> */}
             </ScrollView>
+            <View style={styles.unlockAssetView}>
+                <Text style={styles.unlockhead}>When can I unlock coins?</Text>
+
+                <Text style={styles.lockedParagraph}>
+                    Coins are gradually unlockable after the public sale based on the vesting schedule for your
+                    allocation(s).
+                </Text>
+            </View>
             <AllocationDetails onClose={onClose} refMessage={refMessage} />
         </View>
     );
@@ -138,10 +138,10 @@ const styles = StyleSheet.create({
     },
     unlockAssetView: {
         alignItems: 'flex-start',
-        paddingVertical: 10,
+        paddingVertical: 12,
         paddingHorizontal: 15,
         backgroundColor: theme.colors.grey7,
-        marginTop: 15,
+        marginVertical: 60,
         borderRadius: 8,
     },
     subTitle: {
