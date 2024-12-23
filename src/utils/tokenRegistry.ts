@@ -46,6 +46,23 @@ export interface AccountTokenDetails {
     privateKey: IPrivateKey;
 }
 
+export interface VestedAllocation {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    allocationsDetails: {
+        totalAllocation: number;
+        unlockable: number;
+        unlocked: number;
+        locked: number;
+        vestingStart: Date;
+        vestingPeriod: string;
+        unlockAtVestingStart: number;
+        allocationDate: string;
+    }[];
+}
+
 export enum ChainKeyName {
     ethereum = 'ethereum',
     ethereumPolygon = 'ethereumPolygon',

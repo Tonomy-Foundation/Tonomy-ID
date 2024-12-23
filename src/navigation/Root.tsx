@@ -114,7 +114,7 @@ export type MainRouteStackParamList = {
     };
     SelectAsset: { screenTitle?: string; type: string };
     LeosAssetManager: AssetsParamsScreen;
-    VestedAssets: undefined;
+    VestedAssets: AssetsParamsScreen;
 };
 
 export type BottonNavigatorRouteStackParamList = {

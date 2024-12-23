@@ -411,8 +411,9 @@ export class PangeaVestedToken extends AntelopeToken {
         return new Asset(this, BigInt(vestedBalance * 10 ** this.precision));
     }
 
-    // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
-    // }
+    async getVestedTotalAllocation(account: AntelopeAccount): Promise<VestedAllocation> {
+        return await vestingContract.getVestingAllocations(account.getName());
+    }
 }
 
 export const PangeaMainnetChain = new AntelopeChain(

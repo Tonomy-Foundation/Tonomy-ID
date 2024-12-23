@@ -3,13 +3,28 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
+import { getMultiplier } from '../utils/multiplier';
 
 export type Props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
+    allocationData: {
+        totalAllocation: number;
+        unlockable: number;
+        unlocked: number;
+        locked: number;
+        vestingStart: Date;
+        vestingPeriod: string;
+        unlockAtVestingStart: number;
+        allocationDate: string;
+    };
+    usdPriceValue: number;
 };
 
 const AllocationDetails = (props: Props) => {
+    const allocationData = props.allocationData;
+    const lockedPercentage = (allocationData.locked / allocationData.totalAllocation) * 100;
+
     return (
         <RBSheet
             ref={props.refMessage}
@@ -28,38 +43,40 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Total allocation</Text>
                     <View style={styles.flexColCenter}>
-                        <Text style={styles.allocMulti}>3,000.00 LEOS</Text>
-                        <Text style={styles.usdBalance}>$2357.2</Text>
+                        <Text style={styles.allocMulti}>{allocationData.totalAllocation} LEOS</Text>
+                        <Text style={styles.usdBalance}>${allocationData.totalAllocation * props.usdPriceValue}</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Locked</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>30% of total</Text>
+                        <Text style={styles.allocMulti}>{lockedPercentage}% of total</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>30 March 2024</Text>
+                        <Text style={styles.allocMulti}>{allocationData.vestingStart.toDateString()}</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting period</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>2 years</Text>
+                        <Text style={styles.allocMulti}>{allocationData.vestingPeriod} years</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Unlock at vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>10%</Text>
+                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart}%</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Price multiplier</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>6x</Text>
+                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
+                            {getMultiplier(allocationData.allocationDate)}x
+                        </Text>
                     </View>
                 </View>
             </View>
