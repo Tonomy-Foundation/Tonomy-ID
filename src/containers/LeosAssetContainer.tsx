@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking } from 'react-native';
 import { LeosAssetsScreenNavigationProp } from '../screens/LeosAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
-import { ArrowDown, ArrowUp, Clock, ArrowRight } from 'iconoir-react-native';
+import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight } from 'iconoir-react-native';
 import { IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
@@ -32,7 +32,11 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
     }, [chain]);
 
     if (loading) {
-        return <TSpinner />;
+        return (
+            <View style={styles.textContainer}>
+                <TSpinner />
+            </View>
+        );
     }
 
     const redirectToCheckExplorer = () => {
@@ -54,6 +58,15 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
                 <Text style={styles.imageText}>69,023.35 LEOS</Text>
                 <Text style={styles.imageUsdText}>= $3273.1</Text>
             </ImageBackground>
+            <TouchableOpacity style={styles.vestedView} onPress={() => navigation.navigate('VestedAssets')}>
+                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
+                <View style={styles.allocationView}>
+                    <Text style={{ fontWeight: '700', fontSize: 12 }}>3,000.00 LEOS</Text>
+                    <View style={styles.flexColEnd}>
+                        <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
+                </View>
+            </TouchableOpacity>
             <Text style={styles.subTitle}>Available assets</Text>
 
             <View style={styles.availableAssetView}>
@@ -227,6 +240,19 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
         padding: 4,
         borderRadius: 5,
+    },
+    allocationView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 11,
+        marginTop: 2,
+    },
+    vestedView: {
+        backgroundColor: theme.colors.grey7,
+        borderRadius: 12,
+        marginTop: 15,
+        paddingHorizontal: 14,
+        paddingVertical: 5,
     },
 });
 
