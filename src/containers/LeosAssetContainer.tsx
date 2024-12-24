@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
-import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
+import { Props } from '../screens/LeosAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight } from 'iconoir-react-native';
 
-export type AssetDetailProps = {
-    navigation: AssetDetailScreenNavigationProp['navigation'];
+export type LeosAssetProps = {
+    navigation: Props['navigation'];
 };
 
-const LeosAssetContainer = ({ navigation }: AssetDetailProps) => {
+const LeosAssetContainer = ({ navigation }: LeosAssetProps) => {
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total assets</Text>
