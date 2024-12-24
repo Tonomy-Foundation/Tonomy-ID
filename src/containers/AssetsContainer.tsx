@@ -3,19 +3,19 @@ import { StyleSheet, View, Image, Text, TouchableOpacity, ScrollView, RefreshCon
 import theme, { commonStyles } from '../utils/theme';
 import { AssetsScreenNavigationProp } from '../screens/AssetListingScreen';
 import useWalletStore from '../store/useWalletStore';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 import { formatCurrencyValue } from '../utils/numbers';
 import { capitalizeFirstLetter } from '../utils/strings';
 import { isNetworkError } from '../utils/errors';
-import { assetStorage, connect } from '../utils/StorageManager/setup';
+import { assetStorage } from '../utils/StorageManager/setup';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { tokenRegistry } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
-import useAppSettings from '../hooks/useAppSettings';
+import useAppSettings from '../store/useAppSettings';
 import { captureError } from '../utils/sentry';
 import useUserStore from '../store/userStore';
 
-const debug = DebugAndLog('tonomy-id:containers:AssetsContainer');
+const debug = Debug('tonomy-id:containers:AssetsContainer');
 
 export default function AssetsContainer({ navigation }: { navigation: AssetsScreenNavigationProp['navigation'] }) {
     const [total, setTotal] = useState<number>(0);
@@ -35,8 +35,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
 
     const fetchCryptoAssets = useCallback(async () => {
         try {
-            await connect();
-
             for (const { chain, token } of tokens) {
                 try {
                     const asset = await assetStorage.findAssetByName(token);

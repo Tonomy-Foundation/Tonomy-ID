@@ -1,4 +1,4 @@
-import { init, captureException } from '@sentry/react-native';
+import { init, captureException, wrap as sentryWrap, setUser as sentrySetUser, User, Hub } from '@sentry/react-native';
 import settings from '../settings';
 import { ExclusiveEventHintOrCaptureContext } from '@sentry/core/types/utils/prepareEvent';
 import { SeverityLevel } from '@sentry/types/types/severity';
@@ -23,25 +23,49 @@ export function captureError(message: string, error: any, level: SeverityLevel =
     if (settings.isProduction()) {
         return sendToSentry(message, errorObject, level);
     } else {
-        console[level]('Error: ' + message + ': ', error);
+        console[level](`captureError(): ${message}`, errorObject.stack || errorObject);
         return 'sentry-not-active';
+    }
+}
+
+export function wrap(component: React.ComponentType): React.ComponentType {
+    if (settings.isProduction()) {
+        return sentryWrap(component);
+    } else {
+        return component;
+    }
+}
+
+export function setUser(user: User | null): ReturnType<Hub['setUser']> | null {
+    if (settings.isProduction()) {
+        return sentrySetUser(user);
+    } else {
+        return null;
     }
 }
 
 /**
  * Creates a readable text blog from the debug logs and sends it to Sentry
  */
-function createBlobFromDebugLogs(): string {
+export function createBlobFromDebugLogs(): string {
     const now = new Date();
-    let blob = '';
+    const blobs: string[] = [];
 
+    // Get log strings
     debugLog.forEach((log) => {
         const diff = now.getTime() - log.dateTime.getTime();
+        const blobString =
+            log.dateTime.toISOString() + `(-${diff / 1000}s)` + ' ' + log.namespace + ': ' + log.message + '\n';
 
-        blob += log.dateTime.toISOString() + `(-${diff / 1000}s)` + ' ' + log.namespace + ': ' + log.message + '\n';
+        blobs.push(blobString);
     });
 
-    return blob;
+    // Truncate to 16kB (16267 characters) as per size limit in sentry
+    while (blobs.join('').length > 16267) {
+        blobs.shift();
+    }
+
+    return blobs.join('');
 }
 
 function sendToSentry(message: string, error: Error, level: SeverityLevel): string {

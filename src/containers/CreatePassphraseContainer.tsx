@@ -48,7 +48,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
 
             hasEffectRun.current = true;
         }
-    }, []);
+    }, [generatePassphraseList, getPassphrase, passphraseList?.length]);
 
     async function regenerate() {
         generatePassphraseList();
@@ -65,9 +65,8 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 keyFromPasswordFn: async () => ({ privateKey, salt }),
             };
 
-            // @ts-ignore Checksum256 type error
             await user.savePassword(passphrase, loginOptions);
-            savePrivateKeyToStorage(passphrase, salt.toString());
+            await savePrivateKeyToStorage(passphrase, salt.toString());
 
             navigation.navigate('ConfirmPassphrase', { index: 0 });
         } catch (e) {

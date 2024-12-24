@@ -126,7 +126,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                         </TP>
                     </View>
                 )}
-                <View style={styles.checkboxContainer}>
+                {/* <View style={styles.checkboxContainer}>
                     <View style={styles.checkbox}>
                         <Checkbox.Android
                             color={theme.colors.primary}
@@ -148,7 +148,7 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                             the app while respecting your privacy.
                         </Text>
                     </View>
-                </View>
+                </View> */}
 
                 <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 20 : 0 }]}>
                     <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>

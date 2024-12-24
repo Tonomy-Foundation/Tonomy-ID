@@ -39,7 +39,7 @@ import {
 } from '@wharfkit/antelope';
 import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
-import DebugAndLog from '../debug';
+import Debug from '../debug';
 import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
 import { VestingContract } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
@@ -49,7 +49,7 @@ import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 
 const vestingContract = VestingContract.Instance;
 
-const debug = DebugAndLog('tonomy-id:utils:chain:antelope');
+const debug = Debug('tonomy-id:utils:chain:antelope');
 
 export class AntelopePublicKey extends AbstractPublicKey implements IPublicKey {
     private publicKey: PublicKey;
@@ -149,6 +149,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
 
     async signTransaction(data: ActionData[] | AntelopeTransaction): Promise<SignedTransaction> {
         const actions: ActionData[] = data instanceof AntelopeTransaction ? await data.getData() : data;
+
         // Get the ABI(s) of all contracts
 
         // Create the action data
@@ -176,8 +177,12 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         // Construct the transaction
         const info = await this.chain.getChainInfo();
         const header = info.getTransactionHeader();
+        const defaultExpiration = new Date(new Date().getTime() + ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS);
+        const expiration: Date =
+            data instanceof AntelopeTransaction ? data.getExpiration() ?? defaultExpiration : defaultExpiration;
         const transaction = Transaction.from({
             ...header,
+            expiration,
             actions: actionData,
         });
 
@@ -621,13 +626,20 @@ function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     return new Asset(token, amount);
 }
 
+export const ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS = 120;
+
 export class AntelopeTransaction implements ITransaction {
     private actions: ActionData[];
     protected chain: AntelopeChain;
     protected account: AntelopeAccount;
     private expirationDate: Date | null = null;
 
-    constructor(actions: ActionData[], chain: AntelopeChain, account: AntelopeAccount, timeoutSeconds = 120) {
+    constructor(
+        actions: ActionData[],
+        chain: AntelopeChain,
+        account: AntelopeAccount,
+        timeoutSeconds = ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS
+    ) {
         this.actions = actions;
         this.chain = chain;
         this.account = account;

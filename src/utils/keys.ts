@@ -1,69 +1,8 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
 import argon2 from 'react-native-argon2';
-import { randomBytes, sha256 } from '@tonomy/tonomy-id-sdk';
-import { EthereumPrivateKey, EthereumAccount, EthereumSepoliaChain } from './chain/etherum';
-import { ethers, TransactionRequest, Wallet } from 'ethers';
+import { randomBytes } from '@tonomy/tonomy-id-sdk';
 import { appStorage, keyStorage } from './StorageManager/setup';
-import DebugAndLog from '../utils/debug';
-import { captureError } from './sentry';
 import { getKeyOrNullFromChain, tokenRegistry } from './tokenRegistry';
-
-const debug = DebugAndLog('tonomy-id:utils:keys');
-
-/**
- * Tests that the generatePrivateKeyFromPassword() correctly generates a private key from a password and salt.
- * This is to ensure it creates the same values as the Tonomy-ID SDK and https://argon2.online
- *
- * This needs to be executed at runtime as the react-native-argon2 library cannot run in nodejs
- */
-export async function testKeyGenerator() {
-    // See equivalent test in crypto.test.ts in Tonomy-ID-SDK
-    try {
-        const saltInput = Checksum256.from(sha256('testsalt'));
-
-        const { privateKey, salt } = await generatePrivateKeyFromPassword(
-            'above day fever lemon piano sport',
-            saltInput
-        );
-
-        if (salt.toString() !== '4edf07edc95b2fdcbcaf2378fd12d8ac212c2aa6e326c59c3e629be3039d6432')
-            throw new Error('generatePrivateKeyFromPassword() test: Salt is not correct');
-        if (privateKey.toString() !== 'PVT_K1_q4BZoScNYFCF5tDthn4m5KUgv9LLH4fTNtMFj3FUkG3p7UA4D')
-            throw new Error('generatePrivateKeyFromPassword() test: Key is not correct');
-
-        debug(
-            'testing Chain libraries',
-            Wallet.fromPhrase('save west spatial goose rotate glass any phrase manual pause category flight').privateKey
-        );
-        const wallet = Wallet.fromPhrase(
-            'save west spatial goose rotate glass any phrase manual pause category flight'
-        );
-        const privateKeyHex = wallet.privateKey;
-
-        const privateKeyEth = new EthereumPrivateKey(privateKeyHex, EthereumSepoliaChain);
-
-        const ethereumAccount = await EthereumAccount.fromPublicKey(
-            EthereumSepoliaChain,
-            await privateKeyEth.getPublicKey()
-        );
-        const accountName = await ethereumAccount.getName();
-
-        debug('accountName:', accountName);
-
-        const transactionRequest: TransactionRequest = {
-            to: accountName,
-            from: accountName,
-            value: ethers.parseEther('0'),
-            data: '0x00',
-        };
-
-        const signedTransaction = await privateKeyEth.signTransaction(transactionRequest);
-
-        debug('signedTransaction:', signedTransaction);
-    } catch (e) {
-        captureError('testKeyGenerator()', e);
-    }
-}
 
 export async function generatePrivateKeyFromPassword(
     password: string,

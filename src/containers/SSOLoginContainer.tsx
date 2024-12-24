@@ -21,9 +21,9 @@ import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
-import DebugAndLog from '../utils/debug';
+import Debug from 'debug';
 
-const debug = DebugAndLog('tonomy-id:containers:SSOLoginContainer');
+const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
 export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
     const { user, logout } = useUserStore();
@@ -52,28 +52,37 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
     async function getRequestsFromParams() {
         try {
+            debug('getRequestsFromParams(): start');
             const parsedPayload = base64UrlToObj(payload);
+
             const managedRequests = new RequestsManager(parsedPayload?.requests);
+
+            debug('getRequestsFromParams():', managedRequests);
 
             await managedRequests.verify();
             // TODO check if the internal login request comes from same DID as the sender of the message.
 
             const managedResponses = new ResponsesManager(managedRequests);
 
+            debug('getRequestsFromParams():', managedResponses);
+
             await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
 
             setSsoApp(managedResponses.getExternalLoginResponseOrThrow().getAppOrThrow());
             setResponsesManager(managedResponses);
-
-            setNextLoading(false);
+            debug('getRequestsFromParams(): end');
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
+        } finally {
+            setNextLoading(false);
         }
     }
 
     async function onLogin() {
         try {
             setNextLoading(true);
+            debug('onLogin() logs start:');
+
             if (!responsesManager) throw new Error('Responses manager is not set');
 
             await responsesManager.createResponses(user);
@@ -84,27 +93,27 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
             });
 
-            setNextLoading(false);
+            debug('onLogin() callbackUrl:', callbackUrl);
 
             if (platform === 'mobile') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
                 await Linking.openURL(callbackUrl);
                 // @ts-expect-error item of type string is not assignable to type never
-                // TODO fix type error
                 navigation.navigate('Assets');
             } else {
                 // @ts-expect-error item of type string is not assignable to type never
-                // TODO fix type error
                 navigation.navigate('Assets');
             }
         } catch (e) {
-            setNextLoading(false);
+            debug('onLogin() error', e);
 
             if (
                 e instanceof CommunicationError &&
                 e.exception.status === 400 &&
                 e.exception.message.startsWith('Recipient not connected')
             ) {
+                debug('onLogin() CommunicationError');
+
                 // User cancelled in the browser, so can just navigate back to home
                 // @ts-expect-error item of type string is not assignable to type never
                 navigation.navigate('Assets');
@@ -116,6 +125,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     onClose: async () => navigation.navigate('Assets'),
                 });
             }
+        } finally {
+            setNextLoading(false);
         }
     }
 
