@@ -16,7 +16,6 @@ export type Props = {
         vestingStart: Date;
         vestingPeriod: string;
         unlockAtVestingStart: number;
-        allocationDate: string;
     };
     usdPriceValue: number;
 };
@@ -74,9 +73,7 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Price multiplier</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
-                            {getMultiplier(allocationData.allocationDate)}x
-                        </Text>
+                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>{getMultiplier()}x</Text>
                     </View>
                 </View>
             </View>
