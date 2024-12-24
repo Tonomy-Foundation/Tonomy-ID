@@ -51,10 +51,10 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         let totalLockedAllocations = 0;
 
         allocationsDetails.forEach((allocation) => {
-            const { allocationDate, locked, unlockable } = allocation;
+            const { locked, unlockable } = allocation;
 
             if (locked > 0) {
-                const multiplier = getMultiplier(allocationDate);
+                const multiplier = getMultiplier();
                 const lockedPlusUnlockable = locked + unlockable;
 
                 totalWeightedMultiplier += multiplier * lockedPlusUnlockable;
