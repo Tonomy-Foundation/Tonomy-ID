@@ -137,13 +137,13 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account)
                 );
 
-                const transactionRequest = await AntelopeTransactionRequest.fromTransaction(
-                    transaction,
+                const request = await AntelopeTransactionRequest.fromTransaction(
+                    transaction as AntelopeTransaction,
                     privateKey as AntelopePrivateKey
                 );
 
                 navigation.navigate('SignTransaction', {
-                    request: transactionRequest,
+                    request,
                 });
             }
         } catch (error) {

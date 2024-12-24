@@ -1,21 +1,30 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView, Linking } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
 import { Props } from '../screens/SignTransactionConsentScreen';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import { IOperation, PlatformType, ITransactionRequest, TransactionType, ChainType } from '../utils/chain/types';
+import { IOperation, ITransactionRequest, TransactionType, ChainType, Asset } from '../utils/chain/types';
 import { extractHostname } from '../utils/network';
 import { formatCurrencyValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import AccountDetails from '../components/AccountDetails';
-import { OperationData, Operations, TransactionFee, TransactionFeeData } from '../components/Transaction';
+import {
+    isFree,
+    OperationData,
+    Operations,
+    showFee,
+    TransactionFee,
+    TransactionFeeData,
+} from '../components/Transaction';
 import TSpinner from '../components/atoms/TSpinner';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
-import { Images } from '../assets';
+
 import settings from '../settings';
 import useAppSettings from '../store/useAppSettings';
+import { captureError } from '../utils/sentry';
+import { ETHSepoliaToken, ETHToken } from '../utils/chain/etherum';
 
 const debug = Debug('tonomy-id:components:SignTransactionConsentContainer');
 
@@ -50,9 +59,6 @@ export default function SignTransactionConsentContainer({
     const chainIcon = chain.getLogoUrl();
     const chainName = chain.getName();
     const chainSymbol = chain.getNativeToken().getSymbol();
-    const origin = request.getOrigin();
-    const hostname = origin ? extractHostname(origin) : null;
-    const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
     const { developerMode } = useAppSettings();
 
     const getOperationData = useCallback(
@@ -99,76 +105,71 @@ export default function SignTransactionConsentContainer({
         debug('fetchAccountName() done', accountName);
     }, [transaction, chain]);
 
+    const fetchTransactionFee = useCallback(
+        async (operations: OperationData[]) => {
+            const fee = await request.transaction.estimateTransactionFee();
+            const usdFee = await fee.getUsdValue();
+
+            const transactionFee: TransactionFeeData = {
+                fee: fee.toString(4),
+                usdFee: usdFee,
+                show: showFee(operations, fee, usdFee),
+                isFree: isFree(fee, usdFee),
+            };
+
+            setTransactionFeeData(transactionFee);
+            debug('fetchTransactionFee() done', transactionFee);
+        },
+        [request]
+    );
+
+    const fetchTransactionTotal = useCallback(
+        async (operations: OperationData[]) => {
+            const account = await request.transaction.getFrom();
+            const total = await request.transaction.estimateTransactionTotal();
+            const usdTotal = await total.getUsdValue();
+            let balanceError = false;
+
+            const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
+
+            if (accountBalance < total.getAmount()) {
+                balanceError = true;
+            }
+
+            const transactionTotal = {
+                show: showFee(operations, total, usdTotal),
+                total: total.toString(4),
+                totalUsd: formatCurrencyValue(usdTotal, 2),
+                balanceError,
+            };
+
+            setTransactionTotalData(transactionTotal);
+            debug('fetchTransactionTotal() done', transactionTotal);
+        },
+        [chain, request.account, request.transaction]
+    );
+
     const fetchOperations = useCallback(async () => {
+        let syncedOperations: OperationData[];
+
         if (transaction.hasMultipleOperations()) {
             const operations = await transaction.getOperations();
-            const syncedOperations: OperationData[] = await Promise.all(operations.map(getOperationData));
 
-            setOperations(syncedOperations);
-            debug('fetchOperations() done', syncedOperations);
+            syncedOperations = await Promise.all(operations.map(getOperationData));
         } else {
-            const syncedOperations: OperationData[] = [await getOperationData(transaction)];
-
-            setOperations(syncedOperations);
-            debug('fetchOperations() done', syncedOperations);
-        }
-    }, [transaction, getOperationData]);
-
-    const fetchTransactionFee = useCallback(async () => {
-        const fee = await request.transaction.estimateTransactionFee();
-        const usdFee = await fee.getUsdValue();
-
-        const transactionFee: TransactionFeeData = {
-            fee: fee.toString(4),
-            usdFee: formatCurrencyValue(usdFee, 2),
-            show: true,
-        };
-
-        if (request.account && request.transaction.getExpiration()) {
-            transactionFee.show = false;
+            syncedOperations = [await getOperationData(transaction)];
         }
 
-        setTransactionFeeData(transactionFee);
-        debug('fetchTransactionFee() done', transactionFee);
-    }, [request]);
-
-    const fetchTransactionTotal = useCallback(async () => {
-        const account = await request.transaction.getFrom();
-        const total = await request.transaction.estimateTransactionTotal();
-        const usdTotal = await total.getUsdValue();
-        let balanceError = false;
-
-        const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
-
-        if (accountBalance < total.getAmount()) {
-            balanceError = true;
-        }
-
-        const transactionTotal = {
-            show: true,
-            total: total.toString(4),
-            totalUsd: formatCurrencyValue(usdTotal, 2),
-            balanceError,
-        };
-
-        if (request.account && request.transaction.getExpiration()) {
-            transactionTotal.show = false;
-        }
-
-        setTransactionTotalData(transactionTotal);
-        debug('fetchTransactionTotal() done', transactionTotal);
-    }, [request]);
+        setOperations(syncedOperations);
+        debug('fetchOperations() done', syncedOperations);
+        await Promise.all([fetchTransactionFee(syncedOperations), fetchTransactionTotal(syncedOperations)]);
+    }, [transaction, getOperationData, fetchTransactionFee, fetchTransactionTotal]);
 
     useEffect(() => {
         async function fetchTransactionData() {
             try {
                 setTransactionLoading(true);
-                await Promise.all([
-                    fetchAccountName(),
-                    fetchOperations(),
-                    fetchTransactionFee(),
-                    fetchTransactionTotal(),
-                ]);
+                await Promise.all([fetchAccountName(), fetchOperations()]);
             } catch (error) {
                 errorStore.setError({
                     title: 'Error fetching transaction details',
@@ -181,7 +182,7 @@ export default function SignTransactionConsentContainer({
         }
 
         fetchTransactionData();
-    }, [fetchAccountName, fetchOperations, fetchTransactionFee, fetchTransactionTotal, errorStore]);
+    }, [fetchAccountName, fetchOperations, errorStore]);
 
     async function onReject() {
         setTransactionLoading(true);
@@ -241,32 +242,52 @@ export default function SignTransactionConsentContainer({
         }
     }
 
-    const renderSignTransactionOriginDetails = () => {
+    const SignTransactionOriginDetails = () => {
         const origin = request.getOrigin();
-        const showLogo = origin ? chain.getNativeToken().getLogoUrl() : Images.GetImage('logo1024');
-        const appName = origin ? topLevelHostname : settings.config.appName;
+        const hostname = origin ? extractHostname(origin) : null;
 
-        if (!origin && request.session) {
-            return (
-                <View style={styles.sandingMain}>
-                    <Text style={[styles.sandingTitle, { textAlign: 'center' }]}>
-                        A third-party app wants you to sign a transaction
-                    </Text>
-                </View>
-            );
+        function Logo() {
+            // https://clearbit.com/blog/logo
+            const logo = origin ? `https://logo.clearbit.com/${hostname}` : chain.getNativeToken().getLogoUrl();
+
+            try {
+                return <Image style={styles.logo} source={{ uri: logo }} />;
+            } catch (error) {
+                captureError(`Failed to load logo: ${logo}`, error);
+                return null;
+            }
+        }
+
+        function Message() {
+            if (!origin && request.session) {
+                return (
+                    <>
+                        <View style={styles.sandingMain}>
+                            <Text style={[styles.sandingTitle, { textAlign: 'center' }]}>
+                                A third-party app wants you to sign a transaction
+                            </Text>
+                        </View>
+                    </>
+                );
+            } else {
+                const topLevelHostname = hostname ? hostname.split('.').slice(-2).join('.') : null;
+                const appName = origin ? topLevelHostname : settings.config.appName;
+
+                return (
+                    <>
+                        <View style={commonStyles.alignItemsCenter}>
+                            <Text style={styles.applinkText}>{appName}</Text>
+                            <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
+                        </View>
+                    </>
+                );
+            }
         }
 
         return (
             <>
-                {!origin && !request.session ? (
-                    <Image style={[styles.logo, commonStyles.marginBottom]} source={showLogo} />
-                ) : (
-                    <Image style={[styles.logo, commonStyles.marginBottom]} source={{ uri: showLogo }} />
-                )}
-                <View style={commonStyles.alignItemsCenter}>
-                    <Text style={styles.applinkText}>{appName}</Text>
-                    <Text style={styles.applinkContent}>wants you to sign a transaction</Text>
-                </View>
+                <Logo />
+                <Message />
             </>
         );
     };
@@ -299,7 +320,7 @@ export default function SignTransactionConsentContainer({
         return () => clearInterval(intervalId);
     }, [request]);
 
-    const renderExpirationTimer = () => {
+    const ExpirationTimer = () => {
         return !expired && request.account && transaction.getExpiration() ? (
             <View style={styles.expirationContainer}>
                 <Text>Expiration time</Text>
@@ -313,8 +334,8 @@ export default function SignTransactionConsentContainer({
             body={
                 <ScrollView>
                     <View style={styles.container}>
-                        {renderExpirationTimer()}
-                        {renderSignTransactionOriginDetails()}
+                        <ExpirationTimer />
+                        <SignTransactionOriginDetails />
                         <View style={styles.networkHeading}>
                             <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
                             <Text style={styles.nameText}>{chainName} Network</Text>
@@ -465,6 +486,8 @@ const styles = StyleSheet.create({
     logo: {
         width: 50,
         height: 50,
+        borderRadius: 50,
+        backgroundColor: theme.colors.grey5,
     },
     applinkText: {
         color: theme.colors.linkColor,
