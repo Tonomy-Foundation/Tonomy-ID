@@ -46,6 +46,7 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
+import { VestedAllocation } from '../tokenRegistry';
 
 const vestingContract = VestingContract.Instance;
 
