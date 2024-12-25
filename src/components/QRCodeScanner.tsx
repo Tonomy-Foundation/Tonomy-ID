@@ -72,10 +72,12 @@ export default function QRCodeScanner(props: Props) {
     const [torchOn, setTorchOn] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const errorStore = useErrorStore();
+    const [cameraActive, setCameraActive] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             setTorchOn(false);
+            setCameraActive(true); // Activate camera when screen is focused
 
             const getBarCodeScannerPermissions = async () => {
                 try {
@@ -88,6 +90,11 @@ export default function QRCodeScanner(props: Props) {
             };
 
             getBarCodeScannerPermissions();
+
+            return () => {
+                setCameraActive(false); // Deactivate camera when screen is unfocused
+                setTorchOn(false); // Clean up state when screen is unfocused
+            };
         }, [errorStore, permission?.granted, requestPermission])
     );
 
@@ -95,7 +102,7 @@ export default function QRCodeScanner(props: Props) {
 
     return (
         <>
-            {permission?.granted ? (
+            {permission?.granted && cameraActive ? (
                 <View style={styles.QRContainer}>
                     <ScannerOverlay isFlashlightOn={torchOn} onPress={toggleFlashLight} />
                     <CameraBarcodeScanner onBarCodeScanned={props.onScan} enableTorch={torchOn} />
