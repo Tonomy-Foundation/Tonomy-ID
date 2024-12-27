@@ -170,14 +170,21 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
                     </View>
                 </View>
             </TouchableOpacity>
-            {/* Uncomment when implementing staking */}
-            {/* <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
-                <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
-                <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
-                <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
-                    <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+            <TouchableOpacity
+                onPressIn={() =>
+                    navigation.navigate('StakeLeos', {
+                        chain: asset.chain,
+                    })
+                }
+            >
+                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
+                    <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
+                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
+                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
                 </View>
-            </View> */}
+            </TouchableOpacity>
         </View>
     );
 };
