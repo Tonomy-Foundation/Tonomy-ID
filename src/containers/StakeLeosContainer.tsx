@@ -3,7 +3,10 @@ import { StakeLesoscreenNavigationProp } from '../screens/StakeLeosScreen';
 import theme, { commonStyles } from '../utils/theme';
 
 import { IChain } from '../utils/chain/types';
-
+import { useEffect, useState } from 'react';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
+import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
+import TSpinner from '../components/atoms/TSpinner';
 import { TButtonContained } from '../components/atoms/TButton';
 
 export type StakeLesoProps = {
@@ -12,6 +15,79 @@ export type StakeLesoProps = {
 };
 
 const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
+    const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
+    const [balance, setBalance] = useState({
+        availableBalance: '',
+        availableBalanceUsd: 0,
+        vestedBalance: '',
+        vestedBalanceUsd: 0,
+    });
+    const [loading, setLoading] = useState(true);
+    const token = chain.getNativeToken() as PangeaVestedToken;
+    const [amount, setAmount] = useState('');
+    const [apy, setApy] = useState(0);
+
+    const [monthlyEarningsLeos, setMonthlyEarningsLeos] = useState(0);
+    const [monthlyEarningsUsd, setMonthlyEarningsUsd] = useState(0);
+    const calculateEarnings = (stakingAmount: number) => {
+        const monthlyEarnings = (stakingAmount * apy) / 1200;
+        const monthlyEarningsInUsd = monthlyEarnings * balance.availableBalanceUsd;
+
+        setMonthlyEarningsLeos(monthlyEarnings);
+        setMonthlyEarningsUsd(monthlyEarningsInUsd);
+    };
+    const handleMaxAmount = () => {
+        setAmount(balance.availableBalanceUsd.toFixed(2));
+    };
+
+    const MINIMUM_STAKE_AMOUNT = 50000;
+    const [errorMessage, setErrorMessage] = useState('');
+    const handleAmountChange = (val: string) => {
+        const numericValue = parseFloat(val);
+
+        if (numericValue > parseFloat(balance.availableBalance)) {
+            setErrorMessage('Not enough balance.');
+        } else if (numericValue < MINIMUM_STAKE_AMOUNT) {
+            setErrorMessage(`Minimum stake amount is ${MINIMUM_STAKE_AMOUNT.toLocaleString()} LEOS.`);
+        }
+
+        setAmount(val);
+    };
+
+    useEffect(() => {
+        const fetchAssetDetails = async () => {
+            const assetData = await getAssetDetails(chain);
+            const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
+            const availableBalance = await token.getAvailableBalance(account);
+            const availableBalanceUsd = await availableBalance.getUsdValue();
+            const vestedBalance = await token.getVestedTotalBalance(account);
+            const vestedBalanceUsd = await vestedBalance.getUsdValue();
+
+            setBalance({
+                availableBalance: availableBalance.toString(),
+                vestedBalance: vestedBalance.toString(),
+                availableBalanceUsd,
+                vestedBalanceUsd,
+            });
+
+            setAsset(assetData);
+            setLoading(false);
+        };
+
+        fetchAssetDetails();
+        const interval = setInterval(fetchAssetDetails, 10000);
+
+        return () => clearInterval(interval);
+    }, [chain, token]);
+
+    if (loading) {
+        return (
+            <View style={styles.textContainer}>
+                <TSpinner />
+            </View>
+        );
+    }
+
     return (
         <>
             <View style={styles.container}>
@@ -20,24 +96,27 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                         <TextInput
                             style={styles.input}
                             placeholder="Enter amount"
+                            onChangeText={handleAmountChange}
+                            value={amount}
                             placeholderTextColor={theme.colors.tabGray}
                         />
-                        <TouchableOpacity style={styles.inputButton}>
+                        <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
                             <Text style={styles.inputButtonText}>MAX</Text>
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.inputHelp}>Available: 10,000.00 LEOS</Text>
+                    {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+                    <Text style={styles.inputHelp}>Available: {balance.availableBalance}</Text>
                 </View>
                 <View style={styles.annualView}>
                     <View style={styles.annualText}>
                         <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                        <Text style={styles.annualPercentage}>3.47%</Text>
+                        <Text style={styles.annualPercentage}>{apy.toFixed(2)}%</Text>
                     </View>
                     <View style={styles.annualText}>
                         <Text style={styles.annualSubText}>Monthly earnings</Text>
                         <View>
-                            <Text style={styles.annualPercentage}>180 LEOS</Text>
-                            <Text style={styles.annualSubText}>$50.00</Text>
+                            <Text style={styles.annualPercentage}>{monthlyEarningsLeos.toFixed(2)} LEOS</Text>
+                            <Text style={styles.annualSubText}>${monthlyEarningsUsd.toFixed(2)}</Text>
                         </View>
                     </View>
                     <View style={styles.annualText}>
@@ -67,6 +146,17 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         marginTop: 10,
         gap: 24,
+    },
+    errorText: {
+        color: theme.colors.error,
+        fontSize: 12,
+        marginTop: 4,
+        ...commonStyles.secondaryFontFamily,
+    },
+    textContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     flexCol: {
         flexDirection: 'column',
