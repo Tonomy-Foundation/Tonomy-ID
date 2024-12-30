@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image } from 'react-native';
-import { LeosAssetsScreenNavigationProp } from '../screens/LeosAssetScreen';
+import { Props } from '../screens/StakingManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
 import { IChain } from '../utils/chain/types';
@@ -9,8 +9,8 @@ import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
 
-export type AssetDetailProps = {
-    navigation: LeosAssetsScreenNavigationProp['navigation'];
+export type StakingManagerProps = {
+    navigation: Props['navigation'];
     chain: IChain;
 };
 
@@ -31,7 +31,7 @@ const renderImageBackground = (asset: AccountTokenDetails) => {
     );
 };
 
-const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
+const StakingManagerContainer = ({ navigation, chain }: StakingManagerProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const [balance, setBalance] = useState({
         availableBalance: '',
@@ -96,7 +96,7 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
                         })
                     }
                 >
-                    <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
+                    <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Staking</Text>
                     <View style={styles.allocationView}>
                         <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
                         <View style={styles.flexColEnd}>
@@ -154,22 +154,6 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
             </View>
 
             <Text style={styles.subTitle}>Investor tools</Text>
-            <TouchableOpacity
-                onPressIn={() =>
-                    navigation.navigate('VestedAssets', {
-                        chain: asset.chain,
-                    })
-                }
-            >
-                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
-                    <Image source={require('../assets/images/VestedAssetIcon.png')} style={styles.vestedIcon} />
-
-                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Vested assets</Text>
-                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
-                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
-                    </View>
-                </View>
-            </TouchableOpacity>
             <TouchableOpacity
                 onPressIn={() =>
                     navigation.navigate('StakingManager', {
@@ -320,4 +304,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LeosAssetContainer;
+export default StakingManagerContainer;

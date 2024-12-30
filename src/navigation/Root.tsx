@@ -45,6 +45,7 @@ import VestedAssetsScreen from '../screens/VestedAssetsScreen';
 import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
 import ConfirmStakingScreen from '../screens/ConfirmStakingScreen';
+import StakingManagerScreen from '../screens/StakingManagerScreen';
 
 const prefix = Linking.createURL('');
 
@@ -117,6 +118,7 @@ export type MainRouteStackParamList = {
     LeosAssetManager: AssetsParamsScreen;
     VestedAssets: AssetsParamsScreen;
     ConfirmStaking: AssetsParamsScreen;
+    StakingManager: AssetsParamsScreen;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -307,6 +309,11 @@ export default function RootNavigation() {
                             name="ConfirmStaking"
                             options={{ headerBackTitleVisible: false, title: 'Confirm staking' }}
                             component={ConfirmStakingScreen}
+                        />
+                        <Stack.Screen
+                            name="StakingManager"
+                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
+                            component={StakingManagerScreen}
                         />
                     </Stack.Navigator>
                 </>

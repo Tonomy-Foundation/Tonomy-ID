@@ -111,7 +111,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                 <Text style={{ fontWeight: '700' }}>{allocation.totalAllocation} LEOS</Text>
                                 <View style={styles.flexColEnd}>
                                     <Text style={styles.allocMulti}>
-                                        Multiplier:{' '}
+                                        Multiplier:
                                         <Text style={{ color: theme.colors.success }}>x{getMultiplier()}</Text>
                                     </Text>
                                     <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
