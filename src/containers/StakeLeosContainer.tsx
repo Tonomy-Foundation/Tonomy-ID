@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { StakeLesoscreenNavigationProp } from '../screens/StakeLeosScreen';
 import theme, { commonStyles } from '../utils/theme';
-
 import { IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
 import TSpinner from '../components/atoms/TSpinner';
 import { TButtonContained } from '../components/atoms/TButton';
+import React from 'react';
 
 export type StakeLesoProps = {
     navigation: StakeLesoscreenNavigationProp['navigation'];
@@ -24,9 +24,9 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     });
     const [loading, setLoading] = useState(true);
     const token = chain.getNativeToken() as PangeaVestedToken;
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState<string>('');
     const [apy, setApy] = useState(0);
-
+    const [stakingEndDate, setStakingEndDate] = useState('');
     const [monthlyEarningsLeos, setMonthlyEarningsLeos] = useState(0);
     const [monthlyEarningsUsd, setMonthlyEarningsUsd] = useState(0);
     const calculateEarnings = (stakingAmount: number) => {
@@ -41,17 +41,39 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     };
 
     const MINIMUM_STAKE_AMOUNT = 50000;
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const handleAmountChange = (val: string) => {
         const numericValue = parseFloat(val);
 
-        if (numericValue > parseFloat(balance.availableBalance)) {
+        if (isNaN(numericValue)) {
+            setErrorMessage('Please enter a valid number.');
+        } else if (numericValue > parseFloat(balance.availableBalance)) {
             setErrorMessage('Not enough balance.');
         } else if (numericValue < MINIMUM_STAKE_AMOUNT) {
             setErrorMessage(`Minimum stake amount is ${MINIMUM_STAKE_AMOUNT.toLocaleString()} LEOS.`);
+        } else {
+            setErrorMessage('');
         }
 
-        setAmount(val);
+        const calculateStakingEndDate = () => {
+            const today = new Date();
+            const endDate = new Date(today);
+
+            endDate.setDate(today.getDate() + 30);
+
+            const options: Intl.DateTimeFormatOptions = {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            };
+            const formattedDate = new Intl.DateTimeFormat('en-GB', options).format(endDate);
+
+            setStakingEndDate(`${formattedDate}`);
+        };
+
+        calculateStakingEndDate();
+        calculateEarnings(Number(val));
+        setAmount(val.toString());
     };
 
     useEffect(() => {
@@ -69,7 +91,6 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 availableBalanceUsd,
                 vestedBalanceUsd,
             });
-
             setAsset(assetData);
             setLoading(false);
         };
@@ -88,6 +109,14 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
         );
     }
 
+    const handleSubmit = () => {
+        if (amount && !errorMessage) {
+            navigation.navigate('ConfirmStaking', {
+                chain: asset.chain,
+            });
+        }
+    };
+
     return (
         <>
             <View style={styles.container}>
@@ -97,7 +126,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                             style={styles.input}
                             placeholder="Enter amount"
                             onChangeText={handleAmountChange}
-                            value={amount}
+                            value={amount || ''}
                             placeholderTextColor={theme.colors.tabGray}
                         />
                         <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
@@ -122,7 +151,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                     <View style={styles.annualText}>
                         <Text style={styles.annualSubText}>Stake until</Text>
                         <Text>
-                            3 Nov 2024 <Text style={styles.annualSubText}>(30 days)</Text>
+                            {stakingEndDate} <Text style={styles.annualSubText}>(30 days)</Text>
                         </Text>
                     </View>
                 </View>
@@ -134,7 +163,9 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 </Text>
             </View>
             <View style={styles.proceedBtn}>
-                <TButtonContained>Proceed</TButtonContained>
+                <TButtonContained disabled={errorMessage !== '' || amount == ''} onPressIn={() => handleSubmit()}>
+                    Proceed
+                </TButtonContained>
             </View>
         </>
     );
