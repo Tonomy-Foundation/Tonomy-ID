@@ -4,6 +4,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from '../components/TIconButton';
 import theme, { commonStyles } from '../utils/theme';
 import { TransactionFeeData } from './Transaction';
+import { formatCurrencyValue } from '../utils/numbers';
 
 export type props = {
     refMessage: React.RefObject<any>;
@@ -33,7 +34,7 @@ const NegligibleTransactionFees = (props: props) => {
                             {props.transactionFee.fee}
                         </Text>
                         <Text style={{ color: theme.colors.secondary2, fontSize: 15 }}>
-                            ${props.transactionFee.usdFee}
+                            ${formatCurrencyValue(props.transactionFee.usdFee, 2)}
                         </Text>
                     </View>
                 </View>
