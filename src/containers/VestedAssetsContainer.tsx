@@ -242,8 +242,11 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 15,
         backgroundColor: theme.colors.grey7,
-        marginVertical: 60,
         borderRadius: 8,
+        position: 'absolute',
+        bottom: 50,
+        left: 0,
+        right: 0,
     },
     subTitle: {
         marginBottom: 8,
