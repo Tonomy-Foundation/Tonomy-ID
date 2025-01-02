@@ -113,6 +113,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
         if (amount && !errorMessage) {
             navigation.navigate('ConfirmStaking', {
                 chain: asset.chain,
+                amount: Number(amount),
             });
         }
     };
@@ -124,7 +125,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={styles.input}
-                            placeholder="Enter amount"
+                            placeholder="LEOS Amount"
                             onChangeText={handleAmountChange}
                             value={amount || ''}
                             placeholderTextColor={theme.colors.tabGray}
@@ -163,7 +164,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 </Text>
             </View>
             <View style={styles.proceedBtn}>
-                <TButtonContained disabled={errorMessage !== '' || amount == ''} onPressIn={() => handleSubmit()}>
+                <TButtonContained disabled={errorMessage !== '' || amount === ''} onPressIn={() => handleSubmit()}>
                     Proceed
                 </TButtonContained>
             </View>

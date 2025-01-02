@@ -54,6 +54,11 @@ export interface AssetsParamsScreen {
     screenTitle?: string;
     chain: IChain;
 }
+export interface ConfirmStaking {
+    screenTitle?: string;
+    chain: IChain;
+    amount: number;
+}
 
 export type MainRouteStackParamList = {
     Splash: undefined;
@@ -119,7 +124,7 @@ export type MainRouteStackParamList = {
     LeosAssetManager: AssetsParamsScreen;
     VestedAssets: AssetsParamsScreen;
     StakeLeos: AssetsParamsScreen;
-    ConfirmStaking: AssetsParamsScreen;
+    ConfirmStaking: ConfirmStaking;
     StakeLEOSSuccess: AssetsParamsScreen;
 };
 

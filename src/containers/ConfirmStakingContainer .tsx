@@ -29,7 +29,7 @@ const ConfirmStakingContainer = ({ navigation, chain, amount }: ConfirmStakingPr
     return (
         <>
             <View style={styles.container}>
-                <Text style={styles.confirmTitle}>Confirm staking {amount}LEOS</Text>
+                <Text style={styles.confirmTitle}>Confirm staking {amount} LEOS</Text>
                 <Text style={styles.confirmSubTitle}>These coins will be locked for 30 days</Text>
             </View>
             <View style={styles.proceedBtn}>
