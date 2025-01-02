@@ -46,20 +46,22 @@ export interface AccountTokenDetails {
     privateKey: IPrivateKey;
 }
 
+export interface VestedAllocationDetails {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    vestingStart: Date;
+    vestingPeriod: string;
+    unlockAtVestingStart: number;
+}
+
 export interface VestedAllocation {
     totalAllocation: number;
     unlockable: number;
     unlocked: number;
     locked: number;
-    allocationsDetails: {
-        totalAllocation: number;
-        unlockable: number;
-        unlocked: number;
-        locked: number;
-        vestingStart: Date;
-        vestingPeriod: string;
-        unlockAtVestingStart: number;
-    }[];
+    allocationsDetails: VestedAllocationDetails[];
 }
 
 export enum ChainKeyName {

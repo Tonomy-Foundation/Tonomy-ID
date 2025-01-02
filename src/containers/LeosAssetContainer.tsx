@@ -14,7 +14,16 @@ export type AssetDetailProps = {
     chain: IChain;
 };
 
-const renderImageBackground = (asset: AccountTokenDetails) => {
+interface Balance {
+    availableBalance: string;
+    availableBalanceUsd: number;
+    vestedBalance: string;
+    vestedBalanceUsd: number;
+}
+
+const renderImageBackground = (asset: AccountTokenDetails, balance: Balance) => {
+    const totalBalance = parseFloat(asset.token.balance) + parseFloat(balance.vestedBalance);
+
     return (
         <ImageBackground
             source={require('../assets/images/vesting/bg1.png')}
@@ -24,7 +33,7 @@ const renderImageBackground = (asset: AccountTokenDetails) => {
         >
             <Text style={styles.imageNetworkText}>Pangea Network</Text>
             <Text style={styles.imageText}>
-                {asset.token.balance} {asset.token.symbol}
+                {formatCurrencyValue(totalBalance)} {asset.token.symbol}
             </Text>
             <Text style={styles.imageUsdText}>= ${formatCurrencyValue(asset.token.usdBalance ?? 0)}</Text>
         </ImageBackground>
@@ -33,7 +42,8 @@ const renderImageBackground = (asset: AccountTokenDetails) => {
 
 const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
-    const [balance, setBalance] = useState({
+
+    const [balance, setBalance] = useState<Balance>({
         availableBalance: '',
         availableBalanceUsd: 0,
         vestedBalance: '',
@@ -86,8 +96,8 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total assets</Text>
-            {renderImageBackground(asset)}
-            {balance.vestedBalanceUsd > 0 && (
+            {renderImageBackground(asset, balance)}
+            {parseFloat(balance.vestedBalance) > 0 && (
                 <TouchableOpacity
                     style={styles.vestedView}
                     onPress={() =>
@@ -98,7 +108,10 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
                 >
                     <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
                     <View style={styles.allocationView}>
-                        <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
+                        <Text style={{ fontWeight: '700', fontSize: 12 }}>
+                            {formatCurrencyValue(parseFloat(balance.vestedBalance))}{' '}
+                            {chain.getNativeToken().getSymbol()}
+                        </Text>
                         <View style={styles.flexColEnd}>
                             <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                         </View>

@@ -4,19 +4,13 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { getMultiplier } from '../utils/multiplier';
+import { VestedAllocationDetails } from '../utils/tokenRegistry';
+import { formatCurrencyValue } from '../utils/numbers';
 
 export type Props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
-    allocationData: {
-        totalAllocation: number;
-        unlockable: number;
-        unlocked: number;
-        locked: number;
-        vestingStart: Date;
-        vestingPeriod: string;
-        unlockAtVestingStart: number;
-    };
+    allocationData: VestedAllocationDetails;
     usdPriceValue: number;
 };
 
@@ -42,7 +36,9 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Total allocation</Text>
                     <View style={styles.flexColCenter}>
-                        <Text style={styles.allocMulti}>{allocationData.totalAllocation} LEOS</Text>
+                        <Text style={styles.allocMulti}>
+                            {formatCurrencyValue(allocationData.totalAllocation)} LEOS
+                        </Text>
                         <Text style={styles.usdBalance}>${allocationData.totalAllocation * props.usdPriceValue}</Text>
                     </View>
                 </View>
@@ -55,7 +51,7 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.vestingStart.toDateString()}</Text>
+                        <Text style={styles.allocMulti}>{allocationData?.vestingStart?.toDateString()}</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>

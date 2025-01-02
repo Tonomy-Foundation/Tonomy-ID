@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import AllocationDetails from '../components/AllocationDetails';
 import { IChain } from '../utils/chain/types';
 import { AntelopeAccount, AntelopeChain, PangeaVestedToken } from '../utils/chain/antelope';
-import { getAssetDetails, VestedAllocation } from '../utils/tokenRegistry';
+import { getAssetDetails, VestedAllocation, VestedAllocationDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import { getMultiplier } from '../utils/multiplier';
@@ -21,6 +21,9 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const [loading, setLoading] = useState(true);
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
+    const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocationDetails>(
+        {} as VestedAllocationDetails
+    );
 
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const token = chain.getNativeToken() as PangeaVestedToken;
@@ -76,11 +79,12 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
     const totalVestedView = () => {
         const totalVestedAmount = vestedAllocations.locked + vestedAllocations.unlockable;
+
         const totalVestedAmountUsd = totalVestedAmount * usdPrice;
         const averageMultiplier = calculateAverageMultiplier(vestedAllocations);
 
         return (
-            <>
+            <View>
                 <Text style={styles.subTitle}>Total vested assets</Text>
                 <ImageBackground
                     source={require('../assets/images/vesting/bg2.png')}
@@ -89,11 +93,13 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                     resizeMode="stretch"
                 >
                     <Text style={styles.imageNetworkText}>Pangea Network</Text>
-                    <Text style={styles.imageText}>{totalVestedAmount} LEOS</Text>
+                    <Text style={styles.imageText}>
+                        {formatCurrencyValue(totalVestedAmount)} {chain.getNativeToken().getSymbol()}
+                    </Text>
                     <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd)}</Text>
                     <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text>
                 </ImageBackground>
-            </>
+            </View>
         );
     };
 
@@ -102,43 +108,57 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
             <ScrollView>
                 <View style={{ marginTop: 12 }}>
                     {vestedAllocations.allocationsDetails.map((allocation, index) => (
-                        <>
+                        <View key={index}>
                             <TouchableOpacity
                                 key={index}
                                 style={styles.allocationView}
-                                onPress={() => refMessage.current?.open()}
+                                onPress={() => {
+                                    setSelectedAllocation(allocation);
+                                    refMessage.current?.open();
+                                }}
                             >
-                                <Text style={{ fontWeight: '700' }}>{allocation.totalAllocation} LEOS</Text>
+                                <Text style={{ fontWeight: '700' }}>
+                                    {formatCurrencyValue(allocation.totalAllocation)}{' '}
+                                    {chain.getNativeToken().getSymbol()}
+                                </Text>
                                 <View style={styles.flexColEnd}>
                                     <Text style={styles.allocMulti}>
-                                        Multiplier:{' '}
+                                        Multiplier:
                                         <Text style={{ color: theme.colors.success }}>x{getMultiplier()}</Text>
                                     </Text>
                                     <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                                 </View>
                             </TouchableOpacity>
-                            <AllocationDetails
-                                onClose={onClose}
-                                refMessage={refMessage}
-                                allocationData={allocation}
-                                usdPriceValue={usdPrice}
-                            />
-                        </>
+                        </View>
                     ))}
+                    {selectedAllocation && (
+                        <AllocationDetails
+                            onClose={onClose}
+                            refMessage={refMessage}
+                            allocationData={selectedAllocation}
+                            usdPriceValue={usdPrice}
+                        />
+                    )}
                 </View>
-                {/* Uncomment when implementing withdraw  */}
+                {vestedAllocations.unlockable && (
+                    <View>
+                        <Text style={styles.subTitle}>Unlockable coins</Text>
 
-                {/* <Text style={styles.subTitle}>Unlockable coins</Text>
-
-        <View style={styles.availableAssetView}>
-            <View style={styles.header}>
-                <Text style={styles.lockedCoinsAmount}>{`69,023.35 LEOS`}</Text>
-                <Text style={styles.lockedUSDAmount}>{`= $3273.1`}</Text>
-                <View style={styles.sendReceiveButtons}>
-                    <TButtonContained style={styles.fullWidthButton}>Withdraw</TButtonContained>
-                </View>
-            </View>
-        </View> */}
+                        <View style={styles.availableAssetView}>
+                            <View style={styles.header}>
+                                <Text style={styles.lockedCoinsAmount}>
+                                    {formatCurrencyValue(vestedAllocations.unlockable)}
+                                </Text>
+                                <Text style={styles.lockedUSDAmount}>
+                                    {formatCurrencyValue(vestedAllocations.unlockable * usdPrice)}
+                                </Text>
+                                <View style={styles.sendReceiveButtons}>
+                                    <TButtonContained style={styles.fullWidthButton}>Withdraw</TButtonContained>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                )}
             </ScrollView>
         );
     };
