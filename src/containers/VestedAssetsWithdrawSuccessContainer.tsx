@@ -1,5 +1,5 @@
 import { StyleSheet, Image, View, ImageBackground } from 'react-native';
-import { Props } from '../screens/SuccessLeosWithDrawScreen';
+import { Props } from '../screens/VestedAssetsWithdrawSuccessScreen';
 import theme, { commonStyles } from '../utils/theme';
 import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { TH2, TH1, TP } from '../components/atoms/THeadings';
@@ -10,7 +10,7 @@ export type VestedAssetSuccessProps = {
     chain: IChain;
 };
 
-const SuccessLeosWithDrawContainer = ({ navigation, chain }: VestedAssetSuccessProps) => {
+const VestedAssetsWithdrawSuccessContainer = ({ navigation, chain }: VestedAssetSuccessProps) => {
     return (
         <View style={styles.container}>
             <Image source={require('../assets/images/vesting/vested-success.png')} />
@@ -55,4 +55,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SuccessLeosWithDrawContainer;
+export default VestedAssetsWithdrawSuccessContainer;

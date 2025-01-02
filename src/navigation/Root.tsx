@@ -42,7 +42,7 @@ import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import LeosAssetScreen from '../screens/LeosAssetScreen';
 import VestedAssetsScreen from '../screens/VestedAssetsScreen';
-import SuccessLeosWithDrawScreen from '../screens/SuccessLeosWithDrawScreen';
+import VestedAssetsWithdrawSuccessScreen from '../screens/VestedAssetsWithdrawSuccessScreen';
 import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
 
@@ -282,7 +282,7 @@ export default function RootNavigation() {
                         <Stack.Screen
                             name="VestedWithDrawSuccess"
                             options={{ headerBackTitleVisible: false, title: 'Success' }}
-                            component={SuccessLeosWithDrawScreen}
+                            component={VestedAssetsWithdrawSuccessScreen}
                         />
                         <Stack.Screen
                             name="Send"
