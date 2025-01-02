@@ -110,11 +110,11 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     }
 
     const handleSubmit = () => {
-        if (amount && !errorMessage) {
-            navigation.navigate('ConfirmStaking', {
-                chain: asset.chain,
-            });
-        }
+        // if (amount && !errorMessage) {
+        //     navigation.navigate('ConfirmStaking', {
+        //         chain: asset.chain,
+        //     });
+        // }
     };
 
     return (
@@ -163,7 +163,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 </Text>
             </View>
             <View style={styles.proceedBtn}>
-                <TButtonContained disabled={errorMessage !== '' || amount == ''} onPressIn={() => handleSubmit()}>
+                <TButtonContained disabled={errorMessage !== '' || amount === ''} onPressIn={() => handleSubmit()}>
                     Proceed
                 </TButtonContained>
             </View>
