@@ -1,10 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { StakeLesoscreenNavigationProp } from '../screens/StakeLeosScreen';
 import theme, { commonStyles } from '../utils/theme';
-
 import { IChain } from '../utils/chain/types';
-
+import { useEffect, useState } from 'react';
+import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
+import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
+import TSpinner from '../components/atoms/TSpinner';
 import { TButtonContained } from '../components/atoms/TButton';
+import React from 'react';
 
 export type StakeLesoProps = {
     navigation: StakeLesoscreenNavigationProp['navigation'];
@@ -12,6 +15,108 @@ export type StakeLesoProps = {
 };
 
 const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
+    const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
+    const [balance, setBalance] = useState({
+        availableBalance: '',
+        availableBalanceUsd: 0,
+        vestedBalance: '',
+        vestedBalanceUsd: 0,
+    });
+    const [loading, setLoading] = useState(true);
+    const token = chain.getNativeToken() as PangeaVestedToken;
+    const [amount, setAmount] = useState<string>('');
+    const [apy, setApy] = useState(0);
+    const [stakingEndDate, setStakingEndDate] = useState('');
+    const [monthlyEarningsLeos, setMonthlyEarningsLeos] = useState(0);
+    const [monthlyEarningsUsd, setMonthlyEarningsUsd] = useState(0);
+    const calculateEarnings = (stakingAmount: number) => {
+        const monthlyEarnings = (stakingAmount * apy) / 1200;
+        const monthlyEarningsInUsd = monthlyEarnings * balance.availableBalanceUsd;
+
+        setMonthlyEarningsLeos(monthlyEarnings);
+        setMonthlyEarningsUsd(monthlyEarningsInUsd);
+    };
+    const handleMaxAmount = () => {
+        setAmount(balance.availableBalanceUsd.toFixed(2));
+    };
+
+    const MINIMUM_STAKE_AMOUNT = 50000;
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const handleAmountChange = (val: string) => {
+        const numericValue = parseFloat(val);
+
+        if (isNaN(numericValue)) {
+            setErrorMessage('Please enter a valid number.');
+        } else if (numericValue > parseFloat(balance.availableBalance)) {
+            setErrorMessage('Not enough balance.');
+        } else if (numericValue < MINIMUM_STAKE_AMOUNT) {
+            setErrorMessage(`Minimum stake amount is ${MINIMUM_STAKE_AMOUNT.toLocaleString()} LEOS.`);
+        } else {
+            setErrorMessage('');
+        }
+
+        const calculateStakingEndDate = () => {
+            const today = new Date();
+            const endDate = new Date(today);
+
+            endDate.setDate(today.getDate() + 30);
+
+            const options: Intl.DateTimeFormatOptions = {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            };
+            const formattedDate = new Intl.DateTimeFormat('en-GB', options).format(endDate);
+
+            setStakingEndDate(`${formattedDate}`);
+        };
+
+        calculateStakingEndDate();
+        calculateEarnings(Number(val));
+        setAmount(val.toString());
+    };
+
+    useEffect(() => {
+        const fetchAssetDetails = async () => {
+            const assetData = await getAssetDetails(chain);
+            const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
+            const availableBalance = await token.getAvailableBalance(account);
+            const availableBalanceUsd = await availableBalance.getUsdValue();
+            const vestedBalance = await token.getVestedTotalBalance(account);
+            const vestedBalanceUsd = await vestedBalance.getUsdValue();
+
+            setBalance({
+                availableBalance: availableBalance.toString(),
+                vestedBalance: vestedBalance.toString(),
+                availableBalanceUsd,
+                vestedBalanceUsd,
+            });
+            setAsset(assetData);
+            setLoading(false);
+        };
+
+        fetchAssetDetails();
+        const interval = setInterval(fetchAssetDetails, 10000);
+
+        return () => clearInterval(interval);
+    }, [chain, token]);
+
+    if (loading) {
+        return (
+            <View style={styles.textContainer}>
+                <TSpinner />
+            </View>
+        );
+    }
+
+    const handleSubmit = () => {
+        // if (amount && !errorMessage) {
+        //     navigation.navigate('ConfirmStaking', {
+        //         chain: asset.chain,
+        //     });
+        // }
+    };
+
     return (
         <>
             <View style={styles.container}>
@@ -20,30 +125,33 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                         <TextInput
                             style={styles.input}
                             placeholder="Enter amount"
+                            onChangeText={handleAmountChange}
+                            value={amount || ''}
                             placeholderTextColor={theme.colors.tabGray}
                         />
-                        <TouchableOpacity style={styles.inputButton}>
+                        <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
                             <Text style={styles.inputButtonText}>MAX</Text>
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.inputHelp}>Available: 10,000.00 LEOS</Text>
+                    {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+                    <Text style={styles.inputHelp}>Available: {balance.availableBalance}</Text>
                 </View>
                 <View style={styles.annualView}>
                     <View style={styles.annualText}>
                         <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                        <Text style={styles.annualPercentage}>3.47%</Text>
+                        <Text style={styles.annualPercentage}>{apy.toFixed(2)}%</Text>
                     </View>
                     <View style={styles.annualText}>
                         <Text style={styles.annualSubText}>Monthly earnings</Text>
                         <View>
-                            <Text style={styles.annualPercentage}>180 LEOS</Text>
-                            <Text style={styles.annualSubText}>$50.00</Text>
+                            <Text style={styles.annualPercentage}>{monthlyEarningsLeos.toFixed(2)} LEOS</Text>
+                            <Text style={styles.annualSubText}>${monthlyEarningsUsd.toFixed(2)}</Text>
                         </View>
                     </View>
                     <View style={styles.annualText}>
                         <Text style={styles.annualSubText}>Stake until</Text>
                         <Text>
-                            3 Nov 2024 <Text style={styles.annualSubText}>(30 days)</Text>
+                            {stakingEndDate} <Text style={styles.annualSubText}>(30 days)</Text>
                         </Text>
                     </View>
                 </View>
@@ -55,7 +163,9 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 </Text>
             </View>
             <View style={styles.proceedBtn}>
-                <TButtonContained>Proceed</TButtonContained>
+                <TButtonContained disabled={errorMessage !== '' || amount === ''} onPressIn={() => handleSubmit()}>
+                    Proceed
+                </TButtonContained>
             </View>
         </>
     );
@@ -67,6 +177,17 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         marginTop: 10,
         gap: 24,
+    },
+    errorText: {
+        color: theme.colors.error,
+        fontSize: 12,
+        marginTop: 4,
+        ...commonStyles.secondaryFontFamily,
+    },
+    textContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     flexCol: {
         flexDirection: 'column',
