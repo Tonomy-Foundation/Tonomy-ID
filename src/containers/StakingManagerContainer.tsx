@@ -86,15 +86,32 @@ const StakingManagerContainer = ({ navigation, chain }: StakingManagerProps) => 
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total assets</Text>
+
             {renderImageBackground(asset)}
+            <TouchableOpacity
+                style={styles.vestedView}
+                onPress={() =>
+                    navigation.navigate('StakeLeosDetail', {
+                        chain: asset.chain,
+                    })
+                }
+            >
+                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Staking</Text>
+                <View style={styles.allocationView}>
+                    <Text style={{ fontWeight: '700', fontSize: 12 }}>10.00</Text>
+                    <View style={styles.flexColEnd}>
+                        <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
+                </View>
+            </TouchableOpacity>
             {balance.vestedBalanceUsd > 0 && (
                 <TouchableOpacity
                     style={styles.vestedView}
-                    onPress={() =>
-                        navigation.navigate('VestedAssets', {
-                            chain: asset.chain,
-                        })
-                    }
+                    // onPress={() =>
+                    //     navigation.navigate('StakeLeosAssets', {
+                    //         chain: asset.chain,
+                    //     })
+                    // }
                 >
                     <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Staking</Text>
                     <View style={styles.allocationView}>
@@ -156,7 +173,7 @@ const StakingManagerContainer = ({ navigation, chain }: StakingManagerProps) => 
             <Text style={styles.subTitle}>Investor tools</Text>
             <TouchableOpacity
                 onPressIn={() =>
-                    navigation.navigate('StakingManager', {
+                    navigation.navigate('StakeLeos', {
                         chain: asset.chain,
                     })
                 }

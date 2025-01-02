@@ -47,6 +47,7 @@ import { navigationRef } from '../utils/navigate';
 import ConfirmStakingScreen from '../screens/ConfirmStakingScreen';
 import StakingManagerScreen from '../screens/StakingManagerScreen';
 import StakeLeosScreen from '../screens/StakeLeosScreen';
+import StakeLeosDetailScreen from '../screens/StakeLeosDetailScreen';
 
 const prefix = Linking.createURL('');
 
@@ -121,6 +122,7 @@ export type MainRouteStackParamList = {
     ConfirmStaking: AssetsParamsScreen;
     StakingManager: AssetsParamsScreen;
     StakeLeos: AssetsParamsScreen;
+    StakeLeosDetail: AssetsParamsScreen;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -283,11 +285,7 @@ export default function RootNavigation() {
                             options={{ headerBackTitleVisible: false, title: 'Vested assets' }}
                             component={VestedAssetsScreen}
                         />
-                        <Stack.Screen
-                            name="StakeLeos"
-                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
-                            component={StakeLeosScreen}
-                        />
+
                         <Stack.Screen
                             name="Send"
                             options={({ route }) => ({
@@ -313,14 +311,24 @@ export default function RootNavigation() {
                             component={SelectAsset}
                         />
                         <Stack.Screen
-                            name="ConfirmStaking"
-                            options={{ headerBackTitleVisible: false, title: 'Confirm staking' }}
-                            component={ConfirmStakingScreen}
-                        />
-                        <Stack.Screen
                             name="StakingManager"
                             options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
                             component={StakingManagerScreen}
+                        />
+                        <Stack.Screen
+                            name="StakeLeosDetail"
+                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
+                            component={StakeLeosDetailScreen}
+                        />
+                        <Stack.Screen
+                            name="StakeLeos"
+                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
+                            component={StakeLeosScreen}
+                        />
+                        <Stack.Screen
+                            name="ConfirmStaking"
+                            options={{ headerBackTitleVisible: false, title: 'Confirm staking' }}
+                            component={ConfirmStakingScreen}
                         />
                     </Stack.Navigator>
                 </>
