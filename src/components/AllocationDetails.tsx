@@ -39,7 +39,9 @@ const AllocationDetails = (props: Props) => {
                         <Text style={styles.allocMulti}>
                             {formatCurrencyValue(allocationData.totalAllocation)} LEOS
                         </Text>
-                        <Text style={styles.usdBalance}>${allocationData.totalAllocation * props.usdPriceValue}</Text>
+                        <Text style={styles.usdBalance}>
+                            ${formatCurrencyValue(allocationData.totalAllocation * props.usdPriceValue, 4)}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>

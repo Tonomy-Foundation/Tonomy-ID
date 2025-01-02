@@ -15,15 +15,15 @@ export type AssetDetailProps = {
 };
 
 interface Balance {
+    totalBalance: string;
+    totalBalanceUsd: number;
     availableBalance: string;
     availableBalanceUsd: number;
     vestedBalance: string;
     vestedBalanceUsd: number;
 }
 
-const renderImageBackground = (asset: AccountTokenDetails, balance: Balance) => {
-    const totalBalance = parseFloat(asset.token.balance) + parseFloat(balance.vestedBalance);
-
+const renderImageBackground = (balance: Balance) => {
     return (
         <ImageBackground
             source={require('../assets/images/vesting/bg1.png')}
@@ -32,10 +32,8 @@ const renderImageBackground = (asset: AccountTokenDetails, balance: Balance) => 
             resizeMode="cover"
         >
             <Text style={styles.imageNetworkText}>Pangea Network</Text>
-            <Text style={styles.imageText}>
-                {formatCurrencyValue(totalBalance)} {asset.token.symbol}
-            </Text>
-            <Text style={styles.imageUsdText}>= ${formatCurrencyValue(asset.token.usdBalance ?? 0)}</Text>
+            <Text style={styles.imageText}>{balance.totalBalance}</Text>
+            <Text style={styles.imageUsdText}>= ${balance.totalBalanceUsd}</Text>
         </ImageBackground>
     );
 };
@@ -44,6 +42,8 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
 
     const [balance, setBalance] = useState<Balance>({
+        totalBalance: '',
+        totalBalanceUsd: 0,
         availableBalance: '',
         availableBalanceUsd: 0,
         vestedBalance: '',
@@ -60,8 +60,12 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
             const availableBalanceUsd = await availableBalance.getUsdValue();
             const vestedBalance = await token.getVestedTotalBalance(account);
             const vestedBalanceUsd = await vestedBalance.getUsdValue();
+            const totalBalance = parseFloat(assetData.token.balance) + parseFloat(vestedBalance.toString());
+            const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
             setBalance({
+                totalBalance: formatCurrencyValue(totalBalance, 4) + ' ' + chain.getNativeToken().getSymbol(),
+                totalBalanceUsd: totalBalance * usdPriceValue,
                 availableBalance: availableBalance.toString(),
                 vestedBalance: vestedBalance.toString(),
                 availableBalanceUsd,
@@ -96,7 +100,7 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total assets</Text>
-            {renderImageBackground(asset, balance)}
+            {renderImageBackground(balance)}
             {parseFloat(balance.vestedBalance) > 0 && (
                 <TouchableOpacity
                     style={styles.vestedView}

@@ -96,7 +96,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                     <Text style={styles.imageText}>
                         {formatCurrencyValue(totalVestedAmount)} {chain.getNativeToken().getSymbol()}
                     </Text>
-                    <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd)}</Text>
+                    <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd, 4)}</Text>
                     <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text>
                 </ImageBackground>
             </View>
@@ -140,7 +140,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         />
                     )}
                 </View>
-                {vestedAllocations.unlockable && (
+                {vestedAllocations.unlockable > 0 && (
                     <View>
                         <Text style={styles.subTitle}>Unlockable coins</Text>
 
