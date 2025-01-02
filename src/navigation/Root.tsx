@@ -47,7 +47,7 @@ import { navigationRef } from '../utils/navigate';
 import ConfirmStakingScreen from '../screens/ConfirmStakingScreen';
 import StakingManagerScreen from '../screens/StakingManagerScreen';
 import StakeLeosScreen from '../screens/StakeLeosScreen';
-import StakeLeosDetailScreen from '../screens/StakeLeosDetailScreen';
+import StakeAssetDetailScreen from '../screens/StakeAssetDetailScreen';
 
 const prefix = Linking.createURL('');
 
@@ -318,7 +318,7 @@ export default function RootNavigation() {
                         <Stack.Screen
                             name="StakeLeosDetail"
                             options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
-                            component={StakeLeosDetailScreen}
+                            component={StakeAssetDetailScreen}
                         />
                         <Stack.Screen
                             name="StakeLeos"
