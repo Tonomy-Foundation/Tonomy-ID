@@ -59,7 +59,7 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting period</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.vestingPeriod} years</Text>
+                        <Text style={styles.allocMulti}>{allocationData.vestingPeriod}</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
@@ -71,7 +71,9 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Price multiplier</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>{getMultiplier()}x</Text>
+                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
+                            {getMultiplier(allocationData.allocationDate)}x
+                        </Text>
                     </View>
                 </View>
             </View>

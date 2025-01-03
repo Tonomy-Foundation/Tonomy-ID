@@ -54,6 +54,7 @@ export interface VestedAllocationDetails {
     vestingStart: Date;
     vestingPeriod: string;
     unlockAtVestingStart: number;
+    allocationDate: Date;
 }
 
 export interface VestedAllocation {

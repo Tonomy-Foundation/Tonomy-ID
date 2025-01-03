@@ -55,18 +55,18 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
         allocationsDetails.forEach((allocation) => {
             const { locked, unlockable } = allocation;
+            const multiplier = getMultiplier(allocation.allocationDate);
 
-            if (locked > 0) {
-                const multiplier = getMultiplier();
+            if (multiplier) {
                 const lockedPlusUnlockable = locked + unlockable;
 
                 totalWeightedMultiplier += multiplier * lockedPlusUnlockable;
                 totalLockedAllocations += 1;
             }
         });
-
+        console.log('totalWeightedMultiplier', totalWeightedMultiplier, totalLockedAllocations);
         // Calculate average multiplier
-        return totalLockedAllocations > 0 ? totalWeightedMultiplier / totalLockedAllocations : 0; // Return 0 if no locked allocations exist
+        return totalLockedAllocations > 0 ? totalWeightedMultiplier / totalLockedAllocations : 0;
     };
 
     if (loading) {
@@ -103,6 +103,8 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         );
     };
 
+    console.log('selectedAllocation', selectedAllocation);
+
     const vestingAllocationsView = () => {
         return (
             <ScrollView>
@@ -124,7 +126,9 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                 <View style={styles.flexColEnd}>
                                     <Text style={styles.allocMulti}>
                                         Multiplier:
-                                        <Text style={{ color: theme.colors.success }}>x{getMultiplier()}</Text>
+                                        <Text style={{ color: theme.colors.success }}>
+                                            x{getMultiplier(allocation.allocationDate)}
+                                        </Text>
                                     </Text>
                                     <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                                 </View>
