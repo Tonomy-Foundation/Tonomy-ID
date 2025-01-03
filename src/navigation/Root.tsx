@@ -37,10 +37,9 @@ import {
     ITransactionRequest,
 } from '../utils/chain/types';
 import { OperationData } from '../components/Transaction';
-import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
-import LeosAssetScreen from '../screens/LeosAssetScreen';
+import AssetManagerScreen from '../screens/AssetManagerScreen';
 import VestedAssetsScreen from '../screens/VestedAssetsScreen';
 import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
@@ -105,7 +104,6 @@ export type MainRouteStackParamList = {
     Citizenship: undefined;
     Explore: undefined;
     Apps: undefined;
-    AssetDetail: AssetsParamsScreen;
     Receive: AssetsParamsScreen;
     Send: {
         screenTitle?: string;
@@ -113,7 +111,7 @@ export type MainRouteStackParamList = {
         privateKey: IPrivateKey;
     };
     SelectAsset: { screenTitle?: string; type: string };
-    LeosAssetManager: AssetsParamsScreen;
+    AssetManager: AssetsParamsScreen;
     VestedAssets: AssetsParamsScreen;
 };
 
@@ -258,19 +256,14 @@ export default function RootNavigation() {
                             component={CreateEthereumKeyScreen}
                             initialParams={{}}
                         />
+
                         <Stack.Screen
-                            name="AssetDetail"
+                            name="AssetManager"
                             options={({ route }) => ({
                                 headerBackTitleVisible: false,
                                 title: route.params?.screenTitle || 'AssetDetail',
                             })}
-                            component={AssetDetail}
-                        />
-
-                        <Stack.Screen
-                            name="LeosAssetManager"
-                            options={{ headerBackTitleVisible: false, title: 'LEOS' }}
-                            component={LeosAssetScreen}
+                            component={AssetManagerScreen}
                         />
                         <Stack.Screen
                             name="VestedAssets"
