@@ -1,34 +1,54 @@
+/* eslint-disable indent */
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { commonStyles } from '../utils/theme';
+import { useAppTheme } from '../utils/theme';
 import { TCaption, TP } from './atoms/THeadings';
 
 export type NavigationButtonProps = {
     onPress: () => void;
-    icon?: string;
+    icon?: string | React.ReactNode;
     title: string;
     description?: string;
+    disabled?: boolean;
+    color?: string;
+    textColor?: string;
 };
 
 export default function TNavigationButton(props: NavigationButtonProps) {
+    const theme = useAppTheme();
+    const getAlignmentBasenOnDescription = () => {
+        return props.description ? 'flex-start' : 'center';
+    };
+
     return (
-        <TouchableOpacity onPress={props.onPress} style={[styles.button, commonStyles.marginBottom]}>
-            {props.icon && (
-                <View style={styles.iconContainer}>
-                    <IconButton icon={props.icon} />
+        <TouchableOpacity onPress={props.onPress} style={[styles.button]} disabled={props.disabled}>
+            {props.icon && typeof props.icon === 'string' && (
+                <View style={{ alignSelf: getAlignmentBasenOnDescription() }}>
+                    <IconButton iconColor={props?.textColor} icon={props.icon} style={styles.icons} />
                 </View>
             )}
-            {props.description ? (
-                <View style={styles.textContainer}>
-                    <TP>{props.title}</TP>
-                    <TCaption>{props.description}</TCaption>
-                </View>
-            ) : (
-                <View style={styles.titleContainer}>
-                    <TP>{props.title}</TP>
-                </View>
+            {props.icon && typeof props.icon === 'object' && (
+                <View style={{ alignSelf: getAlignmentBasenOnDescription() }}>{props.icon}</View>
             )}
+
+            <View style={{ ...styles.titleContainer }}>
+                <TP
+                    style={{
+                        color: `${
+                            props?.disabled
+                                ? theme.colors.textGray
+                                : props?.textColor
+                                ? props.textColor
+                                : theme.colors.text
+                        }`,
+                    }}
+                >
+                    {props.title}
+                </TP>
+                {props.description && <TCaption>{props.description}</TCaption>}
+            </View>
+
             <IconButton icon={'chevron-right'} style={styles.chevronStyle} />
         </TouchableOpacity>
     );
@@ -36,10 +56,10 @@ export default function TNavigationButton(props: NavigationButtonProps) {
 
 const styles = StyleSheet.create({
     button: {
-        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginVertical: 12,
     },
     chevronStyle: {
         alignSelf: 'center',
@@ -48,8 +68,9 @@ const styles = StyleSheet.create({
     textContainer: {
         width: '75%',
     },
-    iconContainer: {
-        alignSelf: 'flex-start',
+
+    icons: {
+        margin: 0,
     },
     titleContainer: {
         flex: 1,

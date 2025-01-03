@@ -1,40 +1,23 @@
-name: Tonomy ID Continuous Integration
+name: Tests
 
-on:
-    pull_request
+on: push
 
 jobs:
-    build:
-        runs-on: ubuntu-20.04
+  build:
+    runs-on: ubuntu-20.04
 
-        steps:
-            - name: 🏗 Setup repo
-              uses: actions/checkout@v3
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v4
 
-            - name: 📦 Build, test and lint
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 16.4.1
-            - run: npm install
-            - run: npm test
-            - run: npm run lint
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
 
-    build-apk:
-        runs-on: ubuntu-20.04
-        env:
-          NODE_ENV: staging
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        container: cimg/android:2022.12.1-ndk
-
-        steps:
-            - uses: actions/checkout@v3
-
-            - name: Build Tonomy ID .apk file for Android
-              run: |
-                  curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-                  sudo apt-get install -y nodejs
-                  node -v
-                  npm install
-                  npm run build:prepare
-                  npx eas build --clear-cache --profile "${NODE_ENV}" --platform android --local
-                  find . -name "*.apk"
+      - name: 📦 Build, test and lint
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.3.0
+      - run: yarn --immutable
+      - run: yarn run test
+      - run: yarn run lint
+      - run: yarn run typeCheck

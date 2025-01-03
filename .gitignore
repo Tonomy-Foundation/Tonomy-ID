@@ -12,6 +12,8 @@ app.json
 node_modules
 npm-debug.log
 yarn-error.log
+.yarn
+.pnp.*
 
 # Ruby
 .direnv
@@ -207,3 +209,5 @@ web-build/
 dist/
 
 # @end expo-cli
+
+.database.sqlite.test

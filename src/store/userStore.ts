@@ -1,8 +1,22 @@
-import create from 'zustand';
-import RNKeyManager from '../utils/RNKeyManager';
+import { create } from 'zustand';
+import RNKeyManager, { KEY_STORAGE_NAMESPACE } from '../utils/RNKeyManager';
 import { storageFactory } from '../utils/storage';
-import settings from '../settings';
-import { User, createUserObject, setSettings, createStorage } from '@tonomy/tonomy-id-sdk';
+import {
+    createUserObject,
+    SdkErrors,
+    STORAGE_NAMESPACE,
+    SdkError,
+    KeyManagerLevel,
+    IUser,
+} from '@tonomy/tonomy-id-sdk';
+import useErrorStore from '../store/errorStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import Debug from 'debug';
+import useWalletStore from './useWalletStore';
+import { setUser } from '../utils/sentry';
+
+const debug = Debug('tonomy-id:store:userStore');
 
 export enum UserStatus {
     NONE = 'NONE',
@@ -11,44 +25,105 @@ export enum UserStatus {
 }
 
 export interface UserState {
-    user: User;
+    user: IUser;
     status: UserStatus;
-    getStatus(): UserStatus;
+    getStatus(): Promise<UserStatus>;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
+    logout(reason: string): Promise<void>;
+    isAppInitialized: boolean;
 }
-
-setSettings({
-    blockchainUrl: settings.config.blockchainUrl,
-    accountSuffix: settings.config.accountSuffix,
-    communicationUrl: settings.config.communicationUrl,
-});
-
-interface UserStorageState {
-    status: UserStatus;
-}
-const userStorage = createStorage<UserStorageState>('tonomyid.user.', storageFactory);
 
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
-    getStatus: () => {
-        const status = get().status;
+    isAppInitialized: false,
+    getStatus: async () => {
+        const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
-        return status;
+        debug('getStatus() storageStatus', storageStatus);
+
+        if (storageStatus) {
+            const userStatus = storageStatus as UserStatus;
+
+            set({ status: userStatus });
+            return userStatus;
+        } else {
+            const stateStatus = get().status;
+
+            get().setStatus(stateStatus);
+            return stateStatus;
+        }
     },
-    setStatus: (newStatus: UserStatus) => {
+    setStatus: async (newStatus: UserStatus) => {
+        await AsyncStorage.setItem(STORAGE_NAMESPACE + 'store.status', newStatus);
+
         set({ status: newStatus });
-        // Async call to update the status in the storage
-        userStorage.status = newStatus;
+    },
+    logout: async (reason: string) => {
+        await get().user.logout();
+        if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
+        useWalletStore.getState().clearState();
+        setUser(null);
+        await printStorage('logout(): ' + reason);
     },
     initializeStatusFromStorage: async () => {
-        let status = await userStorage.status;
+        await printStorage('initializeStatusFromStorage()');
 
-        if (!status) status = UserStatus.NONE;
+        if (get().isAppInitialized) {
+            debug('Already initialized application');
+            return;
+        }
 
-        set({ status: status });
+        try {
+            debug('initializeStatusFromStorage() try');
+            const user = get().user;
+
+            await user.initializeFromStorage();
+            setUser({
+                id: (await user.getAccountName()).toString(),
+                username: '@' + (await user.getUsername()).getBaseUsername(),
+            });
+            set({ isAppInitialized: true });
+        } catch (e) {
+            debug('initializeStatusFromStorage() catch', e, typeof e);
+
+            if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
+                await get().logout('Key not found on account');
+                set({ isAppInitialized: true });
+                useErrorStore.getState().setError({ error: e, expected: false });
+            } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
+                await get().logout('Account not found');
+                set({ isAppInitialized: true });
+            } else {
+                debug('Unexpected error during initializeStatusFromStorage()', e);
+                throw e;
+            }
+        }
     },
 }));
+
+/**
+ * Print all AsyncStorage and SecureStore keys
+ * Used for debugging
+ */
+async function printStorage(message: string) {
+    const keys = await AsyncStorage.getAllKeys();
+
+    const status = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
+
+    debug(message, 'AsyncStorage keys and status', keys, status);
+
+    const secureKeys: string[] = [];
+
+    for (const level of Object.keys(KeyManagerLevel)) {
+        debug(KEY_STORAGE_NAMESPACE + level);
+        const value = await SecureStore.getItemAsync(KEY_STORAGE_NAMESPACE + level);
+
+        if (value) secureKeys.push(KEY_STORAGE_NAMESPACE + level);
+    }
+
+    debug(message, 'SecureStore keys', secureKeys);
+}
 
 export default useUserStore;

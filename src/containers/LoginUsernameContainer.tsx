@@ -1,77 +1,88 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
-import { Props } from '../screens/homeScreen';
-import TUsername from '../components/TUsername';
+import { Props } from '../screens/LoginUsernameScreen';
+import TInputTextBox from '../components/TInputTextBox';
 import settings from '../settings';
 import TInfoBox from '../components/TInfoBox';
-import { TButtonContained } from '../components/atoms/Tbutton';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
+import { TError } from '../components/TError';
+import useErrorStore from '../store/errorStore';
+import { formatUsername } from '../utils/username';
+import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const { user } = useUserStore();
-    const {
-        colors: { text },
-    } = useTheme();
-    const stylesColor = StyleSheet.create({
-        text: {
-            color: text,
-        },
-    });
+    const errorStore = useErrorStore();
 
-    const onNext = () => {
-        navigation.navigate('LoginPassword', { username });
+    useEffect(() => {
+        setErrorMessage('');
+    }, []);
+
+    const onNext = async () => {
+        const formattedUsername = username.toLowerCase();
+
+        try {
+            if (await user.usernameExists(formattedUsername))
+                navigation.navigate('LoginPassphrase', { username: formattedUsername });
+            else setErrorMessage('Username does not exist');
+        } catch (error) {
+            if (isNetworkError(error)) {
+                setErrorMessage(NETWORK_ERROR_RESPONSE);
+                return;
+            }
+
+            errorStore.setError({ error, expected: false });
+        }
     };
+
+    function onUsernameChange(value: string) {
+        setUsername(formatUsername(value));
+        if (errorMessage !== '') setErrorMessage('');
+    }
 
     return (
         <LayoutComponent
             body={
                 <View>
-                    <TH1>Username</TH1>
+                    <TH1 style={commonStyles.textAlignCenter}>Username</TH1>
                     <View style={styles.container}>
                         <TP size={1}>Username</TP>
-                        <View style={styles.inputContainer}>
-                            <TUsername
-                                value={username}
-                                onChangeText={setUsername}
-                                suffix={settings.config.accountSuffix}
-                            />
+                        <View>
+                            <TInputTextBox value={username} onChangeText={(v) => onUsernameChange(v)} />
                         </View>
+                        <TError>{errorMessage}</TError>
                     </View>
                 </View>
             }
             footerHint={
-                <View style={commonStyles.marginBottom}>
+                <View>
                     <TInfoBox
                         align="left"
                         icon="privacy"
-                        description="Your username is private and can only be seen by you and those you share it with, not even the Tonomy Foundation can see it."
+                        description={`Your username is private and can only be seen by you and those you share it with, not even the ${settings.config.ecosystemName} can see it.`}
                         linkUrl={settings.config.links.privacyLearnMore}
                         linkUrlText="Learn more"
                     />
                 </View>
             }
             footer={
-                <View>
+                <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
-                        <TButtonContained
-                            onPress={() => {
-                                navigation.navigate('LoginPassword', { username });
-                            }}
-                            disabled={username.length === 0}
-                        >
+                        <TButtonContained onPress={onNext} disabled={username.length === 0}>
                             NEXT
                         </TButtonContained>
                     </View>
                     <View style={styles.textContainer}>
-                        <TP size={1}>{"Don't have an account? "}</TP>
+                        <TP size={1}>{"Don't have an account?"}</TP>
                         <TouchableOpacity onPress={() => navigation.navigate('CreateAccountUsername')}>
                             <TP size={1} style={styles.link}>
+                                {' '}
                                 Sign up
                             </TP>
                         </TouchableOpacity>
@@ -83,13 +94,8 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
 }
 
 const styles = StyleSheet.create({
-    inputContainer: {
-        borderWidth: 1,
-        borderColor: theme.colors.disabled,
-    },
     container: {
-        width: '100%',
-        height: '100%',
+        marginTop: 10,
         justifyContent: 'center',
     },
     link: {

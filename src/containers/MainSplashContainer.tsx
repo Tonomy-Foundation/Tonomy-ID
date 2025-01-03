@@ -1,54 +1,93 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import theme from '../utils/theme';
-import { NavigationProp, StackActions } from '@react-navigation/native';
-import Storage from '../utils/storage';
+import { StackActions } from '@react-navigation/native';
 import LayoutComponent from '../components/layout';
-import { sleep } from '../utils/sleep';
+import { sleep } from '../utils/time';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
+import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { Props } from '../screens/MainSplashScreen';
+import { Images } from '../assets';
+import { appStorage } from '../utils/StorageManager/setup';
+import { useFonts } from 'expo-font';
+import Debug from 'debug';
+import { progressiveRetryOnNetworkError } from '../utils/network';
 
-export default function MainSplashScreenContainer({ navigation }: { navigation: NavigationProp<any> }) {
+const debug = Debug('tonomy-id:container:mainSplashScreen');
+
+export default function MainSplashScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     const errorStore = useErrorStore();
+    const { user, initializeStatusFromStorage, isAppInitialized, getStatus, logout, setStatus } = useUserStore();
 
-    const { user, initializeStatusFromStorage, getStatus } = useUserStore();
-
-    async function main() {
-        await sleep(800);
-
-        try {
-            await initializeStatusFromStorage();
-            const status = getStatus();
-
-            switch (status) {
-                case UserStatus.NONE:
-                    navigation.dispatch(StackActions.replace('SplashSecurity'));
-                    break;
-                case UserStatus.NOT_LOGGED_IN:
-                    user.logout();
-                    navigation.dispatch(StackActions.replace('Home'));
-                    break;
-                case UserStatus.LOGGED_IN:
-                    // Do nothing. status state will automatically navigate user to UserHome
-                    break;
-                default:
-                    throw new Error('Unknown status: ' + status);
-            }
-        } catch (e) {
-            errorStore.setError({ error: e, expected: false });
-        }
-    }
+    useFonts({
+        Roboto: require('../assets/fonts/Roboto-Regular.ttf'),
+        Inter: require('../assets/fonts/Inter.ttf'),
+    });
 
     useEffect(() => {
+        async function main() {
+            await sleep(800);
+
+            try {
+                if (!isAppInitialized) {
+                    progressiveRetryOnNetworkError(initializeStatusFromStorage);
+                }
+
+                const status = await getStatus();
+
+                debug('splash screen status: ', status);
+
+                switch (status) {
+                    case UserStatus.NONE:
+                        navigation.navigate('Onboarding');
+                        break;
+                    case UserStatus.NOT_LOGGED_IN:
+                        debug('status is NOT_LOGGED_IN');
+
+                        {
+                            const haveOnboarding = await appStorage.getSplashOnboarding();
+
+                            if (haveOnboarding) {
+                                navigation.navigate('Onboarding');
+                            } else {
+                                navigation.dispatch(StackActions.replace('Home'));
+                            }
+                        }
+
+                        break;
+                    case UserStatus.LOGGED_IN:
+                        try {
+                            await user.getUsername();
+                        } catch (e) {
+                            if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+                                logout("Invalid data in user's storage");
+                            } else {
+                                debug('loggedin error', e);
+                                throw e;
+                            }
+                        }
+
+                        break;
+                    default:
+                        throw new Error('Unknown status: ' + status);
+                }
+            } catch (e) {
+                debug('main screen error', e);
+                errorStore.setError({ error: e, expected: false });
+                navigation.navigate('Onboarding');
+            }
+        }
+
         main();
-    }, []);
+    }, [errorStore, getStatus, initializeStatusFromStorage, logout, navigation, user, setStatus, isAppInitialized]);
 
     return (
         <LayoutComponent
             body={
                 <View>
-                    <Image style={styles.mainlogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
-                    <Image style={styles.tonomylogo} source={require('../assets/tonomy/tonomy-logo1024.png')}></Image>
+                    <Image style={styles.mainlogo} source={Images.GetImage('logo1024')} />
+                    <Image style={styles.tonomylogo} source={Images.GetImage('logo1024')} />
                     <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
                 </View>
             }

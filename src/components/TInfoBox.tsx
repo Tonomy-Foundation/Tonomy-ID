@@ -4,7 +4,8 @@ import { SvgProps } from 'react-native-svg';
 import PrivacyIcon from '../assets/icons/PrivacyIcon';
 import SecurityIcon from '../assets/icons/SecurityIcon';
 import TransparencyIcon from '../assets/icons/TransparencyIcon';
-import TA from './atoms/TA';
+import { TP } from './atoms/THeadings';
+import theme from '../utils/theme';
 
 export type TInfoBoxProps = {
     icon: string;
@@ -30,34 +31,45 @@ function IconComponent(props: SvgProps & { icon: string }) {
 export default function TInfoBox(props: TInfoBoxProps) {
     const styles = StyleSheet.create({
         infoContainer: {
-            flex: 0,
+            alignContent: 'stretch',
             flexDirection: props.align === 'center' ? 'column' : 'row',
-            marginTop: 20,
             alignSelf: 'center',
-            backgroundColor: '#e1f2e2',
+            backgroundColor: theme.colors.info,
             borderRadius: 8,
-            padding: 10,
-            gap: 10,
+            padding: 14,
             width: '100%',
         },
         icon: {
             alignSelf: 'center',
             marginBottom: props.align === 'center' ? 5 : 0,
-            marginRight: props.align === 'center' ? 0 : 8,
+            marginRight: props.align === 'center' ? 0 : 5,
         },
         description: {
             textAlign: props.align === 'center' ? 'center' : 'left',
             alignSelf: props.align === 'center' ? 'center' : 'auto',
-            width: '90%',
+            justifyContent: props.align === 'center' ? 'center' : 'flex-start',
+            flex: props.align === 'center' ? 0 : 1,
+        },
+        link: {
+            color: theme.colors.success,
+        },
+        paragraph: {
+            textAlign: props.align,
+            textAlignVertical: 'center',
         },
     });
 
     return (
         <View style={styles.infoContainer}>
             <IconComponent style={styles.icon} icon={props.icon} />
-            <Text style={styles.description}>
-                {props.description} <TA href={props.linkUrl}>{props.linkUrlText}</TA>
-            </Text>
+            <View style={styles.description}>
+                <TP style={styles.paragraph}>
+                    {props.description} {/* TODO uncomment link */}
+                    {/* <TA style={[styles.description]} href={props.linkUrl}>
+                        {props.linkUrlText}
+                    </TA> */}
+                </TP>
+            </View>
         </View>
     );
 }

@@ -1,28 +1,60 @@
 {
     "cli": {
-        "version": ">= 2.1.0",
+        "version": "^12.6.2",
         "appVersionSource": "remote"
     },
     "build": {
-        "development": {
-            "developmentClient": true,
-            "distribution": "internal"
+        "production": {
+            "env": {
+                "EXPO_NODE_ENV": "production"
+            },
+            "autoIncrement": true,
+            "node": "22.3.0"
+        },
+        "testnet": {
+            "env": {
+                "EXPO_NODE_ENV": "testnet",
+                "DEBUG": "tonomy*"
+            },
+            "autoIncrement": true,
+            "node": "22.3.0"
+        },
+        "testnet-internal": {
+            "env": {
+                "EXPO_NODE_ENV": "testnet",
+                "DEBUG": "tonomy*"
+            },
+            "distribution": "internal",
+            "node": "22.3.0"
         },
         "staging": {
             "env": {
-                "NODE_ENV": "staging"
+                "EXPO_NODE_ENV": "staging",
+                "DEBUG": "tonomy*"
             },
-            "autoIncrement": true
+            "autoIncrement": true,
+            "node": "22.3.0"
         },
-        "production": {
+        "staging-internal": {
             "env": {
-                "NODE_ENV": "production"
+                "EXPO_NODE_ENV": "staging",
+                "DEBUG": "tonomy*"
             },
-            "autoIncrement": true
+            "distribution": "internal",
+            "node": "22.3.0"
+        },
+        "development": {
+            "env": {
+                "EXPO_NODE_ENV": "development",
+                "DEBUG": "tonomy*"
+            },
+            "developmentClient": true,
+            "distribution": "internal",
+            "node": "22.3.0"
         }
     },
     "submit": {
-        "staging": {
+        "production": {
             "android": {
                 "serviceAccountKeyPath": "./google-service-key.json",
                 "track": "production"
@@ -30,11 +62,28 @@
             "ios": {
                 "ascAppId": "1663471436",
                 "appleTeamId": "6BLD42QR78",
-                "ascApiKeyId": "G23U49XAYF",
+                "ascApiKeyId": "83XQ25UWSK",
+                "ascApiKeyPath": "./apple-asc-api-key.p8",
+                "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309",
+            }
+        },
+        "appleTestnet": {
+            "ios": {
+                "ascAppId": "6476114575",
+                "appleTeamId": "6BLD42QR78",
+                "ascApiKeyId": "83XQ25UWSK",
                 "ascApiKeyPath": "./apple-asc-api-key.p8",
                 "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
             }
         },
-        "production": {}
+        "appleProduction": {
+            "ios": {
+                "ascAppId": "6482296993",
+                "appleTeamId": "6BLD42QR78",
+                "ascApiKeyId": "83XQ25UWSK",
+                "ascApiKeyPath": "./apple-asc-api-key.p8",
+                "ascApiKeyIssuerId": "ba87a564-cdb7-4a94-9e58-dbcb7d2e8309"
+            }
+        }
     }
 }

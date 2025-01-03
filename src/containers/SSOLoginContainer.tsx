@@ -1,117 +1,203 @@
 import React, { useEffect, useState } from 'react';
+import * as Linking from 'expo-linking';
 import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
-import TonomyLogo from '../assets/tonomy/tonomy-logo1024.png';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/Tbutton';
+import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import TInfoBox from '../components/TInfoBox';
-import TCheckbox from '../components/molecules/TCheckbox';
-import useUserStore, { UserStatus } from '../store/userStore';
-import { UserApps, App, JWTLoginPayload, TonomyUsername } from '@tonomy/tonomy-id-sdk';
+import useUserStore from '../store/userStore';
+import {
+    terminateLoginRequest,
+    App,
+    base64UrlToObj,
+    SdkErrors,
+    CommunicationError,
+    ResponsesManager,
+    RequestsManager,
+} from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
-
-import { openBrowserAsync } from 'expo-web-browser';
-import { PublicKey } from '@greymass/eosio';
 import { useNavigation } from '@react-navigation/native';
+import { Images } from '../assets';
+import Debug from 'debug';
 
-export default function SSOLoginContainer({
-    requests,
-    platform,
-}: {
-    requests: string;
-    platform: 'mobile' | 'browser';
-}) {
-    const { user, setStatus } = useUserStore();
-    const [app, setApp] = useState<App>();
-    const [checked, setChecked] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
-    const [username, setUsername] = useState<TonomyUsername>();
-    const [tonomyIdJwtPayload, setTonomyIdJwtPayload] = useState<JWTLoginPayload>();
-    const [ssoJwtPayload, setSsoJwtPayload] = useState<JWTLoginPayload>();
+const debug = Debug('tonomy-id:containers:SSOLoginContainer');
+
+export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
+    const { user, logout } = useUserStore();
+    const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
+    const [username, setUsername] = useState<string>();
     const [ssoApp, setSsoApp] = useState<App>();
-    const [recieverDid, setRecieverDid] = useState<string>();
+    const [nextLoading, setNextLoading] = useState<boolean>(true);
+    const [cancelLoading, setCancelLoading] = useState<boolean>(false);
 
     const navigation = useNavigation();
     const errorStore = useErrorStore();
 
     async function setUserName() {
-        const username = await user.storage.username;
-
-        if (!username) {
-            await user.logout();
-            setStatus(UserStatus.NOT_LOGGED_IN);
-        }
-
-        setUsername(username);
-    }
-
-    async function getLoginFromJwt() {
         try {
-            const verifiedRequests = await UserApps.verifyRequests(requests);
+            const username = await user.getUsername();
 
-            for (const jwt of verifiedRequests) {
-                const payload = jwt.getPayload() as JWTLoginPayload;
-                const app = await App.getApp(payload.origin);
-
-                if (payload.origin === settings.config.ssoWebsiteOrigin) {
-                    setTonomyIdJwtPayload(payload);
-                    setRecieverDid(jwt.getSender());
-                    setApp(app);
-                } else {
-                    setSsoJwtPayload(payload);
-                    setSsoApp(app);
-                }
+            if (!username) {
+                await logout('No username in SSO login screen');
             }
-        } catch (e: any) {
+
+            setUsername(username.getBaseUsername());
+        } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
     }
 
-    function toggleCheckbox() {
-        setChecked((state) => (state === 'checked' ? 'unchecked' : 'checked'));
+    async function getRequestsFromParams() {
+        try {
+            debug('getRequestsFromParams(): start');
+            const parsedPayload = base64UrlToObj(payload);
+
+            const managedRequests = new RequestsManager(parsedPayload?.requests);
+
+            debug('getRequestsFromParams():', managedRequests);
+
+            await managedRequests.verify();
+            // TODO check if the internal login request comes from same DID as the sender of the message.
+
+            const managedResponses = new ResponsesManager(managedRequests);
+
+            debug('getRequestsFromParams():', managedResponses);
+
+            await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
+
+            setSsoApp(managedResponses.getExternalLoginResponseOrThrow().getAppOrThrow());
+            setResponsesManager(managedResponses);
+            debug('getRequestsFromParams(): end');
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        } finally {
+            setNextLoading(false);
+        }
     }
 
-    async function onNext() {
+    async function onLogin() {
         try {
-            const accountName = await user.storage.accountName.toString();
-            let callbackUrl = settings.config.ssoWebsiteOrigin + '/callback?';
+            setNextLoading(true);
+            debug('onLogin() logs start:');
 
-            callbackUrl += 'requests=' + requests;
-            callbackUrl += '&username=' + (await user.storage.username);
-            callbackUrl += '&accountName=' + accountName;
-            if (ssoApp && ssoJwtPayload) await user.apps.loginWithApp(ssoApp, PublicKey.from(ssoJwtPayload?.publicKey));
+            if (!responsesManager) throw new Error('Responses manager is not set');
 
-            if (app && tonomyIdJwtPayload && checked === 'checked') {
-                await user.apps.loginWithApp(app, PublicKey.from(tonomyIdJwtPayload?.publicKey));
-            }
+            await responsesManager.createResponses(user);
+
+            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
+                callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
+                callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
+                messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+            });
+
+            debug('onLogin() callbackUrl:', callbackUrl);
 
             if (platform === 'mobile') {
-                await openBrowserAsync(callbackUrl);
+                if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
+                await Linking.openURL(callbackUrl);
+                // @ts-expect-error item of type string is not assignable to type never
+                navigation.navigate('Assets');
             } else {
-                const message = await user.signMessage({ requests, accountName }, recieverDid);
-
-                user.communication.sendMessage(message);
-                navigation.navigate('Drawer', { screen: 'UserHome' });
+                // @ts-expect-error item of type string is not assignable to type never
+                navigation.navigate('Assets');
             }
-        } catch (e: any) {
-            errorStore.setError({ error: e, expected: false });
+        } catch (e) {
+            debug('onLogin() error', e);
+
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
+                debug('onLogin() CommunicationError');
+
+                // User cancelled in the browser, so can just navigate back to home
+                // @ts-expect-error item of type string is not assignable to type never
+                navigation.navigate('Assets');
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    // @ts-expect-error item of type string is not assignable to type never
+                    onClose: async () => navigation.navigate('Assets'),
+                });
+            }
+        } finally {
+            setNextLoading(false);
+        }
+    }
+
+    async function onCancel() {
+        try {
+            setCancelLoading(true);
+            if (!responsesManager) throw new Error('Responses manager is not set');
+
+            const res = await terminateLoginRequest(
+                responsesManager,
+                platform,
+                {
+                    code: SdkErrors.UserCancelled,
+                    reason: 'User cancelled login request',
+                },
+                {
+                    callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
+                    callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
+                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                    user,
+                }
+            );
+
+            setNextLoading(false);
+
+            if (platform === 'mobile') {
+                if (typeof res !== 'string') throw new Error('Res is not string');
+                await Linking.openURL(res);
+            }
+
+            // @ts-expect-error item of type string is not assignable to type never
+            // TODO fix type error
+            navigation.navigate('Assets');
+        } catch (e) {
+            setCancelLoading(false);
+            debug('Error in cancel', e);
+
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
+                // User cancelled in the browser, so can just navigate back to home
+                // @ts-expect-error item of type string is not assignable to type never
+                navigation.navigate('Assets');
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    // @ts-expect-error item of type string is not assignable to type never
+                    onClose: async () => navigation.navigate('Assets'),
+                });
+            }
         }
     }
 
     useEffect(() => {
         setUserName();
-        getLoginFromJwt();
+        getRequestsFromParams();
     }, []);
 
     return (
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <Image style={[styles.logo, commonStyles.marginBottom]} source={TonomyLogo}></Image>
+                    <Image
+                        style={[styles.logo, commonStyles.marginBottom]}
+                        source={Images.GetImage('logo1024')}
+                    ></Image>
 
-                    {username?.username && <TH1 style={commonStyles.textAlignCenter}>{username.username}</TH1>}
+                    {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 
                     {ssoApp && (
                         <View style={[styles.appDialog, styles.marginTop]}>
@@ -121,11 +207,6 @@ export default function SSOLoginContainer({
                             <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
                         </View>
                     )}
-
-                    <View style={styles.checkbox}>
-                        <TCheckbox status={checked} onPress={toggleCheckbox}></TCheckbox>
-                        <TP>Stay signed in</TP>
-                    </View>
                 </View>
             }
             footerHint={
@@ -141,10 +222,12 @@ export default function SSOLoginContainer({
             }
             footer={
                 <View>
-                    <TButtonContained style={commonStyles.marginBottom} onPress={onNext}>
-                        Next
+                    <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onLogin}>
+                        Login
                     </TButtonContained>
-                    <TButtonOutlined onPress={() => navigation.navigate('Home')}>Cancel</TButtonOutlined>
+                    <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
+                        Cancel
+                    </TButtonOutlined>
                 </View>
             }
         ></LayoutComponent>

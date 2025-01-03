@@ -7,6 +7,6 @@ export type SSOLoginScreenProps = NativeStackScreenProps<RouteStackParamList, 'S
 
 export default function SSOLoginScreen(props: SSOLoginScreenProps) {
     return (
-        <SSOLoginContainer requests={props.route.params.requests} platform={props.route.params.platform ?? 'mobile'} />
+        <SSOLoginContainer payload={props.route.params.payload} platform={props.route.params.platform ?? 'mobile'} />
     );
 }

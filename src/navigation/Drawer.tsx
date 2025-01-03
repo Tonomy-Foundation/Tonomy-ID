@@ -1,52 +1,58 @@
 import React from 'react';
 import { createDrawerNavigator, DrawerNavigationOptions } from '@react-navigation/drawer';
 import CustomDrawer from '../components/CustomDrawer';
-import { useTheme } from 'react-native-paper';
-import MainScreen from '../screens/MainScreen';
-import settings from '../settings';
-import MainNavigation from './Main';
-import SSOLoginScreen from '../screens/SSOLoginScreen';
+import { useAppTheme } from '../utils/theme';
+import BottomTabNavigator from './BottomTabNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
-import SettingsNavigation from './Settings';
+import { TouchableOpacity } from 'react-native';
+import MenuIcon from '../assets/icons/MenuIcon';
+import SupportScreen from '../screens/SupportScreen';
 
-export type RouteDrawerParamList = {
-    UserHome: undefined;
+export type DrawerStackParamList = {
+    UserHome: { did?: string };
     Settings: undefined;
+    Support: undefined;
     Help: undefined;
     Logout: undefined;
-    SSO: { requests: string; platform: 'mobile' | 'browser' };
+    ChangePin: undefined;
+    SSO: { payload: string; platform: 'mobile' | 'browser' };
+    BottomTabs: undefined;
 };
 
-const Drawer = createDrawerNavigator<RouteDrawerParamList>();
+const Drawer = createDrawerNavigator<DrawerStackParamList>();
 
 export default function DrawerNavigation() {
-    const theme = useTheme();
+    const theme = useAppTheme();
     const defaultScreenOptions: DrawerNavigationOptions = {
-        headerStyle: {
-            backgroundColor: theme.colors.primary,
-        },
         headerTitleStyle: {
-            fontSize: 24,
+            fontSize: 16,
+            fontWeight: '500',
+            color: theme.colors.text,
         },
-        headerTitleAlign: 'left',
-        headerTintColor: theme.dark ? theme.colors.text : 'white',
+        headerTitleAlign: 'center',
+        headerTintColor: theme.dark ? theme.colors.text : 'black',
     };
+
+    const drawerScreenOptions = ({ navigation }) => ({
+        headerLeft: () => (
+            <TouchableOpacity
+                style={{ paddingHorizontal: 15, paddingVertical: 10 }}
+                onPress={() => navigation.toggleDrawer()}
+            >
+                <MenuIcon />
+            </TouchableOpacity>
+        ),
+    });
 
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawer {...props} />}
-            initialRouteName="UserHome"
+            initialRouteName="BottomTabs"
             screenOptions={defaultScreenOptions}
         >
-            {/* change component to Main Navigation when bottom nav should be added */}
-            <Drawer.Screen name="UserHome" options={{ title: 'Home' }} component={MainScreen} />
-            <Drawer.Screen
-                name="Settings"
-                options={{ title: 'Settings', headerShown: false }}
-                component={SettingsNavigation}
-            />
-            {/* <Drawer.Screen name="Help" component={TestScreen} options={{ title: 'Help and Info' }} /> */}
-            {/* <Drawer.Screen name="Logout" component={TestScreen} /> */}
+            <Drawer.Screen name="BottomTabs" options={{ headerShown: false }} component={BottomTabNavigator} />
+            <Drawer.Screen name="Settings" options={drawerScreenOptions} component={SettingsScreen} />
+            <Drawer.Screen name="Support" options={drawerScreenOptions} component={SupportScreen} />
         </Drawer.Navigator>
     );
 }

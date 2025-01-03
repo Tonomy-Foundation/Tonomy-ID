@@ -1,14 +1,21 @@
 {
-    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "theme": {
-        "primaryColor": "#6200ee",
-        "secondaryColor": "#03dac4",
-        "tertiaryColor": "white"
+        "primaryColor": "#67D7ED",
+        "disabled": "#D2F3FA",
+        "secondaryColor": "#FF505F",
+        "secondaryColor2": "#6E84A3",
+        "tertiaryColor": "#7660E7",
+        "tertiaryColor2": "#CFC8F7",
+        "text": "#474D4C",
+        "textGray": "#5B6261",
+        "linkColor": "#67D7ED",
+        "infoBackground": "#e1f2e2",
+        "lightBackground": "#F6F9FB"
     },
     "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
     "appName": "Tonomy ID Staging",
     "ecosystemName": "Tonomy Staging",
-    "appSlogan": "Building ecosystems of trust",
+    "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/tonomy/tonomy-splash.png",
         "logo48": "./src/assets/tonomy/tonomy-logo48.png",
@@ -16,7 +23,7 @@
     },
     "links": {
         "privacyPolicyLearnMore": "#",
-        "tearmsAndConditionsLearnMore": "#",
+        "termsAndConditionsLearnMore": "#",
         "usernameLearnMore": "#",
         "passwordLearnMore": "#",
         "privacyLearnMore": "#",
@@ -25,6 +32,14 @@
     },
     "expoProjectId": "b7d1c77f-3535-492c-8f55-0ba569ccdc93",
     "accountSuffix": ".stag.tonomy.id",
-    "ssoWebsiteOrigin": "https://tonomy-id-staging.tonomy.foundation",
-    "communicationUrl": "wss://communication-api-staging.tonomy.foundation"
+    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
+    "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
+    "communicationUrl": "wss://communication.staging.tonomy.foundation",
+    "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
+    "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
+    "blockExplorerUrl": "https://local.bloks.io",
+    "tonomyIdSlug": "tonomy-id-staging://",
+    "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
+    "etherscanApiKey": "8V6DEHQ64R18FFNX2B5S345IXXNZRJVVQX",
+    "walletConnectProjectId": "650e5b61be5fadae5d817ff12daa1283"
 }

@@ -6,6 +6,21 @@
         "typescriptreact"
     ],
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true,
-    }
+        "source.fixAll.eslint": "explicit"
+    },
+    "jest.autoRun": {
+        "onSave": false
+    },
+    "jest.debugMode": false,
+    "jest.jestCommandLine": "yarn run test",
+    "jest.testExplorer": {
+        "enabled": true
+    },
+    "git.branchPrefix": "feature/",
+    "git.branchProtection": [
+        "master",
+        "main",
+        "testnet",
+        "development"
+    ],
 }

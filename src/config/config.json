@@ -1,30 +1,45 @@
 {
-    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
     "theme": {
-        "primaryColor": "#67D7ED",
-        "secondaryColor": "#03dac4",
-        "tertiaryColor": "white"
+        "primaryColor": "#000000",
+        "disabled": "#939393",
+        "secondaryColor": "#4CAF50",
+        "secondaryColor2": "#6E84A3",
+        "tertiaryColor": "#7660E7",
+        "tertiaryColor2": "#CFC8F7",
+        "text": "#000000",
+        "textGray": "#000000",
+        "linkColor": "#4CAF50",
+        "infoBackground": "#F6F9FB",
+        "lightBackground": "#F6F9FB"
     },
-    "appLogoUrl": "./src/assets/tonomy/tonomy-logo48.png",
+    "appLogoUrl": "./src/assets/pangea/favicon.png",
     "appName": "Tonomy ID Development",
     "ecosystemName": "Tonomy Development",
-    "appSlogan": "Building ecosystems of trust",
+    "appSlogan": "Building Ecosystem Of Trust",
     "images": {
-        "splash": "./src/assets/tonomy/tonomy-splash.png",
-        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
-        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
+        "splash": "./src/assets/pangea/pangea-splash.png",
+        "logo48": "./src/assets/pangea/favicon.png",
+        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
-        "tearmsAndConditionsLearnMore": "#",
+        "termsAndConditionsLearnMore": "#",
         "usernameLearnMore": "#",
         "passwordLearnMore": "#",
         "privacyLearnMore": "#",
         "transparencyLearnMore": "#",
         "securityLearnMore": "#"
     },
-    "expoProjectId": "18ee7c2e-dba4-4c3d-8bd1-712e0c19b901",
-    "accountSuffix": ".dev.tonomy.id",
-    "ssoWebsiteOrigin": "https://sso.staging.tonomy.foundation",
-    "communicationUrl": "ws:localhost:5000"
+    "expoProjectId": "8b58b886-eaa6-4a7e-bded-3804f4402490",
+    "accountSuffix": ".stag.tonomy.id",
+    "blockchainUrl": "https://blockchain-api-staging.tonomy.foundation",
+    "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
+    "communicationUrl": "wss://communication.staging.tonomy.foundation",
+    "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
+    "blockExplorerUrl": "https://local.bloks.io",
+    "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
+    "tonomyIdSlug": "tonomy-id-development://",
+    "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
+    "etherscanApiKey": "ESTDTCEUZWS9R56V3FYTXBNAFVQE3EZVIT",
+    "walletConnectProjectId": "850cdd095217e599acfd5f9f01d7b1ba"
 }

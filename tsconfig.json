@@ -1,11 +1,21 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "jsx": "react",
     "strict": true,
-    "esModuleInterop": true,
     "noImplicitAny": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "experimentalDecorators": true, // needed for @wharfkit/antelope
+    "useUnknownInCatchVariables": false, // needed for @wharfkit/antelope
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
-  "esModuleInterop": true,
-  "allowJs": true,
+  "include": [
+    "App.tsx",
+    "src/**/*",
+    "test/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+  ]
 }
