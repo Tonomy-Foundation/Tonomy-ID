@@ -40,6 +40,9 @@ import { OperationData } from '../components/Transaction';
 import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import LeosAssetScreen from '../screens/LeosAssetScreen';
+import VestedAssetsScreen from '../screens/VestedAssetsScreen';
+import VestedAssetsWithdrawSuccessScreen from '../screens/VestedAssetsWithdrawSuccessScreen';
 import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
 
@@ -111,6 +114,9 @@ export type MainRouteStackParamList = {
         privateKey: IPrivateKey;
     };
     SelectAsset: { screenTitle?: string; type: string };
+    LeosAssetManager: AssetsParamsScreen;
+    VestedAssets: { chain: IChain };
+    VestedWithDrawSuccess: { chain: IChain };
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -260,6 +266,22 @@ export default function RootNavigation() {
                                 title: route.params?.screenTitle || 'AssetDetail',
                             })}
                             component={AssetDetail}
+                        />
+
+                        <Stack.Screen
+                            name="LeosAssetManager"
+                            options={{ headerBackTitleVisible: false, title: 'LEOS' }}
+                            component={LeosAssetScreen}
+                        />
+                        <Stack.Screen
+                            name="VestedAssets"
+                            options={{ headerBackTitleVisible: false, title: 'Vested assets' }}
+                            component={VestedAssetsScreen}
+                        />
+                        <Stack.Screen
+                            name="VestedWithDrawSuccess"
+                            options={{ headerBackTitleVisible: false, title: 'Success' }}
+                            component={VestedAssetsWithdrawSuccessScreen}
                         />
                         <Stack.Screen
                             name="Send"

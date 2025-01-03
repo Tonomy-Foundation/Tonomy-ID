@@ -301,13 +301,6 @@ export class AntelopeChain extends AbstractChain {
             }
         }
 
-        if (this.explorerOrigin.includes('https://local.bloks.io')) {
-            url += '?nodeUrl=' + encodeURIComponent(this.apiOrigin);
-            url += '&coreSymbol=LEOS';
-            url += '&corePrecision=6';
-            url += '&systemDomain=eosio';
-        }
-
         return url;
     }
     isValidAccountName(account: string): boolean {
