@@ -102,7 +102,7 @@ export class AntelopeTransactionReceipt extends AbstractTransactionReceipt {
     }
 
     async getFee(): Promise<IAsset> {
-        return new Asset(this.getChain().getNativeToken(), 0n);
+        return new Asset(this.getChain().getNativeToken(), new Decimal(0));
     }
 
     getExplorerUrl(): string {
@@ -377,8 +377,8 @@ export class AntelopeToken extends AbstractToken implements IToken {
         );
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
-        if (!asset) return new Asset(this, BigInt(0));
-        return new Asset(this, BigInt(asset.units.value));
+        if (!asset) return new Asset(this, new Decimal(0));
+        return new Asset(this, new Decimal(asset.units.value));
     }
 
     toAntelopeSymbol(): AntelopeAsset.Symbol {
@@ -414,7 +414,7 @@ class PangeaVestedToken extends AntelopeToken {
 
         const vestedBalance = await vestingContract.getBalance(lookupAccount.getName());
 
-        return new Asset(this, BigInt(vestedBalance * 10 ** this.precision));
+        return new Asset(this, new Decimal(vestedBalance).mul(new Decimal(10).pow(this.precision)));
     }
 
     // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
@@ -603,7 +603,7 @@ export class AntelopeAction implements IOperation {
 
             return getAssetFromQuantity(quantity, this.chain);
         } else {
-            return new Asset(this.chain.getNativeToken(), BigInt(0));
+            return new Asset(this.chain.getNativeToken(), new Decimal(0));
         }
     }
 }
@@ -614,15 +614,15 @@ export class AntelopeAction implements IOperation {
  * @param {AntelopeChain} chain - The chain the asset is on
  * @returns {IAsset} - The asset
  */
+
 function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const name = quantity.split(' ')[1];
     const symbol = name;
     const amountString = quantity.split(' ')[0];
-    const precision = amountString.split('.')[1].length;
+    const precision = amountString.includes('.') ? amountString.split('.')[1].length : 0;
 
     const token = new AntelopeToken(chain, name, symbol, precision, '', '');
-    const amountNumber = new Decimal(amountString).toNumber();
-    const amount = BigInt(amountNumber * 10 ** precision);
+    const amount = new Decimal(amountString).mul(new Decimal(10).pow(precision));
 
     return new Asset(token, amount);
 }
@@ -677,29 +677,29 @@ export class AntelopeTransaction implements ITransaction {
         return this.actions;
     }
     async estimateTransactionFee(): Promise<Asset> {
-        return new Asset(this.chain.getNativeToken(), BigInt(0));
+        return new Asset(this.chain.getNativeToken(), new Decimal(0));
     }
+
     async estimateTransactionTotal(): Promise<Asset> {
         const operationAmountsPromises = (await this.getOperations()).map(async (operation) =>
             (await operation.getValue()).getAmount()
         );
-
         // const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
         //     this return string
 
         // let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
         // Ensure all operation amounts are BigInt
         const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => {
-            return BigInt(a) + BigInt(b);
-        }, BigInt(0));
+            return new Decimal(a).plus(new Decimal(b));
+        }, new Decimal(0));
 
-        const estimatedFee = BigInt((await this.estimateTransactionFee()).getAmount());
+        const estimatedFee = new Decimal((await this.estimateTransactionFee()).getAmount());
 
-        // Combine the total operation amounts with the estimated fee
-        const amount = operationAmounts + estimatedFee;
+        const amount = operationAmounts.plus(estimatedFee);
 
-        return new Asset(this.chain.getNativeToken(), amount);
+        return new Asset(this.chain.getNativeToken(), amount); // Replace null with the appropriate token
     }
+
     hasMultipleOperations(): boolean {
         return true;
     }

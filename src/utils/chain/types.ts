@@ -163,7 +163,7 @@ export abstract class AbstractChain implements IChain {
 
 export interface IAsset {
     getToken(): IToken;
-    getAmount(): bigint;
+    getAmount(): Decimal;
     getUsdValue(): Promise<number>;
     getSymbol(): string;
     getPrecision(): number;
@@ -183,31 +183,31 @@ export interface IAsset {
 
 export abstract class AbstractAsset implements IAsset {
     protected abstract token: IToken;
-    protected abstract amount: bigint;
+    protected abstract amount: Decimal;
 
     getToken(): IToken {
         return this.token;
     }
-    getAmount(): bigint {
+    getAmount(): Decimal {
         return this.amount;
     }
     add(other: IAsset): IAsset {
         if (!this.token.eq(other.getToken())) throw new Error('Different tokens');
-        return new Asset(this.token, this.amount + other.getAmount());
+        return new Asset(this.token, this.amount.add(other.getAmount()));
     }
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
 
         if (price) {
             const precision = this.token.getPrecision();
-            const precisionMultiplier = BigInt(10) ** BigInt(precision);
+            const precisionMultiplier = new Decimal(10).pow(precision);
 
-            const priceMultiplier = 10 ** 4; // $ price assumed to have maximum 4 decimal places
-            const priceBigInt = BigInt(price * priceMultiplier);
+            const priceMultiplier = new Decimal(10).pow(4); // $ price assumed to have max 4 decimal places
+            const priceDecimal = new Decimal(price).mul(priceMultiplier);
 
-            const usdValueBigInt = (this.amount * priceBigInt) / precisionMultiplier;
+            const usdValue = this.amount.mul(priceDecimal).div(precisionMultiplier);
 
-            return new Decimal(usdValueBigInt.toString()).toNumber() / priceMultiplier;
+            return usdValue.div(priceMultiplier).toNumber();
         } else {
             return 0;
         }
@@ -219,16 +219,12 @@ export abstract class AbstractAsset implements IAsset {
         return this.token.getPrecision();
     }
     printValue(precision?: number): string {
-        const amountNumber = Number(this.amount);
-        const precisionNumber = Number(10 ** this.token.getPrecision());
+        const precisionNumber = new Decimal(10).pow(this.token.getPrecision());
+        const value = this.amount.div(precisionNumber).toDecimalPlaces(precision ?? this.getPrecision());
 
-        // Perform the division
-        const value = new Decimal(
-            (amountNumber / precisionNumber).toFixed(precision ?? this.getPrecision())
-        ).toNumber();
-
-        return formatCurrencyValue(value, precision ?? this.getPrecision());
+        return formatCurrencyValue(value.toNumber(), precision ?? this.getPrecision());
     }
+
     toString(precision?: number): string {
         return `${this.printValue(precision)} ${this.token.getSymbol()}`;
     }
@@ -378,9 +374,9 @@ export abstract class AbstractAccount implements IAccount {
 
 export class Asset extends AbstractAsset {
     protected token: IToken;
-    protected amount: bigint;
+    protected amount: Decimal;
 
-    constructor(token: IToken, amount: bigint) {
+    constructor(token: IToken, amount: Decimal) {
         super();
         this.token = token;
         this.amount = amount;

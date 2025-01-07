@@ -37,6 +37,7 @@ import { getSdkError } from '@walletconnect/utils';
 import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
+import Decimal from 'decimal.js';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -195,7 +196,7 @@ export class EthereumToken extends AbstractToken {
 
         debug('getBalance() balance', balanceWei);
 
-        return new Asset(this, balanceWei);
+        return new Asset(this, new Decimal(balanceWei.toString()));
     }
 
     async getUsdValue(account?: IAccount): Promise<number> {
@@ -352,7 +353,10 @@ export class EthereumTransaction implements ITransaction {
     }
     async getValue(): Promise<Asset> {
         // TODO: also need to handle other tokens
-        return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
+        return new Asset(
+            this.chain.getNativeToken(),
+            new Decimal(this.transaction.value ? this.transaction.value.toString() : '0')
+        );
     }
 
     async estimateTransactionFee(): Promise<Asset> {
@@ -372,10 +376,10 @@ export class EthereumTransaction implements ITransaction {
 
         const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
 
-        return new Asset(this.chain.getNativeToken(), totalGasFee);
+        return new Asset(this.chain.getNativeToken(), new Decimal(totalGasFee.toString()));
     }
     async estimateTransactionTotal(): Promise<Asset> {
-        const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
+        const amount = (await this.getValue()).getAmount().plus((await this.estimateTransactionFee()).getAmount());
 
         return new Asset(this.chain.getNativeToken(), amount);
     }
@@ -419,7 +423,7 @@ export class EthereumTransactionReceipt extends AbstractTransactionReceipt {
         const receipt = await this.receipt.wait();
 
         if (!receipt) throw new Error('Failed to fetch receipt');
-        return new Asset(this.chain.getNativeToken(), receipt.fee);
+        return new Asset(this.chain.getNativeToken(), new Decimal(receipt.fee.toString()));
     }
 
     async getTimestamp(): Promise<Date> {
