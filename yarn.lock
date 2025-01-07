@@ -8695,7 +8695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:^10.4.2":
+"decimal.js@npm:^10.4.2, decimal.js@npm:^10.4.3":
   version: 10.4.3
   resolution: "decimal.js@npm:10.4.3"
   checksum: 10c0/6d60206689ff0911f0ce968d40f163304a6c1bc739927758e6efc7921cfa630130388966f16bf6ef6b838cb33679fbe8e7a78a2f3c478afce841fd55ac8fb8ee
@@ -19463,6 +19463,7 @@ __metadata:
     bluebird: "npm:^3.7.2"
     cross-fetch: "npm:^4.0.0"
     crypto-browserify: "npm:^3.12.1"
+    decimal.js: "npm:^10.4.3"
     deepmerge: "npm:^4.3.1"
     eslint: "npm:^8.25.0"
     eslint-config-prettier: "npm:^8.5.0"
