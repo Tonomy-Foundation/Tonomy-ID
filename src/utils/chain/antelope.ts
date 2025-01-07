@@ -46,6 +46,7 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
+import Decimal from 'decimal.js';
 
 const vestingContract = VestingContract.Instance;
 
@@ -620,7 +621,7 @@ function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const precision = amountString.split('.')[1].length;
 
     const token = new AntelopeToken(chain, name, symbol, precision, '', '');
-    const amountNumber = parseFloat(amountString);
+    const amountNumber = new Decimal(amountString).toNumber();
     const amount = BigInt(amountNumber * 10 ** precision);
 
     return new Asset(token, amount);

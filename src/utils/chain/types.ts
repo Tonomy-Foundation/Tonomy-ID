@@ -4,6 +4,7 @@ import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
+import Decimal from 'decimal.js';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -206,7 +207,7 @@ export abstract class AbstractAsset implements IAsset {
 
             const usdValueBigInt = (this.amount * priceBigInt) / precisionMultiplier;
 
-            return parseFloat(usdValueBigInt.toString()) / priceMultiplier;
+            return new Decimal(usdValueBigInt.toString()).toNumber() / priceMultiplier;
         } else {
             return 0;
         }
@@ -222,7 +223,9 @@ export abstract class AbstractAsset implements IAsset {
         const precisionNumber = Number(10 ** this.token.getPrecision());
 
         // Perform the division
-        const value = parseFloat((amountNumber / precisionNumber).toFixed(precision ?? this.getPrecision()));
+        const value = new Decimal(
+            (amountNumber / precisionNumber).toFixed(precision ?? this.getPrecision())
+        ).toNumber();
 
         return formatCurrencyValue(value, precision ?? this.getPrecision());
     }
