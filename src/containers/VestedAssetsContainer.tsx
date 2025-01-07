@@ -51,7 +51,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         const { allocationsDetails } = vestingData;
 
         let totalWeightedMultiplier = 0;
-        let totalLockedAllocations = 0;
+        let totalLockedAndUnlockable = 0;
 
         allocationsDetails.forEach((allocation) => {
             const { locked, unlockable } = allocation;
@@ -61,12 +61,12 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                 const lockedPlusUnlockable = locked + unlockable;
 
                 totalWeightedMultiplier += multiplier * lockedPlusUnlockable;
-                totalLockedAllocations += 1;
+                totalLockedAndUnlockable += lockedPlusUnlockable;
             }
         });
-        console.log('totalWeightedMultiplier', totalWeightedMultiplier, totalLockedAllocations);
+
         // Calculate average multiplier
-        return totalLockedAllocations > 0 ? totalWeightedMultiplier / totalLockedAllocations : 0;
+        return totalLockedAndUnlockable > 0 ? totalWeightedMultiplier / totalLockedAndUnlockable : 0;
     };
 
     if (loading) {
@@ -96,14 +96,12 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                     <Text style={styles.imageText}>
                         {formatCurrencyValue(totalVestedAmount)} {chain.getNativeToken().getSymbol()}
                     </Text>
-                    <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd, 4)}</Text>
+                    <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd)}</Text>
                     <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text>
                 </ImageBackground>
             </View>
         );
     };
-
-    console.log('selectedAllocation', selectedAllocation);
 
     const vestingAllocationsView = () => {
         return (

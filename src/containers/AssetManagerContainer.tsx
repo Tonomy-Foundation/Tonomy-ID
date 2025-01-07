@@ -144,7 +144,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [chain, token, symbol]);
+    }, [chain, token, symbol, errorStore]);
 
     const redirectVestedAsset = () => {
         navigation.navigate('VestedAssets', {
@@ -219,7 +219,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {balance.totalBalance && investorTootlView(redirectVestedAsset)}
+            {balance.vestedBalance && parseFloat(balance.vestedBalance) > 0 && investorTootlView(redirectVestedAsset)}
         </View>
     );
 };

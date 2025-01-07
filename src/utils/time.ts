@@ -26,3 +26,11 @@ export function formatDateTime(date: Date): string {
 export function sleep(milliseconds: number) {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
+
+export function formatDate(date: Date): string {
+    return date?.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+}

@@ -6,6 +6,7 @@ import theme from '../utils/theme';
 import { getMultiplier } from '../utils/multiplier';
 import { VestedAllocationDetails } from '../utils/tokenRegistry';
 import { formatCurrencyValue } from '../utils/numbers';
+import { formatDate } from '../utils/time';
 
 export type Props = {
     refMessage: React.RefObject<any>;
@@ -40,7 +41,7 @@ const AllocationDetails = (props: Props) => {
                             {formatCurrencyValue(allocationData.totalAllocation)} LEOS
                         </Text>
                         <Text style={styles.usdBalance}>
-                            ${formatCurrencyValue(allocationData.totalAllocation * props.usdPriceValue, 4)}
+                            ${formatCurrencyValue(allocationData.totalAllocation * props.usdPriceValue)}
                         </Text>
                     </View>
                 </View>
@@ -53,7 +54,7 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData?.vestingStart?.toDateString()}</Text>
+                        <Text style={styles.allocMulti}>{formatDate(allocationData?.vestingStart)}</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
@@ -81,8 +82,8 @@ const AllocationDetails = (props: Props) => {
                 <Text style={styles.howHead}>How multiplier works</Text>
 
                 <Text style={styles.howParagraph}>
-                    The multiplier boosts the value of your vested coins, increasing rewards or benefits. The higher the
-                    multiplier, the greater the value upon release
+                    The multiplier is the price boost you received when the coins were allocated to you, relative to the
+                    public sale price
                 </Text>
             </View>
         </RBSheet>
