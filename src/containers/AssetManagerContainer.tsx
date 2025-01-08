@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Ima
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
-import { IChain } from '../utils/chain/types';
+import { IAsset, IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
@@ -89,6 +89,10 @@ const investorTootlView = (redirectVestedAsset) => {
     );
 };
 
+const formatBalance = (balance: IAsset) => {
+    return balance.toString().split(' ')[0];
+};
+
 const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const errorStore = useErrorStore();
@@ -117,10 +121,9 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const vestedBalance = await token.getVestedTotalBalance(account);
                     const availableBalance = await token.getAvailableBalance(account);
 
-                    console.log('availableBalance', availableBalance.toString());
                     const vestedBalanceUsd = await vestedBalance.getUsdValue();
-                    const vestedBalanceValue = new Decimal(vestedBalance.toString().split(' ')[0]).toNumber();
-                    const totalBalance = new Decimal(availableBalance.toString().split(' ')[0]).add(vestedBalanceValue);
+                    const vestedBalanceValue = new Decimal(formatBalance(vestedBalance)).toNumber();
+                    const totalBalance = new Decimal(formatBalance(availableBalance)).add(vestedBalanceValue);
                     const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
                     setBalance({
@@ -175,8 +178,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
     return (
         <View style={styles.container}>
-            {balance.totalBalance && renderImageBackground(balance)}
-            {vestedBalanceView(balance, asset, redirectVestedAsset)}
+            {balance.vestedBalance > 0 && renderImageBackground(balance)}
+            {balance.vestedBalance > 0 && vestedBalanceView(balance, asset, redirectVestedAsset)}
 
             <Text style={styles.subTitle}>Available assets</Text>
 
