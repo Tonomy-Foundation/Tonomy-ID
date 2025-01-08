@@ -136,7 +136,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     });
                 } else {
                     setBalance({
-                        availableBalance: assetData.token.balance,
+                        availableBalance: assetData.token.balance + ' ' + symbol,
                         availableBalanceUsd: assetData.token.usdBalance,
                         vestedBalance: 0,
                         vestedBalanceUsd: 0,
@@ -185,9 +185,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
             <View style={styles.availableAssetView}>
                 <View style={styles.header}>
-                    <Text style={styles.headerAssetsAmount}>
-                        {balance.availableBalance} {chain.getNativeToken().getSymbol()}
-                    </Text>
+                    <Text style={styles.headerAssetsAmount}>{balance.availableBalance}</Text>
                     <Text style={styles.headerUSDAmount}>
                         = ${formatCurrencyValue(balance.availableBalanceUsd ?? 0)}
                     </Text>
