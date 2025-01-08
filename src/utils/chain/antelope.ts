@@ -359,6 +359,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
+        return new Asset(this, BigInt(0));
         const contractAccount = this.getContractAccount();
 
         if (!contractAccount) throw new Error('Token has no contract account');
@@ -375,6 +376,9 @@ export class AntelopeToken extends AbstractToken implements IToken {
             lookupAccount.getName(),
             this.getSymbol()
         );
+
+        if (!assets) return new Asset(this, BigInt(0));
+
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, BigInt(0));

@@ -110,19 +110,24 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
             try {
                 const assetData = await getAssetDetails(chain);
 
+                setAsset(assetData);
+
                 if (symbol === 'LEOS') {
                     const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
+                    const availableBalance = await token.getAvailableBalance(account);
+
+                    console.log('availableBalance', availableBalance.toString());
                     const vestedBalanceUsd = await vestedBalance.getUsdValue();
                     const vestedBalanceValue = new Decimal(vestedBalance.toString().split(' ')[0]).toNumber();
-                    const totalBalance = new Decimal(assetData.token.balance).add(vestedBalanceValue);
+                    const totalBalance = new Decimal(availableBalance.toString().split(' ')[0]).add(vestedBalanceValue);
                     const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
                     setBalance({
                         totalBalance: formatCurrencyValue(totalBalance.toNumber(), 4) + ' ' + symbol,
                         totalBalanceUsd: totalBalance.toNumber() * usdPriceValue,
-                        availableBalance: assetData.token.balance,
-                        availableBalanceUsd: assetData.token.usdBalance,
+                        availableBalance: availableBalance.toString(),
+                        availableBalanceUsd: await availableBalance.getUsdValue(),
                         vestedBalance: vestedBalanceValue,
                         vestedBalanceUsd,
                     });
@@ -134,11 +139,10 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                         vestedBalanceUsd: 0,
                     });
                 }
-
-                setAsset(assetData);
-                setLoading(false);
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
+            } finally {
+                setLoading(false);
             }
         };
 
