@@ -199,19 +199,17 @@ export abstract class AbstractAsset implements IAsset {
         const price = await this.token.getUsdPrice();
 
         if (price) {
-            const precision = this.token.getPrecision();
-            const precisionMultiplier = new Decimal(10).pow(precision);
-
-            const priceMultiplier = new Decimal(10).pow(4); // $ price assumed to have max 4 decimal places
-            const priceDecimal = new Decimal(price).mul(priceMultiplier);
+            const precisionMultiplier = new Decimal(10).pow(this.token.getPrecision());
+            const priceDecimal = new Decimal(price);
 
             const usdValue = this.amount.mul(priceDecimal).div(precisionMultiplier);
 
-            return usdValue.div(priceMultiplier).toNumber();
-        } else {
-            return 0;
+            return usdValue.toNumber();
         }
+
+        return 0;
     }
+
     getSymbol(): string {
         return this.token.getSymbol();
     }
@@ -220,9 +218,10 @@ export abstract class AbstractAsset implements IAsset {
     }
     printValue(precision?: number): string {
         const precisionNumber = new Decimal(10).pow(this.token.getPrecision());
-        const value = this.amount.div(precisionNumber).toDecimalPlaces(precision ?? this.getPrecision());
+        const value = this.amount.div(precisionNumber);
 
-        return formatCurrencyValue(value.toNumber(), precision ?? this.getPrecision());
+        // Use Decimal.toFixed() to handle precision and return the string
+        return value.toFixed(precision ?? this.getPrecision());
     }
 
     toString(precision?: number): string {

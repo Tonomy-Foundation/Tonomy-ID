@@ -370,15 +370,22 @@ export class AntelopeToken extends AbstractToken implements IToken {
             })();
 
         const api = this.getChain().getApiClient();
+
         const assets = await api.v1.chain.get_currency_balance(
             contractAccount.getName(),
             lookupAccount.getName(),
             this.getSymbol()
         );
+
+        if (!assets) return new Asset(this, new Decimal(0));
+
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, new Decimal(0));
-        return new Asset(this, new Decimal(asset.units.value));
+        const precision = this.getPrecision();
+        const amount = new Decimal(asset.units.value).div(new Decimal(10).pow(precision));
+
+        return new Asset(this, amount);
     }
 
     toAntelopeSymbol(): AntelopeAsset.Symbol {
@@ -414,7 +421,7 @@ class PangeaVestedToken extends AntelopeToken {
 
         const vestedBalance = await vestingContract.getBalance(lookupAccount.getName());
 
-        return new Asset(this, new Decimal(vestedBalance).mul(new Decimal(10).pow(this.precision)));
+        return new Asset(this, new Decimal(vestedBalance));
     }
 
     // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
@@ -690,14 +697,14 @@ export class AntelopeTransaction implements ITransaction {
         // let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
         // Ensure all operation amounts are BigInt
         const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => {
-            return new Decimal(a).plus(new Decimal(b));
+            return a.plus(b);
         }, new Decimal(0));
 
         const estimatedFee = new Decimal((await this.estimateTransactionFee()).getAmount());
 
         const amount = operationAmounts.plus(estimatedFee);
 
-        return new Asset(this.chain.getNativeToken(), amount); // Replace null with the appropriate token
+        return new Asset(this.chain.getNativeToken(), amount);
     }
 
     hasMultipleOperations(): boolean {

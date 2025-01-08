@@ -85,7 +85,7 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
             const transactionRequest: TransactionRequest = {
                 to: (await transaction.getTo()).getName(),
                 from: (await transaction.getFrom()).getName(),
-                value: (await transaction.getValue()).getAmount(),
+                value: (await transaction.getValue()).getAmount().toString(),
                 data: ((await transaction.getData()) as TransactionRequest).data,
             };
 
@@ -194,7 +194,7 @@ export class EthereumToken extends AbstractToken {
         debug('getBalance() lookupAccount', lookupAccount.getName());
         const balanceWei = await (this.chain as EthereumChain).getProvider().getBalance(lookupAccount.getName() || '');
 
-        debug('getBalance() balance', balanceWei);
+        debug('getBalance() balanceWei', balanceWei);
 
         return new Asset(this, new Decimal(balanceWei.toString()));
     }
@@ -285,7 +285,7 @@ export class EthereumTransaction implements ITransaction {
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
         const isContract = await (await this.getTo()).isContract();
-        const isValuable = (await this.getValue()).getAmount() > BigInt(0);
+        const isValuable = (await this.getValue()).getAmount().greaterThan(0);
 
         if (isContract && this.transaction.data) {
             if (isValuable) {
@@ -381,6 +381,7 @@ export class EthereumTransaction implements ITransaction {
     async estimateTransactionTotal(): Promise<Asset> {
         const amount = (await this.getValue()).getAmount().plus((await this.estimateTransactionFee()).getAmount());
 
+        debug('estimateTransactionTotal() amount', amount);
         return new Asset(this.chain.getNativeToken(), amount);
     }
 
