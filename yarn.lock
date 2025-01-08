@@ -4684,9 +4684,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.25.0-development.3":
-  version: 0.25.0-development.3
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.25.0-development.3"
+"@tonomy/tonomy-id-sdk@portal:/home/sadia/TonomyFoundation/Tonomy-ID-Integration/Tonomy-ID-SDK::locator=tonomy-id%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@tonomy/tonomy-id-sdk@portal:/home/sadia/TonomyFoundation/Tonomy-ID-Integration/Tonomy-ID-SDK::locator=tonomy-id%40workspace%3A."
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4712,9 +4712,8 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/1a0bcc8ca7279f51235d77636065de1b6f995df1cfb3b22a232c8f5d4bd909844f93400d7e446b9e48a7235fd056ca035798064778cb9cd423398b43f8445572
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@tootallnate/once@npm:1":
   version: 1.1.2
@@ -6449,18 +6448,6 @@ __metadata:
     node-gyp: "npm:latest"
     node-gyp-build: "npm:^4.8.0"
   checksum: 10c0/994cf1ae5625aeb5ec2d0e0de67f2cf64b8723e0cc8f3cca844b99b00f57e8ad5cc6eb43b2287c9bd0fb9bd15d147e9341327115a447a6208c47ca7cc78705f5
-  languageName: node
-  linkType: hard
-
-"argon2@npm:^0.41.1":
-  version: 0.41.1
-  resolution: "argon2@npm:0.41.1"
-  dependencies:
-    "@phc/format": "npm:^1.0.0"
-    node-addon-api: "npm:^8.1.0"
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.8.1"
-  checksum: 10c0/69f8f7e00f3d487a2cd7b3151fee6f5feb13e627e8f0551bac18f5d2dba50b1a521245d9c55140b80d7bfde1416bace520277627eb2d57c9e71403af4a4977d7
   languageName: node
   linkType: hard
 
@@ -15141,7 +15128,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^8.0.0, node-addon-api@npm:^8.1.0":
+"node-addon-api@npm:^8.0.0":
   version: 8.2.2
   resolution: "node-addon-api@npm:8.2.2"
   dependencies:
@@ -15209,7 +15196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.8.0, node-gyp-build@npm:^4.8.1":
+"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.8.0":
   version: 4.8.3
   resolution: "node-gyp-build@npm:4.8.3"
   bin:
@@ -19453,7 +19440,7 @@ __metadata:
     "@wharfkit/session": "npm:^1.4.0"
     "@wharfkit/signing-request": "npm:^3.2.0"
     "@wharfkit/wallet-plugin-privatekey": "npm:^1.1.0"
-    argon2: "npm:^0.41.1"
+    argon2: "npm:^0.40.3"
     babel-plugin-module-resolver: "npm:^5.0.2"
     babel-plugin-rewrite-require: "npm:^1.14.5"
     babel-plugin-transform-builtin-extend: "npm:^1.1.2"

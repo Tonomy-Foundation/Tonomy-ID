@@ -9,6 +9,7 @@ import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
+import Decimal from 'decimal.js';
 
 export type Props = {
     navigation: LeosAssetsScreenNavigationProp['navigation'];
@@ -20,13 +21,13 @@ interface Balance {
     totalBalanceUsd?: number;
     availableBalance: string;
     availableBalanceUsd: number;
-    vestedBalance?: string;
-    vestedBalanceUsd?: number;
+    vestedBalance: number;
+    vestedBalanceUsd: number;
 }
 
 const renderImageBackground = (balance: Balance) => {
     return (
-        <>
+        <View>
             <Text style={styles.subTitle}>Total assets</Text>
             <ImageBackground
                 source={require('../assets/images/vesting/bg1.png')}
@@ -38,20 +39,19 @@ const renderImageBackground = (balance: Balance) => {
                 <Text style={styles.imageText}>{balance.totalBalance}</Text>
                 <Text style={styles.imageUsdText}>= ${formatCurrencyValue(balance.totalBalanceUsd ?? 0)}</Text>
             </ImageBackground>
-        </>
+        </View>
     );
 };
 
 const vestedBalanceView = (balance: Balance, asset: AccountTokenDetails, redirectVestedAsset) => {
     return (
-        <>
-            {balance.vestedBalance && parseFloat(balance.vestedBalance) > 0 && (
+        <View>
+            {balance.vestedBalance > 0 && (
                 <TouchableOpacity style={styles.vestedView} onPress={redirectVestedAsset}>
                     <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
                     <View style={styles.allocationView}>
                         <Text style={{ fontWeight: '700', fontSize: 12 }}>
-                            {formatCurrencyValue(parseFloat(balance.vestedBalance))}{' '}
-                            {asset.chain.getNativeToken().getSymbol()}
+                            {balance.vestedBalance} {asset.chain.getNativeToken().getSymbol()}
                         </Text>
                         <View style={styles.flexColEnd}>
                             <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
@@ -59,13 +59,13 @@ const vestedBalanceView = (balance: Balance, asset: AccountTokenDetails, redirec
                     </View>
                 </TouchableOpacity>
             )}
-        </>
+        </View>
     );
 };
 
 const investorTootlView = (redirectVestedAsset) => {
     return (
-        <>
+        <View>
             <Text style={styles.subTitle}>Investor tools</Text>
             <TouchableOpacity onPressIn={redirectVestedAsset}>
                 <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
@@ -85,7 +85,7 @@ const investorTootlView = (redirectVestedAsset) => {
                     <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
                 </View>
             </View> */}
-        </>
+        </View>
     );
 };
 
@@ -98,7 +98,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         totalBalanceUsd: 0,
         availableBalance: '',
         availableBalanceUsd: 0,
-        vestedBalance: '',
+        vestedBalance: 0,
         vestedBalanceUsd: 0,
     });
     const [loading, setLoading] = useState(true);
@@ -114,21 +114,24 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
                     const vestedBalanceUsd = await vestedBalance.getUsdValue();
-                    const totalBalance = parseFloat(assetData.token.balance) + parseFloat(vestedBalance.toString());
+                    const vestedBalanceValue = new Decimal(vestedBalance.toString().split(' ')[0]).toNumber();
+                    const totalBalance = new Decimal(assetData.token.balance).add(vestedBalanceValue);
                     const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
                     setBalance({
-                        totalBalance: formatCurrencyValue(totalBalance, 4) + ' ' + symbol,
-                        totalBalanceUsd: totalBalance * usdPriceValue,
+                        totalBalance: formatCurrencyValue(totalBalance.toNumber(), 4) + ' ' + symbol,
+                        totalBalanceUsd: totalBalance.toNumber() * usdPriceValue,
                         availableBalance: assetData.token.balance,
                         availableBalanceUsd: assetData.token.usdBalance,
-                        vestedBalance: vestedBalance.toString(),
+                        vestedBalance: vestedBalanceValue,
                         vestedBalanceUsd,
                     });
                 } else {
                     setBalance({
                         availableBalance: assetData.token.balance,
                         availableBalanceUsd: assetData.token.usdBalance,
+                        vestedBalance: 0,
+                        vestedBalanceUsd: 0,
                     });
                 }
 
@@ -219,7 +222,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {balance.vestedBalance && parseFloat(balance.vestedBalance) > 0 && investorTootlView(redirectVestedAsset)}
+            {balance.vestedBalance > 0 && investorTootlView(redirectVestedAsset)}
         </View>
     );
 };
