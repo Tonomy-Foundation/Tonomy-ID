@@ -54,7 +54,9 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{formatDate(allocationData?.vestingStart)}</Text>
+                        <Text style={styles.allocMulti}>
+                            {allocationData?.vestingStart && formatDate(allocationData?.vestingStart)}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
