@@ -91,8 +91,8 @@ const AppInstructionProvider = () => {
         }
     };
 
-    const bottomPosNormal = Platform.OS === 'ios' ? 80 : 45;
-    const bottomPosScan = Platform.OS === 'ios' ? 115 : 80;
+    const bottomPosNormal = Platform.OS === 'ios' ? 80 : 74;
+    const bottomPosScan = Platform.OS === 'ios' ? 115 : 96;
 
     return (
         showOnboarding && (

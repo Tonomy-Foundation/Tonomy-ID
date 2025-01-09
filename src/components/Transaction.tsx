@@ -8,6 +8,7 @@ import { QuestionMark, WarningCircle } from 'iconoir-react-native';
 import NegligibleTransactionFees from './NegligibleTransactionFees';
 import { KeyValue } from '../utils/strings';
 import { formatCurrencyValue } from '../utils/numbers';
+import Decimal from 'decimal.js';
 
 export type TransactionFeeData = {
     fee: string;
@@ -203,7 +204,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
 }
 
 export function isFree(asset: IAsset, usdFee: number): boolean {
-    return asset.getAmount() === BigInt(0) && usdFee === 0;
+    return asset.getAmount() === new Decimal(0) && usdFee === 0;
 }
 
 // shows the fee only if the transaction does not contain asset transfers, or is not free
@@ -236,8 +237,10 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
         else if (isNegligible) {
             return (
                 <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
-                    <Text>negligible</Text>
-                    <WarningCircle width={15} height={15} color={theme.colors.success} />
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text>negligible </Text>
+                        <WarningCircle width={15} height={15} color={theme.colors.success} />
+                    </View>
                 </TouchableOpacity>
             );
         } else {
