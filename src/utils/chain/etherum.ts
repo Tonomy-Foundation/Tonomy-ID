@@ -82,10 +82,12 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
 
     async sendTransaction(transaction: ITransaction): Promise<EthereumTransactionReceipt> {
         try {
+            const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
+
             const transactionRequest: TransactionRequest = {
                 to: (await transaction.getTo()).getName(),
                 from: (await transaction.getFrom()).getName(),
-                value: (await transaction.getValue()).getAmount().toString(),
+                value: (await transaction.getValue()).getAmount().mul(precisionMultiplier).toString(),
                 data: ((await transaction.getData()) as TransactionRequest).data,
             };
 
@@ -195,8 +197,9 @@ export class EthereumToken extends AbstractToken {
         const balanceWei = await (this.chain as EthereumChain).getProvider().getBalance(lookupAccount.getName() || '');
 
         debug('getBalance() balanceWei', balanceWei);
+        const precisionMultiplier = new Decimal(10).pow(this.getPrecision());
 
-        return new Asset(this, new Decimal(balanceWei.toString()));
+        return new Asset(this, new Decimal(balanceWei.toString()).div(precisionMultiplier));
     }
 
     async getUsdValue(account?: IAccount): Promise<number> {
@@ -353,9 +356,11 @@ export class EthereumTransaction implements ITransaction {
     }
     async getValue(): Promise<Asset> {
         // TODO: also need to handle other tokens
+        const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
+
         return new Asset(
             this.chain.getNativeToken(),
-            new Decimal(this.transaction.value ? this.transaction.value.toString() : '0')
+            new Decimal(this.transaction.value ? this.transaction.value.toString() : '0').div(precisionMultiplier)
         );
     }
 
@@ -375,13 +380,13 @@ export class EthereumTransaction implements ITransaction {
         const wei = await this.chain.getProvider().estimateGas(transaction);
 
         const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
+        const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
 
-        return new Asset(this.chain.getNativeToken(), new Decimal(totalGasFee.toString()));
+        return new Asset(this.chain.getNativeToken(), new Decimal(totalGasFee.toString()).div(precisionMultiplier));
     }
     async estimateTransactionTotal(): Promise<Asset> {
         const amount = (await this.getValue()).getAmount().plus((await this.estimateTransactionFee()).getAmount());
 
-        debug('estimateTransactionTotal() amount', amount);
         return new Asset(this.chain.getNativeToken(), amount);
     }
 

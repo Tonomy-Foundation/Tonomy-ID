@@ -195,14 +195,13 @@ export abstract class AbstractAsset implements IAsset {
         if (!this.token.eq(other.getToken())) throw new Error('Different tokens');
         return new Asset(this.token, this.amount.add(other.getAmount()));
     }
+
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
 
         if (price) {
-            const precisionMultiplier = new Decimal(10).pow(this.token.getPrecision());
             const priceDecimal = new Decimal(price);
-
-            const usdValue = this.amount.mul(priceDecimal).div(precisionMultiplier);
+            const usdValue = this.amount.mul(priceDecimal);
 
             return usdValue.toNumber();
         }
@@ -217,11 +216,7 @@ export abstract class AbstractAsset implements IAsset {
         return this.token.getPrecision();
     }
     printValue(precision?: number): string {
-        const precisionNumber = new Decimal(10).pow(this.token.getPrecision());
-        const value = this.amount.div(precisionNumber);
-
-        // Use Decimal.toFixed() to handle precision and return the string
-        return value.toFixed(precision ?? this.getPrecision());
+        return this.amount.toFixed(precision ?? this.getPrecision());
     }
 
     toString(precision?: number): string {

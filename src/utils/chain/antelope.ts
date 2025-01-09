@@ -382,8 +382,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, new Decimal(0));
-        const precision = this.getPrecision();
-        const amount = new Decimal(asset.units.value).div(new Decimal(10).pow(precision));
+        const amount = new Decimal(asset.units.value);
 
         return new Asset(this, amount);
     }
@@ -421,6 +420,7 @@ class PangeaVestedToken extends AntelopeToken {
 
         const vestedBalance = await vestingContract.getBalance(lookupAccount.getName());
 
+        debug('getVestedTotalBalance() vestedBalance', vestedBalance);
         return new Asset(this, new Decimal(vestedBalance));
     }
 
