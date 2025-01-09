@@ -8,6 +8,7 @@ import { QuestionMark, WarningCircle } from 'iconoir-react-native';
 import NegligibleTransactionFees from './NegligibleTransactionFees';
 import { KeyValue } from '../utils/strings';
 import { formatCurrencyValue } from '../utils/numbers';
+import Decimal from 'decimal.js';
 
 export type TransactionFeeData = {
     fee: string;
@@ -203,7 +204,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
 }
 
 export function isFree(asset: IAsset, usdFee: number): boolean {
-    return asset.getAmount() === BigInt(0) && usdFee === 0;
+    return asset.getAmount() === new Decimal(0) && usdFee === 0;
 }
 
 // shows the fee only if the transaction does not contain asset transfers, or is not free

@@ -4684,9 +4684,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.25.0-rc.1":
-  version: 0.25.0-rc.1
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.25.0-rc.1"
+"@tonomy/tonomy-id-sdk@npm:0.26.0-development.1":
+  version: 0.26.0-development.1
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.26.0-development.1"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4704,6 +4704,7 @@ __metadata:
     cross-fetch: "npm:^4.0.0"
     csv-parse: "npm:^5.5.6"
     debug: "npm:^4.3.6"
+    decimal.js: "npm:^10.4.3"
     ethers: "npm:^6.13.1"
     ethr-did-resolver: "npm:^10.1.9"
     reflect-metadata: "npm:^0.2.2"
@@ -4712,7 +4713,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/5e113d4bfd5fa179f36ab9779bfd37a50a735b6052d5fbbe5054629d5dd5e0b7c6e2e9c4266481c5300d94642256c9155d153ba6b6c59d6ce87bf9c0414a6266
+  checksum: 10c0/cd733745d121015cbb092fd70a7723fade1c17792667bbb42a1fc38aecfbf09e32c552c53942baacf3bcd1ad606ed1df2125d4894e0319c6cf585f2e46d9d22d
   languageName: node
   linkType: hard
 
@@ -8695,7 +8696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:^10.4.2":
+"decimal.js@npm:^10.4.2, decimal.js@npm:^10.4.3":
   version: 10.4.3
   resolution: "decimal.js@npm:10.4.3"
   checksum: 10c0/6d60206689ff0911f0ce968d40f163304a6c1bc739927758e6efc7921cfa630130388966f16bf6ef6b838cb33679fbe8e7a78a2f3c478afce841fd55ac8fb8ee
@@ -19435,7 +19436,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~5.24.3"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.25.0-rc.1"
+    "@tonomy/tonomy-id-sdk": "npm:0.26.0-development.1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~18.2.79"
@@ -19463,6 +19464,7 @@ __metadata:
     bluebird: "npm:^3.7.2"
     cross-fetch: "npm:^4.0.0"
     crypto-browserify: "npm:^3.12.1"
+    decimal.js: "npm:^10.4.3"
     deepmerge: "npm:^4.3.1"
     eslint: "npm:^8.25.0"
     eslint-config-prettier: "npm:^8.5.0"

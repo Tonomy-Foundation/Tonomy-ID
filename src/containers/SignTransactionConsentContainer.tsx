@@ -132,7 +132,7 @@ export default function SignTransactionConsentContainer({
 
             const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
 
-            if (accountBalance < total.getAmount()) {
+            if (accountBalance.lessThan(total.getAmount())) {
                 balanceError = true;
             }
 
