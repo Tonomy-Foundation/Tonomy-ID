@@ -11,7 +11,7 @@ import { formatCurrencyValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 
 export type TransactionFeeData = {
-    fee: string;
+    fee: IAsset;
     usdFee: number;
     show: boolean;
     isFree: boolean;
@@ -219,7 +219,13 @@ export function showFee(operations: OperationData[] | unknown, asset: IAsset, us
 
 const NEGLIGIBLE_FEE_USD = 0.001;
 
-export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
+export function TransactionFee({
+    transactionFee,
+    precision,
+}: {
+    transactionFee: TransactionFeeData;
+    precision: number;
+}) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD;
@@ -246,7 +252,7 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
         } else {
             return (
                 <>
-                    <Text>{transactionFee.fee}</Text>
+                    <Text>{transactionFee.fee.toString()}</Text>
                     <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
                         (${formatCurrencyValue(transactionFee.usdFee, 2)})
                     </Text>
@@ -257,7 +263,12 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
 
     return (
         <View style={styles.appDialog}>
-            <NegligibleTransactionFees transactionFee={transactionFee} onClose={onClose} refMessage={refMessage} />
+            <NegligibleTransactionFees
+                precision={precision}
+                transactionFee={transactionFee}
+                onClose={onClose}
+                refMessage={refMessage}
+            />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.secondaryColor}>Transaction fee:</Text>

@@ -215,8 +215,26 @@ export abstract class AbstractAsset implements IAsset {
     getPrecision(): number {
         return this.token.getPrecision();
     }
+
     printValue(precision?: number): string {
-        return this.amount.toFixed(precision ?? this.getPrecision());
+        if (precision) {
+            return this.amount.toFixed(precision);
+        } else {
+            let formattedAmount: string;
+            const decimalPart = this.amount.toFixed().split('.')[1] || '';
+
+            if (this.amount.equals(this.amount.floor())) {
+                formattedAmount = this.amount.toFixed(1);
+            } else if (decimalPart.length > 4) {
+                // If the decimal part exceeds 4 digits, display only 4 decimal places
+                formattedAmount = this.amount.toFixed(4, Decimal.ROUND_DOWN);
+            } else {
+                // If the decimal part is 4 digits or fewer, display as-is
+                formattedAmount = this.amount.toString();
+            }
+
+            return formattedAmount;
+        }
     }
 
     toString(precision?: number): string {

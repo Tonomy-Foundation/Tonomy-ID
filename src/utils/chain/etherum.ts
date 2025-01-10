@@ -429,7 +429,9 @@ export class EthereumTransactionReceipt extends AbstractTransactionReceipt {
         const receipt = await this.receipt.wait();
 
         if (!receipt) throw new Error('Failed to fetch receipt');
-        return new Asset(this.chain.getNativeToken(), new Decimal(receipt.fee.toString()));
+        const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
+
+        return new Asset(this.chain.getNativeToken(), new Decimal(receipt.fee.toString()).div(precisionMultiplier));
     }
 
     async getTimestamp(): Promise<Date> {
