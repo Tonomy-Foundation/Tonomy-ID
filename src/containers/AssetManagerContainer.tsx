@@ -21,8 +21,8 @@ interface Balance {
     totalBalanceUsd?: number;
     availableBalance: string;
     availableBalanceUsd: number;
-    vestedBalance: number;
-    vestedBalanceUsd: number;
+    vestedBalance?: string;
+    vestedBalanceUsd?: number;
 }
 
 const renderImageBackground = (balance: Balance) => {
@@ -46,19 +46,15 @@ const renderImageBackground = (balance: Balance) => {
 const vestedBalanceView = (balance: Balance, asset: AccountTokenDetails, redirectVestedAsset) => {
     return (
         <View>
-            {balance.vestedBalance > 0 && (
-                <TouchableOpacity style={styles.vestedView} onPress={redirectVestedAsset}>
-                    <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
-                    <View style={styles.allocationView}>
-                        <Text style={{ fontWeight: '700', fontSize: 12 }}>
-                            {balance.vestedBalance} {asset.chain.getNativeToken().getSymbol()}
-                        </Text>
-                        <View style={styles.flexColEnd}>
-                            <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                        </View>
+            <TouchableOpacity style={styles.vestedView} onPress={redirectVestedAsset}>
+                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
+                <View style={styles.allocationView}>
+                    <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
+                    <View style={styles.flexColEnd}>
+                        <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                     </View>
-                </TouchableOpacity>
-            )}
+                </View>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -102,9 +98,10 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         totalBalanceUsd: 0,
         availableBalance: '',
         availableBalanceUsd: 0,
-        vestedBalance: 0,
+        vestedBalance: '',
         vestedBalanceUsd: 0,
     });
+    const [showVesting, setShowVesting] = useState(false);
     const [loading, setLoading] = useState(true);
     const token = chain.getNativeToken() as PangeaVestedToken;
     const symbol = chain.getNativeToken().getSymbol();
@@ -126,21 +123,22 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const totalBalance = new Decimal(formatBalance(availableBalance)).add(vestedBalanceValue);
                     const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
+                    console.log('vestedBalance11', vestedBalance, vestedBalance.getAmount());
                     setBalance({
                         totalBalance: formatCurrencyValue(totalBalance.toNumber(), 4) + ' ' + symbol,
                         totalBalanceUsd: totalBalance.toNumber() * usdPriceValue,
-                        availableBalance: availableBalance.toString(),
+                        availableBalance: availableBalance.toString(4),
                         availableBalanceUsd: await availableBalance.getUsdValue(),
-                        vestedBalance: vestedBalanceValue,
+                        vestedBalance: vestedBalance.toString(4),
                         vestedBalanceUsd,
                     });
+                    setShowVesting(true);
                 } else {
                     setBalance({
                         availableBalance: assetData.token.balance + ' ' + symbol,
                         availableBalanceUsd: assetData.token.usdBalance,
-                        vestedBalance: 0,
-                        vestedBalanceUsd: 0,
                     });
+                    setShowVesting(false);
                 }
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
@@ -178,8 +176,13 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
     return (
         <View style={styles.container}>
-            {balance.vestedBalance > 0 && renderImageBackground(balance)}
-            {balance.vestedBalance > 0 && vestedBalanceView(balance, asset, redirectVestedAsset)}
+            {showVesting && (
+                <View>
+                    {renderImageBackground(balance)}
+
+                    {vestedBalanceView(balance, asset, redirectVestedAsset)}
+                </View>
+            )}
 
             <Text style={styles.subTitle}>Available assets</Text>
 
@@ -227,7 +230,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {balance.vestedBalance > 0 && investorTootlView(redirectVestedAsset)}
+            {showVesting && investorTootlView(redirectVestedAsset)}
         </View>
     );
 };

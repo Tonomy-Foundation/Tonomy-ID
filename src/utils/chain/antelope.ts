@@ -360,6 +360,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
+        return new Asset(this, new Decimal(0));
         const contractAccount = this.getContractAccount();
 
         if (!contractAccount) throw new Error('Token has no contract account');
