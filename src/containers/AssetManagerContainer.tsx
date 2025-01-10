@@ -125,11 +125,11 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
                     console.log('vestedBalance11', vestedBalance, vestedBalance.getAmount());
                     setBalance({
-                        totalBalance: formatCurrencyValue(totalBalance.toNumber(), 4) + ' ' + symbol,
+                        totalBalance: totalBalance.toNumber() + ' ' + symbol,
                         totalBalanceUsd: totalBalance.toNumber() * usdPriceValue,
-                        availableBalance: availableBalance.toString(4),
+                        availableBalance: availableBalance.toString(),
                         availableBalanceUsd: await availableBalance.getUsdValue(),
-                        vestedBalance: vestedBalance.toString(4),
+                        vestedBalance: vestedBalance.toString(),
                         vestedBalanceUsd,
                     });
                     setShowVesting(true);
