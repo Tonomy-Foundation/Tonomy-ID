@@ -334,9 +334,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         precision: number,
         logoUrl: string,
         coinmarketCapId: string,
-        transferable = true
+        transferable = true,
+        vestingAvailable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestingAvailable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -360,7 +361,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
-        return new Asset(this, new Decimal(0));
         const contractAccount = this.getContractAccount();
 
         if (!contractAccount) throw new Error('Token has no contract account');
@@ -378,8 +378,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
             lookupAccount.getName(),
             this.getSymbol()
         );
-
-        if (!assets) return new Asset(this, new Decimal(0));
 
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
@@ -475,7 +473,8 @@ export const LEOSToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos',
-    false
+    false,
+    true
 );
 
 export const LEOSTestnetToken = new PangeaVestedToken(
@@ -485,7 +484,8 @@ export const LEOSTestnetToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-testnet',
-    false
+    false,
+    true
 );
 
 export const LEOSStagingToken = new PangeaVestedToken(
@@ -495,7 +495,8 @@ export const LEOSStagingToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-staging',
-    false
+    false,
+    true
 );
 
 export const LEOSLocalToken = new PangeaVestedToken(
@@ -505,7 +506,8 @@ export const LEOSLocalToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-local',
-    false
+    false,
+    true
 );
 
 export const EOSJungleChain = new AntelopeChain(

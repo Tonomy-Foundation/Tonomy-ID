@@ -243,6 +243,7 @@ export interface IToken {
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
     isTransferable(): boolean;
+    isVesting(): boolean;
     eq(other: IToken): boolean;
 }
 
@@ -254,14 +255,24 @@ export abstract class AbstractToken implements IToken {
     protected chain: IChain;
     protected logoUrl: string;
     protected transferable = true;
+    protected vestingAvailable = false;
 
-    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string, transferable = true) {
+    constructor(
+        name: string,
+        symbol: string,
+        precision: number,
+        chain: IChain,
+        logoUrl: string,
+        transferable = true,
+        vestingAvailable = false
+    ) {
         this.name = name;
         this.symbol = symbol;
         this.precision = precision;
         this.chain = chain;
         this.logoUrl = logoUrl;
         this.transferable = transferable;
+        this.vestingAvailable = vestingAvailable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -290,6 +301,9 @@ export abstract class AbstractToken implements IToken {
     }
     isTransferable(): boolean {
         return this.transferable;
+    }
+    isVesting(): boolean {
+        return this.vestingAvailable;
     }
     eq(other: IToken): boolean {
         return (

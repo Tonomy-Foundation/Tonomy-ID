@@ -89,6 +89,13 @@ const formatBalance = (balance: IAsset) => {
     return balance.toString().split(' ')[0];
 };
 
+const getTotalBalance = (availableBalance: IAsset, vestedBalance: IAsset) => {
+    const availableBalanceValue = formatBalance(availableBalance);
+    const vestedBalanceValue = formatBalance(vestedBalance);
+
+    return new Decimal(availableBalanceValue).add(vestedBalanceValue);
+};
+
 const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const errorStore = useErrorStore();
@@ -106,6 +113,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const token = chain.getNativeToken() as PangeaVestedToken;
     const symbol = chain.getNativeToken().getSymbol();
 
+    const isVestingAvailable = chain.getNativeToken().isVesting();
+
     useEffect(() => {
         const fetchAssetDetails = async () => {
             try {
@@ -113,29 +122,20 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
                 setAsset(assetData);
 
-                if (symbol === 'LEOS') {
+                if (isVestingAvailable) {
                     const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
                     const availableBalance = await token.getAvailableBalance(account);
-                    const availableBalanceValue = formatBalance(availableBalance);
-                    const vestedBalanceUsd = await vestedBalance.getUsdValue();
-                    const vestedBalanceValue = formatBalance(vestedBalance);
-                    const totalBalance = new Decimal(availableBalanceValue).add(vestedBalanceValue);
+                    const totalBalance = getTotalBalance(availableBalance, vestedBalance);
                     const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
-                    console.log(
-                        'vestedBalance1111',
-                        totalBalance.toString(),
-                        formatBalance(availableBalance),
-                        formatBalance(vestedBalance)
-                    );
                     setBalance({
                         totalBalance: totalBalance.toString() + ' ' + symbol,
                         totalBalanceUsd: totalBalance.toNumber() * usdPriceValue,
                         availableBalance: availableBalance.toString(),
                         availableBalanceUsd: await availableBalance.getUsdValue(),
                         vestedBalance: vestedBalance.toString(),
-                        vestedBalanceUsd,
+                        vestedBalanceUsd: await vestedBalance.getUsdValue(),
                     });
                     setShowVesting(true);
                 } else {
@@ -157,7 +157,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [chain, token, symbol, errorStore]);
+    }, [chain, token, symbol, errorStore, isVestingAvailable]);
 
     const redirectVestedAsset = () => {
         navigation.navigate('VestedAssets', {
