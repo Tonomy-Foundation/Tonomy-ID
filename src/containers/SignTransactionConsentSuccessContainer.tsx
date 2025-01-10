@@ -37,6 +37,7 @@ export default function SignTransactionConsentSuccessContainer({
     const [total, setTotal] = useState<{ total: string; totalUsd: string } | null>(null);
     const [fee, setFee] = useState<TransactionFeeData | null>(null);
     const [date, setDate] = useState<Date | null>(null);
+    const chain = request.transaction.getChain();
 
     const errorStore = useErrorStore();
 
@@ -60,7 +61,7 @@ export default function SignTransactionConsentSuccessContainer({
                 const total = await request.transaction.estimateTransactionTotal();
                 const usdTotal = await total.getUsdValue();
 
-                const totalString = total.toString(4);
+                const totalString = total.toString();
                 const usdTotalString = formatCurrencyValue(usdTotal);
 
                 setTotal({ total: totalString, totalUsd: usdTotalString });
@@ -68,9 +69,7 @@ export default function SignTransactionConsentSuccessContainer({
                 const fee = await receipt.getFee();
                 const usdFee = await fee.getUsdValue();
 
-                const feeString = fee.toString(4);
-
-                setFee({ fee: feeString, usdFee, show: showFee(operations, fee, usdFee), isFree: isFree(fee, usdFee) });
+                setFee({ fee: fee, usdFee, show: showFee(operations, fee, usdFee), isFree: isFree(fee, usdFee) });
             } catch (e) {
                 errorStore.setError({
                     title: 'Error fetching total',
@@ -81,7 +80,7 @@ export default function SignTransactionConsentSuccessContainer({
         }
 
         fetchTransactionDetail();
-    }, [errorStore, receipt, request.account, request.transaction]);
+    }, [errorStore, receipt, request.account, request.transaction, operations]);
 
     return (
         <LayoutComponent
@@ -104,7 +103,9 @@ export default function SignTransactionConsentSuccessContainer({
                             <Operations operations={operations} />
                         )}
                         {!fee && <TSpinner />}
-                        {fee && <TransactionFee transactionFee={fee} />}
+                        {fee && (
+                            <TransactionFee transactionFee={fee} precision={chain.getNativeToken().getPrecision()} />
+                        )}
                         <TButtonSecondaryContained
                             theme="secondary"
                             style={{ width: '100%', marginTop: 25 }}

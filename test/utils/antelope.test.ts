@@ -47,8 +47,8 @@ describe('AntelopeTransaction', () => {
         expect(transaction.getType()).rejects.toThrow(
             'Antelope transactions have multiple operations, call getOperations()'
         );
-        expect((await transaction.estimateTransactionFee()).toString()).toBe('0.0000 JungleEOS');
-        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0.0000 JungleEOS');
+        expect((await transaction.estimateTransactionFee()).toString()).toBe('0.0 JungleEOS');
+        expect((await transaction.estimateTransactionTotal()).toString()).toBe('0.0 JungleEOS');
 
         const operations = await transaction.getOperations();
         const createAssetOperation = operations[0];
@@ -57,7 +57,7 @@ describe('AntelopeTransaction', () => {
         expect(await createAssetOperation.getType()).toBe(TransactionType.CONTRACT);
         expect((await createAssetOperation.getFrom()).getName()).toEqual(jungleAccountName);
         expect((await createAssetOperation.getTo()).getName()).toEqual(SIMPLE_ASSSET_CONTRACT_NAME);
-        expect((await createAssetOperation.getValue()).toString()).toEqual('0.0000 JungleEOS');
+        expect((await createAssetOperation.getValue()).toString()).toEqual('0.0 JungleEOS');
         expect(await createAssetOperation.getFunction()).toEqual('create');
         expect(await createAssetOperation.getArguments()).toEqual({
             author: jungleAccountName,
