@@ -1,14 +1,14 @@
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
-import theme, { commonStyles } from '../utils/theme';
-import { TButtonSecondaryContained } from '../components/atoms/TButton';
+import theme, { commonStyles } from '../../utils/theme';
+import { TButtonSecondaryContained } from '../../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
-import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
+import { AccountTokenDetails, getAssetDetails } from '../../utils/tokenRegistry';
 import { useEffect, useState } from 'react';
-import { formatCurrencyValue } from '../utils/numbers';
-import TSpinner from '../components/atoms/TSpinner';
-import { IChain } from '../utils/chain/types';
-import useErrorStore from '../store/errorStore';
+import { formatCurrencyValue } from '../../utils/numbers';
+import TSpinner from '../../components/atoms/TSpinner';
+import { IChain } from '../../utils/chain/types';
+import useErrorStore from '../../store/errorStore';
 
 export type AssetDetailProps = {
     navigation: AssetDetailScreenNavigationProp['navigation'];
