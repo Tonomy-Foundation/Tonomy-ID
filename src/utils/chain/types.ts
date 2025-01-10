@@ -5,6 +5,7 @@ import { sha256 } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
+import { formatAmount } from '../tokenRegistry';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -220,20 +221,7 @@ export abstract class AbstractAsset implements IAsset {
         if (precision) {
             return this.amount.toFixed(precision);
         } else {
-            let formattedAmount: string;
-            const decimalPart = this.amount.toFixed().split('.')[1] || '';
-
-            if (this.amount.equals(this.amount.floor())) {
-                formattedAmount = this.amount.toFixed(1);
-            } else if (decimalPart.length > 4) {
-                // If the decimal part exceeds 4 digits, display only 4 decimal places
-                formattedAmount = this.amount.toFixed(4, Decimal.ROUND_DOWN);
-            } else {
-                // If the decimal part is 4 digits or fewer, display as-is
-                formattedAmount = this.amount.toString();
-            }
-
-            return formattedAmount;
+            return formatAmount(this.amount);
         }
     }
 
@@ -255,6 +243,7 @@ export interface IToken {
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
     isTransferable(): boolean;
+    isVesting(): boolean;
     eq(other: IToken): boolean;
 }
 
@@ -266,14 +255,24 @@ export abstract class AbstractToken implements IToken {
     protected chain: IChain;
     protected logoUrl: string;
     protected transferable = true;
+    protected vestingAvailable = false;
 
-    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string, transferable = true) {
+    constructor(
+        name: string,
+        symbol: string,
+        precision: number,
+        chain: IChain,
+        logoUrl: string,
+        transferable = true,
+        vestingAvailable = false
+    ) {
         this.name = name;
         this.symbol = symbol;
         this.precision = precision;
         this.chain = chain;
         this.logoUrl = logoUrl;
         this.transferable = transferable;
+        this.vestingAvailable = vestingAvailable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -302,6 +301,9 @@ export abstract class AbstractToken implements IToken {
     }
     isTransferable(): boolean {
         return this.transferable;
+    }
+    isVesting(): boolean {
+        return this.vestingAvailable;
     }
     eq(other: IToken): boolean {
         return (

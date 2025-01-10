@@ -46,6 +46,7 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
+import { VestedAllocation } from '../tokenRegistry';
 import Decimal from 'decimal.js';
 
 const vestingContract = VestingContract.Instance;
@@ -302,13 +303,6 @@ export class AntelopeChain extends AbstractChain {
             }
         }
 
-        if (this.explorerOrigin.includes('https://local.bloks.io')) {
-            url += '?nodeUrl=' + encodeURIComponent(this.apiOrigin);
-            url += '&coreSymbol=LEOS';
-            url += '&corePrecision=6';
-            url += '&systemDomain=eosio';
-        }
-
         return url;
     }
     isValidAccountName(account: string): boolean {
@@ -333,9 +327,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         precision: number,
         logoUrl: string,
         coinmarketCapId: string,
-        transferable = true
+        transferable = true,
+        vestingAvailable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestingAvailable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -377,8 +372,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
             this.getSymbol()
         );
 
-        if (!assets) return new Asset(this, new Decimal(0));
-
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, new Decimal(0));
@@ -398,7 +391,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 }
 
-class PangeaVestedToken extends AntelopeToken {
+export class PangeaVestedToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
         const vestedBalance = await this.getVestedTotalBalance(account);
@@ -424,8 +417,9 @@ class PangeaVestedToken extends AntelopeToken {
         return new Asset(this, new Decimal(vestedBalance));
     }
 
-    // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
-    // }
+    async getVestedTotalAllocation(account: AntelopeAccount): Promise<VestedAllocation> {
+        return await vestingContract.getVestingAllocations(account.getName());
+    }
 }
 
 export const PangeaMainnetChain = new AntelopeChain(
@@ -472,7 +466,8 @@ export const LEOSToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos',
-    false
+    false,
+    true
 );
 
 export const LEOSTestnetToken = new PangeaVestedToken(
@@ -482,7 +477,8 @@ export const LEOSTestnetToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-testnet',
-    false
+    false,
+    true
 );
 
 export const LEOSStagingToken = new PangeaVestedToken(
@@ -492,7 +488,8 @@ export const LEOSStagingToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-staging',
-    false
+    false,
+    true
 );
 
 export const LEOSLocalToken = new PangeaVestedToken(
@@ -502,7 +499,8 @@ export const LEOSLocalToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-local',
-    false
+    false,
+    true
 );
 
 export const EOSJungleChain = new AntelopeChain(

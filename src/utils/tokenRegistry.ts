@@ -47,6 +47,25 @@ export interface AccountTokenDetails {
     privateKey: IPrivateKey;
 }
 
+export interface VestedAllocationDetails {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    vestingStart: Date;
+    vestingPeriod: string;
+    unlockAtVestingStart: number;
+    allocationDate: Date;
+}
+
+export interface VestedAllocation {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    allocationsDetails: VestedAllocationDetails[];
+}
+
 export enum ChainKeyName {
     ethereum = 'ethereum',
     ethereumPolygon = 'ethereumPolygon',
@@ -220,4 +239,21 @@ export async function addNativeTokenToAssetStorage(user: IUserBase) {
     );
 
     await assetStorage.createAsset(asset, account);
+}
+
+export function formatAmount(amount: Decimal): string {
+    let formattedAmount: string;
+    const decimalPart = amount.toFixed().split('.')[1] || '';
+
+    if (amount.equals(amount.floor())) {
+        formattedAmount = amount.toFixed(1);
+    } else if (decimalPart.length > 4) {
+        // If the decimal part exceeds 4 digits, display only 4 decimal places
+        formattedAmount = amount.toFixed(4, Decimal.ROUND_DOWN);
+    } else {
+        // If the decimal part is 4 digits or fewer, display as-is
+        formattedAmount = amount.toString();
+    }
+
+    return formattedAmount;
 }
