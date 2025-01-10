@@ -7,10 +7,11 @@ import { useEffect, useRef, useState } from 'react';
 import AllocationDetails from '../components/AllocationDetails';
 import { IChain } from '../utils/chain/types';
 import { AntelopeAccount, AntelopeChain, PangeaVestedToken } from '../utils/chain/antelope';
-import { getAssetDetails, VestedAllocation, VestedAllocationDetails } from '../utils/tokenRegistry';
+import { formatAmount, getAssetDetails, VestedAllocation, VestedAllocationDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import { getMultiplier } from '../utils/multiplier';
+import Decimal from 'decimal.js';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -94,7 +95,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                 >
                     <Text style={styles.imageNetworkText}>Pangea Network</Text>
                     <Text style={styles.imageText}>
-                        {formatCurrencyValue(totalVestedAmount)} {chain.getNativeToken().getSymbol()}
+                        {formatAmount(new Decimal(totalVestedAmount))} {chain.getNativeToken().getSymbol()}
                     </Text>
                     <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd)}</Text>
                     <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text>
@@ -118,7 +119,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                 }}
                             >
                                 <Text style={{ fontWeight: '700' }}>
-                                    {formatCurrencyValue(allocation.totalAllocation)}{' '}
+                                    {formatAmount(new Decimal(allocation.totalAllocation))}{' '}
                                     {chain.getNativeToken().getSymbol()}
                                 </Text>
                                 <View style={styles.flexColEnd}>

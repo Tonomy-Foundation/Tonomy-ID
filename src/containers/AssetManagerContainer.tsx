@@ -117,15 +117,20 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
                     const availableBalance = await token.getAvailableBalance(account);
-
+                    const availableBalanceValue = formatBalance(availableBalance);
                     const vestedBalanceUsd = await vestedBalance.getUsdValue();
-                    const vestedBalanceValue = new Decimal(formatBalance(vestedBalance)).toNumber();
-                    const totalBalance = new Decimal(formatBalance(availableBalance)).add(vestedBalanceValue);
+                    const vestedBalanceValue = formatBalance(vestedBalance);
+                    const totalBalance = new Decimal(availableBalanceValue).add(vestedBalanceValue);
                     const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
-                    console.log('vestedBalance11', vestedBalance, vestedBalance.getAmount());
+                    console.log(
+                        'vestedBalance1111',
+                        totalBalance.toString(),
+                        formatBalance(availableBalance),
+                        formatBalance(vestedBalance)
+                    );
                     setBalance({
-                        totalBalance: totalBalance.toNumber() + ' ' + symbol,
+                        totalBalance: totalBalance.toString() + ' ' + symbol,
                         totalBalanceUsd: totalBalance.toNumber() * usdPriceValue,
                         availableBalance: availableBalance.toString(),
                         availableBalanceUsd: await availableBalance.getUsdValue(),
