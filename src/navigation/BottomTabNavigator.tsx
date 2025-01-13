@@ -16,6 +16,7 @@ import { BottonNavigatorRouteStackParamList, RouteStackParamList } from './Root'
 import UserCircleSolid from '../assets/icons/UserCircleSolid';
 import CompassSolid from '../assets/icons/CompassSolid';
 import GridPlusSolid from '../assets/icons/GridPlusSolid';
+import AppInstructionProvider from '../providers/AppInstruction';
 
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
 
@@ -49,156 +50,171 @@ function BottomTabNavigator(props) {
     const navigation = useNavigation<DrawerNavigation>();
 
     return (
-        <Tab.Navigator
-            initialRouteName="Citizenship"
-            screenOptions={{
-                tabBarActiveTintColor: theme.colors.primary,
-                tabBarInactiveTintColor: theme.colors.grey,
-                headerStyle: {
-                    borderColor: theme.colors.border,
-                    borderWidth: 1,
-                },
-                headerTitleStyle: {
-                    fontSize: 16,
-                    fontWeight: '500',
-                },
-                headerTitleAlign: 'center',
-                headerTintColor: theme.dark ? theme.colors.text : 'black',
-                headerLeft: () => (
-                    <TouchableOpacity
-                        style={{ paddingHorizontal: 15, paddingVertical: 10 }}
-                        onPress={() => navigation.toggleDrawer()}
-                    >
-                        <MenuIcon />
-                    </TouchableOpacity>
-                ),
-                tabBarStyle: {
-                    height: Platform.OS === 'android' ? 80 : 90,
-                    borderTopWidth: 1,
-                    borderTopColor: theme.colors.border,
-                },
-            }}
-        >
-            <Tab.Screen
-                name="Citizenship"
-                component={CitizenshipScreen}
-                options={{
-                    tabBarIconStyle: {
-                        marginTop: 10,
+        <>
+            <AppInstructionProvider />
+            <Tab.Navigator
+                initialRouteName="Citizenship"
+                screenOptions={{
+                    tabBarActiveTintColor: theme.colors.primary,
+                    tabBarInactiveTintColor: theme.colors.grey,
+                    headerStyle: {
+                        borderColor: theme.colors.border,
+                        borderWidth: 1,
                     },
-                    headerTitle: 'Citizenship',
-                    tabBarLabel: ({ focused }) => (
-                        <Text
-                            style={[styles.tabLabel, { color: !focused ? theme.colors.tabGray : theme.colors.black }]}
-                        >
-                            Citizenship
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? (
-                            <UserCircleSolid />
-                        ) : (
-                            <UserCircle
-                                width={28}
-                                height={28}
-                                color={!focused ? theme.colors.tabGray : theme.colors.black}
-                            />
-                        ),
-                }}
-            />
-            <Tab.Screen
-                name="Assets"
-                component={AssetListingScreen}
-                options={{
-                    tabBarIconStyle: {
-                        marginTop: 10,
+                    headerTitleStyle: {
+                        fontSize: 16,
+                        fontWeight: '500',
                     },
-                    tabBarLabel: ({ focused }) => (
-                        <Text
-                            style={[styles.tabLabel, { color: !focused ? theme.colors.tabGray : theme.colors.black }]}
-                        >
-                            Assets
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? (
-                            <WalletSolid width={28} height={28} color={theme.colors.black} />
-                        ) : (
-                            <Wallet width={28} height={28} color={theme.colors.tabGray} />
-                        ),
-                }}
-            />
-            <Tab.Screen
-                name="ScanQR"
-                component={ScanQRScreen}
-                options={{
-                    headerTitle: 'Scan QR',
+                    headerTitleAlign: 'center',
+                    headerTintColor: theme.dark ? theme.colors.text : 'black',
                     headerLeft: () => (
                         <TouchableOpacity
-                            style={{ paddingHorizontal: 5, paddingVertical: 10 }}
-                            onPress={() => navigation.navigate('Assets')}
+                            style={{ paddingHorizontal: 15, paddingVertical: 10 }}
+                            onPress={() => navigation.toggleDrawer()}
                         >
-                            <ArrowLeft height={24} width={24} color={theme.colors.black} />
+                            <MenuIcon />
                         </TouchableOpacity>
                     ),
-                    tabBarLabel: () => null,
-                    tabBarIcon: () => <ScanIcon width={28} height={28} />,
-                    tabBarButton: (props) => <ScanTabBarButton {...props} />,
-                }}
-            />
-            <Tab.Screen
-                name="Explore"
-                component={ExploreScreen}
-                options={{
-                    tabBarIconStyle: {
-                        marginTop: 10,
+                    tabBarStyle: {
+                        height: Platform.OS === 'android' ? 80 : 90,
+                        borderTopWidth: 1,
+                        borderTopColor: theme.colors.border,
                     },
-                    tabBarLabel: ({ focused }) => (
-                        <Text
-                            style={[styles.tabLabel, { color: !focused ? theme.colors.tabGray : theme.colors.black }]}
-                        >
-                            Explore
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? (
-                            <CompassSolid />
-                        ) : (
-                            <Compass
-                                width={28}
-                                height={28}
-                                color={!focused ? theme.colors.tabGray : theme.colors.black}
-                            />
-                        ),
                 }}
-            />
-            <Tab.Screen
-                name="Apps"
-                component={AppsScreen}
-                options={{
-                    tabBarIconStyle: {
-                        marginTop: 10,
-                    },
-                    tabBarLabel: ({ focused }) => (
-                        <Text
-                            style={[styles.tabLabel, { color: !focused ? theme.colors.tabGray : theme.colors.black }]}
-                        >
-                            Apps
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? (
-                            <GridPlusSolid />
-                        ) : (
-                            <GridPlus
-                                width={28}
-                                height={28}
-                                color={!focused ? theme.colors.tabGray : theme.colors.black}
-                            />
+            >
+                <Tab.Screen
+                    name="Citizenship"
+                    component={CitizenshipScreen}
+                    options={{
+                        tabBarIconStyle: {
+                            marginTop: 10,
+                        },
+                        headerTitle: 'Citizenship',
+                        tabBarLabel: ({ focused }) => (
+                            <Text
+                                style={[
+                                    styles.tabLabel,
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                ]}
+                            >
+                                Citizenship
+                            </Text>
                         ),
-                }}
-            />
-        </Tab.Navigator>
+                        tabBarIcon: ({ focused }) =>
+                            focused ? (
+                                <UserCircleSolid />
+                            ) : (
+                                <UserCircle
+                                    width={28}
+                                    height={28}
+                                    color={!focused ? theme.colors.tabGray : theme.colors.black}
+                                />
+                            ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Assets"
+                    component={AssetListingScreen}
+                    options={{
+                        tabBarIconStyle: {
+                            marginTop: 10,
+                        },
+                        tabBarLabel: ({ focused }) => (
+                            <Text
+                                style={[
+                                    styles.tabLabel,
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                ]}
+                            >
+                                Assets
+                            </Text>
+                        ),
+                        tabBarIcon: ({ focused }) =>
+                            focused ? (
+                                <WalletSolid width={28} height={28} color={theme.colors.black} />
+                            ) : (
+                                <Wallet width={28} height={28} color={theme.colors.tabGray} />
+                            ),
+                    }}
+                />
+                <Tab.Screen
+                    name="ScanQR"
+                    component={ScanQRScreen}
+                    options={{
+                        headerTitle: 'Scan QR',
+                        headerLeft: () => (
+                            <TouchableOpacity
+                                style={{ paddingHorizontal: 5, paddingVertical: 10 }}
+                                onPress={() => navigation.navigate('Assets')}
+                            >
+                                <ArrowLeft height={24} width={24} color={theme.colors.black} />
+                            </TouchableOpacity>
+                        ),
+                        tabBarLabel: () => null,
+                        tabBarIcon: () => <ScanIcon width={28} height={28} />,
+                        tabBarButton: (props) => <ScanTabBarButton {...props} />,
+                    }}
+                />
+                <Tab.Screen
+                    name="Explore"
+                    component={ExploreScreen}
+                    options={{
+                        tabBarIconStyle: {
+                            marginTop: 10,
+                        },
+                        tabBarLabel: ({ focused }) => (
+                            <Text
+                                style={[
+                                    styles.tabLabel,
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                ]}
+                            >
+                                Explore
+                            </Text>
+                        ),
+                        tabBarIcon: ({ focused }) =>
+                            focused ? (
+                                <CompassSolid />
+                            ) : (
+                                <Compass
+                                    width={28}
+                                    height={28}
+                                    color={!focused ? theme.colors.tabGray : theme.colors.black}
+                                />
+                            ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Apps"
+                    component={AppsScreen}
+                    options={{
+                        tabBarIconStyle: {
+                            marginTop: 10,
+                        },
+                        tabBarLabel: ({ focused }) => (
+                            <Text
+                                style={[
+                                    styles.tabLabel,
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                ]}
+                            >
+                                Apps
+                            </Text>
+                        ),
+                        tabBarIcon: ({ focused }) =>
+                            focused ? (
+                                <GridPlusSolid />
+                            ) : (
+                                <GridPlus
+                                    width={28}
+                                    height={28}
+                                    color={!focused ? theme.colors.tabGray : theme.colors.black}
+                                />
+                            ),
+                    }}
+                />
+            </Tab.Navigator>
+        </>
     );
 }
 

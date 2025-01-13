@@ -4,6 +4,7 @@ import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
+import Decimal from 'decimal.js';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -162,7 +163,7 @@ export abstract class AbstractChain implements IChain {
 
 export interface IAsset {
     getToken(): IToken;
-    getAmount(): bigint;
+    getAmount(): Decimal;
     getUsdValue(): Promise<number>;
     getSymbol(): string;
     getPrecision(): number;
@@ -182,50 +183,60 @@ export interface IAsset {
 
 export abstract class AbstractAsset implements IAsset {
     protected abstract token: IToken;
-    protected abstract amount: bigint;
+    protected abstract amount: Decimal;
 
     getToken(): IToken {
         return this.token;
     }
-    getAmount(): bigint {
+    getAmount(): Decimal {
         return this.amount;
     }
     add(other: IAsset): IAsset {
         if (!this.token.eq(other.getToken())) throw new Error('Different tokens');
-        return new Asset(this.token, this.amount + other.getAmount());
+        return new Asset(this.token, this.amount.add(other.getAmount()));
     }
+
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
 
         if (price) {
-            const precision = this.token.getPrecision();
-            const precisionMultiplier = BigInt(10) ** BigInt(precision);
+            const priceDecimal = new Decimal(price);
+            const usdValue = this.amount.mul(priceDecimal);
 
-            const priceMultiplier = 10 ** 4; // $ price assumed to have maximum 4 decimal places
-            const priceBigInt = BigInt(price * priceMultiplier);
-
-            const usdValueBigInt = (this.amount * priceBigInt) / precisionMultiplier;
-
-            return parseFloat(usdValueBigInt.toString()) / priceMultiplier;
-        } else {
-            return 0;
+            return usdValue.toNumber();
         }
+
+        return 0;
     }
+
     getSymbol(): string {
         return this.token.getSymbol();
     }
     getPrecision(): number {
         return this.token.getPrecision();
     }
+
     printValue(precision?: number): string {
-        const amountNumber = Number(this.amount);
-        const precisionNumber = Number(10 ** this.token.getPrecision());
+        if (precision) {
+            return this.amount.toFixed(precision);
+        } else {
+            let formattedAmount: string;
+            const decimalPart = this.amount.toFixed().split('.')[1] || '';
 
-        // Perform the division
-        const value = parseFloat((amountNumber / precisionNumber).toFixed(precision ?? this.getPrecision()));
+            if (this.amount.equals(this.amount.floor())) {
+                formattedAmount = this.amount.toFixed(1);
+            } else if (decimalPart.length > 4) {
+                // If the decimal part exceeds 4 digits, display only 4 decimal places
+                formattedAmount = this.amount.toFixed(4, Decimal.ROUND_DOWN);
+            } else {
+                // If the decimal part is 4 digits or fewer, display as-is
+                formattedAmount = this.amount.toString();
+            }
 
-        return formatCurrencyValue(value, precision ?? this.getPrecision());
+            return formattedAmount;
+        }
     }
+
     toString(precision?: number): string {
         return `${this.printValue(precision)} ${this.token.getSymbol()}`;
     }
@@ -375,9 +386,9 @@ export abstract class AbstractAccount implements IAccount {
 
 export class Asset extends AbstractAsset {
     protected token: IToken;
-    protected amount: bigint;
+    protected amount: Decimal;
 
-    constructor(token: IToken, amount: bigint) {
+    constructor(token: IToken, amount: Decimal) {
         super();
         this.token = token;
         this.amount = amount;
