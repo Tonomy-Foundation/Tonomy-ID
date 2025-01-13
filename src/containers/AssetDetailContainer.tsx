@@ -1,7 +1,7 @@
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AssetDetailScreenNavigationProp } from '../screens/AssetDetailScreen';
 import theme, { commonStyles } from '../utils/theme';
-import { TButtonSecondaryContained } from '../components/atoms/TButton';
+import TButton, { TButtonContained, TButtonSecondaryContained } from '../components/atoms/TButton';
 import { ArrowDown, ArrowUp } from 'iconoir-react-native';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import { useEffect, useState } from 'react';
@@ -117,16 +117,26 @@ const AssetDetailContainer = ({ navigation, chain }: AssetDetailProps) => {
                         </View>
                     )}
                     <View style={styles.transactionHistoryView}>
-                        <TouchableOpacity style={styles.transactionHistoryButton}>
-                            <Text style={styles.textButton}>View your transaction history</Text>
-                        </TouchableOpacity>
+                        {asset?.token.isTransferable && (
+                            <TouchableOpacity style={styles.transactionHistoryButton}>
+                                <Text style={styles.textButton}>View your transaction history</Text>
+                            </TouchableOpacity>
+                        )}
                         <TButtonSecondaryContained
                             onPress={redirectToCheckExplorer}
                             style={commonStyles.marginBottom}
                             size="large"
                         >
-                            Check explorer
+                            Check Explorer
                         </TButtonSecondaryContained>
+                        {!asset?.token.isTransferable && (
+                            <TButtonContained
+                                onPress={() => Linking.openURL('https://pangea.web4.world/leos/buy-leos')}
+                                style={{ marginBottom: 20, marginTop: -13 }}
+                            >
+                                Buy LEOS in Pre-Sale Round
+                            </TButtonContained>
+                        )}
                     </View>
                 </ScrollView>
             </View>
