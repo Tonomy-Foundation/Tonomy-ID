@@ -37,6 +37,7 @@ import { getSdkError } from '@walletconnect/utils';
 import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
+import Decimal from 'decimal.js';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -81,10 +82,12 @@ export class EthereumPrivateKey extends AbstractPrivateKey implements IPrivateKe
 
     async sendTransaction(transaction: ITransaction): Promise<EthereumTransactionReceipt> {
         try {
+            const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
+
             const transactionRequest: TransactionRequest = {
                 to: (await transaction.getTo()).getName(),
                 from: (await transaction.getFrom()).getName(),
-                value: (await transaction.getValue()).getAmount(),
+                value: (await transaction.getValue()).getAmount().mul(precisionMultiplier).toString(),
                 data: ((await transaction.getData()) as TransactionRequest).data,
             };
 
@@ -193,9 +196,10 @@ export class EthereumToken extends AbstractToken {
         debug('getBalance() lookupAccount', lookupAccount.getName());
         const balanceWei = await (this.chain as EthereumChain).getProvider().getBalance(lookupAccount.getName() || '');
 
-        debug('getBalance() balance', balanceWei);
+        debug('getBalance() balanceWei', balanceWei);
+        const precisionMultiplier = new Decimal(10).pow(this.getPrecision());
 
-        return new Asset(this, balanceWei);
+        return new Asset(this, new Decimal(balanceWei.toString()).div(precisionMultiplier));
     }
 
     async getUsdValue(account?: IAccount): Promise<number> {
@@ -284,7 +288,7 @@ export class EthereumTransaction implements ITransaction {
     async getType(): Promise<TransactionType> {
         if (this.type) return this.type;
         const isContract = await (await this.getTo()).isContract();
-        const isValuable = (await this.getValue()).getAmount() > BigInt(0);
+        const isValuable = (await this.getValue()).getAmount().greaterThan(0);
 
         if (isContract && this.transaction.data) {
             if (isValuable) {
@@ -352,7 +356,12 @@ export class EthereumTransaction implements ITransaction {
     }
     async getValue(): Promise<Asset> {
         // TODO: also need to handle other tokens
-        return new Asset(this.chain.getNativeToken(), BigInt(this.transaction.value || 0));
+        const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
+
+        return new Asset(
+            this.chain.getNativeToken(),
+            new Decimal(this.transaction.value ? this.transaction.value.toString() : '0').div(precisionMultiplier)
+        );
     }
 
     async estimateTransactionFee(): Promise<Asset> {
@@ -371,11 +380,12 @@ export class EthereumTransaction implements ITransaction {
         const wei = await this.chain.getProvider().estimateGas(transaction);
 
         const totalGasFee = feeData.gasPrice ? wei * feeData.gasPrice : wei;
+        const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
 
-        return new Asset(this.chain.getNativeToken(), totalGasFee);
+        return new Asset(this.chain.getNativeToken(), new Decimal(totalGasFee.toString()).div(precisionMultiplier));
     }
     async estimateTransactionTotal(): Promise<Asset> {
-        const amount = (await this.getValue()).getAmount() + (await this.estimateTransactionFee()).getAmount();
+        const amount = (await this.getValue()).getAmount().plus((await this.estimateTransactionFee()).getAmount());
 
         return new Asset(this.chain.getNativeToken(), amount);
     }
@@ -419,7 +429,9 @@ export class EthereumTransactionReceipt extends AbstractTransactionReceipt {
         const receipt = await this.receipt.wait();
 
         if (!receipt) throw new Error('Failed to fetch receipt');
-        return new Asset(this.chain.getNativeToken(), receipt.fee);
+        const precisionMultiplier = new Decimal(10).pow(this.chain.getNativeToken().getPrecision());
+
+        return new Asset(this.chain.getNativeToken(), new Decimal(receipt.fee.toString()).div(precisionMultiplier));
     }
 
     async getTimestamp(): Promise<Date> {
@@ -551,7 +563,7 @@ export class WalletConnectSession implements IChainSession {
         const transactionRequest: TransactionRequest = {
             to: (await transaction.getTo()).getName(),
             from: (await transaction.getFrom()).getName(),
-            value: (await transaction.getValue()).getAmount(),
+            value: (await transaction.getValue()).getAmount().toString(),
             data: (await transaction.getData()).data,
         };
 

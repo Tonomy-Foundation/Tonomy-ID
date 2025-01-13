@@ -68,8 +68,7 @@ export default function SignTransactionConsentContainer({
             if (type === TransactionType.TRANSFER) {
                 const to = chain.formatShortAccountName((await operation.getTo()).getName());
                 const value = await operation.getValue();
-                const precision = chain.getNativeToken().getPrecision();
-                const amount = value.toString(precision <= 4 ? 4 : 6).replace(/\.?0+$/, '');
+                const amount = value.toString();
 
                 const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
 
@@ -111,7 +110,7 @@ export default function SignTransactionConsentContainer({
             const usdFee = await fee.getUsdValue();
 
             const transactionFee: TransactionFeeData = {
-                fee: fee.toString(4),
+                fee: fee,
                 usdFee: usdFee,
                 show: showFee(operations, fee, usdFee),
                 isFree: isFree(fee, usdFee),
@@ -132,13 +131,13 @@ export default function SignTransactionConsentContainer({
 
             const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
 
-            if (accountBalance < total.getAmount()) {
+            if (accountBalance.lessThan(total.getAmount())) {
                 balanceError = true;
             }
 
             const transactionTotal = {
                 show: showFee(operations, total, usdTotal),
-                total: total.toString(4),
+                total: total.toString(),
                 totalUsd: formatCurrencyValue(usdTotal, 2),
                 balanceError,
             };
@@ -146,7 +145,7 @@ export default function SignTransactionConsentContainer({
             setTransactionTotalData(transactionTotal);
             debug('fetchTransactionTotal() done', transactionTotal);
         },
-        [chain, request.account, request.transaction]
+        [chain, request]
     );
 
     const fetchOperations = useCallback(async () => {
@@ -345,7 +344,12 @@ export default function SignTransactionConsentContainer({
                         {!operations && <TSpinner />}
                         {operations && <Operations operations={operations} />}
                         {!transactionFeeData && <TSpinner />}
-                        {transactionFeeData && <TransactionFee transactionFee={transactionFeeData} />}
+                        {transactionFeeData && (
+                            <TransactionFee
+                                transactionFee={transactionFeeData}
+                                precision={chain.getNativeToken().getPrecision()}
+                            />
+                        )}
                         {!transactionTotalData && <TSpinner />}
                         {transactionTotalData && (
                             <TransactionTotal
