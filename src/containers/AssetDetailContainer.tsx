@@ -134,7 +134,7 @@ const AssetDetailContainer = ({ navigation, chain }: AssetDetailProps) => {
                                 onPress={() => Linking.openURL('https://pangea.web4.world/leos/buy-leos')}
                                 style={{ marginBottom: 20, marginTop: -13 }}
                             >
-                                Buy LEOS in Seed Round
+                                Buy LEOS in Pre-Sale Round
                             </TButtonContained>
                         )}
                     </View>
