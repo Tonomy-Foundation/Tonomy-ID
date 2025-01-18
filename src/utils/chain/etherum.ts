@@ -211,13 +211,12 @@ export class EthereumToken extends AbstractToken {
         throw new Error(`getVestedTokens() method not implemented' ${account}`);
     }
 
-      async getVestedTotalBalance(): Promise<IAsset> {
-            throw new Error(`getVestedTotalBalance() method not implemented'`);
-        }
-    
-        async getAvailableBalance(account?: IAccount): Promise<IAsset> {
-            return this.getBalance(account);
-        }
+    async getVestedTotalBalance(): Promise<IAsset> {
+        throw new Error(`getVestedTotalBalance() method not implemented'`);
+    }
+
+    async getAvailableBalance(account?: IAccount): Promise<IAsset> {
+        return this.getBalance(account);
     }
 }
 
