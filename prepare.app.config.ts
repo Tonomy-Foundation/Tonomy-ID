@@ -74,6 +74,7 @@ const expo: ExpoConfig = {
                     CFBundleURLSchemes: ['esr', 'wc', 'did'],
                 },
             ],
+            associatedDomains: [`applinks:${settings.config.ssoWebsiteOrigin}`],
         },
     },
     android: {
