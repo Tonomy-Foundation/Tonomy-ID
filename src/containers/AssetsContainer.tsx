@@ -39,9 +39,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                 try {
                     const asset = await assetStorage.findAssetByName(token);
 
-                    debug(
-                        `fetchCryptoAssets() fetching asset ${chain.getName()}: ${asset?.accountName}-${asset?.balance}`
-                    );
                     let account;
 
                     if (asset) {
