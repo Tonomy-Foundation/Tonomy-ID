@@ -393,6 +393,14 @@ export class AntelopeToken extends AbstractToken implements IToken {
     async getVestedTokens(account: IAccount): Promise<VestedTokens> {
         throw new Error(`getVestedTokens() method not implemented' ${account}`);
     }
+
+    async getVestedTotalBalance(): Promise<IAsset> {
+        throw new Error(`getVestedTotalBalance() method not implemented'`);
+    }
+
+    async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
+        return this.getBalance(account);
+    }
 }
 
 export class PangeaVestedToken extends AntelopeToken {

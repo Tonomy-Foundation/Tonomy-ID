@@ -246,6 +246,8 @@ export interface IToken {
     isVestable(): boolean;
     eq(other: IToken): boolean;
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
+    getAvailableBalance(account?: IAccount): Promise<IAsset>;
+    getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -316,6 +318,8 @@ export abstract class AbstractToken implements IToken {
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
     abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
+    abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
+    abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
 }
 
 export interface IAccount {

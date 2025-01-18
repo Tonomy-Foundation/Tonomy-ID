@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
-import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
+import { AntelopeAccount, PangeaMainnetChain } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
 
 export type Props = {
@@ -98,7 +98,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     });
     const [showVesting, setShowVesting] = useState(false);
     const [loading, setLoading] = useState(true);
-    const token = chain.getNativeToken() as PangeaVestedToken;
+    const token = chain.getNativeToken();
     const symbol = chain.getNativeToken().getSymbol();
 
     const isVestable = chain.getNativeToken().isVestable();
