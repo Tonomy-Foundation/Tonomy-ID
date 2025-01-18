@@ -4,14 +4,14 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { getMultiplier } from '../utils/multiplier';
-import { VestedAllocationDetails } from '../utils/tokenRegistry';
+import { VestedAllocation } from '../utils/tokenRegistry';
 import { formatCurrencyValue } from '../utils/numbers';
 import { formatDate } from '../utils/time';
 
 export type Props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
-    allocationData: VestedAllocationDetails;
+    allocationData: VestedAllocation;
     usdPriceValue: number;
 };
 

@@ -6,12 +6,19 @@ import { NavArrowRight } from 'iconoir-react-native';
 import { useEffect, useRef, useState } from 'react';
 import AllocationDetails from '../components/AllocationDetails';
 import { IChain } from '../utils/chain/types';
-import { AntelopeAccount, AntelopeChain, PangeaVestedToken } from '../utils/chain/antelope';
-import { formatAmount, getAssetDetails, VestedAllocation, VestedAllocationDetails } from '../utils/tokenRegistry';
+import {
+    formatTokenValue,
+    getAssetDetails,
+    VestedTokens,
+    VestedAllocation,
+    getAccountFromChain,
+    getTokenEntryByChain,
+} from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import { getMultiplier } from '../utils/multiplier';
 import Decimal from 'decimal.js';
+import useUserStore from '../store/userStore';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -21,13 +28,12 @@ export type VestedAssetProps = {
 const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const [loading, setLoading] = useState(true);
     const [usdPrice, setUsdPrice] = useState(0);
-    const [vestedAllocations, setVestedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
-    const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocationDetails>(
-        {} as VestedAllocationDetails
-    );
+    const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
+    const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
 
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
-    const token = chain.getNativeToken() as PangeaVestedToken;
+    const token = chain.getNativeToken();
+    const { user } = useUserStore();
 
     const onClose = () => {
         refMessage.current?.close();
@@ -35,9 +41,10 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
     useEffect(() => {
         const fetchVestedAllocation = async () => {
-            const assetData = await getAssetDetails(chain);
-            const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
-            const allocations = await token.getVestedTotalAllocation(account);
+            const tokenEntry = await getTokenEntryByChain(chain);
+
+            const account = await getAccountFromChain(tokenEntry, user);
+            const allocations = await token.getVestedTokens(account);
             const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
             setUsdPrice(usdPriceValue);
@@ -46,9 +53,9 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         };
 
         fetchVestedAllocation();
-    }, [chain, token]);
+    }, [chain, token, user]);
 
-    const calculateAverageMultiplier = (vestingData: VestedAllocation): number => {
+    const calculateAverageMultiplier = (vestingData: VestedTokens): number => {
         const { allocationsDetails } = vestingData;
 
         let totalWeightedMultiplier = 0;
@@ -95,7 +102,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                 >
                     <Text style={styles.imageNetworkText}>Pangea Network</Text>
                     <Text style={styles.imageText}>
-                        {formatAmount(new Decimal(totalVestedAmount))} {chain.getNativeToken().getSymbol()}
+                        {formatTokenValue(new Decimal(totalVestedAmount))} {chain.getNativeToken().getSymbol()}
                     </Text>
                     <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd)}</Text>
                     <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text>
@@ -119,7 +126,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                 }}
                             >
                                 <Text style={{ fontWeight: '700' }}>
-                                    {formatAmount(new Decimal(allocation.totalAllocation))}{' '}
+                                    {formatTokenValue(new Decimal(allocation.totalAllocation))}{' '}
                                     {chain.getNativeToken().getSymbol()}
                                 </Text>
                                 <View style={styles.flexColEnd}>

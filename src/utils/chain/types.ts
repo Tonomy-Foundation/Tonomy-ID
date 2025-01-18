@@ -5,7 +5,7 @@ import { sha256 } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
-import { formatAmount } from '../tokenRegistry';
+import { formatTokenValue, VestedTokens } from '../tokenRegistry';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -221,7 +221,7 @@ export abstract class AbstractAsset implements IAsset {
         if (precision) {
             return this.amount.toFixed(precision);
         } else {
-            return formatAmount(this.amount);
+            return formatTokenValue(this.amount);
         }
     }
 
@@ -243,8 +243,9 @@ export interface IToken {
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
     isTransferable(): boolean;
-    isVesting(): boolean;
+    isVestable(): boolean;
     eq(other: IToken): boolean;
+    getVestedTokens(account: IAccount): Promise<VestedTokens>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -255,7 +256,7 @@ export abstract class AbstractToken implements IToken {
     protected chain: IChain;
     protected logoUrl: string;
     protected transferable = true;
-    protected vestingAvailable = false;
+    protected vestable = false;
 
     constructor(
         name: string,
@@ -264,7 +265,7 @@ export abstract class AbstractToken implements IToken {
         chain: IChain,
         logoUrl: string,
         transferable = true,
-        vestingAvailable = false
+        vestable = false
     ) {
         this.name = name;
         this.symbol = symbol;
@@ -272,7 +273,7 @@ export abstract class AbstractToken implements IToken {
         this.chain = chain;
         this.logoUrl = logoUrl;
         this.transferable = transferable;
-        this.vestingAvailable = vestingAvailable;
+        this.vestable = vestable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -302,8 +303,8 @@ export abstract class AbstractToken implements IToken {
     isTransferable(): boolean {
         return this.transferable;
     }
-    isVesting(): boolean {
-        return this.vestingAvailable;
+    isVestable(): boolean {
+        return this.vestable;
     }
     eq(other: IToken): boolean {
         return (
@@ -314,6 +315,7 @@ export abstract class AbstractToken implements IToken {
     }
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
+    abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
 }
 
 export interface IAccount {

@@ -38,6 +38,7 @@ import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
+import { VestedTokens } from '../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -206,6 +207,10 @@ export class EthereumToken extends AbstractToken {
         const balance = await this.getBalance(account);
 
         return balance.getUsdValue();
+    }
+
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
+        throw new Error(`getVestedTokens() method not implemented' ${account}`);
     }
 }
 

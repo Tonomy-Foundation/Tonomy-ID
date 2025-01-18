@@ -2,14 +2,13 @@ import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Ima
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
-import { IAsset, IChain } from '../utils/chain/types';
+import { IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
 import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
-import Decimal from 'decimal.js';
 
 export type Props = {
     navigation: LeosAssetsScreenNavigationProp['navigation'];
@@ -85,17 +84,6 @@ const investorTootlView = (redirectVestedAsset) => {
     );
 };
 
-const formatBalance = (balance: IAsset) => {
-    return balance.toString().split(' ')[0];
-};
-
-const getTotalBalance = (availableBalance: IAsset, vestedBalance: IAsset) => {
-    const availableBalanceValue = formatBalance(availableBalance);
-    const vestedBalanceValue = formatBalance(vestedBalance);
-
-    return new Decimal(availableBalanceValue).add(vestedBalanceValue);
-};
-
 const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const errorStore = useErrorStore();
@@ -113,7 +101,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const token = chain.getNativeToken() as PangeaVestedToken;
     const symbol = chain.getNativeToken().getSymbol();
 
-    const isVestingAvailable = chain.getNativeToken().isVesting();
+    const isVestable = chain.getNativeToken().isVestable();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -122,16 +110,15 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
                 setAsset(assetData);
 
-                if (isVestingAvailable) {
+                if (isVestable) {
                     const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
                     const availableBalance = await token.getAvailableBalance(account);
-                    const totalBalance = getTotalBalance(availableBalance, vestedBalance);
-                    const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+                    const totalBalance = availableBalance.add(vestedBalance);
 
                     setBalance({
-                        totalBalance: totalBalance.toString() + ' ' + symbol,
-                        totalBalanceUsd: totalBalance.toNumber() * usdPriceValue,
+                        totalBalance: totalBalance.toString(),
+                        totalBalanceUsd: await totalBalance.getUsdValue(),
                         availableBalance: availableBalance.toString(),
                         availableBalanceUsd: await availableBalance.getUsdValue(),
                         vestedBalance: vestedBalance.toString(),
@@ -157,7 +144,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [chain, token, symbol, errorStore, isVestingAvailable]);
+    }, [chain, token, symbol, errorStore, isVestable]);
 
     const redirectVestedAsset = () => {
         navigation.navigate('VestedAssets', {

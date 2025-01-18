@@ -46,7 +46,7 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
-import { VestedAllocation } from '../tokenRegistry';
+import { VestedTokens } from '../tokenRegistry';
 import Decimal from 'decimal.js';
 
 const vestingContract = VestingContract.Instance;
@@ -328,9 +328,9 @@ export class AntelopeToken extends AbstractToken implements IToken {
         logoUrl: string,
         coinmarketCapId: string,
         transferable = true,
-        vestingAvailable = false
+        vestable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable, vestingAvailable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -389,6 +389,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
 
         return balance.getUsdValue();
     }
+
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
+        throw new Error(`getVestedTokens() method not implemented' ${account}`);
+    }
 }
 
 export class PangeaVestedToken extends AntelopeToken {
@@ -417,7 +421,7 @@ export class PangeaVestedToken extends AntelopeToken {
         return new Asset(this, new Decimal(vestedBalance));
     }
 
-    async getVestedTotalAllocation(account: AntelopeAccount): Promise<VestedAllocation> {
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
         return await vestingContract.getVestingAllocations(account.getName());
     }
 }
@@ -620,7 +624,7 @@ export class AntelopeAction implements IOperation {
  * @returns {IAsset} - The asset
  */
 
-function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
+export function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const name = quantity.split(' ')[1];
     const symbol = name;
     const amountString = quantity.split(' ')[0];

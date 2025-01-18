@@ -47,7 +47,7 @@ export interface AccountTokenDetails {
     privateKey: IPrivateKey;
 }
 
-export interface VestedAllocationDetails {
+export interface VestedAllocation {
     totalAllocation: number;
     unlockable: number;
     unlocked: number;
@@ -58,12 +58,12 @@ export interface VestedAllocationDetails {
     allocationDate: Date;
 }
 
-export interface VestedAllocation {
+export interface VestedTokens {
     totalAllocation: number;
     unlockable: number;
     unlocked: number;
     locked: number;
-    allocationsDetails: VestedAllocationDetails[];
+    allocationsDetails: VestedAllocation[];
 }
 
 export enum ChainKeyName {
@@ -241,18 +241,18 @@ export async function addNativeTokenToAssetStorage(user: IUserBase) {
     await assetStorage.createAsset(asset, account);
 }
 
-export function formatAmount(amount: Decimal): string {
+export function formatTokenValue(amount: Decimal, maxDecimals = 4): string {
     let formattedAmount: string;
     const decimalPart = amount.toFixed().split('.')[1] || '';
 
     if (amount.equals(amount.floor())) {
         formattedAmount = amount.toFixed(1);
-    } else if (decimalPart.length > 4) {
-        // If the decimal part exceeds 4 digits, display only 4 decimal places
-        formattedAmount = amount.toFixed(4, Decimal.ROUND_DOWN);
+    } else if (decimalPart.length > maxDecimals) {
+        // If the decimal part exceeds maxDecimals, display only maxDecimals decimal places
+        formattedAmount = amount.toFixed(maxDecimals, Decimal.ROUND_DOWN).replace(/\.?0+$/, '');
     } else {
-        // If the decimal part is 4 digits or fewer, display as-is
-        formattedAmount = amount.toString();
+        // If the decimal part is maxDecimals digits or fewer, display as-is
+        formattedAmount = amount.toString().replace(/\.?0+$/, '');
     }
 
     return formattedAmount;
