@@ -5,17 +5,10 @@ import { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
 import { useEffect, useRef, useState } from 'react';
 import AllocationDetails from '../components/AllocationDetails';
-import { IChain } from '../utils/chain/types';
-import {
-    formatTokenValue,
-    getAssetDetails,
-    VestedTokens,
-    VestedAllocation,
-    getAccountFromChain,
-    getTokenEntryByChain,
-} from '../utils/tokenRegistry';
+import { IChain, VestedTokens, VestedAllocation } from '../utils/chain/types';
+import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
-import { formatCurrencyValue } from '../utils/numbers';
+import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { getMultiplier } from '../utils/multiplier';
 import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
@@ -47,6 +40,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
             const allocations = await token.getVestedTokens(account);
             const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
+            console.log('usdPriceValue', usdPriceValue);
             setUsdPrice(usdPriceValue);
             setVestedAllocation(allocations);
             setLoading(false);
@@ -157,7 +151,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         <View style={styles.availableAssetView}>
                             <View style={styles.header}>
                                 <Text style={styles.lockedCoinsAmount}>
-                                    {formatCurrencyValue(vestedAllocations.unlockable)}
+                                    {formatTokenValue(new Decimal(vestedAllocations.unlockable ?? 0))}
                                 </Text>
                                 <Text style={styles.lockedUSDAmount}>
                                     {formatCurrencyValue(vestedAllocations.unlockable * usdPrice)}

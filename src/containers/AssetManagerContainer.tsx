@@ -116,6 +116,10 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = availableBalance.add(vestedBalance);
 
+                    if (Number(vestedBalance.getAmount()) > 0) {
+                        setShowVesting(true);
+                    }
+
                     setBalance({
                         totalBalance: totalBalance.toString(),
                         totalBalanceUsd: await totalBalance.getUsdValue(),
@@ -124,7 +128,6 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                         vestedBalance: vestedBalance.toString(),
                         vestedBalanceUsd: await vestedBalance.getUsdValue(),
                     });
-                    setShowVesting(true);
                 } else {
                     setBalance({
                         availableBalance: assetData.token.balance + ' ' + symbol,
@@ -168,13 +171,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
     return (
         <View style={styles.container}>
-            {showVesting && (
-                <View>
-                    {renderImageBackground(balance)}
-
-                    {vestedBalanceView(balance, asset, redirectVestedAsset)}
-                </View>
-            )}
+            {isVestable && <View>{renderImageBackground(balance)}</View>}
+            {showVesting && vestedBalanceView(balance, asset, redirectVestedAsset)}
 
             <Text style={styles.subTitle}>Available assets</Text>
 

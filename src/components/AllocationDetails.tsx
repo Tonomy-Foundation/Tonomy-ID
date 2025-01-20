@@ -4,9 +4,10 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { getMultiplier } from '../utils/multiplier';
-import { VestedAllocation } from '../utils/tokenRegistry';
-import { formatCurrencyValue } from '../utils/numbers';
+import { VestedAllocation } from '../utils/chain/types';
+import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { formatDate } from '../utils/time';
+import Decimal from 'decimal.js';
 
 export type Props = {
     refMessage: React.RefObject<any>;
@@ -38,7 +39,7 @@ const AllocationDetails = (props: Props) => {
                     <Text style={styles.allocTitle}>Total allocation</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
-                            {formatCurrencyValue(allocationData.totalAllocation)} LEOS
+                            {formatTokenValue(new Decimal(allocationData.totalAllocation ?? 0))} LEOS
                         </Text>
                         <Text style={styles.usdBalance}>
                             ${formatCurrencyValue(allocationData.totalAllocation * props.usdPriceValue)}

@@ -1,13 +1,32 @@
 import { TKeyType } from '@veramo/core';
-import { formatCurrencyValue } from '../numbers';
+import { formatTokenValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
-import { formatTokenValue, VestedTokens } from '../tokenRegistry';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
+
+export interface VestedAllocation {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    vestingStart: Date;
+    vestingPeriod: string;
+    unlockAtVestingStart: number;
+    allocationDate: Date;
+    categoryId: number;
+}
+
+export interface VestedTokens {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    allocationsDetails: VestedAllocation[];
+}
 
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
