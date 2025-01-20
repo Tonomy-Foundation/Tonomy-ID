@@ -75,7 +75,7 @@ const AllocationDetails = (props: Props) => {
                     <Text style={styles.allocTitle}>Price multiplier</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
-                            {getMultiplier(allocationData.allocationDate)}x
+                            {getMultiplier(allocationData.allocationDate, allocationData.categoryId)}x
                         </Text>
                     </View>
                 </View>

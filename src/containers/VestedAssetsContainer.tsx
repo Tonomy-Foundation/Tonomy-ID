@@ -63,7 +63,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
         allocationsDetails.forEach((allocation) => {
             const { locked, unlockable } = allocation;
-            const multiplier = getMultiplier(allocation.allocationDate);
+            const multiplier = getMultiplier(allocation.allocationDate, allocation.categoryId);
 
             if (multiplier) {
                 const lockedPlusUnlockable = locked + unlockable;
@@ -133,7 +133,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                     <Text style={styles.allocMulti}>
                                         Multiplier:
                                         <Text style={{ color: theme.colors.success }}>
-                                            x{getMultiplier(allocation.allocationDate)}
+                                            x{getMultiplier(allocation.allocationDate, allocation.categoryId)}
                                         </Text>
                                     </Text>
                                     <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
