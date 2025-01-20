@@ -19464,6 +19464,7 @@ __metadata:
     bluebird: "npm:^3.7.2"
     cross-fetch: "npm:^4.0.0"
     crypto-browserify: "npm:^3.12.1"
+    decimal.js: "npm:^10.4.3"
     deepmerge: "npm:^4.3.1"
     eslint: "npm:^8.25.0"
     eslint-config-prettier: "npm:^8.5.0"

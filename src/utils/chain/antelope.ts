@@ -46,6 +46,7 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
+import Decimal from 'decimal.js';
 
 const vestingContract = VestingContract.Instance;
 
@@ -101,7 +102,7 @@ export class AntelopeTransactionReceipt extends AbstractTransactionReceipt {
     }
 
     async getFee(): Promise<IAsset> {
-        return new Asset(this.getChain().getNativeToken(), 0n);
+        return new Asset(this.getChain().getNativeToken(), new Decimal(0));
     }
 
     getExplorerUrl(): string {
@@ -318,9 +319,9 @@ export class AntelopeChain extends AbstractChain {
 }
 
 export const LEOS_SEED_ROUND_PRICE = 0.0002;
-export const LEOS_SEED_LATE_ROUND_PRICE = 0.0004;
+export const LEOS_PRE_SALE_ROUND_PRICE = 0.0004;
 export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
-export const LEOS_CURRENT_PRICE = LEOS_SEED_ROUND_PRICE;
+export const LEOS_CURRENT_PRICE = LEOS_PRE_SALE_ROUND_PRICE;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -369,15 +370,21 @@ export class AntelopeToken extends AbstractToken implements IToken {
             })();
 
         const api = this.getChain().getApiClient();
+
         const assets = await api.v1.chain.get_currency_balance(
             contractAccount.getName(),
             lookupAccount.getName(),
             this.getSymbol()
         );
+
+        if (!assets) return new Asset(this, new Decimal(0));
+
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
-        if (!asset) return new Asset(this, BigInt(0));
-        return new Asset(this, BigInt(asset.units.value));
+        if (!asset) return new Asset(this, new Decimal(0));
+        const amount = new Decimal(asset.units.value);
+
+        return new Asset(this, amount);
     }
 
     toAntelopeSymbol(): AntelopeAsset.Symbol {
@@ -413,7 +420,8 @@ class PangeaVestedToken extends AntelopeToken {
 
         const vestedBalance = await vestingContract.getBalance(lookupAccount.getName());
 
-        return new Asset(this, BigInt(vestedBalance * 10 ** this.precision));
+        debug('getVestedTotalBalance() vestedBalance', vestedBalance);
+        return new Asset(this, new Decimal(vestedBalance));
     }
 
     // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
@@ -602,7 +610,7 @@ export class AntelopeAction implements IOperation {
 
             return getAssetFromQuantity(quantity, this.chain);
         } else {
-            return new Asset(this.chain.getNativeToken(), BigInt(0));
+            return new Asset(this.chain.getNativeToken(), new Decimal(0));
         }
     }
 }
@@ -613,15 +621,15 @@ export class AntelopeAction implements IOperation {
  * @param {AntelopeChain} chain - The chain the asset is on
  * @returns {IAsset} - The asset
  */
+
 function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const name = quantity.split(' ')[1];
     const symbol = name;
     const amountString = quantity.split(' ')[0];
-    const precision = amountString.split('.')[1].length;
+    const precision = amountString.includes('.') ? amountString.split('.')[1].length : 0;
 
     const token = new AntelopeToken(chain, name, symbol, precision, '', '');
-    const amountNumber = parseFloat(amountString);
-    const amount = BigInt(amountNumber * 10 ** precision);
+    const amount = new Decimal(amountString).mul(new Decimal(10).pow(precision));
 
     return new Asset(token, amount);
 }
@@ -676,29 +684,29 @@ export class AntelopeTransaction implements ITransaction {
         return this.actions;
     }
     async estimateTransactionFee(): Promise<Asset> {
-        return new Asset(this.chain.getNativeToken(), BigInt(0));
+        return new Asset(this.chain.getNativeToken(), new Decimal(0));
     }
+
     async estimateTransactionTotal(): Promise<Asset> {
         const operationAmountsPromises = (await this.getOperations()).map(async (operation) =>
             (await operation.getValue()).getAmount()
         );
-
         // const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => a + b, BigInt(0));
         //     this return string
 
         // let amount = operationAmounts + (await this.estimateTransactionFee()).getAmount();
         // Ensure all operation amounts are BigInt
         const operationAmounts = (await Promise.all(operationAmountsPromises)).reduce((a, b) => {
-            return BigInt(a) + BigInt(b);
-        }, BigInt(0));
+            return a.plus(b);
+        }, new Decimal(0));
 
-        const estimatedFee = BigInt((await this.estimateTransactionFee()).getAmount());
+        const estimatedFee = new Decimal((await this.estimateTransactionFee()).getAmount());
 
-        // Combine the total operation amounts with the estimated fee
-        const amount = operationAmounts + estimatedFee;
+        const amount = operationAmounts.plus(estimatedFee);
 
         return new Asset(this.chain.getNativeToken(), amount);
     }
+
     hasMultipleOperations(): boolean {
         return true;
     }

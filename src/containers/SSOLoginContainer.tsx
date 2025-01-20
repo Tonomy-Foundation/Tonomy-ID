@@ -106,8 +106,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 navigation.navigate('Assets');
             }
         } catch (e) {
-            debug('onLogin() error', e);
-
             if (
                 e instanceof CommunicationError &&
                 e.exception.status === 400 &&
