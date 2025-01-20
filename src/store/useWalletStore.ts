@@ -103,10 +103,7 @@ const useWalletStore = create<WalletState>((set, get) => ({
                 accounts.map(async (account: IAccount | null) => {
                     try {
                         if (!account) return;
-                        debug(`updateBalance() fetching account 0`);
                         const chain = account.getChain();
-
-                        debug(`updateBalance() fetching account ${chain.getName()}`);
 
                         try {
                             const { token } = await getTokenEntryByChain(chain);
