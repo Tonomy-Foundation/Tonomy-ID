@@ -7,11 +7,11 @@
     },
     {
       "name": "testnet",
-      "prerelease": false
+      "prerelease": "rc"
     },
     {
       "name": "development",
-      "prerelease": false
+      "prerelease": "development"
     }
   ],
   "plugins": [
