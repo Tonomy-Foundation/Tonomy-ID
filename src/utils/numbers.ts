@@ -26,10 +26,8 @@ export function formatTokenValue(amount: Decimal, maxDecimals = 4): string {
     let formattedAmount: string;
     const decimalPart = amount.toFixed().split('.')[1] || '';
 
-    console.log('amount', amount);
-
     if (amount.equals(amount.floor())) {
-        formattedAmount = amount.toFixed(1);
+        formattedAmount = amount.toFixed(2);
     } else if (decimalPart.length > maxDecimals) {
         // If the decimal part exceeds maxDecimals, display only maxDecimals decimal places
         formattedAmount = amount.toFixed(maxDecimals, Decimal.ROUND_DOWN);
@@ -37,8 +35,6 @@ export function formatTokenValue(amount: Decimal, maxDecimals = 4): string {
         // If the decimal part is maxDecimals digits or fewer, display as-is
         formattedAmount = amount.toString();
     }
-
-    console.log('formattedAmount', formattedAmount);
 
     return formattedAmount;
 }
