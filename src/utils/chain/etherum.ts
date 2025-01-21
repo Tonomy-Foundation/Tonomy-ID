@@ -28,6 +28,7 @@ import {
     AbstractTransactionReceipt,
     IAsset,
     ChainType,
+    VestedTokens,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -38,7 +39,6 @@ import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
-import { VestedTokens } from '../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 

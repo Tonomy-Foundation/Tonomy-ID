@@ -17,6 +17,7 @@ import {
     IAsset,
     ExplorerOptions,
     AbstractTransactionReceipt,
+    VestedTokens,
 } from './types';
 import {
     ABI,
@@ -46,7 +47,6 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
-import { VestedTokens } from '../tokenRegistry';
 import Decimal from 'decimal.js';
 
 const vestingContract = VestingContract.Instance;
