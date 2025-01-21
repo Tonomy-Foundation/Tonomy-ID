@@ -70,7 +70,7 @@ export default function SignTransactionConsentContainer({
                 const value = await operation.getValue();
                 const amount = value.toString();
 
-                const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
+                const usdValue = formatCurrencyValue(await value.getUsdValue());
 
                 return {
                     type,
@@ -138,7 +138,7 @@ export default function SignTransactionConsentContainer({
             const transactionTotal = {
                 show: showFee(operations, total, usdTotal),
                 total: total.toString(),
-                totalUsd: formatCurrencyValue(usdTotal, 2),
+                totalUsd: formatCurrencyValue(usdTotal),
                 balanceError,
             };
 
