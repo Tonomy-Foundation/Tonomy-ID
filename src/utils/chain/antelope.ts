@@ -180,8 +180,12 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         const info = await this.chain.getChainInfo();
         const header = info.getTransactionHeader();
         const defaultExpiration = new Date(new Date().getTime() + ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS);
-        const expiration: Date =
+        let expiration: Date =
             data instanceof AntelopeTransaction ? data.getExpiration() ?? defaultExpiration : defaultExpiration;
+        const remainingCounter = Math.floor((expiration.getTime() - new Date().getTime()) / 1000);
+        if (remainingCounter < 5) {
+            expiration = new Date(expiration.getTime() + 10 * 1000);
+        }
         const transaction = Transaction.from({
             ...header,
             expiration,
