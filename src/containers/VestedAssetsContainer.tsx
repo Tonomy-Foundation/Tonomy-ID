@@ -134,7 +134,32 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                             </TouchableOpacity>
                         </View>
                     ))}
-
+                    {vestedAllocations.allocationsDetails.map((allocation, index) => (
+                        <View key={index}>
+                            <TouchableOpacity
+                                key={index}
+                                style={styles.allocationView}
+                                onPress={() => {
+                                    setSelectedAllocation(allocation);
+                                    refMessage.current?.open();
+                                }}
+                            >
+                                <Text style={{ fontWeight: '700' }}>
+                                    {formatTokenValue(new Decimal(allocation.totalAllocation))}{' '}
+                                    {chain.getNativeToken().getSymbol()}
+                                </Text>
+                                <View style={styles.flexColEnd}>
+                                    <Text style={styles.allocMulti}>
+                                        Multiplier:
+                                        <Text style={{ color: theme.colors.success }}>
+                                            x{getMultiplier(allocation.allocationDate, allocation.categoryId)}
+                                        </Text>
+                                    </Text>
+                                    <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
                     {selectedAllocation && (
                         <AllocationDetails
                             onClose={onClose}
@@ -248,7 +273,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.grey7,
         borderRadius: 8,
         position: 'absolute',
-        bottom: 50,
+        bottom: 20,
         left: 0,
         right: 0,
     },
@@ -340,10 +365,10 @@ const styles = StyleSheet.create({
         paddingVertical: 7,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 11,
+        marginBottom: 8,
     },
     allocMulti: { color: theme.colors.grey9, fontWeight: '500' },
-    scrollView: { minHeight: 170, maxHeight: 500, paddingTop: 5, marginBottom: 30 },
+    scrollView: { minHeight: 170, maxHeight: 350, paddingTop: 5, marginBottom: 10 },
 });
 
 export default VestedAssetsContainer;
