@@ -72,8 +72,17 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
         }
     };
 
-    const handleMaxAmount = () => {
-        if (asset.token.balance) {
+    const handleMaxAmount = async () => {
+        const token = chain.getNativeToken();
+
+        if (token.getSymbol() === 'LEOS') {
+            const account = AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account);
+            const availableBalance = await token.getAvailableBalance(account);
+            const balance = availableBalance.toString().split(' ')[0];
+
+            setBalance(balance);
+            setUsdAmount((await availableBalance.getUsdValue()).toString());
+        } else if (asset.token.balance) {
             setBalance(asset.token.balance);
             setUsdAmount(asset.token.usdBalance ? asset.token.usdBalance.toString() : '0');
         }
@@ -85,7 +94,11 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
         if (!depositAccount) throw new Error('Deposit account is required');
 
         try {
-            if (Number(asset.token.balance) < Number(balance) || Number(asset.token.balance) <= 0) {
+            if (
+                Number(asset.token.balance) < Number(balance) ||
+                Number(asset.token.balance) <= 0 ||
+                Number(balance) <= 0
+            ) {
                 errorStore.setError({
                     error: new Error('You do not have enough balance to perform transaction!'),
                     expected: true,

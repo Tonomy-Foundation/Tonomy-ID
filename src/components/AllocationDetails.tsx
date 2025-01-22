@@ -69,7 +69,7 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Unlock at vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart}%</Text>
+                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>

@@ -40,7 +40,6 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
             const allocations = await token.getVestedTokens(account);
             const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
-            console.log('usdPriceValue', usdPriceValue);
             setUsdPrice(usdPriceValue);
             setVestedAllocation(allocations);
             setLoading(false);
@@ -107,7 +106,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
     const vestingAllocationsView = () => {
         return (
-            <ScrollView>
+            <ScrollView style={styles.scrollView}>
                 <View style={{ marginTop: 12 }}>
                     {vestedAllocations.allocationsDetails.map((allocation, index) => (
                         <View key={index}>
@@ -135,6 +134,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                             </TouchableOpacity>
                         </View>
                     ))}
+
                     {selectedAllocation && (
                         <AllocationDetails
                             onClose={onClose}
@@ -343,6 +343,7 @@ const styles = StyleSheet.create({
         marginBottom: 11,
     },
     allocMulti: { color: theme.colors.grey9, fontWeight: '500' },
+    scrollView: { minHeight: 170, maxHeight: 500, paddingTop: 5, marginBottom: 30 },
 });
 
 export default VestedAssetsContainer;
