@@ -25,12 +25,15 @@ export type SendAssetProps = {
 const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) => {
     const [depositAccount, setDepositAccount] = useState<string>();
     const [balance, setBalance] = useState<string>();
+    const [availableBalance, setAvailableBalance] = useState<string>();
+
     const [usdAmount, setUsdAmount] = useState<string>();
     const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const errorStore = useErrorStore();
     const [submitting, setSubmitting] = useState<boolean>(false);
+    const token = chain.getNativeToken();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
@@ -73,19 +76,27 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     };
 
     const handleMaxAmount = async () => {
-        const token = chain.getNativeToken();
-
         if (token.getSymbol() === 'LEOS') {
             const account = AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account);
             const availableBalance = await token.getAvailableBalance(account);
             const balance = availableBalance.toString().split(' ')[0];
 
+            setAvailableBalance(balance);
             setBalance(balance);
             setUsdAmount((await availableBalance.getUsdValue()).toString());
         } else if (asset.token.balance) {
             setBalance(asset.token.balance);
             setUsdAmount(asset.token.usdBalance ? asset.token.usdBalance.toString() : '0');
         }
+    };
+
+    const throwErrorMsg = () => {
+        errorStore.setError({
+            error: new Error('You do not have enough balance to perform transaction!'),
+            expected: true,
+            title: 'Insufficient balance',
+        });
+        setSubmitting(false);
     };
 
     const onSendTransaction = async () => {
@@ -99,12 +110,12 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                 Number(asset.token.balance) <= 0 ||
                 Number(balance) <= 0
             ) {
-                errorStore.setError({
-                    error: new Error('You do not have enough balance to perform transaction!'),
-                    expected: true,
-                    title: 'Insufficient balance',
-                });
-                setSubmitting(false);
+                throwErrorMsg();
+                return;
+            }
+
+            if (token.getSymbol() === 'LEOS' && Number(balance) > Number(availableBalance)) {
+                throwErrorMsg();
                 return;
             }
 
