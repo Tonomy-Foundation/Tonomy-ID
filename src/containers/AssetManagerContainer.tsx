@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
-import { AntelopeAccount, PangeaMainnetChain } from '../utils/chain/antelope';
+import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
 
 export type Props = {
@@ -111,7 +111,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                 setAsset(assetData);
 
                 if (isVestable) {
-                    const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
+                    const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = availableBalance.add(vestedBalance);

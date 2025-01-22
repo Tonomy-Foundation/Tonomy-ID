@@ -36,5 +36,14 @@ export function formatTokenValue(amount: Decimal, maxDecimals = 4): string {
         formattedAmount = amount.toString();
     }
 
+    // Add commas for thousands
+    const [integerPart, fractionalPart] = formattedAmount.split('.');
+
+    formattedAmount = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    if (fractionalPart) {
+        formattedAmount += `.${fractionalPart}`;
+    }
+
     return formattedAmount;
 }
