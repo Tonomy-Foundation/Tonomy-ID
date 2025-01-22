@@ -303,8 +303,8 @@ export default function SignTransactionConsentContainer({
             const now = new Date().getTime();
             const expirationTime = expiration.getTime();
             const timeDiff = expirationTime - now;
-
-            if (timeDiff <= 0) {
+            const remainingCounter = Math.floor((expirationTime - now) / 1000);
+            if (remainingCounter < 0) {
                 setRemainingTime('00:00');
                 setExpired(true);
                 clearInterval(intervalId);
@@ -397,7 +397,7 @@ export default function SignTransactionConsentContainer({
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    {expired && chain.getChainType() === ChainType.ANTELOPE && (
+                    {expired && chain.getChainType() === ChainType.ANTELOPE && !transactionLoading && (
                         <View style={styles.transactionExpiredView}>
                             <Text style={styles.transactionExpiredText}>The transaction time has expired</Text>
                             <Text>Please restart the transaction and try again.</Text>
