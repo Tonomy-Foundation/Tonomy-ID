@@ -46,12 +46,12 @@ export default function ExploreContainer() {
     ];
 
     const openNews = [
-        {
-            title: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...',
-            subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
-            image: require('../assets/images/explore/news-1.png'),
-            url: 'https://pangea-web4-world.webflow.io/news/pangeas-leos-token-a-mica-compliant-pioneer-with-expert-legal-guidance-from-taylor-wessing',
-        },
+        // {
+        //     title: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...',
+        //     subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
+        //     image: require('../assets/images/explore/news-1.png'),
+        //     url: 'https://pangea-web4-world.webflow.io/news/pangeas-leos-token-a-mica-compliant-pioneer-with-expert-legal-guidance-from-taylor-wessing',
+        // },
         {
             title: 'Navigating the Future: Insights from Brightnodes Audit of LEOS...',
             subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
