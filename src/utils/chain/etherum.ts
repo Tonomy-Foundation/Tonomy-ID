@@ -338,13 +338,13 @@ export class EthereumTransaction implements ITransaction {
             `${ETHERSCAN_URL}&module=contract&action=getabi&address=${(await this.getTo()).getName()}`
         )
             .then((res) => res.json())
-            .then((data) => data.result);
+            .then((data) => data);
 
         if (res.status !== '1') {
             throw new Error('Failed to fetch ABI');
         }
 
-        this.abi = res.abi as string;
+        this.abi = res.result as string;
         return this.abi;
     }
     async getFunction(): Promise<string> {
@@ -374,7 +374,6 @@ export class EthereumTransaction implements ITransaction {
             new Decimal(this.transaction.value ? this.transaction.value.toString() : '0').div(precisionMultiplier)
         );
     }
-
     async estimateTransactionFee(): Promise<Asset> {
         // Get the current fee data
         const feeData = await this.chain.getProvider().getFeeData();
