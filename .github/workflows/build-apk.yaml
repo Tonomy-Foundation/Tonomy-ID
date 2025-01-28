@@ -20,7 +20,7 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     env:
-      EXPO_NODE_ENV: testnet
+      EXPO_NODE_ENV: staging
       EXPO_PLATFORM: android
       NODE_VERSION: 22.3.0
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
