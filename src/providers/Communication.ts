@@ -57,14 +57,14 @@ export default function CommunicationProvider() {
         const handleDeepLink = async ({ url }) => {
             debug('handleDeepLink() URL:', url);
             const params = new URLSearchParams(new URL(url).search);
-            const payloadParam = params.get('payloadParam');
+            const payload = params.get('payload');
             const screen = params.get('screen');
 
-            console.log('payloadParam', payloadParam, screen);
+            debug('payloadParam', screen);
 
-            if (payloadParam && screen) {
+            if (payload && screen) {
                 navigation.navigate('SSO', {
-                    payload: payloadParam,
+                    payload: payload,
                     platform: 'mobile',
                 });
             }
