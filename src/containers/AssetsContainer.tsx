@@ -191,9 +191,9 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 <TouchableOpacity
                                     key={index}
                                     onPress={() => {
-                                        navigation.navigate('AssetDetail', {
-                                            screenTitle: chainName,
+                                        navigation.navigate('AssetManager', {
                                             chain: chainObj.chain,
+                                            screenTitle: chainName,
                                         });
                                     }}
                                     style={styles.assetsView}

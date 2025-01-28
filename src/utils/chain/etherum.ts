@@ -28,6 +28,7 @@ import {
     AbstractTransactionReceipt,
     IAsset,
     ChainType,
+    VestedTokens,
 } from './types';
 import settings from '../../settings';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
@@ -204,6 +205,18 @@ export class EthereumToken extends AbstractToken {
         const balance = await this.getBalance(account);
 
         return balance.getUsdValue();
+    }
+
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
+        throw new Error(`getVestedTokens() method not implemented' ${account}`);
+    }
+
+    async getVestedTotalBalance(): Promise<IAsset> {
+        throw new Error(`getVestedTotalBalance() method not implemented'`);
+    }
+
+    async getAvailableBalance(account?: IAccount): Promise<IAsset> {
+        return this.getBalance(account);
     }
 }
 
