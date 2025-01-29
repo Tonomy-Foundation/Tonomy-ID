@@ -63,8 +63,9 @@ export default function CommunicationProvider() {
             debug('payloadParam', screen);
 
             if (payload && screen) {
+                debug('objToBase64Url(JSON.parse(payload))', objToBase64Url(JSON.parse(payload)));
                 navigation.navigate('SSO', {
-                    payload: payload,
+                    payload: objToBase64Url(JSON.parse(payload)),
                     platform: 'mobile',
                 });
             }
