@@ -6,7 +6,6 @@ on:
       - master
       - testnet
       - development
-      - bug/1301-
 
 jobs:
   deploy:
@@ -54,7 +53,7 @@ jobs:
 
           if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             echo "Branch is 'development'"
-            yarn run deploy:staging:ios
+            yarn run deploy:staging
           fi
         env:
           GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
