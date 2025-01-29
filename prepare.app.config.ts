@@ -76,7 +76,7 @@ const expo: ExpoConfig = {
                 },
             ],
         },
-        associatedDomains: [`applinks:${ssoDomainUrl}`],
+        associatedDomains: [`applinks:${ssoDomainUrl}/help?payload=*&screen=SSO`],
     },
     android: {
         allowBackup: false,
