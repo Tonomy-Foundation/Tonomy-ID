@@ -62,12 +62,14 @@ export default function CommunicationProvider() {
             const payload = params.get('payload');
             const screen = params.get('screen');
 
-            debug('payloadParam', payload, screen);
+            debug('payload', payload);
+            debug('screen', screen);
 
-            if (payload && screen) {
-                debug('objToBase64Url(JSON.parse(payload))', JSON.parse(payload), objToBase64Url(JSON.parse(payload)));
+            captureError('handleDeepLink() payload', payload, 'info');
+
+            if (payload) {
                 navigation.navigate('SSO', {
-                    payload: objToBase64Url(JSON.parse(payload)),
+                    payload: payload,
                     platform: 'mobile',
                 });
             }
