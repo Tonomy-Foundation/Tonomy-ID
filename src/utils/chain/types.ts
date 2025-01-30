@@ -1,5 +1,5 @@
 import { TKeyType } from '@veramo/core';
-import { formatCurrencyValue } from '../numbers';
+import { formatTokenValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
@@ -7,6 +7,26 @@ import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
+
+export interface VestedAllocation {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    vestingStart: Date;
+    vestingPeriod: string;
+    unlockAtVestingStart: number;
+    allocationDate: Date;
+    categoryId: number;
+}
+
+export interface VestedTokens {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    allocationsDetails: VestedAllocation[];
+}
 
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
@@ -220,20 +240,7 @@ export abstract class AbstractAsset implements IAsset {
         if (precision) {
             return this.amount.toFixed(precision);
         } else {
-            let formattedAmount: string;
-            const decimalPart = this.amount.toFixed().split('.')[1] || '';
-
-            if (this.amount.equals(this.amount.floor())) {
-                formattedAmount = this.amount.toFixed(1);
-            } else if (decimalPart.length > 4) {
-                // If the decimal part exceeds 4 digits, display only 4 decimal places
-                formattedAmount = this.amount.toFixed(4, Decimal.ROUND_DOWN);
-            } else {
-                // If the decimal part is 4 digits or fewer, display as-is
-                formattedAmount = this.amount.toString();
-            }
-
-            return formattedAmount;
+            return formatTokenValue(this.amount);
         }
     }
 
@@ -255,7 +262,11 @@ export interface IToken {
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
     isTransferable(): boolean;
+    isVestable(): boolean;
     eq(other: IToken): boolean;
+    getVestedTokens(account: IAccount): Promise<VestedTokens>;
+    getAvailableBalance(account?: IAccount): Promise<IAsset>;
+    getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -266,14 +277,24 @@ export abstract class AbstractToken implements IToken {
     protected chain: IChain;
     protected logoUrl: string;
     protected transferable = true;
+    protected vestable = false;
 
-    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string, transferable = true) {
+    constructor(
+        name: string,
+        symbol: string,
+        precision: number,
+        chain: IChain,
+        logoUrl: string,
+        transferable = true,
+        vestable = false
+    ) {
         this.name = name;
         this.symbol = symbol;
         this.precision = precision;
         this.chain = chain;
         this.logoUrl = logoUrl;
         this.transferable = transferable;
+        this.vestable = vestable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -303,6 +324,9 @@ export abstract class AbstractToken implements IToken {
     isTransferable(): boolean {
         return this.transferable;
     }
+    isVestable(): boolean {
+        return this.vestable;
+    }
     eq(other: IToken): boolean {
         return (
             this.getName() === other.getName() &&
@@ -312,6 +336,9 @@ export abstract class AbstractToken implements IToken {
     }
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
+    abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
+    abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
+    abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
 }
 
 export interface IAccount {

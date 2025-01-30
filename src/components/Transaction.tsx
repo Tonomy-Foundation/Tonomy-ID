@@ -254,7 +254,7 @@ export function TransactionFee({
                 <>
                     <Text>{transactionFee.fee.toString()}</Text>
                     <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                        (${formatCurrencyValue(transactionFee.usdFee, 2)})
+                        (${formatCurrencyValue(transactionFee.usdFee)})
                     </Text>
                 </>
             );
