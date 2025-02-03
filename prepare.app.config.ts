@@ -45,6 +45,7 @@ if (!/^[0-9a-zA-Z ]+$/g.test(settings.config.appName)) throw new Error('Invalid 
 if (!/^([.]{1})([0-9a-z.]+)$/g.test(settings.config.accountSuffix))
     throw new Error('Invalid account suffix ' + settings.config.accountSuffix);
 
+const ssoDomainUrl = settings.config.ssoWebsiteOrigin.replace(/^https?:\/\//, '');
 const expo: ExpoConfig = {
     scheme,
     name: settings.config.appName,
@@ -75,6 +76,7 @@ const expo: ExpoConfig = {
                 },
             ],
         },
+        associatedDomains: [`applinks:${ssoDomainUrl}`],
     },
     android: {
         allowBackup: false,

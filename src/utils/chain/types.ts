@@ -1,11 +1,32 @@
 import { TKeyType } from '@veramo/core';
-import { formatCurrencyValue } from '../numbers';
+import { formatTokenValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
 import { sha256 } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
+import Decimal from 'decimal.js';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
+
+export interface VestedAllocation {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    vestingStart: Date;
+    vestingPeriod: string;
+    unlockAtVestingStart: number;
+    allocationDate: Date;
+    categoryId: number;
+}
+
+export interface VestedTokens {
+    totalAllocation: number;
+    unlockable: number;
+    unlocked: number;
+    locked: number;
+    allocationsDetails: VestedAllocation[];
+}
 
 export interface IPublicKey {
     getType(): Promise<TKeyType>;
@@ -162,7 +183,7 @@ export abstract class AbstractChain implements IChain {
 
 export interface IAsset {
     getToken(): IToken;
-    getAmount(): bigint;
+    getAmount(): Decimal;
     getUsdValue(): Promise<number>;
     getSymbol(): string;
     getPrecision(): number;
@@ -182,50 +203,47 @@ export interface IAsset {
 
 export abstract class AbstractAsset implements IAsset {
     protected abstract token: IToken;
-    protected abstract amount: bigint;
+    protected abstract amount: Decimal;
 
     getToken(): IToken {
         return this.token;
     }
-    getAmount(): bigint {
+    getAmount(): Decimal {
         return this.amount;
     }
     add(other: IAsset): IAsset {
         if (!this.token.eq(other.getToken())) throw new Error('Different tokens');
-        return new Asset(this.token, this.amount + other.getAmount());
+        return new Asset(this.token, this.amount.add(other.getAmount()));
     }
+
     async getUsdValue(): Promise<number> {
         const price = await this.token.getUsdPrice();
 
         if (price) {
-            const precision = this.token.getPrecision();
-            const precisionMultiplier = BigInt(10) ** BigInt(precision);
+            const priceDecimal = new Decimal(price);
+            const usdValue = this.amount.mul(priceDecimal);
 
-            const priceMultiplier = 10 ** 4; // $ price assumed to have maximum 4 decimal places
-            const priceBigInt = BigInt(price * priceMultiplier);
-
-            const usdValueBigInt = (this.amount * priceBigInt) / precisionMultiplier;
-
-            return parseFloat(usdValueBigInt.toString()) / priceMultiplier;
-        } else {
-            return 0;
+            return usdValue.toNumber();
         }
+
+        return 0;
     }
+
     getSymbol(): string {
         return this.token.getSymbol();
     }
     getPrecision(): number {
         return this.token.getPrecision();
     }
+
     printValue(precision?: number): string {
-        const amountNumber = Number(this.amount);
-        const precisionNumber = Number(10 ** this.token.getPrecision());
-
-        // Perform the division
-        const value = parseFloat((amountNumber / precisionNumber).toFixed(precision ?? this.getPrecision()));
-
-        return formatCurrencyValue(value, precision ?? this.getPrecision());
+        if (precision) {
+            return this.amount.toFixed(precision);
+        } else {
+            return formatTokenValue(this.amount);
+        }
     }
+
     toString(precision?: number): string {
         return `${this.printValue(precision)} ${this.token.getSymbol()}`;
     }
@@ -244,7 +262,11 @@ export interface IToken {
     getBalance(account?: IAccount): Promise<IAsset>;
     getUsdValue(account?: IAccount): Promise<number>;
     isTransferable(): boolean;
+    isVestable(): boolean;
     eq(other: IToken): boolean;
+    getVestedTokens(account: IAccount): Promise<VestedTokens>;
+    getAvailableBalance(account?: IAccount): Promise<IAsset>;
+    getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -255,14 +277,24 @@ export abstract class AbstractToken implements IToken {
     protected chain: IChain;
     protected logoUrl: string;
     protected transferable = true;
+    protected vestable = false;
 
-    constructor(name: string, symbol: string, precision: number, chain: IChain, logoUrl: string, transferable = true) {
+    constructor(
+        name: string,
+        symbol: string,
+        precision: number,
+        chain: IChain,
+        logoUrl: string,
+        transferable = true,
+        vestable = false
+    ) {
         this.name = name;
         this.symbol = symbol;
         this.precision = precision;
         this.chain = chain;
         this.logoUrl = logoUrl;
         this.transferable = transferable;
+        this.vestable = vestable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -292,6 +324,9 @@ export abstract class AbstractToken implements IToken {
     isTransferable(): boolean {
         return this.transferable;
     }
+    isVestable(): boolean {
+        return this.vestable;
+    }
     eq(other: IToken): boolean {
         return (
             this.getName() === other.getName() &&
@@ -301,6 +336,9 @@ export abstract class AbstractToken implements IToken {
     }
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
+    abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
+    abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
+    abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
 }
 
 export interface IAccount {
@@ -375,9 +413,9 @@ export abstract class AbstractAccount implements IAccount {
 
 export class Asset extends AbstractAsset {
     protected token: IToken;
-    protected amount: bigint;
+    protected amount: Decimal;
 
-    constructor(token: IToken, amount: bigint) {
+    constructor(token: IToken, amount: Decimal) {
         super();
         this.token = token;
         this.amount = amount;

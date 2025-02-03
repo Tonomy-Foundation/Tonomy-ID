@@ -28,6 +28,7 @@ import { appStorage, assetStorage, keyStorage } from './StorageManager/setup';
 import { EosioUtil, IUser, IUserBase } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
 import Debug from './debug';
+import Decimal from 'decimal.js';
 
 const debug = Debug('tonomy-id:utils:tokenRegistry');
 
@@ -44,22 +45,6 @@ export interface AccountTokenDetails {
     };
     account: string;
     privateKey: IPrivateKey;
-}
-
-export interface VestedAllocation {
-    totalAllocation: number;
-    unlockable: number;
-    unlocked: number;
-    locked: number;
-    allocationsDetails: {
-        totalAllocation: number;
-        unlockable: number;
-        unlocked: number;
-        locked: number;
-        vestingStart: Date;
-        vestingPeriod: string;
-        unlockAtVestingStart: number;
-    }[];
 }
 
 export enum ChainKeyName {
@@ -175,7 +160,7 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?:
         );
 
         if (!asset) {
-            await assetStorage.createAsset(new Asset(token, BigInt(0)), account);
+            await assetStorage.createAsset(new Asset(token, new Decimal(0)), account);
         }
     } else {
         if (!user) throw new Error('User is required for Antelope chain to get account name');
@@ -191,7 +176,7 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?:
         debug(`getAccountFromChain() account: ${account.getChain().getName()}`);
 
         if (!asset) {
-            await assetStorage.createAsset(new Asset(token, BigInt(0)), account);
+            await assetStorage.createAsset(new Asset(token, new Decimal(0)), account);
         }
     }
 
@@ -227,7 +212,7 @@ export async function addNativeTokenToAssetStorage(user: IUserBase) {
     const accountName = await user.getAccountName();
     const privateKey = await getKeyFromChain(pangeaTokenEntry);
 
-    const asset = new Asset(pangeaTokenEntry.token, BigInt(0));
+    const asset = new Asset(pangeaTokenEntry.token, new Decimal(0));
     const account = AntelopeAccount.fromAccountAndPrivateKey(
         pangeaTokenEntry.chain,
         accountName,

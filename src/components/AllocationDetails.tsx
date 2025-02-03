@@ -4,19 +4,15 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { getMultiplier } from '../utils/multiplier';
+import { VestedAllocation } from '../utils/chain/types';
+import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
+import { formatDate } from '../utils/time';
+import Decimal from 'decimal.js';
 
 export type Props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
-    allocationData: {
-        totalAllocation: number;
-        unlockable: number;
-        unlocked: number;
-        locked: number;
-        vestingStart: Date;
-        vestingPeriod: string;
-        unlockAtVestingStart: number;
-    };
+    allocationData: VestedAllocation;
     usdPriceValue: number;
 };
 
@@ -42,8 +38,12 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Total allocation</Text>
                     <View style={styles.flexColCenter}>
-                        <Text style={styles.allocMulti}>{allocationData.totalAllocation} LEOS</Text>
-                        <Text style={styles.usdBalance}>${allocationData.totalAllocation * props.usdPriceValue}</Text>
+                        <Text style={styles.allocMulti}>
+                            {formatTokenValue(new Decimal(allocationData.totalAllocation ?? 0))} LEOS
+                        </Text>
+                        <Text style={styles.usdBalance}>
+                            ${formatCurrencyValue(allocationData.totalAllocation * props.usdPriceValue)}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
@@ -55,25 +55,29 @@ const AllocationDetails = (props: Props) => {
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.vestingStart.toDateString()}</Text>
+                        <Text style={styles.allocMulti}>
+                            {allocationData?.vestingStart && formatDate(allocationData?.vestingStart)}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting period</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.vestingPeriod} years</Text>
+                        <Text style={styles.allocMulti}>{allocationData.vestingPeriod}</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Unlock at vesting start</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart}%</Text>
+                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Price multiplier</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>{getMultiplier()}x</Text>
+                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
+                            {getMultiplier(allocationData.allocationDate, allocationData.categoryId)}x
+                        </Text>
                     </View>
                 </View>
             </View>
@@ -81,8 +85,8 @@ const AllocationDetails = (props: Props) => {
                 <Text style={styles.howHead}>How multiplier works</Text>
 
                 <Text style={styles.howParagraph}>
-                    The multiplier boosts the value of your vested coins, increasing rewards or benefits. The higher the
-                    multiplier, the greater the value upon release
+                    The multiplier is the price boost you received when the coins were allocated to you, relative to the
+                    public sale price
                 </Text>
             </View>
         </RBSheet>

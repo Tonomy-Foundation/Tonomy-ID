@@ -5,6 +5,7 @@ import theme, { commonStyles } from '../utils/theme';
 import { IChain } from '../utils/chain/types';
 
 import { TButtonContained } from '../components/atoms/TButton';
+import React from 'react';
 
 export type StakeLesoProps = {
     navigation: StakeLesoscreenNavigationProp['navigation'];

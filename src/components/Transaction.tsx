@@ -8,9 +8,10 @@ import { QuestionMark, WarningCircle } from 'iconoir-react-native';
 import NegligibleTransactionFees from './NegligibleTransactionFees';
 import { KeyValue } from '../utils/strings';
 import { formatCurrencyValue } from '../utils/numbers';
+import Decimal from 'decimal.js';
 
 export type TransactionFeeData = {
-    fee: string;
+    fee: IAsset;
     usdFee: number;
     show: boolean;
     isFree: boolean;
@@ -203,7 +204,7 @@ export function ContractOperationDetails({ operation, date }: { operation: Opera
 }
 
 export function isFree(asset: IAsset, usdFee: number): boolean {
-    return asset.getAmount() === BigInt(0) && usdFee === 0;
+    return asset.getAmount() === new Decimal(0) && usdFee === 0;
 }
 
 // shows the fee only if the transaction does not contain asset transfers, or is not free
@@ -218,7 +219,13 @@ export function showFee(operations: OperationData[] | unknown, asset: IAsset, us
 
 const NEGLIGIBLE_FEE_USD = 0.001;
 
-export function TransactionFee({ transactionFee }: { transactionFee: TransactionFeeData }) {
+export function TransactionFee({
+    transactionFee,
+    precision,
+}: {
+    transactionFee: TransactionFeeData;
+    precision: number;
+}) {
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const isNegligible = transactionFee.usdFee <= NEGLIGIBLE_FEE_USD;
@@ -236,16 +243,18 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
         else if (isNegligible) {
             return (
                 <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
-                    <Text>negligible</Text>
-                    <WarningCircle width={15} height={15} color={theme.colors.success} />
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text>negligible </Text>
+                        <WarningCircle width={15} height={15} color={theme.colors.success} />
+                    </View>
                 </TouchableOpacity>
             );
         } else {
             return (
                 <>
-                    <Text>{transactionFee.fee}</Text>
+                    <Text>{transactionFee.fee.toString()}</Text>
                     <Text style={[styles.secondaryColor, commonStyles.secondaryFontFamily]}>
-                        (${formatCurrencyValue(transactionFee.usdFee, 2)})
+                        (${formatCurrencyValue(transactionFee.usdFee)})
                     </Text>
                 </>
             );
@@ -254,7 +263,12 @@ export function TransactionFee({ transactionFee }: { transactionFee: Transaction
 
     return (
         <View style={styles.appDialog}>
-            <NegligibleTransactionFees transactionFee={transactionFee} onClose={onClose} refMessage={refMessage} />
+            <NegligibleTransactionFees
+                precision={precision}
+                transactionFee={transactionFee}
+                onClose={onClose}
+                refMessage={refMessage}
+            />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.secondaryColor}>Transaction fee:</Text>
