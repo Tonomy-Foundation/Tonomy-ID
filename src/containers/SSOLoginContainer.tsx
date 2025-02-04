@@ -13,6 +13,7 @@ import {
     CommunicationError,
     ResponsesManager,
     RequestsManager,
+    SdkError,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -89,11 +90,30 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             await responsesManager.createResponses(user);
 
-            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-                callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-                messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
-            });
+            let callbackUrl;
+
+            try {
+                callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
+                    callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
+                    callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
+                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                });
+            } catch (e) {
+                debug('acceptLoginRequest() error:', e);
+
+                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    // The following logic is necessary to handle differences between Android deeplinks and iOS universal links
+                    callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
+                        callbackPath: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
+                            .callbackPath,
+                        callbackOrigin: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
+                            .origin,
+                        messageRecipient: responsesManager.getExternalLoginResponseOrThrow().getRequest().getIssuer(),
+                    });
+                } else {
+                    throw e;
+                }
+            }
 
             debug('onLogin() callbackUrl:', callbackUrl);
 
