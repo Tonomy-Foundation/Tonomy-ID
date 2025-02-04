@@ -89,7 +89,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (!responsesManager) throw new Error('Responses manager is not set');
 
             await responsesManager.createResponses(user);
-            //try catch , u
+
             let callbackUrl;
 
             try {
@@ -102,6 +102,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 debug('acceptLoginRequest() error:', e);
 
                 if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    // The following logic is necessary to handle differences between Android deeplinks and iOS universal links
                     callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
                         callbackPath: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
                             .callbackPath,
@@ -110,12 +111,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                         messageRecipient: responsesManager.getExternalLoginResponseOrThrow().getRequest().getIssuer(),
                     });
                 } else {
-                    errorStore.setError({
-                        error: e,
-                        expected: false,
-                        // @ts-expect-error item of type string is not assignable to type never
-                        onClose: async () => navigation.navigate('Assets'),
-                    });
+                    throw e;
                 }
             }
 
