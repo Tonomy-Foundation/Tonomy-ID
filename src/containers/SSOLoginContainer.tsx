@@ -24,6 +24,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
 import Debug from 'debug';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { captureError } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -90,30 +91,61 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             await responsesManager.createResponses(user);
 
-            let callbackUrl;
+            // try {
+            //     callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
+            //         callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
+            //         callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
+            //         messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+            //     });
+            // } catch (e) {
+            //     debug('acceptLoginRequest() error:', e);
+
+            //     if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+            //         // The following logic is necessary to handle differences between Android deeplinks and iOS universal links
+            //         callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
+            //             callbackPath: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
+            //                 .callbackPath,
+            //             callbackOrigin: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
+            //                 .origin,
+            //             messageRecipient: responsesManager.getExternalLoginResponseOrThrow().getRequest().getIssuer(),
+            //         });
+            //     } else {
+            //         throw e;
+            //     }
+            // }
+
+            let loginData;
 
             try {
-                callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                    callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-                    callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
-                });
-            } catch (e) {
-                debug('acceptLoginRequest() error:', e);
+                const accountsLoginRequest = responsesManager.getAccountsLoginRequestOrThrow();
 
-                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
-                    // The following logic is necessary to handle differences between Android deeplinks and iOS universal links
-                    callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                        callbackPath: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
-                            .callbackPath,
-                        callbackOrigin: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
-                            .origin,
-                        messageRecipient: responsesManager.getExternalLoginResponseOrThrow().getRequest().getIssuer(),
-                    });
-                } else {
-                    throw e;
-                }
+                debug(
+                    'getAccountsLoginRequestOrThrow() error:',
+                    accountsLoginRequest.getPayload(),
+                    accountsLoginRequest.getIssuer()
+                );
+                loginData = {
+                    callbackPath: accountsLoginRequest.getPayload().callbackPath,
+                    callbackOrigin: accountsLoginRequest.getPayload().origin,
+                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                };
+            } catch (e) {
+                const externalLoginResponse = responsesManager.getExternalLoginResponseOrThrow();
+
+                debug(
+                    'getExternalLoginResponseOrThrow() error:',
+                    externalLoginResponse.getRequest().getPayload(),
+                    externalLoginResponse.getRequest().getIssuer()
+                );
+
+                loginData = {
+                    callbackPath: externalLoginResponse.getResponse().getPayload().callbackPath,
+                    callbackOrigin: externalLoginResponse.getResponse().getPayload().origin,
+                    messageRecipient: externalLoginResponse.getRequest().getIssuer(),
+                };
             }
+
+            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, loginData);
 
             debug('onLogin() callbackUrl:', callbackUrl);
 
