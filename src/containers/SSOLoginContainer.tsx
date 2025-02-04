@@ -13,6 +13,7 @@ import {
     CommunicationError,
     ResponsesManager,
     RequestsManager,
+    SdkError,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -88,12 +89,33 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (!responsesManager) throw new Error('Responses manager is not set');
 
             await responsesManager.createResponses(user);
+            //try catch , u
+            let callbackUrl;
 
-            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-                callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-                messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
-            });
+            try {
+                callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
+                    callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
+                    callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
+                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                });
+            } catch (e) {
+                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
+                        callbackPath: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
+                            .callbackPath,
+                        callbackOrigin: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
+                            .origin,
+                        messageRecipient: responsesManager.getExternalLoginResponseOrThrow().getRequest().getIssuer(),
+                    });
+                } else {
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                        // @ts-expect-error item of type string is not assignable to type never
+                        onClose: async () => navigation.navigate('Assets'),
+                    });
+                }
+            }
 
             debug('onLogin() callbackUrl:', callbackUrl);
 

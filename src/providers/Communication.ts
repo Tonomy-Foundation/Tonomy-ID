@@ -60,12 +60,6 @@ export default function CommunicationProvider() {
 
             debug('params', params);
             const payload = params.get('payload');
-            const screen = params.get('screen');
-
-            debug('payload', payload);
-            debug('screen', screen);
-
-            captureError('handleDeepLink() payload', payload, 'info');
 
             if (payload) {
                 navigation.navigate('SSO', {
