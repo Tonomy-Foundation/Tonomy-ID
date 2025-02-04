@@ -6,7 +6,6 @@ on:
       - master
       - testnet
       - development
-      - bug/1301-
 
 jobs:
   deploy:
