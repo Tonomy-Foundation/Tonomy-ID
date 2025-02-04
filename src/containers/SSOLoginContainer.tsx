@@ -99,6 +99,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
                 });
             } catch (e) {
+                debug('acceptLoginRequest() error:', e);
+
                 if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
                     callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
                         callbackPath: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
