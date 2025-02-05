@@ -91,36 +91,13 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             await responsesManager.createResponses(user);
 
-            // try {
-            //     callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-            //         callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-            //         callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-            //         messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
-            //     });
-            // } catch (e) {
-            //     debug('acceptLoginRequest() error:', e);
-
-            //     if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
-            //         // The following logic is necessary to handle differences between Android deeplinks and iOS universal links
-            //         callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-            //             callbackPath: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
-            //                 .callbackPath,
-            //             callbackOrigin: responsesManager.getExternalLoginResponseOrThrow().getResponse().getPayload()
-            //                 .origin,
-            //             messageRecipient: responsesManager.getExternalLoginResponseOrThrow().getRequest().getIssuer(),
-            //         });
-            //     } else {
-            //         throw e;
-            //     }
-            // }
-
             let loginData;
 
             try {
                 const accountsLoginRequest = responsesManager.getAccountsLoginRequestOrThrow();
 
                 debug(
-                    'getAccountsLoginRequestOrThrow() error:',
+                    'getAccountsLoginRequestOrThrow():',
                     accountsLoginRequest.getPayload(),
                     accountsLoginRequest.getIssuer()
                 );
@@ -130,21 +107,37 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
                 };
             } catch (e) {
-                const externalLoginResponse = responsesManager.getExternalLoginResponseOrThrow();
+                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    const externalLoginResponse = responsesManager.getExternalLoginResponseOrThrow();
+                    const payload = externalLoginResponse.getRequest().getPayload();
+                    const responsePayload = externalLoginResponse.getResponse().getPayload();
 
-                debug(
-                    'getExternalLoginResponseOrThrow() error:',
-                    externalLoginResponse.getRequest().getPayload(),
-                    externalLoginResponse.getRequest().getIssuer()
-                );
+                    debug(
+                        'getExternalLoginResponseOrThrow() error:',
+                        typeof payload,
+                        payload,
+                        payload.callbackPath,
+                        payload.origin,
+                        externalLoginResponse.getRequest().getIssuer()
+                    );
 
-                loginData = {
-                    callbackPath: externalLoginResponse.getResponse().getPayload().callbackPath,
-                    callbackOrigin: externalLoginResponse.getResponse().getPayload().origin,
-                    messageRecipient: externalLoginResponse.getRequest().getIssuer(),
-                };
+                    debug(
+                        'response payload',
+                        responsePayload,
+                        typeof responsePayload,
+                        responsePayload.callbackPath,
+                        responsePayload.origin
+                    );
+
+                    loginData = {
+                        callbackPath: externalLoginResponse.getRequest().getPayload().callbackPath,
+                        callbackOrigin: externalLoginResponse.getRequest().getPayload().origin,
+                        messageRecipient: externalLoginResponse.getRequest().getIssuer(),
+                    };
+                } else throw e;
             }
 
+            debug('loginData', loginData);
             const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, loginData);
 
             debug('onLogin() callbackUrl:', callbackUrl);
