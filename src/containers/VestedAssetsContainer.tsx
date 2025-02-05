@@ -98,7 +98,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         {formatTokenValue(new Decimal(totalVestedAmount))} {chain.getNativeToken().getSymbol()}
                     </Text>
                     <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd)}</Text>
-                    <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text>
+                    {/* <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text> */}
                 </ImageBackground>
             </View>
         );
@@ -123,12 +123,12 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                     {chain.getNativeToken().getSymbol()}
                                 </Text>
                                 <View style={styles.flexColEnd}>
-                                    <Text style={styles.allocMulti}>
+                                    {/* <Text style={styles.allocMulti}>
                                         Multiplier:
                                         <Text style={{ color: theme.colors.success }}>
                                             x{getMultiplier(allocation.allocationDate, allocation.categoryId)}
                                         </Text>
-                                    </Text>
+                                    </Text> */}
                                     <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                                 </View>
                             </TouchableOpacity>
@@ -149,12 +149,12 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                     {chain.getNativeToken().getSymbol()}
                                 </Text>
                                 <View style={styles.flexColEnd}>
-                                    <Text style={styles.allocMulti}>
+                                    {/* <Text style={styles.allocMulti}>
                                         Multiplier:
                                         <Text style={{ color: theme.colors.success }}>
                                             x{getMultiplier(allocation.allocationDate, allocation.categoryId)}
                                         </Text>
-                                    </Text>
+                                    </Text> */}
                                     <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                                 </View>
                             </TouchableOpacity>
