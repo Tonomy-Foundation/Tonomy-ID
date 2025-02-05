@@ -24,7 +24,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
 import Debug from 'debug';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { captureError } from '../utils/sentry';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -95,15 +94,12 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             try {
                 const accountsLoginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+                const payload = accountsLoginRequest.getPayload();
 
-                debug(
-                    'getAccountsLoginRequestOrThrow():',
-                    accountsLoginRequest.getPayload(),
-                    accountsLoginRequest.getIssuer()
-                );
+                debug('getAccountsLoginRequestOrThrow():', payload, accountsLoginRequest.getIssuer());
                 loginData = {
-                    callbackPath: accountsLoginRequest.getPayload().callbackPath,
-                    callbackOrigin: accountsLoginRequest.getPayload().origin,
+                    callbackPath: payload.callbackPath,
+                    callbackOrigin: payload.origin,
                     messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
                 };
             } catch (e) {
@@ -120,8 +116,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     );
 
                     loginData = {
-                        callbackPath: externalLoginResponse.getRequest().getPayload().callbackPath,
-                        callbackOrigin: externalLoginResponse.getRequest().getPayload().origin,
+                        callbackPath: payload.callbackPath,
+                        callbackOrigin: payload.origin,
                         messageRecipient: externalLoginResponse.getRequest().getIssuer(),
                     };
                 } else throw e;
@@ -173,15 +169,12 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             try {
                 const accountsLoginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+                const payload = accountsLoginRequest.getPayload();
 
-                debug(
-                    'getAccountsLoginRequestOrThrow():',
-                    accountsLoginRequest.getPayload(),
-                    accountsLoginRequest.getIssuer()
-                );
+                debug('getAccountsLoginRequestOrThrow():', payload, accountsLoginRequest.getIssuer());
                 loginData = {
-                    callbackPath: accountsLoginRequest.getPayload().callbackPath,
-                    callbackOrigin: accountsLoginRequest.getPayload().origin,
+                    callbackPath: payload.callbackPath,
+                    callbackOrigin: payload.origin,
                     messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
                     user,
                 };
@@ -199,8 +192,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     );
 
                     loginData = {
-                        callbackPath: externalLoginResponse.getRequest().getPayload().callbackPath,
-                        callbackOrigin: externalLoginResponse.getRequest().getPayload().origin,
+                        callbackPath: payload.callbackPath,
+                        callbackOrigin: payload.origin,
                         messageRecipient: externalLoginResponse.getRequest().getIssuer(),
                         user,
                     };
