@@ -134,32 +134,6 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                             </TouchableOpacity>
                         </View>
                     ))}
-                    {vestedAllocations.allocationsDetails.map((allocation, index) => (
-                        <View key={index}>
-                            <TouchableOpacity
-                                key={index}
-                                style={styles.allocationView}
-                                onPress={() => {
-                                    setSelectedAllocation(allocation);
-                                    refMessage.current?.open();
-                                }}
-                            >
-                                <Text style={{ fontWeight: '700' }}>
-                                    {formatTokenValue(new Decimal(allocation.totalAllocation))}{' '}
-                                    {chain.getNativeToken().getSymbol()}
-                                </Text>
-                                <View style={styles.flexColEnd}>
-                                    {/* <Text style={styles.allocMulti}>
-                                        Multiplier:
-                                        <Text style={{ color: theme.colors.success }}>
-                                            x{getMultiplier(allocation.allocationDate, allocation.categoryId)}
-                                        </Text>
-                                    </Text> */}
-                                    <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
                     {selectedAllocation && (
                         <AllocationDetails
                             onClose={onClose}
