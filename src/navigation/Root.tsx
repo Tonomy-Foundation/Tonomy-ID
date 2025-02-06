@@ -37,9 +37,10 @@ import {
     ITransactionRequest,
 } from '../utils/chain/types';
 import { OperationData } from '../components/Transaction';
-import AssetDetail from '../screens/AssetDetailScreen';
 import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import AssetManagerScreen from '../screens/AssetManagerScreen';
+import VestedAssetsScreen from '../screens/VestedAssetsScreen';
 import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
 
@@ -103,7 +104,6 @@ export type MainRouteStackParamList = {
     Citizenship: undefined;
     Explore: undefined;
     Apps: undefined;
-    AssetDetail: AssetsParamsScreen;
     Receive: AssetsParamsScreen;
     Send: {
         screenTitle?: string;
@@ -111,6 +111,8 @@ export type MainRouteStackParamList = {
         privateKey: IPrivateKey;
     };
     SelectAsset: { screenTitle?: string; type: string };
+    AssetManager: AssetsParamsScreen;
+    VestedAssets: AssetsParamsScreen;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -253,13 +255,19 @@ export default function RootNavigation() {
                             component={CreateEthereumKeyScreen}
                             initialParams={{}}
                         />
+
                         <Stack.Screen
-                            name="AssetDetail"
+                            name="AssetManager"
                             options={({ route }) => ({
                                 headerBackTitleVisible: false,
                                 title: route.params?.screenTitle || 'AssetDetail',
                             })}
-                            component={AssetDetail}
+                            component={AssetManagerScreen}
+                        />
+                        <Stack.Screen
+                            name="VestedAssets"
+                            options={{ headerBackTitleVisible: false, title: 'Vested assets' }}
+                            component={VestedAssetsScreen}
                         />
                         <Stack.Screen
                             name="Send"

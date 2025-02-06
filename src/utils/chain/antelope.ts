@@ -17,6 +17,7 @@ import {
     IAsset,
     ExplorerOptions,
     AbstractTransactionReceipt,
+    VestedTokens,
 } from './types';
 import {
     ABI,
@@ -179,8 +180,12 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         const info = await this.chain.getChainInfo();
         const header = info.getTransactionHeader();
         const defaultExpiration = new Date(new Date().getTime() + ANTELOPE_DEFAULT_TRANSACTION_EXPIRE_SECONDS);
-        const expiration: Date =
+        let expiration: Date =
             data instanceof AntelopeTransaction ? data.getExpiration() ?? defaultExpiration : defaultExpiration;
+        const remainingCounter = Math.floor((expiration.getTime() - new Date().getTime()) / 1000);
+        if (remainingCounter < 5) {
+            expiration = new Date(expiration.getTime() + 10 * 1000);
+        }
         const transaction = Transaction.from({
             ...header,
             expiration,
@@ -302,13 +307,6 @@ export class AntelopeChain extends AbstractChain {
             }
         }
 
-        if (this.explorerOrigin.includes('https://local.bloks.io')) {
-            url += '?nodeUrl=' + encodeURIComponent(this.apiOrigin);
-            url += '&coreSymbol=LEOS';
-            url += '&corePrecision=6';
-            url += '&systemDomain=eosio';
-        }
-
         return url;
     }
     isValidAccountName(account: string): boolean {
@@ -321,7 +319,7 @@ export class AntelopeChain extends AbstractChain {
 export const LEOS_SEED_ROUND_PRICE = 0.0002;
 export const LEOS_PRE_SALE_ROUND_PRICE = 0.0004;
 export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
-export const LEOS_CURRENT_PRICE = LEOS_PRE_SALE_ROUND_PRICE;
+export const LEOS_CURRENT_PRICE = LEOS_PUBLIC_SALE_PRICE;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -333,9 +331,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         precision: number,
         logoUrl: string,
         coinmarketCapId: string,
-        transferable = true
+        transferable = true,
+        vestable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -377,8 +376,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
             this.getSymbol()
         );
 
-        if (!assets) return new Asset(this, new Decimal(0));
-
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, new Decimal(0));
@@ -396,9 +393,21 @@ export class AntelopeToken extends AbstractToken implements IToken {
 
         return balance.getUsdValue();
     }
+
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
+        throw new Error(`getVestedTokens() method not implemented' ${account}`);
+    }
+
+    async getVestedTotalBalance(): Promise<IAsset> {
+        throw new Error(`getVestedTotalBalance() method not implemented'`);
+    }
+
+    async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
+        return this.getBalance(account);
+    }
 }
 
-class PangeaVestedToken extends AntelopeToken {
+export class PangeaVestedToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
         const vestedBalance = await this.getVestedTotalBalance(account);
@@ -424,8 +433,9 @@ class PangeaVestedToken extends AntelopeToken {
         return new Asset(this, new Decimal(vestedBalance));
     }
 
-    // getVestedUnlockableBalance(account?: AntelopeAccount): Promise<IAsset> {
-    // }
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
+        return await vestingContract.getVestingAllocations(account.getName());
+    }
 }
 
 export const PangeaMainnetChain = new AntelopeChain(
@@ -472,7 +482,8 @@ export const LEOSToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos',
-    false
+    false,
+    true
 );
 
 export const LEOSTestnetToken = new PangeaVestedToken(
@@ -482,7 +493,8 @@ export const LEOSTestnetToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-testnet',
-    false
+    false,
+    true
 );
 
 export const LEOSStagingToken = new PangeaVestedToken(
@@ -492,7 +504,8 @@ export const LEOSStagingToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-staging',
-    false
+    false,
+    true
 );
 
 export const LEOSLocalToken = new PangeaVestedToken(
@@ -502,7 +515,8 @@ export const LEOSLocalToken = new PangeaVestedToken(
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-local',
-    false
+    false,
+    true
 );
 
 export const EOSJungleChain = new AntelopeChain(
@@ -622,7 +636,7 @@ export class AntelopeAction implements IOperation {
  * @returns {IAsset} - The asset
  */
 
-function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
+export function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IAsset {
     const name = quantity.split(' ')[1];
     const symbol = name;
     const amountString = quantity.split(' ')[0];

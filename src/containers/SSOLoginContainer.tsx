@@ -56,16 +56,17 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             debug('getRequestsFromParams(): start');
             const parsedPayload = base64UrlToObj(payload);
 
+            debug('getRequestsFromParams(): parsedPayload', parsedPayload?.requests?.length);
             const managedRequests = new RequestsManager(parsedPayload?.requests);
 
-            debug('getRequestsFromParams():', managedRequests);
+            debug('getRequestsFromParams(): managedRequests', managedRequests?.requests?.length);
 
             await managedRequests.verify();
             // TODO check if the internal login request comes from same DID as the sender of the message.
 
             const managedResponses = new ResponsesManager(managedRequests);
 
-            debug('getRequestsFromParams():', managedResponses);
+            debug('getRequestsFromParams(): managedResponses', managedResponses);
 
             await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
 
