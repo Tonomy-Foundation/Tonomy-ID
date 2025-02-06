@@ -83,11 +83,10 @@ const AllocationDetails = (props: Props) => {
                 </View> */}
             </View>
             <View style={styles.howView}>
-                <Text style={styles.howHead}>How multiplier works</Text>
-
+                <Text style={styles.howHead}>How vesting works</Text>
                 <Text style={styles.howParagraph}>
-                    The multiplier is the price boost you received when the coins were allocated to you, relative to the
-                    public sale price
+                    Vesting gradually unlocks your LEOS tokens over a set period, ensuring long-term commitment and
+                    alignment with the project's goals
                 </Text>
             </View>
         </RBSheet>
