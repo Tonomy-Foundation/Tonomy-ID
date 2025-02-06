@@ -86,7 +86,7 @@ const AllocationDetails = (props: Props) => {
                 <Text style={styles.howHead}>How vesting works</Text>
                 <Text style={styles.howParagraph}>
                     Vesting gradually unlocks your LEOS tokens over a set period, ensuring long-term commitment and
-                    alignment with the project's goals
+                    alignment with the project&apos;s goals
                 </Text>
             </View>
         </RBSheet>
