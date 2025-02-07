@@ -22,6 +22,7 @@ import { isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
 import { debounce, progressiveRetryOnNetworkError } from '../utils/network';
 import { useSessionStore } from '../store/sessionStore';
 import { captureError } from '../utils/sentry';
+import settings from '../settings';
 
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
@@ -56,24 +57,45 @@ export default function CommunicationProvider() {
         // Function to handle incoming URLs
         const handleDeepLink = async ({ url }) => {
             debug('handleDeepLink() URL:', url);
-            const params = new URLSearchParams(new URL(url).search);
 
-            debug('params', params);
-            const payload = params.get('payload');
+            const { protocol, origin, pathname, search } = new URL(url);
 
-            if (payload) {
-                navigation.navigate('SSO', {
-                    payload: payload,
-                    platform: 'mobile',
-                });
-            }
+            switch (protocol) {
+                case 'esr:':
+                    await sessionRef.current?.antelopeSession?.onLink(url);
+                    break;
+                case 'wc:':
+                    await sessionRef.current?.walletConnectSession?.onLink(url);
+                    break;
+                case 'https:':
+                    if (origin !== settings.config.ssoWebsiteOrigin) {
+                        throw new Error('Origin not allowed');
+                    }
 
-            if (url.startsWith('wc')) {
-                await sessionRef.current?.walletConnectSession?.onLink(url);
-            }
+                    switch (pathname) {
+                        case '/login': {
+                            const params = new URLSearchParams(search);
+                            const payload = params.get('payload');
 
-            if (url.startsWith('esr')) {
-                await sessionRef.current?.antelopeSession?.onLink(url);
+                            if (payload) {
+                                navigation.navigate('SSO', {
+                                    payload: payload,
+                                    platform: 'mobile',
+                                });
+                            } else {
+                                throw new Error('Payload not found in deep link');
+                            }
+
+                            break;
+                        }
+
+                        default:
+                            throw new Error('Deep link path not supported');
+                    }
+
+                    break;
+                default:
+                    throw new Error('Deep link protocol not supported');
             }
         };
 
