@@ -13,6 +13,7 @@ import {
     CommunicationError,
     ResponsesManager,
     RequestsManager,
+    SdkError,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -89,11 +90,41 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             await responsesManager.createResponses(user);
 
-            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-                callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-                messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
-            });
+            let loginData;
+
+            try {
+                const accountsLoginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+                const payload = accountsLoginRequest.getPayload();
+
+                debug('getAccountsLoginRequestOrThrow():', payload, accountsLoginRequest.getIssuer());
+                loginData = {
+                    callbackPath: payload.callbackPath,
+                    callbackOrigin: payload.origin,
+                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                };
+            } catch (e) {
+                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    const externalLoginResponse = responsesManager.getExternalLoginResponseOrThrow();
+                    const payload = externalLoginResponse.getRequest().getPayload();
+
+                    debug(
+                        'getExternalLoginResponseOrThrow() error:',
+                        typeof payload,
+                        payload,
+                        payload.callbackPath,
+                        payload.origin
+                    );
+
+                    loginData = {
+                        callbackPath: payload.callbackPath,
+                        callbackOrigin: payload.origin,
+                        messageRecipient: externalLoginResponse.getRequest().getIssuer(),
+                    };
+                } else throw e;
+            }
+
+            debug('loginData', loginData);
+            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, loginData);
 
             debug('onLogin() callbackUrl:', callbackUrl);
 
@@ -134,6 +165,40 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         try {
             setCancelLoading(true);
             if (!responsesManager) throw new Error('Responses manager is not set');
+            let loginData;
+
+            try {
+                const accountsLoginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+                const payload = accountsLoginRequest.getPayload();
+
+                debug('getAccountsLoginRequestOrThrow():', payload, accountsLoginRequest.getIssuer());
+                loginData = {
+                    callbackPath: payload.callbackPath,
+                    callbackOrigin: payload.origin,
+                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                    user,
+                };
+            } catch (e) {
+                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    const externalLoginResponse = responsesManager.getExternalLoginResponseOrThrow();
+                    const payload = externalLoginResponse.getRequest().getPayload();
+
+                    debug(
+                        'getExternalLoginResponseOrThrow() error:',
+                        typeof payload,
+                        payload,
+                        payload.callbackPath,
+                        payload.origin
+                    );
+
+                    loginData = {
+                        callbackPath: payload.callbackPath,
+                        callbackOrigin: payload.origin,
+                        messageRecipient: externalLoginResponse.getRequest().getIssuer(),
+                        user,
+                    };
+                } else throw e;
+            }
 
             const res = await terminateLoginRequest(
                 responsesManager,
@@ -142,12 +207,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     code: SdkErrors.UserCancelled,
                     reason: 'User cancelled login request',
                 },
-                {
-                    callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-                    callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
-                    user,
-                }
+                loginData
             );
 
             setNextLoading(false);

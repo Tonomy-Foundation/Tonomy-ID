@@ -56,6 +56,17 @@ export default function CommunicationProvider() {
         // Function to handle incoming URLs
         const handleDeepLink = async ({ url }) => {
             debug('handleDeepLink() URL:', url);
+            const params = new URLSearchParams(new URL(url).search);
+
+            debug('params', params);
+            const payload = params.get('payload');
+
+            if (payload) {
+                navigation.navigate('SSO', {
+                    payload: payload,
+                    platform: 'mobile',
+                });
+            }
 
             if (url.startsWith('wc')) {
                 await sessionRef.current?.walletConnectSession?.onLink(url);
