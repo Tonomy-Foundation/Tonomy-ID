@@ -56,7 +56,8 @@ const AllocationDetails = (props: Props) => {
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>
-                            {allocationData?.vestingStart && formatDate(allocationData?.vestingStart)}
+                            To Be Finalized
+                            {/* {allocationData?.vestingStart && formatDate(allocationData?.vestingStart)} */}
                         </Text>
                     </View>
                 </View>
@@ -72,21 +73,20 @@ const AllocationDetails = (props: Props) => {
                         <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
                     </View>
                 </View>
-                <View style={styles.allocationView}>
+                {/* <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Price multiplier</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
                             {getMultiplier(allocationData.allocationDate, allocationData.categoryId)}x
                         </Text>
                     </View>
-                </View>
+                </View> */}
             </View>
             <View style={styles.howView}>
-                <Text style={styles.howHead}>How multiplier works</Text>
-
+                <Text style={styles.howHead}>How vesting works</Text>
                 <Text style={styles.howParagraph}>
-                    The multiplier is the price boost you received when the coins were allocated to you, relative to the
-                    public sale price
+                    Vesting gradually unlocks your LEOS tokens over a set period, ensuring long-term commitment and
+                    alignment with the project&apos;s goals
                 </Text>
             </View>
         </RBSheet>

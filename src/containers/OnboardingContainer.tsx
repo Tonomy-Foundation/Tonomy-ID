@@ -8,6 +8,7 @@ import { Props } from '../screens/OnboardingScreen';
 import { StackActions } from '@react-navigation/native';
 import { appStorage } from '../utils/StorageManager/setup';
 import useErrorStore from '../store/errorStore';
+import settings from '../settings';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -23,7 +24,7 @@ function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }
         {
             id: 1,
             title: 'Welcome to the Virtual Nation of Pangea',
-            text: 'United Citizens Wallet is your access point to a brand new world.',
+            text: `${settings.config.appName} is your access point to a brand new world.`,
             image: require('../assets/images/onboarding/1.png'),
         },
         {
