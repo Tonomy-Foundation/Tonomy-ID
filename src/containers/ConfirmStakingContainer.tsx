@@ -17,7 +17,7 @@ const SuccessLeosWithDrawContainer = ({ chain, navigation }: PropsStaking) => {
     const confirmStaking = () => {
         setLoading(true);
 
-        navigation.navigate('LeosAssetManager', {
+        navigation.navigate('AssetManager', {
             chain,
         });
     };
@@ -35,11 +35,6 @@ const SuccessLeosWithDrawContainer = ({ chain, navigation }: PropsStaking) => {
                             styles.backBtn,
                             { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
                         ]}
-                        onPress={() =>
-                            navigation.navigate('LeosAssetManager', {
-                                chain,
-                            })
-                        }
                         color={theme.colors.grey3}
                     >
                         <ActivityIndicator size="small" color={theme.colors.grey3} style={{ marginRight: 7 }} />

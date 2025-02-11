@@ -4,6 +4,8 @@ import { IChain } from '../utils/chain/types';
 import theme, { commonStyles } from '../utils/theme';
 import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
+import { useRef, useState } from 'react';
+import StakingAllocationDetails from '../components/StakingAllocationDetails';
 
 export type StakingLeosProps = {
     navigation: Props['navigation'];
@@ -11,6 +13,12 @@ export type StakingLeosProps = {
 };
 
 const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
+    const [selectedAllocation, setSelectedAllocation] = useState<Record<string, any>>({});
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
+    const onClose = () => {
+        refMessage.current?.close();
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.subTitle}>Total staked</Text>
@@ -31,7 +39,13 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.allocationView}>
+            <TouchableOpacity
+                style={styles.allocationView}
+                onPress={() => {
+                    setSelectedAllocation({});
+                    refMessage.current?.open();
+                }}
+            >
                 <Text style={{ fontWeight: '700' }}>6,000.00 LEOS</Text>
                 <View style={styles.flexColEnd}>
                     <Text style={styles.allocMulti}>unlockable in 15 days</Text>
@@ -39,6 +53,8 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                     <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                 </View>
             </TouchableOpacity>
+
+            {selectedAllocation && <StakingAllocationDetails onClose={onClose} refMessage={refMessage} />}
             <TouchableOpacity style={styles.allocationView}>
                 <Text style={{ fontWeight: '700' }}>6,000.00 LEOS</Text>
                 <View style={styles.flexColEnd}>
@@ -63,7 +79,7 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                             { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
                         ]}
                         onPress={() =>
-                            navigation.navigate('LeosAssetManager', {
+                            navigation.navigate('AssetManager', {
                                 chain,
                             })
                         }

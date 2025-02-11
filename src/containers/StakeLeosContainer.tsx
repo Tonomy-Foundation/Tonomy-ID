@@ -55,7 +55,15 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 </Text>
             </View>
             <View style={styles.proceedBtn}>
-                <TButtonContained>Proceed</TButtonContained>
+                <TButtonContained
+                    onPress={() =>
+                        navigation.navigate('ConfirmStaking', {
+                            chain: chain,
+                        })
+                    }
+                >
+                    Proceed
+                </TButtonContained>
             </View>
         </>
     );
@@ -152,6 +160,7 @@ const styles = StyleSheet.create({
     },
     proceedBtn: {
         padding: 16,
+        marginBottom: 20,
     },
 });
 

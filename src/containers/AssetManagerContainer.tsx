@@ -227,7 +227,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {showVesting && investorTootlView(navigation, asset.chain)}
+            {investorTootlView(navigation, asset.chain)}
         </View>
     );
 };

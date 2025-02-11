@@ -3,89 +3,56 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
-import { VestedAllocation } from '../utils/chain/types';
-import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
-import Decimal from 'decimal.js';
 
 export type Props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
-    allocationData: VestedAllocation;
-    usdPriceValue: number;
 };
 
-const AllocationDetails = (props: Props) => {
-    const allocationData = props.allocationData;
-    const lockedPercentage = (allocationData.locked / allocationData.totalAllocation) * 100;
-
+const StakingAllocationDetails = (props: Props) => {
     return (
         <RBSheet
             ref={props.refMessage}
             openDuration={150}
             closeDuration={100}
-            height={470}
+            height={350}
             customStyles={{ container: { paddingHorizontal: 10 } }}
         >
             <View style={styles.vestHead}>
-                <Text style={styles.drawerHead}>Vesting Allocation</Text>
+                <Text style={styles.drawerHead}>Staking details</Text>
                 <TouchableOpacity onPress={props.onClose}>
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} size={17} />
                 </TouchableOpacity>
             </View>
             <View style={styles.vestingDetailView}>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Total allocation</Text>
-                    <View style={styles.flexColCenter}>
-                        <Text style={styles.allocMulti}>
-                            {formatTokenValue(new Decimal(allocationData.totalAllocation ?? 0))} LEOS
-                        </Text>
-                        <Text style={styles.usdBalance}>
-                            ${formatCurrencyValue(allocationData.totalAllocation * props.usdPriceValue)}
-                        </Text>
-                    </View>
-                </View>
-                <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Locked</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{lockedPercentage}% of total</Text>
+                    <View style={styles.flexColCenter}>
+                        <Text style={styles.allocMulti}>10,000.000 LEOS</Text>
+                        <Text style={styles.usdBalance}>$2,338.05</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Vesting start</Text>
+                    <Text style={styles.allocTitle}>Annual Percentage Yield (APY)</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>3.23% </Text>
+                    </View>
+                </View>
+                <View style={[styles.allocationView, { marginTop: 25 }]}>
+                    <Text style={styles.allocTitle}>Monthly earnings</Text>
+                    <View style={styles.flexColCenter}>
+                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>180.00 LEOS</Text>
+                        <Text style={styles.usdBalance}>$50.05</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Stake until</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>
-                            To Be Finalized
-                            {/* {allocationData?.vestingStart && formatDate(allocationData?.vestingStart)} */}
+                            15 Apr 2025 <Text style={{ color: theme.colors.grey9 }}>(30 days)</Text>
                         </Text>
                     </View>
                 </View>
-                <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Vesting period</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.vestingPeriod}</Text>
-                    </View>
-                </View>
-                <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Unlock at vesting start</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
-                    </View>
-                </View>
-                {/* <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Price multiplier</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
-                            {getMultiplier(allocationData.allocationDate, allocationData.categoryId)}x
-                        </Text>
-                    </View>
-                </View> */}
-            </View>
-            <View style={styles.howView}>
-                <Text style={styles.howHead}>How vesting works</Text>
-                <Text style={styles.howParagraph}>
-                    Vesting gradually unlocks your LEOS tokens over a set period, ensuring long-term commitment and
-                    alignment with the project&apos;s goals
-                </Text>
             </View>
         </RBSheet>
     );
@@ -128,8 +95,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         paddingHorizontal: 13,
-        paddingBottom: 20,
-        paddingTop: 3,
+        paddingBottom: 30,
+        paddingTop: 6,
     },
     allocationView: {
         flexDirection: 'row',
@@ -154,4 +121,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AllocationDetails;
+export default StakingAllocationDetails;
