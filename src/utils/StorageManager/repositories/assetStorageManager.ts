@@ -29,7 +29,7 @@ export abstract class AssetStorageManager {
         const existingAsset = await this.repository.findAssetByName(name);
 
         if (existingAsset) {
-            const balance = asset.toString(4);
+            const balance = asset.toString();
 
             debug(`updateAccountBalance() updating ${name} balance to ${balance}`);
 

@@ -68,10 +68,9 @@ export default function SignTransactionConsentContainer({
             if (type === TransactionType.TRANSFER) {
                 const to = chain.formatShortAccountName((await operation.getTo()).getName());
                 const value = await operation.getValue();
-                const precision = chain.getNativeToken().getPrecision();
-                const amount = value.toString(precision <= 4 ? 4 : 6).replace(/\.?0+$/, '');
+                const amount = value.toString();
 
-                const usdValue = formatCurrencyValue(await value.getUsdValue(), 2);
+                const usdValue = formatCurrencyValue(await value.getUsdValue());
 
                 return {
                     type,
@@ -111,7 +110,7 @@ export default function SignTransactionConsentContainer({
             const usdFee = await fee.getUsdValue();
 
             const transactionFee: TransactionFeeData = {
-                fee: fee.toString(4),
+                fee: fee,
                 usdFee: usdFee,
                 show: showFee(operations, fee, usdFee),
                 isFree: isFree(fee, usdFee),
@@ -132,21 +131,21 @@ export default function SignTransactionConsentContainer({
 
             const accountBalance = (await account.getBalance(chain.getNativeToken())).getAmount();
 
-            if (accountBalance < total.getAmount()) {
+            if (accountBalance.lessThan(total.getAmount())) {
                 balanceError = true;
             }
 
             const transactionTotal = {
                 show: showFee(operations, total, usdTotal),
-                total: total.toString(4),
-                totalUsd: formatCurrencyValue(usdTotal, 2),
+                total: total.toString(),
+                totalUsd: formatCurrencyValue(usdTotal),
                 balanceError,
             };
 
             setTransactionTotalData(transactionTotal);
             debug('fetchTransactionTotal() done', transactionTotal);
         },
-        [chain, request.account, request.transaction]
+        [chain, request]
     );
 
     const fetchOperations = useCallback(async () => {
@@ -304,8 +303,8 @@ export default function SignTransactionConsentContainer({
             const now = new Date().getTime();
             const expirationTime = expiration.getTime();
             const timeDiff = expirationTime - now;
-
-            if (timeDiff <= 0) {
+            const remainingCounter = Math.floor((expirationTime - now) / 1000);
+            if (remainingCounter < 0) {
                 setRemainingTime('00:00');
                 setExpired(true);
                 clearInterval(intervalId);
@@ -345,7 +344,12 @@ export default function SignTransactionConsentContainer({
                         {!operations && <TSpinner />}
                         {operations && <Operations operations={operations} />}
                         {!transactionFeeData && <TSpinner />}
-                        {transactionFeeData && <TransactionFee transactionFee={transactionFeeData} />}
+                        {transactionFeeData && (
+                            <TransactionFee
+                                transactionFee={transactionFeeData}
+                                precision={chain.getNativeToken().getPrecision()}
+                            />
+                        )}
                         {!transactionTotalData && <TSpinner />}
                         {transactionTotalData && (
                             <TransactionTotal
@@ -393,7 +397,7 @@ export default function SignTransactionConsentContainer({
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    {expired && chain.getChainType() === ChainType.ANTELOPE && (
+                    {expired && chain.getChainType() === ChainType.ANTELOPE && !transactionLoading && (
                         <View style={styles.transactionExpiredView}>
                             <Text style={styles.transactionExpiredText}>The transaction time has expired</Text>
                             <Text>Please restart the transaction and try again.</Text>

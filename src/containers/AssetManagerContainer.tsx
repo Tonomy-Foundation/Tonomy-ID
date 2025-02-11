@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image } from 'react-native';
-import { LeosAssetsScreenNavigationProp } from '../screens/LeosAssetScreen';
+import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
 import { IChain } from '../utils/chain/types';
@@ -7,59 +7,152 @@ import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue } from '../utils/numbers';
-import { AntelopeAccount, PangeaMainnetChain, PangeaVestedToken } from '../utils/chain/antelope';
+import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
+import useErrorStore from '../store/errorStore';
 
-export type AssetDetailProps = {
+export type Props = {
     navigation: LeosAssetsScreenNavigationProp['navigation'];
     chain: IChain;
 };
 
-const renderImageBackground = (asset: AccountTokenDetails) => {
+interface Balance {
+    totalBalance?: string;
+    totalBalanceUsd?: number;
+    availableBalance: string;
+    availableBalanceUsd: number;
+    vestedBalance?: string;
+    vestedBalanceUsd?: number;
+}
+
+const renderImageBackground = (balance: Balance) => {
     return (
-        <ImageBackground
-            source={require('../assets/images/vesting/bg1.png')}
-            style={styles.imageBackground}
-            imageStyle={{ borderRadius: 10 }}
-            resizeMode="cover"
-        >
-            <Text style={styles.imageNetworkText}>Pangea Network</Text>
-            <Text style={styles.imageText}>
-                {asset.token.balance} {asset.token.symbol}
-            </Text>
-            <Text style={styles.imageUsdText}>= ${formatCurrencyValue(asset.token.usdBalance ?? 0)}</Text>
-        </ImageBackground>
+        <View>
+            <Text style={styles.subTitle}>Total assets</Text>
+            <ImageBackground
+                source={require('../assets/images/vesting/bg1.png')}
+                style={styles.imageBackground}
+                imageStyle={{ borderRadius: 10 }}
+                resizeMode="cover"
+            >
+                <Text style={styles.imageNetworkText}>Pangea Network</Text>
+                <Text style={styles.imageText}>{balance.totalBalance}</Text>
+                <Text style={styles.imageUsdText}>= ${formatCurrencyValue(balance.totalBalanceUsd ?? 0)}</Text>
+            </ImageBackground>
+        </View>
     );
 };
 
-const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
+const vestedBalanceView = (balance: Balance, asset: AccountTokenDetails, redirectVestedAsset) => {
+    return (
+        <View>
+            <TouchableOpacity style={styles.vestedView} onPress={redirectVestedAsset}>
+                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
+                <View style={styles.allocationView}>
+                    <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
+                    <View style={styles.flexColEnd}>
+                        <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
+                </View>
+            </TouchableOpacity>
+        </View>
+    );
+};
+
+const investorTootlView = (navigation, chain) => {
+    return (
+        <View>
+            <Text style={styles.subTitle}>Investor tools</Text>
+            <TouchableOpacity
+                onPressIn={() => {
+                    navigation.navigate('VestedAssets', {
+                        chain: chain,
+                    });
+                }}
+            >
+                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
+                    <Image source={require('../assets/images/VestedAssetIcon.png')} style={styles.vestedIcon} />
+
+                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Vested assets</Text>
+                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
+                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPressIn={() =>
+                    navigation.navigate('StakingManager', {
+                        chain: chain,
+                    })
+                }
+            >
+                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
+                    <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
+                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
+                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
+                </View>
+            </TouchableOpacity>
+        </View>
+    );
+};
+
+const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
-    const [balance, setBalance] = useState({
+    const errorStore = useErrorStore();
+
+    const [balance, setBalance] = useState<Balance>({
+        totalBalance: '',
+        totalBalanceUsd: 0,
         availableBalance: '',
         availableBalanceUsd: 0,
         vestedBalance: '',
         vestedBalanceUsd: 0,
     });
+    const [showVesting, setShowVesting] = useState(false);
     const [loading, setLoading] = useState(true);
-    const token = chain.getNativeToken() as PangeaVestedToken;
+    const token = chain.getNativeToken();
+    const symbol = chain.getNativeToken().getSymbol();
+
+    const isVestable = chain.getNativeToken().isVestable();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
-            const assetData = await getAssetDetails(chain);
-            const account = AntelopeAccount.fromAccount(PangeaMainnetChain, assetData.account);
-            const availableBalance = await token.getAvailableBalance(account);
-            const availableBalanceUsd = await availableBalance.getUsdValue();
-            const vestedBalance = await token.getVestedTotalBalance(account);
-            const vestedBalanceUsd = await vestedBalance.getUsdValue();
+            try {
+                const assetData = await getAssetDetails(chain);
 
-            setBalance({
-                availableBalance: availableBalance.toString(),
-                vestedBalance: vestedBalance.toString(),
-                availableBalanceUsd,
-                vestedBalanceUsd,
-            });
+                setAsset(assetData);
 
-            setAsset(assetData);
-            setLoading(false);
+                if (isVestable) {
+                    const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
+                    const vestedBalance = await token.getVestedTotalBalance(account);
+                    const availableBalance = await token.getAvailableBalance(account);
+                    const totalBalance = availableBalance.add(vestedBalance);
+
+                    if (Number(vestedBalance.getAmount()) > 0) {
+                        setShowVesting(true);
+                    }
+
+                    setBalance({
+                        totalBalance: totalBalance.toString(),
+                        totalBalanceUsd: await totalBalance.getUsdValue(),
+                        availableBalance: availableBalance.toString(),
+                        availableBalanceUsd: await availableBalance.getUsdValue(),
+                        vestedBalance: vestedBalance.toString(),
+                        vestedBalanceUsd: await vestedBalance.getUsdValue(),
+                    });
+                } else {
+                    setBalance({
+                        availableBalance: assetData.token.balance + ' ' + symbol,
+                        availableBalanceUsd: assetData.token.usdBalance,
+                    });
+                    setShowVesting(false);
+                }
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchAssetDetails();
@@ -67,7 +160,7 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [chain, token]);
+    }, [chain, token, symbol, errorStore, isVestable]);
 
     if (loading) {
         return (
@@ -85,26 +178,8 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.subTitle}>Total assets</Text>
-            {renderImageBackground(asset)}
-            {balance.vestedBalanceUsd > 0 && (
-                <TouchableOpacity
-                    style={styles.vestedView}
-                    onPress={() =>
-                        navigation.navigate('VestedAssets', {
-                            chain: asset.chain,
-                        })
-                    }
-                >
-                    <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
-                    <View style={styles.allocationView}>
-                        <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
-                        <View style={styles.flexColEnd}>
-                            <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            )}
+            {isVestable && <View>{renderImageBackground(balance)}</View>}
+            {showVesting && vestedBalanceView(balance, asset, redirectVestedAsset)}
 
             <Text style={styles.subTitle}>Available assets</Text>
 
@@ -152,39 +227,7 @@ const LeosAssetContainer = ({ navigation, chain }: AssetDetailProps) => {
                     </View>
                 </View>
             </View>
-
-            <Text style={styles.subTitle}>Investor tools</Text>
-            <TouchableOpacity
-                onPressIn={() =>
-                    navigation.navigate('VestedAssets', {
-                        chain: asset.chain,
-                    })
-                }
-            >
-                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
-                    <Image source={require('../assets/images/VestedAssetIcon.png')} style={styles.vestedIcon} />
-
-                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Vested assets</Text>
-                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
-                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
-                    </View>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPressIn={() =>
-                    navigation.navigate('StakingManager', {
-                        chain: asset.chain,
-                    })
-                }
-            >
-                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
-                    <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
-                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
-                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
-                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
-                    </View>
-                </View>
-            </TouchableOpacity>
+            {showVesting && investorTootlView(navigation, asset.chain)}
         </View>
     );
 };
@@ -320,4 +363,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LeosAssetContainer;
+export default AssetManagerContainer;

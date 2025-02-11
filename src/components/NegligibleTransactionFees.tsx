@@ -10,6 +10,7 @@ export type props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
     transactionFee: TransactionFeeData;
+    precision: number;
 };
 
 const NegligibleTransactionFees = (props: props) => {
@@ -31,10 +32,10 @@ const NegligibleTransactionFees = (props: props) => {
                 <View style={styles.content}>
                     <View>
                         <Text style={{ ...commonStyles.primaryFontFamily, fontSize: 17 }}>
-                            {props.transactionFee.fee}
+                            {props.transactionFee.fee.toString(props.precision)}
                         </Text>
                         <Text style={{ color: theme.colors.secondary2, fontSize: 15 }}>
-                            ${formatCurrencyValue(props.transactionFee.usdFee, 2)}
+                            ${formatCurrencyValue(props.transactionFee.usdFee)}
                         </Text>
                     </View>
                 </View>

@@ -13,6 +13,9 @@ import {
     CommunicationError,
     ResponsesManager,
     RequestsManager,
+    SdkError,
+    LoginRequest,
+    WalletRequestAndResponseObject,
 } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
@@ -22,6 +25,7 @@ import useErrorStore from '../store/errorStore';
 import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
 import Debug from 'debug';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -55,16 +59,17 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             debug('getRequestsFromParams(): start');
             const parsedPayload = base64UrlToObj(payload);
 
+            debug('getRequestsFromParams(): parsedPayload', parsedPayload?.requests?.length);
             const managedRequests = new RequestsManager(parsedPayload?.requests);
 
-            debug('getRequestsFromParams():', managedRequests);
+            debug('getRequestsFromParams(): managedRequests', managedRequests?.requests?.length);
 
             await managedRequests.verify();
             // TODO check if the internal login request comes from same DID as the sender of the message.
 
             const managedResponses = new ResponsesManager(managedRequests);
 
-            debug('getRequestsFromParams():', managedResponses);
+            debug('getRequestsFromParams(): managedResponses', managedResponses);
 
             await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
 
@@ -87,10 +92,23 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
 
             await responsesManager.createResponses(user);
 
+            let loginRequest: LoginRequest | WalletRequestAndResponseObject;
+
+            try {
+                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+            } catch (e) {
+                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    debug('onLogin() getting loginRequest from external website');
+                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
+                } else throw e;
+            }
+
+            const payload = loginRequest.getPayload();
+
             const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-                callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-                messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                callbackPath: payload.callbackPath,
+                callbackOrigin: payload.origin,
+                messageRecipient: loginRequest.getIssuer(),
             });
 
             debug('onLogin() callbackUrl:', callbackUrl);
@@ -105,8 +123,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 navigation.navigate('Assets');
             }
         } catch (e) {
-            debug('onLogin() error', e);
-
             if (
                 e instanceof CommunicationError &&
                 e.exception.status === 400 &&
@@ -135,6 +151,19 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             setCancelLoading(true);
             if (!responsesManager) throw new Error('Responses manager is not set');
 
+            let loginRequest: LoginRequest | WalletRequestAndResponseObject;
+
+            try {
+                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+            } catch (e) {
+                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
+                    debug('onLogin() getting loginRequest from external website');
+                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
+                } else throw e;
+            }
+
+            const payload = loginRequest.getPayload();
+
             const res = await terminateLoginRequest(
                 responsesManager,
                 platform,
@@ -143,9 +172,9 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                     reason: 'User cancelled login request',
                 },
                 {
-                    callbackPath: responsesManager.getAccountsLoginRequestOrThrow().getPayload().callbackPath,
-                    callbackOrigin: responsesManager.getAccountsLoginRequestOrThrow().getPayload().origin,
-                    messageRecipient: responsesManager.getAccountsLoginRequestsIssuerOrThrow(),
+                    callbackPath: payload.callbackPath,
+                    callbackOrigin: payload.origin,
+                    messageRecipient: loginRequest.getIssuer(),
                     user,
                 }
             );
@@ -192,11 +221,12 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <Image
-                        style={[styles.logo, commonStyles.marginBottom]}
-                        source={Images.GetImage('logo1024')}
-                    ></Image>
-
+                    <SafeAreaView>
+                        <Image
+                            style={[styles.logo, commonStyles.marginBottom]}
+                            source={Images.GetImage('logo1024')}
+                        ></Image>
+                    </SafeAreaView>
                     {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
 
                     {ssoApp && (

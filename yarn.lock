@@ -4684,9 +4684,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.25.0-rc.1":
-  version: 0.25.0-rc.1
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.25.0-rc.1"
+"@tonomy/tonomy-id-sdk@npm:0.28.0-rc.1":
+  version: 0.28.0-rc.1
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.28.0-rc.1"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4704,6 +4704,7 @@ __metadata:
     cross-fetch: "npm:^4.0.0"
     csv-parse: "npm:^5.5.6"
     debug: "npm:^4.3.6"
+    decimal.js: "npm:^10.4.3"
     ethers: "npm:^6.13.1"
     ethr-did-resolver: "npm:^10.1.9"
     reflect-metadata: "npm:^0.2.2"
@@ -4712,7 +4713,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/5e113d4bfd5fa179f36ab9779bfd37a50a735b6052d5fbbe5054629d5dd5e0b7c6e2e9c4266481c5300d94642256c9155d153ba6b6c59d6ce87bf9c0414a6266
+  checksum: 10c0/4249901cab5215cb728c46277ad6368833d42c400cce611c17b576bf044212cdb5fe4febcad833aa87fba86a2ed35be90add956dc174c1914417ac819a8e2bb8
   languageName: node
   linkType: hard
 
@@ -8695,7 +8696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:^10.4.2":
+"decimal.js@npm:^10.4.2, decimal.js@npm:^10.4.3":
   version: 10.4.3
   resolution: "decimal.js@npm:10.4.3"
   checksum: 10c0/6d60206689ff0911f0ce968d40f163304a6c1bc739927758e6efc7921cfa630130388966f16bf6ef6b838cb33679fbe8e7a78a2f3c478afce841fd55ac8fb8ee
@@ -15141,12 +15142,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^8.0.0, node-addon-api@npm:^8.1.0":
+"node-addon-api@npm:^8.0.0":
   version: 8.2.2
   resolution: "node-addon-api@npm:8.2.2"
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10c0/0afc164e407aebaa0114bc5fa04133af6fb024139f9af4d95b82adebe9b70e4156d30b2cf71884254cae4749183620dd8a5019c8e16b1f15d730df205413675b
+  languageName: node
+  linkType: hard
+
+"node-addon-api@npm:^8.1.0":
+  version: 8.3.0
+  resolution: "node-addon-api@npm:8.3.0"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/0ed4206cb68921b33fc637c6f7ffcb91fcde85aea88ea60fadb7b0537bf177226a5600584eac9db2aff93600041d42796fb20576b3299b9be6ff7539592b2180
   languageName: node
   linkType: hard
 
@@ -15209,7 +15219,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.8.0, node-gyp-build@npm:^4.8.1":
+"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.8.0":
   version: 4.8.3
   resolution: "node-gyp-build@npm:4.8.3"
   bin:
@@ -15217,6 +15227,17 @@ __metadata:
     node-gyp-build-optional: optional.js
     node-gyp-build-test: build-test.js
   checksum: 10c0/a7f43c4128d817db80bb0884f631121449ac586b4a3e708eab0db6fcb7fa0d2e66f6d7d4ee1f49469409de4a9b2e413926befe2dce70b850c6c583a3bbe228d2
+  languageName: node
+  linkType: hard
+
+"node-gyp-build@npm:^4.8.1":
+  version: 4.8.4
+  resolution: "node-gyp-build@npm:4.8.4"
+  bin:
+    node-gyp-build: bin.js
+    node-gyp-build-optional: optional.js
+    node-gyp-build-test: build-test.js
+  checksum: 10c0/444e189907ece2081fe60e75368784f7782cfddb554b60123743dfb89509df89f1f29c03bbfa16b3a3e0be3f48799a4783f487da6203245fa5bed239ba7407e1
   languageName: node
   linkType: hard
 
@@ -19435,7 +19456,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~5.24.3"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.25.0-rc.1"
+    "@tonomy/tonomy-id-sdk": "npm:0.28.0-rc.1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~18.2.79"
@@ -19463,6 +19484,7 @@ __metadata:
     bluebird: "npm:^3.7.2"
     cross-fetch: "npm:^4.0.0"
     crypto-browserify: "npm:^3.12.1"
+    decimal.js: "npm:^10.4.3"
     deepmerge: "npm:^4.3.1"
     eslint: "npm:^8.25.0"
     eslint-config-prettier: "npm:^8.5.0"

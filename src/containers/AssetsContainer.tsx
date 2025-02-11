@@ -39,9 +39,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                 try {
                     const asset = await assetStorage.findAssetByName(token);
 
-                    debug(
-                        `fetchCryptoAssets() fetching asset ${chain.getName()}: ${asset?.accountName}-${asset?.balance}`
-                    );
                     let account;
 
                     if (asset) {
@@ -194,17 +191,10 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                                 <TouchableOpacity
                                     key={index}
                                     onPress={() => {
-                                        if (chainObj.token.getSymbol() === 'LEOS') {
-                                            navigation.navigate('LeosAssetManager', {
-                                                chain: chainObj.chain,
-                                            });
-                                            return;
-                                        } else {
-                                            navigation.navigate('AssetDetail', {
-                                                screenTitle: chainName,
-                                                chain: chainObj.chain,
-                                            });
-                                        }
+                                        navigation.navigate('AssetManager', {
+                                            chain: chainObj.chain,
+                                            screenTitle: chainName,
+                                        });
                                     }}
                                     style={styles.assetsView}
                                 >
