@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Props } from '../screens/StakeAssetDetailScreen';
 import { IChain } from '../utils/chain/types';
 import theme, { commonStyles } from '../utils/theme';
@@ -79,7 +79,7 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                             { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
                         ]}
                         onPress={() =>
-                            navigation.navigate('AssetManager', {
+                            navigation.navigate('UnStakeAsset', {
                                 chain,
                             })
                         }

@@ -41,12 +41,13 @@ import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AssetManagerScreen from '../screens/AssetManagerScreen';
 import VestedAssetsScreen from '../screens/VestedAssetsScreen';
-import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
 import ConfirmStakingScreen from '../screens/ConfirmStakingScreen';
 import StakingManagerScreen from '../screens/StakingManagerScreen';
 import StakeLeosScreen from '../screens/StakeLeosScreen';
 import StakeAssetDetailScreen from '../screens/StakeAssetDetailScreen';
+import UnstakeAssetScreen from '../screens/UnstakeAssetScreen';
+import SuccessUnstakeScreen from '../screens/SuccessUnstakeScreen';
 
 const prefix = Linking.createURL('');
 
@@ -121,6 +122,8 @@ export type MainRouteStackParamList = {
     StakingManager: AssetsParamsScreen;
     StakeLeos: AssetsParamsScreen;
     StakeLeosDetail: AssetsParamsScreen;
+    UnStakeAsset: AssetsParamsScreen;
+    SuccessUnstake: AssetsParamsScreen;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -321,6 +324,16 @@ export default function RootNavigation() {
                             name="ConfirmStaking"
                             options={{ headerBackTitleVisible: false, title: 'Confirm staking' }}
                             component={ConfirmStakingScreen}
+                        />
+                        <Stack.Screen
+                            name="UnStakeAsset"
+                            options={{ headerBackTitleVisible: false, title: 'Unstake LEOS' }}
+                            component={UnstakeAssetScreen}
+                        />
+                        <Stack.Screen
+                            name="SuccessUnstake"
+                            options={{ headerBackTitleVisible: false, title: 'Success' }}
+                            component={SuccessUnstakeScreen}
                         />
                     </Stack.Navigator>
                 </>
