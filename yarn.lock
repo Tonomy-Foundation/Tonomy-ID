@@ -4515,9 +4515,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.27.0-rc.2":
-  version: 0.27.0-rc.2
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.27.0-rc.2"
+"@tonomy/tonomy-id-sdk@npm:0.28.0-rc.1":
+  version: 0.28.0-rc.1
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.28.0-rc.1"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4544,7 +4544,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/853e03ad8ed871a9af116be8922b612f5982bae95c0eef8522a5479595590e71fac6080c97bb39f4010fdbca037095e30ce21e4839dc5e6ae87b3011295f3f1e
+  checksum: 10c0/4249901cab5215cb728c46277ad6368833d42c400cce611c17b576bf044212cdb5fe4febcad833aa87fba86a2ed35be90add956dc174c1914417ac819a8e2bb8
   languageName: node
   linkType: hard
 
@@ -8551,9 +8551,9 @@ __metadata:
   linkType: hard
 
 "decimal.js@npm:^10.4.2, decimal.js@npm:^10.4.3":
-  version: 10.5.0
-  resolution: "decimal.js@npm:10.5.0"
-  checksum: 10c0/785c35279df32762143914668df35948920b6c1c259b933e0519a69b7003fc0a5ed2a766b1e1dda02574450c566b21738a45f15e274b47c2ac02072c0d1f3ac3
+  version: 10.4.3
+  resolution: "decimal.js@npm:10.4.3"
+  checksum: 10c0/6d60206689ff0911f0ce968d40f163304a6c1bc739927758e6efc7921cfa630130388966f16bf6ef6b838cb33679fbe8e7a78a2f3c478afce841fd55ac8fb8ee
   languageName: node
   linkType: hard
 
@@ -14893,7 +14893,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^8.0.0, node-addon-api@npm:^8.1.0":
+"node-addon-api@npm:^8.0.0":
+  version: 8.2.2
+  resolution: "node-addon-api@npm:8.2.2"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/0ed4206cb68921b33fc637c6f7ffcb91fcde85aea88ea60fadb7b0537bf177226a5600584eac9db2aff93600041d42796fb20576b3299b9be6ff7539592b2180
+  languageName: node
+  linkType: hard
+
+"node-addon-api@npm:^8.1.0":
   version: 8.3.0
   resolution: "node-addon-api@npm:8.3.0"
   dependencies:
@@ -14961,7 +14970,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.8.0, node-gyp-build@npm:^4.8.1":
+"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.8.0":
+  version: 4.8.3
+  resolution: "node-gyp-build@npm:4.8.3"
+  bin:
+    node-gyp-build: bin.js
+    node-gyp-build-optional: optional.js
+    node-gyp-build-test: build-test.js
+  checksum: 10c0/444e189907ece2081fe60e75368784f7782cfddb554b60123743dfb89509df89f1f29c03bbfa16b3a3e0be3f48799a4783f487da6203245fa5bed239ba7407e1
+  languageName: node
+  linkType: hard
+
+"node-gyp-build@npm:^4.8.1":
   version: 4.8.4
   resolution: "node-gyp-build@npm:4.8.4"
   bin:
@@ -19209,7 +19229,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~5.24.3"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.27.0-rc.2"
+    "@tonomy/tonomy-id-sdk": "npm:0.28.0-rc.1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~18.2.79"

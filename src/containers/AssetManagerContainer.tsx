@@ -220,39 +220,6 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-
-            <Text style={styles.subTitle}>Investor tools</Text>
-            <TouchableOpacity
-                onPressIn={() =>
-                    navigation.navigate('VestedAssets', {
-                        chain: asset.chain,
-                    })
-                }
-            >
-                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
-                    <Image source={require('../assets/images/VestedAssetIcon.png')} style={styles.vestedIcon} />
-
-                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Vested assets</Text>
-                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
-                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
-                    </View>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPressIn={() =>
-                    navigation.navigate('StakeLeos', {
-                        chain: asset.chain,
-                    })
-                }
-            >
-                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
-                    <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
-                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
-                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
-                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
-                    </View>
-                </View>
-            </TouchableOpacity>
             {showVesting && investorTootlView(redirectVestedAsset)}
         </View>
     );
