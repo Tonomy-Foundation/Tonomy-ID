@@ -183,9 +183,11 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         let expiration: Date =
             data instanceof AntelopeTransaction ? data.getExpiration() ?? defaultExpiration : defaultExpiration;
         const remainingCounter = Math.floor((expiration.getTime() - new Date().getTime()) / 1000);
+
         if (remainingCounter < 5) {
             expiration = new Date(expiration.getTime() + 10 * 1000);
         }
+
         const transaction = Transaction.from({
             ...header,
             expiration,
@@ -415,8 +417,8 @@ export class PangeaVestedToken extends AntelopeToken {
         return availableBalance.add(vestedBalance);
     }
 
-    getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
-        return super.getBalance(account);
+    async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
+        return await this.getVestedTotalBalance(account);
     }
 
     async getVestedTotalBalance(account?: AntelopeAccount): Promise<IAsset> {

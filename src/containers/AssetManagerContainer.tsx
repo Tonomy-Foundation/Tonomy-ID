@@ -129,6 +129,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = availableBalance.add(vestedBalance);
 
+                    console.log('vestedBalance', vestedBalance);
+
                     if (Number(vestedBalance.getAmount()) > 0) {
                         setShowVesting(true);
                     }
