@@ -42,10 +42,17 @@ const renderImageBackground = (balance: Balance) => {
     );
 };
 
-const vestedBalanceView = (balance: Balance, asset: AccountTokenDetails, redirectVestedAsset) => {
+const vestedBalanceView = (balance: Balance, navigation, chain) => {
     return (
         <View>
-            <TouchableOpacity style={styles.vestedView} onPress={redirectVestedAsset}>
+            <TouchableOpacity
+                style={styles.vestedView}
+                onPress={() => {
+                    navigation.navigate('VestedAssets', {
+                        chain: chain,
+                    });
+                }}
+            >
                 <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
                 <View style={styles.allocationView}>
                     <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
@@ -181,7 +188,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     return (
         <View style={styles.container}>
             {isVestable && <View>{renderImageBackground(balance)}</View>}
-            {showVesting && vestedBalanceView(balance, asset, redirectVestedAsset)}
+            {showVesting && vestedBalanceView(balance, navigation, asset.chain)}
 
             <Text style={styles.subTitle}>Available assets</Text>
 

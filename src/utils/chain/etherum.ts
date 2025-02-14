@@ -39,6 +39,7 @@ import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
+import { StakingAllocation } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -217,6 +218,9 @@ export class EthereumToken extends AbstractToken {
 
     async getAvailableBalance(account?: IAccount): Promise<IAsset> {
         return this.getBalance(account);
+    }
+    async getStakingAllocation(account: IAccount): Promise<StakingAllocation[]> {
+        throw new Error(`getStakingAllocation() method not implemented' ${account}`);
     }
 }
 
