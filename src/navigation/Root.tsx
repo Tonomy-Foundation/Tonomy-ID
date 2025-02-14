@@ -48,6 +48,7 @@ import StakeLeosScreen from '../screens/StakeLeosScreen';
 import StakeAssetDetailScreen from '../screens/StakeAssetDetailScreen';
 import UnstakeAssetScreen from '../screens/UnstakeAssetScreen';
 import SuccessUnstakeScreen from '../screens/SuccessUnstakeScreen';
+import VestedSuccessScreen from '../screens/VestedSuccessScreen';
 
 const prefix = Linking.createURL('');
 
@@ -124,6 +125,7 @@ export type MainRouteStackParamList = {
     StakeLeosDetail: AssetsParamsScreen;
     UnStakeAsset: AssetsParamsScreen;
     SuccessUnstake: AssetsParamsScreen;
+    SuccessVestingWithdraw: AssetsParamsScreen;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -334,6 +336,11 @@ export default function RootNavigation() {
                             name="SuccessUnstake"
                             options={{ headerBackTitleVisible: false, title: 'Success' }}
                             component={SuccessUnstakeScreen}
+                        />
+                        <Stack.Screen
+                            name="SuccessVestingWithdraw"
+                            options={{ headerBackTitleVisible: false, title: 'Success' }}
+                            component={VestedSuccessScreen}
                         />
                     </Stack.Navigator>
                 </>

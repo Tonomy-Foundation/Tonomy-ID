@@ -150,13 +150,22 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         <View style={styles.availableAssetView}>
                             <View style={styles.header}>
                                 <Text style={styles.lockedCoinsAmount}>
-                                    {formatTokenValue(new Decimal(vestedAllocations.unlockable ?? 0))}
+                                    {formatTokenValue(new Decimal(vestedAllocations.unlockable ?? 0))} LEOS
                                 </Text>
                                 <Text style={styles.lockedUSDAmount}>
-                                    {formatCurrencyValue(vestedAllocations.unlockable * usdPrice)}
+                                    ${formatCurrencyValue(vestedAllocations.unlockable * usdPrice)}
                                 </Text>
                                 <View style={styles.sendReceiveButtons}>
-                                    <TButtonContained style={styles.fullWidthButton}>Withdraw</TButtonContained>
+                                    <TButtonContained
+                                        style={styles.fullWidthButton}
+                                        onPress={() =>
+                                            navigation.navigate('SuccessVestingWithdraw', {
+                                                chain,
+                                            })
+                                        }
+                                    >
+                                        Withdraw
+                                    </TButtonContained>
                                 </View>
                             </View>
                         </View>
@@ -237,8 +246,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         borderRadius: 8,
-        paddingVertical: 20,
-        paddingHorizontal: 18,
+        paddingVertical: 25,
+        paddingHorizontal: 25,
     },
     unlockAssetView: {
         alignItems: 'flex-start',
@@ -252,7 +261,7 @@ const styles = StyleSheet.create({
         right: 0,
     },
     subTitle: {
-        marginBottom: 8,
+        marginBottom: 12,
         fontSize: 16,
         ...commonStyles.primaryFontFamily,
     },
