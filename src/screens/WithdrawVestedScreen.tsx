@@ -6,5 +6,11 @@ import { RouteStackParamList } from '../navigation/Root';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'WithdrawVested'>;
 
 export default function WithdrawVestedScreen(props: Props) {
-    return <WithDrawVestedContainer navigation={props.navigation} chain={props.route.params.chain} />;
+    return (
+        <WithDrawVestedContainer
+            navigation={props.navigation}
+            chain={props.route.params.chain}
+            amount={props.route.params.amount}
+        />
+    );
 }

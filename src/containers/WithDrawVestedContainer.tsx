@@ -9,13 +9,16 @@ import { EosioUtil, KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 import RNKeyManager from '../utils/RNKeyManager';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
+import { formatTokenValue } from '../utils/numbers';
+import Decimal from 'decimal.js';
 
 export type VestedAssetSuccessProps = {
     navigation: Props['navigation'];
     chain: IChain;
+    amount: number;
 };
 
-const WithDrawVestedContainer = ({ navigation, chain }: VestedAssetSuccessProps) => {
+const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSuccessProps) => {
     const [loading, setLoading] = useState(false);
     const token = chain.getNativeToken();
     const { user } = useUserStore();
@@ -36,11 +39,20 @@ const WithDrawVestedContainer = ({ navigation, chain }: VestedAssetSuccessProps)
         });
     };
 
+    const getStakeUntilDate = () => {
+        const date = new Date();
+
+        date.setDate(date.getDate() + 14);
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
     return (
         <View style={styles.container}>
             <Image source={require('../assets/images/vesting/vested-success.png')} />
             <Text style={styles.vestedHead}>A special offer for you!</Text>
-            <TP style={styles.vestedSubHead}>Stake 10,000.000 LEOS and earn a passive income</TP>
+            <TP style={styles.vestedSubHead}>
+                Stake {formatTokenValue(new Decimal(amount))} LEOS and earn a passive income
+            </TP>
             <View style={styles.bottomView}>
                 {loading ? (
                     <View style={styles.inlineContainer}>
@@ -55,8 +67,9 @@ const WithDrawVestedContainer = ({ navigation, chain }: VestedAssetSuccessProps)
                 <TButtonContained
                     style={styles.backBtn}
                     onPress={() =>
-                        navigation.navigate('AssetManager', {
-                            chain,
+                        navigation.navigate('ConfirmStaking', {
+                            chain: chain,
+                            amount: amount,
                         })
                     }
                     disabled={loading}
@@ -80,7 +93,7 @@ const WithDrawVestedContainer = ({ navigation, chain }: VestedAssetSuccessProps)
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Stake until</Text>
                     <Text>
-                        3 Nov 2024 <Text style={styles.annualSubText}>(30 days)</Text>
+                        {getStakeUntilDate()} <Text style={styles.annualSubText}>(14 days)</Text>
                     </Text>
                 </View>
             </View>

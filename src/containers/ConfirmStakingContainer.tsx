@@ -5,13 +5,16 @@ import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
+import { formatTokenValue } from '../utils/numbers';
+import Decimal from 'decimal.js';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
     chain: IChain;
+    amount: number;
 };
 
-const SuccessLeosWithDrawContainer = ({ chain, navigation }: PropsStaking) => {
+const SuccessLeosWithDrawContainer = ({ chain, navigation, amount }: PropsStaking) => {
     const [loading, setLoading] = useState(false);
 
     const confirmStaking = () => {
@@ -25,8 +28,10 @@ const SuccessLeosWithDrawContainer = ({ chain, navigation }: PropsStaking) => {
     return (
         <>
             <View style={styles.container}>
-                <TH1 style={styles.vestedHead}>Confirm staking 10,000 LEOS</TH1>
-                <TP style={styles.vestedSubHead}>These coins will be locked for 30 days</TP>
+                <TH1 style={styles.vestedHead}>
+                    Confirm staking {formatTokenValue(new Decimal(amount))} {chain.getNativeToken().getSymbol()}
+                </TH1>
+                <TP style={styles.vestedSubHead}>These coins will be locked for 14 days</TP>
             </View>
             <View style={styles.bottomView}>
                 {loading ? (
@@ -38,11 +43,11 @@ const SuccessLeosWithDrawContainer = ({ chain, navigation }: PropsStaking) => {
                         color={theme.colors.grey3}
                     >
                         <ActivityIndicator size="small" color={theme.colors.grey3} style={{ marginRight: 7 }} />
-                        Stake for 30 days
+                        Stake for 14 days
                     </TButton>
                 ) : (
                     <TButtonContained style={{ width: '100%' }} onPress={() => confirmStaking()}>
-                        Stake for 30 days
+                        Stake for 14 days
                     </TButtonContained>
                 )}
             </View>

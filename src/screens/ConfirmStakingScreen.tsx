@@ -10,6 +10,7 @@ export default function AssetListingScreen(props: Props) {
         <ConfirmStakingContainer
             navigation={props.navigation}
             chain={props.route.params.chain}
+            amount={props.route.params.amount}
         ></ConfirmStakingContainer>
     );
 }
