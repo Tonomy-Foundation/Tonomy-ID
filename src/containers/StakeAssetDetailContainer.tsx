@@ -6,6 +6,7 @@ import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
 import { useRef, useState } from 'react';
 import StakingAllocationDetails from '../components/StakingAllocationDetails';
+import HowStakingWorks from '../components/HowStakingWorks';
 
 export type StakingLeosProps = {
     navigation: Props['navigation'];
@@ -15,8 +16,15 @@ export type StakingLeosProps = {
 const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
     const [selectedAllocation, setSelectedAllocation] = useState<Record<string, any>>({});
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
+    const refStakingInfo = useRef<{ open: () => void; close: () => void }>(null);
+
     const onClose = () => {
         refMessage.current?.close();
+    };
+
+    const openHowStaking = async () => {
+        // await refMessage.current?.close();
+        refStakingInfo.current?.open();
     };
 
     return (
@@ -91,8 +99,11 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                     These coins are locked during the staking period to support the network and earn rewards. Coins will
                     be fully unlockable in 14 days after they are staked
                 </Text>
-                <Text style={styles.howStaking}>How Staking Works</Text>
+                <TouchableOpacity onPress={() => refStakingInfo.current?.open()}>
+                    <Text style={styles.howStaking}>How Staking Works</Text>
+                </TouchableOpacity>
             </View>
+            <HowStakingWorks refMessage={refStakingInfo} />
         </View>
     );
 };

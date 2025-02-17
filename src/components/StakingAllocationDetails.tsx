@@ -4,7 +4,6 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import TButton from './atoms/TButton';
-import { Props } from '../screens/StakeAssetDetailScreen';
 import { IChain } from '../utils/chain/types';
 
 export type PropsStaking = {
@@ -61,7 +60,7 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                     <Text style={styles.allocTitle}>Locked until</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>
-                            15 Apr 2025 <Text style={{ color: theme.colors.grey9 }}>(30 days)</Text>
+                            15 Apr 2025 <Text style={{ color: theme.colors.grey9 }}>(14 days)</Text>
                         </Text>
                     </View>
                 </View>
