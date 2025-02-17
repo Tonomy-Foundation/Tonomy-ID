@@ -42,7 +42,13 @@ import { GetInfoResponse, PushTransactionResponse } from '@wharfkit/antelope/src
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from '../debug';
 import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
-import { VestingContract, StakingContract, StakingAllocation, StakingAccountState } from '@tonomy/tonomy-id-sdk';
+import {
+    VestingContract,
+    StakingContract,
+    StakingAllocation,
+    StakingAccountState,
+    EosioTokenContract,
+} from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
@@ -52,6 +58,7 @@ import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/block
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
+const eosioTokenContract = EosioTokenContract.Instance;
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -432,7 +439,10 @@ export class PangeaVestedToken extends AntelopeToken {
     }
 
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
-        return await this.getVestedTotalBalance(account);
+        const balance = await eosioTokenContract.getBalance(account?.getName());
+        const amount = new Decimal(balance);
+
+        return new Asset(this, amount);
     }
 
     async getVestedTotalBalance(account?: AntelopeAccount): Promise<IAsset> {

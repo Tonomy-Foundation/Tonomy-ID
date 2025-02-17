@@ -155,6 +155,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                 if (isVestable) {
                     const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
+
+                    console.log('vestedBalance', vestedBalance);
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = availableBalance.add(vestedBalance);
 

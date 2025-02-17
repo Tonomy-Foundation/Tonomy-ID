@@ -31,7 +31,7 @@ const WithDrawVestedContainer = ({ navigation, chain }: VestedAssetSuccessProps)
         await token.withdrawVestedTokens(account, accountSigner);
         setLoading(false);
 
-        navigation.navigate('AssetManager', {
+        navigation.navigate('SuccessVested', {
             chain,
         });
     };
