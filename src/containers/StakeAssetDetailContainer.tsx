@@ -21,6 +21,12 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
 
     return (
         <View style={styles.container}>
+            <View style={styles.yieldRow}>
+                <View style={styles.flexStartCol}>
+                    <Text style={styles.cryptoMsg}>{'Your crypto is working hard!'}</Text>
+                    <Text style={styles.cryptoEarned}>{`100.0000 LEOS earned`}</Text>
+                </View>
+            </View>
             <Text style={styles.subTitle}>Total staked</Text>
 
             <View style={styles.stakeView}>
@@ -54,7 +60,14 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                 </View>
             </TouchableOpacity>
 
-            {selectedAllocation && <StakingAllocationDetails onClose={onClose} refMessage={refMessage} />}
+            {selectedAllocation && (
+                <StakingAllocationDetails
+                    chain={chain}
+                    onClose={onClose}
+                    refMessage={refMessage}
+                    navigation={navigation}
+                />
+            )}
             <TouchableOpacity style={styles.allocationView}>
                 <Text style={{ fontWeight: '700' }}>6,000.00 LEOS</Text>
                 <View style={styles.flexColEnd}>
@@ -63,37 +76,11 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                 </View>
             </TouchableOpacity>
 
-            <Text style={styles.subTitle}>Unlockable</Text>
-
-            <View style={styles.stakeView}>
-                <View style={styles.row}>
-                    <View style={styles.flexStartCol}>
-                        <Text style={styles.lockedCoinsAmount}>{`69,023.35 LEOS`}</Text>
-                        <Text style={styles.lockedUSDAmount}>{`= $3273.1`}</Text>
-                    </View>
-                </View>
-                <View style={styles.stakeMoreBtn}>
-                    <TButton
-                        style={[
-                            styles.unstakeBtn,
-                            { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                        ]}
-                        onPress={() =>
-                            navigation.navigate('UnStakeAsset', {
-                                chain,
-                            })
-                        }
-                        color={theme.colors.black}
-                    >
-                        Unstake
-                    </TButton>
-                </View>
-            </View>
-
             <TouchableOpacity style={styles.allocationView}>
                 <Text style={{ fontWeight: '700' }}>6,000.00 LEOS</Text>
                 <View style={styles.flexColEnd}>
                     <Text style={styles.allocMulti}>released in 5 days</Text>
+                    <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                 </View>
             </TouchableOpacity>
 
@@ -102,8 +89,9 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
 
                 <Text style={styles.lockedParagraph}>
                     These coins are locked during the staking period to support the network and earn rewards. Coins will
-                    be fully unlockable in 30 days after they are staked
+                    be fully unlockable in 14 days after they are staked
                 </Text>
+                <Text style={styles.howStaking}>How Staking Works</Text>
             </View>
         </View>
     );
@@ -114,6 +102,24 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         marginHorizontal: 15,
+    },
+    yieldRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 20,
+        backgroundColor: theme.colors.backgroundGray,
+        paddingHorizontal: 15,
+        paddingVertical: 20,
+        borderRadius: 8,
+        // Android shadow
+        elevation: 4,
+
+        // iOS shadow
+        shadowColor: 'rgba(0, 0, 0, 0.25)',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 1,
+        shadowRadius: 4,
     },
     row: {
         flexDirection: 'row',
@@ -142,7 +148,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     unlockAssetView: {
-        paddingVertical: 12,
+        paddingVertical: 15,
         paddingHorizontal: 15,
         backgroundColor: theme.colors.grey7,
         borderRadius: 8,
@@ -150,10 +156,9 @@ const styles = StyleSheet.create({
         bottom: 50,
         left: 0,
         right: 0,
-        padding: 16,
     },
     subTitle: {
-        marginTop: 20,
+        marginTop: 22,
         marginBottom: 8,
         fontSize: 16,
         ...commonStyles.primaryFontFamily,
@@ -174,6 +179,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
         ...commonStyles.secondaryFontFamily,
+    },
+    cryptoMsg: {
+        fontSize: 16,
+        fontWeight: '400',
+        color: theme.colors.black,
+    },
+    cryptoEarned: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 5,
     },
     apyPercentage: {
         fontSize: 16,
@@ -200,12 +215,7 @@ const styles = StyleSheet.create({
         marginBottom: 11,
     },
     allocMulti: { color: theme.colors.grey9, fontWeight: '500' },
-    unstakeBtn: {
-        borderRadius: 6,
-        backgroundColor: theme.colors.backgroundGray,
-        width: '100%',
-        paddingVertical: 15,
-    },
+
     unlockhead: {
         fontSize: 16,
         fontWeight: '700',
@@ -215,6 +225,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '400',
         color: theme.colors.black,
+        marginTop: 6,
+    },
+    howStaking: {
+        fontSize: 13,
+        fontWeight: '400',
+        color: theme.colors.success,
         marginTop: 6,
     },
 });

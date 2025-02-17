@@ -3,19 +3,24 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
+import TButton from './atoms/TButton';
+import { Props } from '../screens/StakeAssetDetailScreen';
+import { IChain } from '../utils/chain/types';
 
-export type Props = {
+export type PropsStaking = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
+    navigation: any;
+    chain: IChain;
 };
 
-const StakingAllocationDetails = (props: Props) => {
+const StakingAllocationDetails = (props: PropsStaking) => {
     return (
         <RBSheet
             ref={props.refMessage}
             openDuration={150}
             closeDuration={100}
-            height={350}
+            height={500}
             customStyles={{ container: { paddingHorizontal: 10 } }}
         >
             <View style={styles.vestHead}>
@@ -26,33 +31,67 @@ const StakingAllocationDetails = (props: Props) => {
             </View>
             <View style={styles.vestingDetailView}>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Locked</Text>
+                    <Text style={styles.allocTitle}>Staked</Text>
                     <View style={styles.flexColCenter}>
-                        <Text style={styles.allocMulti}>10,000.000 LEOS</Text>
+                        <Text style={styles.allocMulti}>
+                            10,000.000 LEOS (<Text style={{ color: theme.colors.success }}>+621%</Text>)
+                        </Text>
                         <Text style={styles.usdBalance}>$2,338.05</Text>
                     </View>
                 </View>
+
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Annual Percentage Yield (APY)</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>3.23% </Text>
+                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                        <Text style={styles.allocTitle}>Monthly yield:</Text>
+                        <Text style={styles.allocTitle}>(3.42% APY)</Text>
                     </View>
-                </View>
-                <View style={[styles.allocationView, { marginTop: 25 }]}>
-                    <Text style={styles.allocTitle}>Monthly earnings</Text>
+
                     <View style={styles.flexColCenter}>
                         <Text style={[styles.allocMulti, { color: theme.colors.success }]}>180.00 LEOS</Text>
                         <Text style={styles.usdBalance}>$50.05</Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Stake until</Text>
+                    <Text style={styles.allocTitle}>Stake started</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>15 Apr 2025</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Locked until</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>
                             15 Apr 2025 <Text style={{ color: theme.colors.grey9 }}>(30 days)</Text>
                         </Text>
                     </View>
                 </View>
+            </View>
+
+            <View style={styles.unlockAssetView}>
+                <Text style={styles.unlockhead}>How does yield work?</Text>
+
+                <Text style={styles.lockedParagraph}>
+                    Yield is compounded daily based on the current yield rate multiplied by your stake amount
+                </Text>
+                <Text style={styles.howStaking}>How Staking Works</Text>
+            </View>
+            <View style={styles.stakeMoreBtn}>
+                <TButton
+                    style={[
+                        styles.unstakeBtn,
+                        { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+                    ]}
+                    color={theme.colors.black}
+                    onPress={() => {
+                        props.onClose();
+                        props.navigation.navigate('ConfirmUnStaking', {
+                            chain: props.chain,
+                            amount: 100,
+                        });
+                    }}
+                >
+                    Unstake
+                </TButton>
             </View>
         </RBSheet>
     );
@@ -113,11 +152,51 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-end',
     },
-    allocTitle: { fontWeight: '500', color: theme.colors.grey9, fontSize: 14 },
+    allocTitle: { fontWeight: '400', color: theme.colors.grey9, fontSize: 14 },
     flexRowCenter: {
         flexDirection: 'row',
         gap: 7,
         alignItems: 'flex-end',
+    },
+    unlockAssetView: {
+        paddingVertical: 15,
+        paddingHorizontal: 15,
+        backgroundColor: theme.colors.grey7,
+        borderRadius: 8,
+        position: 'absolute',
+        bottom: 100,
+        left: 0,
+        right: 0,
+        marginHorizontal: 10,
+    },
+    unlockhead: {
+        fontSize: 16,
+        fontWeight: '700',
+        alignItems: 'flex-start',
+    },
+    lockedParagraph: {
+        fontSize: 12,
+        fontWeight: '400',
+        color: theme.colors.black,
+        marginTop: 6,
+    },
+    howStaking: {
+        fontSize: 13,
+        fontWeight: '400',
+        color: theme.colors.success,
+        marginTop: 6,
+    },
+    stakeMoreBtn: {
+        position: 'absolute',
+        bottom: 40,
+        left: 13,
+        right: 13,
+    },
+    unstakeBtn: {
+        borderRadius: 6,
+        backgroundColor: theme.colors.backgroundGray,
+        width: '100%',
+        paddingVertical: 14,
     },
 });
 

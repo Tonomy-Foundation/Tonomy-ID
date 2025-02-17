@@ -160,6 +160,9 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = availableBalance.add(vestedBalance);
 
+                    setTotalStaked(10);
+                    setShowStaking(true);
+
                     try {
                         const accountData = await token.getAccountStateData(account);
 
@@ -169,7 +172,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                         }
                     } catch (e) {
                         if (e.message === 'Account not found in staking contract') {
-                            setShowStaking(false);
+                            // setShowStaking(false);
                         }
                     }
 

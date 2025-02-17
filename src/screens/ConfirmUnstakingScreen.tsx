@@ -1,16 +1,16 @@
 import React from 'react';
-import ConfirmStakingContainer from '../containers/ConfirmStakingContainer';
+import ConfirmUnStakingContainer from '../containers/ConfirmUnStakingContainer';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RouteStackParamList } from '../navigation/Root';
 
-export type Props = NativeStackScreenProps<RouteStackParamList, 'ConfirmStaking'>;
+export type Props = NativeStackScreenProps<RouteStackParamList, 'ConfirmUnStaking'>;
 
-export default function ConfirmStakingScreen(props: Props) {
+export default function ConfirmUnstakingScreen(props: Props) {
     return (
-        <ConfirmStakingContainer
+        <ConfirmUnStakingContainer
             navigation={props.navigation}
             chain={props.route.params.chain}
             amount={props.route.params.amount}
-        ></ConfirmStakingContainer>
+        ></ConfirmUnStakingContainer>
     );
 }

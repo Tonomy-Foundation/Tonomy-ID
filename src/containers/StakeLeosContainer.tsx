@@ -59,6 +59,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                     onPress={() =>
                         navigation.navigate('ConfirmStaking', {
                             chain: chain,
+                            amount: 10,
                         })
                     }
                 >
