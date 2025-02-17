@@ -6,6 +6,7 @@ import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
 import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
+import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain/eosio/transaction';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -268,7 +269,7 @@ export interface IToken {
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
     getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
-    withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
+    withdrawVestedTokens(account: IAccount, signer?: Signer): Promise<PushTransactionResponse>;
     getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
     getAccountStateData(account: IAccount): Promise<StakingAccountState>;
 }
@@ -344,7 +345,7 @@ export abstract class AbstractToken implements IToken {
     abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
     abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
     abstract getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
-    abstract withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
+    abstract withdrawVestedTokens(account: IAccount, signer?: Signer): Promise<PushTransactionResponse>;
     abstract getAccountStateData(account: IAccount): Promise<StakingAccountState>;
 }
 

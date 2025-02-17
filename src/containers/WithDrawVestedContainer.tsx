@@ -1,18 +1,40 @@
 import { StyleSheet, Image, View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import { Props } from '../screens/VestedSuccessScreen';
+import { Props } from '../screens/WithdrawVestedScreen';
 import theme, { commonStyles } from '../utils/theme';
 import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { TH2, TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
+import { EosioUtil, KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
+import RNKeyManager from '../utils/RNKeyManager';
+import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import useUserStore from '../store/userStore';
 
 export type VestedAssetSuccessProps = {
     navigation: Props['navigation'];
     chain: IChain;
 };
 
-const VestedSuccessContainer = ({ navigation, chain }: VestedAssetSuccessProps) => {
+const WithDrawVestedContainer = ({ navigation, chain }: VestedAssetSuccessProps) => {
     const [loading, setLoading] = useState(false);
+    const token = chain.getNativeToken();
+    const { user } = useUserStore();
+
+    const withDrawVested = async () => {
+        setLoading(true);
+        const tokenEntry = await getTokenEntryByChain(chain);
+
+        const account = await getAccountFromChain(tokenEntry, user);
+
+        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+
+        await token.withdrawVestedTokens(account, accountSigner);
+        setLoading(false);
+
+        navigation.navigate('AssetManager', {
+            chain,
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -26,7 +48,7 @@ const VestedSuccessContainer = ({ navigation, chain }: VestedAssetSuccessProps) 
                         <Text style={styles.withDrawLoadingBtn}>Only withdraw</Text>
                     </View>
                 ) : (
-                    <TouchableOpacity onPress={() => setLoading(true)}>
+                    <TouchableOpacity onPress={() => withDrawVested()}>
                         <Text style={styles.withDrawBtn}>Only withdraw</Text>
                     </TouchableOpacity>
                 )}
@@ -168,4 +190,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default VestedSuccessContainer;
+export default WithDrawVestedContainer;

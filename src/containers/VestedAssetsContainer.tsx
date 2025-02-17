@@ -12,6 +12,9 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { getMultiplier } from '../utils/multiplier';
 import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
+import { EosioUtil } from '@tonomy/tonomy-id-sdk';
+import { KeyManager, KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
+import RNKeyManager from '../utils/RNKeyManager';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -107,8 +110,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     };
 
     const withDrawVested = async () => {
-        await token.withdrawVestedTokens(account);
-        navigation.navigate('SuccessVestingWithdraw', {
+        navigation.navigate('WithdrawVested', {
             chain,
         });
     };
