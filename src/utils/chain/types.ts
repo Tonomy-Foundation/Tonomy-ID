@@ -1,10 +1,11 @@
 import { TKeyType } from '@veramo/core';
 import { formatTokenValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
-import { sha256, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { sha256, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
+import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -267,7 +268,9 @@ export interface IToken {
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
     getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
-    getStakingAllocation(account?: IAccount): Promise<StakingAllocation[]>;
+    withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
+    getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
+    getAccountStateData(account: IAccount): Promise<StakingAccountState>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -340,7 +343,9 @@ export abstract class AbstractToken implements IToken {
     abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
     abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
     abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
-    abstract getStakingAllocation(account?: IAccount): Promise<StakingAllocation[]>;
+    abstract getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
+    abstract withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
+    abstract getAccountStateData(account: IAccount): Promise<StakingAccountState>;
 }
 
 export interface IAccount {

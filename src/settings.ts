@@ -1,4 +1,3 @@
-import { setSettings } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:settings');

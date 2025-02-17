@@ -5,7 +5,7 @@ import { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
 import { useEffect, useRef, useState } from 'react';
 import AllocationDetails from '../components/AllocationDetails';
-import { IChain, VestedTokens, VestedAllocation } from '../utils/chain/types';
+import { IChain, VestedTokens, VestedAllocation, IAccount } from '../utils/chain/types';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
@@ -23,7 +23,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
     const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
-
+    const [account, setAccount] = useState<IAccount>({} as IAccount);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const token = chain.getNativeToken();
     const { user } = useUserStore();
@@ -37,6 +37,8 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
             const tokenEntry = await getTokenEntryByChain(chain);
 
             const account = await getAccountFromChain(tokenEntry, user);
+
+            setAccount(account);
             const allocations = await token.getVestedTokens(account);
             const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
@@ -104,6 +106,13 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         );
     };
 
+    const withDrawVested = async () => {
+        await token.withdrawVestedTokens(account);
+        navigation.navigate('SuccessVestingWithdraw', {
+            chain,
+        });
+    };
+
     const vestingAllocationsView = () => {
         return (
             <ScrollView style={styles.scrollView}>
@@ -156,14 +165,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                     ${formatCurrencyValue(vestedAllocations.unlockable * usdPrice)}
                                 </Text>
                                 <View style={styles.sendReceiveButtons}>
-                                    <TButtonContained
-                                        style={styles.fullWidthButton}
-                                        onPress={() =>
-                                            navigation.navigate('SuccessVestingWithdraw', {
-                                                chain,
-                                            })
-                                        }
-                                    >
+                                    <TButtonContained style={styles.fullWidthButton} onPress={() => withDrawVested()}>
                                         Withdraw
                                     </TButtonContained>
                                 </View>
@@ -261,8 +263,9 @@ const styles = StyleSheet.create({
         right: 0,
     },
     subTitle: {
-        marginBottom: 12,
+        marginBottom: 8,
         fontSize: 16,
+        fontWeight: 'bold',
         ...commonStyles.primaryFontFamily,
     },
     moreView: {
@@ -313,7 +316,7 @@ const styles = StyleSheet.create({
     },
     lockedCoinsAmount: {
         fontSize: 21,
-        fontWeight: '700',
+        fontWeight: '800',
         ...commonStyles.secondaryFontFamily,
     },
     lockedUSDAmount: {

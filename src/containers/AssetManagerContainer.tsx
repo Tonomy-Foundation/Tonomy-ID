@@ -42,7 +42,7 @@ const renderImageBackground = (balance: Balance) => {
     );
 };
 
-const vestedBalanceView = (balance: Balance, navigation, chain) => {
+const vestedBalanceView = (balance: Balance, navigation, chain: IChain) => {
     return (
         <View>
             <TouchableOpacity
@@ -65,7 +65,32 @@ const vestedBalanceView = (balance: Balance, navigation, chain) => {
     );
 };
 
-const investorTootlView = (navigation, chain) => {
+const stakedBalanceView = (totalStaked: number, navigation, chain: IChain) => {
+    return (
+        <View>
+            <TouchableOpacity
+                style={styles.vestedView}
+                onPress={() => {
+                    navigation.navigate('StakeLeosDetail', {
+                        chain: chain,
+                    });
+                }}
+            >
+                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Staked</Text>
+                <View style={styles.allocationView}>
+                    <Text style={{ fontWeight: '700', fontSize: 12 }}>
+                        {totalStaked} {chain.getNativeToken().getSymbol()}
+                    </Text>
+                    <View style={styles.flexColEnd}>
+                        <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
+                </View>
+            </TouchableOpacity>
+        </View>
+    );
+};
+
+const investorTootlView = (navigation, chain, redirectStakeToEarn) => {
     return (
         <View>
             <Text style={styles.subTitle}>Investor tools</Text>
@@ -85,13 +110,7 @@ const investorTootlView = (navigation, chain) => {
                     </View>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity
-                onPressIn={() =>
-                    navigation.navigate('StakingManager', {
-                        chain: chain,
-                    })
-                }
-            >
+            <TouchableOpacity onPressIn={redirectStakeToEarn}>
                 <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
                     <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
                     <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
@@ -117,6 +136,9 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         vestedBalanceUsd: 0,
     });
     const [showVesting, setShowVesting] = useState(false);
+    const [showStaking, setShowStaking] = useState(false);
+    const [totalStaked, setTotalStaked] = useState(0);
+
     const [loading, setLoading] = useState(true);
     const token = chain.getNativeToken();
     const symbol = chain.getNativeToken().getSymbol();
@@ -135,6 +157,19 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const vestedBalance = await token.getVestedTotalBalance(account);
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = availableBalance.add(vestedBalance);
+
+                    try {
+                        const accountData = await token.getAccountStateData(account);
+
+                        if (accountData) {
+                            setTotalStaked(accountData.totalStaked);
+                            setShowStaking(true);
+                        }
+                    } catch (e) {
+                        if (e.message === 'Account not found in staking contract') {
+                            setShowStaking(false);
+                        }
+                    }
 
                     if (Number(vestedBalance.getAmount()) > 0) {
                         setShowVesting(true);
@@ -183,10 +218,23 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         Linking.openURL(explorerUrl);
     };
 
+    const redirectStakeToEarn = () => {
+        if (totalStaked > 0) {
+            navigation.navigate('StakeLeosDetail', {
+                chain: chain,
+            });
+        } else {
+            navigation.navigate('StakeLeos', {
+                chain: chain,
+            });
+        }
+    };
+
     return (
         <View style={styles.container}>
             {isVestable && <View>{renderImageBackground(balance)}</View>}
             {showVesting && vestedBalanceView(balance, navigation, asset.chain)}
+            {showStaking && stakedBalanceView(totalStaked, navigation, asset.chain)}
 
             <Text style={styles.subTitle}>Available assets</Text>
 
@@ -234,7 +282,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {investorTootlView(navigation, asset.chain)}
+            {investorTootlView(navigation, asset.chain, redirectStakeToEarn)}
         </View>
     );
 };

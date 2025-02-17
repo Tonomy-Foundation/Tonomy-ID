@@ -39,7 +39,8 @@ import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
-import { StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -219,8 +220,16 @@ export class EthereumToken extends AbstractToken {
     async getAvailableBalance(account?: IAccount): Promise<IAsset> {
         return this.getBalance(account);
     }
-    async getStakingAllocation(account: IAccount): Promise<StakingAllocation[]> {
-        throw new Error(`getStakingAllocation() method not implemented' ${account}`);
+    async getStakingAllocationDetail(account: IAccount): Promise<StakingAllocation[]> {
+        throw new Error(`getStakingAllocationDetail() method not implemented' ${account}`);
+    }
+
+    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
+        throw new Error(`withdrawVestedTokens() method not implemented' ${account}`);
+    }
+
+    async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
+        throw new Error(`getAccountStateData() method not implemented' ${account}`);
     }
 }
 
