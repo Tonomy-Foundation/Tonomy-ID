@@ -42,7 +42,7 @@ import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from '../debug';
 import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
-import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import { VestingContract, StakingContract, StakingAccountState } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
@@ -50,6 +50,7 @@ import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 import Decimal from 'decimal.js';
 
 const vestingContract = VestingContract.Instance;
+const stakingContract = StakingContract.Instance;
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -405,6 +406,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
         return this.getBalance(account);
     }
+
+    async getStakingAccountState(account: IAccount): Promise<StakingAccountState> {
+        throw new Error(`getStakingAccountState() method not implemented' ${account}`);
+    }
 }
 
 export class PangeaVestedToken extends AntelopeToken {
@@ -435,6 +440,10 @@ export class PangeaVestedToken extends AntelopeToken {
 
     async getVestedTokens(account: IAccount): Promise<VestedTokens> {
         return await vestingContract.getVestingAllocations(account.getName());
+    }
+
+    async getStakingAccountState(account: IAccount): Promise<StakingAccountState> {
+        return await stakingContract.getAccountState(account.getName());
     }
 }
 

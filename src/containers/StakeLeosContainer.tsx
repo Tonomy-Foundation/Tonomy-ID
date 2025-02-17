@@ -1,11 +1,15 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { StakeLesoscreenNavigationProp } from '../screens/StakeLeosScreen';
 import theme, { commonStyles } from '../utils/theme';
 
 import { IChain } from '../utils/chain/types';
 
 import { TButtonContained } from '../components/atoms/TButton';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import useUserStore from '../store/userStore';
+import { StakingAccountState } from '@tonomy/tonomy-id-sdk';
+import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import Decimal from 'decimal.js';
 
 export type StakeLesoProps = {
     navigation: StakeLesoscreenNavigationProp['navigation'];
@@ -13,41 +17,97 @@ export type StakeLesoProps = {
 };
 
 const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
+    const token = chain.getNativeToken();
+    const { user } = useUserStore();
+
+    const [stakingState, setStakingState] = useState<StakingAccountState | null>(null);
+    const [amount, setAmount] = useState('');
+    const [monthlyYield, setMonthlyYield] = useState<number>(0);
+    const [usdValue, setUsdValue] = useState<string>('0.00');
+    const [stakingDays, setStakingDays] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchStakingDetails = async () => {
+            try {
+                const tokenEntry = await getTokenEntryByChain(chain);
+                const account = await getAccountFromChain(tokenEntry, user);
+                const state = await token.getStakingAccountState(account);
+                setStakingState(state);
+                if (state.allocations.length > 0) {
+                    const unstakeDate = state.allocations[0].unstakeableTime;
+                    const today = new Date();
+                    const diffDays = Math.ceil((unstakeDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    setStakingDays(diffDays > 0 ? diffDays : 0);
+                }
+            } catch (error) {
+                console.error('Error fetching staking details:', error);
+            }
+        };
+        fetchStakingDetails();
+    }, [chain, user, token]);
+
+    const handleAmountChange = async (input: string) => {
+        setAmount(input);
+        const numericAmount = parseFloat(input) || 0;
+        if (stakingState) {
+            const apy = stakingState.settings.apy || 0;
+            const calculatedYield = (numericAmount * apy) / (12 * 100);
+            setMonthlyYield(calculatedYield);
+
+            // Convert to USD
+            const price = await token.getUsdPrice();
+            const priceDecimal = new Decimal(price);
+            const inputDecimal = new Decimal(input);
+
+            const usdValue = inputDecimal.mul(priceDecimal);
+            setUsdValue((calculatedYield * usdValue.toNumber()).toFixed(2));
+        }
+    };
+
+    const availableBalance = stakingState?.totalStaked.toFixed(2) ?? '0.00';
+    const apy = stakingState?.settings.apy.toFixed(2) ?? '0.00';
+    const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? 'N/A';
+
     return (
         <>
             <View style={styles.container}>
-                <View style={styles.flexCol}>
-                    <View style={styles.inputContainer}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter amount"
-                            placeholderTextColor={theme.colors.tabGray}
-                        />
-                        <TouchableOpacity style={styles.inputButton}>
-                            <Text style={styles.inputButtonText}>MAX</Text>
-                        </TouchableOpacity>
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.flexCol}>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Enter amount"
+                                placeholderTextColor={theme.colors.tabGray}
+                                value={amount}
+                                onChangeText={handleAmountChange}
+                                keyboardType="numeric"
+                            />
+                            <TouchableOpacity style={styles.inputButton} onPress={() => setAmount(availableBalance)}>
+                                <Text style={styles.inputButtonText}>MAX</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={styles.inputHelp}>Available: {availableBalance} LEOS</Text>
                     </View>
-                    <Text style={styles.inputHelp}>Available: 10,000.00 LEOS</Text>
-                </View>
-                <View style={styles.annualView}>
-                    <View style={styles.annualText}>
-                        <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                        <Text style={styles.annualPercentage}>3.47%</Text>
-                    </View>
-                    <View style={styles.annualText}>
-                        <Text style={styles.annualSubText}>Monthly earnings</Text>
-                        <View>
-                            <Text style={styles.annualPercentage}>180 LEOS</Text>
-                            <Text style={styles.annualSubText}>$50.00</Text>
+                    <View style={styles.annualView}>
+                        <View style={styles.annualText}>
+                            <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
+                            <Text style={styles.annualPercentage}>{apy}%</Text>
+                        </View>
+                        <View style={styles.annualText}>
+                            <Text style={styles.annualSubText}>Monthly earnings</Text>
+                            <View>
+                                <Text style={styles.annualPercentage}>{monthlyYield.toFixed(2)} LEOS</Text>
+                                <Text style={styles.annualSubText}>${usdValue}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.annualText}>
+                            <Text style={styles.annualSubText}>Stake until</Text>
+                            <Text>
+                                {stakeUntil} <Text style={styles.annualSubText}>({stakingDays ?? '0'} days)</Text>
+                            </Text>
                         </View>
                     </View>
-                    <View style={styles.annualText}>
-                        <Text style={styles.annualSubText}>Stake until</Text>
-                        <Text>
-                            3 Nov 2024 <Text style={styles.annualSubText}>(30 days)</Text>
-                        </Text>
-                    </View>
-                </View>
+                </ScrollView>
             </View>
             <View style={styles.unlockAssetView}>
                 <Text style={styles.unlockhead}>What is staking? </Text>
@@ -153,7 +213,9 @@ const styles = StyleSheet.create({
     },
     proceedBtn: {
         padding: 16,
+        marginBottom: 20,
     },
+    scrollView: { minHeight: 170, maxHeight: 350, paddingTop: 5, marginBottom: 10 },
 });
 
 export default StakeLeosContainer;

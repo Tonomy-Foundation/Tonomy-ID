@@ -58,7 +58,7 @@ const vestedBalanceView = (balance: Balance, asset: AccountTokenDetails, redirec
     );
 };
 
-const investorTootlView = (redirectVestedAsset) => {
+const investorTootlView = (redirectVestedAsset, redirectStakingAsset) => {
     return (
         <View>
             <Text style={styles.subTitle}>Investor tools</Text>
@@ -72,14 +72,15 @@ const investorTootlView = (redirectVestedAsset) => {
                     </View>
                 </View>
             </TouchableOpacity>
-            {/* Uncomment when implementing staking */}
-            {/* <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
-                <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
-                <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
-                <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
-                    <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+            <TouchableOpacity onPressIn={redirectStakingAsset}>
+                <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
+                    <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                    <Text style={{ fontWeight: '600', marginLeft: 5 }}>Stake to earn</Text>
+                    <View style={[styles.flexColEnd, { marginLeft: 'auto' }]}>
+                        <ArrowRight height={18} width={18} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
                 </View>
-            </View> */}
+            </TouchableOpacity>
         </View>
     );
 };
@@ -155,6 +156,12 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         });
     };
 
+    const redirectStakingAsset = () => {
+        navigation.navigate('StakeLeos', {
+            chain: asset.chain,
+        });
+    };
+
     if (loading) {
         return (
             <View style={styles.textContainer}>
@@ -220,7 +227,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {showVesting && investorTootlView(redirectVestedAsset)}
+            {showVesting && investorTootlView(redirectVestedAsset, redirectStakingAsset)}
         </View>
     );
 };
