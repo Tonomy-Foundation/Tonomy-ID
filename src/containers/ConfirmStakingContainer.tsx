@@ -7,18 +7,36 @@ import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
 import { formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
+import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import useUserStore from '../store/userStore';
+import { EosioUtil, KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
+import RNKeyManager from '../utils/RNKeyManager';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
     chain: IChain;
     amount: number;
+    withDraw?: boolean;
 };
 
-const SuccessLeosWithDrawContainer = ({ chain, navigation, amount }: PropsStaking) => {
+const SuccessLeosWithDrawContainer = ({ chain, navigation, amount, withDraw }: PropsStaking) => {
     const [loading, setLoading] = useState(false);
+    const { user } = useUserStore();
+    const token = chain.getNativeToken();
 
-    const confirmStaking = () => {
+    const confirmStaking = async () => {
         setLoading(true);
+
+        if (withDraw) {
+            const tokenEntry = await getTokenEntryByChain(chain);
+
+            const account = await getAccountFromChain(tokenEntry, user);
+
+            await token.withdrawVestedTokens(account);
+            const quantity = amount.toFixed(6) + ' ' + token.getSymbol();
+
+            await token.stakeTokens(account, quantity);
+        }
 
         navigation.navigate('AssetManager', {
             chain,

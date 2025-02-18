@@ -4,19 +4,63 @@ import { IChain } from '../utils/chain/types';
 import theme, { commonStyles } from '../utils/theme';
 import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import StakingAllocationDetails from '../components/StakingAllocationDetails';
 import HowStakingWorks from '../components/HowStakingWorks';
+import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import useUserStore from '../store/userStore';
+import { assetToAmount, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
+import Decimal from 'decimal.js';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type StakingLeosProps = {
     navigation: Props['navigation'];
     chain: IChain;
 };
 
+export function getUnlockStatus(allocation) {
+    const now = new Date();
+    const unstakeableTime = new Date(allocation.unstakeableTime);
+    const releaseTime = new Date(allocation.releaseTime);
+
+    const daysUntilUnlockable = Math.ceil((unstakeableTime.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const daysUntilRelease = Math.ceil((releaseTime.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (allocation.unstakeRequested) {
+        return daysUntilRelease > 0 ? `Released in ${daysUntilRelease} days` : 'Released';
+    } else {
+        return daysUntilUnlockable > 0 ? `Unlockable in ${daysUntilUnlockable} days` : 'Unlockable';
+    }
+}
+
 const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
-    const [selectedAllocation, setSelectedAllocation] = useState<Record<string, any>>({});
+    const [loading, setLoading] = useState(true);
+
+    const [accountData, setAccountData] = useState<StakingAccountState>({} as StakingAccountState);
+    const [selectedAllocation, setSelectedAllocation] = useState<StakingAllocation>({} as StakingAllocation);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const refStakingInfo = useRef<{ open: () => void; close: () => void }>(null);
+    const { user } = useUserStore();
+    const token = chain.getNativeToken();
+    const [usdPrice, setUsdPrice] = useState(0);
+
+    useEffect(() => {
+        const fetchStakedAllocation = async () => {
+            const tokenEntry = await getTokenEntryByChain(chain);
+
+            const account = await getAccountFromChain(tokenEntry, user);
+
+            const accountData = await token.getAccountStateData(account);
+            const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+
+            setUsdPrice(usdPriceValue);
+            setAccountData(accountData);
+            setLoading(false);
+        };
+
+        fetchStakedAllocation();
+    }, []);
 
     const onClose = () => {
         refMessage.current?.close();
@@ -27,25 +71,42 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
         refStakingInfo.current?.open();
     };
 
+    if (loading) {
+        return (
+            <View style={styles.textContainer}>
+                <TSpinner />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
-            <View style={styles.yieldRow}>
-                <View style={styles.flexStartCol}>
-                    <Text style={styles.cryptoMsg}>{'Your crypto is working hard!'}</Text>
-                    <Text style={styles.cryptoEarned}>{`100.0000 LEOS earned`}</Text>
+            {assetToAmount(accountData.totalYield) > 100 && (
+                <View style={styles.yieldRow}>
+                    <View style={styles.flexStartCol}>
+                        <Text style={styles.cryptoMsg}>{'Your crypto is working hard!'}</Text>
+                        <Text style={styles.cryptoEarned}>{accountData.totalYield} earned</Text>
+                    </View>
                 </View>
-            </View>
+            )}
+
             <Text style={styles.subTitle}>Total staked</Text>
 
             <View style={styles.stakeView}>
                 <View style={styles.row}>
                     <View style={styles.flexStartCol}>
-                        <Text style={styles.lockedCoinsAmount}>{`69,023.35 LEOS`}</Text>
-                        <Text style={styles.lockedUSDAmount}>{`= $3273.1`}</Text>
+                        <Text style={styles.lockedCoinsAmount}>
+                            {formatTokenValue(new Decimal(accountData?.totalStaked))} {token.getSymbol()}
+                        </Text>
+                        <Text style={styles.lockedUSDAmount}>{`= $${formatCurrencyValue(
+                            usdPrice * accountData?.totalStaked
+                        )}`}</Text>
                     </View>
                     <View style={styles.flexEndCol}>
-                        <Text style={styles.apyPercentage}>3.48% APY</Text>
-                        <Text style={styles.leosMonthly}>180.00 LEOS / month</Text>
+                        <Text style={styles.apyPercentage}>{accountData.settings.apy}% APY</Text>
+                        <Text style={styles.leosMonthly}>
+                            {formatCurrencyValue(accountData.estimatedMonthlyYield)} LEOS / month
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.stakeMoreBtn}>
@@ -53,44 +114,35 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                 </View>
             </View>
 
-            <TouchableOpacity
-                style={styles.allocationView}
-                onPress={() => {
-                    setSelectedAllocation({});
-                    refMessage.current?.open();
-                }}
-            >
-                <Text style={{ fontWeight: '700' }}>6,000.00 LEOS</Text>
-                <View style={styles.flexColEnd}>
-                    <Text style={styles.allocMulti}>unlockable in 15 days</Text>
-
-                    <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                </View>
-            </TouchableOpacity>
-
             {selectedAllocation && (
                 <StakingAllocationDetails
                     chain={chain}
                     onClose={onClose}
                     refMessage={refMessage}
                     navigation={navigation}
+                    allocation={selectedAllocation}
+                    usdPrice={usdPrice}
+                    accountData={accountData}
                 />
             )}
-            <TouchableOpacity style={styles.allocationView}>
-                <Text style={{ fontWeight: '700' }}>6,000.00 LEOS</Text>
-                <View style={styles.flexColEnd}>
-                    <Text style={styles.allocMulti}>unlockable in 15 days</Text>
-                    <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.allocationView}>
-                <Text style={{ fontWeight: '700' }}>6,000.00 LEOS</Text>
-                <View style={styles.flexColEnd}>
-                    <Text style={styles.allocMulti}>released in 5 days</Text>
-                    <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                </View>
-            </TouchableOpacity>
+            {accountData?.allocations?.map((allocation, index) => (
+                <TouchableOpacity
+                    key={index}
+                    style={styles.allocationView}
+                    onPress={() => {
+                        setSelectedAllocation(allocation);
+                        refMessage.current?.open();
+                    }}
+                >
+                    <Text style={{ fontWeight: '700' }}>
+                        {formatTokenValue(new Decimal(assetToAmount(allocation.staked)))} {token.getSymbol()}
+                    </Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>{getUnlockStatus(allocation)}</Text>
+                        <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                    </View>
+                </TouchableOpacity>
+            ))}
 
             <View style={styles.unlockAssetView}>
                 <Text style={styles.unlockhead}>Why are my coins locked?</Text>
@@ -113,6 +165,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         marginHorizontal: 15,
+    },
+    textContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     yieldRow: {
         flexDirection: 'row',

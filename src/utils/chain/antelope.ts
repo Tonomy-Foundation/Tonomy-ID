@@ -48,6 +48,8 @@ import {
     StakingAllocation,
     StakingAccountState,
     EosioTokenContract,
+    KeyManagerLevel,
+    EosioUtil,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -55,6 +57,7 @@ import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain/eosio/transaction';
+import RNKeyManager from '../RNKeyManager';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -421,12 +424,16 @@ export class AntelopeToken extends AbstractToken implements IToken {
         throw new Error(`getStakingAllocationDetail() method not implemented' ${account}`);
     }
 
-    async withdrawVestedTokens(account: IAccount, signer: Signer): Promise<PushTransactionResponse> {
+    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
         throw new Error(`withdrawVestedTokens() method not implemented' ${account}`);
     }
 
     async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
         throw new Error(`getAccountStateData() method not implemented' ${account}`);
+    }
+
+    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
+        throw new Error(`stakeTokens() method not implemented' ${account} ${amount}`);
     }
 }
 
@@ -463,8 +470,10 @@ export class PangeaVestedToken extends AntelopeToken {
         return await vestingContract.getVestingAllocations(account.getName());
     }
 
-    async withdrawVestedTokens(account: IAccount, signer: Signer): Promise<PushTransactionResponse> {
-        return await vestingContract.withdraw(account.getName(), signer);
+    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
+        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+
+        return await vestingContract.withdraw(account.getName(), accountSigner);
     }
 
     async getStakingAllocationDetail(account: IAccount): Promise<StakingAllocation[]> {
@@ -478,6 +487,12 @@ export class PangeaVestedToken extends AntelopeToken {
         const accountData = await stakingContract.getAccountState(account.getName());
 
         return accountData;
+    }
+
+    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
+        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+
+        return await stakingContract.stakeTokens(account.getName(), amount, accountSigner);
     }
 }
 

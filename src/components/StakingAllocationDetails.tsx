@@ -5,15 +5,25 @@ import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import TButton from './atoms/TButton';
 import { IChain } from '../utils/chain/types';
+import { assetToAmount, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { formatCurrencyValue } from '../utils/numbers';
+import { formatDate } from '../utils/time';
 
 export type PropsStaking = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
     navigation: any;
     chain: IChain;
+    allocation: StakingAllocation;
+    usdPrice: number;
+    accountData: StakingAccountState;
 };
 
 const StakingAllocationDetails = (props: PropsStaking) => {
+    const allocation = props.allocation;
+    const accountData = props.accountData;
+    const isUnlocked = new Date() >= new Date(allocation.unstakeableTime);
+
     return (
         <RBSheet
             ref={props.refMessage}
@@ -28,39 +38,60 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} size={17} />
                 </TouchableOpacity>
             </View>
+
             <View style={styles.vestingDetailView}>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Staked</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
-                            10,000.000 LEOS (<Text style={{ color: theme.colors.success }}>+621%</Text>)
+                            {allocation.staked} (
+                            <Text style={{ color: theme.colors.success }}>
+                                +
+                                {(
+                                    (assetToAmount(allocation.yieldSoFar) / assetToAmount(allocation.initialStake)) *
+                                    100
+                                ).toFixed(2)}
+                                %
+                            </Text>
+                            )
                         </Text>
-                        <Text style={styles.usdBalance}>$2,338.05</Text>
+                        <Text style={styles.usdBalance}>
+                            ${formatCurrencyValue(assetToAmount(allocation.staked) * props.usdPrice)}
+                        </Text>
                     </View>
                 </View>
 
                 <View style={styles.allocationView}>
                     <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                         <Text style={styles.allocTitle}>Monthly yield:</Text>
-                        <Text style={styles.allocTitle}>(3.42% APY)</Text>
+                        <Text style={styles.allocTitle}>({accountData.settings.apy}% APY)</Text>
                     </View>
 
                     <View style={styles.flexColCenter}>
-                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>180.00 LEOS</Text>
-                        <Text style={styles.usdBalance}>$50.05</Text>
+                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
+                            {allocation.monthlyYield}
+                        </Text>
+                        <Text style={styles.usdBalance}>
+                            $
+                            {allocation?.monthlyYield &&
+                                formatCurrencyValue(assetToAmount(allocation.monthlyYield) * props.usdPrice)}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Stake started</Text>
                     <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>15 Apr 2025</Text>
+                        <Text style={styles.allocMulti}>
+                            {allocation.stakedTime && formatDate(allocation.stakedTime)}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Locked until</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>
-                            15 Apr 2025 <Text style={{ color: theme.colors.grey9 }}>(14 days)</Text>
+                            {allocation.unstakeableTime && formatDate(allocation.unstakeableTime)}
+                            <Text style={{ color: theme.colors.grey9 }}> (14 days)</Text>
                         </Text>
                     </View>
                 </View>
@@ -74,24 +105,26 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                 </Text>
                 <Text style={styles.howStaking}>How Staking Works</Text>
             </View>
-            <View style={styles.stakeMoreBtn}>
-                <TButton
-                    style={[
-                        styles.unstakeBtn,
-                        { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                    ]}
-                    color={theme.colors.black}
-                    onPress={() => {
-                        props.onClose();
-                        props.navigation.navigate('ConfirmUnStaking', {
-                            chain: props.chain,
-                            amount: 100,
-                        });
-                    }}
-                >
-                    Unstake
-                </TButton>
-            </View>
+            {isUnlocked && (
+                <View style={styles.stakeMoreBtn}>
+                    <TButton
+                        style={[
+                            styles.unstakeBtn,
+                            { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+                        ]}
+                        color={theme.colors.black}
+                        onPress={() => {
+                            props.onClose();
+                            props.navigation.navigate('ConfirmUnStaking', {
+                                chain: props.chain,
+                                amount: 100,
+                            });
+                        }}
+                    >
+                        Unstake
+                    </TButton>
+                </View>
+            )}
         </RBSheet>
     );
 };

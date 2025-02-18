@@ -121,7 +121,7 @@ export type MainRouteStackParamList = {
     SelectAsset: { screenTitle?: string; type: string };
     AssetManager: AssetsParamsScreen;
     VestedAssets: AssetsParamsScreen;
-    ConfirmStaking: AssetsParamsScreen & { amount: number };
+    ConfirmStaking: AssetsParamsScreen & { amount: number; withDraw?: boolean };
     StakingManager: AssetsParamsScreen;
     StakeLeos: AssetsParamsScreen;
     StakeLeosDetail: AssetsParamsScreen;

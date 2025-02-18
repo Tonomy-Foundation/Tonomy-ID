@@ -2,13 +2,14 @@ import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Ima
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
-import { IChain } from '../utils/chain/types';
+import { Asset, IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
-import { formatCurrencyValue } from '../utils/numbers';
+import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
+import Decimal from 'decimal.js';
 
 export type Props = {
     navigation: LeosAssetsScreenNavigationProp['navigation'];
@@ -79,7 +80,7 @@ const stakedBalanceView = (totalStaked: number, navigation, chain: IChain) => {
                 <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Staked</Text>
                 <View style={styles.allocationView}>
                     <Text style={{ fontWeight: '700', fontSize: 12 }}>
-                        {totalStaked} {chain.getNativeToken().getSymbol()}
+                        {formatTokenValue(new Decimal(totalStaked))} {chain.getNativeToken().getSymbol()}
                     </Text>
                     <View style={styles.flexColEnd}>
                         <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
@@ -158,21 +159,21 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
                     console.log('vestedBalance', vestedBalance);
                     const availableBalance = await token.getAvailableBalance(account);
-                    const totalBalance = availableBalance.add(vestedBalance);
-
-                    setTotalStaked(10);
-                    setShowStaking(true);
+                    let totalBalance = availableBalance.add(vestedBalance);
 
                     try {
                         const accountData = await token.getAccountStateData(account);
 
                         if (accountData) {
+                            const totalStaked = new Asset(token, new Decimal(accountData.totalStaked));
+
+                            totalBalance = totalBalance.add(totalStaked);
                             setTotalStaked(accountData.totalStaked);
                             setShowStaking(true);
                         }
                     } catch (e) {
                         if (e.message === 'Account not found in staking contract') {
-                            // setShowStaking(false);
+                            setShowStaking(false);
                         }
                     }
 
@@ -235,6 +236,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         }
     };
 
+    console.log('balance', balance);
     return (
         <View style={styles.container}>
             {isVestable && <View>{renderImageBackground(balance)}</View>}

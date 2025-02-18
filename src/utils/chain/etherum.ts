@@ -231,6 +231,10 @@ export class EthereumToken extends AbstractToken {
     async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
         throw new Error(`getAccountStateData() method not implemented' ${account}`);
     }
+
+    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
+        throw new Error(`stakeTokens() method not implemented' ${account} ${amount}`);
+    }
 }
 
 export const EthereumMainnetChain = new EthereumChain(

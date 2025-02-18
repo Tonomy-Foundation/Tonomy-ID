@@ -1,12 +1,10 @@
 import { StyleSheet, Image, View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { Props } from '../screens/WithdrawVestedScreen';
-import theme, { commonStyles } from '../utils/theme';
-import TButton, { TButtonContained } from '../components/atoms/TButton';
-import { TH2, TH1, TP } from '../components/atoms/THeadings';
+import theme from '../utils/theme';
+import { TButtonContained } from '../components/atoms/TButton';
+import { TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
-import { EosioUtil, KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
-import RNKeyManager from '../utils/RNKeyManager';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
 import { formatTokenValue } from '../utils/numbers';
@@ -29,9 +27,7 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
 
         const account = await getAccountFromChain(tokenEntry, user);
 
-        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
-
-        await token.withdrawVestedTokens(account, accountSigner);
+        await token.withdrawVestedTokens(account);
         setLoading(false);
 
         navigation.navigate('SuccessVested', {
@@ -70,6 +66,7 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
                         navigation.navigate('ConfirmStaking', {
                             chain: chain,
                             amount: amount,
+                            withDraw: true,
                         })
                     }
                     disabled={loading}

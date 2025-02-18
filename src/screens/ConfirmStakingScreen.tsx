@@ -11,6 +11,7 @@ export default function ConfirmStakingScreen(props: Props) {
             navigation={props.navigation}
             chain={props.route.params.chain}
             amount={props.route.params.amount}
+            withDraw={props.route.params?.withDraw}
         ></ConfirmStakingContainer>
     );
 }
