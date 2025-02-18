@@ -11,6 +11,7 @@ export default function ConfirmUnstakingScreen(props: Props) {
             navigation={props.navigation}
             chain={props.route.params.chain}
             amount={props.route.params.amount}
+            allocationId={props.route.params.allocationId}
         ></ConfirmUnStakingContainer>
     );
 }

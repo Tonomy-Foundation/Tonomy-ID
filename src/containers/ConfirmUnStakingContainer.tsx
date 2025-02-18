@@ -7,22 +7,40 @@ import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
 import { formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
+import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import useUserStore from '../store/userStore';
+import useErrorStore from '../store/errorStore';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
     chain: IChain;
     amount: number;
+    allocationId: number;
 };
 
-const ConfirmUnStakingContainer = ({ chain, navigation, amount }: PropsStaking) => {
+const ConfirmUnStakingContainer = ({ chain, navigation, amount, allocationId }: PropsStaking) => {
     const [loading, setLoading] = useState(false);
+    const { user } = useUserStore();
+    const token = chain.getNativeToken();
+    const errorStore = useErrorStore();
 
-    const confirmStaking = () => {
-        setLoading(true);
+    const confirmStaking = async () => {
+        try {
+            setLoading(true);
+            const tokenEntry = await getTokenEntryByChain(chain);
 
-        navigation.navigate('AssetManager', {
-            chain,
-        });
+            const account = await getAccountFromChain(tokenEntry, user);
+
+            await token.unStakeTokens(account, allocationId);
+
+            navigation.navigate('SuccessUnstake', {
+                chain,
+            });
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

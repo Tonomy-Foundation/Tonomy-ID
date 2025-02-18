@@ -129,7 +129,7 @@ export type MainRouteStackParamList = {
     SuccessUnstake: AssetsParamsScreen;
     WithdrawVested: AssetsParamsScreen & { amount: number };
     SuccessVested: AssetsParamsScreen;
-    ConfirmUnStaking: AssetsParamsScreen & { amount: number };
+    ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
 };
 
 export type BottonNavigatorRouteStackParamList = {

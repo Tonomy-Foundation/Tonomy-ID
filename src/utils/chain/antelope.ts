@@ -420,10 +420,6 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return this.getBalance(account);
     }
 
-    async getStakingAllocationDetail(account: IAccount): Promise<StakingAllocation[]> {
-        throw new Error(`getStakingAllocationDetail() method not implemented' ${account}`);
-    }
-
     async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
         throw new Error(`withdrawVestedTokens() method not implemented' ${account}`);
     }
@@ -434,6 +430,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
 
     async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
         throw new Error(`stakeTokens() method not implemented' ${account} ${amount}`);
+    }
+
+    async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
+        throw new Error(`unStakeTokens() method not implemented' ${account} ${allocationId}`);
     }
 }
 
@@ -476,13 +476,6 @@ export class PangeaVestedToken extends AntelopeToken {
         return await vestingContract.withdraw(account.getName(), accountSigner);
     }
 
-    async getStakingAllocationDetail(account: IAccount): Promise<StakingAllocation[]> {
-        const settings = await stakingContract.getSettings();
-        const allocations = await stakingContract.getAllocations(account.getName(), settings);
-
-        return allocations;
-    }
-
     async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
         const accountData = await stakingContract.getAccountState(account.getName());
 
@@ -493,6 +486,12 @@ export class PangeaVestedToken extends AntelopeToken {
         const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
 
         return await stakingContract.stakeTokens(account.getName(), amount, accountSigner);
+    }
+
+    async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
+        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+
+        return await stakingContract.requestUnstake(account.getName(), allocationId, accountSigner);
     }
 }
 

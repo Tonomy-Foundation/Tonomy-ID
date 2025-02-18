@@ -269,9 +269,9 @@ export interface IToken {
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
     getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
     withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
-    getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
     getAccountStateData(account: IAccount): Promise<StakingAccountState>;
     stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse>;
+    unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -344,10 +344,10 @@ export abstract class AbstractToken implements IToken {
     abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
     abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
     abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
-    abstract getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
     abstract withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
     abstract getAccountStateData(account: IAccount): Promise<StakingAccountState>;
     abstract stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse>;
+    abstract unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse>;
 }
 
 export interface IAccount {

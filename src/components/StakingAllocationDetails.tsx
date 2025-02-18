@@ -24,6 +24,17 @@ const StakingAllocationDetails = (props: PropsStaking) => {
     const accountData = props.accountData;
     const isUnlocked = new Date() >= new Date(allocation.unstakeableTime);
 
+    const requestUnstakeToken = () => {
+        props.onClose();
+        props.navigation.navigate('ConfirmUnStaking', {
+            chain: props.chain,
+            amount: assetToAmount(allocation.staked),
+            allocationId: allocation.id,
+        });
+    };
+
+    console.log(accountData, 'aaaaaaaaaaaaa');
+
     return (
         <RBSheet
             ref={props.refMessage}
@@ -47,16 +58,21 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                             {allocation.staked} (
                             <Text style={{ color: theme.colors.success }}>
                                 +
-                                {(
-                                    (assetToAmount(allocation.yieldSoFar) / assetToAmount(allocation.initialStake)) *
-                                    100
-                                ).toFixed(2)}
+                                {allocation.initialStake &&
+                                    allocation.yieldSoFar &&
+                                    (
+                                        (assetToAmount(allocation.yieldSoFar) /
+                                            assetToAmount(allocation.initialStake)) *
+                                        100
+                                    ).toFixed(2)}
                                 %
                             </Text>
                             )
                         </Text>
                         <Text style={styles.usdBalance}>
-                            ${formatCurrencyValue(assetToAmount(allocation.staked) * props.usdPrice)}
+                            $
+                            {allocation.staked &&
+                                formatCurrencyValue(assetToAmount(allocation.staked) * props.usdPrice)}
                         </Text>
                     </View>
                 </View>
@@ -86,15 +102,27 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                         </Text>
                     </View>
                 </View>
-                <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Locked until</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>
-                            {allocation.unstakeableTime && formatDate(allocation.unstakeableTime)}
-                            <Text style={{ color: theme.colors.grey9 }}> (14 days)</Text>
-                        </Text>
+                {isUnlocked && !allocation.unstakeRequested && (
+                    <View style={styles.allocationView}>
+                        <Text style={styles.allocTitle}>Locked until</Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>
+                                {allocation.unstakeableTime && formatDate(allocation.unstakeableTime)}
+                                <Text style={{ color: theme.colors.grey9 }}> (14 days)</Text>
+                            </Text>
+                        </View>
                     </View>
-                </View>
+                )}
+                {isUnlocked && allocation.unstakeRequested && (
+                    <View style={styles.allocationView}>
+                        <Text style={styles.allocTitle}>Release until</Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>
+                                {allocation.releaseTime && formatDate(allocation.releaseTime)}
+                            </Text>
+                        </View>
+                    </View>
+                )}
             </View>
 
             <View style={styles.unlockAssetView}>
@@ -105,7 +133,7 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                 </Text>
                 <Text style={styles.howStaking}>How Staking Works</Text>
             </View>
-            {isUnlocked && (
+            {isUnlocked && !allocation.unstakeRequested && (
                 <View style={styles.stakeMoreBtn}>
                     <TButton
                         style={[
@@ -113,13 +141,7 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                             { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
                         ]}
                         color={theme.colors.black}
-                        onPress={() => {
-                            props.onClose();
-                            props.navigation.navigate('ConfirmUnStaking', {
-                                chain: props.chain,
-                                amount: 100,
-                            });
-                        }}
+                        onPress={() => requestUnstakeToken()}
                     >
                         Unstake
                     </TButton>
