@@ -157,7 +157,6 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
                     const vestedBalance = await token.getVestedTotalBalance(account);
 
-                    console.log('vestedBalance', vestedBalance);
                     const availableBalance = await token.getAvailableBalance(account);
                     let totalBalance = availableBalance.add(vestedBalance);
 
@@ -166,6 +165,10 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
                         if (accountData) {
                             const totalStaked = new Asset(token, new Decimal(accountData.totalStaked));
+
+                            if (accountData.totalStaked <= 0) {
+                                setShowStaking(false);
+                            }
 
                             totalBalance = totalBalance.add(totalStaked);
                             setTotalStaked(accountData.totalStaked);
@@ -179,6 +182,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
                     if (Number(vestedBalance.getAmount()) > 0) {
                         setShowVesting(true);
+                    } else {
+                        setShowVesting(false);
                     }
 
                     setBalance({
@@ -236,7 +241,6 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
         }
     };
 
-    console.log('balance', balance);
     return (
         <View style={styles.container}>
             {isVestable && <View>{renderImageBackground(balance)}</View>}

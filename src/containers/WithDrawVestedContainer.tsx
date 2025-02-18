@@ -4,11 +4,13 @@ import theme from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import { TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
-import { formatTokenValue } from '../utils/numbers';
+import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
+import { assetToAmount, StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
+import useErrorStore from '../store/errorStore';
 
 export type VestedAssetSuccessProps = {
     navigation: Props['navigation'];
@@ -18,6 +20,13 @@ export type VestedAssetSuccessProps = {
 
 const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSuccessProps) => {
     const [loading, setLoading] = useState(false);
+    const errorStore = useErrorStore();
+    const [usdPrice, setUsdPrice] = useState(0);
+    const [stakingValues, setStakingValues] = useState({
+        apy: 0,
+        monthlyEarnings: '0.00',
+    });
+
     const token = chain.getNativeToken();
     const { user } = useUserStore();
 
@@ -41,6 +50,41 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
         date.setDate(date.getDate() + 14);
         return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     };
+
+    useEffect(() => {
+        const fetchStakedAllocation = async () => {
+            try {
+                const tokenEntry = await getTokenEntryByChain(chain);
+
+                const account = await getAccountFromChain(tokenEntry, user);
+                const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+
+                setUsdPrice(usdPriceValue);
+                const accountData = await token.getAccountStateData(account);
+
+                setStakingValues({
+                    apy: accountData.settings.apy,
+                    monthlyEarnings: accountData.totalYield,
+                });
+            } catch (e) {
+                if (e.message === 'Account not found in staking contract') {
+                    setStakingValues({
+                        apy: StakingContract.MAX_APY,
+                        monthlyEarnings:
+                            formatTokenValue(
+                                new Decimal(amount * (Math.pow(1 + StakingContract.MAX_APY, 1 / 12) - 1))
+                            ) + ' LEOS',
+                    });
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStakedAllocation();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -78,13 +122,15 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
             <View style={styles.annualView}>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                    <Text style={styles.annualPercentage}>3.47%</Text>
+                    <Text style={styles.annualPercentage}>{stakingValues.apy}%</Text>
                 </View>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Monthly earnings</Text>
                     <View>
-                        <Text style={styles.annualPercentage}>180 LEOS</Text>
-                        <Text style={styles.annualSubText}>$50.00</Text>
+                        <Text style={styles.annualPercentage}>{stakingValues?.monthlyEarnings}</Text>
+                        <Text style={styles.annualSubText}>
+                            ${formatCurrencyValue(assetToAmount(stakingValues?.monthlyEarnings) * usdPrice)}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.annualText}>

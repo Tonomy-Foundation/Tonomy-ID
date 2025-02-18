@@ -83,7 +83,6 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const totalVestedView = () => {
         const totalVestedAmount = vestedAllocations.locked + vestedAllocations.unlockable;
 
-        console.log('vestedAllocations', vestedAllocations);
         const totalVestedAmountUsd = totalVestedAmount * usdPrice;
         const averageMultiplier = calculateAverageMultiplier(vestedAllocations);
 
@@ -144,6 +143,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                             </TouchableOpacity>
                         </View>
                     ))}
+
                     {selectedAllocation && (
                         <AllocationDetails
                             onClose={onClose}
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.grey7,
         borderRadius: 8,
         position: 'absolute',
-        bottom: 20,
+        bottom: 40,
         left: 0,
         right: 0,
     },
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     allocMulti: { color: theme.colors.grey9, fontWeight: '500' },
-    scrollView: { minHeight: 170, maxHeight: 350, paddingTop: 5, marginBottom: 10 },
+    scrollView: { minHeight: 270, maxHeight: 470, paddingTop: 5, marginBottom: 10 },
 });
 
 export default VestedAssetsContainer;

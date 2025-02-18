@@ -33,8 +33,6 @@ const StakingAllocationDetails = (props: PropsStaking) => {
         });
     };
 
-    console.log(accountData, 'aaaaaaaaaaaaa');
-
     return (
         <RBSheet
             ref={props.refMessage}
