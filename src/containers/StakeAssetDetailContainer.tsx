@@ -103,7 +103,7 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                         )}`}</Text>
                     </View>
                     <View style={styles.flexEndCol}>
-                        <Text style={styles.apyPercentage}>{accountData.settings.apy}% APY</Text>
+                        <Text style={styles.apyPercentage}>{accountData.settings.apy * 100}% APY</Text>
                         <Text style={styles.leosMonthly}>
                             {formatCurrencyValue(accountData.estimatedMonthlyYield)} LEOS / month
                         </Text>

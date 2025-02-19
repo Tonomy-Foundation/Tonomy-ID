@@ -81,7 +81,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     }
 
     const totalVestedView = () => {
-        const totalVestedAmount = vestedAllocations.locked + vestedAllocations.unlockable;
+        const totalVestedAmount = vestedAllocations.locked;
 
         const totalVestedAmountUsd = totalVestedAmount * usdPrice;
         const averageMultiplier = calculateAverageMultiplier(vestedAllocations);
