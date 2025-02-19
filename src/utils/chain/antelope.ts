@@ -45,9 +45,7 @@ import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
 import {
     VestingContract,
     StakingContract,
-    StakingAllocation,
     StakingAccountState,
-    EosioTokenContract,
     KeyManagerLevel,
     EosioUtil,
 } from '@tonomy/tonomy-id-sdk';
@@ -56,12 +54,14 @@ import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 import Decimal from 'decimal.js';
-import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain/eosio/transaction';
 import RNKeyManager from '../RNKeyManager';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
-const eosioTokenContract = EosioTokenContract.Instance;
+
+function getAccountSigner() {
+    return EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+}
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -446,10 +446,7 @@ export class PangeaVestedToken extends AntelopeToken {
     }
 
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
-        const balance = await eosioTokenContract.getBalance(account?.getName());
-        const amount = new Decimal(balance);
-
-        return new Asset(this, amount);
+        return super.getBalance(account);
     }
 
     async getVestedTotalBalance(account?: AntelopeAccount): Promise<IAsset> {
@@ -471,7 +468,7 @@ export class PangeaVestedToken extends AntelopeToken {
     }
 
     async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
-        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+        const accountSigner = getAccountSigner();
 
         return await vestingContract.withdraw(account.getName(), accountSigner);
     }
@@ -483,13 +480,13 @@ export class PangeaVestedToken extends AntelopeToken {
     }
 
     async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
-        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+        const accountSigner = getAccountSigner();
 
         return await stakingContract.stakeTokens(account.getName(), amount, accountSigner);
     }
 
     async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
-        const accountSigner = EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+        const accountSigner = getAccountSigner();
 
         return await stakingContract.requestUnstake(account.getName(), allocationId, accountSigner);
     }
