@@ -31,6 +31,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
             try {
                 const tokenEntry = await getTokenEntryByChain(chain);
                 const account = await getAccountFromChain(tokenEntry, user);
+                console.log('account', account.getName());
                 const state = await token.getStakingAccountState(account);
                 setStakingState(state);
                 if (state.allocations.length > 0) {

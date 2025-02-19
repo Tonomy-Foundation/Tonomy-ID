@@ -1,7 +1,7 @@
 import { TKeyType } from '@veramo/core';
 import { formatTokenValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
-import { sha256, StakingAccountState } from '@tonomy/tonomy-id-sdk';
+import { sha256, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
@@ -267,6 +267,7 @@ export interface IToken {
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
     getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
+    getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
     getStakingAccountState(account: IAccount): Promise<StakingAccountState>;
 }
 
@@ -340,6 +341,7 @@ export abstract class AbstractToken implements IToken {
     abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
     abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
     abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
+    abstract getStakingAllocationDetail(account?: IAccount): Promise<StakingAllocation[]>;
     abstract getStakingAccountState(account: IAccount): Promise<StakingAccountState>;
 }
 
