@@ -75,9 +75,9 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     };
 
     const handleMaxPress = () => {
-        setAmount(availableBalance)
-        handleAmountChange(availableBalance)
-    }
+        setAmount(availableBalance);
+        handleAmountChange(availableBalance);
+    };
 
     const handleProceed = () => {
         if (amountError || !amount || parseFloat(amount) < minimumStakeTransfer) {
@@ -88,8 +88,8 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
             chain: chain,
             amount: parseFloat(amount) || 0,
             withDraw: true,
-        })
-    }
+        });
+    };
 
     const availableBalance = stakingState?.totalStaked.toFixed(2) ?? '0.00';
     const apy = stakingState?.settings.apy ?? 0;
@@ -147,7 +147,9 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 </Text>
             </View>
             <View style={styles.proceedBtn}>
-                <TButtonContained onPress={handleProceed} disabled={amountError !== null ||  amount === ''}>Proceed</TButtonContained>
+                <TButtonContained onPress={handleProceed} disabled={amountError !== null || amount === ''}>
+                    Proceed
+                </TButtonContained>
             </View>
         </>
     );
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: theme.colors.grey7,
         borderRadius: 6,
-        marginTop: 10
+        marginTop: 10,
     },
     annualText: {
         flexDirection: 'row',
@@ -253,7 +255,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '400',
         ...commonStyles.secondaryFontFamily,
-    }
+    },
 });
 
 export default StakeLeosContainer;
