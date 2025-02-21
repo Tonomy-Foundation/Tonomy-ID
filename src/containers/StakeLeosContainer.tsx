@@ -8,14 +8,20 @@ import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import { useEffect, useState } from 'react';
 import { StakingAccountState } from '@tonomy/tonomy-id-sdk';
-import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
+import { getAccountFromChain, getAssetDetails, getTokenEntryByChain } from '../utils/tokenRegistry';
 import Decimal from 'decimal.js';
 import settings from '../settings';
+import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
 
 export type StakeLesoProps = {
     navigation: StakeLesoscreenNavigationProp['navigation'];
     chain: IChain;
 };
+
+interface Balance {
+    availableBalance: string;
+    availableBalanceUsd: number;
+}
 
 const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     const token = chain.getNativeToken();
@@ -29,12 +35,27 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     const minimumStakeTransfer = settings.isProduction() ? 1000 : 1;
     const [amountError, setAmountError] = useState<string | null>(null);
 
+    const symbol = chain.getNativeToken().getSymbol();
+    const isVestable = chain.getNativeToken().isVestable();
+
+    const [availableBalance, setAvailableBalance] = useState<string>('0.00');
+
     useEffect(() => {
-        const fetchStakingDetails = async () => {
+        const fetchAssetsDetails = async () => {
             try {
+                const assetData = await getAssetDetails(chain);
+                if (isVestable) {
+                    const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
+                    const availableBalance = await token.getAvailableBalance(account);
+                    setAvailableBalance(availableBalance.getAmount().toString());
+                } else {
+                    setAvailableBalance(assetData.token.balance);
+                }
+
                 const tokenEntry = await getTokenEntryByChain(chain);
                 const account = await getAccountFromChain(tokenEntry, user);
                 const state = await token.getAccountStateData(account);
+
                 setStakingState(state);
                 if (state.allocations.length > 0) {
                     const unstakeDate = state.allocations[0].unstakeableTime;
@@ -46,7 +67,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 console.error('Error fetching staking details:', error);
             }
         };
-        fetchStakingDetails();
+        fetchAssetsDetails();
     }, [chain, user, token]);
 
     const handleAmountChange = async (input: string) => {
@@ -91,10 +112,11 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
         });
     };
 
-    const availableBalance = stakingState?.totalStaked.toFixed(2) ?? '0.00';
     const apy = stakingState?.settings.apy ?? 0;
     const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? 'N/A';
     const shouldShowMinStakeMessage = !amountError || amountError === 'Not enough balance';
+
+    console.log(JSON.stringify(stakingState, null, 2));
 
     return (
         <>
@@ -225,6 +247,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         backgroundColor: theme.colors.white,
         flexShrink: 1,
+        borderRadius: 6,
     },
     inputButton: {
         justifyContent: 'center',
