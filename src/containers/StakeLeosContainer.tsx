@@ -1,52 +1,166 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { StakeLesoscreenNavigationProp } from '../screens/StakeLeosScreen';
 import theme, { commonStyles } from '../utils/theme';
 
 import { IChain } from '../utils/chain/types';
 
 import { TButtonContained } from '../components/atoms/TButton';
+import useUserStore from '../store/userStore';
+import { useEffect, useState } from 'react';
+import { StakingAccountState } from '@tonomy/tonomy-id-sdk';
+import { getAccountFromChain, getAssetDetails, getTokenEntryByChain } from '../utils/tokenRegistry';
+import Decimal from 'decimal.js';
+import settings from '../settings';
+import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
 
 export type StakeLesoProps = {
     navigation: StakeLesoscreenNavigationProp['navigation'];
     chain: IChain;
 };
 
+interface Balance {
+    availableBalance: string;
+    availableBalanceUsd: number;
+}
+
 const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
+    const token = chain.getNativeToken();
+    const { user } = useUserStore();
+
+    const [stakingState, setStakingState] = useState<StakingAccountState | null>(null);
+    const [amount, setAmount] = useState('');
+    const [monthlyYield, setMonthlyYield] = useState<number>(0);
+    const [usdValue, setUsdValue] = useState<string>('0.00');
+    const [stakingDays, setStakingDays] = useState<number | null>(null);
+    const minimumStakeTransfer = settings.isProduction() ? 1000 : 1;
+    const [amountError, setAmountError] = useState<string | null>(null);
+
+    const symbol = chain.getNativeToken().getSymbol();
+    const isVestable = chain.getNativeToken().isVestable();
+
+    const [availableBalance, setAvailableBalance] = useState<string>('0.00');
+
+    useEffect(() => {
+        const fetchAssetsDetails = async () => {
+            try {
+                const assetData = await getAssetDetails(chain);
+                if (isVestable) {
+                    const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
+                    const availableBalance = await token.getAvailableBalance(account);
+                    setAvailableBalance(availableBalance.getAmount().toString());
+                } else {
+                    setAvailableBalance(assetData.token.balance);
+                }
+
+                const tokenEntry = await getTokenEntryByChain(chain);
+                const account = await getAccountFromChain(tokenEntry, user);
+                const state = await token.getAccountStateData(account);
+
+                setStakingState(state);
+                if (state.allocations.length > 0) {
+                    const unstakeDate = state.allocations[0].unstakeableTime;
+                    const today = new Date();
+                    const diffDays = Math.ceil((unstakeDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    setStakingDays(diffDays > 0 ? diffDays : 0);
+                }
+            } catch (error) {
+                console.error('Error fetching staking details:', error);
+            }
+        };
+        fetchAssetsDetails();
+    }, [chain, user, token]);
+
+    const handleAmountChange = async (input: string) => {
+        setAmount(input);
+        const numericAmount = parseFloat(input) || 0;
+
+        let errorMessage: string | null = null;
+
+        if (numericAmount > parseFloat(availableBalance)) {
+            errorMessage = 'Not enough balance';
+        } else if (numericAmount < minimumStakeTransfer) {
+            errorMessage = `Minimum stake: ${minimumStakeTransfer.toFixed(3)} LEOS`;
+        }
+
+        setAmountError(errorMessage);
+
+        if (stakingState && numericAmount >= minimumStakeTransfer && numericAmount <= parseFloat(availableBalance)) {
+            const apy = stakingState.settings.apy || 0;
+            const calculatedYield = (numericAmount * apy) / (12 * 100);
+            setMonthlyYield(calculatedYield);
+
+            // Convert to USD
+            const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+            setUsdValue((calculatedYield * usdPriceValue).toFixed(2));
+        }
+    };
+
+    const handleMaxPress = () => {
+        setAmount(availableBalance);
+        handleAmountChange(availableBalance);
+    };
+
+    const handleProceed = () => {
+        if (amountError || !amount || parseFloat(amount) < minimumStakeTransfer) {
+            Alert.alert('Invalid Input', amountError || `Minimum stake is ${minimumStakeTransfer.toFixed(4)} LEOS`);
+            return;
+        }
+        navigation.navigate('ConfirmStaking', {
+            chain: chain,
+            amount: parseFloat(amount) || 0,
+            withDraw: true,
+        });
+    };
+
+    const apy = stakingState?.settings.apy ?? 0;
+    const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? 'N/A';
+    const shouldShowMinStakeMessage = !amountError || amountError === 'Not enough balance';
+
+    console.log(JSON.stringify(stakingState, null, 2));
+
     return (
         <>
             <View style={styles.container}>
-                <View style={styles.flexCol}>
-                    <View style={styles.inputContainer}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter amount"
-                            placeholderTextColor={theme.colors.tabGray}
-                        />
-                        <TouchableOpacity style={styles.inputButton}>
-                            <Text style={styles.inputButtonText}>MAX</Text>
-                        </TouchableOpacity>
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.flexCol}>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Enter amount"
+                                placeholderTextColor={theme.colors.tabGray}
+                                value={amount}
+                                onChangeText={handleAmountChange}
+                                keyboardType="numeric"
+                            />
+                            <TouchableOpacity style={styles.inputButton} onPress={handleMaxPress}>
+                                <Text style={styles.inputButtonText}>MAX</Text>
+                            </TouchableOpacity>
+                        </View>
+                        {amountError && <Text style={styles.errorText}>{amountError}</Text>}
+                        {shouldShowMinStakeMessage && (
+                            <Text style={styles.inputHelp}>Minimum stake: {minimumStakeTransfer.toFixed(4)} LEOS</Text>
+                        )}
                     </View>
-                    <Text style={styles.inputHelp}>Available: 10,000.00 LEOS</Text>
-                </View>
-                <View style={styles.annualView}>
-                    <View style={styles.annualText}>
-                        <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                        <Text style={styles.annualPercentage}>3.47%</Text>
-                    </View>
-                    <View style={styles.annualText}>
-                        <Text style={styles.annualSubText}>Monthly earnings</Text>
-                        <View>
-                            <Text style={styles.annualPercentage}>180 LEOS</Text>
-                            <Text style={styles.annualSubText}>$50.00</Text>
+                    <View style={styles.annualView}>
+                        <View style={styles.annualText}>
+                            <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
+                            <Text style={styles.annualPercentage}>{apy * 100}%</Text>
+                        </View>
+                        <View style={styles.annualText}>
+                            <Text style={styles.annualSubText}>Monthly earnings</Text>
+                            <View>
+                                <Text style={styles.annualPercentage}>{monthlyYield.toFixed(2)} LEOS</Text>
+                                <Text style={styles.annualSubText}>${usdValue}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.annualText}>
+                            <Text style={styles.annualSubText}>Stake until</Text>
+                            <Text>
+                                {stakeUntil} <Text style={styles.annualSubText}>({stakingDays ?? '0'} days)</Text>
+                            </Text>
                         </View>
                     </View>
-                    <View style={styles.annualText}>
-                        <Text style={styles.annualSubText}>Stake until</Text>
-                        <Text>
-                            3 Nov 2024 <Text style={styles.annualSubText}>(30 days)</Text>
-                        </Text>
-                    </View>
-                </View>
+                </ScrollView>
             </View>
             <View style={styles.unlockAssetView}>
                 <Text style={styles.unlockhead}>What is staking? </Text>
@@ -55,14 +169,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 </Text>
             </View>
             <View style={styles.proceedBtn}>
-                <TButtonContained
-                    onPress={() =>
-                        navigation.navigate('ConfirmStaking', {
-                            chain: chain,
-                            amount: 10,
-                        })
-                    }
-                >
+                <TButtonContained onPress={handleProceed} disabled={amountError !== null || amount === ''}>
                     Proceed
                 </TButtonContained>
             </View>
@@ -70,6 +177,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     );
 };
 const styles = StyleSheet.create({
+    scrollView: { minHeight: 170, maxHeight: 350, paddingTop: 5, marginBottom: 10 },
     container: {
         flex: 1,
         backgroundColor: '#fff',
@@ -95,6 +203,7 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: theme.colors.grey7,
         borderRadius: 6,
+        marginTop: 10,
     },
     annualText: {
         flexDirection: 'row',
@@ -138,6 +247,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         backgroundColor: theme.colors.white,
         flexShrink: 1,
+        borderRadius: 6,
     },
     inputButton: {
         justifyContent: 'center',
@@ -162,6 +272,12 @@ const styles = StyleSheet.create({
     proceedBtn: {
         padding: 16,
         marginBottom: 20,
+    },
+    errorText: {
+        color: theme.colors.error,
+        fontSize: 12,
+        fontWeight: '400',
+        ...commonStyles.secondaryFontFamily,
     },
 });
 

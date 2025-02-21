@@ -90,7 +90,11 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
 
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/images/vesting/vested-success.png')} />
+            <Image
+                style={{ height: 280 }}
+                resizeMode="contain"
+                source={require('../assets/images/vesting/vested-success.png')}
+            />
             <Text style={styles.vestedHead}>A special offer for you!</Text>
             <TP style={styles.vestedSubHead}>
                 Stake {formatTokenValue(new Decimal(amount))} LEOS and earn a passive income
