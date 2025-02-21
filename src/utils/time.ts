@@ -9,3 +9,10 @@ export function formatDate(date: Date): string {
 export function sleep(milliseconds: number) {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
+
+export const getStakeUntilDate = () => {
+    const date = new Date();
+
+    date.setDate(date.getDate() + 14);
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+};

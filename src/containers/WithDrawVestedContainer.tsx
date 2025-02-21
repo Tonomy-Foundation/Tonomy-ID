@@ -11,14 +11,16 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import { assetToAmount, StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
+import { getStakeUntilDate } from '../utils/time';
 
 export type VestedAssetSuccessProps = {
     navigation: Props['navigation'];
     chain: IChain;
     amount: number;
+    total: number;
 };
 
-const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSuccessProps) => {
+const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAssetSuccessProps) => {
     const [loading, setLoading] = useState(false);
     const errorStore = useErrorStore();
     const [usdPrice, setUsdPrice] = useState(0);
@@ -41,14 +43,8 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
 
         navigation.navigate('SuccessVested', {
             chain,
+            total,
         });
-    };
-
-    const getStakeUntilDate = () => {
-        const date = new Date();
-
-        date.setDate(date.getDate() + 14);
-        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
     useEffect(() => {

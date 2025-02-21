@@ -8,23 +8,31 @@ import { IChain } from '../utils/chain/types';
 export type SuccessVestedProps = {
     navigation: Props['navigation'];
     chain: IChain;
+    total: number;
 };
 
-const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
+const VestedSuccessContainer = ({ navigation, chain, total }: SuccessVestedProps) => {
+    const redirectBack = () => {
+        if (total > 0) {
+            navigation.navigate('VestedAssets', {
+                chain: chain,
+                loading: true,
+            });
+        } else {
+            navigation.navigate('AssetManager', {
+                chain,
+                loading: true,
+            });
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Image source={require('../assets/images/vesting/success-stake.png')} />
             <TH1 style={styles.vestedHead}>{'Vested and Rested'}</TH1>
             <TP style={styles.vestedSubHead}>Your coins have been successfully withdrawn!</TP>
             <View style={styles.bottomView}>
-                <TButton
-                    style={styles.backBtn}
-                    onPress={() =>
-                        navigation.navigate('AssetManager', {
-                            chain,
-                        })
-                    }
-                >
+                <TButton style={styles.backBtn} onPress={() => redirectBack()}>
                     Back to LEOS
                 </TButton>
             </View>

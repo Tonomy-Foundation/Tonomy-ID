@@ -7,11 +7,12 @@ import { IChain } from '../utils/chain/types';
 import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import { useEffect, useState } from 'react';
-import { StakingAccountState } from '@tonomy/tonomy-id-sdk';
+import { StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
 import { getAccountFromChain, getAssetDetails, getTokenEntryByChain } from '../utils/tokenRegistry';
 import Decimal from 'decimal.js';
 import settings from '../settings';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
+import { getStakeUntilDate } from '../utils/time';
 
 export type StakeLesoProps = {
     navigation: StakeLesoscreenNavigationProp['navigation'];
@@ -44,9 +45,11 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
         const fetchAssetsDetails = async () => {
             try {
                 const assetData = await getAssetDetails(chain);
+
                 if (isVestable) {
                     const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
                     const availableBalance = await token.getAvailableBalance(account);
+
                     setAvailableBalance(availableBalance.getAmount().toString());
                 } else {
                     setAvailableBalance(assetData.token.balance);
@@ -57,18 +60,27 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                 const state = await token.getAccountStateData(account);
 
                 setStakingState(state);
+
                 if (state.allocations.length > 0) {
                     const unstakeDate = state.allocations[0].unstakeableTime;
                     const today = new Date();
                     const diffDays = Math.ceil((unstakeDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
                     setStakingDays(diffDays > 0 ? diffDays : 0);
                 }
             } catch (error) {
                 console.error('Error fetching staking details:', error);
             }
         };
+
         fetchAssetsDetails();
-    }, [chain, user, token]);
+    }, [chain, user, token, isVestable]);
+
+    const apy = stakingState?.settings.apy ?? StakingContract.MAX_APY;
+    const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? getStakeUntilDate();
+    const shouldShowMinStakeMessage = !amountError || amountError === 'Not enough balance';
+
+    console.log(JSON.stringify(stakingState, null, 2));
 
     const handleAmountChange = async (input: string) => {
         setAmount(input);
@@ -84,15 +96,14 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
 
         setAmountError(errorMessage);
 
-        if (stakingState && numericAmount >= minimumStakeTransfer && numericAmount <= parseFloat(availableBalance)) {
-            const apy = stakingState.settings.apy || 0;
-            const calculatedYield = (numericAmount * apy) / (12 * 100);
-            setMonthlyYield(calculatedYield);
+        const calculatedYield = numericAmount * (Math.pow(1 + StakingContract.MAX_APY, 1 / 12) - 1);
 
-            // Convert to USD
-            const usdPriceValue = await chain.getNativeToken().getUsdPrice();
-            setUsdValue((calculatedYield * usdPriceValue).toFixed(2));
-        }
+        setMonthlyYield(calculatedYield);
+
+        // Convert to USD
+        const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+
+        setUsdValue((calculatedYield * usdPriceValue).toFixed(2));
     };
 
     const handleMaxPress = () => {
@@ -105,18 +116,12 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
             Alert.alert('Invalid Input', amountError || `Minimum stake is ${minimumStakeTransfer.toFixed(4)} LEOS`);
             return;
         }
+
         navigation.navigate('ConfirmStaking', {
             chain: chain,
             amount: parseFloat(amount) || 0,
-            withDraw: true,
         });
     };
-
-    const apy = stakingState?.settings.apy ?? 0;
-    const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? 'N/A';
-    const shouldShowMinStakeMessage = !amountError || amountError === 'Not enough balance';
-
-    console.log(JSON.stringify(stakingState, null, 2));
 
     return (
         <>
@@ -156,7 +161,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                         <View style={styles.annualText}>
                             <Text style={styles.annualSubText}>Stake until</Text>
                             <Text>
-                                {stakeUntil} <Text style={styles.annualSubText}>({stakingDays ?? '0'} days)</Text>
+                                {stakeUntil} <Text style={styles.annualSubText}>({stakingDays ?? '14'} days)</Text>
                             </Text>
                         </View>
                     </View>

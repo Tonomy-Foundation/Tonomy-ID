@@ -7,6 +7,10 @@ export type Props = NativeStackScreenProps<RouteStackParamList, 'SuccessVested'>
 
 export default function VestedSuccessScreen(props: Props) {
     return (
-        <VestedSuccessContainer navigation={props.navigation} chain={props.route.params.chain}></VestedSuccessContainer>
+        <VestedSuccessContainer
+            total={props.route.params.total}
+            navigation={props.navigation}
+            chain={props.route.params.chain}
+        ></VestedSuccessContainer>
     );
 }

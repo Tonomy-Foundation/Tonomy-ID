@@ -119,16 +119,16 @@ export type MainRouteStackParamList = {
         privateKey: IPrivateKey;
     };
     SelectAsset: { screenTitle?: string; type: string };
-    AssetManager: AssetsParamsScreen;
-    VestedAssets: AssetsParamsScreen;
+    AssetManager: AssetsParamsScreen & { loading?: boolean };
+    VestedAssets: AssetsParamsScreen & { loading?: boolean };
     ConfirmStaking: AssetsParamsScreen & { amount: number; withDraw?: boolean };
     StakingManager: AssetsParamsScreen;
     StakeLeos: AssetsParamsScreen;
-    StakeLeosDetail: AssetsParamsScreen;
+    StakeLeosDetail: AssetsParamsScreen & { loading?: boolean };
     UnStakeAsset: AssetsParamsScreen;
     SuccessUnstake: AssetsParamsScreen;
-    WithdrawVested: AssetsParamsScreen & { amount: number };
-    SuccessVested: AssetsParamsScreen;
+    WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
+    SuccessVested: AssetsParamsScreen & { total: number };
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
 };
 

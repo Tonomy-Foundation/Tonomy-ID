@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { Props } from '../screens/StakeAssetDetailScreen';
 import { IChain } from '../utils/chain/types';
 import theme, { commonStyles } from '../utils/theme';
 import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import StakingAllocationDetails from '../components/StakingAllocationDetails';
 import HowStakingWorks from '../components/HowStakingWorks';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
@@ -13,10 +13,13 @@ import { assetToAmount, StakingAccountState, StakingAllocation } from '@tonomy/t
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import TSpinner from '../components/atoms/TSpinner';
+import { useFocusEffect } from '@react-navigation/native';
+import useErrorStore from '../store/errorStore';
 
 export type StakingLeosProps = {
     navigation: Props['navigation'];
     chain: IChain;
+    loading?: boolean;
 };
 
 export function getUnlockStatus(allocation) {
@@ -34,9 +37,10 @@ export function getUnlockStatus(allocation) {
     }
 }
 
-const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
-    const [loading, setLoading] = useState(true);
+const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = false }: StakingLeosProps) => {
+    const errorStore = useErrorStore();
 
+    const [loading, setLoading] = useState(true);
     const [accountData, setAccountData] = useState<StakingAccountState>({} as StakingAccountState);
     const [selectedAllocation, setSelectedAllocation] = useState<StakingAllocation>({} as StakingAllocation);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
@@ -47,29 +51,40 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
 
     useEffect(() => {
         const fetchStakedAllocation = async () => {
-            const tokenEntry = await getTokenEntryByChain(chain);
+            try {
+                const tokenEntry = await getTokenEntryByChain(chain);
 
-            const account = await getAccountFromChain(tokenEntry, user);
+                const account = await getAccountFromChain(tokenEntry, user);
 
-            const accountData = await token.getAccountStateData(account);
-            const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+                const accountData = await token.getAccountStateData(account);
+                const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
-            setUsdPrice(usdPriceValue);
-            setAccountData(accountData);
-            setLoading(false);
+                setUsdPrice(usdPriceValue);
+                setAccountData(accountData);
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchStakedAllocation();
-    }, []);
+    }, [chain, user, errorStore, token]);
 
     const onClose = () => {
         refMessage.current?.close();
     };
 
-    const openHowStaking = async () => {
-        // await refMessage.current?.close();
-        refStakingInfo.current?.open();
-    };
+    useFocusEffect(
+        useCallback(() => {
+            if (propsLoading) {
+                setLoading(true);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 7000);
+            }
+        }, [propsLoading])
+    );
 
     if (loading) {
         return (
@@ -110,7 +125,16 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                     </View>
                 </View>
                 <View style={styles.stakeMoreBtn}>
-                    <TButtonContained style={styles.fullWidthButton}>Stake more</TButtonContained>
+                    <TButtonContained
+                        style={styles.fullWidthButton}
+                        onPress={() =>
+                            navigation.navigate('StakeLeos', {
+                                chain: chain,
+                            })
+                        }
+                    >
+                        Stake more
+                    </TButtonContained>
                 </View>
             </View>
 
@@ -125,24 +149,26 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
                     accountData={accountData}
                 />
             )}
-            {accountData?.allocations?.map((allocation, index) => (
-                <TouchableOpacity
-                    key={index}
-                    style={styles.allocationView}
-                    onPress={() => {
-                        setSelectedAllocation(allocation);
-                        refMessage.current?.open();
-                    }}
-                >
-                    <Text style={{ fontWeight: '700' }}>
-                        {formatTokenValue(new Decimal(assetToAmount(allocation.staked)))} {token.getSymbol()}
-                    </Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{getUnlockStatus(allocation)}</Text>
-                        <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                    </View>
-                </TouchableOpacity>
-            ))}
+            <ScrollView style={styles.scrollView}>
+                {accountData?.allocations?.map((allocation, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={styles.allocationView}
+                        onPress={() => {
+                            setSelectedAllocation(allocation);
+                            refMessage.current?.open();
+                        }}
+                    >
+                        <Text style={{ fontWeight: '700' }}>
+                            {formatTokenValue(new Decimal(assetToAmount(allocation.staked)))} {token.getSymbol()}
+                        </Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>{getUnlockStatus(allocation)}</Text>
+                            <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                        </View>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
 
             <View style={styles.unlockAssetView}>
                 <Text style={styles.unlockhead}>Why are my coins locked?</Text>
@@ -161,6 +187,8 @@ const StakeAssetDetailContainer = ({ navigation, chain }: StakingLeosProps) => {
 };
 
 const styles = StyleSheet.create({
+    scrollView: { minHeight: 170, maxHeight: 440, paddingTop: 5, marginBottom: 10 },
+
     container: {
         flex: 1,
         backgroundColor: '#fff',

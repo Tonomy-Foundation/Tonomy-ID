@@ -11,6 +11,7 @@ export default function WithdrawVestedScreen(props: Props) {
             navigation={props.navigation}
             chain={props.route.params.chain}
             amount={props.route.params.amount}
+            total={props.route.params.total}
         />
     );
 }

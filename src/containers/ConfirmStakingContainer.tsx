@@ -9,8 +9,6 @@ import { formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
-import { EosioUtil, KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
-import RNKeyManager from '../utils/RNKeyManager';
 import useErrorStore from '../store/errorStore';
 
 export type PropsStaking = {
@@ -20,7 +18,7 @@ export type PropsStaking = {
     withDraw?: boolean;
 };
 
-const SuccessLeosWithDrawContainer = ({ chain, navigation, amount, withDraw }: PropsStaking) => {
+const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsStaking) => {
     const [loading, setLoading] = useState(false);
     const { user } = useUserStore();
     const token = chain.getNativeToken();
@@ -41,8 +39,9 @@ const SuccessLeosWithDrawContainer = ({ chain, navigation, amount, withDraw }: P
             const quantity = amount.toFixed(6) + ' ' + token.getSymbol();
 
             await token.stakeTokens(account, quantity);
-            navigation.navigate('AssetManager', {
+            navigation.navigate('StakeLeosDetail', {
                 chain,
+                loading: true,
             });
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
@@ -112,4 +111,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SuccessLeosWithDrawContainer;
+export default ConfirmStakingContainer;

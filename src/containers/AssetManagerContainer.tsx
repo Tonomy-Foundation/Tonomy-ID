@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image } from 'react-native';
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
@@ -10,10 +11,13 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
 import Decimal from 'decimal.js';
+import { assetToAmount } from '@tonomy/tonomy-id-sdk';
+import { useFocusEffect } from '@react-navigation/native';
 
 export type Props = {
     navigation: LeosAssetsScreenNavigationProp['navigation'];
     chain: IChain;
+    loading?: boolean;
 };
 
 interface Balance {
@@ -91,7 +95,7 @@ const stakedBalanceView = (totalStaked: number, navigation, chain: IChain) => {
     );
 };
 
-const investorTootlView = (navigation, chain, redirectStakeToEarn, showVesting, showStaking) => {
+const investorTootlView = (navigation, chain, redirectStakeToEarn, showVesting, showStakeToEarn) => {
     return (
         <View>
             <Text style={styles.subTitle}>Investor tools</Text>
@@ -113,7 +117,7 @@ const investorTootlView = (navigation, chain, redirectStakeToEarn, showVesting, 
                     </View>
                 </TouchableOpacity>
             )}
-            {showStaking && (
+            {showStakeToEarn && (
                 <TouchableOpacity onPressIn={redirectStakeToEarn}>
                     <View style={[styles.moreView, { flexDirection: 'row', alignItems: 'center' }]}>
                         <Coins height={18} width={18} color={theme.colors.black} strokeWidth={2} />
@@ -128,7 +132,7 @@ const investorTootlView = (navigation, chain, redirectStakeToEarn, showVesting, 
     );
 };
 
-const AssetManagerContainer = ({ navigation, chain }: Props) => {
+const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = false }: Props) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const errorStore = useErrorStore();
 
@@ -144,7 +148,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const [showStaking, setShowStaking] = useState(false);
     const [totalStaked, setTotalStaked] = useState(0);
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const token = chain.getNativeToken();
     const symbol = chain.getNativeToken().getSymbol();
 
@@ -214,10 +218,18 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
         fetchAssetDetails();
 
-        const interval = setInterval(fetchAssetDetails, 10000);
+        const interval = setInterval(fetchAssetDetails, 9000);
 
         return () => clearInterval(interval);
     }, [chain, token, symbol, errorStore, isVestable]);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (propsLoading) {
+                setLoading(true);
+            }
+        }, [propsLoading])
+    );
 
     if (loading) {
         return (
@@ -244,6 +256,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
             });
         }
     };
+    const showStakeToEarn = assetToAmount(balance.availableBalance) > 0 || showStaking;
 
     return (
         <View style={styles.container}>
@@ -297,8 +310,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {(showVesting || showStaking) &&
-                investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStaking)}
+            {(showVesting || showStakeToEarn) &&
+                investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStakeToEarn)}
         </View>
     );
 };

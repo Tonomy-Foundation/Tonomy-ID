@@ -3,7 +3,7 @@ import { VestedAssetscreenNavigationProp } from '../screens/VestedAssetsScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AllocationDetails from '../components/AllocationDetails';
 import { IChain, VestedTokens, VestedAllocation, IAccount } from '../utils/chain/types';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
@@ -12,13 +12,15 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { getMultiplier } from '../utils/multiplier';
 import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
+import { useFocusEffect } from '@react-navigation/native';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
     chain: IChain;
+    loading?: boolean;
 };
 
-const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
+const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = false }: VestedAssetProps) => {
     const [loading, setLoading] = useState(true);
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
@@ -72,6 +74,17 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         return totalLockedAndUnlockable > 0 ? totalWeightedMultiplier / totalLockedAndUnlockable : 0;
     };
 
+    useFocusEffect(
+        useCallback(() => {
+            if (propsLoading) {
+                setLoading(true);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 7000);
+            }
+        }, [propsLoading])
+    );
+
     if (loading) {
         return (
             <View style={styles.textContainer}>
@@ -110,6 +123,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         navigation.navigate('WithdrawVested', {
             chain,
             amount: vestedAllocations.unlockable,
+            total: vestedAllocations.locked,
         });
     };
 

@@ -10,6 +10,7 @@ export default function StakeAssetDetailScreen(props: Props) {
         <StakeAssetDetailContainer
             chain={props.route.params.chain}
             navigation={props.navigation}
+            loading={props.route.params.loading}
         ></StakeAssetDetailContainer>
     );
 }
