@@ -2,7 +2,7 @@ import { setSettings } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
 
 setSettings({
-    environment: settings.env,
+    environment: 'test', //settings.env,
     blockchainUrl: settings.config.blockchainUrl,
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,

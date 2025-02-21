@@ -234,18 +234,15 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     };
 
     const redirectStakeToEarn = () => {
-        // if (totalStaked > 0) {
-        //     navigation.navigate('StakeLeosDetail', {
-        //         chain: chain,
-        //     });
-        // } else {
-        //     navigation.navigate('StakeLeos', {
-        //         chain: chain,
-        //     });
-        // }
-        navigation.navigate('StakeLeos', {
-            chain: chain,
-        });
+        if (totalStaked > 0) {
+            navigation.navigate('StakeLeosDetail', {
+                chain: chain,
+            });
+        } else {
+            navigation.navigate('StakeLeos', {
+                chain: chain,
+            });
+        }
     };
 
     return (
@@ -300,7 +297,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStaking)}
+            {(showVesting || showStaking) &&
+                investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStaking)}
         </View>
     );
 };

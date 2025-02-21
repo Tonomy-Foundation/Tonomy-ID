@@ -64,7 +64,9 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
 
                 setStakingValues({
                     apy: accountData.settings.apy,
-                    monthlyEarnings: accountData.totalYield,
+                    monthlyEarnings:
+                        formatTokenValue(new Decimal(amount * (Math.pow(1 + StakingContract.MAX_APY, 1 / 12) - 1))) +
+                        ' LEOS',
                 });
             } catch (e) {
                 if (e.message === 'Account not found in staking contract') {
@@ -122,7 +124,7 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
             <View style={styles.annualView}>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                    <Text style={styles.annualPercentage}>{stakingValues.apy}%</Text>
+                    <Text style={styles.annualPercentage}>{stakingValues.apy * 100}%</Text>
                 </View>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Monthly earnings</Text>
