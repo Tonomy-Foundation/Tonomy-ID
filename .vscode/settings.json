@@ -23,4 +23,7 @@
         "testnet",
         "development"
     ],
+    "conventionalCommits.scopes": [
+        "fixed yarn lock"
+    ],
 }
