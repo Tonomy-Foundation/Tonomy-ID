@@ -11,6 +11,7 @@ import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistr
 import useUserStore from '../store/userStore';
 import { EosioUtil, KeyManagerLevel } from '@tonomy/tonomy-id-sdk';
 import RNKeyManager from '../utils/RNKeyManager';
+import useErrorStore from '../store/errorStore';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -23,24 +24,31 @@ const SuccessLeosWithDrawContainer = ({ chain, navigation, amount, withDraw }: P
     const [loading, setLoading] = useState(false);
     const { user } = useUserStore();
     const token = chain.getNativeToken();
+    const errorStore = useErrorStore();
 
     const confirmStaking = async () => {
         setLoading(true);
 
-        if (withDraw) {
+        try {
             const tokenEntry = await getTokenEntryByChain(chain);
 
             const account = await getAccountFromChain(tokenEntry, user);
 
-            await token.withdrawVestedTokens(account);
+            if (withDraw) {
+                await token.withdrawVestedTokens(account);
+            }
+
             const quantity = amount.toFixed(6) + ' ' + token.getSymbol();
 
             await token.stakeTokens(account, quantity);
+            navigation.navigate('AssetManager', {
+                chain,
+            });
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        } finally {
+            setLoading(false);
         }
-
-        navigation.navigate('AssetManager', {
-            chain,
-        });
     };
 
     return (
