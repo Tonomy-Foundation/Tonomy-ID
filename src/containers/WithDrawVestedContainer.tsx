@@ -122,7 +122,7 @@ const WithDrawVestedContainer = ({ navigation, chain, amount }: VestedAssetSucce
             <View style={styles.annualView}>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                    <Text style={styles.annualPercentage}>{stakingValues.apy}%</Text>
+                    <Text style={styles.annualPercentage}>{stakingValues.apy * 100}%</Text>
                 </View>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Monthly earnings</Text>

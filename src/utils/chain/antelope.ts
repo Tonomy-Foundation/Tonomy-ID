@@ -48,6 +48,7 @@ import {
     StakingAccountState,
     KeyManagerLevel,
     EosioUtil,
+    EosioTokenContract,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -58,6 +59,7 @@ import RNKeyManager from '../RNKeyManager';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
+const eosioTokenContract = EosioTokenContract.Instance;
 
 function getAccountSigner() {
     return EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
@@ -446,7 +448,12 @@ export class PangeaVestedToken extends AntelopeToken {
     }
 
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
-        return super.getBalance(account);
+        const balance = await eosioTokenContract.getBalance(account?.getName());
+        const amount = new Decimal(balance);
+
+        return new Asset(this, amount);
+
+        // return super.getBalance(account);
     }
 
     async getVestedTotalBalance(account?: AntelopeAccount): Promise<IAsset> {

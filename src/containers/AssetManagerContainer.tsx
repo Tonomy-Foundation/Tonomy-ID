@@ -297,9 +297,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                     </View>
                 </View>
             </View>
-            {showVesting ||
-                (showStaking &&
-                    investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStaking))}
+            {(showVesting || showStaking) &&
+                investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStaking)}
         </View>
     );
 };
