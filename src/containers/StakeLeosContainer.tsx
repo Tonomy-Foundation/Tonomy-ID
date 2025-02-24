@@ -80,8 +80,6 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? getStakeUntilDate();
     const shouldShowMinStakeMessage = !amountError || amountError === 'Not enough balance';
 
-    console.log(JSON.stringify(stakingState, null, 2));
-
     const handleAmountChange = async (input: string) => {
         setAmount(input);
         const numericAmount = parseFloat(input) || 0;
