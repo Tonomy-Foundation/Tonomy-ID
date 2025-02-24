@@ -13,7 +13,7 @@ export type SuccessUnstakeProps = {
 const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => {
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/images/vesting/success-unstake.png')} />
+            <Image source={require('../assets/images/staking/success-unstake.png')} />
             <TH1 style={styles.vestedHead}>{'Unstaking Completed'}</TH1>
             <TP style={styles.vestedSubHead}>Your assets have been unstaked and are no longer earning rewards</TP>
             <View style={styles.bottomView}>

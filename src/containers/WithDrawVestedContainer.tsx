@@ -9,7 +9,7 @@ import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistr
 import useUserStore from '../store/userStore';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
-import { assetToAmount, StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
+import { amountToAsset, assetToAmount, SdkErrors, StakingContract } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import { getStakeUntilDate } from '../utils/time';
 
@@ -24,12 +24,9 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
     const [loading, setLoading] = useState(false);
     const errorStore = useErrorStore();
     const [usdPrice, setUsdPrice] = useState(0);
-    const [stakingValues, setStakingValues] = useState({
-        apy: 0,
-        monthlyEarnings: '0.00',
-    });
-
+    const [monthlyEarnings, setMonthlyEarnings] = useState('0.00');
     const token = chain.getNativeToken();
+    const symbol = token.getSymbol();
     const { user } = useUserStore();
 
     const withDrawVested = async () => {
@@ -53,40 +50,24 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
 
     useEffect(() => {
         const fetchStakedAllocation = async () => {
-            try {
-                const tokenEntry = await getTokenEntryByChain(chain);
+            const calculatedYield = await token.getCalculatedYield(amount);
+            const formattedYield = formatTokenValue(new Decimal(calculatedYield));
 
-                const account = await getAccountFromChain(tokenEntry, user);
+            setMonthlyEarnings(formattedYield);
+
+            try {
                 const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
                 setUsdPrice(usdPriceValue);
-                const accountData = await token.getAccountStateData(account);
-
-                setStakingValues({
-                    apy: accountData.settings.apy,
-                    monthlyEarnings:
-                        formatTokenValue(new Decimal(amount * (Math.pow(1 + StakingContract.MAX_APY, 1 / 12) - 1))) +
-                        ' LEOS',
-                });
             } catch (e) {
-                if (e.message === 'Account not found in staking contract') {
-                    setStakingValues({
-                        apy: StakingContract.MAX_APY,
-                        monthlyEarnings:
-                            formatTokenValue(
-                                new Decimal(amount * (Math.pow(1 + StakingContract.MAX_APY, 1 / 12) - 1))
-                            ) + ' LEOS',
-                    });
-                } else {
-                    errorStore.setError({ error: e, expected: false });
-                }
+                errorStore.setError({ error: e, expected: false });
             } finally {
                 setLoading(false);
             }
         };
 
         fetchStakedAllocation();
-    }, []);
+    }, [chain, amount, user, errorStore, token]);
 
     return (
         <View style={styles.container}>
@@ -128,14 +109,16 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
             <View style={styles.annualView}>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                    <Text style={styles.annualPercentage}>{stakingValues.apy * 100}%</Text>
+                    <Text style={styles.annualPercentage}>{StakingContract.MAX_APY * 100}%</Text>
                 </View>
                 <View style={styles.annualText}>
                     <Text style={styles.annualSubText}>Monthly earnings</Text>
                     <View>
-                        <Text style={styles.annualPercentage}>{stakingValues?.monthlyEarnings}</Text>
+                        <Text style={styles.annualPercentage}>
+                            {monthlyEarnings} {symbol}
+                        </Text>
                         <Text style={styles.annualSubText}>
-                            ${formatCurrencyValue(assetToAmount(stakingValues?.monthlyEarnings) * usdPrice)}
+                            ${formatCurrencyValue(assetToAmount(monthlyEarnings) * usdPrice)}
                         </Text>
                     </View>
                 </View>

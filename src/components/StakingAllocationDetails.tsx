@@ -96,7 +96,7 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                     <View style={styles.allocationView}>
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                             <Text style={styles.allocTitle}>Monthly yield:</Text>
-                            <Text style={styles.allocTitle}>({accountData.settings.apy * 100}% APY)</Text>
+                            <Text style={styles.allocTitle}>({(accountData.settings.apy * 100).toFixed(2)}% APY)</Text>
                         </View>
 
                         <View style={styles.flexColCenter}>

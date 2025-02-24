@@ -11,7 +11,7 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
 import Decimal from 'decimal.js';
-import { assetToAmount } from '@tonomy/tonomy-id-sdk';
+import { assetToAmount, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { useFocusEffect } from '@react-navigation/native';
 
 export type Props = {
@@ -153,40 +153,36 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
     const symbol = chain.getNativeToken().getSymbol();
 
     const isVestable = chain.getNativeToken().isVestable();
+    const isStakeable = chain.getNativeToken().isStakeable();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
             try {
                 const assetData = await getAssetDetails(chain);
+                const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
 
                 setAsset(assetData);
 
-                if (isVestable) {
-                    const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
-                    const vestedBalance = await token.getVestedTotalBalance(account);
-
-                    const availableBalance = await token.getAvailableBalance(account);
-                    let totalBalance = availableBalance.add(vestedBalance);
-
+                if (isStakeable) {
                     try {
                         const accountData = await token.getAccountStateData(account);
 
                         if (accountData) {
-                            const totalStaked = new Asset(token, new Decimal(accountData.totalStaked));
-
-                            if (accountData.totalStaked <= 0) {
-                                setShowStaking(false);
-                            }
-
-                            totalBalance = totalBalance.add(totalStaked);
                             setTotalStaked(accountData.totalStaked);
                             setShowStaking(true);
                         }
                     } catch (e) {
-                        if (e.message === 'Account not found in staking contract') {
+                        if (e.code === SdkErrors.AccountNotFound) {
                             setShowStaking(false);
                         }
                     }
+                }
+
+                if (isVestable) {
+                    const vestedBalance = await token.getVestedTotalBalance(account);
+
+                    const availableBalance = await token.getAvailableBalance(account);
+                    const totalBalance = await token.getBalance(account);
 
                     if (Number(vestedBalance.getAmount()) > 0) {
                         setShowVesting(true);
@@ -218,10 +214,10 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
 
         fetchAssetDetails();
 
-        const interval = setInterval(fetchAssetDetails, 9000);
+        const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [chain, token, symbol, errorStore, isVestable]);
+    }, [chain, token, symbol, errorStore, isVestable, isStakeable]);
 
     useFocusEffect(
         useCallback(() => {
@@ -244,9 +240,10 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
 
         Linking.openURL(explorerUrl);
     };
+    const showStakeToEarn = assetToAmount(balance.availableBalance) > 0 || showStaking;
 
     const redirectStakeToEarn = () => {
-        if (totalStaked > 0) {
+        if (totalStaked > 0 || showStaking) {
             navigation.navigate('StakeLeosDetail', {
                 chain: chain,
             });
@@ -256,7 +253,6 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
             });
         }
     };
-    const showStakeToEarn = assetToAmount(balance.availableBalance) > 0 || showStaking;
 
     return (
         <View style={styles.container}>

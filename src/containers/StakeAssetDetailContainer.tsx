@@ -2,19 +2,20 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-nati
 import { Props } from '../screens/StakeAssetDetailScreen';
 import { IChain } from '../utils/chain/types';
 import theme, { commonStyles } from '../utils/theme';
-import TButton, { TButtonContained } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import StakingAllocationDetails from '../components/StakingAllocationDetails';
 import HowStakingWorks from '../components/HowStakingWorks';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
-import { assetToAmount, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { assetToAmount, StakingAccountState, StakingAllocation, StakingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import TSpinner from '../components/atoms/TSpinner';
 import { useFocusEffect } from '@react-navigation/native';
 import useErrorStore from '../store/errorStore';
+import { getStakeReleaseTime, getUnstakeTime } from '../utils/time';
 
 export type StakingLeosProps = {
     navigation: Props['navigation'];
@@ -23,23 +24,18 @@ export type StakingLeosProps = {
 };
 
 export function getUnlockStatus(allocation) {
-    const now = new Date();
-    const unstakeableTime = new Date(allocation.unstakeableTime);
-    const releaseTime = new Date(allocation.releaseTime);
-
-    const daysUntilUnlockable = Math.ceil((unstakeableTime.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    const daysUntilRelease = Math.ceil((releaseTime.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const unstakeableTime = getUnstakeTime(allocation.unstakeableTime);
+    const releaseTime = getStakeReleaseTime(allocation.releaseTime);
 
     if (allocation.unstakeRequested) {
-        return daysUntilRelease > 0 ? `Released in ${daysUntilRelease} days` : 'Released';
+        return releaseTime > 0 ? `Released in ${releaseTime} days` : 'Released';
     } else {
-        return daysUntilUnlockable > 0 ? `Unlockable in ${daysUntilUnlockable} days` : 'Unlockable';
+        return unstakeableTime > 0 ? `Unlockable in ${unstakeableTime} days` : 'Unlockable';
     }
 }
 
 const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = false }: StakingLeosProps) => {
     const errorStore = useErrorStore();
-
     const [loading, setLoading] = useState(true);
     const [accountData, setAccountData] = useState<StakingAccountState>({} as StakingAccountState);
     const [selectedAllocation, setSelectedAllocation] = useState<StakingAllocation>({} as StakingAllocation);
@@ -69,6 +65,9 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
         };
 
         fetchStakedAllocation();
+        const interval = setInterval(fetchStakedAllocation, 10000);
+
+        return () => clearInterval(interval);
     }, [chain, user, errorStore, token]);
 
     const onClose = () => {
@@ -79,9 +78,6 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
         useCallback(() => {
             if (propsLoading) {
                 setLoading(true);
-                setTimeout(() => {
-                    setLoading(false);
-                }, 7000);
             }
         }, [propsLoading])
     );
@@ -175,7 +171,7 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
 
                 <Text style={styles.lockedParagraph}>
                     These coins are locked during the staking period to support the network and earn rewards. Coins will
-                    be fully unlockable in 14 days after they are staked
+                    be fully unlockable in {StakingContract.getLockedDays()} days after they are staked
                 </Text>
                 <TouchableOpacity onPress={() => refStakingInfo.current?.open()}>
                     <Text style={styles.howStaking}>How Staking Works</Text>

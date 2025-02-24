@@ -1,33 +1,28 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
-import { StakeLesoscreenNavigationProp } from '../screens/StakeLeosScreen';
+import { Props } from '../screens/StakeAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
-
 import { IChain } from '../utils/chain/types';
-
 import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import { useEffect, useState } from 'react';
 import { StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
 import { getAccountFromChain, getAssetDetails, getTokenEntryByChain } from '../utils/tokenRegistry';
-import Decimal from 'decimal.js';
 import settings from '../settings';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
-import { getStakeUntilDate } from '../utils/time';
+import { getStakeUntilDate, getUnstakeTime } from '../utils/time';
+import useErrorStore from '../store/errorStore';
+import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
+import Decimal from 'decimal.js';
 
 export type StakeLesoProps = {
-    navigation: StakeLesoscreenNavigationProp['navigation'];
+    navigation: Props['navigation'];
     chain: IChain;
 };
 
-interface Balance {
-    availableBalance: string;
-    availableBalanceUsd: number;
-}
-
-const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
+const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
     const token = chain.getNativeToken();
     const { user } = useUserStore();
-
+    const errorStore = useErrorStore();
     const [stakingState, setStakingState] = useState<StakingAccountState | null>(null);
     const [amount, setAmount] = useState('');
     const [monthlyYield, setMonthlyYield] = useState<number>(0);
@@ -36,7 +31,6 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
     const minimumStakeTransfer = settings.isProduction() ? 1000 : 1;
     const [amountError, setAmountError] = useState<string | null>(null);
 
-    const symbol = chain.getNativeToken().getSymbol();
     const isVestable = chain.getNativeToken().isVestable();
 
     const [availableBalance, setAvailableBalance] = useState<string>('0.00');
@@ -63,18 +57,17 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
 
                 if (state.allocations.length > 0) {
                     const unstakeDate = state.allocations[0].unstakeableTime;
-                    const today = new Date();
-                    const diffDays = Math.ceil((unstakeDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    const unstakeableTime = getUnstakeTime(unstakeDate);
 
-                    setStakingDays(diffDays > 0 ? diffDays : 0);
+                    setStakingDays(unstakeableTime > 0 ? unstakeableTime : 0);
                 }
             } catch (error) {
-                console.error('Error fetching staking details:', error);
+                errorStore.setError({ error: e, expected: false });
             }
         };
 
         fetchAssetsDetails();
-    }, [chain, user, token, isVestable]);
+    }, [chain, user, token, isVestable, errorStore]);
 
     const apy = stakingState?.settings.apy ?? StakingContract.MAX_APY;
     const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? getStakeUntilDate();
@@ -89,19 +82,19 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
         if (numericAmount > parseFloat(availableBalance)) {
             errorMessage = 'Not enough balance';
         } else if (numericAmount < minimumStakeTransfer) {
-            errorMessage = `Minimum stake: ${minimumStakeTransfer.toFixed(3)} LEOS`;
+            errorMessage = `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`;
         }
 
         setAmountError(errorMessage);
 
-        const calculatedYield = numericAmount * (Math.pow(1 + StakingContract.MAX_APY, 1 / 12) - 1);
+        const calculatedYield = await token.getCalculatedYield(numericAmount);
 
         setMonthlyYield(calculatedYield);
 
         // Convert to USD
         const usdPriceValue = await chain.getNativeToken().getUsdPrice();
 
-        setUsdValue((calculatedYield * usdPriceValue).toFixed(2));
+        setUsdValue(formatCurrencyValue(calculatedYield * usdPriceValue));
     };
 
     const handleMaxPress = () => {
@@ -111,7 +104,10 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
 
     const handleProceed = () => {
         if (amountError || !amount || parseFloat(amount) < minimumStakeTransfer) {
-            Alert.alert('Invalid Input', amountError || `Minimum stake is ${minimumStakeTransfer.toFixed(4)} LEOS`);
+            Alert.alert(
+                'Invalid Input',
+                amountError || `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`
+            );
             return;
         }
 
@@ -141,7 +137,9 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                         </View>
                         {amountError && <Text style={styles.errorText}>{amountError}</Text>}
                         {shouldShowMinStakeMessage && (
-                            <Text style={styles.inputHelp}>Minimum stake: {minimumStakeTransfer.toFixed(4)} LEOS</Text>
+                            <Text style={styles.inputHelp}>
+                                Minimum stake: {formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS
+                            </Text>
                         )}
                     </View>
                     <View style={styles.annualView}>
@@ -152,7 +150,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
                         <View style={styles.annualText}>
                             <Text style={styles.annualSubText}>Monthly earnings</Text>
                             <View>
-                                <Text style={styles.annualPercentage}>{monthlyYield.toFixed(2)} LEOS</Text>
+                                <Text style={styles.annualPercentage}>{formatCurrencyValue(monthlyYield)} LEOS</Text>
                                 <Text style={styles.annualSubText}>${usdValue}</Text>
                             </View>
                         </View>
@@ -179,6 +177,7 @@ const StakeLeosContainer = ({ navigation, chain }: StakeLesoProps) => {
         </>
     );
 };
+
 const styles = StyleSheet.create({
     scrollView: { minHeight: 170, maxHeight: 350, paddingTop: 5, marginBottom: 10 },
     container: {
@@ -284,4 +283,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default StakeLeosContainer;
+export default StakeAssetContainer;

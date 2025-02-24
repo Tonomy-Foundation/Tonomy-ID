@@ -9,7 +9,6 @@ import { IChain, VestedTokens, VestedAllocation, IAccount } from '../utils/chain
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
-import { getMultiplier } from '../utils/multiplier';
 import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
 import { useFocusEffect } from '@react-navigation/native';
@@ -22,7 +21,7 @@ export type VestedAssetProps = {
 };
 
 const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = false }: VestedAssetProps) => {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
     const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
@@ -38,8 +37,6 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
     useEffect(() => {
         const fetchVestedAllocation = async () => {
             try {
-                setLoading(true);
-
                 const tokenEntry = await getTokenEntryByChain(chain);
 
                 const account = await getAccountFromChain(tokenEntry, user);
@@ -57,37 +54,15 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
         };
 
         fetchVestedAllocation();
+        const interval = setInterval(fetchVestedAllocation, 10000);
+
+        return () => clearInterval(interval);
     }, [chain, token, user, errorStore]);
-
-    const calculateAverageMultiplier = (vestingData: VestedTokens): number => {
-        const { allocationsDetails } = vestingData;
-
-        let totalWeightedMultiplier = 0;
-        let totalLockedAndUnlockable = 0;
-
-        allocationsDetails.forEach((allocation) => {
-            const { locked, unlockable } = allocation;
-            const multiplier = getMultiplier(allocation.allocationDate, allocation.categoryId);
-
-            if (multiplier) {
-                const lockedPlusUnlockable = locked + unlockable;
-
-                totalWeightedMultiplier += multiplier * lockedPlusUnlockable;
-                totalLockedAndUnlockable += lockedPlusUnlockable;
-            }
-        });
-
-        // Calculate average multiplier
-        return totalLockedAndUnlockable > 0 ? totalWeightedMultiplier / totalLockedAndUnlockable : 0;
-    };
 
     useFocusEffect(
         useCallback(() => {
             if (propsLoading) {
                 setLoading(true);
-                setTimeout(() => {
-                    setLoading(false);
-                }, 7000);
             }
         }, [propsLoading])
     );
@@ -102,9 +77,7 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
 
     const totalVestedView = () => {
         const totalVestedAmount = vestedAllocations.locked;
-
         const totalVestedAmountUsd = totalVestedAmount * usdPrice;
-        const averageMultiplier = calculateAverageMultiplier(vestedAllocations);
 
         return (
             <View>
@@ -117,10 +90,10 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
                 >
                     <Text style={styles.imageNetworkText}>Pangea Network</Text>
                     <Text style={styles.imageText}>
-                        {formatTokenValue(new Decimal(totalVestedAmount))} {chain.getNativeToken().getSymbol()}
+                        {totalVestedAmount && formatTokenValue(new Decimal(totalVestedAmount))}{' '}
+                        {chain.getNativeToken().getSymbol()}
                     </Text>
                     <Text style={styles.imageUsdText}>= ${formatCurrencyValue(totalVestedAmountUsd)}</Text>
-                    {/* <Text style={styles.averageMultiplier}>Average multiplier: x{averageMultiplier}</Text> */}
                 </ImageBackground>
             </View>
         );
@@ -138,32 +111,34 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
         return (
             <ScrollView style={styles.scrollView}>
                 <View style={{ marginTop: 12 }}>
-                    {vestedAllocations.allocationsDetails.map((allocation, index) => (
-                        <View key={index}>
-                            <TouchableOpacity
-                                key={index}
-                                style={styles.allocationView}
-                                onPress={() => {
-                                    setSelectedAllocation(allocation);
-                                    refMessage.current?.open();
-                                }}
-                            >
-                                <Text style={{ fontWeight: '700' }}>
-                                    {formatTokenValue(new Decimal(allocation.totalAllocation))}{' '}
-                                    {chain.getNativeToken().getSymbol()}
-                                </Text>
-                                <View style={styles.flexColEnd}>
-                                    {/* <Text style={styles.allocMulti}>
-                                        Multiplier:
-                                        <Text style={{ color: theme.colors.success }}>
-                                            x{getMultiplier(allocation.allocationDate, allocation.categoryId)}
+                    {vestedAllocations?.allocationsDetails?.length > 0 &&
+                        vestedAllocations.allocationsDetails.map((allocation, index) => (
+                            <View key={index}>
+                                {allocation.totalAllocation !== allocation.unlocked && (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={styles.allocationView}
+                                        onPress={() => {
+                                            setSelectedAllocation(allocation);
+                                            refMessage.current?.open();
+                                        }}
+                                    >
+                                        <Text style={{ fontWeight: '700' }}>
+                                            {formatTokenValue(new Decimal(allocation.totalAllocation))}{' '}
+                                            {chain.getNativeToken().getSymbol()}
                                         </Text>
-                                    </Text> */}
-                                    <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
+                                        <View style={styles.flexColEnd}>
+                                            <NavArrowRight
+                                                height={15}
+                                                width={15}
+                                                color={theme.colors.grey2}
+                                                strokeWidth={2}
+                                            />
+                                        </View>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        ))}
 
                     {selectedAllocation && (
                         <AllocationDetails
@@ -199,6 +174,7 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
         );
     };
 
+    console.log('vesteeed', vestedAllocations);
     return (
         <View style={styles.container}>
             {totalVestedView()}
@@ -355,15 +331,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         alignItems: 'flex-start',
-    },
-    averageMultiplier: {
-        backgroundColor: theme.colors.success,
-        color: theme.colors.white,
-        paddingHorizontal: 9,
-        paddingVertical: 3,
-        borderRadius: 5,
-        marginTop: 12,
-        fontSize: 13,
     },
     allocationView: {
         backgroundColor: theme.colors.grey7,

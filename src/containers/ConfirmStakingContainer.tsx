@@ -10,6 +10,7 @@ import Decimal from 'decimal.js';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
+import { amountToAsset, StakingContract } from '@tonomy/tonomy-id-sdk';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -23,6 +24,7 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
     const { user } = useUserStore();
     const token = chain.getNativeToken();
     const errorStore = useErrorStore();
+    const lockedDays = StakingContract.getLockedDays();
 
     const confirmStaking = async () => {
         setLoading(true);
@@ -36,10 +38,10 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
                 await token.withdrawVestedTokens(account);
             }
 
-            const quantity = amount.toFixed(6) + ' ' + token.getSymbol();
+            const formattedAmount = amountToAsset(amount, token.getSymbol());
 
-            await token.stakeTokens(account, quantity);
-            navigation.navigate('StakeLeosDetail', {
+            await token.stakeTokens(account, formattedAmount);
+            navigation.navigate('AssetManager', {
                 chain,
                 loading: true,
             });
@@ -56,7 +58,7 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
                 <TH1 style={styles.vestedHead}>
                     Confirm staking {formatTokenValue(new Decimal(amount))} {chain.getNativeToken().getSymbol()}
                 </TH1>
-                <TP style={styles.vestedSubHead}>These coins will be locked for 14 days</TP>
+                <TP style={styles.vestedSubHead}>These coins will be locked for {lockedDays} days</TP>
             </View>
             <View style={styles.bottomView}>
                 {loading ? (
@@ -68,11 +70,11 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
                         color={theme.colors.grey3}
                     >
                         <ActivityIndicator size="small" color={theme.colors.grey3} style={{ marginRight: 7 }} />
-                        Stake for 14 days
+                        Stake for {lockedDays} days
                     </TButton>
                 ) : (
                     <TButtonContained style={{ width: '100%' }} onPress={() => confirmStaking()}>
-                        Stake for 14 days
+                        Stake for {lockedDays} days
                     </TButtonContained>
                 )}
             </View>

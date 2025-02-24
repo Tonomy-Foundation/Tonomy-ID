@@ -68,7 +68,7 @@ const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
 
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/images/vesting/success-stake.png')} />
+            <Image source={require('../assets/images/staking/success-stake.png')} />
             <TH1 style={styles.vestedHead}>{'Vested and Rested'}</TH1>
             <TP style={styles.vestedSubHead}>Your coins have been successfully withdrawn!</TP>
             <View style={styles.bottomView}>

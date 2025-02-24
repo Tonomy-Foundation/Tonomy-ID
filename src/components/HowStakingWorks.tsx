@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
+import { StakingContract } from '@tonomy/tonomy-id-sdk';
 
 export type Props = {
     refMessage: React.RefObject<{ open: () => void; close: () => void }>;
@@ -32,15 +33,19 @@ const HowStakingWorks = (props: Props) => {
             <View style={{ marginTop: 20 }}>
                 <Text style={styles.heading}>How Does Staking Work?</Text>
                 <Text style={styles.paragragh}>
-                    LEOS is <Text style={styles.boldText}>locked for 14 days. Yield rewards</Text> are distributed daily
-                    and auto-compounded
+                    LEOS is{' '}
+                    <Text style={styles.boldText}>
+                        locked for {StakingContract.getLockedDays()} days. Yield rewards
+                    </Text>{' '}
+                    are distributed daily and auto-compounded
                 </Text>
             </View>
             <View style={{ marginTop: 20 }}>
                 <Text style={styles.heading}>Unlocking Staked LEOS</Text>
                 <Text style={styles.paragragh}>
                     After the <Text style={styles.boldText}>14-day lockup</Text>, you can unlock your LEOS at any time.
-                    Unlocking starts <Text style={styles.boldText}>a 5-day release period </Text>with
+                    Unlocking starts{' '}
+                    <Text style={styles.boldText}>a {StakingContract.getReleaseDays()}-day release period </Text>with
                     <Text style={styles.boldText}> no yield</Text>
                 </Text>
             </View>

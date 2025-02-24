@@ -49,6 +49,7 @@ import {
     KeyManagerLevel,
     EosioUtil,
     EosioTokenContract,
+    SdkErrors,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -348,9 +349,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         logoUrl: string,
         coinmarketCapId: string,
         transferable = true,
-        vestable = false
+        vestable = false,
+        stakeable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable, vestable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -410,45 +412,40 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return balance.getUsdValue();
     }
 
-    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
-        throw new Error(`getVestedTokens() method not implemented' ${account}`);
-    }
-
-    async getVestedTotalBalance(): Promise<IAsset> {
-        throw new Error(`getVestedTotalBalance() method not implemented'`);
-    }
-
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
         return this.getBalance(account);
     }
-
-    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
-        throw new Error(`withdrawVestedTokens() method not implemented' ${account}`);
-    }
-
-    async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
-        throw new Error(`getAccountStateData() method not implemented' ${account}`);
-    }
-
-    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
-        throw new Error(`stakeTokens() method not implemented' ${account} ${amount}`);
-    }
-
-    async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
-        throw new Error(`unStakeTokens() method not implemented' ${account} ${allocationId}`);
-    }
 }
 
-export class PangeaVestedToken extends AntelopeToken {
+export class PangeaToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
         const vestedBalance = await this.getVestedTotalBalance(account);
 
-        return availableBalance.add(vestedBalance);
+        // Ensure we retrieve staking state correctly
+        let stakedBalance = new Asset(this, new Decimal(0));
+
+        try {
+            const stakingState = await this.getAccountStateData(account as IAccount);
+
+            // Convert totalStaked to an Asset
+            stakedBalance = new Asset(this, new Decimal(stakingState.totalStaked));
+        } catch (e) {
+            if (e.code === SdkErrors.AccountNotFound) {
+                debug('getBalance() Account not found');
+            }
+        }
+
+        return availableBalance.add(vestedBalance).add(stakedBalance);
     }
 
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
-        return super.getBalance(account);
+        const balance = await eosioTokenContract.getBalance(account?.getName());
+        const amount = new Decimal(balance);
+
+        return new Asset(this, amount);
+
+        // return super.getBalance(account);
     }
 
     async getVestedTotalBalance(account?: AntelopeAccount): Promise<IAsset> {
@@ -492,6 +489,10 @@ export class PangeaVestedToken extends AntelopeToken {
 
         return await stakingContract.requestUnstake(account.getName(), allocationId, accountSigner);
     }
+
+    async getCalculatedYield(amount: number): Promise<number> {
+        return stakingContract.calculateYield(amount);
+    }
 }
 
 export const PangeaMainnetChain = new AntelopeChain(
@@ -531,7 +532,7 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const LEOSToken = new PangeaVestedToken(
+export const LEOSToken = new PangeaToken(
     PangeaMainnetChain,
     'LEOS',
     'LEOS',
@@ -539,10 +540,11 @@ export const LEOSToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos',
     false,
+    true,
     true
 );
 
-export const LEOSTestnetToken = new PangeaVestedToken(
+export const LEOSTestnetToken = new PangeaToken(
     PangeaTestnetChain,
     'TestnetLEOS',
     'LEOS',
@@ -550,10 +552,11 @@ export const LEOSTestnetToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-testnet',
     false,
+    true,
     true
 );
 
-export const LEOSStagingToken = new PangeaVestedToken(
+export const LEOSStagingToken = new PangeaToken(
     TonomyStagingChain,
     'StagingLEOS',
     'LEOS',
@@ -561,10 +564,11 @@ export const LEOSStagingToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-staging',
     false,
+    true,
     true
 );
 
-export const LEOSLocalToken = new PangeaVestedToken(
+export const LEOSLocalToken = new PangeaToken(
     TonomyLocalChain,
     'LocalLEOS',
     'LEOS',
@@ -572,6 +576,7 @@ export const LEOSLocalToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-local',
     false,
+    true,
     true
 );
 

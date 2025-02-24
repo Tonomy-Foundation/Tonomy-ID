@@ -209,32 +209,8 @@ export class EthereumToken extends AbstractToken {
         return balance.getUsdValue();
     }
 
-    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
-        throw new Error(`getVestedTokens() method not implemented' ${account}`);
-    }
-
-    async getVestedTotalBalance(): Promise<IAsset> {
-        throw new Error(`getVestedTotalBalance() method not implemented'`);
-    }
-
     async getAvailableBalance(account?: IAccount): Promise<IAsset> {
         return this.getBalance(account);
-    }
-
-    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
-        throw new Error(`withdrawVestedTokens() method not implemented' ${account}`);
-    }
-
-    async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
-        throw new Error(`getAccountStateData() method not implemented' ${account}`);
-    }
-
-    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
-        throw new Error(`stakeTokens() method not implemented' ${account} ${amount}`);
-    }
-
-    async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
-        throw new Error(`unStakeTokens() method not implemented' ${account} ${allocationId}`);
     }
 }
 

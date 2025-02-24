@@ -10,6 +10,7 @@ import Decimal from 'decimal.js';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
+import { StakingContract } from '@tonomy/tonomy-id-sdk';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -49,7 +50,9 @@ const ConfirmUnStakingContainer = ({ chain, navigation, amount, allocationId }: 
                 <TH1 style={styles.vestedHead}>
                     Confirm unstaking {formatTokenValue(new Decimal(amount))} {chain.getNativeToken().getSymbol()}
                 </TH1>
-                <TP style={styles.vestedSubHead}>Your LEOS will enter a 5-day release period with no yield</TP>
+                <TP style={styles.vestedSubHead}>
+                    Your LEOS will enter a {StakingContract.getReleaseDays()}-day release period with no yield
+                </TP>
             </View>
             <View style={styles.bottomView}>
                 {loading ? (

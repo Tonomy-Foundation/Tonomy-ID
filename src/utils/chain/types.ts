@@ -264,6 +264,7 @@ export interface IToken {
     getUsdValue(account?: IAccount): Promise<number>;
     isTransferable(): boolean;
     isVestable(): boolean;
+    isStakeable(): boolean;
     eq(other: IToken): boolean;
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
@@ -272,6 +273,7 @@ export interface IToken {
     getAccountStateData(account: IAccount): Promise<StakingAccountState>;
     stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse>;
     unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse>;
+    getCalculatedYield(amount: number): Promise<number>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -283,6 +285,7 @@ export abstract class AbstractToken implements IToken {
     protected logoUrl: string;
     protected transferable = true;
     protected vestable = false;
+    protected stakeable = false;
 
     constructor(
         name: string,
@@ -291,7 +294,8 @@ export abstract class AbstractToken implements IToken {
         chain: IChain,
         logoUrl: string,
         transferable = true,
-        vestable = false
+        vestable = false,
+        stakeable = false
     ) {
         this.name = name;
         this.symbol = symbol;
@@ -300,6 +304,7 @@ export abstract class AbstractToken implements IToken {
         this.logoUrl = logoUrl;
         this.transferable = transferable;
         this.vestable = vestable;
+        this.stakeable = stakeable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -332,6 +337,10 @@ export abstract class AbstractToken implements IToken {
     isVestable(): boolean {
         return this.vestable;
     }
+    isStakeable(): boolean {
+        return this.stakeable;
+    }
+
     eq(other: IToken): boolean {
         return (
             this.getName() === other.getName() &&
@@ -341,13 +350,32 @@ export abstract class AbstractToken implements IToken {
     }
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
-    abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
     abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
-    abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
-    abstract withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
-    abstract getAccountStateData(account: IAccount): Promise<StakingAccountState>;
-    abstract stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse>;
-    abstract unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse>;
+
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
+        throw new Error(`getVestedTokens() method not implemented' ${account}`);
+    }
+
+    async getVestedTotalBalance(): Promise<IAsset> {
+        throw new Error(`getVestedTotalBalance() method not implemented'`);
+    }
+    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
+        throw new Error(`withdrawVestedTokens() method not implemented' ${account}`);
+    }
+    async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
+        throw new Error(`getAccountStateData() method not implemented' ${account}`);
+    }
+
+    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
+        throw new Error(`stakeTokens() method not implemented' ${account} ${amount}`);
+    }
+
+    async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
+        throw new Error(`unStakeTokens() method not implemented' ${account} ${allocationId}`);
+    }
+    async getCalculatedYield(amount: number): Promise<number> {
+        throw new Error(`getCalculatedYield() method not implemented' ${amount}`);
+    }
 }
 
 export interface IAccount {

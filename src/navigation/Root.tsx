@@ -43,10 +43,8 @@ import AssetManagerScreen from '../screens/AssetManagerScreen';
 import VestedAssetsScreen from '../screens/VestedAssetsScreen';
 import { navigationRef } from '../utils/navigate';
 import ConfirmStakingScreen from '../screens/ConfirmStakingScreen';
-import StakingManagerScreen from '../screens/StakingManagerScreen';
-import StakeLeosScreen from '../screens/StakeLeosScreen';
+import StakeAssetScreen from '../screens/StakeAssetScreen';
 import StakeAssetDetailScreen from '../screens/StakeAssetDetailScreen';
-import UnstakeAssetScreen from '../screens/UnstakeAssetScreen';
 import SuccessUnstakeScreen from '../screens/SuccessUnstakeScreen';
 import WithdrawVestedScreen from '../screens/WithdrawVestedScreen';
 import VestedSuccessScreen from '../screens/VestedSuccessScreen';
@@ -122,10 +120,8 @@ export type MainRouteStackParamList = {
     AssetManager: AssetsParamsScreen & { loading?: boolean };
     VestedAssets: AssetsParamsScreen & { loading?: boolean };
     ConfirmStaking: AssetsParamsScreen & { amount: number; withDraw?: boolean };
-    StakingManager: AssetsParamsScreen;
     StakeLeos: AssetsParamsScreen;
     StakeLeosDetail: AssetsParamsScreen & { loading?: boolean };
-    UnStakeAsset: AssetsParamsScreen;
     SuccessUnstake: AssetsParamsScreen;
     WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
     SuccessVested: AssetsParamsScreen;
@@ -311,11 +307,7 @@ export default function RootNavigation() {
                             })}
                             component={SelectAsset}
                         />
-                        <Stack.Screen
-                            name="StakingManager"
-                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
-                            component={StakingManagerScreen}
-                        />
+
                         <Stack.Screen
                             name="StakeLeosDetail"
                             options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
@@ -324,18 +316,14 @@ export default function RootNavigation() {
                         <Stack.Screen
                             name="StakeLeos"
                             options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
-                            component={StakeLeosScreen}
+                            component={StakeAssetScreen}
                         />
                         <Stack.Screen
                             name="ConfirmStaking"
                             options={{ headerBackTitleVisible: false, title: 'Confirm staking' }}
                             component={ConfirmStakingScreen}
                         />
-                        <Stack.Screen
-                            name="UnStakeAsset"
-                            options={{ headerBackTitleVisible: false, title: 'Unstake LEOS' }}
-                            component={UnstakeAssetScreen}
-                        />
+
                         <Stack.Screen
                             name="SuccessUnstake"
                             options={{ headerBackTitleVisible: false, title: 'Success' }}
