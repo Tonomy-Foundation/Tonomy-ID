@@ -448,12 +448,7 @@ export class PangeaVestedToken extends AntelopeToken {
     }
 
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
-        const balance = await eosioTokenContract.getBalance(account?.getName());
-        const amount = new Decimal(balance);
-
-        return new Asset(this, amount);
-
-        // return super.getBalance(account);
+        return super.getBalance(account);
     }
 
     async getVestedTotalBalance(account?: AntelopeAccount): Promise<IAsset> {
