@@ -22,6 +22,7 @@ const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => 
                     onPress={() =>
                         navigation.navigate('AssetManager', {
                             chain,
+                            loading: true,
                         })
                     }
                 >

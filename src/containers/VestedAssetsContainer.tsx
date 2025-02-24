@@ -13,6 +13,7 @@ import { getMultiplier } from '../utils/multiplier';
 import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
 import { useFocusEffect } from '@react-navigation/native';
+import useErrorStore from '../store/errorStore';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -25,10 +26,10 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
     const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
-    const [account, setAccount] = useState<IAccount>({} as IAccount);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const token = chain.getNativeToken();
     const { user } = useUserStore();
+    const errorStore = useErrorStore();
 
     const onClose = () => {
         refMessage.current?.close();
@@ -36,21 +37,27 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
 
     useEffect(() => {
         const fetchVestedAllocation = async () => {
-            const tokenEntry = await getTokenEntryByChain(chain);
+            try {
+                setLoading(true);
 
-            const account = await getAccountFromChain(tokenEntry, user);
+                const tokenEntry = await getTokenEntryByChain(chain);
 
-            setAccount(account);
-            const allocations = await token.getVestedTokens(account);
-            const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+                const account = await getAccountFromChain(tokenEntry, user);
 
-            setUsdPrice(usdPriceValue);
-            setVestedAllocation(allocations);
-            setLoading(false);
+                const allocations = await token.getVestedTokens(account);
+                const usdPriceValue = await chain.getNativeToken().getUsdPrice();
+
+                setUsdPrice(usdPriceValue);
+                setVestedAllocation(allocations);
+            } catch (e) {
+                errorStore.setError({ error: e, expected: false });
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchVestedAllocation();
-    }, [chain, token, user]);
+    }, [chain, token, user, errorStore]);
 
     const calculateAverageMultiplier = (vestingData: VestedTokens): number => {
         const { allocationsDetails } = vestingData;
@@ -215,7 +222,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         marginTop: 10,
     },
-
     textContainer: {
         flex: 1,
         justifyContent: 'center',

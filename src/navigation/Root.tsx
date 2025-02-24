@@ -128,7 +128,7 @@ export type MainRouteStackParamList = {
     UnStakeAsset: AssetsParamsScreen;
     SuccessUnstake: AssetsParamsScreen;
     WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
-    SuccessVested: AssetsParamsScreen & { total: number };
+    SuccessVested: AssetsParamsScreen;
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
 };
 

@@ -262,7 +262,7 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
         <View style={styles.container}>
             {isVestable && <View>{renderImageBackground(balance)}</View>}
             {showVesting && vestedBalanceView(balance, navigation, asset.chain)}
-            {showStaking && stakedBalanceView(totalStaked, navigation, asset.chain)}
+            {totalStaked > 0 && stakedBalanceView(totalStaked, navigation, asset.chain)}
 
             <Text style={styles.subTitle}>Available assets</Text>
 

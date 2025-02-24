@@ -33,18 +33,22 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
     const { user } = useUserStore();
 
     const withDrawVested = async () => {
-        setLoading(true);
-        const tokenEntry = await getTokenEntryByChain(chain);
+        try {
+            setLoading(true);
+            const tokenEntry = await getTokenEntryByChain(chain);
 
-        const account = await getAccountFromChain(tokenEntry, user);
+            const account = await getAccountFromChain(tokenEntry, user);
 
-        await token.withdrawVestedTokens(account);
-        setLoading(false);
+            await token.withdrawVestedTokens(account);
 
-        navigation.navigate('SuccessVested', {
-            chain,
-            total,
-        });
+            navigation.navigate('SuccessVested', {
+                chain,
+            });
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {

@@ -10,11 +10,12 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { formatDate } from '../utils/time';
 import Decimal from 'decimal.js';
 import HowStakingWorks from './HowStakingWorks';
+import { Props } from '../screens/StakeAssetDetailScreen';
 
 export type PropsStaking = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
-    navigation: any;
+    navigation: Props['navigation'];
     chain: IChain;
     allocation: StakingAllocation;
     usdPrice: number;
@@ -111,32 +112,31 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                             </Text>
                         </View>
                     </View>
-                    {isUnlocked ? (
+
+                    <View style={styles.allocationView}>
+                        <Text style={styles.allocTitle}>Stake started</Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>
+                                {allocation.stakedTime && formatDate(allocation.stakedTime)}
+                            </Text>
+                        </View>
+                    </View>
+                    {isUnlocked && allocation.unstakeRequested ? (
+                        <View style={styles.allocationView}>
+                            <Text style={styles.allocTitle}>Release until</Text>
+                            <View style={styles.flexColEnd}>
+                                <Text style={styles.allocMulti}>
+                                    {allocation.releaseTime && formatDate(allocation.releaseTime)}
+                                </Text>
+                            </View>
+                        </View>
+                    ) : (
                         <View style={styles.allocationView}>
                             <Text style={styles.allocTitle}>Locked until</Text>
                             <View style={styles.flexColEnd}>
                                 <Text style={styles.allocMulti}>
                                     {allocation.unstakeableTime && formatDate(allocation.unstakeableTime)}
                                     <Text style={{ color: theme.colors.grey9 }}> (14 days)</Text>
-                                </Text>
-                            </View>
-                        </View>
-                    ) : (
-                        <View style={styles.allocationView}>
-                            <Text style={styles.allocTitle}>Stake started</Text>
-                            <View style={styles.flexColEnd}>
-                                <Text style={styles.allocMulti}>
-                                    {allocation.stakedTime && formatDate(allocation.stakedTime)}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-                    {isUnlocked && allocation.unstakeRequested && (
-                        <View style={styles.allocationView}>
-                            <Text style={styles.allocTitle}>Release until</Text>
-                            <View style={styles.flexColEnd}>
-                                <Text style={styles.allocMulti}>
-                                    {allocation.releaseTime && formatDate(allocation.releaseTime)}
                                 </Text>
                             </View>
                         </View>
