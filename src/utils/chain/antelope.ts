@@ -47,7 +47,6 @@ import {
     StakingContract,
     StakingAccountState,
     KeyManagerLevel,
-    EosioUtil,
     SdkErrors,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
@@ -55,13 +54,13 @@ import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 import Decimal from 'decimal.js';
-import RNKeyManager from '../RNKeyManager';
+import useUserStore from '../../store/userStore';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
 
 function getAccountSigner() {
-    return EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
+    return useUserStore.getState().user.getSigner(KeyManagerLevel.ACTIVE);
 }
 
 const debug = Debug('tonomy-id:utils:chain:antelope');

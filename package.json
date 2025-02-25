@@ -136,7 +136,8 @@
     },
     "resolutions": {
         "jsonld": "link:./node_modules/@digitalcredentials/jsonld",
-        "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto"
+        "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto",
+        "@tonomy/tonomy-id-sdk": "portal:/home/sadia/TonomyFoundation/january/Tonomy-ID-Integration/Tonomy-ID-SDK"
     },
     "private": true,
     "packageManager": "yarn@4.3.1",
