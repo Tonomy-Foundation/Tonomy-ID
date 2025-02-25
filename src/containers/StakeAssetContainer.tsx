@@ -61,7 +61,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
 
                     setStakingDays(unstakeableTime > 0 ? unstakeableTime : 0);
                 }
-            } catch (error) {
+            } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }
         };

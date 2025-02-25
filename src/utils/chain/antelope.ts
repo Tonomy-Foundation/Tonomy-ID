@@ -48,7 +48,6 @@ import {
     StakingAccountState,
     KeyManagerLevel,
     EosioUtil,
-    EosioTokenContract,
     SdkErrors,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
@@ -60,7 +59,6 @@ import RNKeyManager from '../RNKeyManager';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
-const eosioTokenContract = EosioTokenContract.Instance;
 
 function getAccountSigner() {
     return EosioUtil.createKeyManagerSigner(new RNKeyManager(), KeyManagerLevel.ACTIVE);
