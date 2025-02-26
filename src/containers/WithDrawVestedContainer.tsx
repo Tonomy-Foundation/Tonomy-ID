@@ -9,7 +9,7 @@ import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistr
 import useUserStore from '../store/userStore';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
-import { amountToAsset, assetToAmount, SdkErrors, StakingContract } from '@tonomy/tonomy-id-sdk';
+import { assetToAmount, KeyManagerLevel, StakingContract } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import { getStakeUntilDate } from '../utils/time';
 
@@ -35,8 +35,9 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
             const tokenEntry = await getTokenEntryByChain(chain);
 
             const account = await getAccountFromChain(tokenEntry, user);
+            const accountSigner = await user.getSigner(KeyManagerLevel.ACTIVE);
 
-            await token.withdrawVestedTokens(account, user.getSigner(KeyManagerLevel.ACTIVE));
+            await token.withdrawVestedTokens(account, accountSigner);
 
             navigation.navigate('SuccessVested', {
                 chain,
