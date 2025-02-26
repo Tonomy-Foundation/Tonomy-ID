@@ -15,7 +15,11 @@ export async function getPriceCoinGecko(token: string, currency: string): Promis
         `https://api.coingecko.com/api/v3/simple/price?ids=${token}&vs_currencies=${currency}`
     ).then((res) => res.json());
 
-    const price = res?.ethereum?.usd;
+    if (!res || res === null) {
+        throw new Error('Failed to fetch price from CoinGecko');
+    }
+
+    const price = res.ethereum?.usd;
 
     if (typeof price === 'number') {
         cachedPrice = price;

@@ -459,7 +459,7 @@ export class PangeaToken extends AntelopeToken {
     }
 
     async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
-        const accountSigner = getAccountSigner();
+        const accountSigner = await getAccountSigner();
 
         return await vestingContract.withdraw(account.getName(), accountSigner);
     }
@@ -471,19 +471,21 @@ export class PangeaToken extends AntelopeToken {
     }
 
     async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
-        const accountSigner = getAccountSigner();
+        const accountSigner = await getAccountSigner();
 
         return await stakingContract.stakeTokens(account.getName(), amount, accountSigner);
     }
 
     async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
-        const accountSigner = getAccountSigner();
+        const accountSigner = await getAccountSigner();
 
         return await stakingContract.requestUnstake(account.getName(), allocationId, accountSigner);
     }
 
     async getCalculatedYield(amount: number): Promise<number> {
-        return stakingContract.calculateYield(amount);
+        const settings = await stakingContract.getSettings();
+
+        return stakingContract.calculateMonthlyYield(amount, settings);
     }
 }
 
