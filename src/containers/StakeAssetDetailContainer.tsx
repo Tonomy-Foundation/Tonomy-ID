@@ -160,7 +160,9 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
                         </Text>
                         <View style={styles.flexColEnd}>
                             <Text style={styles.allocMulti}>{getUnlockStatus(allocation)}</Text>
-                            <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                            {getStakeReleaseTime(allocation.releaseTime) > 0 && (
+                                <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
+                            )}
                         </View>
                     </TouchableOpacity>
                 ))}

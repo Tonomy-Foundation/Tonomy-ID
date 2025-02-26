@@ -27,7 +27,6 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
     const [amount, setAmount] = useState('');
     const [monthlyYield, setMonthlyYield] = useState<number>(0);
     const [usdValue, setUsdValue] = useState<string>('0.00');
-    const [stakingDays, setStakingDays] = useState<number | null>(null);
     const minimumStakeTransfer = settings.isProduction() ? 1000 : 1;
     const [amountError, setAmountError] = useState<string | null>(null);
 
@@ -54,13 +53,6 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                 const state = await token.getAccountStateData(account);
 
                 setStakingState(state);
-
-                if (state.allocations.length > 0) {
-                    const unstakeDate = state.allocations[0].unstakeableTime;
-                    const unstakeableTime = getUnstakeTime(unstakeDate);
-
-                    setStakingDays(unstakeableTime > 0 ? unstakeableTime : 0);
-                }
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -70,7 +62,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
     }, [chain, user, token, isVestable, errorStore]);
 
     const apy = stakingState?.settings.apy ?? StakingContract.MAX_APY;
-    const stakeUntil = stakingState?.allocations[0]?.unstakeableTime.toDateString() ?? getStakeUntilDate();
+    const stakeUntil = getStakeUntilDate();
     const shouldShowMinStakeMessage = !amountError || amountError === 'Not enough balance';
 
     const handleAmountChange = async (input: string) => {
@@ -157,7 +149,8 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                         <View style={styles.annualText}>
                             <Text style={styles.annualSubText}>Stake until</Text>
                             <Text>
-                                {stakeUntil} <Text style={styles.annualSubText}>({stakingDays ?? '14'} days)</Text>
+                                {stakeUntil}{' '}
+                                <Text style={styles.annualSubText}>({StakingContract.getLockedDays()} days)</Text>
                             </Text>
                         </View>
                     </View>

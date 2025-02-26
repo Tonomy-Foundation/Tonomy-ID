@@ -5,7 +5,7 @@ import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import TButton from './atoms/TButton';
 import { IChain } from '../utils/chain/types';
-import { assetToAmount, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { assetToAmount, StakingAccountState, StakingAllocation, StakingContract } from '@tonomy/tonomy-id-sdk';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import { formatDate } from '../utils/time';
 import Decimal from 'decimal.js';
@@ -71,7 +71,19 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                         <View style={styles.flexColCenter}>
                             <Text style={styles.allocMulti}>
                                 {allocation.staked && formatTokenValue(new Decimal(assetToAmount(allocation.staked)))}{' '}
-                                {symbol} (
+                                {symbol}
+                            </Text>
+                            <Text style={styles.usdBalance}>
+                                $
+                                {allocation.staked &&
+                                    formatCurrencyValue(assetToAmount(allocation.staked) * props.usdPrice)}
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={styles.allocationView}>
+                        <Text style={styles.allocTitle}>Yield so far</Text>
+                        <View style={styles.flexColCenter}>
+                            <Text style={styles.allocMulti}>
                                 <Text style={{ color: theme.colors.success }}>
                                     +
                                     {allocation.initialStake &&
@@ -83,12 +95,6 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                                         ).toFixed(2)}
                                     %
                                 </Text>
-                                )
-                            </Text>
-                            <Text style={styles.usdBalance}>
-                                $
-                                {allocation.staked &&
-                                    formatCurrencyValue(assetToAmount(allocation.staked) * props.usdPrice)}
                             </Text>
                         </View>
                     </View>
@@ -112,21 +118,12 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                             </Text>
                         </View>
                     </View>
-
-                    <View style={styles.allocationView}>
-                        <Text style={styles.allocTitle}>Stake started</Text>
-                        <View style={styles.flexColEnd}>
-                            <Text style={styles.allocMulti}>
-                                {allocation.stakedTime && formatDate(allocation.stakedTime)}
-                            </Text>
-                        </View>
-                    </View>
-                    {isUnlocked && allocation.unstakeRequested ? (
+                    {isUnlocked ? (
                         <View style={styles.allocationView}>
-                            <Text style={styles.allocTitle}>Release until</Text>
+                            <Text style={styles.allocTitle}>Stake started</Text>
                             <View style={styles.flexColEnd}>
                                 <Text style={styles.allocMulti}>
-                                    {allocation.releaseTime && formatDate(allocation.releaseTime)}
+                                    {allocation.stakedTime && formatDate(allocation.stakedTime)}
                                 </Text>
                             </View>
                         </View>
@@ -136,7 +133,10 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                             <View style={styles.flexColEnd}>
                                 <Text style={styles.allocMulti}>
                                     {allocation.unstakeableTime && formatDate(allocation.unstakeableTime)}
-                                    <Text style={{ color: theme.colors.grey9 }}> (14 days)</Text>
+                                    <Text style={{ color: theme.colors.grey9 }}>
+                                        {' '}
+                                        ({StakingContract.getLockedDays()} days)
+                                    </Text>
                                 </Text>
                             </View>
                         </View>
