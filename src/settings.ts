@@ -61,6 +61,7 @@ type ConfigType = {
     sentryPublicKey: string;
     sentrySecretKey: string;
     sentryProjectId: string;
+    currencySymbol: string;
 };
 
 type SettingsType = {

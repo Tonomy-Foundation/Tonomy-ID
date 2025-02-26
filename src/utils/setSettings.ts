@@ -9,5 +9,5 @@ setSettings({
     tonomyIdSchema: settings.config.tonomyIdSlug,
     accountsServiceUrl: settings.config.accountsServiceUrl,
     ssoWebsiteOrigin: settings.config.ssoWebsiteOrigin,
-    currencySymbol: 'LEOS',
+    currencySymbol: settings.config.currencySymbol,
 });

@@ -48,11 +48,12 @@ import {
     StakingAccountState,
     KeyManagerLevel,
     SdkErrors,
+    AntelopePushTransactionError,
+    HttpError,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
-import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 import Decimal from 'decimal.js';
 import useUserStore from '../../store/userStore';
 
@@ -269,6 +270,8 @@ export class AntelopeChain extends AbstractChain {
         explorerOrigin: string,
         testnet = false
     ) {
+        console.log('antelopeChainId', antelopeChainId);
+        debug(antelopeChainId);
         const chainId = 'antelope-' + antelopeChainId;
 
         super(name, chainId, logoUrl, testnet);
@@ -589,7 +592,10 @@ export const EOSJungleToken = new AntelopeToken(
     'JungleEOS',
     4,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-    'jungle'
+    'jungle',
+    false,
+    false,
+    false
 );
 
 EOSJungleChain.setNativeToken(EOSJungleToken);
