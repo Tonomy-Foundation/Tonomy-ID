@@ -7,6 +7,10 @@ export type LeosAssetsScreenNavigationProp = NativeStackScreenProps<RouteStackPa
 
 export default function AssetManagerScreen(props: LeosAssetsScreenNavigationProp) {
     return (
-        <AssetManagerContainer chain={props.route.params.chain} navigation={props.navigation}></AssetManagerContainer>
+        <AssetManagerContainer
+            chain={props.route.params.chain}
+            loading={props.route.params?.loading}
+            navigation={props.navigation}
+        ></AssetManagerContainer>
     );
 }

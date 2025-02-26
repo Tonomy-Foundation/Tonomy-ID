@@ -81,7 +81,7 @@ npx expo-doctor
 ```
 
 ### Update Tonomy-ID-SDK package version to the latest
-
+_
 ```bash
 yarn run updateSdkVersion development
 # or

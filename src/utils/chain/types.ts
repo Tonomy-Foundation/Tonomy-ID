@@ -1,10 +1,12 @@
 import { TKeyType } from '@veramo/core';
 import { formatTokenValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
-import { sha256 } from '@tonomy/tonomy-id-sdk';
+import { sha256, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
+import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
+import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -263,10 +265,16 @@ export interface IToken {
     getUsdValue(account?: IAccount): Promise<number>;
     isTransferable(): boolean;
     isVestable(): boolean;
+    isStakeable(): boolean;
     eq(other: IToken): boolean;
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
     getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
+    withdrawVestedTokens(account: IAccount, accountSigner: Signer): Promise<PushTransactionResponse>;
+    getAccountStateData(account: IAccount): Promise<StakingAccountState>;
+    stakeTokens(account: IAccount, amount: string, accountSigner: Signer): Promise<PushTransactionResponse>;
+    unStakeTokens(account: IAccount, allocationId: number, accountSigner: Signer): Promise<PushTransactionResponse>;
+    getCalculatedYield(amount: number): Promise<number>;
 }
 
 export abstract class AbstractToken implements IToken {
@@ -278,6 +286,7 @@ export abstract class AbstractToken implements IToken {
     protected logoUrl: string;
     protected transferable = true;
     protected vestable = false;
+    protected stakeable = false;
 
     constructor(
         name: string,
@@ -286,7 +295,8 @@ export abstract class AbstractToken implements IToken {
         chain: IChain,
         logoUrl: string,
         transferable = true,
-        vestable = false
+        vestable = false,
+        stakeable = false
     ) {
         this.name = name;
         this.symbol = symbol;
@@ -295,6 +305,7 @@ export abstract class AbstractToken implements IToken {
         this.logoUrl = logoUrl;
         this.transferable = transferable;
         this.vestable = vestable;
+        this.stakeable = stakeable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -327,6 +338,10 @@ export abstract class AbstractToken implements IToken {
     isVestable(): boolean {
         return this.vestable;
     }
+    isStakeable(): boolean {
+        return this.stakeable;
+    }
+
     eq(other: IToken): boolean {
         return (
             this.getName() === other.getName() &&
@@ -336,9 +351,36 @@ export abstract class AbstractToken implements IToken {
     }
     abstract getBalance(account?: IAccount): Promise<IAsset>;
     abstract getUsdValue(account?: IAccount): Promise<number>;
-    abstract getVestedTokens(account: IAccount): Promise<VestedTokens>;
     abstract getAvailableBalance(account?: IAccount): Promise<IAsset>;
-    abstract getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
+
+    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
+        throw new Error(`getVestedTokens() method not implemented' ${account}`);
+    }
+
+    async getVestedTotalBalance(): Promise<IAsset> {
+        throw new Error(`getVestedTotalBalance() method not implemented'`);
+    }
+    async withdrawVestedTokens(account: IAccount, accountSigner: Signer): Promise<PushTransactionResponse> {
+        throw new Error(`withdrawVestedTokens() method not implemented' ${account} ${accountSigner}`);
+    }
+    async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
+        throw new Error(`getAccountStateData() method not implemented' ${account}`);
+    }
+
+    async stakeTokens(account: IAccount, amount: string, accountSigner: Signer): Promise<PushTransactionResponse> {
+        throw new Error(`stakeTokens() method not implemented' ${account} ${amount} ${accountSigner}`);
+    }
+
+    async unStakeTokens(
+        account: IAccount,
+        allocationId: number,
+        accountSigner: Signer
+    ): Promise<PushTransactionResponse> {
+        throw new Error(`unStakeTokens() method not implemented' ${account} ${allocationId} ${accountSigner}`);
+    }
+    async getCalculatedYield(amount: number): Promise<number> {
+        throw new Error(`getCalculatedYield() method not implemented' ${amount}`);
+    }
 }
 
 export interface IAccount {

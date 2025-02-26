@@ -7,6 +7,10 @@ export type VestedAssetscreenNavigationProp = NativeStackScreenProps<RouteStackP
 
 export default function VestedAssetsScreen(props: VestedAssetscreenNavigationProp) {
     return (
-        <VestedAssetsContainer chain={props.route.params.chain} navigation={props.navigation}></VestedAssetsContainer>
+        <VestedAssetsContainer
+            loading={props.route.params.loading}
+            chain={props.route.params.chain}
+            navigation={props.navigation}
+        ></VestedAssetsContainer>
     );
 }
