@@ -46,7 +46,6 @@ import {
     VestingContract,
     StakingContract,
     StakingAccountState,
-    KeyManagerLevel,
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
@@ -55,14 +54,10 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
-import useUserStore from '../../store/userStore';
+import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
-
-function getAccountSigner() {
-    return useUserStore.getState().user.getSigner(KeyManagerLevel.ACTIVE);
-}
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -461,9 +456,7 @@ export class PangeaToken extends AntelopeToken {
         return await vestingContract.getVestingAllocations(account.getName());
     }
 
-    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
-        const accountSigner = await getAccountSigner();
-
+    async withdrawVestedTokens(account: IAccount, accountSigner: Signer): Promise<PushTransactionResponse> {
         return await vestingContract.withdraw(account.getName(), accountSigner);
     }
 
@@ -473,15 +466,15 @@ export class PangeaToken extends AntelopeToken {
         return accountData;
     }
 
-    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
-        const accountSigner = await getAccountSigner();
-
+    async stakeTokens(account: IAccount, amount: string, accountSigner: Signer): Promise<PushTransactionResponse> {
         return await stakingContract.stakeTokens(account.getName(), amount, accountSigner);
     }
 
-    async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
-        const accountSigner = await getAccountSigner();
-
+    async unStakeTokens(
+        account: IAccount,
+        allocationId: number,
+        accountSigner: Signer
+    ): Promise<PushTransactionResponse> {
         return await stakingContract.requestUnstake(account.getName(), allocationId, accountSigner);
     }
 

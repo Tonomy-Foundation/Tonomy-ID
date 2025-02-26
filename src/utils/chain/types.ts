@@ -6,6 +6,7 @@ import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
 import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
+import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
@@ -269,10 +270,10 @@ export interface IToken {
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
     getVestedTotalBalance(account?: IAccount): Promise<IAsset>;
-    withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse>;
+    withdrawVestedTokens(account: IAccount, accountSigner: Signer): Promise<PushTransactionResponse>;
     getAccountStateData(account: IAccount): Promise<StakingAccountState>;
-    stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse>;
-    unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse>;
+    stakeTokens(account: IAccount, amount: string, accountSigner: Signer): Promise<PushTransactionResponse>;
+    unStakeTokens(account: IAccount, allocationId: number, accountSigner: Signer): Promise<PushTransactionResponse>;
     getCalculatedYield(amount: number): Promise<number>;
 }
 
@@ -359,19 +360,23 @@ export abstract class AbstractToken implements IToken {
     async getVestedTotalBalance(): Promise<IAsset> {
         throw new Error(`getVestedTotalBalance() method not implemented'`);
     }
-    async withdrawVestedTokens(account: IAccount): Promise<PushTransactionResponse> {
-        throw new Error(`withdrawVestedTokens() method not implemented' ${account}`);
+    async withdrawVestedTokens(account: IAccount, accountSigner: Signer): Promise<PushTransactionResponse> {
+        throw new Error(`withdrawVestedTokens() method not implemented' ${account} ${accountSigner}`);
     }
     async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
         throw new Error(`getAccountStateData() method not implemented' ${account}`);
     }
 
-    async stakeTokens(account: IAccount, amount: string): Promise<PushTransactionResponse> {
-        throw new Error(`stakeTokens() method not implemented' ${account} ${amount}`);
+    async stakeTokens(account: IAccount, amount: string, accountSigner: Signer): Promise<PushTransactionResponse> {
+        throw new Error(`stakeTokens() method not implemented' ${account} ${amount} ${accountSigner}`);
     }
 
-    async unStakeTokens(account: IAccount, allocationId: number): Promise<PushTransactionResponse> {
-        throw new Error(`unStakeTokens() method not implemented' ${account} ${allocationId}`);
+    async unStakeTokens(
+        account: IAccount,
+        allocationId: number,
+        accountSigner: Signer
+    ): Promise<PushTransactionResponse> {
+        throw new Error(`unStakeTokens() method not implemented' ${account} ${allocationId} ${accountSigner}`);
     }
     async getCalculatedYield(amount: number): Promise<number> {
         throw new Error(`getCalculatedYield() method not implemented' ${amount}`);

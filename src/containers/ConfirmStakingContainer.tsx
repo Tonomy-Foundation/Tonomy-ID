@@ -10,7 +10,8 @@ import Decimal from 'decimal.js';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
-import { amountToAsset, StakingContract } from '@tonomy/tonomy-id-sdk';
+import { amountToAsset, KeyManagerLevel, StakingContract } from '@tonomy/tonomy-id-sdk';
+import { KeyManager } from '../utils/StorageManager/repositories/keyStorageManager';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -33,14 +34,15 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
             const tokenEntry = await getTokenEntryByChain(chain);
 
             const account = await getAccountFromChain(tokenEntry, user);
+            const accountSigner = await user.getSigner(KeyManagerLevel.ACTIVE);
 
             if (withDraw) {
-                await token.withdrawVestedTokens(account);
+                await token.withdrawVestedTokens(account, accountSigner);
             }
 
             const formattedAmount = amountToAsset(amount, token.getSymbol());
 
-            await token.stakeTokens(account, formattedAmount);
+            await token.stakeTokens(account, formattedAmount, accountSigner);
             navigation.navigate('AssetManager', {
                 chain,
                 loading: true,

@@ -36,7 +36,7 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
 
             const account = await getAccountFromChain(tokenEntry, user);
 
-            await token.withdrawVestedTokens(account);
+            await token.withdrawVestedTokens(account, user.getSigner(KeyManagerLevel.ACTIVE));
 
             navigation.navigate('SuccessVested', {
                 chain,

@@ -10,7 +10,7 @@ import Decimal from 'decimal.js';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
-import { StakingContract } from '@tonomy/tonomy-id-sdk';
+import { KeyManagerLevel, StakingContract } from '@tonomy/tonomy-id-sdk';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -31,8 +31,9 @@ const ConfirmUnStakingContainer = ({ chain, navigation, amount, allocationId }: 
             const tokenEntry = await getTokenEntryByChain(chain);
 
             const account = await getAccountFromChain(tokenEntry, user);
+            const accountSigner = await user.getSigner(KeyManagerLevel.ACTIVE);
 
-            await token.unStakeTokens(account, allocationId);
+            await token.unStakeTokens(account, allocationId, accountSigner);
 
             navigation.navigate('SuccessUnstake', {
                 chain,
