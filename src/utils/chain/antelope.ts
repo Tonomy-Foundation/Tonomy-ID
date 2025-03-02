@@ -794,7 +794,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
             throw new Error('Account has no private key');
         }
 
-        //TODO catch overdraw balance error and throw application error NotEnoughCoins
+        //TODO: catch overdraw balance error and throw application error NotEnoughCoins
         return await this.privateKey.sendTransaction(data);
     }
 
@@ -847,10 +847,10 @@ export class AntelopeSigningRequestSession implements IChainSession {
     }
 
     async createSession(request: ResolvedSigningRequest): Promise<void> {
-        //TODO
+        //TODO:
     }
     async cancelSessionRequest(request: unknown): Promise<void> {
-        //TODO
+        //TODO:
     }
     async getActiveAccounts(): Promise<AntelopeAccount[]> {
         return [this.account];
