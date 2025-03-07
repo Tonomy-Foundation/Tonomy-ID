@@ -265,8 +265,6 @@ export class AntelopeChain extends AbstractChain {
         explorerOrigin: string,
         testnet = false
     ) {
-        console.log('antelopeChainId', antelopeChainId);
-        debug(antelopeChainId);
         const chainId = 'antelope-' + antelopeChainId;
 
         super(name, chainId, logoUrl, testnet);
