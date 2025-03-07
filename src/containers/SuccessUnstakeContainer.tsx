@@ -1,9 +1,10 @@
-import { StyleSheet, Image, View } from 'react-native';
+import { StyleSheet, Image, View, ActivityIndicator } from 'react-native';
 import { Props } from '../screens/SuccessUnstakeScreen';
 import theme from '../utils/theme';
-import TButton from '../components/atoms/TButton';
+import TButton, { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
+import { useState } from 'react';
 
 export type SuccessUnstakeProps = {
     navigation: Props['navigation'];
@@ -11,23 +12,40 @@ export type SuccessUnstakeProps = {
 };
 
 const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => {
+    const [loading, setLoading] = useState(false);
+
+    const backToLEOS = () => {
+        setLoading(true);
+        setTimeout(() => {
+            navigation.navigate('AssetManager', {
+                chain,
+            });
+            setLoading(false);
+        }, 10000);
+    };
+
     return (
         <View style={styles.container}>
             <Image source={require('../assets/images/staking/success-unstake.png')} />
             <TH1 style={styles.vestedHead}>{'Unstaking Completed'}</TH1>
             <TP style={styles.vestedSubHead}>Your assets have been unstaked and are no longer earning rewards</TP>
             <View style={styles.bottomView}>
-                <TButton
-                    style={styles.backBtn}
-                    onPress={() =>
-                        navigation.navigate('AssetManager', {
-                            chain,
-                            loading: true,
-                        })
-                    }
-                >
-                    Back to LEOS
-                </TButton>
+                {loading ? (
+                    <TButton
+                        style={[
+                            styles.backBtn,
+                            { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+                        ]}
+                        color={theme.colors.grey3}
+                    >
+                        <ActivityIndicator size="small" color={theme.colors.grey3} style={{ marginRight: 7 }} />
+                        Back to LEOS
+                    </TButton>
+                ) : (
+                    <TButtonContained style={{ width: '100%' }} onPress={() => backToLEOS()}>
+                        Back to LEOS
+                    </TButtonContained>
+                )}
             </View>
         </View>
     );

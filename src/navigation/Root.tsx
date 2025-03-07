@@ -117,8 +117,8 @@ export type MainRouteStackParamList = {
         privateKey: IPrivateKey;
     };
     SelectAsset: { screenTitle?: string; type: string };
-    AssetManager: AssetsParamsScreen & { loading?: boolean };
-    VestedAssets: AssetsParamsScreen & { loading?: boolean };
+    AssetManager: AssetsParamsScreen;
+    VestedAssets: AssetsParamsScreen;
     ConfirmStaking: AssetsParamsScreen & { amount: number; withDraw?: boolean };
     StakeLeos: AssetsParamsScreen;
     StakeLeosDetail: AssetsParamsScreen & { loading?: boolean };

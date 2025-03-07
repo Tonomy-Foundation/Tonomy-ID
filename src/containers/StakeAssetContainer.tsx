@@ -5,7 +5,7 @@ import { IChain } from '../utils/chain/types';
 import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import { useEffect, useState } from 'react';
-import { StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
+import { SdkErrors, StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
 import { getAccountFromChain, getAssetDetails, getTokenEntryByChain } from '../utils/tokenRegistry';
 import settings from '../settings';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
@@ -13,6 +13,9 @@ import { getStakeUntilDate, getUnstakeTime } from '../utils/time';
 import useErrorStore from '../store/errorStore';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
+import Debug from 'debug';
+
+const debug = Debug('tonomy-id:containers:StakeAssetContainer');
 
 export type StakeLesoProps = {
     navigation: Props['navigation'];
@@ -50,9 +53,16 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
 
                 const tokenEntry = await getTokenEntryByChain(chain);
                 const account = await getAccountFromChain(tokenEntry, user);
-                const state = await token.getAccountStateData(account);
 
-                setStakingState(state);
+                try {
+                    const state = await token.getAccountStateData(account);
+
+                    setStakingState(state);
+                } catch (e) {
+                    if (e.code === SdkErrors.AccountNotFound) {
+                        debug('Staking account not found');
+                    }
+                }
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }

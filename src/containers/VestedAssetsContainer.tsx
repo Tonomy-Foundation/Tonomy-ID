@@ -1,26 +1,24 @@
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import { VestedAssetscreenNavigationProp } from '../screens/VestedAssetsScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
 import { NavArrowRight } from 'iconoir-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import AllocationDetails from '../components/AllocationDetails';
-import { IChain, VestedTokens, VestedAllocation, IAccount } from '../utils/chain/types';
+import { IChain, VestedTokens, VestedAllocation } from '../utils/chain/types';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
-import { useFocusEffect } from '@react-navigation/native';
 import useErrorStore from '../store/errorStore';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
     chain: IChain;
-    loading?: boolean;
 };
 
-const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = false }: VestedAssetProps) => {
+const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const [loading, setLoading] = useState(false);
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
@@ -58,14 +56,6 @@ const VestedAssetsContainer = ({ navigation, chain, loading: propsLoading = fals
 
         return () => clearInterval(interval);
     }, [chain, token, user, errorStore]);
-
-    useFocusEffect(
-        useCallback(() => {
-            if (propsLoading) {
-                setLoading(true);
-            }
-        }, [propsLoading])
-    );
 
     if (loading) {
         return (

@@ -151,8 +151,10 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
                         key={index}
                         style={styles.allocationView}
                         onPress={() => {
-                            setSelectedAllocation(allocation);
-                            refMessage.current?.open();
+                            if (!allocation.unstakeRequested) {
+                                setSelectedAllocation(allocation);
+                                refMessage.current?.open();
+                            }
                         }}
                     >
                         <Text style={{ fontWeight: '700' }}>
@@ -160,7 +162,7 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
                         </Text>
                         <View style={styles.flexColEnd}>
                             <Text style={styles.allocMulti}>{getUnlockStatus(allocation)}</Text>
-                            {getStakeReleaseTime(allocation.releaseTime) > 0 && (
+                            {!allocation.unstakeRequested && (
                                 <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                             )}
                         </View>

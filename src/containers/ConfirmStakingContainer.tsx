@@ -43,13 +43,14 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
             const formattedAmount = amountToAsset(amount, token.getSymbol());
 
             await token.stakeTokens(account, formattedAmount, accountSigner);
-            navigation.navigate('AssetManager', {
-                chain,
-                loading: true,
-            });
+            setTimeout(() => {
+                navigation.navigate('AssetManager', {
+                    chain,
+                });
+                setLoading(false);
+            }, 10000);
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
-        } finally {
             setLoading(false);
         }
     };

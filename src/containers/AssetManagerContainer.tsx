@@ -1,23 +1,25 @@
-import { useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image } from 'react-native';
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
-import { Asset, IChain } from '../utils/chain/types';
+import { IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
-import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
+import {
+    AccountTokenDetails,
+    getAccountFromChain,
+    getAssetDetails,
+    getTokenEntryByChain,
+} from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
-import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
 import useErrorStore from '../store/errorStore';
 import Decimal from 'decimal.js';
 import { assetToAmount, SdkErrors } from '@tonomy/tonomy-id-sdk';
-import { useFocusEffect } from '@react-navigation/native';
+import useUserStore from '../store/userStore';
 
 export type Props = {
     navigation: LeosAssetsScreenNavigationProp['navigation'];
     chain: IChain;
-    loading?: boolean;
 };
 
 interface Balance {
@@ -132,7 +134,7 @@ const investorTootlView = (navigation, chain, redirectStakeToEarn, showVesting, 
     );
 };
 
-const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = false }: Props) => {
+const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const errorStore = useErrorStore();
 
@@ -154,12 +156,15 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
 
     const isVestable = chain.getNativeToken().isVestable();
     const isStakeable = chain.getNativeToken().isStakeable();
+    const { user } = useUserStore();
 
     useEffect(() => {
         const fetchAssetDetails = async () => {
             try {
                 const assetData = await getAssetDetails(chain);
-                const account = AntelopeAccount.fromAccount(chain as AntelopeChain, assetData.account);
+                const tokenEntry = await getTokenEntryByChain(chain);
+
+                const account = await getAccountFromChain(tokenEntry, user);
 
                 setAsset(assetData);
 
@@ -217,15 +222,7 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
         const interval = setInterval(fetchAssetDetails, 10000);
 
         return () => clearInterval(interval);
-    }, [chain, token, symbol, errorStore, isVestable, isStakeable]);
-
-    useFocusEffect(
-        useCallback(() => {
-            if (propsLoading) {
-                setLoading(true);
-            }
-        }, [propsLoading])
-    );
+    }, [chain, token, symbol, errorStore, isVestable, isStakeable, user]);
 
     if (loading) {
         return (
@@ -240,7 +237,7 @@ const AssetManagerContainer = ({ navigation, chain, loading: propsLoading = fals
 
         Linking.openURL(explorerUrl);
     };
-    const showStakeToEarn = assetToAmount(balance.availableBalance) > 0 || showStaking;
+    const showStakeToEarn = (balance.availableBalance && assetToAmount(balance.availableBalance) > 0) || showStaking;
 
     const redirectStakeToEarn = () => {
         if (totalStaked > 0 || showStaking) {
