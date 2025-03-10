@@ -61,7 +61,7 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
                 <TH1 style={styles.vestedHead}>
                     Confirm staking {formatTokenValue(new Decimal(amount))} {chain.getNativeToken().getSymbol()}
                 </TH1>
-                <TP style={styles.vestedSubHead}>These coins will be locked for {lockedDays.toFixed(1)} days</TP>
+                <TP style={styles.vestedSubHead}>These coins will be locked for {lockedDays} days</TP>
             </View>
             <View style={styles.bottomView}>
                 {loading ? (
@@ -77,7 +77,7 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
                     </TButton>
                 ) : (
                     <TButtonContained style={{ width: '100%' }} onPress={() => confirmStaking()}>
-                        Stake for {lockedDays.toFixed(1)} days
+                        Stake for {lockedDays} days
                     </TButtonContained>
                 )}
             </View>
