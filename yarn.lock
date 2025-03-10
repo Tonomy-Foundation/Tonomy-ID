@@ -4684,9 +4684,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.29.0-development.3":
-  version: 0.29.0-development.3
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.29.0-development.3"
+"@tonomy/tonomy-id-sdk@npm:0.29.0-development.4":
+  version: 0.29.0-development.4
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.29.0-development.4"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4713,7 +4713,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/60c5d76dfbf92cfcf9b84f278978a0a98e96c25a16b347e2046d5e0b50290db3e93ac118497929705910dc52e03b6d420af117e024b5ebc406a1d1894d6230e0
+  checksum: 10c0/e2402d51ac90b10615301350915ad77482550f8b0477f3d0e28e3f91de9af024872e389d10f5fb4d4ad590252705ad21eb2edb08d9fe2a06d0a3773cd840f897
   languageName: node
   linkType: hard
 
@@ -19456,7 +19456,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~5.24.3"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.29.0-development.3"
+    "@tonomy/tonomy-id-sdk": "npm:0.29.0-development.4"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~18.2.79"
