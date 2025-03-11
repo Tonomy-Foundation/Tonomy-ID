@@ -49,6 +49,7 @@ import {
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
+    assetToAmount,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -390,7 +391,13 @@ export class AntelopeToken extends AbstractToken implements IToken {
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, new Decimal(0));
-        const amount = new Decimal(asset.units.value);
+        let amount;
+
+        if (typeof asset.units.value === 'object') {
+            const convertAmount = assetToAmount(asset.toString());
+
+            amount = new Decimal(convertAmount);
+        } else amount = new Decimal(asset.units.value);
 
         return new Asset(this, amount);
     }

@@ -150,7 +150,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const [showStaking, setShowStaking] = useState(false);
     const [totalStaked, setTotalStaked] = useState(0);
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const token = chain.getNativeToken();
     const symbol = chain.getNativeToken().getSymbol();
 

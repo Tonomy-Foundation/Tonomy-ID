@@ -77,17 +77,14 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
 
     const handleAmountChange = async (input: string) => {
         setAmount(input);
+        setAmountError(null);
         const numericAmount = parseFloat(input) || 0;
 
-        let errorMessage: string | null = null;
-
         if (numericAmount > parseFloat(availableBalance)) {
-            errorMessage = 'Not enough balance';
+            setAmountError('Not enough balance');
         } else if (numericAmount < minimumStakeTransfer) {
-            errorMessage = `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`;
+            setAmountError(`Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`);
         }
-
-        setAmountError(errorMessage);
 
         const calculatedYield = await token.getCalculatedYield(numericAmount);
 
