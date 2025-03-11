@@ -19,7 +19,7 @@ export type VestedAssetProps = {
 };
 
 const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
     const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
