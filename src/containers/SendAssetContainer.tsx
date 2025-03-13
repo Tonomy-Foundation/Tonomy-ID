@@ -167,7 +167,6 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                     privateKey as AntelopePrivateKey
                 );
 
-                console.log('requesst', action);
                 navigation.navigate('SignTransaction', {
                     request,
                 });
