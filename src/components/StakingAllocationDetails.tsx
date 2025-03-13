@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.grey7,
         borderRadius: 8,
         position: 'absolute',
-        bottom: 100,
+        bottom: 75,
         left: 0,
         right: 0,
         marginHorizontal: 10,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     },
     stakeMoreBtn: {
         position: 'absolute',
-        bottom: 40,
+        bottom: 20,
         left: 13,
         right: 13,
     },
