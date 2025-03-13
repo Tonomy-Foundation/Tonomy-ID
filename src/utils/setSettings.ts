@@ -1,8 +1,10 @@
 import { setSettings } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
 
+const env = settings.env;
+
 setSettings({
-    environment: settings.env,
+    environment: env === 'staging' ? 'test' : env,
     blockchainUrl: settings.config.blockchainUrl,
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,

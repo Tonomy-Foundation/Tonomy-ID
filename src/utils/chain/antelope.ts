@@ -699,10 +699,11 @@ export function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IA
     const name = quantity.split(' ')[1];
     const symbol = name;
     const amountString = quantity.split(' ')[0];
+
     const precision = amountString.includes('.') ? amountString.split('.')[1].length : 0;
 
     const token = new AntelopeToken(chain, name, symbol, precision, '', '');
-    const amount = new Decimal(amountString).mul(new Decimal(10).pow(precision));
+    const amount = new Decimal(amountString);
 
     return new Asset(token, amount);
 }
