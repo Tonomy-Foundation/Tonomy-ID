@@ -4,7 +4,7 @@ import settings from '../settings';
 const env = settings.env;
 
 setSettings({
-    environment: env === 'staging' ? 'test' : env,
+    environment: env,
     blockchainUrl: settings.config.blockchainUrl,
     accountSuffix: settings.config.accountSuffix,
     communicationUrl: settings.config.communicationUrl,
