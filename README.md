@@ -124,7 +124,7 @@ This is now running in production mode connected to the staging/testnet environm
 
 ### iOS
 
-TODO
+TODO: iOS
 
 ## Testing app upgrades
 
