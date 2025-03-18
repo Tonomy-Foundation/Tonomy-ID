@@ -224,9 +224,6 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
 };
 
 const styles = StyleSheet.create({
-    proceedBtn: {
-        padding: 16,
-    },
     scrollView: { minHeight: 170, maxHeight: 350, paddingTop: 5, marginBottom: 10 },
     container: {
         flex: 1,
