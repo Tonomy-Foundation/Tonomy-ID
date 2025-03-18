@@ -114,7 +114,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                         }}
                                     >
                                         <Text style={{ fontWeight: '700' }}>
-                                            {formatTokenValue(new Decimal(allocation.totalAllocation))}{' '}
+                                            {formatTokenValue(new Decimal(allocation.locked))}{' '}
                                             {chain.getNativeToken().getSymbol()}
                                         </Text>
                                         <View style={styles.flexColEnd}>
@@ -164,7 +164,6 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         );
     };
 
-    console.log('vesteeed', vestedAllocations);
     return (
         <View style={styles.container}>
             {totalVestedView()}
