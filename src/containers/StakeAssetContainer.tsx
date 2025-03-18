@@ -1,15 +1,28 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    TextInput,
+    ScrollView,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Keyboard,
+    TouchableWithoutFeedback,
+    Animated,
+} from 'react-native';
 import { Props } from '../screens/StakeAssetScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { IChain } from '../utils/chain/types';
 import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
-import { useEffect, useState } from 'react';
 import { SdkErrors, StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
 import { getAccountFromChain, getAssetDetails, getTokenEntryByChain } from '../utils/tokenRegistry';
 import settings from '../settings';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
-import { getStakeUntilDate, getUnstakeTime } from '../utils/time';
+import { getStakeUntilDate } from '../utils/time';
 import useErrorStore from '../store/errorStore';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
@@ -36,6 +49,9 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
     const isVestable = chain.getNativeToken().isVestable();
 
     const [availableBalance, setAvailableBalance] = useState<string>('0.00');
+
+    // Animated value for the marginBottom of the "Proceed" button
+    const animatedMarginBottom = useRef(new Animated.Value(20)).current;
 
     useEffect(() => {
         const fetchAssetsDetails = async () => {
@@ -70,6 +86,30 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
 
         fetchAssetsDetails();
     }, [chain, user, token, isVestable, errorStore]);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+            // Animate the marginBottom to 100 when the keyboard is shown
+            Animated.timing(animatedMarginBottom, {
+                toValue: 100,
+                duration: 300,
+                useNativeDriver: false,
+            }).start();
+        });
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+            // Animate the marginBottom back to 20 when the keyboard is hidden
+            Animated.timing(animatedMarginBottom, {
+                toValue: 20,
+                duration: 300,
+                useNativeDriver: false,
+            }).start();
+        });
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, [animatedMarginBottom]);
 
     const apy = stakingState?.settings.apy ?? StakingContract.MAX_APY;
     const stakeUntil = getStakeUntilDate();
@@ -117,68 +157,76 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
     };
 
     return (
-        <>
-            <View style={styles.container}>
-                <ScrollView style={styles.scrollView}>
-                    <View style={styles.flexCol}>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter amount"
-                                placeholderTextColor={theme.colors.tabGray}
-                                value={amount}
-                                onChangeText={handleAmountChange}
-                                keyboardType="numeric"
-                            />
-                            <TouchableOpacity style={styles.inputButton} onPress={handleMaxPress}>
-                                <Text style={styles.inputButtonText}>MAX</Text>
-                            </TouchableOpacity>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                    <View style={styles.container}>
+                        <View style={styles.flexCol}>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Enter amount"
+                                    placeholderTextColor={theme.colors.tabGray}
+                                    value={amount}
+                                    onChangeText={handleAmountChange}
+                                    keyboardType="numeric"
+                                />
+                                <TouchableOpacity style={styles.inputButton} onPress={handleMaxPress}>
+                                    <Text style={styles.inputButtonText}>MAX</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {amountError && <Text style={styles.errorText}>{amountError}</Text>}
+                            {shouldShowMinStakeMessage && (
+                                <Text style={styles.inputHelp}>
+                                    Minimum stake: {formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS
+                                </Text>
+                            )}
                         </View>
-                        {amountError && <Text style={styles.errorText}>{amountError}</Text>}
-                        {shouldShowMinStakeMessage && (
-                            <Text style={styles.inputHelp}>
-                                Minimum stake: {formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS
-                            </Text>
-                        )}
-                    </View>
-                    <View style={styles.annualView}>
-                        <View style={styles.annualText}>
-                            <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                            <Text style={styles.annualPercentage}>{apy * 100}%</Text>
-                        </View>
-                        <View style={styles.annualText}>
-                            <Text style={styles.annualSubText}>Monthly earnings</Text>
-                            <View>
-                                <Text style={styles.annualPercentage}>{formatCurrencyValue(monthlyYield)} LEOS</Text>
-                                <Text style={styles.annualSubText}>${usdValue}</Text>
+                        <View style={styles.annualView}>
+                            <View style={styles.annualText}>
+                                <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
+                                <Text style={styles.annualPercentage}>{apy * 100}%</Text>
+                            </View>
+                            <View style={styles.annualText}>
+                                <Text style={styles.annualSubText}>Monthly earnings</Text>
+                                <View>
+                                    <Text style={styles.annualPercentage}>
+                                        {formatCurrencyValue(monthlyYield)} LEOS
+                                    </Text>
+                                    <Text style={styles.annualSubText}>${usdValue}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.annualText}>
+                                <Text style={styles.annualSubText}>Stake until</Text>
+                                <Text>
+                                    {stakeUntil}{' '}
+                                    <Text style={styles.annualSubText}>({StakingContract.getLockedDays()} days)</Text>
+                                </Text>
                             </View>
                         </View>
-                        <View style={styles.annualText}>
-                            <Text style={styles.annualSubText}>Stake until</Text>
-                            <Text>
-                                {stakeUntil}{' '}
-                                <Text style={styles.annualSubText}>({StakingContract.getLockedDays()} days)</Text>
-                            </Text>
-                        </View>
                     </View>
+                    <View style={styles.unlockAssetView}>
+                        <Text style={styles.unlockhead}>What is staking? </Text>
+                        <Text style={styles.lockedParagraph}>
+                            Staking is locking up cryptocurrency to increase blockchain network security and earn
+                            rewards
+                        </Text>
+                    </View>
+                    <Animated.View style={[styles.proceedBtn, { marginBottom: animatedMarginBottom }]}>
+                        <TButtonContained onPress={handleProceed} disabled={amountError !== null || amount === ''}>
+                            Proceed
+                        </TButtonContained>
+                    </Animated.View>
                 </ScrollView>
-            </View>
-            <View style={styles.unlockAssetView}>
-                <Text style={styles.unlockhead}>What is staking? </Text>
-                <Text style={styles.lockedParagraph}>
-                    Staking is locking up cryptocurrency to increase blockchain network security and earn rewards
-                </Text>
-            </View>
-            <View style={styles.proceedBtn}>
-                <TButtonContained onPress={handleProceed} disabled={amountError !== null || amount === ''}>
-                    Proceed
-                </TButtonContained>
-            </View>
-        </>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
+    proceedBtn: {
+        padding: 16,
+    },
     scrollView: { minHeight: 170, maxHeight: 350, paddingTop: 5, marginBottom: 10 },
     container: {
         flex: 1,
@@ -205,7 +253,6 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: theme.colors.grey7,
         borderRadius: 6,
-        marginTop: 10,
     },
     annualText: {
         flexDirection: 'row',
