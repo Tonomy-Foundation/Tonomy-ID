@@ -167,13 +167,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
     },
-
     backBtn: {
         padding: 12,
         borderRadius: 8,
         width: '98%',
         paddingVertical: 15,
-        marginBottom: 6,
+        marginBottom: 10,
         marginTop: 18,
     },
     vestedHead: {
