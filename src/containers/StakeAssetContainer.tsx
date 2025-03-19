@@ -157,7 +157,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                             <Text style={styles.annualSubText}>Stake until</Text>
                             <Text>
                                 {stakeUntil}{' '}
-                                <Text style={styles.annualSubText}>({StakingContract.getLockedDays()} days)</Text>
+                                <Text style={styles.annualSubText}>({StakingContract.getLockedDays().toFixed(0)} days)</Text>
                             </Text>
                         </View>
                     </View>
