@@ -11,7 +11,6 @@ import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistr
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
 import { amountToAsset, KeyManagerLevel, StakingContract } from '@tonomy/tonomy-id-sdk';
-import { KeyManager } from '../utils/StorageManager/repositories/keyStorageManager';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -35,12 +34,20 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
 
             const account = await getAccountFromChain(tokenEntry, user);
             const accountSigner = await user.getSigner(KeyManagerLevel.ACTIVE);
+            let stakeAmount;
 
             if (withDraw) {
+                const allocations = await token.getVestedTokens(account);
+
+                stakeAmount = allocations.unlockable;
+
                 await token.withdrawVestedTokens(account, accountSigner);
+                await new Promise((resolve) => setTimeout(resolve, 10000));
+            } else {
+                stakeAmount = amount;
             }
 
-            const formattedAmount = amountToAsset(amount, token.getSymbol());
+            const formattedAmount = amountToAsset(stakeAmount, token.getSymbol());
 
             await token.stakeTokens(account, formattedAmount, accountSigner);
             setTimeout(() => {

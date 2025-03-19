@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Ima
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
-import { IChain } from '../utils/chain/types';
+import { Asset, IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import {
     AccountTokenDetails,
@@ -60,10 +60,12 @@ const vestedBalanceView = (balance: Balance, navigation, chain: IChain) => {
                     });
                 }}
             >
-                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
-                <View style={styles.allocationView}>
-                    <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
-                    <View style={styles.flexColEnd}>
+                <View style={styles.balanceContainer}>
+                    <View>
+                        <Text style={styles.balanceLabelText}>Vested</Text>
+                        <Text style={styles.balanceAmountText}>{balance.vestedBalance}</Text>
+                    </View>
+                    <View style={styles.navArrowContainer}>
                         <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                     </View>
                 </View>
@@ -83,12 +85,14 @@ const stakedBalanceView = (totalStaked: number, navigation, chain: IChain) => {
                     });
                 }}
             >
-                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Staked</Text>
-                <View style={styles.allocationView}>
-                    <Text style={{ fontWeight: '700', fontSize: 12 }}>
-                        {formatTokenValue(new Decimal(totalStaked))} {chain.getNativeToken().getSymbol()}
-                    </Text>
-                    <View style={styles.flexColEnd}>
+                <View style={styles.balanceContainer}>
+                    <View>
+                        <Text style={styles.balanceLabelText}>Staked</Text>
+                        <Text style={styles.balanceAmountText}>
+                            {formatTokenValue(new Decimal(totalStaked))} {chain.getNativeToken().getSymbol()}
+                        </Text>
+                    </View>
+                    <View style={styles.navArrowContainer}>
                         <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                     </View>
                 </View>
@@ -173,8 +177,10 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                         const accountData = await token.getAccountStateData(account);
 
                         if (accountData) {
-                            setTotalStaked(accountData.totalStaked);
-                            setShowStaking(true);
+                            const totalStaked = accountData.totalStaked + accountData.totalUnlocking;
+
+                            setTotalStaked(totalStaked);
+                            setShowStaking(accountData.allocations.length > 0 ? true : false);
                         }
                     } catch (e) {
                         if (e.code === SdkErrors.AccountNotFound) {
@@ -184,12 +190,12 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                 }
 
                 if (isVestable) {
-                    const vestedBalance = await token.getVestedTotalBalance(account);
-
+                    const allocations = await token.getVestedTokens(account);
+                    const lockedAsset = new Asset(token, new Decimal(allocations.locked));
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = await token.getBalance(account);
 
-                    if (Number(vestedBalance.getAmount()) > 0) {
+                    if (Number(lockedAsset.getAmount()) > 0) {
                         setShowVesting(true);
                     } else {
                         setShowVesting(false);
@@ -200,8 +206,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                         totalBalanceUsd: await totalBalance.getUsdValue(),
                         availableBalance: availableBalance.toString(),
                         availableBalanceUsd: await availableBalance.getUsdValue(),
-                        vestedBalance: vestedBalance.toString(),
-                        vestedBalanceUsd: await vestedBalance.getUsdValue(),
+                        vestedBalance: lockedAsset.toString(),
+                        vestedBalanceUsd: await lockedAsset.getUsdValue(),
                     });
                 } else {
                     setBalance({
@@ -240,7 +246,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const showStakeToEarn = (balance.availableBalance && assetToAmount(balance.availableBalance) > 0) || showStaking;
 
     const redirectStakeToEarn = () => {
-        if (totalStaked > 0 || showStaking) {
+        if (showStaking) {
             navigation.navigate('StakeLeosDetail', {
                 chain: chain,
             });
@@ -277,7 +283,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                             }
                         >
                             <View style={styles.headerButton}>
-                                <ArrowUp height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                                <ArrowUp height={24} width={24} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Send</Text>
                         </TouchableOpacity>
@@ -290,13 +296,13 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                             style={styles.flexCenter}
                         >
                             <View style={styles.headerButton}>
-                                <ArrowDown height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                                <ArrowDown height={24} width={24} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Receive</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.flexCenter} onPress={redirectToCheckExplorer}>
                             <View style={styles.headerButton}>
-                                <Clock height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                                <Clock height={24} width={24} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>History</Text>
                         </TouchableOpacity>
@@ -345,8 +351,8 @@ const styles = StyleSheet.create({
     },
     headerButton: {
         backgroundColor: theme.colors.backgroundGray,
-        width: 35,
-        height: 35,
+        width: 46,
+        height: 46,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,
@@ -437,6 +443,24 @@ const styles = StyleSheet.create({
     vestedIcon: {
         width: 20,
         height: 20,
+    },
+    balanceContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    navArrowContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    balanceLabelText: {
+        color: theme.colors.grey9,
+        fontWeight: '400',
+        fontSize: 12,
+    },
+    balanceAmountText: {
+        fontWeight: '500',
+        fontSize: 14,
     },
 });
 

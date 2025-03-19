@@ -34,7 +34,18 @@ const AllocationDetails = (props: Props) => {
             </View>
             <View style={styles.vestingDetailView}>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Total allocation</Text>
+                    <Text style={styles.allocTitle}>Vested asset</Text>
+                    <View style={styles.flexColCenter}>
+                        <Text style={styles.allocMulti}>
+                            {formatTokenValue(new Decimal(allocationData.locked ?? 0))} LEOS
+                        </Text>
+                        <Text style={styles.usdBalance}>
+                            ${formatCurrencyValue(allocationData.locked * props.usdPriceValue)}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Initial allocation</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
                             {formatTokenValue(new Decimal(allocationData.totalAllocation ?? 0))} LEOS
@@ -44,12 +55,7 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
-                <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Locked</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{lockedPercentage}% of total</Text>
-                    </View>
-                </View>
+
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>

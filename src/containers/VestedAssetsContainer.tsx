@@ -100,7 +100,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const vestingAllocationsView = () => {
         return (
             <ScrollView style={styles.scrollView}>
-                <View style={{ marginTop: 12 }}>
+                <View style={{ marginVertical: 16 }}>
                     {vestedAllocations?.allocationsDetails?.length > 0 &&
                         vestedAllocations.allocationsDetails.map((allocation, index) => (
                             <View key={index}>
@@ -113,8 +113,8 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                                             refMessage.current?.open();
                                         }}
                                     >
-                                        <Text style={{ fontWeight: '700' }}>
-                                            {formatTokenValue(new Decimal(allocation.totalAllocation))}{' '}
+                                        <Text style={{ fontWeight: '500' }}>
+                                            {formatTokenValue(new Decimal(allocation.locked))}{' '}
                                             {chain.getNativeToken().getSymbol()}
                                         </Text>
                                         <View style={styles.flexColEnd}>
@@ -164,7 +164,6 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         );
     };
 
-    console.log('vesteeed', vestedAllocations);
     return (
         <View style={styles.container}>
             {totalVestedView()}
@@ -240,14 +239,14 @@ const styles = StyleSheet.create({
     },
     unlockAssetView: {
         alignItems: 'flex-start',
-        paddingVertical: 12,
-        paddingHorizontal: 15,
         backgroundColor: theme.colors.grey7,
         borderRadius: 8,
         position: 'absolute',
         bottom: 40,
         left: 0,
         right: 0,
+        gap: 8,
+        padding: 16,
     },
     subTitle: {
         marginBottom: 8,
@@ -315,7 +314,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '400',
         color: theme.colors.black,
-        marginTop: 6,
     },
     unlockhead: {
         fontSize: 16,
@@ -325,8 +323,8 @@ const styles = StyleSheet.create({
     allocationView: {
         backgroundColor: theme.colors.grey7,
         borderRadius: 12,
-        paddingHorizontal: 13,
-        paddingVertical: 7,
+        paddingHorizontal: 16,
+        paddingVertical: 18,
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 8,

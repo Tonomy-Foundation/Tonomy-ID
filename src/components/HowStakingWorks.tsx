@@ -53,7 +53,7 @@ const HowStakingWorks = (props: Props) => {
                 <Text style={styles.heading}>Yield and APY</Text>
                 <Text style={styles.paragragh}>
                     <Text style={styles.boldText}>Variable APY</Text> based on total staked LEOS. The{' '}
-                    <Text style={styles.boldText}>maximum APY is 200%</Text>
+                    <Text style={styles.boldText}>maximum APY is {StakingContract.MAX_APY * 100}%</Text>
                 </Text>
             </View>
         </RBSheet>

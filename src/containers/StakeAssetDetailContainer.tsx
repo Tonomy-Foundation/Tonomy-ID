@@ -96,7 +96,9 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
                 <View style={styles.yieldRow}>
                     <View style={styles.flexStartCol}>
                         <Text style={styles.cryptoMsg}>{'Your crypto is working hard!'}</Text>
-                        <Text style={styles.cryptoEarned}>{accountData.totalYield} earned</Text>
+                        <Text style={styles.cryptoEarned}>
+                            {formatTokenValue(new Decimal(assetToAmount(accountData.totalYield)))} earned
+                        </Text>
                     </View>
                 </View>
             )}
