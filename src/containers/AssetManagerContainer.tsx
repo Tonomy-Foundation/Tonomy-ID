@@ -69,8 +69,8 @@ const vestedBalanceView = (balance: Balance, navigation, chain: IChain) => {
                         <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                     </View>
                 </View>
-            </TouchableOpacity >
-        </View >
+            </TouchableOpacity>
+        </View>
     );
 };
 
@@ -447,20 +447,20 @@ const styles = StyleSheet.create({
     balanceContainer: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     navArrowContainer: {
         display: 'flex',
-        justifyContent: "center"
+        justifyContent: 'center',
     },
     balanceLabelText: {
         color: theme.colors.grey9,
         fontWeight: '400',
-        fontSize: 12
+        fontSize: 12,
     },
     balanceAmountText: {
         fontWeight: '500',
-        fontSize: 14
+        fontSize: 14,
     },
 });
 
