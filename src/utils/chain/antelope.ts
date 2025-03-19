@@ -427,9 +427,10 @@ export class PangeaToken extends AntelopeToken {
 
         try {
             const stakingState = await this.getAccountStateData(account as IAccount);
+            const totalStaked = stakingState.totalStaked + stakingState.totalUnlocking;
 
             // Convert totalStaked to an Asset
-            stakedBalance = new Asset(this, new Decimal(stakingState.totalStaked));
+            stakedBalance = new Asset(this, new Decimal(totalStaked));
         } catch (e) {
             if (e.code === SdkErrors.AccountNotFound) {
                 debug('getBalance() Account not found');

@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         width: '98%',
         paddingVertical: 15,
-        marginBottom: 10,
+        marginBottom: 6,
     },
     annualView: {
         alignItems: 'flex-start',
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     },
     withDrawBtn: {
         color: theme.colors.success,
-        marginBottom: 10,
+        marginBottom: 28,
         fontSize: 16,
     },
     withDrawLoadingBtn: {

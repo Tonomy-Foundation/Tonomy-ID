@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Ima
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
-import { IChain } from '../utils/chain/types';
+import { Asset, IChain } from '../utils/chain/types';
 import { useEffect, useState } from 'react';
 import {
     AccountTokenDetails,
@@ -177,8 +177,10 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                         const accountData = await token.getAccountStateData(account);
 
                         if (accountData) {
-                            setTotalStaked(accountData.totalStaked);
-                            setShowStaking(true);
+                            const totalStaked = accountData.totalStaked + accountData.totalUnlocking;
+
+                            setTotalStaked(totalStaked);
+                            setShowStaking(accountData.allocations.length > 0 ? true : false);
                         }
                     } catch (e) {
                         if (e.code === SdkErrors.AccountNotFound) {
@@ -188,12 +190,12 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                 }
 
                 if (isVestable) {
-                    const vestedBalance = await token.getVestedTotalBalance(account);
-
+                    const allocations = await token.getVestedTokens(account);
+                    const lockedAsset = new Asset(token, new Decimal(allocations.locked));
                     const availableBalance = await token.getAvailableBalance(account);
                     const totalBalance = await token.getBalance(account);
 
-                    if (Number(vestedBalance.getAmount()) > 0) {
+                    if (Number(lockedAsset.getAmount()) > 0) {
                         setShowVesting(true);
                     } else {
                         setShowVesting(false);
@@ -204,8 +206,8 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                         totalBalanceUsd: await totalBalance.getUsdValue(),
                         availableBalance: availableBalance.toString(),
                         availableBalanceUsd: await availableBalance.getUsdValue(),
-                        vestedBalance: vestedBalance.toString(),
-                        vestedBalanceUsd: await vestedBalance.getUsdValue(),
+                        vestedBalance: lockedAsset.toString(),
+                        vestedBalanceUsd: await lockedAsset.getUsdValue(),
                     });
                 } else {
                     setBalance({
@@ -244,7 +246,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     const showStakeToEarn = (balance.availableBalance && assetToAmount(balance.availableBalance) > 0) || showStaking;
 
     const redirectStakeToEarn = () => {
-        if (totalStaked > 0 || showStaking) {
+        if (showStaking) {
             navigation.navigate('StakeLeosDetail', {
                 chain: chain,
             });
