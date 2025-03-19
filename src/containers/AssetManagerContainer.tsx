@@ -60,10 +60,12 @@ const vestedBalanceView = (balance: Balance, navigation, chain: IChain) => {
                     });
                 }}
             >
-                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Vested</Text>
-                <View style={styles.allocationView}>
-                    <Text style={{ fontWeight: '700', fontSize: 12 }}>{balance.vestedBalance}</Text>
-                    <View style={styles.flexColEnd}>
+                <View style={styles.balanceContainer}>
+                    <View>
+                        <Text style={styles.balanceLabelText}>Vested</Text>
+                        <Text style={styles.balanceAmountText}>{balance.vestedBalance}</Text>
+                    </View>
+                    <View style={styles.navArrowContainer}>
                         <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                     </View>
                 </View>
@@ -83,12 +85,14 @@ const stakedBalanceView = (totalStaked: number, navigation, chain: IChain) => {
                     });
                 }}
             >
-                <Text style={{ color: theme.colors.grey9, fontSize: 12 }}>Staked</Text>
-                <View style={styles.allocationView}>
-                    <Text style={{ fontWeight: '700', fontSize: 12 }}>
-                        {formatTokenValue(new Decimal(totalStaked))} {chain.getNativeToken().getSymbol()}
-                    </Text>
-                    <View style={styles.flexColEnd}>
+                <View style={styles.balanceContainer}>
+                    <View>
+                        <Text style={styles.balanceLabelText}>Staked</Text>
+                        <Text style={styles.balanceAmountText}>
+                            {formatTokenValue(new Decimal(totalStaked))} {chain.getNativeToken().getSymbol()}
+                        </Text>
+                    </View>
+                    <View style={styles.navArrowContainer}>
                         <NavArrowRight height={15} width={15} color={theme.colors.grey2} strokeWidth={2} />
                     </View>
                 </View>
@@ -279,7 +283,7 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                             }
                         >
                             <View style={styles.headerButton}>
-                                <ArrowUp height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                                <ArrowUp height={24} width={24} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Send</Text>
                         </TouchableOpacity>
@@ -292,13 +296,13 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
                             style={styles.flexCenter}
                         >
                             <View style={styles.headerButton}>
-                                <ArrowDown height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                                <ArrowDown height={24} width={24} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Receive</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.flexCenter} onPress={redirectToCheckExplorer}>
                             <View style={styles.headerButton}>
-                                <Clock height={18} width={18} color={theme.colors.black} strokeWidth={2} />
+                                <Clock height={24} width={24} color={theme.colors.black} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>History</Text>
                         </TouchableOpacity>
@@ -347,8 +351,8 @@ const styles = StyleSheet.create({
     },
     headerButton: {
         backgroundColor: theme.colors.backgroundGray,
-        width: 35,
-        height: 35,
+        width: 46,
+        height: 46,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,
@@ -439,6 +443,24 @@ const styles = StyleSheet.create({
     vestedIcon: {
         width: 20,
         height: 20,
+    },
+    balanceContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    navArrowContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    balanceLabelText: {
+        color: theme.colors.grey9,
+        fontWeight: '400',
+        fontSize: 12,
+    },
+    balanceAmountText: {
+        fontWeight: '500',
+        fontSize: 14,
     },
 });
 
