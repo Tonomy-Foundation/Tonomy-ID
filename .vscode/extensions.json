@@ -3,6 +3,7 @@
         "DavidAnson.vscode-markdownlint",
         "dbaeumer.vscode-eslint",
         "streetsidesoftware.code-spell-checker",
-        "Orta.vscode-jest"
+        "Orta.vscode-jest",
+        "wayou.vscode-todo-highlight"
     ]
 }

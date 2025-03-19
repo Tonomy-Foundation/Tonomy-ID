@@ -65,7 +65,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             debug('getRequestsFromParams(): managedRequests', managedRequests?.requests?.length);
 
             await managedRequests.verify();
-            // TODO check if the internal login request comes from same DID as the sender of the message.
+            // TODO: check if the internal login request comes from same DID as the sender of the message.
 
             const managedResponses = new ResponsesManager(managedRequests);
 
@@ -187,7 +187,7 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             }
 
             // @ts-expect-error item of type string is not assignable to type never
-            // TODO fix type error
+            // FIXME: fix type error
             navigation.navigate('Assets');
         } catch (e) {
             setCancelLoading(false);

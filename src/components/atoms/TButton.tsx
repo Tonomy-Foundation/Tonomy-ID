@@ -41,7 +41,7 @@ export default function TButton(props: ButtonProps) {
     };
 
     return (
-        // @ts-expect-error style props do not match. TODO fix me!
+        // @ts-expect-error style props do not match. FIXME:!
         // eslint-disable-next-line react/prop-types
         <TouchableOpacity {...props} style={[buttonStyle, commonStyles.borderRadius, props.style]}>
             {props.icon && (
