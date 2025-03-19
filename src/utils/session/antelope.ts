@@ -217,11 +217,11 @@ export class AntelopeSession extends AbstractSession {
     }
 
     async onEvent(): Promise<void> {
-        //TODO when implement listen antelope events
+        //TODO: when implement listen antelope events
     }
 
     async handleLoginRequest(request: unknown): Promise<void> {
-        //TODO when implement handle identity request
+        //TODO: when implement handle identity request
     }
 
     async handleTransactionRequest(signingRequest: SigningRequest): Promise<void> {

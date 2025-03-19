@@ -183,9 +183,11 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         let expiration: Date =
             data instanceof AntelopeTransaction ? data.getExpiration() ?? defaultExpiration : defaultExpiration;
         const remainingCounter = Math.floor((expiration.getTime() - new Date().getTime()) / 1000);
+
         if (remainingCounter < 5) {
             expiration = new Date(expiration.getTime() + 10 * 1000);
         }
+
         const transaction = Transaction.from({
             ...header,
             expiration,
@@ -316,10 +318,15 @@ export class AntelopeChain extends AbstractChain {
     }
 }
 
-export const LEOS_SEED_ROUND_PRICE = 0.0002;
-export const LEOS_PRE_SALE_ROUND_PRICE = 0.0004;
-export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
-export const LEOS_CURRENT_PRICE = LEOS_PUBLIC_SALE_PRICE;
+const leosSalesPrices = {
+    seed: 0.0001,
+    preSale: 0.0002,
+    private: 0.0004,
+    kol: 0.0006,
+    publicSale: 0.0006,
+};
+
+export const LEOS_CURRENT_PRICE = leosSalesPrices.publicSale;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -794,7 +801,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
             throw new Error('Account has no private key');
         }
 
-        //TODO catch overdraw balance error and throw application error NotEnoughCoins
+        //TODO: catch overdraw balance error and throw application error NotEnoughCoins
         return await this.privateKey.sendTransaction(data);
     }
 
