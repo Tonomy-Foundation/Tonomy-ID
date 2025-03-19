@@ -89,6 +89,7 @@ if (settings.env === 'production') {
         chain: TonomyStagingChain,
         keyName: ChainKeyName.tonomyStagingLeos,
     };
+    debug('pangeaTokenEntry', pangeaTokenEntry.chain);
     ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else {
     pangeaTokenEntry = {
@@ -96,6 +97,8 @@ if (settings.env === 'production') {
         chain: TonomyLocalChain,
         keyName: ChainKeyName.tonomyLocalLeos,
     };
+    debug('pangeaTokenEntry', pangeaTokenEntry.chain);
+
     addLocalChain();
 }
 

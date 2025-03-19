@@ -39,6 +39,8 @@ import Debug from '../debug';
 import { ApplicationErrors, throwError } from '../errors';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
+import { StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -207,14 +209,6 @@ export class EthereumToken extends AbstractToken {
         return balance.getUsdValue();
     }
 
-    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
-        throw new Error(`getVestedTokens() method not implemented' ${account}`);
-    }
-
-    async getVestedTotalBalance(): Promise<IAsset> {
-        throw new Error(`getVestedTotalBalance() method not implemented'`);
-    }
-
     async getAvailableBalance(account?: IAccount): Promise<IAsset> {
         return this.getBalance(account);
     }
@@ -338,13 +332,13 @@ export class EthereumTransaction implements ITransaction {
             `${ETHERSCAN_URL}&module=contract&action=getabi&address=${(await this.getTo()).getName()}`
         )
             .then((res) => res.json())
-            .then((data) => data.result);
+            .then((data) => data);
 
         if (res.status !== '1') {
             throw new Error('Failed to fetch ABI');
         }
 
-        this.abi = res.abi as string;
+        this.abi = res.result as string;
         return this.abi;
     }
     async getFunction(): Promise<string> {
