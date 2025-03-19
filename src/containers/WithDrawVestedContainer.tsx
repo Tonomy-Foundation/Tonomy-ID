@@ -1,4 +1,4 @@
-import { StyleSheet, Image, View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, View, ActivityIndicator, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Props } from '../screens/WithdrawVestedScreen';
 import theme from '../utils/theme';
 import { TButtonContained } from '../components/atoms/TButton';
@@ -72,16 +72,51 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
 
     return (
         <View style={styles.container}>
-            <Image
-                style={{ height: 280 }}
-                resizeMode="contain"
-                source={require('../assets/images/vesting/vested-success.png')}
-            />
-            <Text style={styles.vestedHead}>A special offer for you!</Text>
-            <TP style={styles.vestedSubHead}>
-                Stake {formatTokenValue(new Decimal(amount))} LEOS and earn a passive income
-            </TP>
-            <View style={styles.bottomView}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Image
+                    style={{ height: 280 }}
+                    resizeMode="contain"
+                    source={require('../assets/images/vesting/vested-success.png')}
+                />
+                <Text style={styles.vestedHead}>A special offer for you!</Text>
+                <TP style={styles.vestedSubHead}>
+                    Stake {formatTokenValue(new Decimal(amount))} LEOS and earn a passive income
+                </TP>
+
+                <View style={styles.annualView}>
+                    <View style={styles.annualText}>
+                        <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
+                        <Text style={styles.annualPercentage}>{StakingContract.MAX_APY * 100}%</Text>
+                    </View>
+                    <View style={styles.annualText}>
+                        <Text style={styles.annualSubText}>Monthly earnings</Text>
+                        <View>
+                            <Text style={styles.annualPercentage}>
+                                {monthlyEarnings} {symbol}
+                            </Text>
+                            <Text style={styles.annualSubText}>
+                                ${formatCurrencyValue(assetToAmount(monthlyEarnings) * usdPrice)}
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.annualText}>
+                        <Text style={styles.annualSubText}>Stake until</Text>
+                        <Text>
+                            {getStakeUntilDate()} <Text style={styles.annualSubText}>(14 days)</Text>
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={styles.unlockAssetView}>
+                    <Text style={styles.unlockhead}>What is staking? </Text>
+                    <Text style={styles.lockedParagraph}>
+                        Staking is locking up cryptocurrency to increase blockchain network security and earn rewards.
+                    </Text>
+                </View>
+            </ScrollView>
+
+            <View style={styles.bottomFixedView}>
                 {loading ? (
                     <View style={styles.inlineContainer}>
                         <ActivityIndicator size="small" />
@@ -106,36 +141,6 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
                     Stake and earn
                 </TButtonContained>
             </View>
-
-            <View style={styles.annualView}>
-                <View style={styles.annualText}>
-                    <Text style={styles.annualSubText}>Annual Percentage Yield (APY)</Text>
-                    <Text style={styles.annualPercentage}>{StakingContract.MAX_APY * 100}%</Text>
-                </View>
-                <View style={styles.annualText}>
-                    <Text style={styles.annualSubText}>Monthly earnings</Text>
-                    <View>
-                        <Text style={styles.annualPercentage}>
-                            {monthlyEarnings} {symbol}
-                        </Text>
-                        <Text style={styles.annualSubText}>
-                            ${formatCurrencyValue(assetToAmount(monthlyEarnings) * usdPrice)}
-                        </Text>
-                    </View>
-                </View>
-                <View style={styles.annualText}>
-                    <Text style={styles.annualSubText}>Stake until</Text>
-                    <Text>
-                        {getStakeUntilDate()} <Text style={styles.annualSubText}>(14 days)</Text>
-                    </Text>
-                </View>
-            </View>
-            <View style={styles.unlockAssetView}>
-                <Text style={styles.unlockhead}>What is staking? </Text>
-                <Text style={styles.lockedParagraph}>
-                    Staking is locking up cryptocurrency to increase blockchain network security and earn rewards
-                </Text>
-            </View>
         </View>
     );
 };
@@ -146,6 +151,30 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         alignItems: 'center',
         marginTop: 5,
+    },
+
+    scrollContainer: {
+        paddingBottom: 150,
+    },
+    bottomFixedView: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        justifyContent: 'space-between',
+        padding: 16,
+        backgroundColor: 'white',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+
+    backBtn: {
+        padding: 12,
+        borderRadius: 8,
+        width: '98%',
+        paddingVertical: 15,
+        marginBottom: 6,
+        marginTop: 18,
     },
     vestedHead: {
         marginBottom: 0,
@@ -167,12 +196,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
     },
-    backBtn: {
-        borderRadius: 6,
-        width: '98%',
-        paddingVertical: 15,
-        marginBottom: 6,
-    },
+
     annualView: {
         alignItems: 'flex-start',
         padding: 16,
@@ -217,22 +241,23 @@ const styles = StyleSheet.create({
         color: theme.colors.black,
         marginTop: 6,
     },
-    withDrawBtn: {
-        color: theme.colors.success,
-        marginBottom: 28,
+    withDrawLoadingBtn: {
+        padding: 12,
+        borderRadius: 8,
+        textAlign: 'center',
+        color: theme.colors.grey9,
         fontSize: 16,
     },
-    withDrawLoadingBtn: {
-        color: theme.colors.grey9,
-        marginBottom: 10,
+    withDrawBtn: {
+        padding: 12,
+        borderRadius: 8,
+        textAlign: 'center',
+        color: theme.colors.success,
         fontSize: 16,
-        marginLeft: 6,
-        paddingTop: 10,
     },
     inlineContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
     },
 });
 
