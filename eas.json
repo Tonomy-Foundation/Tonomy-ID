@@ -20,6 +20,9 @@
                 "DEBUG": "tonomy*"
             },
             "autoIncrement": true,
+            "ios":{                
+                "image": "macos-sonoma-14.6-xcode-16.0" 
+            },
             "node": "22.3.0"
         },
         "testnet-internal": {
@@ -34,6 +37,9 @@
             "env": {
                 "EXPO_NODE_ENV": "staging",
                 "DEBUG": "tonomy*"
+            },
+            "ios":{                
+                "image": "macos-sonoma-14.6-xcode-16.0" 
             },
             "autoIncrement": true,
             "node": "22.3.0"
