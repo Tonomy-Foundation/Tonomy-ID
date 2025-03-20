@@ -1,7 +1,7 @@
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Props } from '../screens/ConfirmUnstakingScreen';
 import theme from '../utils/theme';
-import TButton, { TButtonContained } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
@@ -11,6 +11,7 @@ import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistr
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
 import { KeyManagerLevel, StakingContract } from '@tonomy/tonomy-id-sdk';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -56,22 +57,14 @@ const ConfirmUnStakingContainer = ({ chain, navigation, amount, allocationId }: 
                 </TP>
             </View>
             <View style={styles.bottomView}>
-                {loading ? (
-                    <TButton
-                        style={[
-                            styles.backBtn,
-                            { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                        ]}
-                        color={theme.colors.grey3}
-                    >
-                        <ActivityIndicator size="small" color={theme.colors.grey3} style={{ marginRight: 7 }} />
-                        Unstake LEOS
-                    </TButton>
-                ) : (
-                    <TButtonContained style={{ width: '100%' }} onPress={() => confirmStaking()}>
-                        Unstake LEOS
-                    </TButtonContained>
-                )}
+                <TButtonContained
+                    style={{ height: loading ? 46 : 'auto', width: '100%' }}
+                    size="large"
+                    onPress={() => confirmStaking()}
+                    disabled={loading}
+                >
+                    {loading ? <TSpinner size={40} /> : 'Unstake LEOS'}
+                </TButtonContained>
             </View>
         </>
     );

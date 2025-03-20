@@ -1,13 +1,14 @@
-import { StyleSheet, Image, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Image, View } from 'react-native';
 import { Props } from '../screens/VestedSuccessScreen';
 import theme from '../utils/theme';
-import TButton, { TButtonContained } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import useUserStore from '../store/userStore';
 import { useEffect, useState } from 'react';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useErrorStore from '../store/errorStore';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type SuccessVestedProps = {
     navigation: Props['navigation'];
@@ -69,22 +70,14 @@ const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
             <TH1 style={styles.vestedHead}>{'Vested and Rested'}</TH1>
             <TP style={styles.vestedSubHead}>Your coins have been successfully withdrawn!</TP>
             <View style={styles.bottomView}>
-                {loading ? (
-                    <TButton
-                        style={[
-                            styles.backBtn,
-                            { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                        ]}
-                        color={theme.colors.grey3}
-                    >
-                        <ActivityIndicator size="small" color={theme.colors.grey3} style={{ marginRight: 7 }} />
-                        Back to LEOS
-                    </TButton>
-                ) : (
-                    <TButtonContained style={{ width: '100%' }} onPress={() => redirectBack()}>
-                        Back to LEOS
-                    </TButtonContained>
-                )}
+                <TButtonContained
+                    style={{ height: loading ? 46 : 'auto', width: '100%' }}
+                    size="large"
+                    onPress={() => redirectBack()}
+                    disabled={loading}
+                >
+                    {loading ? <TSpinner size={40} /> : 'Back to LEOS'}
+                </TButtonContained>
             </View>
         </View>
     );
