@@ -22,14 +22,22 @@ import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import useErrorStore from '../store/errorStore';
-import { useNavigation } from '@react-navigation/native';
 import { Images } from '../assets';
 import Debug from 'debug';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
-export default function SSOLoginContainer({ payload, platform }: { payload: string; platform: 'mobile' | 'browser' }) {
+export default function SSOLoginContainer({
+    payload,
+    platform,
+    navigation,
+}: {
+    payload: string;
+    platform: 'mobile' | 'browser';
+    navigation: SSOLoginScreenProps['navigation'];
+}) {
     const { user, logout } = useUserStore();
     const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
     const [username, setUsername] = useState<string>();
@@ -37,7 +45,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
 
-    const navigation = useNavigation();
     const errorStore = useErrorStore();
 
     async function setUserName() {
@@ -116,10 +123,8 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
             if (platform === 'mobile') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
                 await Linking.openURL(callbackUrl);
-                // @ts-expect-error item of type string is not assignable to type never
                 navigation.navigate('Assets');
             } else {
-                // @ts-expect-error item of type string is not assignable to type never
                 navigation.navigate('Assets');
             }
         } catch (e) {
@@ -131,13 +136,11 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 debug('onLogin() CommunicationError');
 
                 // User cancelled in the browser, so can just navigate back to home
-                // @ts-expect-error item of type string is not assignable to type never
                 navigation.navigate('Assets');
             } else {
                 errorStore.setError({
                     error: e,
                     expected: false,
-                    // @ts-expect-error item of type string is not assignable to type never
                     onClose: async () => navigation.navigate('Assets'),
                 });
             }
@@ -186,8 +189,6 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 await Linking.openURL(res);
             }
 
-            // @ts-expect-error item of type string is not assignable to type never
-            // FIXME: fix type error
             navigation.navigate('Assets');
         } catch (e) {
             setCancelLoading(false);
@@ -199,13 +200,11 @@ export default function SSOLoginContainer({ payload, platform }: { payload: stri
                 e.exception.message.startsWith('Recipient not connected')
             ) {
                 // User cancelled in the browser, so can just navigate back to home
-                // @ts-expect-error item of type string is not assignable to type never
                 navigation.navigate('Assets');
             } else {
                 errorStore.setError({
                     error: e,
                     expected: false,
-                    // @ts-expect-error item of type string is not assignable to type never
                     onClose: async () => navigation.navigate('Assets'),
                 });
             }
