@@ -203,6 +203,11 @@ Linting is done with `eslint`. Install the recommended VS Code plugin to see mar
 yarn run lint
 ```
 
+## How to deploy hotfix to master
+
+- To ensure correct ios release to master
+- Always do the conventional commit with fix bump version
+
 ## Error handling
 
 See [errors.ts](./src/utils/errors.ts). All errors have a registered unique code enum.
