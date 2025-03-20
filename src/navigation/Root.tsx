@@ -326,7 +326,7 @@ export default function RootNavigation() {
 
                         <Stack.Screen
                             name="SuccessUnstake"
-                            options={{ headerBackTitleVisible: false, title: 'Success' }}
+                            options={{ headerBackTitleVisible: false, headerBackVisible: false, title: 'Success' }}
                             component={SuccessUnstakeScreen}
                         />
                         <Stack.Screen
@@ -336,7 +336,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SuccessVested"
-                            options={{ headerBackTitleVisible: false, title: 'Success' }}
+                            options={{ headerBackTitleVisible: false, headerBackVisible: false, title: 'Success' }}
                             component={VestedSuccessScreen}
                         />
                         <Stack.Screen

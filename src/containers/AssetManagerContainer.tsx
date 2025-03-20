@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image, ScrollView } from 'react-native';
 import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
@@ -260,57 +260,59 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
     return (
         <View style={styles.container}>
             {isVestable && <View>{renderImageBackground(balance)}</View>}
-            {showVesting && vestedBalanceView(balance, navigation, asset.chain)}
-            {totalStaked > 0 && stakedBalanceView(totalStaked, navigation, asset.chain)}
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
+                {showVesting && vestedBalanceView(balance, navigation, asset.chain)}
+                {totalStaked > 0 && stakedBalanceView(totalStaked, navigation, asset.chain)}
 
-            <Text style={styles.subTitle}>Available assets</Text>
+                <Text style={styles.subTitle}>Available assets</Text>
 
-            <View style={styles.availableAssetView}>
-                <View style={styles.header}>
-                    <Text style={styles.headerAssetsAmount}>{balance.availableBalance}</Text>
-                    <Text style={styles.headerUSDAmount}>
-                        = ${formatCurrencyValue(balance.availableBalanceUsd ?? 0)}
-                    </Text>
+                <View style={styles.availableAssetView}>
+                    <View style={styles.header}>
+                        <Text style={styles.headerAssetsAmount}>{balance.availableBalance}</Text>
+                        <Text style={styles.headerUSDAmount}>
+                            = ${formatCurrencyValue(balance.availableBalanceUsd ?? 0)}
+                        </Text>
 
-                    <View style={styles.sendReceiveButtons}>
-                        <TouchableOpacity
-                            style={styles.flexCenter}
-                            onPress={() =>
-                                navigation.navigate('Send', {
-                                    chain: asset.chain,
-                                    privateKey: asset.privateKey,
-                                })
-                            }
-                        >
-                            <View style={styles.headerButton}>
-                                <ArrowUp height={24} width={24} color={theme.colors.black} strokeWidth={2} />
-                            </View>
-                            <Text style={styles.textSize}>Send</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() =>
-                                navigation.navigate('Receive', {
-                                    chain: asset.chain,
-                                })
-                            }
-                            style={styles.flexCenter}
-                        >
-                            <View style={styles.headerButton}>
-                                <ArrowDown height={24} width={24} color={theme.colors.black} strokeWidth={2} />
-                            </View>
-                            <Text style={styles.textSize}>Receive</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.flexCenter} onPress={redirectToCheckExplorer}>
-                            <View style={styles.headerButton}>
-                                <Clock height={24} width={24} color={theme.colors.black} strokeWidth={2} />
-                            </View>
-                            <Text style={styles.textSize}>History</Text>
-                        </TouchableOpacity>
+                        <View style={styles.sendReceiveButtons}>
+                            <TouchableOpacity
+                                style={styles.flexCenter}
+                                onPress={() =>
+                                    navigation.navigate('Send', {
+                                        chain: asset.chain,
+                                        privateKey: asset.privateKey,
+                                    })
+                                }
+                            >
+                                <View style={styles.headerButton}>
+                                    <ArrowUp height={24} width={24} color={theme.colors.black} strokeWidth={2} />
+                                </View>
+                                <Text style={styles.textSize}>Send</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.navigate('Receive', {
+                                        chain: asset.chain,
+                                    })
+                                }
+                                style={styles.flexCenter}
+                            >
+                                <View style={styles.headerButton}>
+                                    <ArrowDown height={24} width={24} color={theme.colors.black} strokeWidth={2} />
+                                </View>
+                                <Text style={styles.textSize}>Receive</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.flexCenter} onPress={redirectToCheckExplorer}>
+                                <View style={styles.headerButton}>
+                                    <Clock height={24} width={24} color={theme.colors.black} strokeWidth={2} />
+                                </View>
+                                <Text style={styles.textSize}>History</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>
-            {(showVesting || showStakeToEarn) &&
-                investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStakeToEarn)}
+                {(showVesting || showStakeToEarn) &&
+                    investorTootlView(navigation, asset.chain, redirectStakeToEarn, showVesting, showStakeToEarn)}
+            </ScrollView>
         </View>
     );
 };
