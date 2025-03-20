@@ -3,7 +3,9 @@ name: Deployment
 on:
   push:
     branches:
-      - bug/ios-sdk-version
+      - master
+      - testnet
+      - development
 
 jobs:
   deploy:
@@ -49,7 +51,7 @@ jobs:
             yarn run deploy:testnet
           fi
 
-          if [[ ${GITHUB_REF#refs/*/} == "bug/ios-sdk-version" ]]; then
+          if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             echo "Branch is 'development'"
             yarn run deploy:staging
           fi
