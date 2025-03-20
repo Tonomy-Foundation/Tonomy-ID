@@ -56,6 +56,7 @@ import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
+import settings from '../../settings';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -327,10 +328,15 @@ export class AntelopeChain extends AbstractChain {
     }
 }
 
-export const LEOS_SEED_ROUND_PRICE = 0.0002;
-export const LEOS_PRE_SALE_ROUND_PRICE = 0.0004;
-export const LEOS_PUBLIC_SALE_PRICE = 0.0012;
-export const LEOS_CURRENT_PRICE = LEOS_PUBLIC_SALE_PRICE;
+const leosSalesPrices = {
+    seed: 0.0001,
+    preSale: 0.0002,
+    private: 0.0004,
+    kol: 0.0006,
+    publicSale: 0.0006,
+};
+
+export const LEOS_CURRENT_PRICE = leosSalesPrices.publicSale;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -520,7 +526,7 @@ export const TonomyStagingChain = new AntelopeChain(
 );
 
 export const TonomyLocalChain = new AntelopeChain(
-    'http://localhost:8888',
+    settings.config.blockchainUrl,
     'Tonomy Localhost',
     'unknown chain id at this time',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
@@ -855,7 +861,7 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
             throw new Error('Account has no private key');
         }
 
-        //TODO catch overdraw balance error and throw application error NotEnoughCoins
+        //TODO: catch overdraw balance error and throw application error NotEnoughCoins
         return await this.privateKey.sendTransaction(data);
     }
 
