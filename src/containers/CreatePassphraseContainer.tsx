@@ -120,7 +120,12 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={loading}>
+                            <TButtonContained
+                                onPress={onNext}
+                                disabled={loading}
+                                size="large"
+                                style={{ height: loading ? 46 : 'auto' }}
+                            >
                                 {loading ? <TSpinner size={40} /> : 'NEXT'}
                             </TButtonContained>
                         </View>

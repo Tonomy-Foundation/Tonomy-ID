@@ -88,7 +88,7 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
             footer={
                 <View style={commonStyles.marginTop}>
                     <View style={commonStyles.marginBottom}>
-                        <TButtonContained onPress={onNext} disabled={username.length === 0 || loading}>
+                        <TButtonContained size="large" onPress={onNext} disabled={username.length === 0 || loading}>
                             Next
                         </TButtonContained>
                     </View>

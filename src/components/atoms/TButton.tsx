@@ -65,7 +65,6 @@ export function TButtonContained(props: ButtonProps) {
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        paddingVertical: props.size !== 'large' ? 11 : 14,
     };
     const shadowStyle = {
         shadowColor: theme.colors.shadowDark,

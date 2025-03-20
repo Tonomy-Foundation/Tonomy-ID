@@ -179,8 +179,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 25,
-        paddingBottom: 30,
         width: '100%',
+        minHeight: 55,
     },
     skipButton: {
         fontSize: 16,
