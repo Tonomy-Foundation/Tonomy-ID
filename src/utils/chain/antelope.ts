@@ -56,6 +56,7 @@ import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
+import settings from '../../settings';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -525,7 +526,7 @@ export const TonomyStagingChain = new AntelopeChain(
 );
 
 export const TonomyLocalChain = new AntelopeChain(
-    'http://localhost:8888',
+    settings.config.blockchainUrl,
     'Tonomy Localhost',
     'unknown chain id at this time',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
