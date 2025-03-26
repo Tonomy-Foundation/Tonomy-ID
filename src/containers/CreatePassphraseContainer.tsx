@@ -84,7 +84,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                         <TH1 style={commonStyles.textAlignCenter}>Create passphrase</TH1>
                         <TP style={styles.paragraph}>
                             Passphrase is like a password but more secure and easier to remember.{' '}
-                            {/* TODO uncomment link */}
+                            {/* TODO: uncomment link */}
                             {/* <TP style={styles.link}>Learn more.</TP> */}
                         </TP>
                         <View style={styles.innerContainer}>
