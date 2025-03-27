@@ -6,7 +6,7 @@ import { OpenNewWindow } from 'iconoir-react-native';
 const availableAppsData = [
     {
         image: require('../assets/images/apps/pangea-block-explorer.png'),
-        title: 'Pangea DAO',
+        title: 'Pangea DAO on Hypha',
         description: 'Collaborate and make decisions within the Pangea ecosystem with other Pangeans.',
         url: 'https://pangea.hypha.earth/pangea-dao/',
         isAvailable: true,
@@ -52,7 +52,7 @@ const availableAppsData = [
     },
     {
         image: require('../assets/images/apps/pangea-dao.png'),
-        title: 'Pangea DAO',
+        title: 'Pangea DAO on Hypha',
         description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
         isAvailable: false,
         url: 'https://pangea.web4.world/technology/pangea-dao',

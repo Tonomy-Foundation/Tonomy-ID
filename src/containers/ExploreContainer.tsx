@@ -73,7 +73,7 @@ export default function ExploreContainer() {
                 <View style={styles.worldFristAutonomous}>
                     <Text style={styles.worldFristAutonomousTitle}>Worlds First Autonomous Virtual Nation</Text>
                     <Text style={styles.worldFristAutonomousNotes}>Powered by Web 4.0 </Text>
-                    <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/watch?v=d5b2gmJWKp4')}>
+                    <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/watch?v=im-DTmS2R7I')}>
                         <Image
                             style={styles.worldFristAutonomousImage}
                             source={require('../assets/images/explore/explore-video.png')}

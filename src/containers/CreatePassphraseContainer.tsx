@@ -84,7 +84,7 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                         <TH1 style={commonStyles.textAlignCenter}>Create passphrase</TH1>
                         <TP style={styles.paragraph}>
                             Passphrase is like a password but more secure and easier to remember.{' '}
-                            {/* TODO uncomment link */}
+                            {/* TODO: uncomment link */}
                             {/* <TP style={styles.link}>Learn more.</TP> */}
                         </TP>
                         <View style={styles.innerContainer}>
@@ -120,8 +120,14 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={loading}>
-                                {loading ? <TSpinner size={40} /> : 'NEXT'}
+                            <TButtonContained
+                                loading={loading}
+                                disabled={loading}
+                                style={{ width: '100%' }}
+                                size="large"
+                                onPress={onNext}
+                            >
+                                NEXT
                             </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>

@@ -64,7 +64,7 @@ export default function TInfoBox(props: TInfoBoxProps) {
             <IconComponent style={styles.icon} icon={props.icon} />
             <View style={styles.description}>
                 <TP style={styles.paragraph}>
-                    {props.description} {/* TODO uncomment link */}
+                    {props.description} {/* TODO: uncomment link */}
                     {/* <TA style={[styles.description]} href={props.linkUrl}>
                         {props.linkUrlText}
                     </TA> */}

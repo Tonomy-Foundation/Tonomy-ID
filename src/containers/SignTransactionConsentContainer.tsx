@@ -304,6 +304,7 @@ export default function SignTransactionConsentContainer({
             const expirationTime = expiration.getTime();
             const timeDiff = expirationTime - now;
             const remainingCounter = Math.floor((expirationTime - now) / 1000);
+
             if (remainingCounter < 0) {
                 setRemainingTime('00:00');
                 setExpired(true);

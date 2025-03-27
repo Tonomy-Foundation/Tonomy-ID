@@ -41,8 +41,14 @@ import SelectAsset from '../screens/SelectAssetScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AssetManagerScreen from '../screens/AssetManagerScreen';
 import VestedAssetsScreen from '../screens/VestedAssetsScreen';
-import AppInstructionProvider from '../providers/AppInstruction';
 import { navigationRef } from '../utils/navigate';
+import ConfirmStakingScreen from '../screens/ConfirmStakingScreen';
+import StakeAssetScreen from '../screens/StakeAssetScreen';
+import StakeAssetDetailScreen from '../screens/StakeAssetDetailScreen';
+import SuccessUnstakeScreen from '../screens/SuccessUnstakeScreen';
+import WithdrawVestedScreen from '../screens/WithdrawVestedScreen';
+import VestedSuccessScreen from '../screens/VestedSuccessScreen';
+import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
 
 const prefix = Linking.createURL('');
 
@@ -113,6 +119,13 @@ export type MainRouteStackParamList = {
     SelectAsset: { screenTitle?: string; type: string };
     AssetManager: AssetsParamsScreen;
     VestedAssets: AssetsParamsScreen;
+    ConfirmStaking: AssetsParamsScreen & { amount: number; withDraw?: boolean };
+    StakeLeos: AssetsParamsScreen;
+    StakeLeosDetail: AssetsParamsScreen & { loading?: boolean };
+    SuccessUnstake: AssetsParamsScreen;
+    WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
+    SuccessVested: AssetsParamsScreen;
+    ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -269,6 +282,7 @@ export default function RootNavigation() {
                             options={{ headerBackTitleVisible: false, title: 'Vested assets' }}
                             component={VestedAssetsScreen}
                         />
+
                         <Stack.Screen
                             name="Send"
                             options={({ route }) => ({
@@ -292,6 +306,43 @@ export default function RootNavigation() {
                                 title: route.params?.screenTitle || 'Select Asset',
                             })}
                             component={SelectAsset}
+                        />
+
+                        <Stack.Screen
+                            name="StakeLeosDetail"
+                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
+                            component={StakeAssetDetailScreen}
+                        />
+                        <Stack.Screen
+                            name="StakeLeos"
+                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
+                            component={StakeAssetScreen}
+                        />
+                        <Stack.Screen
+                            name="ConfirmStaking"
+                            options={{ headerBackTitleVisible: false, title: 'Confirm staking' }}
+                            component={ConfirmStakingScreen}
+                        />
+
+                        <Stack.Screen
+                            name="SuccessUnstake"
+                            options={{ headerBackTitleVisible: false, headerBackVisible: false, title: 'Success' }}
+                            component={SuccessUnstakeScreen}
+                        />
+                        <Stack.Screen
+                            name="WithdrawVested"
+                            options={{ headerBackTitleVisible: false, title: 'Withdraw' }}
+                            component={WithdrawVestedScreen}
+                        />
+                        <Stack.Screen
+                            name="SuccessVested"
+                            options={{ headerBackTitleVisible: false, headerBackVisible: false, title: 'Success' }}
+                            component={VestedSuccessScreen}
+                        />
+                        <Stack.Screen
+                            name="ConfirmUnStaking"
+                            options={{ headerBackTitleVisible: false, title: 'Confirm unstaking' }}
+                            component={ConfirmUnstakingScreen}
                         />
                     </Stack.Navigator>
                 </>

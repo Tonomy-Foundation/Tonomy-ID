@@ -22,7 +22,7 @@ export default function SettingsNavigation() {
     const backButton = () => {
         return (
             // @ts-expect-error no overload matches this call
-            // TODO fix type error
+            // FIXME: fix type error
             <TouchableOpacity onPress={() => navigation.navigate('Assets')}>
                 <IconButton
                     icon={Platform.OS === 'android' ? 'arrow-left' : 'chevron-left'}

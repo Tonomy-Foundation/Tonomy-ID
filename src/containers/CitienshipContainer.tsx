@@ -51,7 +51,7 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent}>
-                <Text style={styles.title}>Welcome to Pangea Virtual Nation, @{username}</Text>
+                <Text style={styles.title}>Welcome to Pangea, @{username}</Text>
                 <View style={styles.identityView}>
                     <View style={styles.identityTitle}>
                         <Text style={styles.identityText}>Your identity, your control</Text>
@@ -101,7 +101,7 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                     />
                     <HorizontalScrollItem
                         title="Unlock the Power of Decentralization"
-                        subtitle="with Pangea DAO"
+                        subtitle="with Pangea DAO on Hypha"
                         imageSource={require('../assets/images/citizenship/2-slide.png')}
                         url="https://pangea.web4.world/technology/pangea-dao"
                     />

@@ -11,6 +11,7 @@ import ErrorHandlerProvider from './src/providers/ErrorHandler';
 import Debug from 'debug';
 import { wrap } from './src/utils/sentry';
 import InitializeAppProvider from './src/providers/InitializeApp';
+import { StatusBar } from 'react-native';
 
 Debug.enable(process.env.DEBUG);
 console.log('DEBUG:', process.env.DEBUG);
@@ -19,6 +20,7 @@ function App() {
     return (
         <PaperProvider theme={theme}>
             <SafeAreaProvider>
+                <StatusBar />
                 <ErrorHandlerProvider />
                 <InitializeAppProvider />
             </SafeAreaProvider>

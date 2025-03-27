@@ -227,7 +227,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
                 footer={
                     <View style={commonStyles.marginTop}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained onPress={onNext} disabled={!code || loading || !success}>
+                            <TButtonContained size="large" onPress={onNext} disabled={!code || loading || !success}>
                                 Create Account
                             </TButtonContained>
                         </View>
