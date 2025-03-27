@@ -129,7 +129,7 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
                 )}
                 <TButtonContained
                     size="large"
-                    style={styles.backBtn}
+                    style={{ height: loading ? 46 : 'auto', width: '100%' }}
                     onPress={() =>
                         navigation.navigate('ConfirmStaking', {
                             chain: chain,

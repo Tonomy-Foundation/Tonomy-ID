@@ -1,6 +1,6 @@
 import React from 'react';
 import theme, { commonStyles, useAppTheme } from '../../utils/theme';
-import { Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
 type CustomButtonProps = {
@@ -41,7 +41,7 @@ export default function TButton(props: ButtonProps) {
     };
 
     return (
-        // @ts-expect-error style props do not match. FIXME:!
+        // @ts-expect-error style props do not match. TODO fix me!
         // eslint-disable-next-line react/prop-types
         <TouchableOpacity {...props} style={[buttonStyle, commonStyles.borderRadius, props.style]}>
             {props.icon && (
@@ -57,12 +57,40 @@ export default function TButton(props: ButtonProps) {
     );
 }
 
+export function TButtonLoading(props: ButtonProps) {
+    const theme = useAppTheme();
+    const color = theme.colors.white;
+    const style: ViewStyle = {
+        backgroundColor: props.disabled ? theme.colors.disabled : getColorBasedOnTheme(props.theme),
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+    };
+    const shadowStyle = {
+        shadowColor: theme.colors.shadowDark,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+
+        elevation: 4,
+    };
+
+    return (
+        // eslint-disable-next-line react/prop-types
+        <View {...props} style={[props.style, commonStyles.borderRadius, style, !props.disabled ? shadowStyle : null]}>
+            {props.children}
+        </View>
+    );
+}
+
 export function TButtonContained(props: ButtonProps) {
     const theme = useAppTheme();
     const color = theme.colors.white;
     const style: ViewStyle = {
         backgroundColor: props.disabled ? theme.colors.disabled : getColorBasedOnTheme(props.theme),
-        height: 48,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',

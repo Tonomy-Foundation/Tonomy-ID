@@ -1,7 +1,7 @@
 import { StyleSheet, Image, View } from 'react-native';
 import { Props } from '../screens/VestedSuccessScreen';
 import theme from '../utils/theme';
-import { TButtonContained } from '../components/atoms/TButton';
+import { TButtonContained, TButtonLoading } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import useUserStore from '../store/userStore';
@@ -48,21 +48,14 @@ const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
         setLoading(true);
 
         if (totalLocked > 0) {
-            setTimeout(() => {
-                navigation.navigate('VestedAssets', {
-                    chain,
-                });
-                setLoading(false);
-            }, 10000);
+            navigation.navigate('VestedAssets', { chain });
         } else {
-            setTimeout(() => {
-                navigation.navigate('AssetManager', {
-                    chain,
-                });
-                setLoading(false);
-            }, 10000);
+            navigation.navigate('AssetManager', { chain });
         }
+
+        setLoading(false);
     };
+
 
     return (
         <View style={styles.container}>
@@ -70,14 +63,19 @@ const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
             <TH1 style={styles.vestedHead}>{'Vested and Rested'}</TH1>
             <TP style={styles.vestedSubHead}>Your coins have been successfully withdrawn!</TP>
             <View style={styles.bottomView}>
-                <TButtonContained
-                    style={{ height: loading ? 46 : 'auto', width: '100%' }}
-                    size="large"
-                    onPress={() => redirectBack()}
-                    disabled={loading}
-                >
-                    {loading ? <TSpinner size={40} /> : 'Back to LEOS'}
-                </TButtonContained>
+                {loading ? (
+                    <TButtonLoading disabled={true} style={{ width: '100%' }} size="large">
+                        <TSpinner size={50} />
+                    </TButtonLoading>
+                ) : (
+                    <TButtonContained
+                        style={{ height: 'auto', width: '100%' }}
+                        size="large"
+                        onPress={() => redirectBack()}
+                    >
+                        Back to LEOS
+                    </TButtonContained>
+                )}
             </View>
         </View>
     );

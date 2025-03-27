@@ -43,7 +43,7 @@ const HowStakingWorks = (props: Props) => {
             <View style={{ marginTop: 20 }}>
                 <Text style={styles.heading}>Unlocking Staked LEOS</Text>
                 <Text style={styles.paragragh}>
-                    After the <Text style={styles.boldText}>14-day lockup</Text>, you can unlock your LEOS at any time.
+                    After the <Text style={styles.boldText}>{StakingContract.getLockedDays()} days lockup</Text>, you can unlock your LEOS at any time.
                     Unlocking starts{' '}
                     <Text style={styles.boldText}>a {StakingContract.getReleaseDays()}-day release period </Text>with
                     <Text style={styles.boldText}> no yield</Text>

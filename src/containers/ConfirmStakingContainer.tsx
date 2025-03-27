@@ -1,7 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Props } from '../screens/ConfirmStakingScreen';
 import theme from '../utils/theme';
-import { TButtonContained } from '../components/atoms/TButton';
+import { TButtonContained, TButtonLoading } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
@@ -51,12 +51,9 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
             const formattedAmount = amountToAsset(stakeAmount, token.getSymbol());
 
             await token.stakeTokens(account, formattedAmount, accountSigner);
-            setTimeout(() => {
-                navigation.navigate('AssetManager', {
-                    chain,
-                });
-                setLoading(false);
-            }, 10000);
+            navigation.navigate('AssetManager', { chain });
+            setLoading(false);
+
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
             setLoading(false);
@@ -72,14 +69,19 @@ const ConfirmStakingContainer = ({ chain, navigation, amount, withDraw }: PropsS
                 <TP style={styles.vestedSubHead}>These coins will be locked for {lockedDays} days</TP>
             </View>
             <View style={styles.bottomView}>
-                <TButtonContained
-                    style={{ height: loading ? 46 : 'auto', width: '100%' }}
-                    size="large"
-                    onPress={() => confirmStaking()}
-                    disabled={loading}
-                >
-                    {loading ? <TSpinner size={40} /> : `Stake for ${lockedDays} days`}
-                </TButtonContained>
+                {loading ? (
+                    <TButtonLoading disabled={true} style={{ width: '100%' }} size="large">
+                        <TSpinner size={50} />
+                    </TButtonLoading>
+                ) : (
+                    <TButtonContained
+                        style={{ height: 'auto', width: '100%' }}
+                        size="large"
+                        onPress={() => confirmStaking()}
+                    >
+                        {`Stake for ${lockedDays} days`}
+                    </TButtonContained>
+                )}
             </View>
         </>
     );

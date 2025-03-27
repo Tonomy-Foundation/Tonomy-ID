@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import { TButtonContained, TButtonLoading, TButtonOutlined } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
@@ -120,14 +120,19 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-                            <TButtonContained
-                                onPress={onNext}
-                                disabled={loading}
-                                size="large"
-                                style={{ height: loading ? 46 : 'auto' }}
-                            >
-                                {loading ? <TSpinner size={40} /> : 'NEXT'}
-                            </TButtonContained>
+                            {loading ? (
+                                <TButtonLoading disabled={true} style={{ width: '100%' }} size="large">
+                                    <TSpinner size={50} />
+                                </TButtonLoading>
+                            ) : (
+                                <TButtonContained
+                                    style={{ height: 'auto', width: '100%' }}
+                                    size="large"
+                                    onPress={onNext}
+                                >
+                                    NEXT
+                                </TButtonContained>
+                            )}
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Already have an account? </TP>
