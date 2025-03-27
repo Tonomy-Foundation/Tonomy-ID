@@ -1,7 +1,7 @@
 import { StyleSheet, Image, View } from 'react-native';
 import { Props } from '../screens/SuccessUnstakeScreen';
 import theme from '../utils/theme';
-import { TButtonContained, TButtonLoading } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
@@ -27,19 +27,15 @@ const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => 
             <TH1 style={styles.vestedHead}>{'Unstaking Completed'}</TH1>
             <TP style={styles.vestedSubHead}>Your assets have been unstaked and are no longer earning rewards</TP>
             <View style={styles.bottomView}>
-                {loading ? (
-                    <TButtonLoading disabled={true} style={{ width: '100%' }} size="large">
-                        <TSpinner size={50} />
-                    </TButtonLoading>
-                ) : (
-                    <TButtonContained
-                        style={{ height: 'auto', width: '100%' }}
-                        size="large"
-                        onPress={() => backToLEOS()}
-                    >
-                        Back to LEOS
-                    </TButtonContained>
-                )}
+                <TButtonContained
+                    loading={loading}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                    size="large"
+                    onPress={() => backToLEOS()}
+                >
+                    Back to LEOS
+                </TButtonContained>
             </View>
         </View>
     );

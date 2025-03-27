@@ -2,6 +2,7 @@ import React from 'react';
 import theme, { commonStyles, useAppTheme } from '../../utils/theme';
 import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import TSpinner from './TSpinner';
 
 type CustomButtonProps = {
     theme?: 'primary' | 'secondary';
@@ -10,6 +11,8 @@ type CustomButtonProps = {
     color?: string;
     icon?: string;
     disabled?: boolean;
+    loading?: boolean;
+    style?: ViewStyle;
 };
 export type ButtonProps = React.ComponentProps<typeof TouchableOpacity> & CustomButtonProps;
 
@@ -57,35 +60,6 @@ export default function TButton(props: ButtonProps) {
     );
 }
 
-export function TButtonLoading(props: ButtonProps) {
-    const theme = useAppTheme();
-    const color = theme.colors.white;
-    const style: ViewStyle = {
-        backgroundColor: props.disabled ? theme.colors.disabled : getColorBasedOnTheme(props.theme),
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-    };
-    const shadowStyle = {
-        shadowColor: theme.colors.shadowDark,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
-
-        elevation: 4,
-    };
-
-    return (
-        // eslint-disable-next-line react/prop-types
-        <View {...props} style={[props.style, commonStyles.borderRadius, style, !props.disabled ? shadowStyle : null]}>
-            {props.children}
-        </View>
-    );
-}
-
 export function TButtonContained(props: ButtonProps) {
     const theme = useAppTheme();
     const color = theme.colors.white;
@@ -107,11 +81,15 @@ export function TButtonContained(props: ButtonProps) {
         elevation: 4,
     };
 
-    return (
+    return !props.loading ? (
         // eslint-disable-next-line react/prop-types
         <TButton {...props} style={[props.style, style, !props.disabled ? shadowStyle : null]} color={color}>
             {props.children}
         </TButton>
+    ) : (
+        <View {...props} style={[props.style, commonStyles.borderRadius, style, !props.disabled ? shadowStyle : null]}>
+            <TSpinner size={45} />
+        </View>
     );
 }
 

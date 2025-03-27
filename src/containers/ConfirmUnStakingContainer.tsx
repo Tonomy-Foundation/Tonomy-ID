@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { Props } from '../screens/ConfirmUnstakingScreen';
 import theme from '../utils/theme';
-import { TButtonContained, TButtonLoading } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
@@ -57,19 +57,15 @@ const ConfirmUnStakingContainer = ({ chain, navigation, amount, allocationId }: 
                 </TP>
             </View>
             <View style={styles.bottomView}>
-                {loading ? (
-                    <TButtonLoading disabled={true} style={{ width: '100%' }} size="large">
-                        <TSpinner size={50} />
-                    </TButtonLoading>
-                ) : (
-                    <TButtonContained
-                        style={{ height: 'auto', width: '100%' }}
-                        size="large"
-                        onPress={() => confirmStaking()}
-                    >
-                        Unstake LEOS
-                    </TButtonContained>
-                )}
+                <TButtonContained
+                    loading={loading}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                    size="large"
+                    onPress={() => confirmStaking()}
+                >
+                    Unstake LEOS
+                </TButtonContained>
             </View>
         </>
     );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { TButtonContained, TButtonLoading } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
@@ -132,20 +132,15 @@ export default function LoginPassphraseContainer({
                 footer={
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
-
-                            {loading ? (
-                                <TButtonLoading disabled={true || nextDisabled} style={{ width: '100%' }} size="large">
-                                    <TSpinner size={50} />
-                                </TButtonLoading>
-                            ) : (
-                                <TButtonContained
-                                    style={{ height: 'auto', width: '100%' }}
-                                    size="large"
-                                    onPress={onNext}
-                                >
-                                    NEXT
-                                </TButtonContained>
-                            )}
+                            <TButtonContained
+                                loading={loading || nextDisabled}
+                                disabled={loading}
+                                style={{ width: '100%' }}
+                                size="large"
+                                onPress={onNext}
+                            >
+                                NEXT
+                            </TButtonContained>
                         </View>
                         <View style={styles.textContainer}>
                             <TP size={1}>Don&apos;t have an account?</TP>

@@ -1,7 +1,7 @@
 import { StyleSheet, Image, View } from 'react-native';
 import { Props } from '../screens/VestedSuccessScreen';
 import theme from '../utils/theme';
-import { TButtonContained, TButtonLoading } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import useUserStore from '../store/userStore';
@@ -56,26 +56,21 @@ const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
         setLoading(false);
     };
 
-
     return (
         <View style={styles.container}>
             <Image source={require('../assets/images/staking/success-stake.png')} />
             <TH1 style={styles.vestedHead}>{'Vested and Rested'}</TH1>
             <TP style={styles.vestedSubHead}>Your coins have been successfully withdrawn!</TP>
             <View style={styles.bottomView}>
-                {loading ? (
-                    <TButtonLoading disabled={true} style={{ width: '100%' }} size="large">
-                        <TSpinner size={50} />
-                    </TButtonLoading>
-                ) : (
-                    <TButtonContained
-                        style={{ height: 'auto', width: '100%' }}
-                        size="large"
-                        onPress={() => redirectBack()}
-                    >
-                        Back to LEOS
-                    </TButtonContained>
-                )}
+                <TButtonContained
+                    loading={loading}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                    size="large"
+                    onPress={() => redirectBack()}
+                >
+                    Back to LEOS
+                </TButtonContained>
             </View>
         </View>
     );
