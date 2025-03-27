@@ -1,10 +1,11 @@
-import { StyleSheet, Image, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Image, View } from 'react-native';
 import { Props } from '../screens/SuccessUnstakeScreen';
 import theme from '../utils/theme';
-import TButton, { TButtonContained } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
+import TSpinner from '../components/atoms/TSpinner';
 
 export type SuccessUnstakeProps = {
     navigation: Props['navigation'];
@@ -16,12 +17,8 @@ const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => 
 
     const backToLEOS = () => {
         setLoading(true);
-        setTimeout(() => {
-            navigation.navigate('AssetManager', {
-                chain,
-            });
-            setLoading(false);
-        }, 10000);
+        navigation.navigate('AssetManager', { chain });
+        setLoading(false);
     };
 
     return (
@@ -30,22 +27,15 @@ const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => 
             <TH1 style={styles.vestedHead}>{'Unstaking Completed'}</TH1>
             <TP style={styles.vestedSubHead}>Your assets have been unstaked and are no longer earning rewards</TP>
             <View style={styles.bottomView}>
-                {loading ? (
-                    <TButton
-                        style={[
-                            styles.backBtn,
-                            { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                        ]}
-                        color={theme.colors.grey3}
-                    >
-                        <ActivityIndicator size="small" color={theme.colors.grey3} style={{ marginRight: 7 }} />
-                        Back to LEOS
-                    </TButton>
-                ) : (
-                    <TButtonContained style={{ width: '100%' }} onPress={() => backToLEOS()}>
-                        Back to LEOS
-                    </TButtonContained>
-                )}
+                <TButtonContained
+                    loading={loading}
+                    disabled={loading}
+                    style={{ width: '100%' }}
+                    size="large"
+                    onPress={() => backToLEOS()}
+                >
+                    Back to LEOS
+                </TButtonContained>
             </View>
         </View>
     );

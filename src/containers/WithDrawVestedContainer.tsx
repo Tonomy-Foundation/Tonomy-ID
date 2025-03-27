@@ -128,7 +128,8 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
                     </TouchableOpacity>
                 )}
                 <TButtonContained
-                    style={styles.backBtn}
+                    size="large"
+                    style={{ height: loading ? 46 : 'auto', width: '100%' }}
                     onPress={() =>
                         navigation.navigate('ConfirmStaking', {
                             chain: chain,

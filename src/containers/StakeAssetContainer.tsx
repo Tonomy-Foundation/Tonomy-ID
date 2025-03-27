@@ -213,7 +213,11 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                         </Text>
                     </View>
                     <Animated.View style={[styles.proceedBtn, { marginBottom: animatedMarginBottom }]}>
-                        <TButtonContained onPress={handleProceed} disabled={amountError !== null || amount === ''}>
+                        <TButtonContained
+                            size="large"
+                            onPress={handleProceed}
+                            disabled={amountError !== null || amount === ''}
+                        >
                             Proceed
                         </TButtonContained>
                     </Animated.View>

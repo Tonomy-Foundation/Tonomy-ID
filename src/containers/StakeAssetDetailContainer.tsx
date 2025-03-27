@@ -159,7 +159,7 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
                             }
                         }}
                     >
-                        <Text style={{ fontWeight: '700' }}>
+                        <Text style={{ fontWeight: '500' }}>
                             {formatTokenValue(new Decimal(assetToAmount(allocation.staked)))} {token.getSymbol()}
                         </Text>
                         <View style={styles.flexColEnd}>
@@ -306,11 +306,11 @@ const styles = StyleSheet.create({
     allocationView: {
         backgroundColor: theme.colors.grey7,
         borderRadius: 12,
-        paddingHorizontal: 13,
-        paddingVertical: 7,
+        paddingHorizontal: 16,
+        paddingVertical: 18,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 11,
+        marginBottom: 8,
     },
     allocMulti: { color: theme.colors.grey9, fontWeight: '500' },
 
