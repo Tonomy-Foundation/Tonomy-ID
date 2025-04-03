@@ -1,4 +1,3 @@
-import { setSettings } from '@tonomy/tonomy-id-sdk';
 import Debug from 'debug';
 
 const debug = Debug('tonomy-id:settings');
@@ -14,6 +13,7 @@ const settingsInputs = {
 debug('settingsInputs', settingsInputs);
 
 type ConfigType = {
+    environment: string;
     blockchainUrl: string;
     theme: {
         primaryColor: string;
@@ -61,6 +61,7 @@ type ConfigType = {
     sentryPublicKey: string;
     sentrySecretKey: string;
     sentryProjectId: string;
+    currencySymbol: string;
 };
 
 type SettingsType = {
@@ -126,6 +127,7 @@ if (process.env.SENTRY_SECRET_KEY) {
 
 config.sentryPublicKey = '49c8103bafbb9ebd792b3e3db9f91e76';
 config.sentryProjectId = '4508392816705616';
+config.environment = env;
 
 settings.config = config;
 

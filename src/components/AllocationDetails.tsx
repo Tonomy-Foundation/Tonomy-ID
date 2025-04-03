@@ -3,10 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
-import { getMultiplier } from '../utils/multiplier';
 import { VestedAllocation } from '../utils/chain/types';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
-import { formatDate } from '../utils/time';
 import Decimal from 'decimal.js';
 
 export type Props = {
@@ -36,7 +34,18 @@ const AllocationDetails = (props: Props) => {
             </View>
             <View style={styles.vestingDetailView}>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Total allocation</Text>
+                    <Text style={styles.allocTitle}>Vested asset</Text>
+                    <View style={styles.flexColCenter}>
+                        <Text style={styles.allocMulti}>
+                            {formatTokenValue(new Decimal(allocationData.locked ?? 0))} LEOS
+                        </Text>
+                        <Text style={styles.usdBalance}>
+                            ${formatCurrencyValue(allocationData.locked * props.usdPriceValue)}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Initial allocation</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
                             {formatTokenValue(new Decimal(allocationData.totalAllocation ?? 0))} LEOS
@@ -46,12 +55,7 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
-                <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Locked</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{lockedPercentage}% of total</Text>
-                    </View>
-                </View>
+
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
@@ -73,14 +77,6 @@ const AllocationDetails = (props: Props) => {
                         <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
                     </View>
                 </View>
-                {/* <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Price multiplier</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
-                            {getMultiplier(allocationData.allocationDate, allocationData.categoryId)}x
-                        </Text>
-                    </View>
-                </View> */}
             </View>
             <View style={styles.howView}>
                 <Text style={styles.howHead}>How vesting works</Text>
