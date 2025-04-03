@@ -5,7 +5,7 @@ import CitizenshipScreen from '../screens/CitizenshipScreen';
 import AssetListingScreen from '../screens/AssetListingScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import theme, { useAppTheme } from '../utils/theme';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 import ScanIcon from '../assets/icons/ScanIcon';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -48,6 +48,7 @@ type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'Citizenship'>
 function BottomTabNavigator(props) {
     const theme = useAppTheme();
     const navigation = useNavigation<DrawerNavigation>();
+    const isIpad = Platform.OS === 'ios' && Dimensions.get('window').width >= 768;
 
     return (
         <>
@@ -76,7 +77,7 @@ function BottomTabNavigator(props) {
                         </TouchableOpacity>
                     ),
                     tabBarStyle: {
-                        height: Platform.OS === 'android' ? 80 : 90,
+                        height: isIpad ? 135 : Platform.OS === 'android' ? 80 : 90,
                         borderTopWidth: 1,
                         borderTopColor: theme.colors.border,
                     },
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     tabLabel: {
         fontSize: 10,
         fontWeight: '500',
-        marginBottom: Platform.OS === 'android' ? 20 : 5,
+        marginBottom: Platform.OS === 'android' ? 20 : 7,
     },
 });
 
