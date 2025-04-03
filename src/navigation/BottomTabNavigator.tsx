@@ -77,9 +77,14 @@ function BottomTabNavigator(props) {
                         </TouchableOpacity>
                     ),
                     tabBarStyle: {
-                        height: isIpad ? 135 : Platform.OS === 'android' ? 80 : 90,
                         borderTopWidth: 1,
                         borderTopColor: theme.colors.border,
+                        paddingTop: 20,
+                    },
+                    tabBarItemStyle: {
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     },
                 }}
             >
@@ -87,9 +92,6 @@ function BottomTabNavigator(props) {
                     name="Citizenship"
                     component={CitizenshipScreen}
                     options={{
-                        tabBarIconStyle: {
-                            marginTop: 10,
-                        },
                         headerTitle: 'Citizenship',
                         tabBarLabel: ({ focused }) => (
                             <Text
@@ -117,9 +119,6 @@ function BottomTabNavigator(props) {
                     name="Assets"
                     component={AssetListingScreen}
                     options={{
-                        tabBarIconStyle: {
-                            marginTop: 10,
-                        },
                         tabBarLabel: ({ focused }) => (
                             <Text
                                 style={[
@@ -160,9 +159,6 @@ function BottomTabNavigator(props) {
                     name="Explore"
                     component={ExploreScreen}
                     options={{
-                        tabBarIconStyle: {
-                            marginTop: 10,
-                        },
                         tabBarLabel: ({ focused }) => (
                             <Text
                                 style={[
@@ -189,9 +185,6 @@ function BottomTabNavigator(props) {
                     name="Apps"
                     component={AppsScreen}
                     options={{
-                        tabBarIconStyle: {
-                            marginTop: 10,
-                        },
                         tabBarLabel: ({ focused }) => (
                             <Text
                                 style={[
@@ -223,7 +216,7 @@ const styles = StyleSheet.create({
     tabLabel: {
         fontSize: 10,
         fontWeight: '500',
-        marginBottom: Platform.OS === 'android' ? 20 : 7,
+        marginTop: 13,
     },
 });
 
