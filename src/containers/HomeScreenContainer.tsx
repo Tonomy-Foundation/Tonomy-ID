@@ -13,7 +13,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
         <LayoutComponent
             body={
                 <View style={styles.header}>
-                    {/* TODO uncomment link */}
+                    {/* TODO: uncomment link */}
                     {/* <TButtonText style={styles.headerButton}>Need Help?</TButtonText> */}
                     <View style={styles.imgContainer}>
                         <Image
@@ -29,12 +29,14 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
             footer={
                 <View>
                     <TButtonContained
+                        size="large"
                         onPress={() => navigation.navigate('CreateAccountUsername')}
                         style={commonStyles.marginBottom}
                     >
                         Create Account
                     </TButtonContained>
                     <TButtonOutlined
+                        size="large"
                         onPress={() => navigation.navigate('LoginUsername')}
                         style={commonStyles.marginBottom}
                     >
