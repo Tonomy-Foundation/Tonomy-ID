@@ -44,11 +44,11 @@ const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }
 };
 
 type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'Citizenship'>;
+const isIpad = Platform.OS === 'ios' && Dimensions.get('window').width >= 768;
 
 function BottomTabNavigator(props) {
     const theme = useAppTheme();
     const navigation = useNavigation<DrawerNavigation>();
-    const isIpad = Platform.OS === 'ios' && Dimensions.get('window').width >= 768;
 
     return (
         <>
@@ -79,7 +79,7 @@ function BottomTabNavigator(props) {
                     tabBarStyle: {
                         borderTopWidth: 1,
                         borderTopColor: theme.colors.border,
-                        paddingTop: 20,
+                        paddingTop: isIpad ? 10 : 20,
                     },
                     tabBarItemStyle: {
                         flexDirection: 'column',
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     tabLabel: {
         fontSize: 10,
         fontWeight: '500',
-        marginTop: 13,
+        marginTop: isIpad ? 0 : 13,
     },
 });
 
