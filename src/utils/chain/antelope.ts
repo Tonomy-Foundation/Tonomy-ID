@@ -502,7 +502,7 @@ export const PangeaMainnetChain = new AntelopeChain(
     'https://pangea.eosusa.io',
     'Pangea',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    require('../../assets/pangea/Pangea256x256.png'),
     'https://explorer.pangea.web4.world'
 );
 
@@ -511,7 +511,7 @@ export const PangeaTestnetChain = new AntelopeChain(
     'https://test.pangea.eosusa.io',
     'Pangea Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    require('../../assets/pangea/Pangea256x256.png'),
     'https://explorer.testnet.pangea.web4.world',
     true
 );
@@ -520,7 +520,7 @@ export const TonomyStagingChain = new AntelopeChain(
     'https://blockchain-api-staging.tonomy.foundation/',
     'Tonomy Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    require('../../assets/pangea/Pangea256x256.png'),
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
@@ -529,7 +529,7 @@ export const TonomyLocalChain = new AntelopeChain(
     settings.config.blockchainUrl,
     'Tonomy Localhost',
     'unknown chain id at this time',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    require('../../assets/pangea/Pangea256x256.png'),
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
@@ -539,7 +539,7 @@ export const LEOSToken = new PangeaToken(
     'LEOS',
     'LEOS',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    require('../../assets/pangea/LEOS-tokenx256.png'),
     'leos',
     false,
     true,
@@ -551,7 +551,7 @@ export const LEOSTestnetToken = new PangeaToken(
     'TestnetLEOS',
     'LEOS',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    require('../../assets/pangea/LEOS-tokenx256.png'),
     'leos-testnet',
     false,
     true,
@@ -563,7 +563,7 @@ export const LEOSStagingToken = new PangeaToken(
     'StagingLEOS',
     'LEOS',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    require('../../assets/pangea/LEOS-tokenx256.png'),
     'leos-staging',
     false,
     true,
@@ -575,7 +575,7 @@ export const LEOSLocalToken = new PangeaToken(
     'LocalLEOS',
     'LEOS',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    require('../../assets/pangea/LEOS-tokenx256.png'),
     'leos-local',
     false,
     true,
@@ -596,7 +596,7 @@ export const EOSJungleToken = new AntelopeToken(
     'EOS',
     'JungleEOS',
     4,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    require('../../assets/pangea/LEOS-tokenx256.png'),
     'jungle',
     false,
     false,
