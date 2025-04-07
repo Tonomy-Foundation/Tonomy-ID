@@ -214,7 +214,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                             rewards.
                         </Text>
                         <TouchableOpacity onPress={() => refStakingInfo.current?.open()}>
-                            <Text style={styles.howStaking}>How Staking Works</Text>
+                            <Text style={styles.howStaking}> How Staking Works</Text>
                         </TouchableOpacity>
                     </View>
                     <Animated.View style={[styles.proceedBtn, { marginBottom: animatedMarginBottom }]}>

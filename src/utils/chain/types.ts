@@ -327,7 +327,6 @@ export abstract class AbstractToken implements IToken {
     abstract getUsdPrice(): Promise<number>;
     abstract getContractAccount(): IAccount | undefined;
     getLogoUrl(): string {
-        console.log(' this.logoUrl', this.logoUrl);
         return this.logoUrl;
     }
     getAccount(): IAccount | undefined {
