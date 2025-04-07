@@ -57,6 +57,8 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 import settings from '../../settings';
+import LeosToken from '../../assets/pangea/LEOS-tokenx256.png';
+import PangeaLogo from '../../assets/pangea/Pangea256x256.png';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -502,7 +504,7 @@ export const PangeaMainnetChain = new AntelopeChain(
     'https://pangea.eosusa.io',
     'Pangea',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
-    require('../../assets/pangea/Pangea256x256.png'),
+    PangeaLogo,
     'https://explorer.pangea.web4.world'
 );
 
@@ -511,7 +513,7 @@ export const PangeaTestnetChain = new AntelopeChain(
     'https://test.pangea.eosusa.io',
     'Pangea Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    require('../../assets/pangea/Pangea256x256.png'),
+    PangeaLogo,
     'https://explorer.testnet.pangea.web4.world',
     true
 );
@@ -520,7 +522,7 @@ export const TonomyStagingChain = new AntelopeChain(
     'https://blockchain-api-staging.tonomy.foundation/',
     'Tonomy Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    require('../../assets/pangea/Pangea256x256.png'),
+    PangeaLogo,
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
@@ -529,29 +531,19 @@ export const TonomyLocalChain = new AntelopeChain(
     settings.config.blockchainUrl,
     'Tonomy Localhost',
     'unknown chain id at this time',
-    require('../../assets/pangea/Pangea256x256.png'),
+    PangeaLogo,
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
 
-export const LEOSToken = new PangeaToken(
-    PangeaMainnetChain,
-    'LEOS',
-    'LEOS',
-    6,
-    require('../../assets/pangea/LEOS-tokenx256.png'),
-    'leos',
-    false,
-    true,
-    true
-);
+export const LEOSToken = new PangeaToken(PangeaMainnetChain, 'LEOS', 'LEOS', 6, LeosToken, 'leos', false, true, true);
 
 export const LEOSTestnetToken = new PangeaToken(
     PangeaTestnetChain,
     'TestnetLEOS',
     'LEOS',
     6,
-    require('../../assets/pangea/LEOS-tokenx256.png'),
+    LeosToken,
     'leos-testnet',
     false,
     true,
@@ -563,7 +555,7 @@ export const LEOSStagingToken = new PangeaToken(
     'StagingLEOS',
     'LEOS',
     6,
-    require('../../assets/pangea/LEOS-tokenx256.png'),
+    LeosToken,
     'leos-staging',
     false,
     true,
@@ -575,7 +567,7 @@ export const LEOSLocalToken = new PangeaToken(
     'LocalLEOS',
     'LEOS',
     6,
-    require('../../assets/pangea/LEOS-tokenx256.png'),
+    LeosToken,
     'leos-local',
     false,
     true,
@@ -596,7 +588,7 @@ export const EOSJungleToken = new AntelopeToken(
     'EOS',
     'JungleEOS',
     4,
-    require('../../assets/pangea/LEOS-tokenx256.png'),
+    LeosToken,
     'jungle',
     false,
     false,
