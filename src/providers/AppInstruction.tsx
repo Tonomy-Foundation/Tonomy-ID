@@ -33,8 +33,8 @@ const AppInstructionProvider = () => {
 
     const tips = [
         {
-            title: 'Pangea citizenship',
-            text: ['Find out what awaits you as a citizen of the Pangea world'],
+            title: `${settings.config.ecosystemName} citizenship`,
+            text: [`Find out what awaits you as a citizen of the ${settings.config.ecosystemName} world`],
             tabIndex: 0,
         },
         {
@@ -44,12 +44,12 @@ const AppInstructionProvider = () => {
         },
         {
             title: 'Scan QR codes for login and sign crypto transactions',
-            text: ['Pangea', 'WalletConnect', 'Anchor (Antelope)'],
+            text: [settings.config.ecosystemName, 'WalletConnect', 'Anchor (Antelope)'],
             tabIndex: 2,
         },
         {
-            title: 'Explore Pangea',
-            text: ["Get involved in Pangea's community and learn about its ecosystem"],
+            title: `Explore ${settings.config.ecosystemName}`,
+            text: [`Get involved in ${settings.config.ecosystemName}'s community and learn about its ecosystem`],
             tabIndex: 3,
         },
         {

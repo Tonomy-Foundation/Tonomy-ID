@@ -41,7 +41,7 @@ const renderImageBackground = (balance: Balance) => {
                 imageStyle={{ borderRadius: 10 }}
                 resizeMode="cover"
             >
-                <Text style={styles.imageNetworkText}>Pangea Network</Text>
+                <Text style={styles.imageNetworkText}>{settings.config.ecosystemName} Network</Text>
                 <Text style={styles.imageText}>{balance.totalBalance}</Text>
                 <Text style={styles.imageUsdText}>= ${formatCurrencyValue(balance.totalBalanceUsd ?? 0)}</Text>
             </ImageBackground>

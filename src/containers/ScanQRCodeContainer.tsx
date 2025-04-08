@@ -173,7 +173,7 @@ export default function ScanQRCodeContainer({
                     <View style={styles.flexCol}>
                         <View style={styles.flexRow}>
                             <Image source={Images.GetImage('logo48')} style={styles.favicon} />
-                            <Text>Pangea</Text>
+                            <Text>{settings.config.ecosystemName}</Text>
                         </View>
                         <View style={styles.flexRow}>
                             <Image source={require('../assets/images/crypto-transaction.png')} style={styles.favicon} />

@@ -364,7 +364,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         if (this.getChain().isTestnet()) return 0;
 
         switch (this.getChain().getName()) {
-            case 'Pangea':
+            case 'Tonomy':
                 return TONO_CURRENT_PRICE;
             default:
                 throw new Error('Unsupported Antelope chain');
@@ -423,7 +423,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 }
 
-export class PangeaToken extends AntelopeToken {
+export class TonomyToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
         const vestedBalance = await this.getVestedTotalBalance(account);
@@ -497,19 +497,19 @@ export class PangeaToken extends AntelopeToken {
     }
 }
 
-export const PangeaMainnetChain = new AntelopeChain(
+export const TonomyMainnetChain = new AntelopeChain(
     // 'https://blockchain-api.pangea.web4.world',
     'https://pangea.eosusa.io',
-    'Pangea',
+    'Tonomy',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
     'https://explorer.pangea.web4.world'
 );
 
-export const PangeaTestnetChain = new AntelopeChain(
+export const TonomyTestnetChain = new AntelopeChain(
     // 'https://blockchain-api-testnet.pangea.web4.world',
     'https://test.pangea.eosusa.io',
-    'Pangea Testnet',
+    'Tonomy Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
     'https://explorer.testnet.pangea.web4.world',
@@ -534,8 +534,8 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const TONOToken = new PangeaToken(
-    PangeaMainnetChain,
+export const TONOToken = new TonomyToken(
+    TonomyMainnetChain,
     'TONO',
     'TONO',
     6,
@@ -546,8 +546,8 @@ export const TONOToken = new PangeaToken(
     true
 );
 
-export const TONOTestnetToken = new PangeaToken(
-    PangeaTestnetChain,
+export const TONOTestnetToken = new TonomyToken(
+    TonomyTestnetChain,
     'TestnetTONO',
     'TONO',
     6,
@@ -558,7 +558,7 @@ export const TONOTestnetToken = new PangeaToken(
     true
 );
 
-export const TONOStagingToken = new PangeaToken(
+export const TONOStagingToken = new TonomyToken(
     TonomyStagingChain,
     'StagingTONO',
     'TONO',
@@ -570,7 +570,7 @@ export const TONOStagingToken = new PangeaToken(
     true
 );
 
-export const TONOLocalToken = new PangeaToken(
+export const TONOLocalToken = new TonomyToken(
     TonomyLocalChain,
     'LocalTONO',
     'TONO',
@@ -604,15 +604,15 @@ export const EOSJungleToken = new AntelopeToken(
 );
 
 EOSJungleChain.setNativeToken(EOSJungleToken);
-PangeaMainnetChain.setNativeToken(TONOToken);
-PangeaTestnetChain.setNativeToken(TONOTestnetToken);
+TonomyMainnetChain.setNativeToken(TONOToken);
+TonomyTestnetChain.setNativeToken(TONOTestnetToken);
 TonomyStagingChain.setNativeToken(TONOStagingToken);
 TonomyLocalChain.setNativeToken(TONOLocalToken);
 
 export const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
 
-// ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
-// ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
+// ANTELOPE_CHAIN_ID_TO_CHAIN[TonomyMainnetChain.getAntelopeChainId()] = TonomyMainnetChain;
+// ANTELOPE_CHAIN_ID_TO_CHAIN[TonomyTestnetChain.getAntelopeChainId()] = TonomyTestnetChain;
 ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
 
 export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
@@ -809,10 +809,10 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
 
     private static getDidChainName(chain: AntelopeChain): string | null {
         switch (chain.getName()) {
-            case 'Pangea':
-                return 'pangea';
-            case 'Pangea Testnet':
-                return 'pangea:testnet';
+            case 'Tonomy':
+                return 'tonomy';
+            case 'Tonomy Testnet':
+                return 'tonomy:testnet';
             default:
                 return null;
         }

@@ -13,8 +13,8 @@
         "lightBackground": "#F6F9FB"
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
-    "appName": "Tonomy",
-    "ecosystemName": "Tonomy ",
+    "appName": "Tonomy ID",
+    "ecosystemName": "Tonomy",
     "appSlogan": "For a better Tomorrow",
     "images": {
         "splash": "./src/assets/pangea/pangea-splash.png",

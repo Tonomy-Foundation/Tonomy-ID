@@ -5,6 +5,7 @@ import theme from '../utils/theme';
 import TelegramIcon from '../assets/icons/TelegramIcon';
 import DiscordIcon from '../assets/icons/DiscordIcon';
 import * as Linking from 'expo-linking';
+import settings from '../settings';
 
 export default function SupportContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
@@ -48,7 +49,7 @@ export default function SupportContainer({ navigation }: { navigation: Props['na
                     <View style={styles.supportUserDetails}>
                         <View>
                             <Text style={styles.supportUsername}>Philip Patterson</Text>
-                            <Text style={styles.supportUserRole}>Pangea Fundraising Lead</Text>
+                            <Text style={styles.supportUserRole}>{settings.config.ecosystemName} Fundraising Lead</Text>
                         </View>
                         <TouchableOpacity onPress={() => Linking.openURL('tel:+44 7 8286 99027')}>
                             <Text style={styles.supportUserContactNumber}>+44 7 8286 99027</Text>

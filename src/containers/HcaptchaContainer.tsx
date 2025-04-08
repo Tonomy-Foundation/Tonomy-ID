@@ -15,7 +15,7 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
+import { tonomyTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import NetInfo from '@react-native-community/netinfo';
 import Debug from 'debug';
 import { setUser } from '../utils/sentry';
@@ -109,7 +109,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             await addNativeTokenToAssetStorage(user);
 
-            const url = pangeaTokenEntry.chain.getExplorerUrl({ accountName });
+            const url = tonomyTokenEntry.chain.getExplorerUrl({ accountName });
 
             setAccountUrl(url);
         } catch (e) {

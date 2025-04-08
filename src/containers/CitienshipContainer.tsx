@@ -3,6 +3,7 @@ import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } 
 import theme, { commonStyles } from '../utils/theme';
 import useUserStore from '../store/userStore';
 import { Props } from '../screens/CitizenshipScreen';
+import settings from '../settings';
 
 export default function CitizenshipContainer({ navigation }: { navigation: Props['navigation'] }) {
     const userStore = useUserStore();
@@ -51,12 +52,15 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent}>
-                <Text style={styles.title}>Welcome to Pangea, @{username}</Text>
+                <Text style={styles.title}>
+                    Welcome to {settings.config.ecosystemName}, @{username}
+                </Text>
                 <View style={styles.identityView}>
                     <View style={styles.identityTitle}>
                         <Text style={styles.identityText}>Your identity, your control</Text>
                         <Text style={styles.identityNotes}>
-                            Pangea does not own or control your citizenship like other state nations
+                            {settings.config.ecosystemName} does not own or control your citizenship like other state
+                            nations
                         </Text>
                     </View>
                     <View style={styles.identityImage}>
@@ -66,7 +70,9 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         />
                     </View>
                 </View>
-                <Text style={styles.subTitle}>Pangea is your ticket to digital worlds available now</Text>
+                <Text style={styles.subTitle}>
+                    {settings.config.ecosystemName} is your ticket to digital worlds available now
+                </Text>
                 <View style={styles.digitalWorldContent}>
                     <TouchableOpacity style={styles.webMain} onPress={() => navigation.navigate('Apps')}>
                         <View style={styles.webImage}>
@@ -95,27 +101,27 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                 <ScrollView horizontal={true} style={{ paddingBottom: 70 }}>
                     <HorizontalScrollItem
                         title="Pay globally without middlemen"
-                        subtitle="with Pangea Banklesss"
+                        subtitle={`with ${settings.config.ecosystemName} Banklesss`}
                         imageSource={require('../assets/images/citizenship/1-slide.png')}
-                        url="https://pangea.web4.world/technology/pangea-bankless"
+                        url="https://tonomy.io/technology/pangea-bankless"
                     />
                     <HorizontalScrollItem
                         title="Unlock the Power of Decentralization"
-                        subtitle="with Pangea DAO on Hypha"
+                        subtitle={`with ${settings.config.ecosystemName} DAO on Hypha`}
                         imageSource={require('../assets/images/citizenship/2-slide.png')}
-                        url="https://pangea.web4.world/technology/pangea-dao"
+                        url="https://tonomy.io/technology/pangea-dao"
                     />
                     <HorizontalScrollItem
                         title="Be a part of Liquid Democracy"
-                        subtitle="with Pangea Gov+"
+                        subtitle={`with ${settings.config.ecosystemName} Gov+`}
                         imageSource={require('../assets/images/citizenship/3-slide.png')}
-                        url="https://pangea.web4.world/technology/pangea-gov"
+                        url="https://tonomy.io/technology/pangea-gov"
                     />
                     <HorizontalScrollItem
                         title="Build Next- generation apps"
-                        subtitle="with Pangea Build"
+                        subtitle={`with ${settings.config.ecosystemName} Build`}
                         imageSource={require('../assets/images/citizenship/4-slide.png')}
-                        url="https://pangea.web4.world/technology/pangea-build"
+                        url="https://tonomy.io/technology/pangea-build"
                     />
                 </ScrollView>
             </ScrollView>

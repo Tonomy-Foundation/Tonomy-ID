@@ -13,8 +13,8 @@
         "lightBackground": "#F6F9FB"
     },
     "appLogoUrl": "./src/assets/pangea/favicon.png",
-    "appName": "Pangea ID Testnet",
-    "ecosystemName": "Pangea Testnet",
+    "appName": "Tonomy ID Testnet",
+    "ecosystemName": "Tonomy Testnet",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
         "splash": "./src/assets/pangea/pangea-splash.png",
