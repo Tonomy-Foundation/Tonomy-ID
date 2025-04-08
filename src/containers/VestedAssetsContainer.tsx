@@ -12,6 +12,7 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
+import settings from '../settings';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -146,7 +147,8 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         <View style={styles.availableAssetView}>
                             <View style={styles.header}>
                                 <Text style={styles.lockedCoinsAmount}>
-                                    {formatTokenValue(new Decimal(vestedAllocations.unlockable ?? 0))} LEOS
+                                    {formatTokenValue(new Decimal(vestedAllocations.unlockable ?? 0))}{' '}
+                                    {settings.config.currencySymbol}
                                 </Text>
                                 <Text style={styles.lockedUSDAmount}>
                                     ${formatCurrencyValue(vestedAllocations.unlockable * usdPrice)}

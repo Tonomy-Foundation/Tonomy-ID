@@ -4,6 +4,7 @@ import theme from '../utils/theme';
 import CloseIcon from '../assets/icons/CloseIcon';
 import { appStorage } from '../utils/StorageManager/setup';
 import useErrorStore from '../store/errorStore';
+import settings from '../settings';
 
 const { width } = Dimensions.get('window');
 const numberOfTabs = 5;
@@ -36,7 +37,11 @@ const AppInstructionProvider = () => {
             text: ['Find out what awaits you as a citizen of the Pangea world'],
             tabIndex: 0,
         },
-        { title: 'Assets', text: ['Send and receive LEOS, ETH and other cryptocurrencies'], tabIndex: 1 },
+        {
+            title: 'Assets',
+            text: [`Send and receive ${settings.config.currencySymbol}, ETH and other cryptocurrencies`],
+            tabIndex: 1,
+        },
         {
             title: 'Scan QR codes for login and sign crypto transactions',
             text: ['Pangea', 'WalletConnect', 'Anchor (Antelope)'],

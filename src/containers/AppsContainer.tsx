@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'rea
 import theme from '../utils/theme';
 import { openURL } from 'expo-linking';
 import { OpenNewWindow } from 'iconoir-react-native';
+import settings from '../settings';
 
 const availableAppsData = [
     {
@@ -21,9 +22,8 @@ const availableAppsData = [
     },
     {
         image: require('../assets/images/apps/sales-platform.png'),
-        title: 'LEOS Sales Platform',
-        description:
-            'Invest in Pangea, purchase LEOS tokens easily. LEOS customers are protected under Europe’s MICA regulation.',
+        title: 'Tonomy Launchpad',
+        description: `Invest in Pangea, purchase ${settings.config.currencySymbol} tokens easily. ${settings.config.currencySymbol} customers are protected under Europe’s MICA regulation.`,
         url: 'https://sales.pangea.web4.world',
         isAvailable: true,
     },
@@ -45,8 +45,7 @@ const availableAppsData = [
     {
         image: require('../assets/images/apps/pangean-bankless.png'),
         title: 'Pangea Bankless',
-        description:
-            'Manage your LEOS tokens as easily as any neo-banking application. Full control without compromise.',
+        description: `Manage your ${settings.config.currencySymbol} tokens as easily as any neo-banking application. Full control without compromise.`,
         isAvailable: false,
         url: 'https://pangea.web4.world/technology/pangea-bankless',
     },
@@ -163,16 +162,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 20,
         marginBottom: 5,
-    },
-    leosSalesPlatformFlex: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingBottom: 12,
-    },
-    leosSalesPlatformLink: {
-        fontSize: 10,
-        fontWeight: '400',
-        color: theme.colors.blue,
     },
     pangeaAppHead: {
         fontSize: 16,

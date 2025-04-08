@@ -16,8 +16,9 @@ import TSpinner from '../components/atoms/TSpinner';
 import { useFocusEffect } from '@react-navigation/native';
 import useErrorStore from '../store/errorStore';
 import { getStakeReleaseTime, getUnstakeTime } from '../utils/time';
+import settings from '../settings';
 
-export type StakingLeosProps = {
+export type StakingAssetProps = {
     navigation: Props['navigation'];
     chain: IChain;
     loading?: boolean;
@@ -34,7 +35,7 @@ export function getUnlockStatus(allocation) {
     }
 }
 
-const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = false }: StakingLeosProps) => {
+const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = false }: StakingAssetProps) => {
     const errorStore = useErrorStore();
     const [loading, setLoading] = useState(true);
     const [accountData, setAccountData] = useState<StakingAccountState>({} as StakingAccountState);
@@ -117,8 +118,9 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
                     </View>
                     <View style={styles.flexEndCol}>
                         <Text style={styles.apyPercentage}>{accountData.settings.apy * 100}% APY</Text>
-                        <Text style={styles.leosMonthly}>
-                            {formatCurrencyValue(accountData.estimatedMonthlyYield)} LEOS / month
+                        <Text style={styles.tonoMonthly}>
+                            {formatCurrencyValue(accountData.estimatedMonthlyYield)} {settings.config.currencySymbol} /
+                            month
                         </Text>
                     </View>
                 </View>
@@ -126,7 +128,7 @@ const StakeAssetDetailContainer = ({ navigation, chain, loading: propsLoading = 
                     <TButtonContained
                         style={styles.fullWidthButton}
                         onPress={() =>
-                            navigation.navigate('StakeLeos', {
+                            navigation.navigate('StakeAsset', {
                                 chain: chain,
                             })
                         }
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
         color: theme.colors.success,
         ...commonStyles.secondaryFontFamily,
     },
-    leosMonthly: {
+    tonoMonthly: {
         fontSize: 13,
         color: theme.colors.grey9,
     },

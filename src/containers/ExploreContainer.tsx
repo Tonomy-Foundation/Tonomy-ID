@@ -9,6 +9,7 @@ import SocialIconLinkedIn from '../assets/images/explore/icon-social-linkedin';
 import SocialIconTelegram from '../assets/images/explore/icon-social-telegram';
 import SocialIconDiscord from '../assets/images/explore/icon-social-discord';
 import SocialIconGithub from '../assets/images/explore/icon-social-github';
+import settings from '../settings';
 
 export default function ExploreContainer() {
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
@@ -46,15 +47,9 @@ export default function ExploreContainer() {
     ];
 
     const openNews = [
-        // {
-        //     title: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...',
-        //     subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
-        //     image: require('../assets/images/explore/news-1.png'),
-        //     url: 'https://pangea-web4-world.webflow.io/news/pangeas-leos-token-a-mica-compliant-pioneer-with-expert-legal-guidance-from-taylor-wessing',
-        // },
         {
-            title: 'Navigating the Future: Insights from Brightnodes Audit of LEOS...',
-            subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
+            title: `Navigating the Future: Insights from Brightnodes Audit of ${settings.config.currencySymbol}...`,
+            subtitle: `Pangea&apos;s ${settings.config.currencySymbol} Token: A MiCA-Compliant Pioneer with...`,
             image: require('../assets/images/explore/news-2.jpg'),
             url: 'https://pangea-web4-world.webflow.io/news/navigating-the-future-insights-from-brightnodes-audit-of-leos-tokenomics',
         },

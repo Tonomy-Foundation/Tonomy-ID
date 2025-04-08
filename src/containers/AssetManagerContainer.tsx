@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image, ScrollView } from 'react-native';
-import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
+import { Props } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
 import { Asset, IChain } from '../utils/chain/types';
@@ -17,8 +17,8 @@ import Decimal from 'decimal.js';
 import { assetToAmount, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 
-export type Props = {
-    navigation: LeosAssetsScreenNavigationProp['navigation'];
+export type AssetsProps = {
+    navigation: Props['navigation'];
     chain: IChain;
 };
 
@@ -80,7 +80,7 @@ const stakedBalanceView = (totalStaked: number, navigation, chain: IChain) => {
             <TouchableOpacity
                 style={styles.vestedView}
                 onPress={() => {
-                    navigation.navigate('StakeLeosDetail', {
+                    navigation.navigate('StakeAssetDetail', {
                         chain: chain,
                     });
                 }}
@@ -138,7 +138,7 @@ const investorTootlView = (navigation, chain, redirectStakeToEarn, showVesting, 
     );
 };
 
-const AssetManagerContainer = ({ navigation, chain }: Props) => {
+const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const errorStore = useErrorStore();
 
@@ -247,11 +247,11 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
     const redirectStakeToEarn = () => {
         if (showStaking) {
-            navigation.navigate('StakeLeosDetail', {
+            navigation.navigate('StakeAssetDetail', {
                 chain: chain,
             });
         } else {
-            navigation.navigate('StakeLeos', {
+            navigation.navigate('StakeAsset', {
                 chain: chain,
             });
         }

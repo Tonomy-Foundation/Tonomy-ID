@@ -14,10 +14,10 @@ import {
     AntelopeAccount,
     AntelopeChain,
     AntelopePrivateKey,
-    LEOSLocalToken,
-    LEOSStagingToken,
-    LEOSTestnetToken,
-    LEOSToken,
+    TONOLocalToken,
+    TONOStagingToken,
+    TONOTestnetToken,
+    TONOToken,
     PangeaMainnetChain,
     PangeaTestnetChain,
     TonomyStagingChain,
@@ -51,10 +51,10 @@ export enum ChainKeyName {
     ethereum = 'ethereum',
     ethereumPolygon = 'ethereumPolygon',
     ethereumTestnetSepolia = 'ethereumTestnetSepolia',
-    pangeaLeos = 'pangeaLeos',
-    pangeaTestnetLeos = 'pangeaTestnetLeos',
-    tonomyStagingLeos = 'tonomyStagingLeos',
-    tonomyLocalLeos = 'tonomyLocalLeos',
+    pangeaTono = 'pangeaTono',
+    pangeaTestnetTono = 'pangeaTestnetTono',
+    tonomyStagingTono = 'tonomyStagingTono',
+    tonomyLocalTono = 'tonomyLocalTono',
 }
 
 export type TokenRegistryEntry = {
@@ -74,28 +74,28 @@ async function addLocalChain() {
 export let pangeaTokenEntry: TokenRegistryEntry & { chain: AntelopeChain };
 
 if (settings.env === 'production') {
-    pangeaTokenEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: ChainKeyName.pangeaLeos };
+    pangeaTokenEntry = { token: TONOToken, chain: PangeaMainnetChain, keyName: ChainKeyName.pangeaTono };
     ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else if (settings.env === 'testnet') {
     pangeaTokenEntry = {
-        token: LEOSTestnetToken,
+        token: TONOTestnetToken,
         chain: PangeaTestnetChain,
-        keyName: ChainKeyName.pangeaTestnetLeos,
+        keyName: ChainKeyName.pangeaTestnetTono,
     };
     ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else if (settings.env === 'staging' || settings.env === 'development') {
     pangeaTokenEntry = {
-        token: LEOSStagingToken,
+        token: TONOStagingToken,
         chain: TonomyStagingChain,
-        keyName: ChainKeyName.tonomyStagingLeos,
+        keyName: ChainKeyName.tonomyStagingTono,
     };
     debug('pangeaTokenEntry', pangeaTokenEntry.chain);
     ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
 } else {
     pangeaTokenEntry = {
-        token: LEOSLocalToken,
+        token: TONOLocalToken,
         chain: TonomyLocalChain,
-        keyName: ChainKeyName.tonomyLocalLeos,
+        keyName: ChainKeyName.tonomyLocalTono,
     };
     debug('pangeaTokenEntry', pangeaTokenEntry.chain);
 

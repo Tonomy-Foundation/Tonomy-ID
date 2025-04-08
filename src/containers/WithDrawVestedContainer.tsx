@@ -12,6 +12,7 @@ import Decimal from 'decimal.js';
 import { assetToAmount, KeyManagerLevel, StakingContract } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import { getStakeUntilDate } from '../utils/time';
+import settings from '../settings';
 
 export type VestedAssetSuccessProps = {
     navigation: Props['navigation'];
@@ -80,7 +81,8 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
                 />
                 <Text style={styles.vestedHead}>A special offer for you!</Text>
                 <TP style={styles.vestedSubHead}>
-                    Stake {formatTokenValue(new Decimal(amount))} LEOS and earn a passive income
+                    Stake {formatTokenValue(new Decimal(amount))} {settings.config.currencySymbol} and earn a passive
+                    income
                 </TP>
 
                 <View style={styles.annualView}>

@@ -328,7 +328,7 @@ export class AntelopeChain extends AbstractChain {
     }
 }
 
-const leosSalesPrices = {
+const tonoSalesPrices = {
     seed: 0.0001,
     preSale: 0.0002,
     private: 0.0004,
@@ -336,7 +336,7 @@ const leosSalesPrices = {
     publicSale: 0.0006,
 };
 
-export const LEOS_CURRENT_PRICE = leosSalesPrices.publicSale;
+export const TONO_CURRENT_PRICE = tonoSalesPrices.publicSale;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -365,7 +365,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
 
         switch (this.getChain().getName()) {
             case 'Pangea':
-                return LEOS_CURRENT_PRICE;
+                return TONO_CURRENT_PRICE;
             default:
                 throw new Error('Unsupported Antelope chain');
         }
@@ -534,49 +534,49 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const LEOSToken = new PangeaToken(
+export const TONOToken = new PangeaToken(
     PangeaMainnetChain,
-    'LEOS',
-    'LEOS',
+    'TONO',
+    'TONO',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos',
+    'tono',
     false,
     true,
     true
 );
 
-export const LEOSTestnetToken = new PangeaToken(
+export const TONOTestnetToken = new PangeaToken(
     PangeaTestnetChain,
-    'TestnetLEOS',
-    'LEOS',
+    'TestnetTONO',
+    'TONO',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos-testnet',
+    'tono-testnet',
     false,
     true,
     true
 );
 
-export const LEOSStagingToken = new PangeaToken(
+export const TONOStagingToken = new PangeaToken(
     TonomyStagingChain,
-    'StagingLEOS',
-    'LEOS',
+    'StagingTONO',
+    'TONO',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos-staging',
+    'tono-staging',
     false,
     true,
     true
 );
 
-export const LEOSLocalToken = new PangeaToken(
+export const TONOLocalToken = new PangeaToken(
     TonomyLocalChain,
-    'LocalLEOS',
-    'LEOS',
+    'LocalTONO',
+    'TONO',
     6,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos-local',
+    'tono-local',
     false,
     true,
     true
@@ -604,10 +604,10 @@ export const EOSJungleToken = new AntelopeToken(
 );
 
 EOSJungleChain.setNativeToken(EOSJungleToken);
-PangeaMainnetChain.setNativeToken(LEOSToken);
-PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
-TonomyStagingChain.setNativeToken(LEOSStagingToken);
-TonomyLocalChain.setNativeToken(LEOSLocalToken);
+PangeaMainnetChain.setNativeToken(TONOToken);
+PangeaTestnetChain.setNativeToken(TONOTestnetToken);
+TonomyStagingChain.setNativeToken(TONOStagingToken);
+TonomyLocalChain.setNativeToken(TONOLocalToken);
 
 export const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
 
@@ -697,7 +697,7 @@ export class AntelopeAction implements IOperation {
 
 /*
  * Converts a quantity string to an Asset
- * @param {string} quantity - The quantity string e.g. "1.0000 LEOS"
+ * @param {string} quantity - The quantity string e.g. "1.0000 TONO"
  * @param {AntelopeChain} chain - The chain the asset is on
  * @returns {IAsset} - The asset
  */

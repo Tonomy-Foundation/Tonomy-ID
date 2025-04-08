@@ -123,7 +123,11 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
         if (numericAmount > parseFloat(availableBalance)) {
             setAmountError('Not enough balance');
         } else if (numericAmount < minimumStakeTransfer) {
-            setAmountError(`Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`);
+            setAmountError(
+                `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
+                    settings.config.currencySymbol
+                }`
+            );
         }
 
         const calculatedYield = await token.getCalculatedYield(numericAmount);
@@ -145,7 +149,10 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
         if (amountError || !amount || parseFloat(amount) < minimumStakeTransfer) {
             Alert.alert(
                 'Invalid Input',
-                amountError || `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`
+                amountError ||
+                    `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
+                        settings.config.currencySymbol
+                    }`
             );
             return;
         }
@@ -178,7 +185,8 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                             {amountError && <Text style={styles.errorText}>{amountError}</Text>}
                             {shouldShowMinStakeMessage && (
                                 <Text style={styles.inputHelp}>
-                                    Minimum stake: {formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS
+                                    Minimum stake: {formatTokenValue(new Decimal(minimumStakeTransfer))}{' '}
+                                    {settings.config.currencySymbol}
                                 </Text>
                             )}
                         </View>
@@ -191,7 +199,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                                 <Text style={styles.annualSubText}>Monthly earnings</Text>
                                 <View>
                                     <Text style={styles.annualPercentage}>
-                                        {formatCurrencyValue(monthlyYield)} LEOS
+                                        {formatCurrencyValue(monthlyYield)} {settings.config.currencySymbol}
                                     </Text>
                                     <Text style={styles.annualSubText}>${usdValue}</Text>
                                 </View>

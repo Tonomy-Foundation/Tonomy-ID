@@ -15,6 +15,7 @@ import { debounce } from '../utils/network';
 import { AntelopeAccount, AntelopeChain, AntelopePrivateKey, AntelopeTransaction } from '../utils/chain/antelope';
 import { WalletTransactionRequest } from '../utils/session/walletConnect';
 import { AntelopeTransactionRequest } from '../utils/session/antelope';
+import settings from '../settings';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -76,7 +77,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     };
 
     const handleMaxAmount = async () => {
-        if (token.getSymbol() === 'LEOS') {
+        if (token.getSymbol() === settings.config.currencySymbol) {
             const account = AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account);
             const availableBalance = await token.getAvailableBalance(account);
             const balance = availableBalance.toString().split(' ')[0];
@@ -115,7 +116,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                 return;
             }
 
-            if (token.getSymbol() === 'LEOS' && Number(balance) > Number(availableBalance)) {
+            if (token.getSymbol() === settings.config.currencySymbol && Number(balance) > Number(availableBalance)) {
                 throwErrorMsg();
                 return;
             }
