@@ -503,7 +503,7 @@ export const TonomyMainnetChain = new AntelopeChain(
     'Tonomy',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-    'https://explorer.pangea.web4.world'
+    'https://explorer.tonomy.io'
 );
 
 export const TonomyTestnetChain = new AntelopeChain(
@@ -512,7 +512,7 @@ export const TonomyTestnetChain = new AntelopeChain(
     'Tonomy Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-    'https://explorer.testnet.pangea.web4.world',
+    'https://explorer.testnet.tonomy.io',
     true
 );
 
