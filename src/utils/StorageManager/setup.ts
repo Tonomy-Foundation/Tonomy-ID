@@ -67,6 +67,29 @@ async function checkTableExists(dataSource, tableName) {
     }
 }
 
+async function runAssetNameMigration(dataSource) {
+    const queryRunner = dataSource.createQueryRunner();
+
+    try {
+        const result = await queryRunner.query(
+            `UPDATE AssetStorage 
+             SET assetName = REPLACE(assetName, 'Tonomy Staging-LEOS', 'Tonomy Staging-TONO') 
+             WHERE assetName LIKE '%Tonomy Staging-LEOS%'`
+        );
+
+        // Instead of checking result.length, check the affected rows
+        if (result[0]?.changes > 0) {
+            console.log(`Migration executed: ${result[0].changes} rows updated.`);
+        } else {
+            console.log('No rows affected by migration.');
+        }
+
+        return result[0]?.changes > 0;
+    } finally {
+        await queryRunner.release();
+    }
+}
+
 //initialize the data source
 export async function connect() {
     try {
@@ -83,6 +106,9 @@ export async function connect() {
         if (!appTableExists || !keyTableExists || !assetTableExists) {
             await dataSource.synchronize();
         }
+
+        // Check if the tables exist after synchronization
+        await runAssetNameMigration(dataSource);
 
         return dataSource;
     } catch (error) {

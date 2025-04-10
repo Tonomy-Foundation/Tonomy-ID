@@ -66,8 +66,4 @@ export abstract class AssetStorageManager {
     public async deleteAll(): Promise<void> {
         await this.repository.deleteAll();
     }
-
-    public async findAll(): Promise<void> {
-        await this.repository.findAll();
-    }
 }
