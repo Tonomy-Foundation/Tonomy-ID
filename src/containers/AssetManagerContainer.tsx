@@ -16,6 +16,7 @@ import useErrorStore from '../store/errorStore';
 import Decimal from 'decimal.js';
 import { assetToAmount, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
+import settings from '../settings';
 
 export type AssetsProps = {
     navigation: Props['navigation'];
