@@ -29,12 +29,14 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
             footer={
                 <View>
                     <TButtonContained
+                        size="large"
                         onPress={() => navigation.navigate('CreateAccountUsername')}
                         style={commonStyles.marginBottom}
                     >
                         Create Account
                     </TButtonContained>
                     <TButtonOutlined
+                        size="large"
                         onPress={() => navigation.navigate('LoginUsername')}
                         style={commonStyles.marginBottom}
                     >

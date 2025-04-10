@@ -38,18 +38,28 @@ import {
     SignedTransaction,
     Transaction,
 } from '@wharfkit/antelope';
-import { GetInfoResponse } from '@wharfkit/antelope/src/api/v1/types';
+import { GetInfoResponse, PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
 import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from '../debug';
 import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
-import { VestingContract } from '@tonomy/tonomy-id-sdk';
+import {
+    VestingContract,
+    StakingContract,
+    StakingAccountState,
+    SdkErrors,
+    AntelopePushTransactionError,
+    HttpError,
+    assetToAmount,
+} from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
-import { AntelopePushTransactionError, HttpError } from '@tonomy/tonomy-id-sdk';
 import Decimal from 'decimal.js';
+import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
+import settings from '../../settings';
 
 const vestingContract = VestingContract.Instance;
+const stakingContract = StakingContract.Instance;
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -339,9 +349,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         logoUrl: string,
         coinmarketCapId: string,
         transferable = true,
-        vestable = false
+        vestable = false,
+        stakeable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable, vestable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -386,7 +397,13 @@ export class AntelopeToken extends AbstractToken implements IToken {
         const asset = assets.find((asset) => asset.symbol.toString() === this.toAntelopeSymbol().toString());
 
         if (!asset) return new Asset(this, new Decimal(0));
-        const amount = new Decimal(asset.units.value);
+        let amount;
+
+        if (typeof asset.units.value === 'object') {
+            const convertAmount = assetToAmount(asset.toString());
+
+            amount = new Decimal(convertAmount);
+        } else amount = new Decimal(asset.units.value);
 
         return new Asset(this, amount);
     }
@@ -401,28 +418,35 @@ export class AntelopeToken extends AbstractToken implements IToken {
         return balance.getUsdValue();
     }
 
-    async getVestedTokens(account: IAccount): Promise<VestedTokens> {
-        throw new Error(`getVestedTokens() method not implemented' ${account}`);
-    }
-
-    async getVestedTotalBalance(): Promise<IAsset> {
-        throw new Error(`getVestedTotalBalance() method not implemented'`);
-    }
-
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
         return this.getBalance(account);
     }
 }
 
-export class PangeaVestedToken extends AntelopeToken {
+export class PangeaToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
         const vestedBalance = await this.getVestedTotalBalance(account);
 
-        return availableBalance.add(vestedBalance);
+        // Ensure we retrieve staking state correctly
+        let stakedBalance = new Asset(this, new Decimal(0));
+
+        try {
+            const stakingState = await this.getAccountStateData(account as IAccount);
+            const totalStaked = stakingState.totalStaked + stakingState.totalUnlocking;
+
+            // Convert totalStaked to an Asset
+            stakedBalance = new Asset(this, new Decimal(totalStaked));
+        } catch (e) {
+            if (e.code === SdkErrors.AccountNotFound) {
+                debug('getBalance() Account not found');
+            }
+        }
+
+        return availableBalance.add(vestedBalance).add(stakedBalance);
     }
 
-    getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
+    async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
         return super.getBalance(account);
     }
 
@@ -442,6 +466,34 @@ export class PangeaVestedToken extends AntelopeToken {
 
     async getVestedTokens(account: IAccount): Promise<VestedTokens> {
         return await vestingContract.getVestingAllocations(account.getName());
+    }
+
+    async withdrawVestedTokens(account: IAccount, accountSigner: Signer): Promise<PushTransactionResponse> {
+        return await vestingContract.withdraw(account.getName(), accountSigner);
+    }
+
+    async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
+        const accountData = await stakingContract.getAccountState(account.getName());
+
+        return accountData;
+    }
+
+    async stakeTokens(account: IAccount, amount: string, accountSigner: Signer): Promise<PushTransactionResponse> {
+        return await stakingContract.stakeTokens(account.getName(), amount, accountSigner);
+    }
+
+    async unStakeTokens(
+        account: IAccount,
+        allocationId: number,
+        accountSigner: Signer
+    ): Promise<PushTransactionResponse> {
+        return await stakingContract.requestUnstake(account.getName(), allocationId, accountSigner);
+    }
+
+    async getCalculatedYield(amount: number): Promise<number> {
+        const settings = await stakingContract.getSettings();
+
+        return stakingContract.calculateMonthlyYield(amount, settings);
     }
 }
 
@@ -474,7 +526,7 @@ export const TonomyStagingChain = new AntelopeChain(
 );
 
 export const TonomyLocalChain = new AntelopeChain(
-    'http://localhost:8888',
+    settings.config.blockchainUrl,
     'Tonomy Localhost',
     'unknown chain id at this time',
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
@@ -482,7 +534,7 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const LEOSToken = new PangeaVestedToken(
+export const LEOSToken = new PangeaToken(
     PangeaMainnetChain,
     'LEOS',
     'LEOS',
@@ -490,10 +542,11 @@ export const LEOSToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos',
     false,
+    true,
     true
 );
 
-export const LEOSTestnetToken = new PangeaVestedToken(
+export const LEOSTestnetToken = new PangeaToken(
     PangeaTestnetChain,
     'TestnetLEOS',
     'LEOS',
@@ -501,10 +554,11 @@ export const LEOSTestnetToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-testnet',
     false,
+    true,
     true
 );
 
-export const LEOSStagingToken = new PangeaVestedToken(
+export const LEOSStagingToken = new PangeaToken(
     TonomyStagingChain,
     'StagingLEOS',
     'LEOS',
@@ -512,10 +566,11 @@ export const LEOSStagingToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-staging',
     false,
+    true,
     true
 );
 
-export const LEOSLocalToken = new PangeaVestedToken(
+export const LEOSLocalToken = new PangeaToken(
     TonomyLocalChain,
     'LocalLEOS',
     'LEOS',
@@ -523,6 +578,7 @@ export const LEOSLocalToken = new PangeaVestedToken(
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
     'leos-local',
     false,
+    true,
     true
 );
 
@@ -541,7 +597,10 @@ export const EOSJungleToken = new AntelopeToken(
     'JungleEOS',
     4,
     'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-    'jungle'
+    'jungle',
+    false,
+    false,
+    false
 );
 
 EOSJungleChain.setNativeToken(EOSJungleToken);
@@ -647,10 +706,11 @@ export function getAssetFromQuantity(quantity: string, chain: AntelopeChain): IA
     const name = quantity.split(' ')[1];
     const symbol = name;
     const amountString = quantity.split(' ')[0];
+
     const precision = amountString.includes('.') ? amountString.split('.')[1].length : 0;
 
     const token = new AntelopeToken(chain, name, symbol, precision, '', '');
-    const amount = new Decimal(amountString).mul(new Decimal(10).pow(precision));
+    const amount = new Decimal(amountString);
 
     return new Asset(token, amount);
 }

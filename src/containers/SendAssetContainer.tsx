@@ -80,9 +80,10 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
             const account = AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account);
             const availableBalance = await token.getAvailableBalance(account);
             const balance = availableBalance.toString().split(' ')[0];
+            const formatBalance = Number(balance?.replace(/,/g, '')).toString();
 
-            setAvailableBalance(balance);
-            setBalance(balance);
+            setAvailableBalance(formatBalance);
+            setBalance(formatBalance);
             setUsdAmount((await availableBalance.getUsdValue()).toString());
         } else if (asset.token.balance) {
             setBalance(asset.token.balance);

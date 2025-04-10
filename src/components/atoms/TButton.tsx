@@ -1,7 +1,8 @@
 import React from 'react';
 import theme, { commonStyles, useAppTheme } from '../../utils/theme';
-import { Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import TSpinner from './TSpinner';
 
 type CustomButtonProps = {
     theme?: 'primary' | 'secondary';
@@ -10,6 +11,8 @@ type CustomButtonProps = {
     color?: string;
     icon?: string;
     disabled?: boolean;
+    loading?: boolean;
+    style?: ViewStyle;
 };
 export type ButtonProps = React.ComponentProps<typeof TouchableOpacity> & CustomButtonProps;
 
@@ -41,7 +44,7 @@ export default function TButton(props: ButtonProps) {
     };
 
     return (
-        // @ts-expect-error style props do not match. FIXME:!
+        // @ts-expect-error style props do not match. TODO fix me!
         // eslint-disable-next-line react/prop-types
         <TouchableOpacity {...props} style={[buttonStyle, commonStyles.borderRadius, props.style]}>
             {props.icon && (
@@ -62,7 +65,6 @@ export function TButtonContained(props: ButtonProps) {
     const color = theme.colors.white;
     const style: ViewStyle = {
         backgroundColor: props.disabled ? theme.colors.disabled : getColorBasedOnTheme(props.theme),
-        height: 55,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
@@ -79,11 +81,15 @@ export function TButtonContained(props: ButtonProps) {
         elevation: 4,
     };
 
-    return (
+    return !props.loading ? (
         // eslint-disable-next-line react/prop-types
         <TButton {...props} style={[props.style, style, !props.disabled ? shadowStyle : null]} color={color}>
             {props.children}
         </TButton>
+    ) : (
+        <View {...props} style={[props.style, commonStyles.borderRadius, style, !props.disabled ? shadowStyle : null]}>
+            <TSpinner size={45} />
+        </View>
     );
 }
 

@@ -90,6 +90,11 @@ const expo: ExpoConfig = {
                     {
                         scheme: 'did',
                     },
+                    {
+                        scheme: 'https',
+                        host: ssoDomainUrl,
+                        pathPrefix: '/login',
+                    },
                 ],
                 category: ['BROWSABLE', 'DEFAULT'],
             },
