@@ -39,4 +39,8 @@ export class AssetStorageRepository {
     public async deleteAll(): Promise<void> {
         await this.ormRepository.delete({});
     }
+
+    public async findAll(): Promise<AssetStorage[]> {
+        return await this.ormRepository.find({});
+    }
 }

@@ -107,9 +107,6 @@ export async function connect() {
             await dataSource.synchronize();
         }
 
-        // Check if the tables exist after synchronization
-        await runAssetNameMigration(dataSource);
-
         return dataSource;
     } catch (error) {
         if (isNetworkError(error)) {

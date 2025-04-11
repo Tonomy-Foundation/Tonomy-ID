@@ -37,7 +37,6 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
         try {
             for (const { chain, token } of tokens) {
                 try {
-                    await assetStorage.findAll();
                     const asset = await assetStorage.findAssetByName(token);
 
                     let account;

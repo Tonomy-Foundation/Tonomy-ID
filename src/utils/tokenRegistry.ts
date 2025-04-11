@@ -151,6 +151,7 @@ export async function getKeyOrNullFromChain(chainEntry: TokenRegistryEntry): Pro
 
 export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?: IUser): Promise<IAccount> {
     const { chain, token } = chainEntry;
+
     const asset = await assetStorage.findAssetByName(chainEntry.token);
     const key = await getKeyFromChain(chainEntry);
 
@@ -180,6 +181,8 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?:
 
         if (!asset) {
             await assetStorage.createAsset(new Asset(token, new Decimal(0)), account);
+        } else {
+            await assetStorage.updateAssetNameMigration(chainEntry);
         }
     }
 
