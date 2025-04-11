@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
         ...commonStyles.secondaryFontFamily,
     },
     nameText: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 5,
         fontSize: 14,
     },
@@ -564,7 +564,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
     },
     secondaryColor: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 4,
         fontSize: 16,
         ...commonStyles.secondaryFontFamily,

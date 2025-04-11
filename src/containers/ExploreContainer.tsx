@@ -48,8 +48,8 @@ export default function ExploreContainer() {
 
     const openNews = [
         {
-            title: `Navigating the Future: Insights from Brightnodes Audit of ${settings.config.currencySymbol}...`,
-            subtitle: `${settings.config.ecosystemName}&apos;s ${settings.config.currencySymbol} Token: A MiCA-Compliant Pioneer with...`,
+            title: `Tonomy's ${settings.config.currencySymbol} Token: A MiCA-Compliant Pioneer with Exper...`,
+            subtitle: `The ${settings.config.ecosystemName} and it's ${settings.config.currencySymbol} token aim to revolutionize...`,
             image: require('../assets/images/explore/news-2.jpg'),
             url: 'https://pangea-web4-world.webflow.io/news/navigating-the-future-insights-from-brightnodes-audit-of-leos-tokenomics',
         },
@@ -84,7 +84,7 @@ export default function ExploreContainer() {
                             style={styles.tonomyLinkButton}
                         >
                             <View style={{ flexDirection: 'row' }}>
-                                <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
+                                <Image source={Images.GetImage('favicon')} style={styles.favicon} />
                                 <Text style={styles.tonomyLinkButtonText}>{link.title}</Text>
                             </View>
                             <ArrowRight width={24} height={24} color={theme.colors.grey9} />
@@ -237,15 +237,15 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderColor: theme.colors.grey8,
         flexDirection: 'row',
-        gap: 9,
+        gap: 10,
         paddingHorizontal: 16,
         paddingVertical: 16,
         width: '100%',
     },
     newsFrameTitle: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '700',
-        lineHeight: 16.41,
+        lineHeight: 19,
         letterSpacing: 0.15,
         width: 260,
         paddingEnd: 10,
@@ -256,10 +256,11 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
     newsFrameNote: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '400',
         lineHeight: 16,
         color: theme.colors.grey9,
         width: '50%',
+        marginTop: 3,
     },
 });

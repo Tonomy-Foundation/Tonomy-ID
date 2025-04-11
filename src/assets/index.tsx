@@ -18,12 +18,16 @@ export class Images {
             name: 'logo1024',
             image: require('./tonomy/tonomy-logo1024.png'),
         },
+        {
+            name: 'favicon',
+            image: require('./tonomy/tonomy-logo48.png'),
+        },
     ];
 
     private static pangeaImages: Array<Image> = [
         {
             name: 'splash',
-            image: require('./pangea/pangea-splash.png'),
+            image: require('./pangea/tono-splash.png'),
         },
         {
             name: 'logo48',
@@ -32,6 +36,10 @@ export class Images {
         {
             name: 'logo1024',
             image: require('./pangea/pangea-large-logo.png'),
+        },
+        {
+            name: 'favicon',
+            image: require('./pangea/favicon.png'),
         },
     ];
 

@@ -227,7 +227,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                                     <Text style={styles.inputButtonText}>Paste</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.inputButton} onPress={handleOpenQRScan}>
-                                    <ScanIcon color={theme.colors.success} width={18} height={18} />
+                                    <ScanIcon color={theme.colors.primary} width={18} height={18} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     secondaryColor: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 4,
     },
     inputContainer: {
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
         ...commonStyles.secondaryFontFamily,
     },
     inputButtonText: {
-        color: theme.colors.success,
+        color: theme.colors.primary,
         fontSize: 15,
         fontWeight: '500',
         ...commonStyles.secondaryFontFamily,

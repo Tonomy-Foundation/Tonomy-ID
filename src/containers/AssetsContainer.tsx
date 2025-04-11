@@ -156,7 +156,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                             style={styles.flexCenter}
                         >
                             <View style={styles.headerButton}>
-                                <ArrowUp height={20} width={20} color={theme.colors.black} strokeWidth={2} />
+                                <ArrowUp height={20} width={20} color={theme.colors.primary} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Send</Text>
                         </TouchableOpacity>
@@ -170,7 +170,7 @@ export default function AssetsContainer({ navigation }: { navigation: AssetsScre
                             style={styles.flexCenter}
                         >
                             <View style={styles.headerButton}>
-                                <ArrowDown height={20} width={20} color={theme.colors.black} strokeWidth={2} />
+                                <ArrowDown height={20} width={20} color={theme.colors.primary} strokeWidth={2} />
                             </View>
                             <Text style={styles.textSize}>Receive</Text>
                         </TouchableOpacity>
@@ -305,7 +305,8 @@ const styles = StyleSheet.create({
         ...commonStyles.secondaryFontFamily,
     },
     headerButton: {
-        backgroundColor: theme.colors.grey7,
+        borderColor: theme.colors.grey8,
+        borderWidth: 2,
         width: 37,
         height: 37,
         alignItems: 'center',
@@ -328,12 +329,12 @@ const styles = StyleSheet.create({
     },
 
     networkTitle: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         fontSize: 12,
     },
     secondaryColor: {
         fontSize: 13,
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
     },
     favicon: {
         width: 26,

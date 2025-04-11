@@ -17,7 +17,7 @@
     "ecosystemName": "Tonomy",
     "appSlogan": "For a better Tomorrow",
     "images": {
-        "splash": "./src/assets/pangea/pangea-splash.png",
+        "splash": "./src/assets/pangea/tono-splash.png",
         "logo48": "./src/assets/pangea/favicon.png",
         "logo1024": "./src/assets/pangea/pangea-large-logo.png"
     },

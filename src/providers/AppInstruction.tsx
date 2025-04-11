@@ -96,8 +96,8 @@ const AppInstructionProvider = () => {
         }
     };
 
-    const bottomPosNormal = Platform.OS === 'ios' ? 80 : 74;
-    const bottomPosScan = Platform.OS === 'ios' ? 115 : 96;
+    const bottomPosNormal = Platform.OS === 'ios' ? 80 : 60;
+    const bottomPosScan = Platform.OS === 'ios' ? 115 : 80;
 
     return (
         showOnboarding && (
@@ -105,7 +105,7 @@ const AppInstructionProvider = () => {
                 style={[styles.modalContainer, { opacity, bottom: currentTip === 2 ? bottomPosScan : bottomPosNormal }]}
             >
                 <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
-                    <CloseIcon />
+                    <CloseIcon color={theme.colors.black} />
                 </TouchableOpacity>
                 <View style={styles.modalContent}>
                     <View style={{ gap: 8 }}>
@@ -157,11 +157,11 @@ const styles = StyleSheet.create({
         borderTopWidth: 8,
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
-        borderTopColor: theme.colors.blue,
+        borderTopColor: theme.colors.secondary2,
     },
     modalContent: {
         width: '100%',
-        backgroundColor: theme.colors.blue,
+        backgroundColor: theme.colors.secondary2,
         padding: 20,
         borderRadius: 10,
     },
@@ -173,20 +173,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 24,
         marginRight: 6,
-        color: theme.colors.white,
+        color: theme.colors.black,
     },
     tipTitle: {
         fontSize: 16,
         fontWeight: '500',
-        color: theme.colors.white,
+        color: theme.colors.black,
     },
     tipText: {
         fontSize: 15,
-        color: theme.colors.white,
+        color: theme.colors.black,
     },
     pagination: {
         fontSize: 15,
-        color: theme.colors.white,
+        color: theme.colors.black,
     },
     footer: {
         marginTop: 10,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     },
     nextButton: {
         alignItems: 'center',
-        borderColor: theme.colors.white,
+        borderColor: theme.colors.black,
         borderWidth: 1,
         paddingHorizontal: 26,
         paddingVertical: 12,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     },
     nextText: {
         fontSize: 15,
-        color: theme.colors.white,
+        color: theme.colors.black,
     },
 });
 

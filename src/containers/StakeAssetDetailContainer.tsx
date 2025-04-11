@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     apyPercentage: {
         fontSize: 16,
         fontWeight: '700',
-        color: theme.colors.success,
+        color: theme.colors.primary,
         ...commonStyles.secondaryFontFamily,
     },
     tonoMonthly: {
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     howStaking: {
         fontSize: 13,
         fontWeight: '400',
-        color: theme.colors.success,
+        color: theme.colors.primary,
         marginTop: 6,
     },
 });

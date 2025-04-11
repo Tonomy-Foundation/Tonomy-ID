@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     annualPercentage: {
         fontWeight: '400',
         fontSize: 14,
-        color: theme.colors.success,
+        color: theme.colors.primary,
     },
     unlockAssetView: {
         alignItems: 'flex-start',
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
         padding: 12,
         borderRadius: 8,
         textAlign: 'center',
-        color: theme.colors.success,
+        color: theme.colors.primary,
         fontSize: 16,
     },
     inlineContainer: {

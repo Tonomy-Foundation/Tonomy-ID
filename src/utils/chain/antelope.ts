@@ -57,7 +57,7 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 import settings from '../../settings';
-import LeosToken from '../../assets/pangea/LEOS-tokenx256.png';
+import TonoToken from '../../assets/pangea/favicon.png';
 import PangeaLogo from '../../assets/pangea/Pangea256x256.png';
 
 const vestingContract = VestingContract.Instance;
@@ -536,14 +536,14 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, LeosToken, 'tono', false, true, true);
+export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, TonoToken, 'tono', false, true, true);
 
 export const TONOTestnetToken = new TonomyToken(
     TonomyTestnetChain,
     'TestnetTONO',
     'TONO',
     6,
-    LeosToken,
+    TonoToken,
     'tono-testnet',
     false,
     true,
@@ -555,7 +555,7 @@ export const TONOStagingToken = new TonomyToken(
     'StagingTONO',
     'TONO',
     6,
-    LeosToken,
+    TonoToken,
     'leos-staging',
     false,
     true,
@@ -567,7 +567,7 @@ export const TONOLocalToken = new TonomyToken(
     'LocalTONO',
     'TONO',
     6,
-    LeosToken,
+    TonoToken,
     'leos-local',
     false,
     true,
@@ -588,7 +588,7 @@ export const EOSJungleToken = new AntelopeToken(
     'EOS',
     'JungleEOS',
     4,
-    LeosToken,
+    TonoToken,
     'jungle',
     false,
     false,

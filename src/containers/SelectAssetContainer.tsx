@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     },
     secondaryColor: {
         fontSize: 13,
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
     },
     assetsTestnetNetwork: {
         backgroundColor: theme.colors.blue,

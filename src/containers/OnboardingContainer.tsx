@@ -13,8 +13,8 @@ import settings from '../settings';
 const { height: screenHeight } = Dimensions.get('window');
 
 const pictureAndSliderHeight = screenHeight * 0.69;
-const textHeight = screenHeight * 0.22;
-const buttonsHeight = screenHeight * 0.07;
+const textHeight = screenHeight * 0.2;
+const buttonsHeight = screenHeight * 0.09;
 
 function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -23,7 +23,7 @@ function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }
     const slides = [
         {
             id: 1,
-            title: `Welcome to the Virtual Nation of ${settings.config.ecosystemName}`,
+            title: `Welcome to ${settings.config.ecosystemName}`,
             text: `${settings.config.appName} is your access point to a brand new world.`,
             image: require('../assets/images/onboarding/1.png'),
         },

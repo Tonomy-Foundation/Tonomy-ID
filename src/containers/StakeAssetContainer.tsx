@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     annualPercentage: {
         fontWeight: '400',
         fontSize: 14,
-        color: theme.colors.success,
+        color: theme.colors.primary,
     },
     unlockhead: {
         fontSize: 16,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
         flexShrink: 0,
     },
     inputButtonText: {
-        color: theme.colors.success,
+        color: theme.colors.primary,
         fontSize: 15,
         fontWeight: '500',
         ...commonStyles.secondaryFontFamily,
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     howStaking: {
         fontSize: 13,
         fontWeight: '400',
-        color: theme.colors.success,
+        color: theme.colors.primary,
         marginTop: 6,
     },
 });

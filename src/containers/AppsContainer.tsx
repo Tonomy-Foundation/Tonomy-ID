@@ -6,7 +6,7 @@ import settings from '../settings';
 
 const availableAppsData = [
     {
-        image: require('../assets/images/apps/pangea-block-explorer.png'),
+        image: require('../assets/pangea/favicon.png'),
         title: `${settings.config.ecosystemName} DAO on Hypha`,
         description: `Collaborate and make decisions within the ${settings.config.ecosystemName} ecosystem with other's.`,
         url: 'https://pangea.hypha.earth/pangea-dao/',
@@ -21,24 +21,24 @@ const availableAppsData = [
         isAvailable: true,
     },
     {
-        image: require('../assets/images/apps/sales-platform.png'),
+        image: require('../assets/pangea/favicon.png'),
         title: 'Tonomy Launchpad',
         description: `Invest in ${settings.config.ecosystemName}, purchase ${settings.config.currencySymbol} tokens easily. ${settings.config.currencySymbol} customers are protected under Europe’s MICA regulation.`,
-        url: 'https://sales.pangea.web4.world',
+        url: 'https://launchpad.tonomy.io',
         isAvailable: true,
     },
     {
-        image: require('../assets/images/apps/pangea-block-explorer.png'),
+        image: require('../assets/pangea/favicon.png'),
         description: `Search, view, and track your ${settings.config.ecosystemName} Blockchain transactions and activities in real-time.`,
         title: `${settings.config.ecosystemName} Block Explorer`,
-        url: 'https://explorer.pangea.web4.world',
+        url: 'https://explorer.tonomy.io',
         isAvailable: true,
     },
     {
-        image: require('../assets/images/apps/pangea-block-explorer.png'),
+        image: require('../assets/pangea/favicon.png'),
         title: `${settings.config.ecosystemName} Developers Features Demo`,
         description: `A website to demonstrate the flows and features available to developers in ${settings.config.ecosystemName}. See the  0.5s block time, easy data signing flows and simplified non-custodial crypto management.`,
-        url: 'https://demo.pangea.web4.world',
+        url: 'https://demo.tonomy.io',
         isAvailable: true,
     },
     {
