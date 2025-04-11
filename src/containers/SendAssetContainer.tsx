@@ -195,6 +195,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
         setBalance(amount);
         debouncedSearch(amount);
     };
+    const logo = asset.token.icon;
 
     return (
         <View style={styles.container}>
@@ -231,7 +232,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                             </View>
                         </View>
                         <View style={styles.networkContainer}>
-                            <Image source={{ uri: asset.token.icon }} style={styles.favicon} />
+                            <Image source={typeof logo === 'string' ? { uri: logo } : logo} style={styles.favicon} />
                             <Text style={styles.networkName}>{asset.chain.getName()} network</Text>
                         </View>
                         <View>

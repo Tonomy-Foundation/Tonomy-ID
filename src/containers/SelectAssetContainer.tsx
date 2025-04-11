@@ -126,6 +126,7 @@ const SelectAssetContainer = ({
                             const chainName = capitalizeFirstLetter(chainObj.chain.getName());
 
                             const accountData = findAccountByChain(chainName);
+                            const logo = chainObj.token.getLogoUrl();
 
                             if (chainObj.chain.isTestnet() && !developerMode) {
                                 return null;
@@ -138,7 +139,7 @@ const SelectAssetContainer = ({
                                     onPress={() => handleOnPress(chainObj)}
                                 >
                                     <Image
-                                        source={{ uri: chainObj.token.getLogoUrl() }}
+                                        source={typeof logo === 'string' ? { uri: logo } : logo}
                                         style={[styles.favicon, { resizeMode: 'contain' }]}
                                     />
                                     <View style={styles.assetContent}>

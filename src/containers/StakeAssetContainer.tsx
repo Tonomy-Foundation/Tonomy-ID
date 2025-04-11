@@ -27,6 +27,7 @@ import useErrorStore from '../store/errorStore';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import Debug from 'debug';
+import HowStakingWorks from '../components/HowStakingWorks';
 
 const debug = Debug('tonomy-id:containers:StakeAssetContainer');
 
@@ -45,6 +46,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
     const [usdValue, setUsdValue] = useState<string>('0.00');
     const minimumStakeTransfer = settings.isProduction() ? 1000 : 1;
     const [amountError, setAmountError] = useState<string | null>(null);
+    const refStakingInfo = useRef<{ open: () => void; close: () => void }>(null);
 
     const isVestable = chain.getNativeToken().isVestable();
 
@@ -217,8 +219,11 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                         <Text style={styles.unlockhead}>What is staking? </Text>
                         <Text style={styles.lockedParagraph}>
                             Staking is locking up cryptocurrency to increase blockchain network security and earn
-                            rewards
+                            rewards.
                         </Text>
+                        <TouchableOpacity onPress={() => refStakingInfo.current?.open()}>
+                            <Text style={styles.howStaking}> How Staking Works</Text>
+                        </TouchableOpacity>
                     </View>
                     <Animated.View style={[styles.proceedBtn, { marginBottom: animatedMarginBottom }]}>
                         <TButtonContained
@@ -229,6 +234,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                             Proceed
                         </TButtonContained>
                     </Animated.View>
+                    <HowStakingWorks refMessage={refStakingInfo} />
                 </ScrollView>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -336,6 +342,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '400',
         ...commonStyles.secondaryFontFamily,
+    },
+    howStaking: {
+        fontSize: 13,
+        fontWeight: '400',
+        color: theme.colors.success,
+        marginTop: 6,
     },
 });
 

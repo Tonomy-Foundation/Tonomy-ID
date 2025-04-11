@@ -57,6 +57,8 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 import settings from '../../settings';
+import LeosToken from '../../assets/pangea/LEOS-tokenx256.png';
+import PangeaLogo from '../../assets/pangea/Pangea256x256.png';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -502,7 +504,7 @@ export const TonomyMainnetChain = new AntelopeChain(
     'https://pangea.eosusa.io',
     'Tonomy',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    PangeaLogo,
     'https://explorer.tonomy.io'
 );
 
@@ -511,7 +513,7 @@ export const TonomyTestnetChain = new AntelopeChain(
     'https://test.pangea.eosusa.io',
     'Tonomy Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    PangeaLogo,
     'https://explorer.testnet.tonomy.io',
     true
 );
@@ -520,7 +522,7 @@ export const TonomyStagingChain = new AntelopeChain(
     'https://blockchain-api-staging.tonomy.foundation/',
     'Tonomy Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    PangeaLogo,
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
@@ -529,29 +531,19 @@ export const TonomyLocalChain = new AntelopeChain(
     settings.config.blockchainUrl,
     'Tonomy Localhost',
     'unknown chain id at this time',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    PangeaLogo,
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
 
-export const TONOToken = new TonomyToken(
-    TonomyMainnetChain,
-    'TONO',
-    'TONO',
-    6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'tono',
-    false,
-    true,
-    true
-);
+export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, LeosToken, 'tono', false, true, true);
 
 export const TONOTestnetToken = new TonomyToken(
     TonomyTestnetChain,
     'TestnetTONO',
     'TONO',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    LeosToken,
     'tono-testnet',
     false,
     true,
@@ -563,8 +555,8 @@ export const TONOStagingToken = new TonomyToken(
     'StagingTONO',
     'TONO',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'tono-staging',
+    LeosToken,
+    'leos-staging',
     false,
     true,
     true
@@ -575,8 +567,8 @@ export const TONOLocalToken = new TonomyToken(
     'LocalTONO',
     'TONO',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'tono-local',
+    LeosToken,
+    'leos-local',
     false,
     true,
     true
@@ -596,7 +588,7 @@ export const EOSJungleToken = new AntelopeToken(
     'EOS',
     'JungleEOS',
     4,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    LeosToken,
     'jungle',
     false,
     false,
