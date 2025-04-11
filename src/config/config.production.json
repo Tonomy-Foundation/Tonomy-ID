@@ -1,14 +1,14 @@
 {
     "theme": {
-        "primaryColor": "#000000",
-        "disabled": "#939393",
-        "secondaryColor": "#4CAF50",
-        "secondaryColor2": "#6E84A3",
+        "primaryColor": "#5833BC",
+        "disabled": "#C2B8E6",
+        "secondaryColor": "#EDF2F9",
+        "secondaryColor2": "#1ACFD3",
         "tertiaryColor": "#7660E7",
         "tertiaryColor2": "#CFC8F7",
         "text": "#000000",
         "textGray": "#000000",
-        "linkColor": "#4CAF50",
+        "linkColor": "#5833BC",
         "infoBackground": "#F6F9FB",
         "lightBackground": "#F6F9FB"
     },
