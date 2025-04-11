@@ -27,6 +27,7 @@ import useErrorStore from '../store/errorStore';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import Debug from 'debug';
+import HowStakingWorks from '../components/HowStakingWorks';
 
 const debug = Debug('tonomy-id:containers:StakeAssetContainer');
 
@@ -45,6 +46,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
     const [usdValue, setUsdValue] = useState<string>('0.00');
     const minimumStakeTransfer = settings.isProduction() ? 1000 : 1;
     const [amountError, setAmountError] = useState<string | null>(null);
+    const refStakingInfo = useRef<{ open: () => void; close: () => void }>(null);
 
     const isVestable = chain.getNativeToken().isVestable();
 
@@ -123,7 +125,11 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
         if (numericAmount > parseFloat(availableBalance)) {
             setAmountError('Not enough balance');
         } else if (numericAmount < minimumStakeTransfer) {
-            setAmountError(`Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`);
+            setAmountError(
+                `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
+                    settings.config.currencySymbol
+                }`
+            );
         }
 
         const calculatedYield = await token.getCalculatedYield(numericAmount);
@@ -145,7 +151,10 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
         if (amountError || !amount || parseFloat(amount) < minimumStakeTransfer) {
             Alert.alert(
                 'Invalid Input',
-                amountError || `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS`
+                amountError ||
+                    `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
+                        settings.config.currencySymbol
+                    }`
             );
             return;
         }
@@ -178,7 +187,8 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                             {amountError && <Text style={styles.errorText}>{amountError}</Text>}
                             {shouldShowMinStakeMessage && (
                                 <Text style={styles.inputHelp}>
-                                    Minimum stake: {formatTokenValue(new Decimal(minimumStakeTransfer))} LEOS
+                                    Minimum stake: {formatTokenValue(new Decimal(minimumStakeTransfer))}{' '}
+                                    {settings.config.currencySymbol}
                                 </Text>
                             )}
                         </View>
@@ -191,7 +201,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                                 <Text style={styles.annualSubText}>Monthly earnings</Text>
                                 <View>
                                     <Text style={styles.annualPercentage}>
-                                        {formatCurrencyValue(monthlyYield)} LEOS
+                                        {formatCurrencyValue(monthlyYield)} {settings.config.currencySymbol}
                                     </Text>
                                     <Text style={styles.annualSubText}>${usdValue}</Text>
                                 </View>
@@ -209,8 +219,11 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                         <Text style={styles.unlockhead}>What is staking? </Text>
                         <Text style={styles.lockedParagraph}>
                             Staking is locking up cryptocurrency to increase blockchain network security and earn
-                            rewards
+                            rewards.
                         </Text>
+                        <TouchableOpacity onPress={() => refStakingInfo.current?.open()}>
+                            <Text style={styles.howStaking}> How Staking Works</Text>
+                        </TouchableOpacity>
                     </View>
                     <Animated.View style={[styles.proceedBtn, { marginBottom: animatedMarginBottom }]}>
                         <TButtonContained
@@ -221,6 +234,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
                             Proceed
                         </TButtonContained>
                     </Animated.View>
+                    <HowStakingWorks refMessage={refStakingInfo} />
                 </ScrollView>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -270,7 +284,7 @@ const styles = StyleSheet.create({
     annualPercentage: {
         fontWeight: '400',
         fontSize: 14,
-        color: theme.colors.success,
+        color: theme.colors.primary,
     },
     unlockhead: {
         fontSize: 16,
@@ -308,7 +322,7 @@ const styles = StyleSheet.create({
         flexShrink: 0,
     },
     inputButtonText: {
-        color: theme.colors.success,
+        color: theme.colors.primary,
         fontSize: 15,
         fontWeight: '500',
         ...commonStyles.secondaryFontFamily,
@@ -328,6 +342,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '400',
         ...commonStyles.secondaryFontFamily,
+    },
+    howStaking: {
+        fontSize: 13,
+        fontWeight: '400',
+        color: theme.colors.primary,
+        marginTop: 6,
     },
 });
 

@@ -31,7 +31,7 @@ const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }
                         width: 70,
                         height: 70,
                         borderRadius: 35,
-                        backgroundColor: theme.colors.black,
+                        backgroundColor: theme.colors.primary,
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
@@ -67,7 +67,7 @@ function BottomTabNavigator(props) {
                         fontWeight: '500',
                     },
                     headerTitleAlign: 'center',
-                    headerTintColor: theme.dark ? theme.colors.text : 'black',
+                    headerTintColor: theme.dark ? theme.colors.text : 'primary',
                     headerLeft: () => (
                         <TouchableOpacity
                             style={{ paddingHorizontal: 15, paddingVertical: 10 }}
@@ -97,7 +97,7 @@ function BottomTabNavigator(props) {
                             <Text
                                 style={[
                                     styles.tabLabel,
-                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.primary },
                                 ]}
                             >
                                 Citizenship
@@ -105,12 +105,12 @@ function BottomTabNavigator(props) {
                         ),
                         tabBarIcon: ({ focused }) =>
                             focused ? (
-                                <UserCircleSolid />
+                                <UserCircleSolid color={theme.colors.primary} />
                             ) : (
                                 <UserCircle
                                     width={28}
                                     height={28}
-                                    color={!focused ? theme.colors.tabGray : theme.colors.black}
+                                    color={!focused ? theme.colors.tabGray : theme.colors.primary}
                                 />
                             ),
                     }}
@@ -123,7 +123,7 @@ function BottomTabNavigator(props) {
                             <Text
                                 style={[
                                     styles.tabLabel,
-                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.primary },
                                 ]}
                             >
                                 Assets
@@ -131,7 +131,7 @@ function BottomTabNavigator(props) {
                         ),
                         tabBarIcon: ({ focused }) =>
                             focused ? (
-                                <WalletSolid width={28} height={28} color={theme.colors.black} />
+                                <WalletSolid width={28} height={28} color={theme.colors.primary} />
                             ) : (
                                 <Wallet width={28} height={28} color={theme.colors.tabGray} />
                             ),
@@ -147,7 +147,7 @@ function BottomTabNavigator(props) {
                                 style={{ paddingHorizontal: 5, paddingVertical: 10 }}
                                 onPress={() => navigation.navigate('Assets')}
                             >
-                                <ArrowLeft height={24} width={24} color={theme.colors.black} />
+                                <ArrowLeft height={24} width={24} color={theme.colors.primary} />
                             </TouchableOpacity>
                         ),
                         tabBarLabel: () => null,
@@ -163,7 +163,7 @@ function BottomTabNavigator(props) {
                             <Text
                                 style={[
                                     styles.tabLabel,
-                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.primary },
                                 ]}
                             >
                                 Explore
@@ -171,12 +171,12 @@ function BottomTabNavigator(props) {
                         ),
                         tabBarIcon: ({ focused }) =>
                             focused ? (
-                                <CompassSolid />
+                                <CompassSolid color={theme.colors.primary} />
                             ) : (
                                 <Compass
                                     width={28}
                                     height={28}
-                                    color={!focused ? theme.colors.tabGray : theme.colors.black}
+                                    color={!focused ? theme.colors.tabGray : theme.colors.primary}
                                 />
                             ),
                     }}
@@ -189,7 +189,7 @@ function BottomTabNavigator(props) {
                             <Text
                                 style={[
                                     styles.tabLabel,
-                                    { color: !focused ? theme.colors.tabGray : theme.colors.black },
+                                    { color: !focused ? theme.colors.tabGray : theme.colors.primary },
                                 ]}
                             >
                                 Apps
@@ -197,12 +197,12 @@ function BottomTabNavigator(props) {
                         ),
                         tabBarIcon: ({ focused }) =>
                             focused ? (
-                                <GridPlusSolid />
+                                <GridPlusSolid color={theme.colors.primary} />
                             ) : (
                                 <GridPlus
                                     width={28}
                                     height={28}
-                                    color={!focused ? theme.colors.tabGray : theme.colors.black}
+                                    color={!focused ? theme.colors.tabGray : theme.colors.primary}
                                 />
                             ),
                     }}

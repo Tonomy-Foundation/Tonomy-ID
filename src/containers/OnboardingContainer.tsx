@@ -13,8 +13,8 @@ import settings from '../settings';
 const { height: screenHeight } = Dimensions.get('window');
 
 const pictureAndSliderHeight = screenHeight * 0.69;
-const textHeight = screenHeight * 0.22;
-const buttonsHeight = screenHeight * 0.07;
+const textHeight = screenHeight * 0.2;
+const buttonsHeight = screenHeight * 0.09;
 
 function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -23,20 +23,20 @@ function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }
     const slides = [
         {
             id: 1,
-            title: 'Welcome to the Virtual Nation of Pangea',
+            title: `Welcome to ${settings.config.ecosystemName}`,
             text: `${settings.config.appName} is your access point to a brand new world.`,
             image: require('../assets/images/onboarding/1.png'),
         },
         {
             id: 2,
-            title: 'Passwordless login to Pangea apps',
-            text: 'No more passwords for every app you use! Using the secure login of Pangea.',
+            title: `Passwordless login to ${settings.config.ecosystemName} apps`,
+            text: `No more passwords for every app you use! Using the secure login of ${settings.config.ecosystemName}.`,
             image: require('../assets/images/onboarding/2.png'),
         },
         {
             id: 3,
             title: 'You control your data and citizenship',
-            text: 'Your data is stored on your phone. Pangea and third parties can’t access it.',
+            text: `Your data is stored on your phone. ${settings.config.ecosystemName} and third parties can’t access it.`,
             image: require('../assets/images/onboarding/3.png'),
         },
         {

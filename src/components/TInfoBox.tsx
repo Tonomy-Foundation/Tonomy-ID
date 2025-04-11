@@ -51,11 +51,17 @@ export default function TInfoBox(props: TInfoBoxProps) {
             flex: props.align === 'center' ? 0 : 1,
         },
         link: {
-            color: theme.colors.success,
+            color: theme.colors.primary,
         },
         paragraph: {
             textAlign: props.align,
             textAlignVertical: 'center',
+            letterSpacing: 0.2,
+            lineHeight: 19,
+            paddingLeft: 5,
+            fontSize: 14,
+            fontWeight: '400',
+            color: theme.colors.text,
         },
     });
 

@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView } from 'rea
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from '../components/TIconButton';
 import theme from '../utils/theme';
+import settings from '../settings';
 
 export type QRScanProps = {
     refMessage: React.RefObject<any>;
@@ -19,14 +20,14 @@ const LearnMoreAutonomous = (props: QRScanProps) => {
             customStyles={{ container: { borderTopStartRadius: 8, borderTopEndRadius: 8 } }}
         >
             <View style={styles.rawTransactionDrawer}>
-                <Text style={styles.drawerHead}>What is Pangea</Text>
+                <Text style={styles.drawerHead}>What is {settings.config.ecosystemName}</Text>
                 <TouchableOpacity onPress={props.onClose}>
                     <TIconButton icon={'close'} color={theme.colors.lightBg} iconColor={theme.colors.grey1} />
                 </TouchableOpacity>
             </View>
             <ScrollView>
                 <View style={styles.content}>
-                    <Text style={styles.drawerTitle}>Pangea is a Virtual Nation</Text>
+                    <Text style={styles.drawerTitle}>{settings.config.ecosystemName} is a Virtual Nation</Text>
                     <Text style={styles.darwerContent}>
                         A Virtual Nation, embodies a community governed online,where members participate in{' '}
                         <Text style={styles.drawerInnerContent}>decentralized decision-making processes, </Text>have
@@ -38,7 +39,7 @@ const LearnMoreAutonomous = (props: QRScanProps) => {
                         source={require('../assets/images/pangea-web-platform.png')}
                     />
                     <View style={{ flexDirection: 'column', gap: 10 }}>
-                        <Text style={styles.drawerTitle}>Pangea is a Web 4.0 Platform</Text>
+                        <Text style={styles.drawerTitle}>{settings.config.ecosystemName} is a Web 4.0 Platform</Text>
                         <Text style={styles.darwerContent}>
                             Web4 builds upon the decentralized foundation of Web3, with a{' '}
                             <Text style={styles.drawerInnerContent}>seamless user experience</Text> to create an

@@ -117,10 +117,12 @@ const styles = StyleSheet.create({
     },
     innerContainer: { marginTop: 10, justifyContent: 'center' },
     link: {
-        color: theme.colors.linkColor,
+        color: theme.colors.primary,
+        fontWeight: 'bold',
     },
     textContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
+        fontWeight: 'bold',
     },
 });

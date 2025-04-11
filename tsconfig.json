@@ -13,7 +13,8 @@
   "include": [
     "App.tsx",
     "src/**/*",
-    "test/**/*"
+    "test/**/*",
+    "types"
   ],
   "exclude": [
     "node_modules",

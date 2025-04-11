@@ -60,6 +60,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
             alert(error.message);
         }
     };
+    const logo = asset.token.icon;
 
     return (
         <View style={styles.container}>
@@ -71,7 +72,7 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                             : 'To complete the transaction, top up your account balance using this QR code'}
                     </Text>
                     <View style={styles.networkHeading}>
-                        <Image source={{ uri: asset.token.icon }} style={styles.faviconIcon} />
+                        <Image source={typeof logo === 'string' ? { uri: logo } : logo} style={styles.faviconIcon} />
                         <Text style={styles.networkTitleName}>{asset.chain.getName()} Network</Text>
                     </View>
                     <View style={styles.flexCenter}>

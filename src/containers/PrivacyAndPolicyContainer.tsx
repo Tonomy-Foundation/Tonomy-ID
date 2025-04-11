@@ -151,10 +151,14 @@ export default function PrivacyAndPolicyContainer({ navigation }: { navigation: 
                 </View> */}
 
                 <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 20 : 0 }]}>
-                    <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
+                    <TButtonOutlined                         
+                        size="medium"
+                        onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                         DECLINE
                     </TButtonOutlined>
-                    <TButtonContained onPress={() => navigation.navigate('Hcaptcha')} style={styles.buttonsStyle} disabled={false}>
+                    <TButtonContained                        
+                        size="medium"
+                        onPress={() => navigation.navigate('Hcaptcha')} style={styles.buttonsStyle} disabled={false}>
                         ACCEPT
                     </TButtonContained>
                 </View>

@@ -1,6 +1,7 @@
 import { IAccount, IAsset, IToken } from '../../chain/types';
 import { AssetStorageRepository } from './assetStorageRepository';
 import Debug from '../../debug';
+import { TokenRegistryEntry } from '../../tokenRegistry';
 
 const debug = Debug('tonomy-id:utils:storage:assetStorageManager');
 
@@ -65,5 +66,14 @@ export abstract class AssetStorageManager {
 
     public async deleteAll(): Promise<void> {
         await this.repository.deleteAll();
+    }
+
+    public async updateAssetNameMigration(token: TokenRegistryEntry): Promise<void> {
+        const asset = await this.repository.findAssetByName(token.token.getChain().getName() + '-' + 'LEOS');
+
+        if (asset) {
+            asset.assetName = token.token.getChain().getName() + '-' + token.token.getSymbol();
+            await this.repository.updateAccountBalance(asset);
+        }
     }
 }

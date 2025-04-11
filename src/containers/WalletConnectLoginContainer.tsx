@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     nameText: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 10,
         marginRight: 10,
     },

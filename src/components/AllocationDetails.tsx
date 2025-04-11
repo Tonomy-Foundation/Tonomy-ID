@@ -6,6 +6,7 @@ import theme from '../utils/theme';
 import { VestedAllocation } from '../utils/chain/types';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
+import settings from '../settings';
 
 export type Props = {
     refMessage: React.RefObject<any>;
@@ -37,7 +38,7 @@ const AllocationDetails = (props: Props) => {
                     <Text style={styles.allocTitle}>Vested asset</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
-                            {formatTokenValue(new Decimal(allocationData.locked ?? 0))} LEOS
+                            {formatTokenValue(new Decimal(allocationData.locked ?? 0))} {settings.config.currencySymbol}
                         </Text>
                         <Text style={styles.usdBalance}>
                             ${formatCurrencyValue(allocationData.locked * props.usdPriceValue)}
@@ -48,7 +49,8 @@ const AllocationDetails = (props: Props) => {
                     <Text style={styles.allocTitle}>Initial allocation</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
-                            {formatTokenValue(new Decimal(allocationData.totalAllocation ?? 0))} LEOS
+                            {formatTokenValue(new Decimal(allocationData.totalAllocation ?? 0))}{' '}
+                            {settings.config.currencySymbol}
                         </Text>
                         <Text style={styles.usdBalance}>
                             ${formatCurrencyValue(allocationData.totalAllocation * props.usdPriceValue)}
@@ -81,8 +83,8 @@ const AllocationDetails = (props: Props) => {
             <View style={styles.howView}>
                 <Text style={styles.howHead}>How vesting works</Text>
                 <Text style={styles.howParagraph}>
-                    Vesting gradually unlocks your LEOS tokens over a set period, ensuring long-term commitment and
-                    alignment with the project&apos;s goals
+                    Vesting gradually unlocks your {settings.config.currencySymbol} tokens over a set period, ensuring
+                    long-term commitment and alignment with the project&apos;s goals
                 </Text>
             </View>
         </RBSheet>

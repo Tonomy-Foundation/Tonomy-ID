@@ -6,6 +6,7 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import { IChain } from '../utils/chain/types';
 import { useState } from 'react';
 import TSpinner from '../components/atoms/TSpinner';
+import settings from '../settings';
 
 export type SuccessUnstakeProps = {
     navigation: Props['navigation'];
@@ -15,7 +16,7 @@ export type SuccessUnstakeProps = {
 const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => {
     const [loading, setLoading] = useState(false);
 
-    const backToLEOS = () => {
+    const backToTONO = () => {
         setLoading(true);
         navigation.navigate('AssetManager', { chain });
         setLoading(false);
@@ -32,9 +33,9 @@ const SuccessUnstakeContainer = ({ navigation, chain }: SuccessUnstakeProps) => 
                     disabled={loading}
                     style={{ width: '100%' }}
                     size="large"
-                    onPress={() => backToLEOS()}
+                    onPress={() => backToTONO()}
                 >
-                    Back to LEOS
+                    Back to {settings.config.currencySymbol}
                 </TButtonContained>
             </View>
         </View>

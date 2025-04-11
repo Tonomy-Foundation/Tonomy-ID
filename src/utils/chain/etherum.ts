@@ -41,6 +41,7 @@ import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
 import { StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
 import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
+import EthToken from '../../assets/ethereumLogo/eth-logo.png';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -218,14 +219,14 @@ export const EthereumMainnetChain = new EthereumChain(
     `https://mainnet.infura.io/v3/${INFURA_KEY}`,
     'Ethereum',
     '1',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    EthToken,
     'https://etherscan.io'
 );
 export const EthereumSepoliaChain = new EthereumChain(
     `https://sepolia.infura.io/v3/${INFURA_KEY}`,
     'sepolia',
     '11155111',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    EthToken,
     'https://sepolia.etherscan.io',
     true
 );
@@ -238,22 +239,8 @@ export const EthereumPolygonChain = new EthereumChain(
     'https://polygonscan.com'
 );
 
-export const ETHToken = new EthereumToken(
-    EthereumMainnetChain,
-    'Ether',
-    'ETH',
-    18,
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    'ethereum'
-);
-export const ETHSepoliaToken = new EthereumToken(
-    EthereumSepoliaChain,
-    'Ether',
-    'SepoliaETH',
-    18,
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    'ethereum'
-);
+export const ETHToken = new EthereumToken(EthereumMainnetChain, 'Ether', 'ETH', 18, EthToken, 'ethereum');
+export const ETHSepoliaToken = new EthereumToken(EthereumSepoliaChain, 'Ether', 'SepoliaETH', 18, EthToken, 'ethereum');
 
 export const ETHPolygonToken = new EthereumToken(
     EthereumPolygonChain,

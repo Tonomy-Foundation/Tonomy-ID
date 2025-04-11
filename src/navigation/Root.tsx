@@ -120,8 +120,8 @@ export type MainRouteStackParamList = {
     AssetManager: AssetsParamsScreen;
     VestedAssets: AssetsParamsScreen;
     ConfirmStaking: AssetsParamsScreen & { amount: number; withDraw?: boolean };
-    StakeLeos: AssetsParamsScreen;
-    StakeLeosDetail: AssetsParamsScreen & { loading?: boolean };
+    StakeAsset: AssetsParamsScreen;
+    StakeAssetDetail: AssetsParamsScreen & { loading?: boolean };
     SuccessUnstake: AssetsParamsScreen;
     WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
     SuccessVested: AssetsParamsScreen;
@@ -309,13 +309,19 @@ export default function RootNavigation() {
                         />
 
                         <Stack.Screen
-                            name="StakeLeosDetail"
-                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
+                            name="StakeAssetDetail"
+                            options={{
+                                headerBackTitleVisible: false,
+                                title: `Stake ${settings.config.currencySymbol}`,
+                            }}
                             component={StakeAssetDetailScreen}
                         />
                         <Stack.Screen
-                            name="StakeLeos"
-                            options={{ headerBackTitleVisible: false, title: 'Stake LEOS' }}
+                            name="StakeAsset"
+                            options={{
+                                headerBackTitleVisible: false,
+                                title: `Stake ${settings.config.currencySymbol}`,
+                            }}
                             component={StakeAssetScreen}
                         />
                         <Stack.Screen

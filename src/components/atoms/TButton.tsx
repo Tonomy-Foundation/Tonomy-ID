@@ -36,8 +36,8 @@ export default function TButton(props: ButtonProps) {
     };
 
     const buttonStyle = {
-        paddingHorizontal: props.size !== 'large' ? 16 : 22,
-        paddingVertical: props.size !== 'large' ? 11 : 14,
+        paddingHorizontal: props.size !== 'large' ? 16 : 20,
+        paddingVertical: props.size !== 'large' ? 11 : 12,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -97,7 +97,7 @@ export function TButtonSecondaryContained(props: ButtonProps) {
     const theme = useAppTheme();
     const color = theme.colors.black;
     const style = {
-        backgroundColor: theme.colors.backgroundGray,
+        backgroundColor: theme.colors.secondary,
     };
 
     return (
@@ -110,7 +110,7 @@ export function TButtonSecondaryContained(props: ButtonProps) {
 
 export function TButtonOutlined(props: ButtonProps) {
     const style = {
-        borderColor: props.disabled ? theme.colors.grey2 : getColorBasedOnTheme(props.theme),
+        borderColor: props.disabled ? theme.colors.grey2 : theme.colors.grey8,
         borderWidth: 1,
     };
 

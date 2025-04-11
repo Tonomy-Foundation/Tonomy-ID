@@ -84,7 +84,7 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                         <Text style={styles.allocTitle}>Yield so far</Text>
                         <View style={styles.flexColCenter}>
                             <Text style={styles.allocMulti}>
-                                <Text style={{ color: theme.colors.success }}>
+                                <Text style={{ color: theme.colors.primary }}>
                                     +
                                     {allocation.initialStake &&
                                         allocation.yieldSoFar &&
@@ -106,7 +106,7 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                         </View>
 
                         <View style={styles.flexColCenter}>
-                            <Text style={[styles.allocMulti, { color: theme.colors.success }]}>
+                            <Text style={[styles.allocMulti, { color: theme.colors.primary }]}>
                                 {allocation.monthlyYield &&
                                     formatTokenValue(new Decimal(assetToAmount(allocation.monthlyYield)))}{' '}
                                 {symbol}
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     howStaking: {
         fontSize: 13,
         fontWeight: '400',
-        color: theme.colors.success,
+        color: theme.colors.primary,
         marginTop: 6,
     },
     stakeMoreBtn: {

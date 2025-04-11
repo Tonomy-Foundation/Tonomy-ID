@@ -92,7 +92,7 @@ yarn run updateSdkVersion testnet
 
 ## Run the production environment locally
 
-Run production (United Citizen Wallet), testnet (Pangea Testnet) or staging (Tonomy ID Staging) locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs as it runs
+Run production (Tonomy ID), testnet (Tonomy Testnet) or staging (Tonomy ID Staging) locally without needing to wait for deploy to Play store. This has the advantage of being able to see logs as it runs
 
 Instructions for `staging`. Change to `testnet` or `production` below to change environment:
 

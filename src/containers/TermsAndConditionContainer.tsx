@@ -134,13 +134,16 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                     </View>
                 )}
                 <View style={[styles.buttonsRow, { paddingBottom: Platform.OS === 'ios' ? 30 : 0 }]}>
-                    <TButtonOutlined onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
+                    <TButtonOutlined                         
+                        size="medium"
+                        onPress={() => setShowDeclineModal(true)} style={styles.buttonsStyle} disabled={false}>
                         DECLINE
                     </TButtonOutlined>
                     <TButtonContained
                         onPress={() => navigation.navigate('PrivacyAndPolicy')}
                         style={styles.buttonsStyle}
                         disabled={false}
+                        size="medium"
                     >
                         ACCEPT
                     </TButtonContained>
