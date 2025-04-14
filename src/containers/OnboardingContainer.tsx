@@ -25,31 +25,31 @@ function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }
             id: 1,
             title: `Welcome to ${settings.config.ecosystemName}`,
             text: `${settings.config.appName} is your access point to a brand new world.`,
-            image: require('../assets/images/onboarding/1.png'),
+            image: require('../assets/images/onboarding/1.svg'),
         },
         {
             id: 2,
             title: `Passwordless login to ${settings.config.ecosystemName} apps`,
             text: `No more passwords for every app you use! Using the secure login of ${settings.config.ecosystemName}.`,
-            image: require('../assets/images/onboarding/2.png'),
+            image: require('../assets/images/onboarding/2.svg'),
         },
         {
             id: 3,
             title: 'You control your data and citizenship',
             text: `Your data is stored on your phone. ${settings.config.ecosystemName} and third parties can’t access it.`,
-            image: require('../assets/images/onboarding/3.png'),
+            image: require('../assets/images/onboarding/3.svg'),
         },
         {
             id: 4,
             title: 'Manage your crypto assets with ease',
             text: 'So easy it’s obvious. No technical knowledge required.',
-            image: require('../assets/images/onboarding/4.png'),
+            image: require('../assets/images/onboarding/4.svg'),
         },
         {
             id: 5,
             title: 'Web4 trust-less platform for people',
             text: 'We give citizens full control, powered by invisible Web4 technology!',
-            image: require('../assets/images/onboarding/5.png'),
+            image: require('../assets/images/onboarding/5.svg'),
         },
     ];
 
