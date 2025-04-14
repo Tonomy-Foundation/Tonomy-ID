@@ -41,35 +41,35 @@ const availableAppsData = [
         url: 'https://demo.tonomy.io',
         isAvailable: true,
     },
-    {
-        image: require('../assets/images/apps/pangean-bankless.png'),
-        title: `${settings.config.ecosystemName} Bankless`,
-        description: `Manage your ${settings.config.currencySymbol} tokens as easily as any neo-banking application. Full control without compromise.`,
-        isAvailable: false,
-        url: '#',
-    },
-    {
-        image: require('../assets/images/apps/pangea-dao.png'),
-        title: `${settings.config.ecosystemName} DAO on Hypha`,
-        description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
-        isAvailable: false,
-        url: '#',
-    },
-    {
-        image: require('../assets/images/apps/pangea-gov.png'),
-        title: `${settings.config.ecosystemName} Gov+`,
-        description: `Participate in the liquid democracy governance of the ${settings.config.ecosystemName} ecosystem.`,
-        isAvailable: false,
-        url:'#'',
-    },
-    {
-        image: require('../assets/images/apps/pangea-build.png'),
-        title: `${settings.config.ecosystemName} Build`,
-        description:
-            'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
-        isAvailable: false,
-        url: '#',
-    },
+    // {
+    //     image: require('../assets/images/apps/pangean-bankless.png'),
+    //     title: `${settings.config.ecosystemName} Bankless`,
+    //     description: `Manage your ${settings.config.currencySymbol} tokens as easily as any neo-banking application. Full control without compromise.`,
+    //     isAvailable: false,
+    //     url: '#',
+    // },
+    // {
+    //     image: require('../assets/images/apps/pangea-dao.png'),
+    //     title: `${settings.config.ecosystemName} DAO on Hypha`,
+    //     description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
+    //     isAvailable: false,
+    //     url: '#',
+    // },
+    // {
+    //     image: require('../assets/images/apps/pangea-gov.png'),
+    //     title: `${settings.config.ecosystemName} Gov+`,
+    //     description: `Participate in the liquid democracy governance of the ${settings.config.ecosystemName} ecosystem.`,
+    //     isAvailable: false,
+    //     url:'#',
+    // },
+    // {
+    //     image: require('../assets/images/apps/pangea-build.png'),
+    //     title: `${settings.config.ecosystemName} Build`,
+    //     description:
+    //         'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
+    //     isAvailable: false,
+    //     url: '#',
+    // },
 ];
 
 function getUrlHost(url: string) {

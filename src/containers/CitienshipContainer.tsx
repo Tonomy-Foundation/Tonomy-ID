@@ -98,12 +98,12 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.subTitle}>Worlds coming soon</Text>
-                <ScrollView horizontal={true} style={{ paddingBottom: 70 }}>
+                {/* <ScrollView horizontal={true} style={{ paddingBottom: 70 }}>
                     <HorizontalScrollItem
                         title="Pay globally without middlemen"
                         subtitle={`with ${settings.config.ecosystemName} Banklesss`}
                         imageSource={require('../assets/images/citizenship/1-slide.png')}
-                        url="#"
+                        url="https://tonomy.io/technology/pangea-bankless"
                     />
                     <HorizontalScrollItem
                         title="Unlock the Power of Decentralization"
@@ -123,7 +123,7 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         imageSource={require('../assets/images/citizenship/4-slide.png')}
                         url="https://tonomy.io/technology/pangea-build"
                     />
-                </ScrollView>
+                </ScrollView> */}
             </ScrollView>
         </View>
     );
