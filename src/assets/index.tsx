@@ -27,19 +27,19 @@ export class Images {
     private static pangeaImages: Array<Image> = [
         {
             name: 'splash',
-            image: require('./pangea/tono-splash.png'),
+            image: require('./tonomyProduction/tonomy-splash.png'),
         },
         {
             name: 'logo48',
-            image: require('./pangea/favicon.png'),
+            image: require('./tonomyProduction/logo48x48.png'),
         },
         {
             name: 'logo1024',
-            image: require('./pangea/pangea-large-logo.png'),
+            image: require('./tonomyProduction/logo1024x1024.png'),
         },
         {
             name: 'favicon',
-            image: require('./pangea/favicon.png'),
+            image: require('./tonomyProduction/favicon.png'),
         },
     ];
 

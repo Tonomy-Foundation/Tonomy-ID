@@ -12,14 +12,14 @@
         "infoBackground": "#F6F9FB",
         "lightBackground": "#F6F9FB"
     },
-    "appLogoUrl": "./src/assets/pangea/favicon.png",
+    "appLogoUrl": "./src/assets/tonomyProduction/favicon.png",
     "appName": "Tonomy ID Testnet",
     "ecosystemName": "Tonomy Testnet",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
-        "splash": "./src/assets/pangea/tono-splash.png",
-        "logo48": "./src/assets/pangea/favicon.png",
-        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
+        "splash": "./src/assets/tonomyProduction/tonomy-splash.png",
+        "logo48": "./src/assets/tonomyProduction/favicon.png",
+        "logo1024": "./src/assets/tonomyProduction/logo1024x1024.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
