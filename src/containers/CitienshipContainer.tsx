@@ -97,7 +97,7 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         </View>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.subTitle}>Worlds coming soon</Text>
+                {/* <Text style={styles.subTitle}>Worlds coming soon</Text> */}
                 {/* <ScrollView horizontal={true} style={{ paddingBottom: 70 }}>
                     <HorizontalScrollItem
                         title="Pay globally without middlemen"
@@ -186,6 +186,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 14,
         marginTop: 5,
+        marginBottom: 50,
     },
     webMain: {
         flexGrow: 1,

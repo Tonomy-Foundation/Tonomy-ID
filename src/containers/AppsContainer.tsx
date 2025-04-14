@@ -113,7 +113,7 @@ export default function AppsContainer() {
                                 )}
                             </View>
                         ))}
-                    <Text style={styles.headingText}>Coming soon</Text>
+                    {/* <Text style={styles.headingText}>Coming soon</Text> */}
                     {availableAppsData
                         .filter((app) => !app.isAvailable)
                         .map((app, index) => (
