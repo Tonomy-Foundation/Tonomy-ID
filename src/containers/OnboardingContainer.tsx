@@ -9,6 +9,11 @@ import { StackActions } from '@react-navigation/native';
 import { appStorage } from '../utils/StorageManager/setup';
 import useErrorStore from '../store/errorStore';
 import settings from '../settings';
+import OnBoardingImage1 from '../assets/images/onboarding/1.svg';
+import OnBoardingImage2 from '../assets/images/onboarding/2.svg';
+import OnBoardingImage3 from '../assets/images/onboarding/3.svg';
+import OnBoardingImage4 from '../assets/images/onboarding/4.svg';
+import OnBoardingImage5 from '../assets/images/onboarding/5.svg';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -25,31 +30,31 @@ function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }
             id: 1,
             title: `Welcome to ${settings.config.ecosystemName}`,
             text: `${settings.config.appName} is your access point to a brand new world.`,
-            image: require('../assets/images/onboarding/1.svg'),
+            image: OnBoardingImage1,
         },
         {
             id: 2,
             title: `Passwordless login to ${settings.config.ecosystemName} apps`,
             text: `No more passwords for every app you use! Using the secure login of ${settings.config.ecosystemName}.`,
-            image: require('../assets/images/onboarding/2.svg'),
+            image: OnBoardingImage2,
         },
         {
             id: 3,
             title: 'You control your data and citizenship',
             text: `Your data is stored on your phone. ${settings.config.ecosystemName} and third parties can’t access it.`,
-            image: require('../assets/images/onboarding/3.svg'),
+            image: OnBoardingImage3,
         },
         {
             id: 4,
             title: 'Manage your crypto assets with ease',
             text: 'So easy it’s obvious. No technical knowledge required.',
-            image: require('../assets/images/onboarding/4.svg'),
+            image: OnBoardingImage4,
         },
         {
             id: 5,
             title: 'Web4 trust-less platform for people',
             text: 'We give citizens full control, powered by invisible Web4 technology!',
-            image: require('../assets/images/onboarding/5.svg'),
+            image: OnBoardingImage5,
         },
     ];
 
@@ -83,7 +88,7 @@ function OnboardingContainer({ navigation }: { navigation: Props['navigation'] }
                 >
                     {slides.map((slide) => (
                         <View style={styles.slide} key={slide.id}>
-                            <Image source={slide.image} style={styles.image} />
+                            <slide.image />
                         </View>
                     ))}
                 </Swiper>

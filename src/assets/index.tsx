@@ -27,7 +27,7 @@ export class Images {
     private static pangeaImages: Array<Image> = [
         {
             name: 'splash',
-            image: require('./tonomyProduction/tonomy-splash.png'),
+            image: require('./tonomyProduction/tono-splash.png'),
         },
         {
             name: 'logo48',

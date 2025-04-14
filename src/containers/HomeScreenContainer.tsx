@@ -71,5 +71,6 @@ const styles = StyleSheet.create({
         color: theme.colors.black,
         fontWeight: '600',
         fontSize: 15,
+        marginTop: 10,
     },
 });
