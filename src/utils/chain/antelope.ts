@@ -57,7 +57,7 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 import settings from '../../settings';
-import TonoToken from '../../assets/pangea/favicon.png';
+import TokenLogo from '../../assets/pangea/favicon.png';
 import PangeaLogo from '../../assets/pangea/Pangea256x256.png';
 
 const vestingContract = VestingContract.Instance;
@@ -500,7 +500,6 @@ export class TonomyToken extends AntelopeToken {
 }
 
 export const TonomyMainnetChain = new AntelopeChain(
-    // 'https://blockchain-api.pangea.web4.world',
     'https://pangea.eosusa.io',
     'Tonomy',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
@@ -509,7 +508,6 @@ export const TonomyMainnetChain = new AntelopeChain(
 );
 
 export const TonomyTestnetChain = new AntelopeChain(
-    // 'https://blockchain-api-testnet.pangea.web4.world',
     'https://test.pangea.eosusa.io',
     'Tonomy Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
@@ -536,14 +534,14 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, TonoToken, 'tono', false, true, true);
+export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, TokenLogo, 'tono', false, true, true);
 
 export const TONOTestnetToken = new TonomyToken(
     TonomyTestnetChain,
     'TestnetTONO',
     'TONO',
     6,
-    TonoToken,
+    TokenLogo,
     'tono-testnet',
     false,
     true,
@@ -555,7 +553,7 @@ export const TONOStagingToken = new TonomyToken(
     'StagingTONO',
     'TONO',
     6,
-    TonoToken,
+    TokenLogo,
     'leos-staging',
     false,
     true,
@@ -567,7 +565,7 @@ export const TONOLocalToken = new TonomyToken(
     'LocalTONO',
     'TONO',
     6,
-    TonoToken,
+    TokenLogo,
     'leos-local',
     false,
     true,
@@ -588,7 +586,7 @@ export const EOSJungleToken = new AntelopeToken(
     'EOS',
     'JungleEOS',
     4,
-    TonoToken,
+    TokenLogo,
     'jungle',
     false,
     false,

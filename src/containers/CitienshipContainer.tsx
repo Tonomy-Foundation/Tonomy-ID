@@ -103,7 +103,7 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
                         title="Pay globally without middlemen"
                         subtitle={`with ${settings.config.ecosystemName} Banklesss`}
                         imageSource={require('../assets/images/citizenship/1-slide.png')}
-                        url="https://tonomy.io/technology/pangea-bankless"
+                        url="#"
                     />
                     <HorizontalScrollItem
                         title="Unlock the Power of Decentralization"

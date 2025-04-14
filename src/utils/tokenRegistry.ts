@@ -181,8 +181,6 @@ export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?:
 
         if (!asset) {
             await assetStorage.createAsset(new Asset(token, new Decimal(0)), account);
-        } else {
-            // await assetStorage.updateAssetNameMigration(chainEntry);
         }
     }
 

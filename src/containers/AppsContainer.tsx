@@ -8,7 +8,7 @@ const availableAppsData = [
     {
         image: require('../assets/pangea/favicon.png'),
         title: `${settings.config.ecosystemName} DAO on Hypha`,
-        description: `Collaborate and make decisions within the ${settings.config.ecosystemName} ecosystem with other's.`,
+        description: `Collaborate and make decisions within the ${settings.config.ecosystemName} ecosystem with others.`,
         url: 'https://pangea.hypha.earth/pangea-dao/',
         isAvailable: true,
     },
@@ -46,21 +46,21 @@ const availableAppsData = [
         title: `${settings.config.ecosystemName} Bankless`,
         description: `Manage your ${settings.config.currencySymbol} tokens as easily as any neo-banking application. Full control without compromise.`,
         isAvailable: false,
-        url: 'https://tonomy.io/technology/pangea-bankless',
+        url: '#',
     },
     {
         image: require('../assets/images/apps/pangea-dao.png'),
         title: `${settings.config.ecosystemName} DAO on Hypha`,
         description: 'Incorporate businesses and manage employee access and controls. Fully decentralised.',
         isAvailable: false,
-        url: 'https://tonomy.io/technology/pangea-dao',
+        url: '#',
     },
     {
         image: require('../assets/images/apps/pangea-gov.png'),
         title: `${settings.config.ecosystemName} Gov+`,
         description: `Participate in the liquid democracy governance of the ${settings.config.ecosystemName} ecosystem.`,
         isAvailable: false,
-        url: 'https://tonomy.io/technology/pangea-gov',
+        url:'#'',
     },
     {
         image: require('../assets/images/apps/pangea-build.png'),
@@ -68,7 +68,7 @@ const availableAppsData = [
         description:
             'Build anything with our Low-Code/No-Code suite, empowering next-generation secure and seamless app development',
         isAvailable: false,
-        url: 'https://tonomy.io/technology/pangea-build',
+        url: '#',
     },
 ];
 
