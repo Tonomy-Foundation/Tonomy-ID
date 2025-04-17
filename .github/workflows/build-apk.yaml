@@ -51,7 +51,7 @@ jobs:
       # - moby/buildkit:latest
       # - alpine:3.16/3.17/3.18/3.19
       # - debian:10/11
-      # - ubuntu:20.04/22.04
+      # - ubuntu:24.04
       - name: Clean up Docker images
         run: |
           echo "Docker before cleanup:"
