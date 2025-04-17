@@ -41,6 +41,8 @@ import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
 import { StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
 import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
+import EthLogo from '../../assets/ethereumLogo/eth-logo.png';
+import MaticLogo from '../../assets/ethereumLogo/polygon-logo.png';
 
 const debug = Debug('tonomy-id:utils:chain:ethereum');
 
@@ -218,14 +220,14 @@ export const EthereumMainnetChain = new EthereumChain(
     `https://mainnet.infura.io/v3/${INFURA_KEY}`,
     'Ethereum',
     '1',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    EthLogo,
     'https://etherscan.io'
 );
 export const EthereumSepoliaChain = new EthereumChain(
     `https://sepolia.infura.io/v3/${INFURA_KEY}`,
     'sepolia',
     '11155111',
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    EthLogo,
     'https://sepolia.etherscan.io',
     true
 );
@@ -234,35 +236,14 @@ export const EthereumPolygonChain = new EthereumChain(
     `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
     'Polygon',
     '137',
-    'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    MaticLogo,
     'https://polygonscan.com'
 );
 
-export const ETHToken = new EthereumToken(
-    EthereumMainnetChain,
-    'Ether',
-    'ETH',
-    18,
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    'ethereum'
-);
-export const ETHSepoliaToken = new EthereumToken(
-    EthereumSepoliaChain,
-    'Ether',
-    'SepoliaETH',
-    18,
-    'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    'ethereum'
-);
+export const ETHToken = new EthereumToken(EthereumMainnetChain, 'Ether', 'ETH', 18, EthLogo, 'ethereum');
+export const ETHSepoliaToken = new EthereumToken(EthereumSepoliaChain, 'Ether', 'SepoliaETH', 18, EthLogo, 'ethereum');
 
-export const ETHPolygonToken = new EthereumToken(
-    EthereumPolygonChain,
-    'Polygon',
-    'MATIC',
-    18,
-    'https://cryptologos.cc/logos/polygon-matic-logo.png',
-    'polygon'
-);
+export const ETHPolygonToken = new EthereumToken(EthereumPolygonChain, 'Polygon', 'MATIC', 18, MaticLogo, 'polygon');
 
 EthereumMainnetChain.setNativeToken(ETHToken);
 EthereumSepoliaChain.setNativeToken(ETHSepoliaToken);

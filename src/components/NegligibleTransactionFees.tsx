@@ -34,7 +34,7 @@ const NegligibleTransactionFees = (props: props) => {
                         <Text style={{ ...commonStyles.primaryFontFamily, fontSize: 17 }}>
                             {props.transactionFee.fee.toString(props.precision)}
                         </Text>
-                        <Text style={{ color: theme.colors.secondary2, fontSize: 15 }}>
+                        <Text style={{ color: theme.colors.grey9, fontSize: 15 }}>
                             ${formatCurrencyValue(props.transactionFee.usdFee)}
                         </Text>
                     </View>

@@ -12,6 +12,7 @@ import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
 import { KeyManagerLevel, StakingContract } from '@tonomy/tonomy-id-sdk';
 import TSpinner from '../components/atoms/TSpinner';
+import settings from '../settings';
 
 export type PropsStaking = {
     navigation: Props['navigation'];
@@ -53,7 +54,8 @@ const ConfirmUnStakingContainer = ({ chain, navigation, amount, allocationId }: 
                     Confirm unstaking {formatTokenValue(new Decimal(amount))} {chain.getNativeToken().getSymbol()}
                 </TH1>
                 <TP style={styles.vestedSubHead}>
-                    Your LEOS will enter a {StakingContract.getReleaseDays()}-day release period with no yield
+                    Your {settings.config.currencySymbol} will enter a {StakingContract.getReleaseDays()}-day release
+                    period with no yield
                 </TP>
             </View>
             <View style={styles.bottomView}>
@@ -64,7 +66,7 @@ const ConfirmUnStakingContainer = ({ chain, navigation, amount, allocationId }: 
                     size="large"
                     onPress={() => confirmStaking()}
                 >
-                    Unstake LEOS
+                    Unstake {settings.config.currencySymbol}
                 </TButtonContained>
             </View>
         </>

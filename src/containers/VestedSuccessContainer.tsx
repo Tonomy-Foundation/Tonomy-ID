@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { getAccountFromChain, getTokenEntryByChain } from '../utils/tokenRegistry';
 import useErrorStore from '../store/errorStore';
 import TSpinner from '../components/atoms/TSpinner';
+import settings from '../settings';
 
 export type SuccessVestedProps = {
     navigation: Props['navigation'];
@@ -69,7 +70,7 @@ const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
                     size="large"
                     onPress={() => redirectBack()}
                 >
-                    Back to LEOS
+                    Back to {settings.config.currencySymbol}
                 </TButtonContained>
             </View>
         </View>
