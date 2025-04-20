@@ -1,7 +1,8 @@
 import React from 'react';
 import theme, { commonStyles, useAppTheme } from '../../utils/theme';
-import { Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import TSpinner from './TSpinner';
 
 type CustomButtonProps = {
     theme?: 'primary' | 'secondary';
@@ -10,6 +11,8 @@ type CustomButtonProps = {
     color?: string;
     icon?: string;
     disabled?: boolean;
+    loading?: boolean;
+    style?: ViewStyle;
 };
 export type ButtonProps = React.ComponentProps<typeof TouchableOpacity> & CustomButtonProps;
 
@@ -65,7 +68,6 @@ export function TButtonContained(props: ButtonProps) {
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        paddingVertical: props.size !== 'large' ? 11 : 14,
     };
     const shadowStyle = {
         shadowColor: theme.colors.shadowDark,
@@ -79,11 +81,15 @@ export function TButtonContained(props: ButtonProps) {
         elevation: 4,
     };
 
-    return (
+    return !props.loading ? (
         // eslint-disable-next-line react/prop-types
         <TButton {...props} style={[props.style, style, !props.disabled ? shadowStyle : null]} color={color}>
             {props.children}
         </TButton>
+    ) : (
+        <View {...props} style={[props.style, commonStyles.borderRadius, style, !props.disabled ? shadowStyle : null]}>
+            <TSpinner size={45} />
+        </View>
     );
 }
 

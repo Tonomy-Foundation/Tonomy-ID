@@ -124,7 +124,7 @@ This is now running in production mode connected to the staging/testnet environm
 
 ### iOS
 
-TODO
+TODO: iOS
 
 ## Testing app upgrades
 
@@ -202,6 +202,11 @@ Linting is done with `eslint`. Install the recommended VS Code plugin to see mar
 ```bash
 yarn run lint
 ```
+
+## How to deploy hotfix to master
+
+- To ensure correct ios release to master
+- Always do the conventional commit with fix bump version
 
 ## Error handling
 
