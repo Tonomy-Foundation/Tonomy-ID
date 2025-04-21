@@ -44,17 +44,16 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         break;
                     case UserStatus.NOT_LOGGED_IN:
                         debug('status is NOT_LOGGED_IN');
-                        navigation.navigate('Onboarding');
 
-                        // {
-                        //     const haveOnboarding = await appStorage.getSplashOnboarding();
+                        {
+                            const haveOnboarding = await appStorage.getSplashOnboarding();
 
-                        //     if (haveOnboarding) {
-                        //         navigation.navigate('Onboarding');
-                        //     } else {
-                        //         navigation.dispatch(StackActions.replace('Home'));
-                        //     }
-                        // }
+                            if (haveOnboarding) {
+                                navigation.navigate('Onboarding');
+                            } else {
+                                navigation.dispatch(StackActions.replace('Home'));
+                            }
+                        }
 
                         break;
                     case UserStatus.LOGGED_IN:
