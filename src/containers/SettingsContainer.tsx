@@ -54,7 +54,7 @@ export default function SettingsContainer({ navigation }: { navigation: Props['n
                             style={{ flexShrink: 0, marginBottom: 15 }}
                             value={developerMode}
                             onValueChange={onToggleSwitch}
-                            color={theme.colors.success}
+                            color={theme.colors.primary}
                         />
                     </View>
                 </View>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import { TButtonContained, TButtonOutlined, TButtonSecondaryContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
@@ -95,14 +95,14 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                             </View>
                         </View>
                         <View style={styles.btnView}>
-                            <TButtonOutlined
+                            <TButtonSecondaryContained
                                 style={styles.regenerateBtn}
                                 onPress={regenerate}
                                 icon={require('../assets/images/refresh-ccw.png')}
                                 disabled={loading}
                             >
                                 Regenerate
-                            </TButtonOutlined>
+                            </TButtonSecondaryContained>
                         </View>
                     </View>
                 }

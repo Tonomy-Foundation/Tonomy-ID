@@ -245,7 +245,7 @@ export function TransactionFee({
                 <TouchableOpacity onPress={() => refMessage.current?.open()} style={{ marginLeft: 2 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text>negligible </Text>
-                        <WarningCircle width={15} height={15} color={theme.colors.success} />
+                        <WarningCircle width={15} height={15} color={theme.colors.primary} />
                     </View>
                 </TouchableOpacity>
             );
@@ -284,7 +284,7 @@ export function TransactionFee({
                         contentStyle={{ backgroundColor: theme.colors.black }}
                     >
                         <TouchableOpacity style={styles.tooltipIconQue} onPress={() => setToolTipVisible(true)}>
-                            <QuestionMark width={13} height={13} color={theme.colors.success} />
+                            <QuestionMark width={13} height={13} color={theme.colors.primary} />
                         </TouchableOpacity>
                     </Tooltip>
                 </View>
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     secondaryColor: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 4,
         fontSize: 14,
         ...commonStyles.secondaryFontFamily,
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     },
     tooltipIconQue: {
         borderWidth: 1,
-        borderColor: theme.colors.success,
+        borderColor: theme.colors.primary,
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
