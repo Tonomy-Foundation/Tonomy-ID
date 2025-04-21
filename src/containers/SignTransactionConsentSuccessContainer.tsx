@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
         ...commonStyles.alignItemsCenter,
     },
     secondaryColor: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 4,
     },
 });

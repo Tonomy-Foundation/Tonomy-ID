@@ -14,12 +14,12 @@ import {
     AntelopeAccount,
     AntelopeChain,
     AntelopePrivateKey,
-    LEOSLocalToken,
-    LEOSStagingToken,
-    LEOSTestnetToken,
-    LEOSToken,
-    PangeaMainnetChain,
-    PangeaTestnetChain,
+    TONOLocalToken,
+    TONOStagingToken,
+    TONOTestnetToken,
+    TONOToken,
+    TonomyMainnetChain,
+    TonomyTestnetChain,
     TonomyStagingChain,
     TonomyLocalChain,
 } from './chain/antelope';
@@ -51,10 +51,10 @@ export enum ChainKeyName {
     ethereum = 'ethereum',
     ethereumPolygon = 'ethereumPolygon',
     ethereumTestnetSepolia = 'ethereumTestnetSepolia',
-    pangeaLeos = 'pangeaLeos',
-    pangeaTestnetLeos = 'pangeaTestnetLeos',
-    tonomyStagingLeos = 'tonomyStagingLeos',
-    tonomyLocalLeos = 'tonomyLocalLeos',
+    tonomyTono = 'tonomyTono',
+    tonomyTestnetTono = 'tonomyTestnetTono',
+    tonomyStagingTono = 'tonomyStagingTono',
+    tonomyLocalTono = 'tonomyLocalTono',
 }
 
 export type TokenRegistryEntry = {
@@ -68,36 +68,36 @@ async function addLocalChain() {
 
     // @ts-expect-error antelopeChainId is protected
     TonomyLocalChain.antelopeChainId = chainId.toString();
-    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
+    ANTELOPE_CHAIN_ID_TO_CHAIN[tonomyTokenEntry.chain.getAntelopeChainId()] = tonomyTokenEntry.chain;
 }
 
-export let pangeaTokenEntry: TokenRegistryEntry & { chain: AntelopeChain };
+export let tonomyTokenEntry: TokenRegistryEntry & { chain: AntelopeChain };
 
 if (settings.env === 'production') {
-    pangeaTokenEntry = { token: LEOSToken, chain: PangeaMainnetChain, keyName: ChainKeyName.pangeaLeos };
-    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
+    tonomyTokenEntry = { token: TONOToken, chain: TonomyMainnetChain, keyName: ChainKeyName.tonomyTono };
+    ANTELOPE_CHAIN_ID_TO_CHAIN[tonomyTokenEntry.chain.getAntelopeChainId()] = tonomyTokenEntry.chain;
 } else if (settings.env === 'testnet') {
-    pangeaTokenEntry = {
-        token: LEOSTestnetToken,
-        chain: PangeaTestnetChain,
-        keyName: ChainKeyName.pangeaTestnetLeos,
+    tonomyTokenEntry = {
+        token: TONOTestnetToken,
+        chain: TonomyTestnetChain,
+        keyName: ChainKeyName.tonomyTestnetTono,
     };
-    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
+    ANTELOPE_CHAIN_ID_TO_CHAIN[tonomyTokenEntry.chain.getAntelopeChainId()] = tonomyTokenEntry.chain;
 } else if (settings.env === 'staging' || settings.env === 'development') {
-    pangeaTokenEntry = {
-        token: LEOSStagingToken,
+    tonomyTokenEntry = {
+        token: TONOStagingToken,
         chain: TonomyStagingChain,
-        keyName: ChainKeyName.tonomyStagingLeos,
+        keyName: ChainKeyName.tonomyStagingTono,
     };
-    debug('pangeaTokenEntry', pangeaTokenEntry.chain);
-    ANTELOPE_CHAIN_ID_TO_CHAIN[pangeaTokenEntry.chain.getAntelopeChainId()] = pangeaTokenEntry.chain;
+    debug('tonomyTokenEntry', tonomyTokenEntry.chain);
+    ANTELOPE_CHAIN_ID_TO_CHAIN[tonomyTokenEntry.chain.getAntelopeChainId()] = tonomyTokenEntry.chain;
 } else {
-    pangeaTokenEntry = {
-        token: LEOSLocalToken,
+    tonomyTokenEntry = {
+        token: TONOLocalToken,
         chain: TonomyLocalChain,
-        keyName: ChainKeyName.tonomyLocalLeos,
+        keyName: ChainKeyName.tonomyLocalTono,
     };
-    debug('pangeaTokenEntry', pangeaTokenEntry.chain);
+    debug('tonomyTokenEntry', tonomyTokenEntry.chain);
 
     addLocalChain();
 }
@@ -109,13 +109,13 @@ export const tokenRegistry: TokenRegistryEntry[] = [
 ];
 
 // Uncomment out these lines to test the chain easily:
-// pangeaTokenEntry.token.isTransferable = () => true;
-// pangeaTokenEntry.chain.isTestnet = () => true;
+// tonomyTokenEntry.token.isTransferable = () => true;
+// tonomyTokenEntry.chain.isTestnet = () => true;
 
-if (pangeaTokenEntry.chain.isTestnet()) {
-    tokenRegistry.push(pangeaTokenEntry);
+if (tonomyTokenEntry.chain.isTestnet()) {
+    tokenRegistry.push(tonomyTokenEntry);
 } else {
-    tokenRegistry.unshift(pangeaTokenEntry);
+    tokenRegistry.unshift(tonomyTokenEntry);
 }
 
 export async function getTokenEntryByChain(chain: string | IChain): Promise<TokenRegistryEntry> {
@@ -151,6 +151,7 @@ export async function getKeyOrNullFromChain(chainEntry: TokenRegistryEntry): Pro
 
 export async function getAccountFromChain(chainEntry: TokenRegistryEntry, user?: IUser): Promise<IAccount> {
     const { chain, token } = chainEntry;
+
     const asset = await assetStorage.findAssetByName(chainEntry.token);
     const key = await getKeyFromChain(chainEntry);
 
@@ -213,11 +214,11 @@ export const getAssetDetails = async (chain: IChain): Promise<AccountTokenDetail
 
 export async function addNativeTokenToAssetStorage(user: IUserBase) {
     const accountName = await user.getAccountName();
-    const privateKey = await getKeyFromChain(pangeaTokenEntry);
+    const privateKey = await getKeyFromChain(tonomyTokenEntry);
 
-    const asset = new Asset(pangeaTokenEntry.token, new Decimal(0));
+    const asset = new Asset(tonomyTokenEntry.token, new Decimal(0));
     const account = AntelopeAccount.fromAccountAndPrivateKey(
-        pangeaTokenEntry.chain,
+        tonomyTokenEntry.chain,
         accountName,
         privateKey as AntelopePrivateKey
     );

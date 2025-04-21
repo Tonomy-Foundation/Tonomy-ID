@@ -3,7 +3,7 @@ import { SvgProps, SvgXml } from 'react-native-svg';
 import theme from '../../utils/theme';
 
 export default function PrivacyIcon(props: SvgProps) {
-    let color = theme.colors.success;
+    let color = theme.colors.primary;
 
     if (props.color && typeof props.color === 'string') {
         color = props.color;

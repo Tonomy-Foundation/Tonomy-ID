@@ -9,6 +9,7 @@ import SocialIconLinkedIn from '../assets/images/explore/icon-social-linkedin';
 import SocialIconTelegram from '../assets/images/explore/icon-social-telegram';
 import SocialIconDiscord from '../assets/images/explore/icon-social-discord';
 import SocialIconGithub from '../assets/images/explore/icon-social-github';
+import settings from '../settings';
 
 export default function ExploreContainer() {
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
@@ -16,9 +17,9 @@ export default function ExploreContainer() {
         refMessage.current?.close();
     };
 
-    const openPangeaLinks = [
-        { title: 'Website', url: 'https://pangea.web4.world/' },
-        { title: 'Whitepapers', url: 'https://pangea.web4.world/about/whitepapers' },
+    const openTonomyLinks = [
+        { title: 'Website', url: 'https://tonomy.io/' },
+        { title: 'Whitepapers', url: 'https://tonomy.io/about/whitepapers' },
         { title: 'Pitch Decks', url: 'https://www.canva.com/design/DAGKvFBFvlQ/AicATNBAKdrj0wV6akGCZw/view' },
     ];
 
@@ -46,15 +47,9 @@ export default function ExploreContainer() {
     ];
 
     const openNews = [
-        // {
-        //     title: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with Exper...',
-        //     subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
-        //     image: require('../assets/images/explore/news-1.png'),
-        //     url: 'https://pangea-web4-world.webflow.io/news/pangeas-leos-token-a-mica-compliant-pioneer-with-expert-legal-guidance-from-taylor-wessing',
-        // },
         {
-            title: 'Navigating the Future: Insights from Brightnodes Audit of LEOS...',
-            subtitle: 'Pangea&apos;s LEOS Token: A MiCA-Compliant Pioneer with...',
+            title: `Tonomy's ${settings.config.currencySymbol} Token: A MiCA-Compliant Pioneer with Exper...`,
+            subtitle: `The ${settings.config.ecosystemName} and it's ${settings.config.currencySymbol} token aim to revolutionize...`,
             image: require('../assets/images/explore/news-2.jpg'),
             url: 'https://pangea-web4-world.webflow.io/news/navigating-the-future-insights-from-brightnodes-audit-of-leos-tokenomics',
         },
@@ -80,17 +75,17 @@ export default function ExploreContainer() {
                         />
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.subTitle}>Pangea links</Text>
-                <View style={styles.pangeaLinkButtonLayout}>
-                    {openPangeaLinks.map((link, index) => (
+                <Text style={styles.subTitle}>{settings.config.ecosystemName} links</Text>
+                <View style={styles.tonomyLinkButtonLayout}>
+                    {openTonomyLinks.map((link, index) => (
                         <TouchableOpacity
                             key={index}
                             onPress={() => Linking.openURL(link.url)}
-                            style={styles.pangeaLinkButton}
+                            style={styles.tonomyLinkButton}
                         >
                             <View style={{ flexDirection: 'row' }}>
-                                <Image source={Images.GetImage('logo1024')} style={styles.favicon} />
-                                <Text style={styles.pangeaLinkButtonText}>{link.title}</Text>
+                                <Image source={Images.GetImage('favicon')} style={styles.favicon} />
+                                <Text style={styles.tonomyLinkButtonText}>{link.title}</Text>
                             </View>
                             <ArrowRight width={24} height={24} color={theme.colors.grey9} />
                         </TouchableOpacity>
@@ -194,12 +189,12 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         paddingHorizontal: 20,
     },
-    pangeaLinkButtonLayout: {
+    tonomyLinkButtonLayout: {
         flexDirection: 'column',
         gap: 8,
         flexWrap: 'wrap',
     },
-    pangeaLinkButton: {
+    tonomyLinkButton: {
         borderWidth: 1,
         borderRadius: 8,
         borderColor: theme.colors.grey8,
@@ -210,7 +205,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    pangeaLinkButtonText: {
+    tonomyLinkButtonText: {
         fontWeight: '400',
         fontSize: 14,
     },
@@ -242,15 +237,15 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderColor: theme.colors.grey8,
         flexDirection: 'row',
-        gap: 9,
+        gap: 10,
         paddingHorizontal: 16,
         paddingVertical: 16,
         width: '100%',
     },
     newsFrameTitle: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '700',
-        lineHeight: 16.41,
+        lineHeight: 19,
         letterSpacing: 0.15,
         width: 260,
         paddingEnd: 10,
@@ -261,10 +256,11 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
     newsFrameNote: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '400',
         lineHeight: 16,
         color: theme.colors.grey9,
         width: '50%',
+        marginTop: 3,
     },
 });

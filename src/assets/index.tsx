@@ -18,20 +18,28 @@ export class Images {
             name: 'logo1024',
             image: require('./tonomy/tonomy-logo1024.png'),
         },
+        {
+            name: 'favicon',
+            image: require('./tonomy/tonomy-logo48.png'),
+        },
     ];
 
     private static pangeaImages: Array<Image> = [
         {
             name: 'splash',
-            image: require('./pangea/pangea-splash.png'),
+            image: require('./tonomyProduction/tono-splash.png'),
         },
         {
             name: 'logo48',
-            image: require('./pangea/favicon.png'),
+            image: require('./tonomyProduction/logo48x48.png'),
         },
         {
             name: 'logo1024',
-            image: require('./pangea/pangea-large-logo.png'),
+            image: require('./tonomyProduction/logo1024x1024.png'),
+        },
+        {
+            name: 'favicon',
+            image: require('./tonomyProduction/favicon.png'),
         },
     ];
 
