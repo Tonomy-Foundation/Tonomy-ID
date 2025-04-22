@@ -49,7 +49,6 @@ import {
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
-    formatAssetToNumber,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -59,6 +58,7 @@ import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/block
 import settings from '../../settings';
 import TokenLogo from '../../assets/tonomyProduction/favicon.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
+import { formatAssetToNumber } from '../numbers';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
