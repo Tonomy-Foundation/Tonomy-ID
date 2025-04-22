@@ -549,7 +549,7 @@ export const TONOTestnetToken = new TonomyToken(
 export const TONOStagingToken = new TonomyToken(
     TonomyStagingChain,
     'StagingTONO',
-    'TONO',
+    'LEOS',
     6,
     TokenLogo,
     'leos-staging',
@@ -561,7 +561,7 @@ export const TONOStagingToken = new TonomyToken(
 export const TONOLocalToken = new TonomyToken(
     TonomyLocalChain,
     'LocalTONO',
-    'TONO',
+    'LEOS',
     6,
     TokenLogo,
     'leos-local',
