@@ -90,13 +90,18 @@ const expo: ExpoConfig = {
                     {
                         scheme: 'did',
                     },
-                    {
-                        scheme: 'https',
-                        host: ssoDomainUrl,
-                        pathPrefix: '/login',
-                    },
                 ],
                 category: ['BROWSABLE', 'DEFAULT'],
+            },
+            {
+                action: 'VIEW',
+                data: {
+                    scheme: 'https',
+                    host: ssoDomainUrl,
+                    pathPrefix: '/login',
+                },
+                category: ['BROWSABLE', 'DEFAULT'],
+                autoVerify: true, // only works in EAS Build ensures Android tries to verify your domain when the app installs.
             },
         ],
     },
