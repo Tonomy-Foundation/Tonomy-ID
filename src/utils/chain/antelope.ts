@@ -49,7 +49,6 @@ import {
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
-    assetToAmount,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -59,6 +58,7 @@ import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/block
 import settings from '../../settings';
 import TokenLogo from '../../assets/tonomyProduction/favicon.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
+import { formatAssetToNumber } from '../numbers';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -402,9 +402,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         let amount;
 
         if (typeof asset.units.value === 'object') {
-            const convertAmount = assetToAmount(asset.toString());
-
-            amount = new Decimal(convertAmount);
+            amount = formatAssetToNumber(asset.toString());
         } else amount = new Decimal(asset.units.value);
 
         return new Asset(this, amount);
@@ -551,7 +549,7 @@ export const TONOTestnetToken = new TonomyToken(
 export const TONOStagingToken = new TonomyToken(
     TonomyStagingChain,
     'StagingTONO',
-    'TONO',
+    'LEOS',
     6,
     TokenLogo,
     'leos-staging',
@@ -563,7 +561,7 @@ export const TONOStagingToken = new TonomyToken(
 export const TONOLocalToken = new TonomyToken(
     TonomyLocalChain,
     'LocalTONO',
-    'TONO',
+    'LEOS',
     6,
     TokenLogo,
     'leos-local',

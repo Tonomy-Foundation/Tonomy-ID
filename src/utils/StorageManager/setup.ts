@@ -12,7 +12,7 @@ import { AssetStorage } from './entities/assetStorage';
 import Debug from '../debug';
 import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
-import { AssetNameMigration163837490194480 } from './migrations/assetNameMigration';
+import { AssetNameMigration163837490194410 } from './migrations/assetNameMigration';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
@@ -21,7 +21,7 @@ export const dataSource = new DataSource({
     driver: ExpoSQLite,
     entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
-    migrations: [AssetNameMigration163837490194480],
+    migrations: [AssetNameMigration163837490194410],
 });
 
 // Create the key repository instances
@@ -69,6 +69,18 @@ async function checkTableExists(dataSource, tableName) {
     }
 }
 
+export async function checkReposExists() {
+    // Get the repositories
+    const appTableExists = await checkTableExists(dataSource, 'AppStorage');
+    const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
+    const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
+
+    // If the tables don't exist, synchronize the schema
+    if (!appTableExists || !keyTableExists || !assetTableExists) {
+        return false;
+    } else return true;
+}
+
 //initialize the data source
 export async function connect() {
     try {
@@ -77,13 +89,9 @@ export async function connect() {
             await dataSource.runMigrations();
         }
 
-        // Get the repositories
-        const appTableExists = await checkTableExists(dataSource, 'AppStorage');
-        const keyTableExists = await checkTableExists(dataSource, 'KeyStorage');
-        const assetTableExists = await checkTableExists(dataSource, 'AssetStorage');
+        const isExists = await checkReposExists();
 
-        // If the tables don't exist, synchronize the schema
-        if (!appTableExists || !keyTableExists || !assetTableExists) {
+        if (!isExists) {
             await dataSource.synchronize();
         }
 

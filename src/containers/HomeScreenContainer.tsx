@@ -16,7 +16,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                     {/* TODO: uncomment link */}
                     {/* <TButtonText style={styles.headerButton}>Need Help?</TButtonText> */}
                     <View style={styles.imgContainer}>
-                        <Image style={styles.logo} source={Images.GetImage('splash')}></Image>
+                        <Image style={styles.logo} source={Images.GetImage('home')}></Image>
 
                         <TH4 style={[styles.sloganText, commonStyles.textAlignCenter]}>{settings.config.appSlogan}</TH4>
                     </View>

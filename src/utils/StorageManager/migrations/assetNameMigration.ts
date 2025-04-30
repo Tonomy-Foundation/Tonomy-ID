@@ -1,38 +1,45 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import settings from '../../../settings';
 import Debug from 'debug';
+import { checkReposExists } from '../setup';
 
 const debug = Debug('tonomy-id:utils:storageManager:migrations:assetNameMigration');
 
-export class AssetNameMigration163837490194480 implements MigrationInterface {
+export class AssetNameMigration163837490194410 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const chainName = settings.config.ecosystemName;
-        const name = chainName + '-' + 'LEOS';
-        const newName = chainName + '-' + 'TONO';
+        const isExists = await checkReposExists();
 
-        // First check if any records match
-        const result = await queryRunner.query(`SELECT COUNT(*) FROM AssetStorage WHERE assetName LIKE '%${name}%'`);
+        if (isExists) {
+            const chainName = settings.config.ecosystemName;
+            const name = chainName + '-' + 'LEOS';
+            const newName = chainName + '-' + 'TONO';
 
-        const count = parseInt(result[0]['COUNT(*)'], 10);
+            // First check if any records match
+            const result = await queryRunner.query(
+                `SELECT COUNT(*) FROM AssetStorage WHERE assetName LIKE '%${name}%'`
+            );
 
-        debug(`Found ${count} records to update.`);
+            const count = parseInt(result[0]['COUNT(*)'], 10);
 
-        if (count > 0) {
-            try {
-                const updateQuery = `
-                UPDATE AssetStorage
-                SET assetName = REPLACE(assetName, '${name}', '${newName}')
-                WHERE assetName LIKE '%${name}%'`;
+            debug(`Found ${count} records to update.`);
 
-                debug(`Executing update query: ${updateQuery}`);
+            if (count > 0) {
+                try {
+                    const updateQuery = `
+                    UPDATE AssetStorage
+                    SET assetName = REPLACE(assetName, '${name}', '${newName}')
+                    WHERE assetName LIKE '%${name}%'`;
 
-                await queryRunner.query(updateQuery);
-                await queryRunner.query(`
-                    DELETE FROM AssetStorage
-                    WHERE assetName LIKE '%${name}%'
-                  `);
-            } catch (error) {
-                console.error('❌ Update query failed:', error);
+                    debug(`Executing update query: ${updateQuery}`);
+
+                    await queryRunner.query(updateQuery);
+                    await queryRunner.query(`
+                        DELETE FROM AssetStorage
+                        WHERE assetName LIKE '%${name}%'
+                      `);
+                } catch (error) {
+                    console.error('❌ Update query failed:', error);
+                }
             }
         }
     }
