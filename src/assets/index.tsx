@@ -7,7 +7,7 @@ interface Image {
 export class Images {
     private static tonomyImages: Array<Image> = [
         {
-            name: 'splash',
+            name: 'home',
             image: require('./tonomy/tonomy-splash.png'),
         },
         {
@@ -18,20 +18,36 @@ export class Images {
             name: 'logo1024',
             image: require('./tonomy/tonomy-logo1024.png'),
         },
+        {
+            name: 'favicon',
+            image: require('./tonomy/tonomy-logo48.png'),
+        },
+        {
+            name: 'splash',
+            image: require('./tonomy/tonomy-splash.png'),
+        },
     ];
 
     private static pangeaImages: Array<Image> = [
         {
-            name: 'splash',
-            image: require('./pangea/pangea-splash.png'),
+            name: 'home',
+            image: require('./tonomyProduction/tono-splash.png'),
         },
         {
             name: 'logo48',
-            image: require('./pangea/favicon.png'),
+            image: require('./tonomyProduction/logo48x48.png'),
         },
         {
             name: 'logo1024',
-            image: require('./pangea/pangea-large-logo.png'),
+            image: require('./tonomyProduction/logo1024x1024.png'),
+        },
+        {
+            name: 'favicon',
+            image: require('./tonomyProduction/favicon.png'),
+        },
+        {
+            name: 'splash',
+            image: require('./tonomyProduction/tonomy-splash.png'),
         },
     ];
 

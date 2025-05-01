@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image, ScrollView } from 'react-native';
-import { LeosAssetsScreenNavigationProp } from '../screens/AssetManagerScreen';
+import { Props } from '../screens/AssetManagerScreen';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins } from 'iconoir-react-native';
 import { Asset, IChain } from '../utils/chain/types';
@@ -14,11 +14,13 @@ import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import Decimal from 'decimal.js';
-import { assetToAmount, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
+import settings from '../settings';
+import { formatAssetToNumber } from '../utils/numbers';
 
-export type Props = {
-    navigation: LeosAssetsScreenNavigationProp['navigation'];
+export type AssetsProps = {
+    navigation: Props['navigation'];
     chain: IChain;
 };
 
@@ -41,7 +43,7 @@ const renderImageBackground = (balance: Balance) => {
                 imageStyle={{ borderRadius: 10 }}
                 resizeMode="cover"
             >
-                <Text style={styles.imageNetworkText}>Pangea Network</Text>
+                <Text style={styles.imageNetworkText}>{settings.config.ecosystemName} Network</Text>
                 <Text style={styles.imageText}>{balance.totalBalance}</Text>
                 <Text style={styles.imageUsdText}>= ${formatCurrencyValue(balance.totalBalanceUsd ?? 0)}</Text>
             </ImageBackground>
@@ -80,7 +82,7 @@ const stakedBalanceView = (totalStaked: number, navigation, chain: IChain) => {
             <TouchableOpacity
                 style={styles.vestedView}
                 onPress={() => {
-                    navigation.navigate('StakeLeosDetail', {
+                    navigation.navigate('StakeAssetDetail', {
                         chain: chain,
                     });
                 }}
@@ -138,7 +140,7 @@ const investorTootlView = (navigation, chain, redirectStakeToEarn, showVesting, 
     );
 };
 
-const AssetManagerContainer = ({ navigation, chain }: Props) => {
+const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
     const [asset, setAsset] = useState<AccountTokenDetails>({} as AccountTokenDetails);
     const errorStore = useErrorStore();
 
@@ -243,15 +245,17 @@ const AssetManagerContainer = ({ navigation, chain }: Props) => {
 
         Linking.openURL(explorerUrl);
     };
-    const showStakeToEarn = (balance.availableBalance && assetToAmount(balance.availableBalance) > 0) || showStaking;
+
+    const showStakeToEarn =
+        (balance.availableBalance && formatAssetToNumber(balance.availableBalance) > new Decimal(0)) || showStaking;
 
     const redirectStakeToEarn = () => {
         if (showStaking) {
-            navigation.navigate('StakeLeosDetail', {
+            navigation.navigate('StakeAssetDetail', {
                 chain: chain,
             });
         } else {
-            navigation.navigate('StakeLeos', {
+            navigation.navigate('StakeAsset', {
                 chain: chain,
             });
         }

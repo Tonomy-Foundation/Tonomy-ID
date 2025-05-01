@@ -15,7 +15,7 @@ import useErrorStore from '../store/errorStore';
 import TLink from '../components/atoms/TA';
 import usePassphraseStore from '../store/passphraseStore';
 import { createNetworkErrorState, isNetworkError, NETWORK_ERROR_MESSAGE } from '../utils/errors';
-import { pangeaTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
+import { tonomyTokenEntry, addNativeTokenToAssetStorage } from '../utils/tokenRegistry';
 import NetInfo from '@react-native-community/netinfo';
 import Debug from 'debug';
 import { setUser } from '../utils/sentry';
@@ -109,7 +109,7 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
 
             await addNativeTokenToAssetStorage(user);
 
-            const url = pangeaTokenEntry.chain.getExplorerUrl({ accountName });
+            const url = tonomyTokenEntry.chain.getExplorerUrl({ accountName });
 
             setAccountUrl(url);
         } catch (e) {
@@ -250,8 +250,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             >
                 <View>
                     <Text>
-                        Username <Text style={{ color: theme.colors.linkColor }}>{username}</Text> is already taken.
-                        Please choose another one.
+                        Username <Text style={{ color: theme.colors.linkColor, fontWeight: 'bold' }}>{username}</Text>{' '}
+                        is already taken. Please choose another one.
                     </Text>
                 </View>
             </TModal>
@@ -263,12 +263,16 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             >
                 <View>
                     <Text>
-                        Your username is <Text style={{ color: theme.colors.linkColor }}>{username}</Text>
+                        Your username is{' '}
+                        <Text style={{ color: theme.colors.linkColor, fontWeight: 'bold' }}>{username}</Text>
                     </Text>
                 </View>
                 <View style={errorModalStyles.marginTop}>
                     <Text>
-                        See it on the blockchain <TLink href={accountUrl}>here</TLink>
+                        See it on the blockchain{' '}
+                        <TLink href={accountUrl} style={{ fontWeight: 'bold' }}>
+                            here
+                        </TLink>
                     </Text>
                 </View>
             </TModal>
@@ -306,6 +310,7 @@ const styles = StyleSheet.create({
     },
     link: {
         color: theme.colors.linkColor,
+        fontWeight: 'bold',
     },
     textContainer: {
         flexDirection: 'row',

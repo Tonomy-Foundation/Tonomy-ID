@@ -87,7 +87,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
             body={
                 <View>
                     <Image style={styles.mainlogo} source={Images.GetImage('logo1024')} />
-                    <Image style={styles.tonomylogo} source={Images.GetImage('logo1024')} />
                     <Text style={styles.text}>Brought to you by the Tonomy Foundation</Text>
                 </View>
             }
@@ -102,14 +101,8 @@ const styles = StyleSheet.create({
         width: 220,
         height: 220,
     },
-    tonomylogo: {
-        margin: 10,
-        alignSelf: 'center',
-        width: 40,
-        height: 40,
-    },
     text: {
-        marginTop: 7,
+        marginTop: 35,
         textAlign: 'center',
         alignSelf: 'center',
         color: theme.colors.disabled,

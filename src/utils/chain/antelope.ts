@@ -49,7 +49,6 @@ import {
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
-    assetToAmount,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -57,6 +56,9 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
 import settings from '../../settings';
+import TokenLogo from '../../assets/tonomyProduction/favicon.png';
+import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
+import { formatAssetToNumber } from '../numbers';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -328,7 +330,7 @@ export class AntelopeChain extends AbstractChain {
     }
 }
 
-const leosSalesPrices = {
+const tonoSalesPrices = {
     seed: 0.0001,
     preSale: 0.0002,
     private: 0.0004,
@@ -336,7 +338,7 @@ const leosSalesPrices = {
     publicSale: 0.0006,
 };
 
-export const LEOS_CURRENT_PRICE = leosSalesPrices.publicSale;
+export const TONO_CURRENT_PRICE = tonoSalesPrices.publicSale;
 
 export class AntelopeToken extends AbstractToken implements IToken {
     protected coinmarketCapId: string;
@@ -364,8 +366,8 @@ export class AntelopeToken extends AbstractToken implements IToken {
         if (this.getChain().isTestnet()) return 0;
 
         switch (this.getChain().getName()) {
-            case 'Pangea':
-                return LEOS_CURRENT_PRICE;
+            case 'Tonomy':
+                return TONO_CURRENT_PRICE;
             default:
                 throw new Error('Unsupported Antelope chain');
         }
@@ -400,9 +402,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         let amount;
 
         if (typeof asset.units.value === 'object') {
-            const convertAmount = assetToAmount(asset.toString());
-
-            amount = new Decimal(convertAmount);
+            amount = formatAssetToNumber(asset.toString());
         } else amount = new Decimal(asset.units.value);
 
         return new Asset(this, amount);
@@ -423,7 +423,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
     }
 }
 
-export class PangeaToken extends AntelopeToken {
+export class TonomyToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
         const vestedBalance = await this.getVestedTotalBalance(account);
@@ -497,22 +497,20 @@ export class PangeaToken extends AntelopeToken {
     }
 }
 
-export const PangeaMainnetChain = new AntelopeChain(
-    // 'https://blockchain-api.pangea.web4.world',
+export const TonomyMainnetChain = new AntelopeChain(
     'https://pangea.eosusa.io',
-    'Pangea',
+    'Tonomy',
     '66d565f72ac08f8321a3036e2d92eea7f96ddc90599bdbfc2d025d810c74c248',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-    'https://explorer.pangea.web4.world'
+    TonomyLogo,
+    'https://explorer.tonomy.io'
 );
 
-export const PangeaTestnetChain = new AntelopeChain(
-    // 'https://blockchain-api-testnet.pangea.web4.world',
+export const TonomyTestnetChain = new AntelopeChain(
     'https://test.pangea.eosusa.io',
-    'Pangea Testnet',
+    'Tonomy Testnet',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
-    'https://explorer.testnet.pangea.web4.world',
+    TonomyLogo,
+    'https://explorer.testnet.tonomy.io',
     true
 );
 
@@ -520,7 +518,7 @@ export const TonomyStagingChain = new AntelopeChain(
     'https://blockchain-api-staging.tonomy.foundation/',
     'Tonomy Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    TonomyLogo,
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
@@ -529,53 +527,43 @@ export const TonomyLocalChain = new AntelopeChain(
     settings.config.blockchainUrl,
     'Tonomy Localhost',
     'unknown chain id at this time',
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    TonomyLogo,
     'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
     true
 );
 
-export const LEOSToken = new PangeaToken(
-    PangeaMainnetChain,
-    'LEOS',
-    'LEOS',
+export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, TokenLogo, 'tono', false, true, true);
+
+export const TONOTestnetToken = new TonomyToken(
+    TonomyTestnetChain,
+    'TestnetTONO',
+    'TONO',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos',
+    TokenLogo,
+    'tono-testnet',
     false,
     true,
     true
 );
 
-export const LEOSTestnetToken = new PangeaToken(
-    PangeaTestnetChain,
-    'TestnetLEOS',
-    'LEOS',
-    6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
-    'leos-testnet',
-    false,
-    true,
-    true
-);
-
-export const LEOSStagingToken = new PangeaToken(
+export const TONOStagingToken = new TonomyToken(
     TonomyStagingChain,
-    'StagingLEOS',
+    'StagingTONO',
     'LEOS',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    TokenLogo,
     'leos-staging',
     false,
     true,
     true
 );
 
-export const LEOSLocalToken = new PangeaToken(
+export const TONOLocalToken = new TonomyToken(
     TonomyLocalChain,
-    'LocalLEOS',
+    'LocalTONO',
     'LEOS',
     6,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/LEOS%20256x256.png?raw=true',
+    TokenLogo,
     'leos-local',
     false,
     true,
@@ -596,7 +584,7 @@ export const EOSJungleToken = new AntelopeToken(
     'EOS',
     'JungleEOS',
     4,
-    'https://github.com/Tonomy-Foundation/documentation/blob/master/images/logos/Pangea%20256x256.png?raw=true',
+    TokenLogo,
     'jungle',
     false,
     false,
@@ -604,15 +592,15 @@ export const EOSJungleToken = new AntelopeToken(
 );
 
 EOSJungleChain.setNativeToken(EOSJungleToken);
-PangeaMainnetChain.setNativeToken(LEOSToken);
-PangeaTestnetChain.setNativeToken(LEOSTestnetToken);
-TonomyStagingChain.setNativeToken(LEOSStagingToken);
-TonomyLocalChain.setNativeToken(LEOSLocalToken);
+TonomyMainnetChain.setNativeToken(TONOToken);
+TonomyTestnetChain.setNativeToken(TONOTestnetToken);
+TonomyStagingChain.setNativeToken(TONOStagingToken);
+TonomyLocalChain.setNativeToken(TONOLocalToken);
 
 export const ANTELOPE_CHAIN_ID_TO_CHAIN: Record<string, AntelopeChain> = {};
 
-// ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaMainnetChain.getAntelopeChainId()] = PangeaMainnetChain;
-// ANTELOPE_CHAIN_ID_TO_CHAIN[PangeaTestnetChain.getAntelopeChainId()] = PangeaTestnetChain;
+// ANTELOPE_CHAIN_ID_TO_CHAIN[TonomyMainnetChain.getAntelopeChainId()] = TonomyMainnetChain;
+// ANTELOPE_CHAIN_ID_TO_CHAIN[TonomyTestnetChain.getAntelopeChainId()] = TonomyTestnetChain;
 ANTELOPE_CHAIN_ID_TO_CHAIN[EOSJungleChain.getAntelopeChainId()] = EOSJungleChain;
 
 export function getChainFromAntelopeChainId(chainId: string): AntelopeChain {
@@ -697,7 +685,7 @@ export class AntelopeAction implements IOperation {
 
 /*
  * Converts a quantity string to an Asset
- * @param {string} quantity - The quantity string e.g. "1.0000 LEOS"
+ * @param {string} quantity - The quantity string e.g. "1.0000 TONO"
  * @param {AntelopeChain} chain - The chain the asset is on
  * @returns {IAsset} - The asset
  */
@@ -809,10 +797,10 @@ export class AntelopeAccount extends AbstractAccount implements IAccount {
 
     private static getDidChainName(chain: AntelopeChain): string | null {
         switch (chain.getName()) {
-            case 'Pangea':
-                return 'pangea';
-            case 'Pangea Testnet':
-                return 'pangea:testnet';
+            case 'Tonomy':
+                return 'tonomy';
+            case 'Tonomy Testnet':
+                return 'tonomy:testnet';
             default:
                 return null;
         }

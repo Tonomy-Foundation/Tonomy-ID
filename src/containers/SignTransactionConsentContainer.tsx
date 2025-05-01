@@ -250,7 +250,7 @@ export default function SignTransactionConsentContainer({
             const logo = origin ? `https://logo.clearbit.com/${hostname}` : chain.getNativeToken().getLogoUrl();
 
             try {
-                return <Image style={styles.logo} source={{ uri: logo }} />;
+                return <Image style={styles.logo} source={typeof logo === 'string' ? { uri: logo } : logo} />;
             } catch (error) {
                 captureError(`Failed to load logo: ${logo}`, error);
                 return null;
@@ -337,7 +337,12 @@ export default function SignTransactionConsentContainer({
                         <ExpirationTimer />
                         <SignTransactionOriginDetails />
                         <View style={styles.networkHeading}>
-                            <Image source={{ uri: chainIcon }} style={styles.imageStyle} />
+                            <Image
+                                source={typeof chainIcon === 'string' ? { uri: chainIcon } : chainIcon}
+                                style={styles.imageStyle}
+                                resizeMode="contain"
+                            />
+
                             <Text style={styles.nameText}>{chainName} Network</Text>
                         </View>
                         {!accountName && <TSpinner />}
@@ -491,8 +496,7 @@ const styles = StyleSheet.create({
     logo: {
         width: 50,
         height: 50,
-        borderRadius: 50,
-        backgroundColor: theme.colors.grey5,
+        // borderRadius: 50,
     },
     applinkText: {
         color: theme.colors.linkColor,
@@ -539,8 +543,8 @@ const styles = StyleSheet.create({
         ...commonStyles.secondaryFontFamily,
     },
     imageStyle: {
-        width: 10,
-        height: 13,
+        width: 20,
+        height: 18,
     },
     networkHeading: {
         flexDirection: 'row',
@@ -553,7 +557,7 @@ const styles = StyleSheet.create({
         ...commonStyles.secondaryFontFamily,
     },
     nameText: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 5,
         fontSize: 14,
     },
@@ -564,7 +568,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
     },
     secondaryColor: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 4,
         fontSize: 16,
         ...commonStyles.secondaryFontFamily,

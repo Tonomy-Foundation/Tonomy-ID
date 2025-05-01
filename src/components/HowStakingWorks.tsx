@@ -4,6 +4,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
 import { StakingContract } from '@tonomy/tonomy-id-sdk';
+import settings from '../settings';
 
 export type Props = {
     refMessage: React.RefObject<{ open: () => void; close: () => void }>;
@@ -27,13 +28,13 @@ const HowStakingWorks = (props: Props) => {
             <View>
                 <Text style={styles.heading}>What is staking?</Text>
                 <Text style={styles.paragragh}>
-                    Staking LEOS lets you earn rewards by locking tokens for a set period
+                    Staking {settings.config.currencySymbol} lets you earn rewards by locking tokens for a set period
                 </Text>
             </View>
             <View style={{ marginTop: 20 }}>
                 <Text style={styles.heading}>How Does Staking Work?</Text>
                 <Text style={styles.paragragh}>
-                    LEOS is{' '}
+                    {settings.config.currencySymbol} is{' '}
                     <Text style={styles.boldText}>
                         locked for {StakingContract.getLockedDays()} days. Yield rewards
                     </Text>{' '}
@@ -41,10 +42,10 @@ const HowStakingWorks = (props: Props) => {
                 </Text>
             </View>
             <View style={{ marginTop: 20 }}>
-                <Text style={styles.heading}>Unlocking Staked LEOS</Text>
+                <Text style={styles.heading}>Unlocking Staked {settings.config.currencySymbol}</Text>
                 <Text style={styles.paragragh}>
                     After the <Text style={styles.boldText}>{StakingContract.getLockedDays()} days lockup</Text>, you
-                    can unlock your LEOS at any time. Unlocking starts{' '}
+                    can unlock your {settings.config.currencySymbol} at any time. Unlocking starts{' '}
                     <Text style={styles.boldText}>a {StakingContract.getReleaseDays()}-day release period </Text>with
                     <Text style={styles.boldText}> no yield</Text>
                 </Text>
@@ -52,7 +53,8 @@ const HowStakingWorks = (props: Props) => {
             <View style={{ marginTop: 20 }}>
                 <Text style={styles.heading}>Yield and APY</Text>
                 <Text style={styles.paragragh}>
-                    <Text style={styles.boldText}>Variable APY</Text> based on total staked LEOS. The{' '}
+                    <Text style={styles.boldText}>Variable APY</Text> based on total staked{' '}
+                    {settings.config.currencySymbol}. The{' '}
                     <Text style={styles.boldText}>maximum APY is {StakingContract.MAX_APY * 100}%</Text>
                 </Text>
             </View>
