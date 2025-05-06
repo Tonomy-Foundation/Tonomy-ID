@@ -47,3 +47,9 @@ export function formatTokenValue(amount: Decimal, maxDecimals = 4): string {
 
     return formattedAmount;
 }
+
+export function formatAssetToNumber(asset: string): Decimal {
+    const numericValue = asset.replace(/[^0-9.-]/g, '');
+
+    return new Decimal(numericValue);
+}

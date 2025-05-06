@@ -1,7 +1,7 @@
 // useWalletStore.js
 import { create } from 'zustand';
 import { IWeb3Wallet } from '@walletconnect/web3wallet';
-import { assetStorage, keyStorage } from '../utils/StorageManager/setup';
+import { assetStorage, checkReposExists, keyStorage } from '../utils/StorageManager/setup';
 import { IAccount, IChain } from '../utils/chain/types';
 import Debug from 'debug';
 import { ICore } from '@walletconnect/types';
@@ -80,8 +80,13 @@ const useWalletStore = create<WalletState>((set, get) => ({
     },
     clearState: async () => {
         try {
-            await keyStorage.deleteAll();
-            await assetStorage.deleteAll();
+            const isExists = await checkReposExists();
+
+            if (isExists) {
+                await keyStorage.deleteAll();
+                await assetStorage.deleteAll();
+            }
+
             set({
                 initialized: false,
                 web3wallet: null,

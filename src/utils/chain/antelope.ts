@@ -49,7 +49,6 @@ import {
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
-    assetToAmount,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -59,6 +58,7 @@ import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/block
 import settings from '../../settings';
 import TokenLogo from '../../assets/tonomyProduction/favicon.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
+import { formatAssetToNumber } from '../numbers';
 
 const vestingContract = VestingContract.Instance;
 const stakingContract = StakingContract.Instance;
@@ -402,9 +402,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
         let amount;
 
         if (typeof asset.units.value === 'object') {
-            const convertAmount = assetToAmount(asset.toString());
-
-            amount = new Decimal(convertAmount);
+            amount = formatAssetToNumber(asset.toString());
         } else amount = new Decimal(asset.units.value);
 
         return new Asset(this, amount);
@@ -521,7 +519,7 @@ export const TonomyStagingChain = new AntelopeChain(
     'Tonomy Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
     TonomyLogo,
-    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
+    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=TONO&corePrecision=6&systemDomain=eosio',
     true
 );
 
@@ -530,7 +528,7 @@ export const TonomyLocalChain = new AntelopeChain(
     'Tonomy Localhost',
     'unknown chain id at this time',
     TonomyLogo,
-    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
+    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=TONO&corePrecision=6&systemDomain=eosio',
     true
 );
 
@@ -554,7 +552,7 @@ export const TONOStagingToken = new TonomyToken(
     'TONO',
     6,
     TokenLogo,
-    'leos-staging',
+    'tono-staging',
     false,
     true,
     true
@@ -566,7 +564,7 @@ export const TONOLocalToken = new TonomyToken(
     'TONO',
     6,
     TokenLogo,
-    'leos-local',
+    'tono-local',
     false,
     true,
     true

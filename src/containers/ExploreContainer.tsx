@@ -48,10 +48,11 @@ export default function ExploreContainer() {
 
     const openNews = [
         {
-            title: `Tonomy's ${settings.config.currencySymbol} Token: A MiCA-Compliant Pioneer with Exper...`,
-            subtitle: `The ${settings.config.ecosystemName} and it's ${settings.config.currencySymbol} token aim to revolutionize...`,
-            image: require('../assets/images/explore/news-2.jpg'),
-            url: 'https://pangea-web4-world.webflow.io/news/navigating-the-future-insights-from-brightnodes-audit-of-leos-tokenomics',
+            title: 'Digital Identity 2.0: How Tonomy Gives You Full Control Over Your Online Identity',
+            subtitle:
+                'In a world where every click, login, and transaction involves your personal data, how your identity is verified...',
+            image: require('../assets/images/explore/news-3.jpg'),
+            url: 'https://tonomy.io/news/digital-identity-2-0-how-tonomy-gives-you-full-control-over-your-online-identity',
         },
     ];
 

@@ -14,9 +14,10 @@ import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import Decimal from 'decimal.js';
-import { assetToAmount, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { SdkErrors } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
+import { formatAssetToNumber } from '../utils/numbers';
 
 export type AssetsProps = {
     navigation: Props['navigation'];
@@ -244,7 +245,9 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
 
         Linking.openURL(explorerUrl);
     };
-    const showStakeToEarn = (balance.availableBalance && assetToAmount(balance.availableBalance) > 0) || showStaking;
+
+    const showStakeToEarn =
+        (balance.availableBalance && formatAssetToNumber(balance.availableBalance) > new Decimal(0)) || showStaking;
 
     const redirectStakeToEarn = () => {
         if (showStaking) {
