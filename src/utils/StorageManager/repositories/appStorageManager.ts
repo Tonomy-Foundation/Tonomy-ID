@@ -13,9 +13,9 @@ export abstract class AppStorageManager {
         if (existingValue) {
             existingValue.value = seed;
             existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
+            await this.repository.update(existingValue);
         } else {
-            await this.repository.addNewSetting('seed', seed);
+            await this.repository.create('seed', seed);
         }
     }
 
@@ -36,9 +36,9 @@ export abstract class AppStorageManager {
         if (existingValue) {
             existingValue.value = mode.toString();
             existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
+            await this.repository.update(existingValue);
         } else {
-            await this.repository.addNewSetting('developerMode', mode.toString());
+            await this.repository.create('developerMode', mode.toString());
         }
     }
     public async getDeveloperMode(): Promise<boolean> {
@@ -54,9 +54,9 @@ export abstract class AppStorageManager {
         if (existingValue) {
             existingValue.value = value.toString();
             existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
+            await this.repository.update(existingValue);
         } else {
-            await this.repository.addNewSetting('splashOnboarding', value.toString());
+            await this.repository.create('splashOnboarding', value.toString());
         }
     }
     public async getSplashOnboarding(): Promise<boolean> {
@@ -72,9 +72,9 @@ export abstract class AppStorageManager {
         if (existingValue) {
             existingValue.value = value.toString();
             existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
+            await this.repository.update(existingValue);
         } else {
-            await this.repository.addNewSetting('appInstruction', value.toString());
+            await this.repository.create('appInstruction', value.toString());
         }
     }
     public async getAppInstruction(): Promise<boolean> {

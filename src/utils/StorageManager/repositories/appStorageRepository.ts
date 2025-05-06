@@ -8,12 +8,13 @@ export class AppStorageRepository {
         this.ormRepository = dataSource.getRepository(AppStorage);
     }
 
-    public async addNewSetting(name: string, value: string): Promise<AppStorage> {
+    public async create(name: string, value: string): Promise<AppStorage> {
+        const now = new Date();
         const appStorageEntity = this.ormRepository.create({
             name,
             value,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: now,
+            updatedAt: now,
         });
 
         return this.ormRepository.save(appStorageEntity);
@@ -29,7 +30,7 @@ export class AppStorageRepository {
         await this.ormRepository.delete({});
     }
 
-    public async updateSetting(settings: AppStorage): Promise<AppStorage> {
+    public async update(settings: AppStorage): Promise<AppStorage> {
         const findDoc = await this.ormRepository.findOne({ where: { name: settings.name, id: settings.id } });
 
         if (findDoc) return await this.ormRepository.save(settings);
