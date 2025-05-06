@@ -23,18 +23,18 @@ export class IdentityVerificationStorageRepository {
     }
 
     public async findByVeriffId(veriffId: string): Promise<IdentityVerificationStorage | null> {
-        const identityVerification = this.ormRepository.findOne({ where: { veriffId } });
+        const doc = this.ormRepository.findOne({ where: { veriffId } });
 
-        return identityVerification;
+        return doc;
     }
 
     public async findLatestApproved(): Promise<IdentityVerificationStorage | null> {
-        const identityVerification = await this.ormRepository.findOne({
+        const doc = await this.ormRepository.findOne({
             where: { status: 'APPROVED' },
             order: { createdAt: 'DESC' },
         });
 
-        return identityVerification;
+        return doc;
     }
 
     public async deleteAll(): Promise<void> {
@@ -42,11 +42,11 @@ export class IdentityVerificationStorageRepository {
     }
 
     public async update(identityVerification: IdentityVerificationStorage): Promise<IdentityVerificationStorage> {
-        const findDoc = await this.ormRepository.findOne({
-            where: { name: identityVerification.name, id: identityVerification.id },
+        const doc = await this.ormRepository.findOne({
+            where: { veriffId: identityVerification.veriffId },
         });
 
-        if (findDoc) return await this.ormRepository.save(identityVerification);
-        else throw new Error('Name not exists ');
+        if (doc) return await this.ormRepository.save(identityVerification);
+        else throw new Error('veriffId not exists ');
     }
 }
