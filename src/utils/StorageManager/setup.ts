@@ -12,6 +12,7 @@ import { AssetStorage } from './entities/assetStorage';
 import Debug from '../debug';
 import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
+import { AssetNameMigration163837490194480 } from './migrations/assetNameMigration';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
@@ -20,6 +21,7 @@ export const dataSource = new DataSource({
     driver: ExpoSQLite,
     entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
+    migrations: [AssetNameMigration163837490194480],
 });
 
 // Create the key repository instances
@@ -72,6 +74,7 @@ export async function connect() {
     try {
         if (!dataSource.isInitialized) {
             await dataSource.initialize();
+            await dataSource.runMigrations();
         }
 
         // Get the repositories

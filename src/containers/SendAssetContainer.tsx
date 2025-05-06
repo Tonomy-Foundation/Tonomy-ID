@@ -15,6 +15,7 @@ import { debounce } from '../utils/network';
 import { AntelopeAccount, AntelopeChain, AntelopePrivateKey, AntelopeTransaction } from '../utils/chain/antelope';
 import { WalletTransactionRequest } from '../utils/session/walletConnect';
 import { AntelopeTransactionRequest } from '../utils/session/antelope';
+import settings from '../settings';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -76,7 +77,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     };
 
     const handleMaxAmount = async () => {
-        if (token.getSymbol() === 'LEOS') {
+        if (token.getSymbol() === settings.config.currencySymbol) {
             const account = AntelopeAccount.fromAccount(chain as AntelopeChain, asset.account);
             const availableBalance = await token.getAvailableBalance(account);
             const balance = availableBalance.toString().split(' ')[0];
@@ -115,7 +116,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                 return;
             }
 
-            if (token.getSymbol() === 'LEOS' && Number(balance) > Number(availableBalance)) {
+            if (token.getSymbol() === settings.config.currencySymbol && Number(balance) > Number(availableBalance)) {
                 throwErrorMsg();
                 return;
             }
@@ -194,6 +195,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
         setBalance(amount);
         debouncedSearch(amount);
     };
+    const logo = asset.token.icon;
 
     return (
         <View style={styles.container}>
@@ -225,12 +227,12 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                                     <Text style={styles.inputButtonText}>Paste</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.inputButton} onPress={handleOpenQRScan}>
-                                    <ScanIcon color={theme.colors.success} width={18} height={18} />
+                                    <ScanIcon color={theme.colors.primary} width={18} height={18} />
                                 </TouchableOpacity>
                             </View>
                         </View>
                         <View style={styles.networkContainer}>
-                            <Image source={{ uri: asset.token.icon }} style={styles.favicon} />
+                            <Image source={typeof logo === 'string' ? { uri: logo } : logo} style={styles.favicon} />
                             <Text style={styles.networkName}>{asset.chain.getName()} network</Text>
                         </View>
                         <View>
@@ -314,7 +316,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     secondaryColor: {
-        color: theme.colors.secondary2,
+        color: theme.colors.grey9,
         marginLeft: 4,
     },
     inputContainer: {
@@ -347,7 +349,7 @@ const styles = StyleSheet.create({
         ...commonStyles.secondaryFontFamily,
     },
     inputButtonText: {
-        color: theme.colors.success,
+        color: theme.colors.primary,
         fontSize: 15,
         fontWeight: '500',
         ...commonStyles.secondaryFontFamily,

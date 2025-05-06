@@ -8,7 +8,7 @@ export type IconButtonProps = React.ComponentProps<typeof IconButton> & { color?
 export default function TButton(props: IconButtonProps) {
     const styles = StyleSheet.create({
         icon: {
-            backgroundColor: props.color ? props.color : theme.colors.success,
+            backgroundColor: props.color ? props.color : theme.colors.primary,
         },
     });
 
