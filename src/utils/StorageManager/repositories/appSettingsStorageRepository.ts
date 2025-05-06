@@ -1,5 +1,5 @@
 import { Repository, DataSource } from 'typeorm';
-import { AppStorage } from '../entities/appSettings';
+import { AppStorage } from '../entities/appSettingsStorage';
 
 export class AppStorageRepository {
     private ormRepository: Repository<AppStorage>;
@@ -21,9 +21,9 @@ export class AppStorageRepository {
     }
 
     public async findByName(name: string): Promise<AppStorage | null> {
-        const settings = this.ormRepository.findOne({ where: { name } });
+        const doc = this.ormRepository.findOne({ where: { name } });
 
-        return settings;
+        return doc;
     }
 
     public async deleteAll(): Promise<void> {
@@ -31,9 +31,9 @@ export class AppStorageRepository {
     }
 
     public async update(settings: AppStorage): Promise<AppStorage> {
-        const findDoc = await this.ormRepository.findOne({ where: { name: settings.name, id: settings.id } });
+        const doc = await this.ormRepository.findOne({ where: { name: settings.name, id: settings.id } });
 
-        if (findDoc) return await this.ormRepository.save(settings);
+        if (doc) return await this.ormRepository.save(settings);
         else throw new Error('Name not exists ');
     }
 }
