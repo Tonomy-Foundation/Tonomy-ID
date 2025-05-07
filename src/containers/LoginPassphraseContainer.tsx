@@ -226,9 +226,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 16,
     },
-    regenerateBtn: {
-        width: '50%',
-        justifyContent: 'center',
-        flexDirection: 'row',
-    },
 });
