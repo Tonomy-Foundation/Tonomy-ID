@@ -1,8 +1,6 @@
 import { IdentityVerificationStorageRepository } from './identityVerificationStorageRepository';
-import { util } from '@tonomy/tonomy-id-sdk';
-import { IdentityVerificationStorage, VcStatus } from '../entities/identityVerificationStorage';
-
-const { VerifiableCredential } = util;
+import { VcStatus } from '../entities/identityVerificationStorage';
+import { VerifiableCredential } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/util/ssi/vc';
 
 // from https://devdocs.veriff.com/docs/decision-webhook#sample-request
 type VeriffIdentityVerification = {
@@ -147,10 +145,6 @@ type VeriffIdentityVerification = {
     };
 };
 
-export interface IdentityVerification extends IdentityVerificationStorage {
-    subject: VeriffIdentityVerification;
-}
-
 export abstract class IdentityVerificationStorageManager {
     protected repository: IdentityVerificationStorageRepository;
 
@@ -158,21 +152,19 @@ export abstract class IdentityVerificationStorageManager {
         this.repository = repository;
     }
 
-    async createVc(veriffId: string, vc: typeof VerifiableCredential, status: VcStatus): Promise<void> {
+    async createVc(
+        veriffId: string,
+        vc: VerifiableCredential<VeriffIdentityVerification>,
+        status: VcStatus
+    ): Promise<void> {
         await this.repository.create(veriffId, vc.toString(), status);
     }
 
-    async findLatestApproved(): Promise<IdentityVerification | null> {
+    async findLatestApproved(): Promise<VerifiableCredential<VeriffIdentityVerification> | null> {
         const doc = await this.repository.findLatestApproved();
 
         if (doc) {
-            const vc = new VerifiableCredential<VeriffIdentityVerification>(doc.vc);
-            const subject = vc.getCredentialSubject();
-
-            return {
-                ...doc,
-                subject,
-            };
+            return new VerifiableCredential<VeriffIdentityVerification>(doc.vc);
         } else return null;
     }
 
