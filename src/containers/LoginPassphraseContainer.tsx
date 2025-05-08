@@ -27,7 +27,7 @@ export default function LoginPassphraseContainer({
     username: string;
 }) {
     const errorsStore = useErrorStore();
-    const { user, setStatus } = useUserStore();
+    const { user, setStatus, isVerified } = useUserStore();
 
     const [passphrase, setPassphrase] = useState<string[]>(
         settings.isProduction() ? ['', '', '', '', '', ''] : DEFAULT_DEV_PASSPHRASE_LIST
@@ -64,12 +64,17 @@ export default function LoginPassphraseContainer({
                     id: result.account_name.toString(),
                     username: '@' + tonomyUsername.getBaseUsername(),
                 });
+                console.log('calling...1');
                 setPassphrase(['', '', '', '', '', '']);
                 setNextDisabled(false);
                 setErrorMessage('');
                 await user.saveLocal();
                 await updateKeys();
-                setStatus(UserStatus.LOGGED_IN);
+                if (!isVerified) {
+                    setStatus(UserStatus.PENDING_VERIFICATION);
+                } else {
+                    setStatus(UserStatus.LOGGED_IN);
+                }
             } else {
                 throw new Error('Account name not found');
             }

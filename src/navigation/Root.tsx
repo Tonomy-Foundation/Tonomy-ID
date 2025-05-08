@@ -49,6 +49,7 @@ import SuccessUnstakeScreen from '../screens/SuccessUnstakeScreen';
 import WithdrawVestedScreen from '../screens/WithdrawVestedScreen';
 import VestedSuccessScreen from '../screens/VestedSuccessScreen';
 import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
+import IdentityVerificationScreen from '../screens/IdentityVerificationScreen';
 
 const prefix = Linking.createURL('');
 
@@ -126,6 +127,8 @@ export type MainRouteStackParamList = {
     WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
     SuccessVested: AssetsParamsScreen;
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
+
+    IdentityVerification: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -172,7 +175,7 @@ export default function RootNavigation() {
     const noHeaderScreenOptions = { headerShown: false };
     const CombinedDefaultTheme = merge(navigationTheme, theme);
 
-    const { status } = useUserStore();
+    const { status, isVerified } = useUserStore();
 
     return (
         <NavigationContainer ref={navigationRef} theme={CombinedDefaultTheme} linking={linking}>
@@ -227,7 +230,15 @@ export default function RootNavigation() {
                 <>
                     <NotificationsProvider />
                     <CommunicationProvider />
-                    <Stack.Navigator initialRouteName={'BottomTabs'} screenOptions={defaultScreenOptions}>
+                    <Stack.Navigator
+                        initialRouteName={!isVerified ? 'IdentityVerification' : 'BottomTabs'}
+                        screenOptions={defaultScreenOptions}
+                    >
+                        <Stack.Screen
+                            name="IdentityVerification"
+                            options={{ headerBackTitleVisible: false, title: 'Identity Verification' }}
+                            component={IdentityVerificationScreen}
+                        />
                         <Stack.Screen
                             name="Drawer"
                             component={DrawerNavigation}
