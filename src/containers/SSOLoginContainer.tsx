@@ -243,7 +243,7 @@ export default function SSOLoginContainer({
             footerHint={
                 <TouchableOpacity style={styles.promptCard} onPress={() => refMessage?.current?.open()}>
                     <Text style={styles.promptText}>Instant and secure access, made easy</Text>
-                    <ArrowUpRight width={20} height={20} />
+                    <ArrowUpRight width={20} height={20} color={'black'} />
                 </TouchableOpacity>
             }
             footer={
