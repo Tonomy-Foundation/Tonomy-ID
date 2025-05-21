@@ -233,11 +233,7 @@ export default function RootNavigation() {
                             component={DrawerNavigation}
                             options={{ headerShown: false, title: settings.config.appName }}
                         />
-                        <Stack.Screen
-                            name="SSO"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
-                            component={SSOLoginScreen}
-                        />
+                        <Stack.Screen name="SSO" options={{ title: 'App login' }} component={SSOLoginScreen} />
                         <Stack.Screen
                             name="ProfilePreview"
                             options={{ headerBackTitleVisible: false, title: 'Profile Information' }}
