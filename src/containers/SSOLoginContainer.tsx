@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Linking from 'expo-linking';
-import { Image, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
@@ -21,6 +21,7 @@ import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
 import { ArrowUpRight } from 'iconoir-react-native';
+import SSOLoginBottomLayover from '../components/SSOLoginBottomLayover';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -39,6 +40,7 @@ export default function SSOLoginContainer({
     const [ssoApp, setSsoApp] = useState<App>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
 
     const errorStore = useErrorStore();
 
@@ -214,7 +216,7 @@ export default function SSOLoginContainer({
     return (
         <LayoutComponent
             body={
-                <View style={styles.container}>
+                <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
                     {/* Progress bar */}
                     <View style={styles.progressBarContainer}>
                         <View style={styles.progressActive} />
@@ -234,10 +236,12 @@ export default function SSOLoginContainer({
                             </View>
                         </View>
                     )}
-                </View>
+
+                    <SSOLoginBottomLayover refMessage={refMessage} />
+                </ScrollView>
             }
             footerHint={
-                <TouchableOpacity style={styles.promptCard}>
+                <TouchableOpacity style={styles.promptCard} onPress={() => refMessage?.current?.open()}>
                     <Text style={styles.promptText}>Instant and secure access, made easy</Text>
                     <ArrowUpRight width={20} height={20} />
                 </TouchableOpacity>
@@ -261,6 +265,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         textAlign: 'center',
+        paddingBottom: 50,
     },
     appIcon: {
         width: 50,
@@ -275,12 +280,13 @@ const styles = StyleSheet.create({
     },
     loginCard: {
         alignItems: 'center',
-        padding: 24,
+        paddingHorizontal: 40,
+        paddingVertical: 28,
         borderRadius: 15,
         borderWidth: 1,
         borderColor: theme.colors.grey8,
         marginBottom: 30,
-        marginTop: 50,
+        marginTop: 70,
     },
     promptText: {
         flex: 1,
