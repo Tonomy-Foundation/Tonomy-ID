@@ -4,15 +4,12 @@ import { Entity, Unique, Column, Index, PrimaryColumn } from 'typeorm';
 @Entity('AppStorage')
 @Unique(['origin'])
 export class AppStorage {
-    @PrimaryColumn({
-        unique: true,
-        type: 'varchar',
-    })
+    @PrimaryColumn({ type: 'varchar', unique: true })
+    accountName!: string;
+
+    @Column({ type: 'varchar', unique: true })
     @Index()
     origin!: string;
-
-    @Column({ type: 'varchar' })
-    accountName!: string;
 
     @Column({ type: 'bool' })
     isLoggedIn!: boolean;
