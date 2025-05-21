@@ -220,39 +220,28 @@ export default function SSOLoginContainer({
         <LayoutComponent
             body={
                 <View style={styles.container}>
-                    <SafeAreaView>
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={Images.GetImage('logo1024')}
-                        ></Image>
-                    </SafeAreaView>
-                    {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
-
                     {ssoApp && (
                         <View style={[styles.appDialog, styles.marginTop]}>
                             <Image style={styles.appDialogImage} source={{ uri: ssoApp.logoUrl }} />
                             <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
                             <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
                             <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
+                            {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
                         </View>
                     )}
                 </View>
             }
             footerHint={
                 <View style={styles.infoBox}>
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="100% secure. Only your phone can authorize your app login."
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
-                    />
+                    <Image source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }} style={styles.avatar} />
+                    <Text style={styles.promptText}>Instant and secure access, made easy</Text>
+                    <ArrowRight width={20} height={20} color="#7a7a7a" />
                 </View>
             }
             footer={
                 <View>
                     <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onLogin}>
-                        Login
+                        Proceed
                     </TButtonContained>
                     <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
                         Cancel
