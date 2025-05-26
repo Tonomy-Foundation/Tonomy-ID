@@ -235,7 +235,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SSO"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            options={{ headerBackTitleVisible: false, title: 'App login' }}
                             component={SSOLoginScreen}
                         />
                         <Stack.Screen
