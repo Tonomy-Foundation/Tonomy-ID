@@ -22,6 +22,7 @@ export enum UserStatus {
     NONE = 'NONE',
     NOT_LOGGED_IN = 'NOT_LOGGED_IN',
     LOGGED_IN = 'LOGGED_IN',
+    PENDING_VERIFICATION = 'PENDING_VERIFICATION',
 }
 
 export interface UserState {
@@ -32,11 +33,13 @@ export interface UserState {
     initializeStatusFromStorage(): Promise<void>;
     logout(reason: string): Promise<void>;
     isAppInitialized: boolean;
+    isVerified: boolean;
 }
 
 const useUserStore = create<UserState>((set, get) => ({
     user: createUserObject(new RNKeyManager(), storageFactory),
     status: UserStatus.NONE,
+    isVerified: false,
     isAppInitialized: false,
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
