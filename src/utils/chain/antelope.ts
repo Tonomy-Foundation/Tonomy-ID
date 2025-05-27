@@ -519,7 +519,7 @@ export const TonomyStagingChain = new AntelopeChain(
     'Tonomy Staging',
     '8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8f',
     TonomyLogo,
-    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
+    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=TONO&corePrecision=6&systemDomain=eosio',
     true
 );
 
@@ -528,7 +528,7 @@ export const TonomyLocalChain = new AntelopeChain(
     'Tonomy Localhost',
     'unknown chain id at this time',
     TonomyLogo,
-    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=LEOS&corePrecision=6&systemDomain=eosio',
+    'https://local.bloks.io/?nodeUrl=https%3A%2F%2Fblockchain-api-staging.tonomy.foundation&coreSymbol=TONO&corePrecision=6&systemDomain=eosio',
     true
 );
 
@@ -549,10 +549,10 @@ export const TONOTestnetToken = new TonomyToken(
 export const TONOStagingToken = new TonomyToken(
     TonomyStagingChain,
     'StagingTONO',
-    'LEOS',
+    'TONO',
     6,
     TokenLogo,
-    'leos-staging',
+    'tono-staging',
     false,
     true,
     true
@@ -561,10 +561,10 @@ export const TONOStagingToken = new TonomyToken(
 export const TONOLocalToken = new TonomyToken(
     TonomyLocalChain,
     'LocalTONO',
-    'LEOS',
+    'TONO',
     6,
     TokenLogo,
-    'leos-local',
+    'tono-local',
     false,
     true,
     true
