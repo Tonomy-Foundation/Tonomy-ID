@@ -4,6 +4,7 @@ import theme, { commonStyles } from '../utils/theme';
 import useUserStore from '../store/userStore';
 import { Props } from '../screens/CitizenshipScreen';
 import settings from '../settings';
+import TButton from '../components/TIconButton';
 
 export default function CitizenshipContainer({ navigation }: { navigation: Props['navigation'] }) {
     const userStore = useUserStore();
@@ -51,6 +52,9 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => navigation.navigate('VeriffLogin')}>
+                <Text>Veriff Start</Text>
+            </TouchableOpacity>
             <ScrollView style={styles.scrollContent}>
                 <Text style={styles.title}>
                     Welcome to {settings.config.ecosystemName}, @{username}
