@@ -1,18 +1,11 @@
-import React, { useState } from 'react';
-import * as Linking from 'expo-linking';
-import { Image, StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, View, Text, ScrollView } from 'react-native';
 import LayoutComponent from '../components/layout';
-import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
+import { TButtonContained } from '../components/atoms/TButton';
 import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/VeriffLoginScreen';
-import { ArrowUpRight } from 'iconoir-react-native';
-import SSOLoginBottomLayover from '../components/SSOLoginBottomLayover';
-import settings from '../settings';
 
 export default function VeriffLoginContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const [nextLoading, setNextLoading] = useState<boolean>(true);
-    const [cancelLoading, setCancelLoading] = useState<boolean>(false);
-
     return (
         <LayoutComponent
             body={
@@ -46,7 +39,12 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained style={commonStyles.marginBottom}>Get Started</TButtonContained>
+                    <TButtonContained
+                        onPress={() => navigation.navigate('VeriffLoading')}
+                        style={commonStyles.marginBottom}
+                    >
+                        Get Started
+                    </TButtonContained>
                 </View>
             }
         ></LayoutComponent>

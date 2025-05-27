@@ -50,6 +50,7 @@ import WithdrawVestedScreen from '../screens/WithdrawVestedScreen';
 import VestedSuccessScreen from '../screens/VestedSuccessScreen';
 import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
 import VeriffLoginScreen from '../screens/VeriffLoginScreen';
+import VeriffLoadingScreen from '../screens/VeriffLoadingScreen';
 
 const prefix = Linking.createURL('');
 
@@ -128,6 +129,7 @@ export type MainRouteStackParamList = {
     SuccessVested: AssetsParamsScreen;
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
     VeriffLogin: undefined;
+    VeriffLoading: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -356,6 +358,15 @@ export default function RootNavigation() {
                             name="VeriffLogin"
                             options={{ headerBackTitleVisible: false, title: 'App Login' }}
                             component={VeriffLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="VeriffLoading"
+                            options={{
+                                headerBackTitleVisible: false,
+                                headerBackVisible: false,
+                                headerShown: false,
+                            }}
+                            component={VeriffLoadingScreen}
                         />
                     </Stack.Navigator>
                 </>
