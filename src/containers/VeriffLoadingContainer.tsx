@@ -7,7 +7,10 @@ export default function VeriffLoadingContainer({ navigation }: { navigation: Pro
     const [loading, setLoading] = React.useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(true), 3000);
+        const timer = setTimeout(() => {
+            setLoading(true);
+            navigation.navigate('VeriffDataSharing');
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, [navigation]);

@@ -51,6 +51,7 @@ import VestedSuccessScreen from '../screens/VestedSuccessScreen';
 import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
 import VeriffLoginScreen from '../screens/VeriffLoginScreen';
 import VeriffLoadingScreen from '../screens/VeriffLoadingScreen';
+import VeriffDataSharingScreen from '../screens/VeriffDataSharingScreen';
 
 const prefix = Linking.createURL('');
 
@@ -130,6 +131,7 @@ export type MainRouteStackParamList = {
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
     VeriffLogin: undefined;
     VeriffLoading: undefined;
+    VeriffDataSharing: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -367,6 +369,11 @@ export default function RootNavigation() {
                                 headerShown: false,
                             }}
                             component={VeriffLoadingScreen}
+                        />
+                        <Stack.Screen
+                            name="VeriffDataSharing"
+                            options={{ headerBackTitleVisible: false, title: 'Data Sharing' }}
+                            component={VeriffDataSharingScreen}
                         />
                     </Stack.Navigator>
                 </>
