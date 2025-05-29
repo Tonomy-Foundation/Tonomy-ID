@@ -4937,9 +4937,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.31.0-rc.1":
-  version: 0.31.0-rc.1
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.31.0-rc.1"
+"@tonomy/tonomy-id-sdk@npm:0.31.0-test.2":
+  version: 0.31.0-test.2
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.31.0-test.2"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4953,7 +4953,7 @@ __metadata:
     "@veramo/key-manager": "npm:^6.0.0"
     "@veramo/kms-local": "npm:^6.0.0"
     "@wharfkit/antelope": "npm:^1.0.7"
-    argon2: "npm:^0.40.3"
+    argon2: "npm:^0.41.1"
     cross-fetch: "npm:^4.0.0"
     csv-parse: "npm:^5.5.6"
     debug: "npm:^4.3.6"
@@ -4966,7 +4966,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/2a121ce7af1ad6acf0987a8ae8a3cf66b540b179ade836ce94d2bfe24dbdc9e314e54a1b40ec8059c71c28627c21c56b961a512cf45f357dbd8c5e6a05015c44
+  checksum: 10c0/178af8cb6177cf4187f5d8913d792453836d45fed5b5be4ceffeffcfc2e2e93bcbd1668a475897121092edb0ecd758178624d04d29290a6486173ff3531d66a8
   languageName: node
   linkType: hard
 
@@ -6230,9 +6230,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wharfkit/antelope@npm:^1.0.0, @wharfkit/antelope@npm:^1.0.11, @wharfkit/antelope@npm:^1.0.2, @wharfkit/antelope@npm:^1.0.4, @wharfkit/antelope@npm:^1.0.7":
-  version: 1.0.13
-  resolution: "@wharfkit/antelope@npm:1.0.13"
+"@wharfkit/antelope@npm:1.0.7":
+  version: 1.0.7
+  resolution: "@wharfkit/antelope@npm:1.0.7"
   dependencies:
     bn.js: "npm:^4.11.9"
     brorand: "npm:^1.1.0"
@@ -6240,7 +6240,7 @@ __metadata:
     hash.js: "npm:^1.0.0"
     pako: "npm:^2.1.0"
     tslib: "npm:^2.0.3"
-  checksum: 10c0/6a9f6aad1ec261158e25261277c33262312588c5a6a2b96ca6111a51623ea1b8896d038e2ab72421c28610fc018039cf1b5713e9e8dfae7c4651dee44576ac3c
+  checksum: 10c0/11b002181760c3efc035613b0c1c680bc939dd5092278b3b737f40181f3dcd7e3e0e15bed581f8933e258dc92db52f75138006c595a549b32ed48c9072cfabf9
   languageName: node
   linkType: hard
 
@@ -6698,18 +6698,6 @@ __metadata:
   version: 4.1.3
   resolution: "arg@npm:4.1.3"
   checksum: 10c0/070ff801a9d236a6caa647507bdcc7034530604844d64408149a26b9e87c2f97650055c0f049abd1efc024b334635c01f29e0b632b371ac3f26130f4cf65997a
-  languageName: node
-  linkType: hard
-
-"argon2@npm:^0.40.3":
-  version: 0.40.3
-  resolution: "argon2@npm:0.40.3"
-  dependencies:
-    "@phc/format": "npm:^1.0.0"
-    node-addon-api: "npm:^8.0.0"
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.8.0"
-  checksum: 10c0/994cf1ae5625aeb5ec2d0e0de67f2cf64b8723e0cc8f3cca844b99b00f57e8ad5cc6eb43b2287c9bd0fb9bd15d147e9341327115a447a6208c47ca7cc78705f5
   languageName: node
   linkType: hard
 
@@ -15491,15 +15479,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^8.0.0":
-  version: 8.2.2
-  resolution: "node-addon-api@npm:8.2.2"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/0afc164e407aebaa0114bc5fa04133af6fb024139f9af4d95b82adebe9b70e4156d30b2cf71884254cae4749183620dd8a5019c8e16b1f15d730df205413675b
-  languageName: node
-  linkType: hard
-
 "node-addon-api@npm:^8.1.0":
   version: 8.3.1
   resolution: "node-addon-api@npm:8.3.1"
@@ -15568,7 +15547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.8.0":
+"node-gyp-build@npm:^4.2.0":
   version: 4.8.3
   resolution: "node-gyp-build@npm:4.8.3"
   bin:
@@ -19861,7 +19840,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~5.24.3"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.31.0-rc.1"
+    "@tonomy/tonomy-id-sdk": "npm:0.31.0-test.2"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~18.2.79"

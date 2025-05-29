@@ -40,7 +40,7 @@
         "@react-navigation/native-stack": "^6.11.0",
         "@sentry/react-native": "~5.24.3",
         "@sinonjs/text-encoding": "^0.7.3",
-        "@tonomy/tonomy-id-sdk": "0.31.0-rc.1",
+        "@tonomy/tonomy-id-sdk": "0.31.0-test.2",
         "@veramo/core": "^6.0.0",
         "@walletconnect/core": "^2.17.2",
         "@walletconnect/react-native-compat": "^2.17.2",
@@ -137,7 +137,8 @@
     },
     "resolutions": {
         "jsonld": "link:./node_modules/@digitalcredentials/jsonld",
-        "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto"
+        "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto",
+        "@wharfkit/antelope": "1.0.7"
     },
     "private": true,
     "packageManager": "yarn@4.3.1",
