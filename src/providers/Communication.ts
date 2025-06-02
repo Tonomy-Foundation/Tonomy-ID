@@ -79,7 +79,7 @@ export default function CommunicationProvider() {
 
                             if (payload) {
                                 navigation.navigate('SSO', {
-                                    payload: payload,
+                                    payload,
                                     platform: 'mobile',
                                 });
                             } else {
@@ -185,10 +185,9 @@ export default function CommunicationProvider() {
 
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();
-                const base64UrlPayload = objToBase64Url(payload);
 
                 navigation.navigate('SSO', {
-                    payload: base64UrlPayload,
+                    payload: payload.toString(),
                     platform: 'browser',
                 });
                 sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
