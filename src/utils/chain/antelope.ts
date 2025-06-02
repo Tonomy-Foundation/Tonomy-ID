@@ -54,7 +54,7 @@ import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
-import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
+import { Signer } from '@tonomy/tonomy-id-sdk';
 import settings from '../../settings';
 import TokenLogo from '../../assets/tonomyProduction/favicon.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
