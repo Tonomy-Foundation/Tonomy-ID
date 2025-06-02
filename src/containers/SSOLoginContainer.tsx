@@ -8,11 +8,9 @@ import useUserStore from '../store/userStore';
 import {
     terminateLoginRequest,
     App,
-    base64UrlToObj,
     SdkErrors,
+    DualWalletRequests,
     CommunicationError,
-    ResponsesManager,
-    RequestsManager,
     SdkError,
     LoginRequest,
     WalletRequestAndResponseObject,
@@ -39,7 +37,7 @@ export default function SSOLoginContainer({
     navigation: SSOLoginScreenProps['navigation'];
 }) {
     const { user, logout } = useUserStore();
-    const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
+    const [dualRequests, setDualRequests] = useState<DualWalletRequests>();
     const [username, setUsername] = useState<string>();
     const [ssoApp, setSsoApp] = useState<App>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
@@ -64,24 +62,18 @@ export default function SSOLoginContainer({
     async function getRequestsFromParams() {
         try {
             debug('getRequestsFromParams(): start');
-            const parsedPayload = base64UrlToObj(payload);
+            const requests = DualWalletRequests.fromString(payload);
 
-            debug('getRequestsFromParams(): parsedPayload', parsedPayload?.requests?.length);
-            const managedRequests = new RequestsManager(parsedPayload?.requests);
+            debug(
+                'getRequestsFromParams(): requests',
+                requests.external.getRequests().length,
+                requests.sso?.getRequests().length
+            );
 
-            debug('getRequestsFromParams(): managedRequests', managedRequests?.requests?.length);
-
-            await managedRequests.verify();
             // TODO: check if the internal login request comes from same DID as the sender of the message.
 
-            const managedResponses = new ResponsesManager(managedRequests);
-
-            debug('getRequestsFromParams(): managedResponses', managedResponses);
-
-            await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
-
-            setSsoApp(managedResponses.getExternalLoginResponseOrThrow().getAppOrThrow());
-            setResponsesManager(managedResponses);
+            setSsoApp(requests.external.getApp());
+            setDualRequests(requests);
             debug('getRequestsFromParams(): end');
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
@@ -95,28 +87,9 @@ export default function SSOLoginContainer({
             setNextLoading(true);
             debug('onLogin() logs start:');
 
-            if (!responsesManager) throw new Error('Responses manager is not set');
+            if (!dualRequests) throw new Error('Responses manager is not set');
 
-            await responsesManager.createResponses(user);
-
-            let loginRequest: LoginRequest | WalletRequestAndResponseObject;
-
-            try {
-                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
-            } catch (e) {
-                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
-                    debug('onLogin() getting loginRequest from external website');
-                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
-                } else throw e;
-            }
-
-            const payload = loginRequest.getPayload();
-
-            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                callbackPath: payload.callbackPath,
-                callbackOrigin: payload.origin,
-                messageRecipient: loginRequest.getIssuer(),
-            });
+            const callbackUrl = await user.acceptLoginRequest(dualRequests, platform);
 
             debug('onLogin() callbackUrl:', callbackUrl);
 
@@ -152,23 +125,23 @@ export default function SSOLoginContainer({
     async function onCancel() {
         try {
             setCancelLoading(true);
-            if (!responsesManager) throw new Error('Responses manager is not set');
+            if (!dualRequests) throw new Error('Responses manager is not set');
 
             let loginRequest: LoginRequest | WalletRequestAndResponseObject;
 
             try {
-                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+                loginRequest = dualRequests.getAccountsLoginRequestOrThrow();
             } catch (e) {
                 if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
                     debug('onLogin() getting loginRequest from external website');
-                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
+                    loginRequest = dualRequests.getExternalLoginResponseOrThrow().getRequest();
                 } else throw e;
             }
 
             const payload = loginRequest.getPayload();
 
             const res = await terminateLoginRequest(
-                responsesManager,
+                dualRequests,
                 platform,
                 {
                     code: SdkErrors.UserCancelled,
