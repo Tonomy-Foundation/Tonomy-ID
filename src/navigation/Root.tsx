@@ -70,7 +70,7 @@ export type MainRouteStackParamList = {
     SetPassword: undefined;
     Settings: undefined;
     Support: undefined;
-    SSO: { payload: string; platform?: 'mobile' | 'browser' };
+    SSO: { payload: string; receivedVia?: 'deepLink' | 'message' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
     TermsAndCondition: undefined;
@@ -92,9 +92,9 @@ export type MainRouteStackParamList = {
         transaction?: ITransactionRequest | null;
         requestType: string;
         request:
-            | SignClientTypes.EventArguments['session_request']
-            | SignClientTypes.EventArguments['session_proposal']
-            | null;
+        | SignClientTypes.EventArguments['session_request']
+        | SignClientTypes.EventArguments['session_proposal']
+        | null;
     };
     BottomTabs: undefined;
     Assets: undefined;

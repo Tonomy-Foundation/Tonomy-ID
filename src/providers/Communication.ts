@@ -80,7 +80,7 @@ export default function CommunicationProvider() {
                             if (payload) {
                                 navigation.navigate('SSO', {
                                     payload,
-                                    platform: 'mobile',
+                                    receivedVia: 'deepLink',
                                 });
                             } else {
                                 throw new Error('Payload not found in deep link');
@@ -188,7 +188,7 @@ export default function CommunicationProvider() {
 
                 navigation.navigate('SSO', {
                     payload: payload.toString(),
-                    platform: 'browser',
+                    receivedVia: 'message',
                 });
                 sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
             } catch (e) {

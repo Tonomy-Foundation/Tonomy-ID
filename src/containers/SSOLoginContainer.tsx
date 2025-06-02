@@ -20,11 +20,11 @@ const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
 export default function SSOLoginContainer({
     payload,
-    platform,
+    receivedVia,
     navigation,
 }: {
     payload: string;
-    platform: 'mobile' | 'browser';
+    receivedVia: 'deepLink' | 'message';
     navigation: SSOLoginScreenProps['navigation'];
 }) {
     const { user, logout } = useUserStore();
@@ -78,11 +78,14 @@ export default function SSOLoginContainer({
 
             if (!dualRequests) throw new Error('dualRequests manager is not set');
 
-            const callbackUrl = await user.acceptLoginRequest(dualRequests, platform);
+            const callbackUrl = await user.acceptLoginRequest(
+                dualRequests,
+                receivedVia === 'deepLink' ? 'redirect' : 'message'
+            );
 
             debug('onLogin() callbackUrl:', callbackUrl);
 
-            if (platform === 'mobile') {
+            if (receivedVia === 'deepLink') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
                 await Linking.openURL(callbackUrl);
                 navigation.navigate('Assets');
@@ -118,7 +121,7 @@ export default function SSOLoginContainer({
 
             const redirectUrl = await rejectLoginRequest(
                 dualRequests,
-                platform,
+                receivedVia === 'deepLink' ? 'redirect' : 'message',
                 {
                     code: SdkErrors.UserCancelled,
                     reason: 'User cancelled login request',
@@ -130,7 +133,7 @@ export default function SSOLoginContainer({
 
             setNextLoading(false);
 
-            if (platform === 'mobile') {
+            if (receivedVia === 'deepLink') {
                 if (typeof redirectUrl !== 'string') throw new Error('redirectUrl is not string');
                 await Linking.openURL(redirectUrl);
             }
