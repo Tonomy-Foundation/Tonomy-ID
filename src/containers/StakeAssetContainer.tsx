@@ -126,7 +126,8 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
             setAmountError('Not enough balance');
         } else if (numericAmount < minimumStakeTransfer) {
             setAmountError(
-                `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${settings.config.currencySymbol
+                `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
+                    settings.config.currencySymbol
                 }`
             );
         }
@@ -151,8 +152,9 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
             Alert.alert(
                 'Invalid Input',
                 amountError ||
-                `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${settings.config.currencySymbol
-                }`
+                    `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
+                        settings.config.currencySymbol
+                    }`
             );
             return;
         }
