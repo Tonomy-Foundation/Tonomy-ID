@@ -5,10 +5,10 @@ import {
     CommunicationError,
     LinkAuthRequestMessage,
     LoginRequestsMessage,
-    objToBase64Url,
     parseDid,
     SdkError,
     SdkErrors,
+    isErrorCode,
 } from '@tonomy/tonomy-id-sdk';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useErrorStore from '../store/errorStore';
@@ -154,7 +154,7 @@ export default function CommunicationProvider() {
 
             if (isNetworkError(e)) {
                 throw e;
-            } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+            } else if (isErrorCode(e, dkErrors.CommunicationNotConnected)) {
                 throw new Error(NETWORK_ERROR_MESSAGE);
             } else {
                 errorStore.setError({ error: e, expected: false });
@@ -215,7 +215,7 @@ export default function CommunicationProvider() {
             } catch (e) {
                 if (isNetworkError(e)) {
                     debug('linkAuthRequestSubscriber() Network error');
-                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                } else if (isErrorCode(e, SdkErrors.CommunicationNotConnected)) {
                     debug('linkAuthRequestSubscriber() Network error connecting to Communication service');
                 } else {
                     errorStore.setError({ error: e, expected: false });

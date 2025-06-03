@@ -8,7 +8,7 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreateEthereumKeyScreen';
 import useUserStore from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract, util } from '@tonomy/tonomy-id-sdk';
+import { AccountType, isErrorCode, SdkErrors, TonomyUsername, TonomyContract, util } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
@@ -32,9 +32,9 @@ export default function CreateEthereumKeyContainer({
 }: {
     requestType: string;
     request:
-        | SignClientTypes.EventArguments['session_request']
-        | SignClientTypes.EventArguments['session_proposal']
-        | null;
+    | SignClientTypes.EventArguments['session_request']
+    | SignClientTypes.EventArguments['session_proposal']
+    | null;
     transaction: ITransactionRequest | null;
     navigation: Props['navigation'];
 }) {
@@ -99,19 +99,17 @@ export default function CreateEthereumKeyContainer({
 
             if (isNetworkError(e)) {
                 errorsStore.setError(createNetworkErrorState());
-            } else if (e instanceof SdkError) {
-                switch (e.code) {
-                    case SdkErrors.PasswordInvalid:
-                    case SdkErrors.PasswordFormatInvalid:
-                    case SdkErrors.AccountDoesntExist:
-                        errorsStore.setError({
-                            error: new Error('Incorrect passphrase. Please try again.'),
-                            expected: true,
-                        });
-                        break;
-                    default:
-                        errorsStore.setError({ error: e, expected: false });
-                }
+            } else if (
+                isErrorCode(e, [
+                    SdkErrors.PasswordInvalid,
+                    SdkErrors.PasswordFormatInvalid,
+                    SdkErrors.AccountDoesntExist,
+                ])
+            ) {
+                errorsStore.setError({
+                    error: new Error('Incorrect passphrase. Please try again.'),
+                    expected: true,
+                });
             } else {
                 errorsStore.setError({ error: e, expected: false });
             }

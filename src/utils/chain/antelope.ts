@@ -49,6 +49,7 @@ import {
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
+    isErrorCode,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
@@ -438,7 +439,7 @@ export class TonomyToken extends AntelopeToken {
             // Convert totalStaked to an Asset
             stakedBalance = new Asset(this, new Decimal(totalStaked));
         } catch (e) {
-            if (e.code === SdkErrors.AccountNotFound) {
+            if (isErrorCode(e, SdkErrors.AccountNotFound)) {
                 debug('getBalance() Account not found');
             }
         }

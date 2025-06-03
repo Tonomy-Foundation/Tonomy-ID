@@ -6,7 +6,7 @@ import { TH1, TP } from '../components/atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
 import { Checkbox, ActivityIndicator } from 'react-native-paper';
 import { TButtonContained } from '../components/atoms/TButton';
-import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { isErrorCode, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/HcaptchaScreen';
 import settings from '../settings';
 import useUserStore, { UserStatus } from '../store/userStore';
@@ -116,14 +116,8 @@ export default function HcaptchaContainer({ navigation }: { navigation: Props['n
             if (isNetworkError(e)) {
                 errorStore.setError(createNetworkErrorState());
                 return;
-            } else if (e instanceof SdkError) {
-                switch (e.code) {
-                    case SdkErrors.UsernameTaken:
-                        setShowUsernameErrorModal(true);
-                        break;
-                    default:
-                        errorStore.setError({ title: 'Error', error: e, expected: false });
-                }
+            } else if (isErrorCode(e, SdkErrors.UsernameTaken)) {
+                setShowUsernameErrorModal(true);
             } else {
                 errorStore.setError({ title: 'Error', error: e, expected: false });
             }

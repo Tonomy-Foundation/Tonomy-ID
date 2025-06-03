@@ -76,21 +76,18 @@ export default function LoginPassphraseContainer({
         } catch (e) {
             if (isNetworkError(e)) {
                 errorsStore.setError(createNetworkErrorState());
-            } else if (e instanceof SdkError) {
-                switch (e.code) {
-                    case SdkErrors.UsernameNotFound:
-                    case SdkErrors.PasswordInvalid:
-                    case SdkErrors.PasswordFormatInvalid:
-                    case SdkErrors.AccountDoesntExist:
-                        setErrorMessage('Incorrect passphrase. Please try again.');
-                        break;
-                    default:
-                        setErrorMessage('');
-                        errorsStore.setError({ error: e, expected: false });
-                }
-
+            } else if (
+                isErrorCode(e, [
+                    SdkErrors.UsernameNotFound,
+                    SdkErrors.PasswordInvalid,
+                    SdkErrors.PasswordFormatInvalid,
+                    SdkErrors.AccountDoesntExist,
+                ])
+            ) {
+                setErrorMessage('Incorrect passphrase. Please try again.');
                 return;
             } else {
+                setErrorMessage('');
                 errorsStore.setError({ error: e, expected: false });
 
                 return;

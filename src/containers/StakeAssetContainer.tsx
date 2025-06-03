@@ -18,7 +18,7 @@ import theme, { commonStyles } from '../utils/theme';
 import { IChain } from '../utils/chain/types';
 import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
-import { SdkErrors, StakingAccountState, StakingContract } from '@tonomy/tonomy-id-sdk';
+import { SdkErrors, StakingAccountState, StakingContract, isErrorCode } from '@tonomy/tonomy-id-sdk';
 import { getAccountFromChain, getAssetDetails, getTokenEntryByChain } from '../utils/tokenRegistry';
 import settings from '../settings';
 import { AntelopeAccount, AntelopeChain } from '../utils/chain/antelope';
@@ -77,7 +77,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
 
                     setStakingState(state);
                 } catch (e) {
-                    if (e.code === SdkErrors.AccountNotFound) {
+                    if (isErrorCode(e, SdkErrors.AccountNotFound)) {
                         debug('Staking account not found');
                     }
                 }
@@ -126,8 +126,7 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
             setAmountError('Not enough balance');
         } else if (numericAmount < minimumStakeTransfer) {
             setAmountError(
-                `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
-                    settings.config.currencySymbol
+                `Minimum stake: ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${settings.config.currencySymbol
                 }`
             );
         }
@@ -152,9 +151,8 @@ const StakeAssetContainer = ({ navigation, chain }: StakeLesoProps) => {
             Alert.alert(
                 'Invalid Input',
                 amountError ||
-                    `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${
-                        settings.config.currencySymbol
-                    }`
+                `Minimum stake is ${formatTokenValue(new Decimal(minimumStakeTransfer))} ${settings.config.currencySymbol
+                }`
             );
             return;
         }
