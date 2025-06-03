@@ -8,13 +8,12 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, SdkError, SdkErrors, TonomyUsername, TonomyContract, IUserBase } from '@tonomy/tonomy-id-sdk';
+import { AccountType, isErrorCode, SdkErrors, TonomyUsername, TonomyContract } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
-import TSpinner from '../components/atoms/TSpinner';
 import { setUser } from '../utils/sentry';
 
 const tonomyContract = TonomyContract.Instance;

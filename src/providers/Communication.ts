@@ -154,7 +154,7 @@ export default function CommunicationProvider() {
 
             if (isNetworkError(e)) {
                 throw e;
-            } else if (isErrorCode(e, dkErrors.CommunicationNotConnected)) {
+            } else if (isErrorCode(e, SdkErrors.CommunicationNotConnected)) {
                 throw new Error(NETWORK_ERROR_MESSAGE);
             } else {
                 errorStore.setError({ error: e, expected: false });
