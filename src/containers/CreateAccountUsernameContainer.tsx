@@ -4,7 +4,7 @@ import { TButtonContained } from '../components/atoms/TButton';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import useUserStore from '../store/userStore';
-import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { randomString, isErrorCode, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import TInputTextBox from '../components/TInputTextBox';
 import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
@@ -42,8 +42,8 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         try {
             await user.saveUsername(formattedUsername);
             navigation.navigate('CreatePassphrase');
-        } catch (e: any) {
-            if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
+        } catch (e) {
+            if (isErrorCode(e, SdkErrors.UsernameTaken)) {
                 setErrorMessage('Username already exists');
             } else if (isNetworkError(e)) {
                 setErrorMessage(NETWORK_ERROR_RESPONSE);

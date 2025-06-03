@@ -70,7 +70,7 @@ export type MainRouteStackParamList = {
     SetPassword: undefined;
     Settings: undefined;
     Support: undefined;
-    SSO: { payload: string; platform?: 'mobile' | 'browser' };
+    SSO: { payload: string; receivedVia?: 'deepLink' | 'message' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
     TermsAndCondition: undefined;

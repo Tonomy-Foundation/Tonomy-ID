@@ -5,10 +5,10 @@ import {
     CommunicationError,
     LinkAuthRequestMessage,
     LoginRequestsMessage,
-    objToBase64Url,
     parseDid,
     SdkError,
     SdkErrors,
+    isErrorCode,
 } from '@tonomy/tonomy-id-sdk';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useErrorStore from '../store/errorStore';
@@ -79,8 +79,8 @@ export default function CommunicationProvider() {
 
                             if (payload) {
                                 navigation.navigate('SSO', {
-                                    payload: payload,
-                                    platform: 'mobile',
+                                    payload,
+                                    receivedVia: 'deepLink',
                                 });
                             } else {
                                 throw new Error('Payload not found in deep link');
@@ -154,7 +154,7 @@ export default function CommunicationProvider() {
 
             if (isNetworkError(e)) {
                 throw e;
-            } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+            } else if (isErrorCode(e, SdkErrors.CommunicationNotConnected)) {
                 throw new Error(NETWORK_ERROR_MESSAGE);
             } else {
                 errorStore.setError({ error: e, expected: false });
@@ -185,13 +185,12 @@ export default function CommunicationProvider() {
 
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();
-                const base64UrlPayload = objToBase64Url(payload);
 
                 navigation.navigate('SSO', {
-                    payload: base64UrlPayload,
-                    platform: 'browser',
+                    payload: payload.toString(),
+                    receivedVia: 'message',
                 });
-                sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
+                sendLoginNotificationOnBackground(payload.external.getOrigin());
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -216,7 +215,7 @@ export default function CommunicationProvider() {
             } catch (e) {
                 if (isNetworkError(e)) {
                     debug('linkAuthRequestSubscriber() Network error');
-                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                } else if (isErrorCode(e, SdkErrors.CommunicationNotConnected)) {
                     debug('linkAuthRequestSubscriber() Network error connecting to Communication service');
                 } else {
                     errorStore.setError({ error: e, expected: false });

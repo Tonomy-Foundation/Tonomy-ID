@@ -9,7 +9,6 @@ import {
     randomString,
     sha256,
     createSigner,
-    throwError,
     SdkErrors,
     CheckKeyOptions,
     STORAGE_NAMESPACE,
@@ -27,18 +26,15 @@ type KeyStorage = {
 export const KEY_STORAGE_NAMESPACE = STORAGE_NAMESPACE + 'key.';
 
 export default class RNKeyManager implements KeyManager {
-    // @ts-ignore PrivateKey type error
     async storeKey(options: StoreKeyOptions): Promise<PublicKey> {
         StoreKeyOptions.validate(options);
         const keyStore: KeyStorage = {
-            // @ts-ignore PrivateKey type error
             privateKey: options.privateKey,
-            // @ts-ignore PublicKey type error
             publicKey: options.privateKey.toPublic(),
         };
 
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
-            if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
+            if (!options.challenge) throw new Error(`${SdkErrors.MissingChallenge}: Challenge missing`);
             keyStore.salt = randomString(32);
             keyStore.hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
         }
@@ -57,31 +53,30 @@ export default class RNKeyManager implements KeyManager {
         return keyStore.publicKey;
     }
 
-    // @ts-ignore Signature type error
     async signData(options: SignDataOptions): Promise<string | Signature> {
         SignDataOptions.validate(options);
 
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
-            if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
+            if (!options.challenge) throw new Error(`${SdkErrors.MissingChallenge}: Challenge missing`);
             const validChallenge = await this.checkKey({ level: options.level, challenge: options.challenge });
 
             if (!validChallenge && options.level === KeyManagerLevel.PASSWORD)
-                throwError('Invalid password', SdkErrors.PasswordInvalid);
+                throw new Error(`${SdkErrors.PasswordInvalid}: Invalid password`);
             if (!validChallenge && options.level === KeyManagerLevel.PIN)
-                throwError('Invalid PIN', SdkErrors.PinInvalid);
+                throw new Error(`${SdkErrors.PinInvalid}: Invalid PIN`);
         }
 
         const secureData = await SecureStore.getItemAsync(KEY_STORAGE_NAMESPACE + options.level, {
             requireAuthentication: options.level === KeyManagerLevel.BIOMETRIC,
         });
 
-        if (!secureData) throwError(`Key missing for level ${options.level}`, SdkErrors.KeyNotFound);
+        if (!secureData) throw new Error(`${SdkErrors.KeyNotFound}: Key missing for level ${options.level}`);
 
         const privateKey = PrivateKey.from(secureData);
 
         if (options.outputType === 'jwt') {
-            if (typeof options.data !== 'string') throwError('data must be a string', SdkErrors.InvalidData);
-            const signer = createSigner(privateKey as any);
+            if (typeof options.data !== 'string') throw new Error(`${SdkErrors.InvalidData}: data must be a string`);
+            const signer = createSigner(privateKey);
 
             return (await signer(options.data)) as string;
         } else {
@@ -90,7 +85,6 @@ export default class RNKeyManager implements KeyManager {
             if (options.data instanceof String) {
                 digest = Checksum256.hash(Bytes.from(options.data));
             } else {
-                // @ts-ignore Checksum256 type error
                 digest = options.data as Checksum256;
             }
 
@@ -104,16 +98,16 @@ export default class RNKeyManager implements KeyManager {
         CheckKeyOptions.validate(options);
         const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 
-        if (!asyncStorageData) throwError('No key for this level', SdkErrors.KeyNotFound);
+        if (!asyncStorageData) throw new Error(`${SdkErrors.KeyNotFound}: No key for this level`);
 
         const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
         if (options.level === KeyManagerLevel.PASSWORD || options.level === KeyManagerLevel.PIN) {
-            if (!options.challenge) throwError('Challenge missing', SdkErrors.MissingChallenge);
+            if (!options.challenge) throw new Error(`${SdkErrors.MissingChallenge}: Challenge missing`);
             const hashedSaltedChallenge = sha256(options.challenge + keyStore.salt);
 
             return keyStore.hashedSaltedChallenge === hashedSaltedChallenge;
-        } else throwError('Invalid Level', SdkErrors.InvalidKeyLevel);
+        } else throw new Error(`${SdkErrors.InvalidKeyLevel}: Invalid Level`);
     }
 
     async removeKey(options: GetKeyOptions): Promise<void> {
@@ -123,12 +117,11 @@ export default class RNKeyManager implements KeyManager {
         });
     }
 
-    // @ts-ignore PrivateKey type error
     async getKey(options: GetKeyOptions): Promise<PublicKey> {
         GetKeyOptions.validate(options);
         const asyncStorageData = await AsyncStorage.getItem(KEY_STORAGE_NAMESPACE + options.level);
 
-        if (!asyncStorageData) throwError(`No key for level ${options.level}`, SdkErrors.KeyNotFound);
+        if (!asyncStorageData) throw new Error(`${SdkErrors.KeyNotFound}: No key for level ${options.level}`);
 
         const keyStore: KeyStorage = JSON.parse(asyncStorageData);
 
