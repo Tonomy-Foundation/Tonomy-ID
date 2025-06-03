@@ -61,7 +61,7 @@ export default function SSOLoginContainer({
                 requests.sso?.getRequests().length
             );
 
-            setSsoApp(requests.external.getApp());
+            setSsoApp(await requests.external.getApp());
             setDualRequests(requests);
             debug('getRequestsFromParams(): end');
         } catch (e) {

@@ -190,7 +190,7 @@ export default function CommunicationProvider() {
                     payload: payload.toString(),
                     receivedVia: 'message',
                 });
-                sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
+                sendLoginNotificationOnBackground(payload.external.getOrigin());
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }
