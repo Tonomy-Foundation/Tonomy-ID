@@ -14,7 +14,7 @@ import TSpinner from '../components/atoms/TSpinner';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import useErrorStore from '../store/errorStore';
 import Decimal from 'decimal.js';
-import { SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { SdkErrors, isErrorCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
 import { formatAssetToNumber } from '../utils/numbers';
@@ -185,7 +185,7 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
                             setShowStaking(accountData.allocations.length > 0 ? true : false);
                         }
                     } catch (e) {
-                        if (e.code === SdkErrors.AccountNotFound) {
+                        if (isErrorCode(e, SdkErrors.AccountNotFound)) {
                             setShowStaking(false);
                         }
                     }

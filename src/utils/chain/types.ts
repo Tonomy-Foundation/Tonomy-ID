@@ -1,12 +1,12 @@
 import { TKeyType } from '@veramo/core';
 import { formatTokenValue } from '../numbers';
 import Web3Wallet from '@walletconnect/web3wallet';
-import { sha256, StakingAccountState, StakingAllocation } from '@tonomy/tonomy-id-sdk';
+import { sha256, StakingAccountState } from '@tonomy/tonomy-id-sdk';
 import { navigate } from '../navigate';
 import { KeyValue } from '../strings';
 import Decimal from 'decimal.js';
 import { PushTransactionResponse } from '@wharfkit/antelope/src/api/v1/types';
-import { Signer } from '@tonomy/tonomy-id-sdk/build/sdk/types/sdk/services/blockchain';
+import { Signer } from '@tonomy/tonomy-id-sdk';
 
 export type KeyFormat = 'hex' | 'base64' | 'base58' | 'wif';
 
