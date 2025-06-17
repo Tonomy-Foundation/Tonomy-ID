@@ -2,7 +2,7 @@
     "theme": {
         "primaryColor": "#67D7ED",
         "disabled": "#D2F3FA",
-        "secondaryColor": "#FF505F",
+        "secondaryColor": "#EDF2F9",
         "secondaryColor2": "#6E84A3",
         "tertiaryColor": "#7660E7",
         "tertiaryColor2": "#CFC8F7",
@@ -42,5 +42,5 @@
     "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
     "etherscanApiKey": "8V6DEHQ64R18FFNX2B5S345IXXNZRJVVQX",
     "walletConnectProjectId": "650e5b61be5fadae5d817ff12daa1283",
-    "currencySymbol": "LEOS"
+    "currencySymbol": "TONO"
 }
