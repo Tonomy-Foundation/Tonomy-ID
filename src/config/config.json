@@ -17,9 +17,9 @@
     "ecosystemName": "Tonomy Development",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
-        "splash": "./src/assets/pangea/pangea-splash.png",
-        "logo48": "./src/assets/pangea/favicon.png",
-        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
+        "splash": "./src/assets/tonomy/tonomy-splash.png",
+        "logo48": "./src/assets/tonomy/tonomy-logo48.png",
+        "logo1024": "./src/assets/tonomy/tonomy-logo1024.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
