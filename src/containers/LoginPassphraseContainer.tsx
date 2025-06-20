@@ -4,7 +4,6 @@ import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
-import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
@@ -15,6 +14,7 @@ import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
 import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { setUser } from '../utils/sentry';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 const tonomyContract = TonomyContract.Instance;
 
@@ -116,12 +116,10 @@ export default function LoginPassphraseContainer({
                 }
                 footerHint={
                     <View>
-                        <TInfoBox
-                            align="left"
-                            icon="security"
-                            description="Your passphrase and private keys are self-sovereign meaning hackers have a very hard time! "
-                            linkUrl={settings.config.links.securityLearnMore}
-                            linkUrlText="Learn more"
+                        <TInfoModalBox
+                            description="Your account is protected with end-to-end cryptography"
+                            modalTitle="Full Key Ownership"
+                            modalDescription="Your account is protected with end-to-end cryptography, meaning no one — not even us — can access your private information. You have full, sovereign control over your keys and identity. Only you can unlock and manage your account"
                         />
                     </View>
                 }

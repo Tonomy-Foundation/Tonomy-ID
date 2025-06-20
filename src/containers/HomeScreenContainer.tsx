@@ -7,6 +7,7 @@ import theme, { commonStyles } from '../utils/theme';
 import settings from '../settings';
 import { Props } from '../screens/HomeScreen';
 import { Images } from '../assets';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 export default function HomeScreenContainer({ navigation }: { navigation: Props['navigation'] }) {
     return (
@@ -22,7 +23,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                     </View>
                 </View>
             }
-            footer={
+            footerHint={
                 <View>
                     <TButtonContained
                         size="large"
@@ -38,6 +39,15 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                     >
                         Login
                     </TButtonOutlined>
+                </View>
+            }
+            footer={
+                <View>
+                    <TInfoModalBox
+                        description="Your personal data is stored ONLY on your phone. Not in databases, "
+                        modalTitle="Your Data Stays Private and Secure"
+                        modalDescription="Your data, your rules. Privacy isn’t a feature — it’s your right. That’s why your personal information stays on your phone, and nowhere else. No cloud. No servers. No third parties. Which means it can’t be leaked, hacked, or sold — because we never store it in the first place. You’re always in control. This is privacy by design, not just a promise."
+                    />
                 </View>
             }
         ></LayoutComponent>
@@ -59,8 +69,7 @@ const styles = StyleSheet.create({
     },
     imgContainer: {
         flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        justifyContent: 'center',
     },
     logo: {
         alignSelf: 'center',
