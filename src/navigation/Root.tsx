@@ -49,6 +49,9 @@ import SuccessUnstakeScreen from '../screens/SuccessUnstakeScreen';
 import WithdrawVestedScreen from '../screens/WithdrawVestedScreen';
 import VestedSuccessScreen from '../screens/VestedSuccessScreen';
 import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
+import VeriffLoginScreen from '../screens/VeriffLoginScreen';
+import VeriffLoadingScreen from '../screens/VeriffLoadingScreen';
+import VeriffDataSharingScreen from '../screens/VeriffDataSharingScreen';
 
 const prefix = Linking.createURL('');
 
@@ -126,6 +129,9 @@ export type MainRouteStackParamList = {
     WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
     SuccessVested: AssetsParamsScreen;
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
+    VeriffLogin: undefined;
+    VeriffLoading: undefined;
+    VeriffDataSharing: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -235,7 +241,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SSO"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            options={{ headerBackTitleVisible: false, title: 'App login' }}
                             component={SSOLoginScreen}
                         />
                         <Stack.Screen
@@ -349,6 +355,25 @@ export default function RootNavigation() {
                             name="ConfirmUnStaking"
                             options={{ headerBackTitleVisible: false, title: 'Confirm unstaking' }}
                             component={ConfirmUnstakingScreen}
+                        />
+                        <Stack.Screen
+                            name="VeriffLogin"
+                            options={{ headerBackTitleVisible: false, title: 'App Login' }}
+                            component={VeriffLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="VeriffLoading"
+                            options={{
+                                headerBackTitleVisible: false,
+                                headerBackVisible: false,
+                                headerShown: false,
+                            }}
+                            component={VeriffLoadingScreen}
+                        />
+                        <Stack.Screen
+                            name="VeriffDataSharing"
+                            options={{ headerBackTitleVisible: false, title: 'Data Sharing' }}
+                            component={VeriffDataSharingScreen}
                         />
                     </Stack.Navigator>
                 </>

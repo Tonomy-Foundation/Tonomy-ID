@@ -1,20 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Linking from 'expo-linking';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import TInfoBox from '../components/TInfoBox';
 import useUserStore from '../store/userStore';
-import { rejectLoginRequest, App, SdkErrors, DualWalletRequests, CommunicationError } from '@tonomy/tonomy-id-sdk';
-import { TH1, TP } from '../components/atoms/THeadings';
-import TLink from '../components/atoms/TA';
-import { commonStyles } from '../utils/theme';
-import settings from '../settings';
+import {
+    terminateLoginRequest,
+    App,
+    base64UrlToObj,
+    SdkErrors,
+    CommunicationError,
+    ResponsesManager,
+    RequestsManager,
+    SdkError,
+    LoginRequest,
+    WalletRequestAndResponseObject,
+} from '@tonomy/tonomy-id-sdk';
+import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
-import { Images } from '../assets';
 import Debug from 'debug';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
+import { ArrowUpRight } from 'iconoir-react-native';
+import SSOLoginBottomLayover from '../components/SSOLoginBottomLayover';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -33,6 +40,7 @@ export default function SSOLoginContainer({
     const [ssoApp, setSsoApp] = useState<App>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
 
     const errorStore = useErrorStore();
 
@@ -168,40 +176,40 @@ export default function SSOLoginContainer({
     return (
         <LayoutComponent
             body={
-                <View style={styles.container}>
-                    <SafeAreaView>
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={Images.GetImage('logo1024')}
-                        ></Image>
-                    </SafeAreaView>
-                    {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
-
+                <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+                    {/* Progress bar */}
+                    <View style={styles.progressBarContainer}>
+                        <View style={styles.progressActive} />
+                        <View style={styles.progressInactive} />
+                        <View style={styles.progressInactive} />
+                    </View>
                     {ssoApp && (
-                        <View style={[styles.appDialog, styles.marginTop]}>
-                            <Image style={styles.appDialogImage} source={{ uri: ssoApp.logoUrl }} />
-                            <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
-                            <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                            <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
+                        <View style={styles.loginCard}>
+                            <Image source={{ uri: ssoApp.logoUrl }} style={styles.appIcon} />
+                            <Text style={styles.loginTitle}>{ssoApp.appName}</Text>
+                            <Text style={styles.loginSubtitle}>wants you to log in to</Text>
+                            <TouchableOpacity onPress={() => Linking.openURL(ssoApp.origin)}>
+                                <Text style={styles.appLink}>{ssoApp.origin.replace(/^https?:\/\//, '')}</Text>
+                            </TouchableOpacity>
+                            <View style={styles.usernameContainer}>
+                                <Text style={styles.username}>@{username}</Text>
+                            </View>
                         </View>
                     )}
-                </View>
+
+                    <SSOLoginBottomLayover refMessage={refMessage} />
+                </ScrollView>
             }
             footerHint={
-                <View style={styles.infoBox}>
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="100% secure. Only your phone can authorize your app login."
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
-                    />
-                </View>
+                <TouchableOpacity style={styles.promptCard} onPress={() => refMessage?.current?.open()}>
+                    <Text style={styles.promptText}>Instant and secure access, made easy</Text>
+                    <ArrowUpRight width={20} height={20} color={'black'} />
+                </TouchableOpacity>
             }
             footer={
-                <View>
+                <View style={{ marginTop: 30 }}>
                     <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onLogin}>
-                        Login
+                        Proceed
                     </TButtonContained>
                     <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
                         Cancel
@@ -217,36 +225,82 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         textAlign: 'center',
+        paddingBottom: 50,
     },
-    logo: {
-        width: 80,
-        height: 80,
-    },
-    appDialog: {
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderStyle: 'solid',
-        borderRadius: 8,
-        padding: 16,
-        flex: 1,
-        alignItems: 'center',
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        minHeight: 200,
-    },
-    appDialogImage: {
-        aspectRatio: 1,
+    appIcon: {
+        width: 50,
         height: 50,
-        resizeMode: 'contain',
+        marginBottom: 12,
     },
-    marginTop: {
+    loginSubtitle: {
+        fontSize: 22,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 2,
+    },
+    loginCard: {
+        alignItems: 'center',
+        paddingHorizontal: 40,
+        paddingVertical: 28,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: theme.colors.grey8,
+        marginBottom: 30,
+        marginTop: 70,
+    },
+    promptText: {
+        flex: 1,
+        fontSize: 14,
+        color: 'black',
+    },
+    loginTitle: {
+        fontSize: 22,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 0,
+        paddingBottom: 0,
+    },
+    appLink: {
+        fontSize: 18,
+        color: theme.colors.primary,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    usernameContainer: {
+        backgroundColor: '#0000000D',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
         marginTop: 10,
     },
-    infoBox: {
-        marginBottom: 32,
+    username: {
+        fontSize: 14,
+        color: 'black',
     },
-    checkbox: {
+    promptCard: {
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: theme.colors.backgroundGray,
+        borderRadius: 12,
+        paddingHorizontal: 15,
+        marginTop: 30,
+        paddingVertical: 18,
+    },
+    progressBarContainer: {
+        flexDirection: 'row',
+        marginBottom: 30,
+    },
+    progressActive: {
+        flex: 1,
+        height: 4,
+        backgroundColor: theme.colors.primary,
+        borderRadius: 2,
+    },
+    progressInactive: {
+        flex: 1,
+        height: 4,
+        backgroundColor: '#ECF1F4',
+        marginLeft: 4,
+        borderRadius: 2,
     },
 });
