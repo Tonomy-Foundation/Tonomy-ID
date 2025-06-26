@@ -5,18 +5,7 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import TInfoBox from '../components/TInfoBox';
 import useUserStore from '../store/userStore';
-import {
-    terminateLoginRequest,
-    App,
-    base64UrlToObj,
-    SdkErrors,
-    CommunicationError,
-    ResponsesManager,
-    RequestsManager,
-    SdkError,
-    LoginRequest,
-    WalletRequestAndResponseObject,
-} from '@tonomy/tonomy-id-sdk';
+import { rejectLoginRequest, App, SdkErrors, DualWalletRequests, CommunicationError } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
@@ -31,15 +20,15 @@ const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
 export default function SSOLoginContainer({
     payload,
-    platform,
+    receivedVia,
     navigation,
 }: {
     payload: string;
-    platform: 'mobile' | 'browser';
+    receivedVia: 'deepLink' | 'message';
     navigation: SSOLoginScreenProps['navigation'];
 }) {
     const { user, logout } = useUserStore();
-    const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
+    const [dualRequests, setDualRequests] = useState<DualWalletRequests>();
     const [username, setUsername] = useState<string>();
     const [ssoApp, setSsoApp] = useState<App>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
@@ -64,24 +53,16 @@ export default function SSOLoginContainer({
     async function getRequestsFromParams() {
         try {
             debug('getRequestsFromParams(): start');
-            const parsedPayload = base64UrlToObj(payload);
+            const requests = DualWalletRequests.fromString(payload);
 
-            debug('getRequestsFromParams(): parsedPayload', parsedPayload?.requests?.length);
-            const managedRequests = new RequestsManager(parsedPayload?.requests);
+            debug(
+                'getRequestsFromParams(): requests',
+                requests.external.getRequests().length,
+                requests.sso?.getRequests().length
+            );
 
-            debug('getRequestsFromParams(): managedRequests', managedRequests?.requests?.length);
-
-            await managedRequests.verify();
-            // TODO: check if the internal login request comes from same DID as the sender of the message.
-
-            const managedResponses = new ResponsesManager(managedRequests);
-
-            debug('getRequestsFromParams(): managedResponses', managedResponses);
-
-            await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
-
-            setSsoApp(managedResponses.getExternalLoginResponseOrThrow().getAppOrThrow());
-            setResponsesManager(managedResponses);
+            setSsoApp(await requests.external.getApp());
+            setDualRequests(requests);
             debug('getRequestsFromParams(): end');
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
@@ -95,32 +76,16 @@ export default function SSOLoginContainer({
             setNextLoading(true);
             debug('onLogin() logs start:');
 
-            if (!responsesManager) throw new Error('Responses manager is not set');
+            if (!dualRequests) throw new Error('dualRequests manager is not set');
 
-            await responsesManager.createResponses(user);
-
-            let loginRequest: LoginRequest | WalletRequestAndResponseObject;
-
-            try {
-                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
-            } catch (e) {
-                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
-                    debug('onLogin() getting loginRequest from external website');
-                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
-                } else throw e;
-            }
-
-            const payload = loginRequest.getPayload();
-
-            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                callbackPath: payload.callbackPath,
-                callbackOrigin: payload.origin,
-                messageRecipient: loginRequest.getIssuer(),
-            });
+            const callbackUrl = await user.acceptLoginRequest(
+                dualRequests,
+                receivedVia === 'deepLink' ? 'redirect' : 'message'
+            );
 
             debug('onLogin() callbackUrl:', callbackUrl);
 
-            if (platform === 'mobile') {
+            if (receivedVia === 'deepLink') {
                 if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
                 await Linking.openURL(callbackUrl);
                 navigation.navigate('Assets');
@@ -152,41 +117,25 @@ export default function SSOLoginContainer({
     async function onCancel() {
         try {
             setCancelLoading(true);
-            if (!responsesManager) throw new Error('Responses manager is not set');
+            if (!dualRequests) throw new Error('dualRequests is not set');
 
-            let loginRequest: LoginRequest | WalletRequestAndResponseObject;
-
-            try {
-                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
-            } catch (e) {
-                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
-                    debug('onLogin() getting loginRequest from external website');
-                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
-                } else throw e;
-            }
-
-            const payload = loginRequest.getPayload();
-
-            const res = await terminateLoginRequest(
-                responsesManager,
-                platform,
+            const redirectUrl = await rejectLoginRequest(
+                dualRequests,
+                receivedVia === 'deepLink' ? 'redirect' : 'message',
                 {
                     code: SdkErrors.UserCancelled,
                     reason: 'User cancelled login request',
                 },
                 {
-                    callbackPath: payload.callbackPath,
-                    callbackOrigin: payload.origin,
-                    messageRecipient: loginRequest.getIssuer(),
                     user,
                 }
             );
 
             setNextLoading(false);
 
-            if (platform === 'mobile') {
-                if (typeof res !== 'string') throw new Error('Res is not string');
-                await Linking.openURL(res);
+            if (receivedVia === 'deepLink') {
+                if (typeof redirectUrl !== 'string') throw new Error('redirectUrl is not string');
+                await Linking.openURL(redirectUrl);
             }
 
             navigation.navigate('Assets');
