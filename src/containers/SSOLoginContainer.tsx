@@ -15,6 +15,9 @@ import {
     SdkError,
     LoginRequest,
     WalletRequestAndResponseObject,
+    DualWalletRequests,
+    WalletRequest,
+    DataSharingRequestPayload,
 } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
@@ -40,6 +43,7 @@ export default function SSOLoginContainer({
     const [ssoApp, setSsoApp] = useState<App>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const [requestType, setRequestType] = useState<'login' | 'dataSharing' | 'kyc'>('login');
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
 
     const errorStore = useErrorStore();
@@ -62,13 +66,33 @@ export default function SSOLoginContainer({
         try {
             debug('getRequestsFromParams(): start');
             const requests = DualWalletRequests.fromString(payload);
+            // Check request types
+            const externalRequests = requests.external.getRequests();
+            const hasLoginRequest = externalRequests.some((req) => WalletRequest.isLoginRequest(req));
+            const hasDataSharingRequest = externalRequests.some((req) => WalletRequest.isDataSharingRequest(req));
+
+            if (hasDataSharingRequest) {
+                // Check for KYC in data sharing requests
+                const hasKycRequest = externalRequests
+                    .filter(WalletRequest.isDataSharingRequest)
+                    .some((req) => (req as DataSharingRequestPayload).data.kyc === true);
+
+                if (hasKycRequest) {
+                    setRequestType('kyc');
+                } else {
+                    setRequestType('dataSharing');
+                }
+            }
+
+            if (hasLoginRequest) {
+                setRequestType('login');
+            }
 
             debug(
                 'getRequestsFromParams(): requests',
                 requests.external.getRequests().length,
                 requests.sso?.getRequests().length
             );
-
             setSsoApp(await requests.external.getApp());
             setDualRequests(requests);
             debug('getRequestsFromParams(): end');
@@ -80,45 +104,48 @@ export default function SSOLoginContainer({
     }
 
     async function onLogin() {
-        try {
-            setNextLoading(true);
-            debug('onLogin() logs start:');
+        setNextLoading(true);
+        debug('onLogin() logs start:');
 
-            if (!dualRequests) throw new Error('dualRequests manager is not set');
+        if(requestType === "kyc") {
+            navigation.navigate('VeriffLogin');
+        } else {
+            try{  if (!dualRequests) throw new Error('dualRequests manager is not set');
 
-            const callbackUrl = await user.acceptLoginRequest(
-                dualRequests,
-                receivedVia === 'deepLink' ? 'redirect' : 'message'
-            );
+                const callbackUrl = await user.acceptLoginRequest(
+                    dualRequests,
+                    receivedVia === 'deepLink' ? 'redirect' : 'message'
+                );
 
-            debug('onLogin() callbackUrl:', callbackUrl);
+                debug('onLogin() callbackUrl:', callbackUrl);
 
-            if (receivedVia === 'deepLink') {
-                if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
-                await Linking.openURL(callbackUrl);
-                navigation.navigate('Assets');
-            } else {
-                navigation.navigate('Assets');
+                if (receivedVia === 'deepLink') {
+                    if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
+                    await Linking.openURL(callbackUrl);
+                    navigation.navigate('Assets');
+                } else {
+                    navigation.navigate('Assets');
+                }
+            } catch (e) {
+                if (
+                    e instanceof CommunicationError &&
+                    e.exception.status === 400 &&
+                    e.exception.message.startsWith('Recipient not connected')
+                ) {
+                    debug('onLogin() CommunicationError');
+
+                    // User cancelled in the browser, so can just navigate back to home
+                    navigation.navigate('Assets');
+                } else {
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                        onClose: async () => navigation.navigate('Assets'),
+                    });
+                }
+            } finally {
+                setNextLoading(false);
             }
-        } catch (e) {
-            if (
-                e instanceof CommunicationError &&
-                e.exception.status === 400 &&
-                e.exception.message.startsWith('Recipient not connected')
-            ) {
-                debug('onLogin() CommunicationError');
-
-                // User cancelled in the browser, so can just navigate back to home
-                navigation.navigate('Assets');
-            } else {
-                errorStore.setError({
-                    error: e,
-                    expected: false,
-                    onClose: async () => navigation.navigate('Assets'),
-                });
-            }
-        } finally {
-            setNextLoading(false);
         }
     }
 
