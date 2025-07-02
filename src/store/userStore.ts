@@ -9,6 +9,7 @@ import {
     KeyManagerLevel,
     isErrorCode,
     IUser,
+    User,
 } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,6 +17,7 @@ import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
 import useWalletStore from './useWalletStore';
 import { setUser } from '../utils/sentry';
+import { DataSource } from 'typeorm';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -26,8 +28,9 @@ export enum UserStatus {
 }
 
 export interface UserState {
-    user: IUser;
+    user: User;
     status: UserStatus;
+    setUser(dataSource: DataSource): Promise<void>;
     getStatus(): Promise<UserStatus>;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
@@ -36,9 +39,17 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: null as unknown as IUser,
+    user: null as unknown as User,
     status: UserStatus.NONE,
     isAppInitialized: false,
+    setUser: async (dataSource: DataSource) => {
+        debug('userStore setUser()');
+        const userObj = await createUserObject(new RNKeyManager(), storageFactory, dataSource);
+
+        debug(userObj);
+
+        set({ user: userObj });
+    },
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
@@ -78,11 +89,13 @@ const useUserStore = create<UserState>((set, get) => ({
 
         try {
             debug('initializeStatusFromStorage() try');
+            const user = get().user;
+
+            if (!user) {
+                await get().setUser();
+            }
+
             // Create the user object asynchronously
-            const user = await createUserObject(new RNKeyManager(), storageFactory);
-
-            set({ user });
-
             await user.initializeFromStorage();
             setUser({
                 id: (await user.getAccountName()).toString(),

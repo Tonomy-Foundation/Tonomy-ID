@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Text } from 'react-native';
 import { Props } from '../screens/VeriffLoadingScreen';
 import TSpinner from '../components/atoms/TSpinner';
-
+import useUserStore from '../store/userStore';
+s
 export default function VeriffLoadingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [loading, setLoading] = React.useState(false);
+
+    const {user} = useUserStore();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -13,6 +16,25 @@ export default function VeriffLoadingContainer({ navigation }: { navigation: Pro
         }, 3000);
 
         return () => clearTimeout(timer);
+    }, [navigation]);
+
+    useEffect(() => {
+        // Listen for Veriff verification message
+         // First, subscribe to verification messages
+        user.subscribeToVerificationUpdates()
+         .then((verifications) => {
+             if (verifications) {
+
+                 if (verifications?.length > 0 ) {
+                     navigation.navigate('VeriffDataSharing', { verifications });
+                 } else {
+                     // throw error
+                 }
+             }
+         })
+         .catch(error => {
+             console.error('Error subscribing to verification updates:', error);
+         });
     }, [navigation]);
 
     return (
