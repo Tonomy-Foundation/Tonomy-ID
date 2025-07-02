@@ -4937,9 +4937,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@portal:/home/sadia/Tonomy-ID-Integration/Tonomy-ID-SDK::locator=tonomy-id%40workspace%3A.":
+"@tonomy/tonomy-id-sdk@portal:/home/sadia/Tonomy/Tonomy-ID-Integration/Tonomy-ID-SDK::locator=tonomy-id%40workspace%3A.":
   version: 0.0.0-use.local
-  resolution: "@tonomy/tonomy-id-sdk@portal:/home/sadia/Tonomy-ID-Integration/Tonomy-ID-SDK::locator=tonomy-id%40workspace%3A."
+  resolution: "@tonomy/tonomy-id-sdk@portal:/home/sadia/Tonomy/Tonomy-ID-Integration/Tonomy-ID-SDK::locator=tonomy-id%40workspace%3A."
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -5832,6 +5832,16 @@ __metadata:
     multiformats: "npm:^13.0.0"
     uint8arrays: "npm:^4.0.6"
   checksum: 10c0/63adb82599fce2fc65cb93695352b4bcd932c3e1dcb23d67d374c41c24d0fdfd8c29e39cfbaeb8c95e04f5a041a1c8ab4458e0257f7a3ad718767b1f29a2f3e1
+  languageName: node
+  linkType: hard
+
+"@veriff/react-native-sdk@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@veriff/react-native-sdk@npm:9.0.0"
+  peerDependencies:
+    react: ^19.0.0
+    react-native: ^0.79.0
+  checksum: 10c0/9ce7a2207ca941eb3c286c57462f7100ad35e2924a2cca1860c8d49d8aa241d6e16da57540c301bd10a6b09cc4b1e29bb863732ee1594f613031e4c0a3c84019
   languageName: node
   linkType: hard
 
@@ -19848,6 +19858,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^5.40.0"
     "@typescript-eslint/parser": "npm:^5.40.0"
     "@veramo/core": "npm:^6.0.0"
+    "@veriff/react-native-sdk": "npm:^9.0.0"
     "@walletconnect/core": "npm:^2.17.2"
     "@walletconnect/react-native-compat": "npm:^2.17.2"
     "@walletconnect/utils": "npm:^2.17.2"

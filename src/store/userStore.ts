@@ -36,7 +36,7 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: createUserObject(new RNKeyManager(), storageFactory),
+    user: null as unknown as IUser,
     status: UserStatus.NONE,
     isAppInitialized: false,
     getStatus: async () => {
@@ -78,7 +78,10 @@ const useUserStore = create<UserState>((set, get) => ({
 
         try {
             debug('initializeStatusFromStorage() try');
-            const user = get().user;
+            // Create the user object asynchronously
+            const user = await createUserObject(new RNKeyManager(), storageFactory);
+
+            set({ user });
 
             await user.initializeFromStorage();
             setUser({

@@ -4,8 +4,51 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained } from '../components/atoms/TButton';
 import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/VeriffLoginScreen';
+import { handleVeriffIfRequired } from '../utils/veriff';
+import settings from '../settings';
+import { util } from '@tonomy/tonomy-id-sdk';
+import useUserStore from '../store/userStore';
+import useErrorStore from '../store/errorStore';
+
+type VeriffPayload = {
+    appName: string;
+    proof?: string;
+};
 
 export default function VeriffLoginContainer({ navigation }: { navigation: Props['navigation'] }) {
+    const userStore = useUserStore();
+    const user = userStore.user;
+    const errorStore = useErrorStore();
+
+    const onStartVerification = async () => {
+        const appName = settings.config.appName;
+
+        const issuer = await user.getIssuer();
+        const did = await user.getDid();
+
+        const proofVc = await util.VerifiableCredential.sign<VeriffPayload>(
+            did,
+            'VerifiableCredential',
+            { appName },
+            issuer
+        );
+
+        const jwt = proofVc.toString();
+
+        const isVerified = await handleVeriffIfRequired(jwt);
+
+        // Verification was successful from user
+        if (isVerified) {
+            navigation.navigate('VeriffLoading');
+            // Check Veriff Status using websocket
+            // if user is verified, set isVerified to true in store and setStatus to LOGGED_IN
+            // if user is not verified, set isVerified to false in store and show the error message
+        } else {
+            // show error message
+            errorStore.setError({ error: new Error('Verification failed'), expected: false });
+        }
+    };
+
     return (
         <LayoutComponent
             body={
@@ -39,10 +82,7 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained
-                        onPress={() => navigation.navigate('VeriffLoading')}
-                        style={commonStyles.marginBottom}
-                    >
+                    <TButtonContained onPress={() => onStartVerification()} style={commonStyles.marginBottom}>
                         Get Started
                     </TButtonContained>
                 </View>

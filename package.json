@@ -42,6 +42,7 @@
         "@sinonjs/text-encoding": "^0.7.3",
         "@tonomy/tonomy-id-sdk": "0.32.0-development.2",
         "@veramo/core": "^6.0.0",
+        "@veriff/react-native-sdk": "^9.0.0",
         "@walletconnect/core": "^2.17.2",
         "@walletconnect/react-native-compat": "^2.17.2",
         "@walletconnect/utils": "^2.17.2",
@@ -139,7 +140,7 @@
         "jsonld": "link:./node_modules/@digitalcredentials/jsonld",
         "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto",
         "@wharfkit/antelope": "1.0.13",
-        "@tonomy/tonomy-id-sdk": "portal:/home/sadia/Tonomy-ID-Integration/Tonomy-ID-SDK"
+        "@tonomy/tonomy-id-sdk": "portal:/home/sadia/Tonomy/Tonomy-ID-Integration/Tonomy-ID-SDK"
     },
     "private": true,
     "packageManager": "yarn@4.3.1",

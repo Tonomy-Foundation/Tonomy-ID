@@ -5,16 +5,10 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import {
-    terminateLoginRequest,
+    rejectLoginRequest,
     App,
-    base64UrlToObj,
     SdkErrors,
     CommunicationError,
-    ResponsesManager,
-    RequestsManager,
-    SdkError,
-    LoginRequest,
-    WalletRequestAndResponseObject,
     DualWalletRequests,
     WalletRequest,
     DataSharingRequestPayload,
@@ -107,10 +101,11 @@ export default function SSOLoginContainer({
         setNextLoading(true);
         debug('onLogin() logs start:');
 
-        if(requestType === "kyc") {
+        if (requestType === 'kyc') {
             navigation.navigate('VeriffLogin');
         } else {
-            try{  if (!dualRequests) throw new Error('dualRequests manager is not set');
+            try {
+                if (!dualRequests) throw new Error('dualRequests manager is not set');
 
                 const callbackUrl = await user.acceptLoginRequest(
                     dualRequests,
