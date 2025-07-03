@@ -12,6 +12,7 @@ import {
     WalletRequest,
     DataSharingRequestPayload,
     VerificationTypeEnum,
+    KYCVC,
 } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
@@ -104,11 +105,11 @@ export default function SSOLoginContainer({
 
         if (requestType === 'kyc') {
             try {
-                const vc = await user.fetchVerificationData(VerificationTypeEnum.KYC);
+                const vc = (await user.fetchVerificationData(VerificationTypeEnum.KYC)) as KYCVC;
 
                 if (vc) {
                     navigation.navigate('VeriffDataSharing', {
-                        payload: vc.getVc(),
+                        payload: vc.getPayload(),
                     });
                 }
             } catch (e) {
