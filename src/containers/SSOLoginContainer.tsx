@@ -11,6 +11,7 @@ import {
     DualWalletRequests,
     WalletRequest,
     DataSharingRequestPayload,
+    VerificationTypeEnum,
 } from '@tonomy/tonomy-id-sdk';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
@@ -102,7 +103,21 @@ export default function SSOLoginContainer({
         debug('onLogin() logs start:');
 
         if (requestType === 'kyc') {
-            navigation.navigate('VeriffLogin');
+            try {
+                const vc = await user.fetchVerificationData(VerificationTypeEnum.KYC);
+
+                if (vc) {
+                    navigation.navigate('VeriffDataSharing', {
+                        payload: vc.getVc(),
+                    });
+                }
+            } catch (e) {
+                if (e.message.includes('verification data requested but not available in storage')) {
+                    navigation.navigate('VeriffLogin');
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            }
         } else {
             try {
                 if (!dualRequests) throw new Error('dualRequests manager is not set');
