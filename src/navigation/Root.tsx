@@ -52,6 +52,7 @@ import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
 import VeriffLoginScreen from '../screens/VeriffLoginScreen';
 import VeriffLoadingScreen from '../screens/VeriffLoadingScreen';
 import VeriffDataSharingScreen from '../screens/VeriffDataSharingScreen';
+import { KYCPayload } from '@tonomy/tonomy-id-sdk';
 
 const prefix = Linking.createURL('');
 
@@ -131,7 +132,7 @@ export type MainRouteStackParamList = {
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
     VeriffLogin: undefined;
     VeriffLoading: undefined;
-    VeriffDataSharing: undefined;
+    VeriffDataSharing: { payload: KYCPayload };
 };
 
 export type BottonNavigatorRouteStackParamList = {

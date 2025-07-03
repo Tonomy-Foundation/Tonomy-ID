@@ -6,7 +6,6 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import {
     rejectLoginRequest,
-    App,
     SdkErrors,
     CommunicationError,
     DualWalletRequests,
@@ -19,6 +18,7 @@ import Debug from 'debug';
 import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
 import { ArrowUpRight } from 'iconoir-react-native';
 import SSOLoginBottomLayover from '../components/SSOLoginBottomLayover';
+import { useVerificationStore } from '../store/verificationStore';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -32,9 +32,8 @@ export default function SSOLoginContainer({
     navigation: SSOLoginScreenProps['navigation'];
 }) {
     const { user, logout } = useUserStore();
-    const [dualRequests, setDualRequests] = useState<DualWalletRequests>();
+    const { ssoApp, dualRequests, setDualRequests, setSsoApp, setReceivedVia } = useVerificationStore();
     const [username, setUsername] = useState<string>();
-    const [ssoApp, setSsoApp] = useState<App>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
     const [requestType, setRequestType] = useState<'login' | 'dataSharing' | 'kyc'>('login');
@@ -59,6 +58,7 @@ export default function SSOLoginContainer({
     async function getRequestsFromParams() {
         try {
             debug('getRequestsFromParams(): start');
+            setReceivedVia(receivedVia);
             const requests = DualWalletRequests.fromString(payload);
             // Check request types
             const externalRequests = requests.external.getRequests();

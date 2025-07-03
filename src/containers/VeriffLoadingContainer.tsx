@@ -1,41 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Image, Text } from 'react-native';
 import { Props } from '../screens/VeriffLoadingScreen';
 import TSpinner from '../components/atoms/TSpinner';
 import useUserStore from '../store/userStore';
-s
+import { KYCPayload } from '@tonomy/tonomy-id-sdk';
+
 export default function VeriffLoadingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [loading, setLoading] = React.useState(false);
 
-    const {user} = useUserStore();
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setLoading(true);
-            navigation.navigate('VeriffDataSharing');
-        }, 3000);
-
-        return () => clearTimeout(timer);
-    }, [navigation]);
+    const { user } = useUserStore();
 
     useEffect(() => {
         // Listen for Veriff verification message
-         // First, subscribe to verification messages
-        user.subscribeToVerificationUpdates()
-         .then((verifications) => {
-             if (verifications) {
-
-                 if (verifications?.length > 0 ) {
-                     navigation.navigate('VeriffDataSharing', { verifications });
-                 } else {
-                     // throw error
-                 }
-             }
-         })
-         .catch(error => {
-             console.error('Error subscribing to verification updates:', error);
-         });
-    }, [navigation]);
+        // First, subscribe to verification messages
+        user.waitForNextVeriffVerification()
+            .then((payload: KYCPayload) => {
+                if (payload) {
+                    if (payload.status === 'success') {
+                        navigation.navigate('VeriffDataSharing', { payload });
+                    } else {
+                        // throw error
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error('Error subscribing to verification updates:', error);
+            });
+    }, [navigation, user]);
 
     return (
         <View style={styles.container}>

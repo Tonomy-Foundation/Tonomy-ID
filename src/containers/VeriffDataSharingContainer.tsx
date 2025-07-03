@@ -1,14 +1,151 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import LayoutComponent from '../components/layout';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, Linking } from 'react-native';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowUpRight, NavArrowUp, NavArrowDown } from 'iconoir-react-native';
 import { Props } from '../screens/VeriffDataSharingScreen';
+import { CommunicationError, KYCPayload, rejectLoginRequest, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { Images } from '../assets';
+import { useVerificationStore } from '../store/verificationStore';
+import useUserStore from '../store/userStore';
+import useErrorStore from '../store/errorStore';
+import Debug from 'debug';
 
-export default function VeriffDataSharingContainer({ navigation }: { navigation: Props['navigation'] }) {
+const debug = Debug('tonomy-id:containers:VeriffDataSharingContainer');
+
+export default function VeriffDataSharingContainer({
+    navigation,
+    payload,
+}: {
+    navigation: Props['navigation'];
+    payload: KYCPayload;
+}) {
+    const { ssoApp, dualRequests, receivedVia } = useVerificationStore();
+    const { user, logout } = useUserStore();
+    const errorStore = useErrorStore();
     const [identityCollapsed, setIdentityCollapsed] = useState(false);
     const [personalCollapsed, setPersonalCollapsed] = useState(true);
+    const [nextLoading, setNextLoading] = useState<boolean>(true);
+    const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const [username, setUsername] = useState<string>();
+
+    const person = payload.data.verification.person;
+    const document = payload.data.verification.document;
+
+    async function setUserName() {
+        try {
+            const username = await user.getUsername();
+
+            if (!username) {
+                await logout('No username in SSO login screen');
+            }
+
+            setUsername(username.getBaseUsername());
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
+    useEffect(() => {
+        setUserName();
+    }, []);
+
+    const displayPersonData = (label: string, value: string) => {
+        return (
+            <View style={styles.row}>
+                <Text style={styles.rowLabel}>{label}</Text>
+                <Text style={styles.rowValue}>{value}</Text>
+            </View>
+        );
+    };
+
+    const onAcceptRequest = async () => {
+        try {
+            setNextLoading(true);
+
+            if (!dualRequests) throw new Error('dualRequests manager is not set');
+
+            const callbackUrl = await user.acceptLoginRequest(
+                dualRequests,
+                receivedVia === 'deepLink' ? 'redirect' : 'message'
+            );
+
+            debug('onLogin() callbackUrl:', callbackUrl);
+
+            if (receivedVia === 'deepLink') {
+                if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
+                await Linking.openURL(callbackUrl);
+                navigation.navigate('Assets');
+            } else {
+                navigation.navigate('Assets');
+            }
+        } catch (e) {
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
+                debug('onLogin() CommunicationError');
+
+                // User cancelled in the browser, so can just navigate back to home
+                navigation.navigate('Assets');
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    onClose: async () => navigation.navigate('Assets'),
+                });
+            }
+        } finally {
+            setNextLoading(false);
+        }
+    };
+
+    async function onCancel() {
+        try {
+            setCancelLoading(true);
+            if (!dualRequests) throw new Error('dualRequests is not set');
+
+            const redirectUrl = await rejectLoginRequest(
+                dualRequests,
+                receivedVia === 'deepLink' ? 'redirect' : 'message',
+                {
+                    code: SdkErrors.UserCancelled,
+                    reason: 'User cancelled login request',
+                },
+                {
+                    user,
+                }
+            );
+
+            setNextLoading(false);
+
+            if (receivedVia === 'deepLink') {
+                if (typeof redirectUrl !== 'string') throw new Error('redirectUrl is not string');
+                await Linking.openURL(redirectUrl);
+            }
+
+            navigation.navigate('Assets');
+        } catch (e) {
+            setCancelLoading(false);
+            debug('Error in cancel', e);
+
+            if (
+                e instanceof CommunicationError &&
+                e.exception.status === 400 &&
+                e.exception.message.startsWith('Recipient not connected')
+            ) {
+                // User cancelled in the browser, so can just navigate back to home
+                navigation.navigate('Assets');
+            } else {
+                errorStore.setError({
+                    error: e,
+                    expected: false,
+                    onClose: async () => navigation.navigate('Assets'),
+                });
+            }
+        }
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -23,15 +160,15 @@ export default function VeriffDataSharingContainer({ navigation }: { navigation:
             {/* Top Card */}
             <View style={styles.card}>
                 <View style={styles.iconRow}>
-                    <Image source={require('../assets/images/anchor-codes.png')} style={styles.appIcon} />
+                    <Image source={Images.GetImage('logo48')} style={styles.appIcon} />
                     <Text style={styles.dots}>. . .</Text>
-                    <Image source={require('../assets/images/anchor-codes.png')} style={styles.appIcon} />
+                    <Image source={{ uri: ssoApp?.logoUrl }} style={styles.appIcon} />
                 </View>
                 <Text style={styles.shareText}>
-                    Share data with <Text style={styles.discord}>Discord</Text>
+                    Share data with <Text style={styles.discord}>{ssoApp?.appName}</Text>
                 </Text>
                 <View style={styles.usernameView}>
-                    <Text style={styles.username}>@jamiesmith</Text>
+                    <Text style={styles.username}>@{username}</Text>
                 </View>
             </View>
 
@@ -65,30 +202,13 @@ export default function VeriffDataSharingContainer({ navigation }: { navigation:
 
                     {!identityCollapsed && (
                         <View style={styles.sectionContent}>
-                            <View style={styles.row}>
-                                <Text style={styles.rowLabel}>Date of birth</Text>
-                                <Text style={styles.rowValue}>28 March 1989</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.rowLabel}>Name</Text>
-                                <Text style={styles.rowValue}>Joseph Williams</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.rowLabel}>Gender</Text>
-                                <Text style={styles.rowValue}>Male</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.rowLabel}>Nationality</Text>
-                                <Text style={styles.rowValue}>Australian</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.rowLabel}>Document type</Text>
-                                <Text style={styles.rowValue}>Passport</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.rowLabel}>Document number</Text>
-                                <Text style={styles.rowValue}>G78DM78</Text>
-                            </View>
+                            {person?.dateOfBirth?.value && displayPersonData('Date of birth', person.dateOfBirth.value)}
+                            {person?.firstName?.value && displayPersonData('First name', person.firstName.value)}
+                            {person?.lastName?.value && displayPersonData('Last name', person.lastName.value)}
+                            {person?.gender?.value && displayPersonData('Gender', person.gender.value)}
+                            {person?.nationality?.value && displayPersonData('Nationality', person.nationality.value)}
+                            {document?.type?.value && displayPersonData('Document type', document.type.value)}
+                            {document?.number?.value && displayPersonData('Document number', document.number.value)}
                         </View>
                     )}
                 </View>
@@ -139,10 +259,12 @@ export default function VeriffDataSharingContainer({ navigation }: { navigation:
 
             {/* Spacer to push footer into view */}
             <View style={{ height: 20 }} />
-            <TButtonContained onPress={() => navigation.navigate('VeriffLoading')} style={commonStyles.marginBottom}>
+            <TButtonContained style={commonStyles.marginBottom} disabled={nextLoading} onPress={onAcceptRequest}>
                 Share & Login
             </TButtonContained>
-            <TButtonOutlined size="large">Cancel</TButtonOutlined>
+            <TButtonOutlined size="large" disabled={cancelLoading} onPress={onCancel}>
+                Cancel
+            </TButtonOutlined>
             <View style={{ height: 30 }} />
         </ScrollView>
     );

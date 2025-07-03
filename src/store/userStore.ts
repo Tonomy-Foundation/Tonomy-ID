@@ -28,7 +28,7 @@ export enum UserStatus {
 }
 
 export interface UserState {
-    user: User;
+    user: IUser;
     status: UserStatus;
     setUser(dataSource: DataSource): Promise<void>;
     getStatus(): Promise<UserStatus>;
@@ -39,7 +39,7 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: null as unknown as User,
+    user: null as unknown as IUser,
     status: UserStatus.NONE,
     isAppInitialized: false,
     setUser: async (dataSource: DataSource) => {

@@ -4952,7 +4952,7 @@ __metadata:
     "@veramo/did-resolver": "npm:^6.0.0"
     "@veramo/key-manager": "npm:^6.0.0"
     "@veramo/kms-local": "npm:^6.0.0"
-    "@wharfkit/antelope": "npm:1.0.13"
+    "@wharfkit/antelope": "npm:^1.0.7"
     argon2: "npm:^0.41.1"
     cross-fetch: "npm:^4.0.0"
     csv-parse: "npm:^5.5.6"

@@ -13,14 +13,13 @@ import Debug from '../debug';
 import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
 import { AssetNameMigration163837490194410 } from './migrations/assetNameMigration';
-import { IdentityVerificationStorage } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLite,
-    entities: [KeyStorage, AppStorage, AssetStorage, IdentityVerificationStorage],
+    entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
     migrations: [AssetNameMigration163837490194410],
 });

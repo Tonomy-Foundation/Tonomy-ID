@@ -6,5 +6,10 @@ import { RouteStackParamList } from '../navigation/Root';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'VeriffDataSharing'>;
 
 export default function VeriffDataSharingScreen(props: Props) {
-    return <VeriffDataSharingContainer navigation={props.navigation}></VeriffDataSharingContainer>;
+    return (
+        <VeriffDataSharingContainer
+            navigation={props.navigation}
+            payload={props.route.params.payload}
+        ></VeriffDataSharingContainer>
+    );
 }
