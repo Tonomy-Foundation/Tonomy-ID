@@ -32,7 +32,7 @@ export default function SSOLoginContainer({
     navigation: SSOLoginScreenProps['navigation'];
 }) {
     const { user, logout } = useUserStore();
-    const { ssoApp, dualRequests, setDualRequests, setSsoApp, setReceivedVia } = useVerificationStore();
+    const { ssoApp, dualRequests, setDualRequests, setSsoApp, setReceivedVia, clearAuth } = useVerificationStore();
     const [username, setUsername] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
@@ -140,6 +140,7 @@ export default function SSOLoginContainer({
                 }
             } finally {
                 setNextLoading(false);
+                clearAuth();
             }
         }
     }
@@ -187,6 +188,8 @@ export default function SSOLoginContainer({
                     onClose: async () => navigation.navigate('Assets'),
                 });
             }
+        } finally {
+            clearAuth();
         }
     }
 

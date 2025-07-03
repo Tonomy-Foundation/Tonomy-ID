@@ -18,5 +18,5 @@ export const useVerificationStore = create<AuthState>((set) => ({
     setSsoApp: (app: App) => set({ ssoApp: app }),
     setDualRequests: (requests: DualWalletRequests) => set({ dualRequests: requests }),
     setReceivedVia: (receivedVia: string) => set({ receivedVia }),
-    clearAuth: () => set({ ssoApp: null, dualRequests: null }),
+    clearAuth: () => set({ ssoApp: null, dualRequests: null, receivedVia: null }),
 }));

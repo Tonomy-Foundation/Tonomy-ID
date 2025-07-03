@@ -20,7 +20,7 @@ export default function VeriffDataSharingContainer({
     navigation: Props['navigation'];
     payload: KYCPayload;
 }) {
-    const { ssoApp, dualRequests, receivedVia } = useVerificationStore();
+    const { ssoApp, dualRequests, receivedVia, clearAuth } = useVerificationStore();
     const { user, logout } = useUserStore();
     const errorStore = useErrorStore();
     const [identityCollapsed, setIdentityCollapsed] = useState(false);
@@ -98,6 +98,7 @@ export default function VeriffDataSharingContainer({
             }
         } finally {
             setNextLoading(false);
+            clearAuth();
         }
     };
 
@@ -144,6 +145,8 @@ export default function VeriffDataSharingContainer({
                     onClose: async () => navigation.navigate('Assets'),
                 });
             }
+        } finally {
+            clearAuth();
         }
     }
 
