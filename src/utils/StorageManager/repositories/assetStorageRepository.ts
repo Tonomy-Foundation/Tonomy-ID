@@ -8,14 +8,15 @@ export class AssetStorageRepository {
         this.ormRepository = dataSource.getRepository(AssetStorage);
     }
 
-    public async createAsset(assetName: string, accountName: string): Promise<AssetStorage> {
+    public async create(assetName: string, accountName: string): Promise<AssetStorage> {
+        const now = new Date();
         const assetStorageEntity = this.ormRepository.create({
             assetName,
             accountName,
             balance: '0',
             usdBalance: 0,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: now,
+            updatedAt: now,
         });
 
         const storage = this.ormRepository.save(assetStorageEntity);
@@ -23,14 +24,14 @@ export class AssetStorageRepository {
         return storage;
     }
 
-    public async updateAccountBalance(key: AssetStorage): Promise<AssetStorage> {
+    public async update(key: AssetStorage): Promise<AssetStorage> {
         const findDoc = await this.ormRepository.findOne({ where: { assetName: key.assetName, id: key.id } });
 
         if (findDoc) return await this.ormRepository.save(key);
         else throw new Error('Name not exists ');
     }
 
-    public async findAssetByName(name: string): Promise<AssetStorage | null> {
+    public async findByAssetName(name: string): Promise<AssetStorage | null> {
         const findDoc = await this.ormRepository.findOne({ where: { assetName: name } });
 
         return findDoc;

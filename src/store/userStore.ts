@@ -9,6 +9,7 @@ import {
     KeyManagerLevel,
     isErrorCode,
     IUser,
+    User,
 } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,6 +17,7 @@ import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
 import useWalletStore from './useWalletStore';
 import { setUser } from '../utils/sentry';
+import { DataSource } from 'typeorm';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -28,6 +30,7 @@ export enum UserStatus {
 export interface UserState {
     user: IUser;
     status: UserStatus;
+    setUser(dataSource: DataSource): Promise<void>;
     getStatus(): Promise<UserStatus>;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
@@ -36,9 +39,26 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: createUserObject(new RNKeyManager(), storageFactory),
+    user: null as unknown as IUser,
     status: UserStatus.NONE,
     isAppInitialized: false,
+    setUser: async (dataSource: DataSource | null) => {
+        console.log('userStore setUser() c');
+
+        if (!dataSource) {
+            throw new Error('Invalid dataSource provided to setUser');
+        }
+
+        try {
+            const userObj = await createUserObject(new RNKeyManager(), storageFactory, dataSource);
+
+            debug('Created user object:', userObj);
+            set({ user: userObj });
+        } catch (error) {
+            debug('Error creating user object:', error);
+            throw error;
+        }
+    },
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
@@ -80,6 +100,11 @@ const useUserStore = create<UserState>((set, get) => ({
             debug('initializeStatusFromStorage() try');
             const user = get().user;
 
+            if (!user) {
+                await get().setUser();
+            }
+
+            // Create the user object asynchronously
             await user.initializeFromStorage();
             setUser({
                 id: (await user.getAccountName()).toString(),

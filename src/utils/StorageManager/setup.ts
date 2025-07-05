@@ -1,11 +1,11 @@
 import { DataSource } from 'typeorm';
 import { KeyStorage } from './entities/keyStorage';
-import { AppStorage } from './entities/appSettings';
+import { AppStorage } from './entities/appSettingsStorage';
 import * as ExpoSQLite from 'expo-sqlite/legacy';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
-import { AppStorageRepository } from './repositories/appStorageRepository';
-import { AppStorageManager } from './repositories/appStorageManager';
+import { AppStorageRepository } from './repositories/appSettingsStorageRepository';
+import { AppStorageManager } from './repositories/appSettingsStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
@@ -13,15 +13,16 @@ import Debug from '../debug';
 import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
 import { AssetNameMigration163837490194410 } from './migrations/assetNameMigration';
+import { IdentityVerificationStorage } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLite,
-    entities: [KeyStorage, AppStorage, AssetStorage],
+    entities: [IdentityVerificationStorage, KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
-    migrations: [AssetNameMigration163837490194410],
+    // migrations: [AssetNameMigration163837490194410],
 });
 
 // Create the key repository instances
@@ -86,7 +87,7 @@ export async function connect() {
     try {
         if (!dataSource.isInitialized) {
             await dataSource.initialize();
-            await dataSource.runMigrations();
+            // await dataSource.runMigrations();
         }
 
         const isExists = await checkReposExists();
