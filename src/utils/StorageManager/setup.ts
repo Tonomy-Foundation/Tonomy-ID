@@ -13,15 +13,16 @@ import Debug from '../debug';
 import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
 import { AssetNameMigration163837490194410 } from './migrations/assetNameMigration';
+import { IdentityVerificationStorage } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLite,
-    entities: [KeyStorage, AppStorage, AssetStorage],
+    entities: [IdentityVerificationStorage, KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
-    migrations: [AssetNameMigration163837490194410],
+    // migrations: [AssetNameMigration163837490194410],
 });
 
 // Create the key repository instances
@@ -86,7 +87,7 @@ export async function connect() {
     try {
         if (!dataSource.isInitialized) {
             await dataSource.initialize();
-            await dataSource.runMigrations();
+            // await dataSource.runMigrations();
         }
 
         const isExists = await checkReposExists();

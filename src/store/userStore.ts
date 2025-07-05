@@ -42,13 +42,22 @@ const useUserStore = create<UserState>((set, get) => ({
     user: null as unknown as IUser,
     status: UserStatus.NONE,
     isAppInitialized: false,
-    setUser: async (dataSource: DataSource) => {
-        debug('userStore setUser()');
-        const userObj = await createUserObject(new RNKeyManager(), storageFactory, dataSource);
+    setUser: async (dataSource: DataSource | null) => {
+        console.log('userStore setUser() c');
 
-        debug(userObj);
+        if (!dataSource) {
+            throw new Error('Invalid dataSource provided to setUser');
+        }
 
-        set({ user: userObj });
+        try {
+            const userObj = await createUserObject(new RNKeyManager(), storageFactory, dataSource);
+
+            debug('Created user object:', userObj);
+            set({ user: userObj });
+        } catch (error) {
+            debug('Error creating user object:', error);
+            throw error;
+        }
     },
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
