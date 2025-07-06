@@ -20,7 +20,7 @@ export default function VeriffDataSharingContainer({
     navigation: Props['navigation'];
     payload: KYCPayload;
 }) {
-    const { ssoApp, dualRequests, receivedVia, clearAuth } = useVerificationStore();
+    const { ssoApp, dualRequests, receivedVia, clearAuth, isUsernameRequested } = useVerificationStore();
     const { user, logout } = useUserStore();
     const errorStore = useErrorStore();
     const [identityCollapsed, setIdentityCollapsed] = useState(false);
@@ -34,13 +34,13 @@ export default function VeriffDataSharingContainer({
 
     async function setUserName() {
         try {
-            const username = await user.getUsername();
+            const username = await user?.getUsername();
 
             if (!username) {
                 await logout('No username in SSO login screen');
             }
 
-            setUsername(username.getBaseUsername());
+            setUsername(username?.getBaseUsername());
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
         }
@@ -65,7 +65,7 @@ export default function VeriffDataSharingContainer({
 
             if (!dualRequests) throw new Error('dualRequests manager is not set');
 
-            const callbackUrl = await user.acceptLoginRequest(
+            const callbackUrl = await user?.acceptLoginRequest(
                 dualRequests,
                 receivedVia === 'deepLink' ? 'redirect' : 'message'
             );
@@ -218,40 +218,43 @@ export default function VeriffDataSharingContainer({
             </View>
 
             {/* Personal Data Section */}
-            <View style={styles.sectionHeader}>
-                <View style={styles.textContainer}>
-                    <TouchableOpacity
-                        style={styles.sectionWrapper}
-                        onPress={() => setPersonalCollapsed(!personalCollapsed)}
-                    >
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}
+            {isUsernameRequested && (
+                <View style={styles.sectionHeader}>
+                    <View style={styles.textContainer}>
+                        <TouchableOpacity
+                            style={styles.sectionWrapper}
+                            onPress={() => setPersonalCollapsed(!personalCollapsed)}
                         >
-                            <View style={{ flex: 1, marginRight: 20 }}>
-                                <Text style={styles.sectionTitle}>Personal Data</Text>
-                            </View>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <View style={{ flex: 1, marginRight: 20 }}>
+                                    <Text style={styles.sectionTitle}>Personal Data</Text>
+                                </View>
 
-                            {personalCollapsed ? (
-                                <NavArrowDown width={16} height={16} color={theme.colors.primary} />
-                            ) : (
-                                <NavArrowUp width={16} height={16} color={theme.colors.primary} />
-                            )}
-                        </View>
-                    </TouchableOpacity>
-
-                    {!personalCollapsed && (
-                        <View style={styles.sectionContent}>
-                            <View style={styles.row}>
-                                <Text style={styles.rowLabel}>Date of birth</Text>
-                                <Text style={styles.rowValue}>28 March 1989</Text>
+                                {personalCollapsed ? (
+                                    <NavArrowDown width={16} height={16} color={theme.colors.primary} />
+                                ) : (
+                                    <NavArrowUp width={16} height={16} color={theme.colors.primary} />
+                                )}
                             </View>
-                        </View>
-                    )}
+                        </TouchableOpacity>
+
+                        {!personalCollapsed && (
+                            <View style={styles.sectionContent}>
+                                <View style={styles.row}>
+                                    <Text style={styles.rowLabel}>Username</Text>
+                                    <Text style={styles.rowValue}>{username}</Text>
+                                </View>
+                            </View>
+                        )}
+                    </View>
                 </View>
-            </View>
+            )}
+
             {/* Info Card */}
             <View style={styles.infoCard}>
                 <Text style={styles.infoText}>

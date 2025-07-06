@@ -34,7 +34,8 @@ export default function SSOLoginContainer({
     navigation: SSOLoginScreenProps['navigation'];
 }) {
     const { user, logout } = useUserStore();
-    const { ssoApp, dualRequests, setDualRequests, setSsoApp, setReceivedVia, clearAuth } = useVerificationStore();
+    const { ssoApp, dualRequests, setDualRequests, setSsoApp, setReceivedVia, clearAuth, setUsernameRequested } =
+        useVerificationStore();
     const [username, setUsername] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
@@ -84,6 +85,11 @@ export default function SSOLoginContainer({
                 setRequestType('login');
             }
 
+            const hasUsernameRequested = externalRequests
+                .filter(WalletRequest.isDataSharingRequest)
+                .some((req) => (req as DataSharingRequestPayload).data.username === true);
+
+            setUsernameRequested(hasUsernameRequested);
             debug(
                 'getRequestsFromParams(): requests',
                 requests.external.getRequests().length,

@@ -119,7 +119,7 @@ export default function CommunicationProvider() {
         return () => {
             if (listener) listener.remove();
         };
-    }, []);
+    }, [navigation, sessionRef, walletConnectSession, antelopeSession]);
 
     /**
      *  Login to communication microservice
@@ -127,26 +127,28 @@ export default function CommunicationProvider() {
      */
     async function loginToService() {
         try {
-            const issuer = await user.getIssuer();
-            const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
+            if (user) {
+                const issuer = await user.getIssuer();
+                const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
-            debug('loginToService() login message', message);
+                debug('loginToService() login message', message);
 
-            const subscribers = listenToMessages();
+                const subscribers = listenToMessages();
 
-            debug('loginToService() subscribers', subscribers);
+                debug('loginToService() subscribers', subscribers);
 
-            setSubscribers(subscribers);
+                setSubscribers(subscribers);
 
-            try {
-                await user.loginCommunication(message);
-            } catch (e) {
-                if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
-                    await logout(
-                        e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
-                    );
-                } else {
-                    throw e;
+                try {
+                    await user.loginCommunication(message);
+                } catch (e) {
+                    if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
+                        await logout(
+                            e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
+                        );
+                    } else {
+                        throw e;
+                    }
                 }
             }
         } catch (e) {
@@ -163,7 +165,7 @@ export default function CommunicationProvider() {
     }
 
     function listenToMessages(): number[] {
-        const loginRequestSubscriber = user.subscribeMessage(async (message) => {
+        const loginRequestSubscriber = user?.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender();
 
@@ -196,7 +198,7 @@ export default function CommunicationProvider() {
             }
         }, LoginRequestsMessage.getType());
 
-        const linkAuthRequestSubscriber = user.subscribeMessage(async (message) => {
+        const linkAuthRequestSubscriber = user?.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender().split('#')[0];
 
@@ -223,7 +225,9 @@ export default function CommunicationProvider() {
             }
         }, LinkAuthRequestMessage.getType());
 
-        return [loginRequestSubscriber, linkAuthRequestSubscriber];
+        return [loginRequestSubscriber, linkAuthRequestSubscriber].filter(
+            (subscriber): subscriber is number => typeof subscriber === 'number'
+        );
     }
 
     function sendLoginNotificationOnBackground(appName: string) {
@@ -240,7 +244,7 @@ export default function CommunicationProvider() {
 
     const unsubscribeAll = useCallback(() => {
         for (const s of subscribers) {
-            user.unsubscribeMessage(s);
+            user?.unsubscribeMessage(s);
         }
     }, [subscribers, user]);
 

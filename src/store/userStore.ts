@@ -7,9 +7,7 @@ import {
     STORAGE_NAMESPACE,
     SdkError,
     KeyManagerLevel,
-    isErrorCode,
     IUser,
-    User,
 } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,9 +26,9 @@ export enum UserStatus {
 }
 
 export interface UserState {
-    user: IUser;
+    user: IUser | undefined;
     status: UserStatus;
-    setUser(dataSource: DataSource): Promise<void>;
+    setUser: (dataSource: DataSource) => Promise<void>;
     getStatus(): Promise<UserStatus>;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
@@ -39,25 +37,13 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: null as unknown as IUser,
+    user: undefined,
     status: UserStatus.NONE,
     isAppInitialized: false,
-    setUser: async (dataSource: DataSource | null) => {
-        console.log('userStore setUser() c');
+    setUser: async (dataSource: DataSource) => {
+        const userObj = await createUserObject(new RNKeyManager(), storageFactory, dataSource);
 
-        if (!dataSource) {
-            throw new Error('Invalid dataSource provided to setUser');
-        }
-
-        try {
-            const userObj = await createUserObject(new RNKeyManager(), storageFactory, dataSource);
-
-            debug('Created user object:', userObj);
-            set({ user: userObj });
-        } catch (error) {
-            debug('Error creating user object:', error);
-            throw error;
-        }
+        set({ user: userObj });
     },
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
@@ -82,7 +68,7 @@ const useUserStore = create<UserState>((set, get) => ({
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
-        await get().user.logout();
+        await get().user?.logout();
         if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         useWalletStore.getState().clearState();
         setUser(null);
@@ -100,25 +86,27 @@ const useUserStore = create<UserState>((set, get) => ({
             debug('initializeStatusFromStorage() try');
             const user = get().user;
 
-            if (!user) {
-                await get().setUser();
+            await user?.initializeFromStorage();
+
+            if (user) {
+                const accountName = await user.getAccountName();
+                const usernameObj = await user.getUsername();
+
+                setUser({
+                    id: accountName.toString(),
+                    username: '@' + usernameObj.getBaseUsername(),
+                });
             }
 
-            // Create the user object asynchronously
-            await user.initializeFromStorage();
-            setUser({
-                id: (await user.getAccountName()).toString(),
-                username: '@' + (await user.getUsername()).getBaseUsername(),
-            });
             set({ isAppInitialized: true });
         } catch (e) {
             debug('initializeStatusFromStorage() catch', e, typeof e);
 
-            if (isErrorCode(e, SdkErrors.KeyNotFound)) {
+            if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 set({ isAppInitialized: true });
                 useErrorStore.getState().setError({ error: e, expected: false });
-            } else if (isErrorCode(e, SdkErrors.AccountDoesntExist)) {
+            } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
                 set({ isAppInitialized: true });
             } else {
