@@ -1,10 +1,11 @@
 import VeriffSdk from '@veriff/react-native-sdk';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
+import settings from '../settings';
 
 const debug = Debug('tonomy-id:veriff');
 
-const VERIFF_API_KEY = '461a1795-d8b4-4a1f-950a-8f523ff72d0c';
+const VERIFF_API_KEY = settings.config.veriffApiKey;
 const VERIFF_API_URL = 'https://stationapi.veriff.com/v1/sessions';
 
 /**
