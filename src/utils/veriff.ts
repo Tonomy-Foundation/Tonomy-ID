@@ -4,7 +4,7 @@ import Debug from 'debug';
 
 const debug = Debug('tonomy-id:veriff');
 
-const VERIFF_API_KEY = '14a61fd8-3df2-4fb1-b330-40afb4678efe';
+const VERIFF_API_KEY = '461a1795-d8b4-4a1f-950a-8f523ff72d0c';
 const VERIFF_API_URL = 'https://stationapi.veriff.com/v1/sessions';
 
 /**

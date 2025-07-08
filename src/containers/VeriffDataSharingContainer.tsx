@@ -157,7 +157,6 @@ export default function VeriffDataSharingContainer({
                 <View style={styles.progressActive} />
                 <View style={styles.progressActive} />
                 <View style={styles.progressActive} />
-                <View style={styles.progressInactive} />
             </View>
 
             {/* Top Card */}

@@ -6,7 +6,7 @@ import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/VeriffLoginScreen';
 import { handleVeriffIfRequired } from '../utils/veriff';
 import settings from '../settings';
-import { util } from '@tonomy/tonomy-id-sdk';
+import { KYCPayload, util } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
 
@@ -34,15 +34,13 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
         );
 
         const jwt = proofVc.toString();
+        const verificationEventPromise: Promise<KYCPayload> = user.waitForNextVeriffVerification();
 
         const isVerified = await handleVeriffIfRequired(jwt);
 
         // Verification was successful from user
         if (isVerified) {
-            navigation.navigate('VeriffLoading');
-            // Check Veriff Status using websocket
-            // if user is verified, set isVerified to true in store and setStatus to LOGGED_IN
-            // if user is not verified, set isVerified to false in store and show the error message
+            navigation.navigate('VeriffLoading', { kycPayload: verificationEventPromise });
         } else {
             // show error message
             errorStore.setError({ error: new Error('Verification failed'), expected: false });
@@ -56,7 +54,7 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
                     {/* Progress bar */}
                     <View style={styles.progressBarContainer}>
                         <View style={styles.progressActive} />
-                        <View style={styles.progressInactive} />
+                        <View style={styles.progressActive} />
                         <View style={styles.progressInactive} />
                     </View>
                     <View style={styles.identityTitle}>

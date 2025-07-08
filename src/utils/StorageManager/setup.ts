@@ -17,14 +17,22 @@ import { IdentityVerificationStorage } from '@tonomy/tonomy-id-sdk';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
+export const kycDatasource = new DataSource({
+    database: 'kyc',
+    driver: ExpoSQLite,
+    entities: [IdentityVerificationStorage],
+    type: 'expo',
+});
+
 export const dataSource = new DataSource({
     database: 'storage',
     driver: ExpoSQLite,
-    entities: [IdentityVerificationStorage, KeyStorage, AppStorage, AssetStorage],
+    entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
     // migrations: [AssetNameMigration163837490194410],
 });
 
+// TODO: clean this
 // Create the key repository instances
 const keyStorageRepository = new KeyStorageRepository(dataSource);
 

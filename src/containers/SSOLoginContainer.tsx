@@ -39,7 +39,7 @@ export default function SSOLoginContainer({
     const [username, setUsername] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
-    const [requestType, setRequestType] = useState<'login' | 'dataSharing' | 'kyc'>('login');
+    const [requestType, setRequestType] = useState<'login' | 'kyc'>('login');
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
 
     const errorStore = useErrorStore();
@@ -60,28 +60,19 @@ export default function SSOLoginContainer({
 
     async function getRequestsFromParams() {
         try {
+            await user.initializeKycDataSource();
             debug('getRequestsFromParams(): start');
             setReceivedVia(receivedVia);
             const requests = DualWalletRequests.fromString(payload);
             // Check request types
             const externalRequests = requests.external.getRequests();
-            const hasLoginRequest = externalRequests.some((req) => WalletRequest.isLoginRequest(req));
-            const hasDataSharingRequest = externalRequests.some((req) => WalletRequest.isDataSharingRequest(req));
+            const hasKycRequest = externalRequests
+                .filter(WalletRequest.isDataSharingRequest)
+                .some((req) => (req as DataSharingRequestPayload).data.kyc === true);
 
-            if (hasDataSharingRequest) {
-                // Check for KYC in data sharing requests
-                const hasKycRequest = externalRequests
-                    .filter(WalletRequest.isDataSharingRequest)
-                    .some((req) => (req as DataSharingRequestPayload).data.kyc === true);
-
-                if (hasKycRequest) {
-                    setRequestType('kyc');
-                } else {
-                    setRequestType('dataSharing');
-                }
-            }
-
-            if (hasLoginRequest) {
+            if (hasKycRequest) {
+                setRequestType('kyc');
+            } else {
                 setRequestType('login');
             }
 
@@ -107,11 +98,11 @@ export default function SSOLoginContainer({
 
     async function onLogin() {
         setNextLoading(true);
-        debug('onLogin() logs start:');
+        debug('onLogin() logs start:', requestType);
 
         if (requestType === 'kyc') {
             try {
-                const vc = (await user.fetchVerificationData(VerificationTypeEnum.KYC)) as KYCVC;
+                const vc = (await user?.fetchVerificationData(VerificationTypeEnum.KYC)) as KYCVC;
 
                 if (vc) {
                     navigation.navigate('VeriffDataSharing', {
@@ -119,7 +110,7 @@ export default function SSOLoginContainer({
                     });
                 }
             } catch (e) {
-                if (e.message.includes('verification data requested but not available in storage')) {
+                if (e.code === SdkErrors.VerificationDataNotFound) {
                     navigation.navigate('VeriffLogin');
                 } else {
                     errorStore.setError({ error: e, expected: false });

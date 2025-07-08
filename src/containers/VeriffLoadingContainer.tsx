@@ -3,29 +3,56 @@ import { StyleSheet, View, Image, Text } from 'react-native';
 import { Props } from '../screens/VeriffLoadingScreen';
 import TSpinner from '../components/atoms/TSpinner';
 import useUserStore from '../store/userStore';
-import { KYCPayload } from '@tonomy/tonomy-id-sdk';
+import { KYCPayload, KYCVC, SdkErrors, VeriffStatusEnum, VerificationTypeEnum } from '@tonomy/tonomy-id-sdk';
+import useErrorStore from '../store/errorStore';
 
-export default function VeriffLoadingContainer({ navigation }: { navigation: Props['navigation'] }) {
+export default function VeriffLoadingContainer({
+    navigation,
+    kycPayload,
+}: {
+    navigation: Props['navigation'];
+    kycPayload: Promise<KYCPayload>;
+}) {
     const [loading, setLoading] = React.useState(false);
 
     const { user } = useUserStore();
+    const errorStore = useErrorStore();
 
     useEffect(() => {
-        // Listen for Veriff verification message
-        // First, subscribe to verification messages
-        user.waitForNextVeriffVerification()
-            .then((payload: KYCPayload) => {
-                if (payload) {
-                    if (payload.status === 'success') {
-                        navigation.navigate('VeriffDataSharing', { payload });
+        let timer: NodeJS.Timeout;
+
+        const startVerificationCheck = async () => {
+            if (user) {
+                let verificationEvent: KYCPayload;
+
+                try {
+                    verificationEvent = await kycPayload;
+                    navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
+                } catch (error) {
+                    if (error.code === SdkErrors.VerificationDataNotFound) {
+                        verificationEvent = (
+                            (await user.fetchVerificationData(
+                                VerificationTypeEnum.KYC,
+                                VeriffStatusEnum.DECLINED
+                            )) as KYCVC
+                        ).getPayload();
+                        navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
                     } else {
-                        // throw error
+                        errorStore.setError({ error: error, expected: false });
                     }
                 }
-            })
-            .catch((error) => {
-                console.error('Error subscribing to verification updates:', error);
-            });
+            }
+        };
+
+        // Start verification check after 3 seconds
+        timer = setTimeout(() => {
+            setLoading(true);
+            startVerificationCheck();
+        }, 1000);
+
+        return () => {
+            clearTimeout(timer);
+        };
     }, [navigation, user]);
 
     return (

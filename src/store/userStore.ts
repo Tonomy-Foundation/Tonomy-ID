@@ -15,7 +15,7 @@ import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
 import useWalletStore from './useWalletStore';
 import { setUser } from '../utils/sentry';
-import { DataSource } from 'typeorm';
+import { kycDatasource } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -26,9 +26,8 @@ export enum UserStatus {
 }
 
 export interface UserState {
-    user: IUser | undefined;
+    user: IUser;
     status: UserStatus;
-    setUser: (dataSource: DataSource) => Promise<void>;
     getStatus(): Promise<UserStatus>;
     setStatus(newStatus: UserStatus): void;
     initializeStatusFromStorage(): Promise<void>;
@@ -37,14 +36,10 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: undefined,
+    user: createUserObject(new RNKeyManager(), storageFactory, kycDatasource),
     status: UserStatus.NONE,
     isAppInitialized: false,
-    setUser: async (dataSource: DataSource) => {
-        const userObj = await createUserObject(new RNKeyManager(), storageFactory, dataSource);
 
-        set({ user: userObj });
-    },
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
@@ -86,7 +81,8 @@ const useUserStore = create<UserState>((set, get) => ({
             debug('initializeStatusFromStorage() try');
             const user = get().user;
 
-            await user?.initializeFromStorage();
+            await user.initializeKycDataSource();
+            await user.initializeFromStorage();
 
             if (user) {
                 const accountName = await user.getAccountName();

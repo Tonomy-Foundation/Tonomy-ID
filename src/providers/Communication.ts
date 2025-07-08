@@ -165,10 +165,17 @@ export default function CommunicationProvider() {
     }
 
     function listenToMessages(): number[] {
-        const loginRequestSubscriber = user?.subscribeMessage(async (message) => {
+        /**
+         * @description
+         * This callback is called when a message of type `LoginRequestsMessage` is received.
+         * It verifies the message and navigates to the SSO screen with the received message payload.
+         * If the message sender does not match the user's DID, it is dropped.
+         * @param {VerifiableCredentialWithType} message The received message
+         * @returns {Promise<void>}
+         */
+        const loginRequestSubscriber = user.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender();
-
                 const { method, id } = parseDid(senderDid);
 
                 // did:key is used for the initial login request so is allowed
@@ -198,7 +205,7 @@ export default function CommunicationProvider() {
             }
         }, LoginRequestsMessage.getType());
 
-        const linkAuthRequestSubscriber = user?.subscribeMessage(async (message) => {
+        const linkAuthRequestSubscriber = user.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender().split('#')[0];
 
@@ -225,9 +232,7 @@ export default function CommunicationProvider() {
             }
         }, LinkAuthRequestMessage.getType());
 
-        return [loginRequestSubscriber, linkAuthRequestSubscriber].filter(
-            (subscriber): subscriber is number => typeof subscriber === 'number'
-        );
+        return [loginRequestSubscriber, linkAuthRequestSubscriber];
     }
 
     function sendLoginNotificationOnBackground(appName: string) {

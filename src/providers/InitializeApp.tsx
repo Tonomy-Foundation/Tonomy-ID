@@ -6,7 +6,6 @@ import TSpinner from '../components/atoms/TSpinner';
 import useErrorStore from '../store/errorStore';
 import settings from '../settings';
 import { runTests } from '../utils/runtimeTests';
-import useUserStore from '../store/userStore';
 
 const debug = Debug('tonomy-id:providers:InitializeApp');
 
@@ -14,21 +13,13 @@ const InitializeAppProvider: React.FC = () => {
     const [RootNavigation, setRootNavigation] = useState<React.ComponentType | null>(null);
 
     const { setError } = useErrorStore();
-    const { setUser } = useUserStore();
 
     useEffect(() => {
         const initialize = async () => {
             try {
                 debug('App setup started');
 
-                const dataSource = await connect();
-
-                if (!dataSource) {
-                    throw new Error('Failed to connect to storage: dataSource is undefined');
-                }
-
-                await setUser(dataSource);
-
+                await connect();
                 debug('Storage connected');
                 // need import dynamically, to ensure that it's sub-components do not call getSettings()
                 // from @tonomy/tonomy-id-sdk before setSettings() is called, or try connect to storage before
