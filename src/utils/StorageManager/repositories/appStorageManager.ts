@@ -1,4 +1,5 @@
 import { AppStorageRepository } from './appStorageRepository';
+import { AppStorage } from '../entities/appStorage';
 
 export abstract class AppStorageManager {
     protected repository: AppStorageRepository;
@@ -7,79 +8,44 @@ export abstract class AppStorageManager {
         this.repository = repository;
     }
 
-    public async setCryptoSeed(seed: string): Promise<void> {
-        const existingValue = await this.repository.findByName('seed');
+    async createApp(origin: string, accountName: string): Promise<void> {
+        await this.repository.create(origin, accountName);
+    }
 
-        if (existingValue) {
-            existingValue.value = seed;
-            existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
+    async findAppOrigin(origin: string): Promise<AppStorage | null> {
+        const doc = await this.repository.findByOrigin(origin);
+
+        if (doc) {
+            return doc;
+        } else return null;
+    }
+
+    public async updateAppData(
+        origin: string,
+        dataShared: { username: boolean; veriffDocument: boolean },
+        isLoggedIn?: boolean,
+        isDataShared?: boolean
+    ): Promise<void> {
+        const doc = await this.repository.findByOrigin(origin);
+
+        if (doc) {
+            if (isLoggedIn) doc.isLoggedIn = isLoggedIn;
+            if (isDataShared) doc.isDataShared = isDataShared;
+
+            if (dataShared) {
+                doc.dataShared = {
+                    ...doc.dataShared,
+                    ...dataShared,
+                };
+            }
+
+            await this.repository.update(doc);
         } else {
-            await this.repository.addNewSetting('seed', seed);
+            throw new Error('Asset not found');
         }
     }
 
-    public async getCryptoSeed(): Promise<string | null> {
-        const seed = await this.repository.findByName('seed');
-
-        return seed ? seed.value : null;
-    }
-
-    public async deleteAll(): Promise<void> {
+    async deleteAll(): Promise<void> {
         await this.repository.deleteAll();
-    }
-
-    //-- Setting >> Developer Mode
-    public async setDeveloperMode(mode: boolean): Promise<void> {
-        const existingValue = await this.repository.findByName('developerMode');
-
-        if (existingValue) {
-            existingValue.value = mode.toString();
-            existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
-        } else {
-            await this.repository.addNewSetting('developerMode', mode.toString());
-        }
-    }
-    public async getDeveloperMode(): Promise<boolean> {
-        const mode = await this.repository.findByName('developerMode');
-
-        return mode?.value === 'true' ? true : false;
-    }
-
-    //-- Splace Screen >> Onboarding
-    public async setSplashOnboarding(value: boolean): Promise<void> {
-        const existingValue = await this.repository.findByName('splashOnboarding');
-
-        if (existingValue) {
-            existingValue.value = value.toString();
-            existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
-        } else {
-            await this.repository.addNewSetting('splashOnboarding', value.toString());
-        }
-    }
-    public async getSplashOnboarding(): Promise<boolean> {
-        const onboarding = await this.repository.findByName('splashOnboarding');
-
-        return onboarding?.value === 'false' ? false : true;
-    }
-
-    //-- Home >> App Instructions
-    public async setAppInstruction(value: boolean): Promise<void> {
-        const existingValue = await this.repository.findByName('appInstruction');
-
-        if (existingValue) {
-            existingValue.value = value.toString();
-            existingValue.updatedAt = new Date();
-            await this.repository.updateSetting(existingValue);
-        } else {
-            await this.repository.addNewSetting('appInstruction', value.toString());
-        }
-    }
-    public async getAppInstruction(): Promise<boolean> {
-        const instructions = await this.repository.findByName('appInstruction');
-
-        return instructions?.value === 'false' ? false : true;
     }
 }

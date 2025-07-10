@@ -22,11 +22,11 @@ export abstract class AssetStorageManager {
         const symbol = token.getSymbol();
         const name = token.getChain().getName() + '-' + symbol;
 
-        await this.repository.createAsset(name, value.getName());
+        await this.repository.create(name, value.getName());
     }
     public async updateAccountBalance(asset: IAsset): Promise<void> {
         const name = asset.getToken().getChain().getName() + '-' + asset.getToken().getSymbol();
-        const existingAsset = await this.repository.findAssetByName(name);
+        const existingAsset = await this.repository.findByAssetName(name);
 
         if (existingAsset) {
             const balance = asset.toString();
@@ -45,7 +45,7 @@ export abstract class AssetStorageManager {
 
             existingAsset.balance = balance.split(' ')[0];
             existingAsset.updatedAt = new Date();
-            await this.repository.updateAccountBalance(existingAsset);
+            await this.repository.update(existingAsset);
         } else {
             throw new Error('Asset not found');
         }
@@ -54,7 +54,7 @@ export abstract class AssetStorageManager {
     public async findAssetByName(token: IToken): Promise<AssetStorage | null> {
         const name = token.getChain().getName() + '-' + token.getSymbol();
 
-        const existingAsset = await this.repository.findAssetByName(name);
+        const existingAsset = await this.repository.findByAssetName(name);
 
         if (existingAsset) {
             return existingAsset;

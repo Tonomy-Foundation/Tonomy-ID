@@ -7,7 +7,6 @@ import {
     STORAGE_NAMESPACE,
     SdkError,
     KeyManagerLevel,
-    isErrorCode,
     IUser,
 } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
@@ -16,6 +15,7 @@ import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
 import useWalletStore from './useWalletStore';
 import { setUser } from '../utils/sentry';
+import { kycDatasource } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -36,9 +36,10 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: createUserObject(new RNKeyManager(), storageFactory),
+    user: createUserObject(new RNKeyManager(), storageFactory, kycDatasource),
     status: UserStatus.NONE,
     isAppInitialized: false,
+
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
@@ -62,7 +63,7 @@ const useUserStore = create<UserState>((set, get) => ({
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
-        await get().user.logout();
+        await get().user?.logout();
         if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         useWalletStore.getState().clearState();
         setUser(null);
@@ -81,19 +82,26 @@ const useUserStore = create<UserState>((set, get) => ({
             const user = get().user;
 
             await user.initializeFromStorage();
-            setUser({
-                id: (await user.getAccountName()).toString(),
-                username: '@' + (await user.getUsername()).getBaseUsername(),
-            });
+
+            if (user) {
+                const accountName = await user.getAccountName();
+                const usernameObj = await user.getUsername();
+
+                setUser({
+                    id: accountName.toString(),
+                    username: '@' + usernameObj.getBaseUsername(),
+                });
+            }
+
             set({ isAppInitialized: true });
         } catch (e) {
             debug('initializeStatusFromStorage() catch', e, typeof e);
 
-            if (isErrorCode(e, SdkErrors.KeyNotFound)) {
+            if (e instanceof SdkError && e.code === SdkErrors.KeyNotFound) {
                 await get().logout('Key not found on account');
                 set({ isAppInitialized: true });
                 useErrorStore.getState().setError({ error: e, expected: false });
-            } else if (isErrorCode(e, SdkErrors.AccountDoesntExist)) {
+            } else if (e instanceof SdkError && e.code === SdkErrors.AccountDoesntExist) {
                 await get().logout('Account not found');
                 set({ isAppInitialized: true });
             } else {
