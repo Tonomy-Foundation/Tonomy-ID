@@ -81,7 +81,6 @@ const useUserStore = create<UserState>((set, get) => ({
             debug('initializeStatusFromStorage() try');
             const user = get().user;
 
-            await user.initializeKycDataSource();
             await user.initializeFromStorage();
 
             if (user) {
