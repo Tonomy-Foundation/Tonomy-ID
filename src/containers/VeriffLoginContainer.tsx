@@ -4,47 +4,13 @@ import LayoutComponent from '../components/layout';
 import { TButtonContained } from '../components/atoms/TButton';
 import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/VeriffLoginScreen';
-import { handleVeriffIfRequired } from '../utils/veriff';
-import settings from '../settings';
-import { KYCPayload, util } from '@tonomy/tonomy-id-sdk';
-import useUserStore from '../store/userStore';
-import useErrorStore from '../store/errorStore';
-
-type VeriffPayload = {
-    appName: string;
-    proof?: string;
-};
+import { useVerificationStore } from '../store/verificationStore';
 
 export default function VeriffLoginContainer({ navigation }: { navigation: Props['navigation'] }) {
-    const userStore = useUserStore();
-    const user = userStore.user;
-    const errorStore = useErrorStore();
+    const { ssoApp } = useVerificationStore();
 
     const onStartVerification = async () => {
-        const appName = settings.config.appName;
-
-        const issuer = await user.getIssuer();
-        const did = await user.getDid();
-
-        const proofVc = await util.VerifiableCredential.sign<VeriffPayload>(
-            did,
-            'VerifiableCredential',
-            { appName },
-            issuer
-        );
-
-        const jwt = proofVc.toString();
-        const verificationEventPromise: Promise<KYCPayload> = user.waitForNextVeriffVerification();
-
-        const isVerified = await handleVeriffIfRequired(jwt);
-
-        // Verification was successful from user
-        if (isVerified) {
-            navigation.navigate('VeriffLoading', { kycPayload: verificationEventPromise });
-        } else {
-            // show error message
-            errorStore.setError({ error: new Error('Verification failed'), expected: false });
-        }
+        navigation.navigate('VeriffLoading');
     };
 
     return (
@@ -59,7 +25,7 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
                     </View>
                     <View style={styles.identityTitle}>
                         <Text style={styles.identityText}>Let’s get you verified</Text>
-                        <Text style={styles.identityNotes}>Discord would like to confirm your identity</Text>
+                        <Text style={styles.identityNotes}>{ssoApp?.appName} would like to confirm your identity</Text>
                     </View>
                     <View style={styles.loginCard}>
                         <Image style={styles.image} source={require('../assets/images/veriff/VeriffLogin.png')} />
@@ -80,7 +46,7 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained onPress={() => onStartVerification()} style={commonStyles.marginBottom}>
+                    <TButtonContained onPress={() => onStartVerification()} style={{ marginTop: 30 }}>
                         Get Started
                     </TButtonContained>
                 </View>

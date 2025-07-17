@@ -25,7 +25,7 @@ export default function VeriffDataSharingContainer({
     const errorStore = useErrorStore();
     const [identityCollapsed, setIdentityCollapsed] = useState(false);
     const [personalCollapsed, setPersonalCollapsed] = useState(true);
-    const [nextLoading, setNextLoading] = useState<boolean>(true);
+    const [nextLoading, setNextLoading] = useState<boolean>(false);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
     const [username, setUsername] = useState<string>();
 
@@ -286,11 +286,11 @@ const styles = StyleSheet.create({
     progressBarContainer: { flexDirection: 'row', marginVertical: 16 },
     progressActive: { flex: 1, height: 4, backgroundColor: theme.colors.primary, borderRadius: 2, marginRight: 4 },
     progressInactive: { flex: 1, height: 4, backgroundColor: '#ECF1F4', borderRadius: 2 },
-    card: { backgroundColor: 'white', borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 24 },
+    card: { backgroundColor: 'white', borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 7 },
     iconRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, marginTop: 10 },
     appIcon: { width: 40, height: 40, resizeMode: 'contain' },
     dots: { marginHorizontal: 15, marginBottom: 20, fontSize: 35, color: theme.colors.grey9 },
-    shareText: { fontSize: 20, fontWeight: '600' },
+    shareText: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
     discord: { color: theme.colors.primary },
     sectionWrapper: { paddingVertical: 9, paddingLeft: 9 },
     usernameView: {

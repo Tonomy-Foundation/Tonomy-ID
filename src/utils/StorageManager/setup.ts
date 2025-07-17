@@ -18,7 +18,7 @@ import { IdentityVerificationStorage } from '@tonomy/tonomy-id-sdk';
 const debug = Debug('tonomy-id:storageManager:setup');
 
 export const kycDatasource = new DataSource({
-    database: 'kycdb',
+    database: 'kycstorage',
     entities: [IdentityVerificationStorage],
     type: 'expo',
     driver: ExpoSQLite,
@@ -29,7 +29,7 @@ export const dataSource = new DataSource({
     driver: ExpoSQLite,
     entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
-    // migrations: [AssetNameMigration163837490194410],
+    migrations: [AssetNameMigration163837490194410],
 });
 
 // TODO: clean this
@@ -95,7 +95,7 @@ export async function connect() {
     try {
         if (!dataSource.isInitialized) {
             await dataSource.initialize();
-            // await dataSource.runMigrations();
+            await dataSource.runMigrations();
         }
 
         const isExists = await checkReposExists();

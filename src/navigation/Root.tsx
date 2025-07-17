@@ -131,7 +131,7 @@ export type MainRouteStackParamList = {
     SuccessVested: AssetsParamsScreen;
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
     VeriffLogin: undefined;
-    VeriffLoading: { kycPayload: Promise<KYCPayload> };
+    VeriffLoading: undefined;
     VeriffDataSharing: { payload: KYCPayload };
 };
 

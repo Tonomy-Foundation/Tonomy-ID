@@ -3,57 +3,68 @@ import { StyleSheet, View, Image, Text } from 'react-native';
 import { Props } from '../screens/VeriffLoadingScreen';
 import TSpinner from '../components/atoms/TSpinner';
 import useUserStore from '../store/userStore';
-import { KYCPayload, KYCVC, SdkErrors, VeriffStatusEnum, VerificationTypeEnum } from '@tonomy/tonomy-id-sdk';
+import { KYCPayload, KYCVC, SdkErrors, VeriffStatusEnum, VerificationTypeEnum, util } from '@tonomy/tonomy-id-sdk';
 import useErrorStore from '../store/errorStore';
+import settings from '../settings';
+import { handleVeriffIfRequired } from '../utils/veriff';
 
-export default function VeriffLoadingContainer({
-    navigation,
-    kycPayload,
-}: {
-    navigation: Props['navigation'];
-    kycPayload: Promise<KYCPayload>;
-}) {
+type VeriffPayload = {
+    appName: string;
+    proof?: string;
+};
+
+export default function VeriffLoadingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [loading, setLoading] = React.useState(false);
 
     const { user } = useUserStore();
     const errorStore = useErrorStore();
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout;
+    async function startVeriffFlow() {
+        const appName = settings.config.appName;
 
-        const startVerificationCheck = async () => {
-            if (user) {
-                let verificationEvent: KYCPayload;
+        const issuer = await user.getIssuer();
+        const did = await user.getDid();
 
-                try {
-                    verificationEvent = await kycPayload;
+        const proofVc = await util.VerifiableCredential.sign<VeriffPayload>(
+            did,
+            'VerifiableCredential',
+            { appName },
+            issuer
+        );
+
+        const jwt = proofVc.toString();
+        const verificationEventPromise: Promise<KYCPayload> = user.waitForNextVeriffVerification();
+
+        setLoading(true);
+        const isVerified = await handleVeriffIfRequired(jwt);
+
+        // Verification was successful from user
+        if (isVerified) {
+            let verificationEvent: KYCPayload;
+
+            try {
+                verificationEvent = await verificationEventPromise;
+
+                navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
+            } catch (error) {
+                if (error.code === SdkErrors.VerificationDataNotFound) {
+                    verificationEvent = (
+                        (await user.fetchVerificationData(VerificationTypeEnum.KYC, VeriffStatusEnum.DECLINED)) as KYCVC
+                    ).getPayload();
                     navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
-                } catch (error) {
-                    if (error.code === SdkErrors.VerificationDataNotFound) {
-                        verificationEvent = (
-                            (await user.fetchVerificationData(
-                                VerificationTypeEnum.KYC,
-                                VeriffStatusEnum.DECLINED
-                            )) as KYCVC
-                        ).getPayload();
-                        navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
-                    } else {
-                        errorStore.setError({ error: error, expected: false });
-                    }
+                } else {
+                    errorStore.setError({ error: error, expected: false });
                 }
             }
-        };
+        } else {
+            // show error message
+            errorStore.setError({ error: new Error('Verification failed'), expected: false });
+        }
+    }
 
-        // Start verification check after 3 seconds
-        timer = setTimeout(() => {
-            setLoading(true);
-            startVerificationCheck();
-        }, 1000);
-
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [navigation, user]);
+    useEffect(() => {
+        startVeriffFlow();
+    }, [user, navigation, errorStore]);
 
     return (
         <View style={styles.container}>

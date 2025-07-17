@@ -6,10 +6,5 @@ import { RouteStackParamList } from '../navigation/Root';
 export type Props = NativeStackScreenProps<RouteStackParamList, 'VeriffLoading'>;
 
 export default function VeriffLoadingScreen(props: Props) {
-    return (
-        <VeriffLoadingContainer
-            navigation={props.navigation}
-            kycPayload={props.route.params.kycPayload}
-        ></VeriffLoadingContainer>
-    );
+    return <VeriffLoadingContainer navigation={props.navigation}></VeriffLoadingContainer>;
 }

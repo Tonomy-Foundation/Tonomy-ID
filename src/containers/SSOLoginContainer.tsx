@@ -60,7 +60,6 @@ export default function SSOLoginContainer({
 
     async function getRequestsFromParams() {
         try {
-            debug('getRequestsFromParams(): start');
             setReceivedVia(receivedVia);
             const requests = DualWalletRequests.fromString(payload);
             // Check request types
