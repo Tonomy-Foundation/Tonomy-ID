@@ -35,35 +35,52 @@ export default function VeriffLoadingContainer({ navigation }: { navigation: Pro
         const jwt = proofVc.toString();
         const verificationEventPromise: Promise<KYCPayload> = user.waitForNextVeriffVerification();
 
-        setLoading(true);
-        const isVerified = await handleVeriffIfRequired(jwt);
+        try {
+            const isVerified = await handleVeriffIfRequired(jwt);
 
-        // Verification was successful from user
-        if (isVerified) {
-            let verificationEvent: KYCPayload;
+            // Verification was successful from user
+            if (isVerified) {
+                let verificationEvent: KYCPayload;
 
-            try {
-                verificationEvent = await verificationEventPromise;
+                try {
+                    verificationEvent = await verificationEventPromise;
 
-                navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
-            } catch (error) {
-                if (error.code === SdkErrors.VerificationDataNotFound) {
-                    verificationEvent = (
-                        (await user.fetchVerificationData(VerificationTypeEnum.KYC, VeriffStatusEnum.DECLINED)) as KYCVC
-                    ).getPayload();
                     navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
-                } else {
-                    errorStore.setError({ error: error, expected: false });
+                } catch (error) {
+                    if (error.code === SdkErrors.VerificationDataNotFound) {
+                        verificationEvent = (
+                            (await user.fetchVerificationData(
+                                VerificationTypeEnum.KYC,
+                                VeriffStatusEnum.APPROVED
+                            )) as KYCVC
+                        ).getPayload();
+                        navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
+                    } else {
+                        errorStore.setError({ error: error, expected: false });
+                    }
                 }
+            } else {
+                // show error message
+                errorStore.setError({ error: new Error('Verification failed'), expected: false });
+                navigation.navigate('VeriffLogin');
             }
-        } else {
-            // show error message
-            errorStore.setError({ error: new Error('Verification failed'), expected: false });
+        } catch (error) {
+            console.error('Error during Veriff flow:', error);
+            errorStore.setError({ error, expected: false });
+            navigation.navigate('VeriffLogin');
         }
     }
 
     useEffect(() => {
         startVeriffFlow();
+        // Start verification check after 3 seconds
+        const timer = setTimeout(() => {
+            setLoading(true);
+        }, 1000);
+
+        return () => {
+            clearTimeout(timer);
+        };
     }, [user, navigation, errorStore]);
 
     return (

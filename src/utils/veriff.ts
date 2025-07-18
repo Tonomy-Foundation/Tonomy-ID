@@ -42,9 +42,8 @@ export async function createVeriffSession(jwt: string): Promise<string | null> {
         return verificationURL;
     } catch (error) {
         debug('error', error);
-        debug('Failed to create Veriff session:', error);
-        useErrorStore.getState().setError({ error, expected: false });
-        return null;
+        console.log('Failed to create Veriff session:', error);
+        throw error;
     }
 }
 
@@ -63,22 +62,19 @@ export async function launchVeriffVerification(verificationURL: string): Promise
 
             case VeriffSdk.statusCanceled:
                 debug('Veriff verification was canceled by the user.');
-                return false;
+                throw new Error('Verification canceled by user');
 
             case VeriffSdk.statusError:
-                debug('Veriff returned an error:', result.error);
-                useErrorStore.getState().setError({ error: new Error(result.error), expected: false });
-                return false;
+                console.log('Failed to create Veriff session: Veriff returned an error:', result.error);
+                throw new Error(result.error);
 
             default:
-                debug('Veriff returned unknown status:', result.status);
-                useErrorStore.getState().setError({ error: new Error('Unknown Veriff status'), expected: false });
-                return false;
+                console.log('Failed to create Veriff session: Veriff returned unknown status:', result.status);
+                throw new Error('Unknown Veriff status');
         }
     } catch (error) {
-        debug('Exception during Veriff verification:', error);
-        useErrorStore.getState().setError({ error, expected: false });
-        return false;
+        console.log('Failed to create Veriff session: launch', error);
+        throw error;
     }
 }
 
