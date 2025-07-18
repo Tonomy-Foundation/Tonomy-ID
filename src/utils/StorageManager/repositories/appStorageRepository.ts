@@ -1,5 +1,5 @@
 import { Repository, DataSource } from 'typeorm';
-import { AppStorage } from '../entities/appSettings';
+import { AppStorage } from '../entities/appStorage';
 
 export class AppStorageRepository {
     private ormRepository: Repository<AppStorage>;
@@ -8,31 +8,40 @@ export class AppStorageRepository {
         this.ormRepository = dataSource.getRepository(AppStorage);
     }
 
-    public async addNewSetting(name: string, value: string): Promise<AppStorage> {
+    public async create(origin: string, accountName: string): Promise<AppStorage> {
+        const now = new Date();
         const appStorageEntity = this.ormRepository.create({
-            name,
-            value,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            origin,
+            accountName,
+            dataShared: {
+                username: false,
+                veriffDocument: false,
+            },
+            isDataShared: false,
+            isLoggedIn: false,
+            createdAt: now,
+            updatedAt: now,
         });
 
         return this.ormRepository.save(appStorageEntity);
     }
 
-    public async findByName(name: string): Promise<AppStorage | null> {
-        const settings = this.ormRepository.findOne({ where: { name } });
+    public async findByOrigin(origin: string): Promise<AppStorage | null> {
+        const doc = this.ormRepository.findOne({ where: { origin } });
 
-        return settings;
+        return doc;
     }
 
     public async deleteAll(): Promise<void> {
         await this.ormRepository.delete({});
     }
 
-    public async updateSetting(settings: AppStorage): Promise<AppStorage> {
-        const findDoc = await this.ormRepository.findOne({ where: { name: settings.name, id: settings.id } });
+    public async update(appDetail: AppStorage): Promise<AppStorage> {
+        const doc = await this.ormRepository.findOne({
+            where: { origin: appDetail.origin },
+        });
 
-        if (findDoc) return await this.ormRepository.save(settings);
-        else throw new Error('Name not exists ');
+        if (doc) return await this.ormRepository.save(appDetail);
+        else throw new Error('App origin not exists ');
     }
 }
