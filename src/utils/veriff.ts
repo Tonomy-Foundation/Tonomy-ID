@@ -2,6 +2,7 @@ import VeriffSdk from '@veriff/react-native-sdk';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import settings from '../settings';
+import { Props } from '../screens/VeriffLoadingScreen';
 
 const debug = Debug('tonomy-id:veriff');
 
@@ -47,10 +48,20 @@ export async function createVeriffSession(jwt: string): Promise<string | null> {
     }
 }
 
+function showError(error: string, navigation: Props['navigation']) {
+    console.error('Veriff error:', error);
+
+    useErrorStore.getState().setError({ error: new Error(error), expected: false });
+    navigation.navigate('VeriffLogin');
+}
+
 /**
  * Launches the Veriff verification flow using a session URL
  */
-export async function launchVeriffVerification(verificationURL: string): Promise<boolean> {
+export async function launchVeriffVerification(
+    verificationURL: string,
+    navigation: Props['navigation']
+): Promise<boolean> {
     try {
         debug('Launching Veriff verification flow...');
         const result = await VeriffSdk.launchVeriff({ sessionUrl: verificationURL });
@@ -61,37 +72,37 @@ export async function launchVeriffVerification(verificationURL: string): Promise
                 return true;
 
             case VeriffSdk.statusCanceled:
-                debug('Veriff verification was canceled by the user.');
-                throw new Error('Verification canceled by user');
+                showError('Veriff verification was canceled by the user.', navigation);
+                return false;
 
             case VeriffSdk.statusError:
-                console.log('Failed to create Veriff session: Veriff returned an error:', result.error);
-                throw new Error(result.error);
+                showError(`Failed to create Veriff session: Veriff returned an error: ${result.error}`, navigation);
+                return false;
 
             default:
-                console.log('Failed to create Veriff session: Veriff returned unknown status:', result.status);
-                throw new Error('Unknown Veriff status');
+                showError(
+                    `Failed to create Veriff session: Veriff returned unknown status: ${result.status}`,
+                    navigation
+                );
+                return false;
         }
     } catch (error) {
-        console.log('Failed to create Veriff session: launch', error);
-        throw error;
+        showError('Failed to create Veriff session: launch', navigation);
+        return false;
     }
 }
 
 /**
  * Handles the full Veriff flow if verification is required
  */
-export async function handleVeriffIfRequired(jwt: string): Promise<boolean> {
+export async function handleVeriffIfRequired(jwt: string, navigation: Props['navigation']): Promise<boolean> {
     const verificationURL = await createVeriffSession(jwt);
 
     if (!verificationURL) {
         debug('Could not obtain Veriff session URL. Verification failed.');
-        useErrorStore.getState().setError({
-            error: new Error('Could not obtain Veriff session URL. Verification failed.'),
-            expected: false,
-        });
+        showError('Could not obtain Veriff session URL. Verification failed.', navigation);
         return false;
     }
 
-    return await launchVeriffVerification(verificationURL);
+    return await launchVeriffVerification(verificationURL, navigation);
 }

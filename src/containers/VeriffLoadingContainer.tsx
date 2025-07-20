@@ -36,7 +36,7 @@ export default function VeriffLoadingContainer({ navigation }: { navigation: Pro
         const verificationEventPromise: Promise<KYCPayload> = user.waitForNextVeriffVerification();
 
         try {
-            const isVerified = await handleVeriffIfRequired(jwt);
+            const isVerified = await handleVeriffIfRequired(jwt, navigation);
 
             // Verification was successful from user
             if (isVerified) {
