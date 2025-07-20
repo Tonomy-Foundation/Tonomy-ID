@@ -123,6 +123,12 @@ const expo: ExpoConfig = {
                     compileSdkVersion: 34,
                     targetSdkVersion: 34,
                     buildToolsVersion: '34.0.0',
+                    minSdkVersion: 26,
+                    extraMavenRepos: [
+                        {
+                            url: 'https://cdn.veriff.me/android/',
+                        },
+                    ],
                 },
                 ios: {
                     deploymentTarget: '13.4',
@@ -136,6 +142,12 @@ const expo: ExpoConfig = {
                 organization: 'tonomy-foundation-ba',
                 project: settings.config.sentryProjectId,
                 url: 'https://sentry.io/',
+            },
+        ],
+        [
+            '@veriff/react-native-sdk',
+            {
+                androidMavenRepoUrl: 'https://cdn.veriff.me/android/',
             },
         ],
     ],
