@@ -20,7 +20,7 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     env:
-      EXPO_NODE_ENV: testnet
+      EXPO_NODE_ENV: staging
       EXPO_PLATFORM: android
       NODE_VERSION: 22.3.0
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -87,6 +87,9 @@ jobs:
       - name: Find APK file and rename it so it can be added as an artifact
         run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk" \;
 
+      - name: Find APK file and rename it so it can be added as an artifact
+        run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.aab" \;
+
       - name: Archive Android APK as artifact
         # Do not run this step if the action is being run locally (using nektos/act)
         if: ${{ github.actor != 'nektos/act' }}
@@ -94,3 +97,11 @@ jobs:
         with:
           name: "TonomyID-Android-${{env.EXPO_NODE_ENV}}"
           path: "./Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk"
+
+      - name: Archive Android AAB as artifact
+        # Do not run this step if the action is being run locally (using nektos/act)
+        if: ${{ github.actor != 'nektos/act' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: "TonomyID-Android-${{env.EXPO_NODE_ENV}}"
+          path: "./Tonomy-ID-${{env.EXPO_NODE_ENV}}.aab"
