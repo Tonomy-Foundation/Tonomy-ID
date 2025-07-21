@@ -88,7 +88,11 @@ jobs:
         run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk" \;
 
       - name: Find APK file and rename it so it can be added as an artifact
-        run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.aab" \;
+        run: find . -name "*.aab" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.aab" \;
+
+      - name: build aab using expo 
+        run: npx eas build --platform android --profile staging --local --non-interactive --clear-cache
+
 
       - name: Archive Android APK as artifact
         # Do not run this step if the action is being run locally (using nektos/act)
@@ -104,4 +108,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "TonomyID-Android-${{env.EXPO_NODE_ENV}}"
-          path: "./Tonomy-ID-${{env.EXPO_NODE_ENV}}.aab"
+          path: "./Tonomy-ID-aab-${{env.EXPO_NODE_ENV}}.aab"
