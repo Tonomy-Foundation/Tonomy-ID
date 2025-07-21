@@ -80,27 +80,17 @@ jobs:
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
-          npx eas build --clear-cache --profile "staging-internal" --platform "${EXPO_PLATFORM}"
+          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
         env:
           SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
         
       - name: Find APK file and rename it so it can be added as an artifact
-        run: find . -name "*.apk" -exec mv {} "Tonomy-ID-staging.apk" \;
-      - name: Find APK file and rename it so it can be added as an artifact
-        run: find . -name "*.apk" -exec mv {} "Tonomy-ID-staging.aab" \;
+        run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk" \;
 
       - name: Archive Android APK as artifact
         # Do not run this step if the action is being run locally (using nektos/act)
         if: ${{ github.actor != 'nektos/act' }}
         uses: actions/upload-artifact@v4
         with:
-          name: "TonomyID-Android-staging"
-          path: "./Tonomy-ID-staging.apk"
-
-      - name: Archive Android AAB as artifact
-        # Do not run this step if the action is being run locally (using nektos/act)
-        if: ${{ github.actor != 'nektos/act' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "TonomyID-Android-staging"
-          path: "./Tonomy-ID-staging.aab"
+          name: "TonomyID-Android-${{env.EXPO_NODE_ENV}}"
+          path: "./Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk"
