@@ -12,6 +12,7 @@ import OnBoardingImage1 from '../assets/images/kyc-onboarding/1.png';
 import OnBoardingImage2 from '../assets/images/kyc-onboarding/2.png';
 import OnBoardingImage3 from '../assets/images/kyc-onboarding/3.png';
 import OnBoardingImage4 from '../assets/images/kyc-onboarding/4.png';
+import BackgroundSvg from '../assets/images/kyc-onboarding/bg.svg';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -69,6 +70,13 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 
     return (
         <View style={styles.container}>
+            <BackgroundSvg
+                width="100%"
+                height="100%"
+                preserveAspectRatio="xMidYMid slice"
+                style={StyleSheet.absoluteFill}
+            />
+
             <View style={[styles.pictureAndSlider, { height: pictureAndSliderHeight }]}>
                 <Swiper
                     loop={false}
@@ -105,9 +113,9 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
                     </TouchableOpacity>
                 )}
                 {activeIndex === slides.length - 1 && (
-                    <TButtonContained size="large" style={{ width: '100%' }} onPress={onFinish}>
-                        PROCEED
-                    </TButtonContained>
+                    <TouchableOpacity style={styles.getStartedBtn} onPress={onFinish}>
+                        <Text style={{ color: theme.colors.white }}>Get Started!</Text>
+                    </TouchableOpacity>
                 )}
             </View>
         </View>
@@ -117,12 +125,11 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000000',
-        paddingTop: 20,
     },
     pictureAndSlider: {
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 20,
     },
     slide: {
         flex: 1,
@@ -196,6 +203,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 40,
+    },
+    getStartedBtn: {
+        width: '100%',
+        backgroundColor: theme.colors.black,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: theme.colors.white,
     },
 });
 
