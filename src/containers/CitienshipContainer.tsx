@@ -52,6 +52,9 @@ export default function CitizenshipContainer({ navigation }: { navigation: Props
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => navigation.navigate('KycOnboarding')}>
+                <Text>kyc onboarding screen</Text>
+            </TouchableOpacity>
             <ScrollView style={styles.scrollContent}>
                 <Text style={styles.title}>
                     Welcome to {settings.config.ecosystemName}, @{username}
