@@ -1,14 +1,14 @@
 {
     "theme": {
-        "primaryColor": "#000000",
-        "disabled": "#939393",
+        "primaryColor": "#5833BC",
+        "disabled": "#C2B8E6",
         "secondaryColor": "#EDF2F9",
-        "secondaryColor2": "#6E84A3",
+        "secondaryColor2": "#1ACFD3",
         "tertiaryColor": "#7660E7",
         "tertiaryColor2": "#CFC8F7",
         "text": "#000000",
         "textGray": "#000000",
-        "linkColor": "#4CAF50",
+        "linkColor": "#5833BC",
         "infoBackground": "#F6F9FB",
         "lightBackground": "#F6F9FB"
     },
@@ -42,5 +42,6 @@
     "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
     "etherscanApiKey": "ESTDTCEUZWS9R56V3FYTXBNAFVQE3EZVIT",
     "walletConnectProjectId": "850cdd095217e599acfd5f9f01d7b1ba",
-    "currencySymbol": "TONO"
+    "currencySymbol": "TONO",
+    "veriffApiKey": "461a1795-d8b4-4a1f-950a-8f523ff72d0c"
 }

@@ -115,6 +115,7 @@ export default function ScanQRCodeContainer({
             } else {
                 const did = validateQrCode(data);
 
+                debug('onScan() validated did:', did);
                 await connectToDid(did);
             }
         } catch (e) {
