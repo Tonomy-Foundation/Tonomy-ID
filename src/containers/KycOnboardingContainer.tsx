@@ -1,23 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import Swiper from 'react-native-swiper';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    withDelay,
-    withSequence,
-    withRepeat,
-    Easing,
-    interpolate,
-} from 'react-native-reanimated';
-
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 import theme, { commonStyles } from '../utils/theme';
 import ArrowForwardIcon from '../assets/icons/ArrowForwardIcon';
 import { Props } from '../screens/KycOnboardingScreen';
-import { StackActions } from '@react-navigation/native';
-import { appStorage } from '../utils/StorageManager/setup';
 import useErrorStore from '../store/errorStore';
 import OnBoardingImage1 from '../assets/images/kyc-onboarding/1.png';
 import OnBoardingImage2 from '../assets/images/kyc-onboarding/2.png';
@@ -93,9 +81,6 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 
             // Wait for animation to complete
             await new Promise((resolve) => setTimeout(resolve, 300));
-
-            await appStorage.setSplashOnboarding(false);
-            navigation.dispatch(StackActions.replace('Home'));
         } catch (error) {
             errorStore.setError({ error, expected: false });
         }
@@ -170,7 +155,10 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
                             <Text style={styles.skipButton}>Skip</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={onNext} style={styles.nextButton}>
-                            <ArrowForwardIcon color={theme.colors.white} />
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={{ color: theme.colors.white, marginRight: 5, fontSize: 16 }}>Next</Text>
+                                <ArrowForwardIcon color={theme.colors.white} />
+                            </View>
                         </TouchableOpacity>
                     </>
                 )}
@@ -248,7 +236,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 18,
+        paddingHorizontal: 20,
         width: '100%',
         minHeight: 55,
     },

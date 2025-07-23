@@ -14,7 +14,7 @@ import theme from '../utils/theme';
 interface BubbleProps {
     text: string;
     delay: number;
-    side?: 'left' | 'right'; // NEW
+    side?: string;
     style?: any;
 }
 
