@@ -1,7 +1,18 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import Swiper from 'react-native-swiper';
-import { TButtonContained } from '../components/atoms/TButton';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withDelay,
+    withSequence,
+    withRepeat,
+    Easing,
+    interpolate,
+} from 'react-native-reanimated';
+
 import theme, { commonStyles } from '../utils/theme';
 import ArrowForwardIcon from '../assets/icons/ArrowForwardIcon';
 import { Props } from '../screens/KycOnboardingScreen';
@@ -13,9 +24,9 @@ import OnBoardingImage2 from '../assets/images/kyc-onboarding/2.png';
 import OnBoardingImage3 from '../assets/images/kyc-onboarding/3.png';
 import OnBoardingImage4 from '../assets/images/kyc-onboarding/4.png';
 import BackgroundSvg from '../assets/images/kyc-onboarding/bg.svg';
+import { Bubble } from '../components/Bubble';
 
 const { height: screenHeight } = Dimensions.get('window');
-
 const pictureAndSliderHeight = screenHeight * 0.59;
 const textHeight = screenHeight * 0.22;
 const buttonsHeight = screenHeight * 0.09;
@@ -23,36 +34,66 @@ const buttonsHeight = screenHeight * 0.09;
 function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const errorStore = useErrorStore();
-
+    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
     const slides = [
         {
             id: 1,
             title: `Tired of verifying your identity again and again?`,
             text: '',
             image: OnBoardingImage1,
+            bubbles: [
+                { top: -0.27, left: 0.23, text: 'Frustration', delay: 300, side: 'right' },
+                { top: -0.22, left: -0.43, text: '💢', delay: 400, side: 'left' },
+                { top: -0.004, left: 0.35, text: '😤', delay: 500, side: 'right' },
+            ],
         },
         {
             id: 2,
             title: `Meet reusable KYC`,
             text: `Verify once. Log in anywhere securely — without repeating the process`,
             image: OnBoardingImage2,
+            bubbles: [
+                { top: -0.29, left: 0.11, text: 'Already verified?', delay: 300, side: 'right' },
+                { top: -0.22, left: -0.44, text: '😍', delay: 400, side: 'left' },
+                { top: -0.02, left: -0.44, text: 'Felt kind of magic', delay: 500, side: 'left' },
+            ],
         },
         {
             id: 3,
             title: 'Faster access. Full control',
-            text: `Your data stays private and secure — even we can’t see it`,
+            text: `Your data stays private and secure — even we can't see it`,
             image: OnBoardingImage3,
+            bubbles: [
+                { top: -0.29, left: -0.44, text: 'Privacy', delay: 300, side: 'left' },
+                { top: -0.2, left: 0.34, text: '😎', delay: 400, side: 'right' },
+                { top: 0.0, left: 0.19, text: 'Confidence', delay: 500, side: 'right' },
+            ],
         },
         {
             id: 4,
             title: 'One ID. All your apps',
             text: 'This is just the beginning',
             image: OnBoardingImage4,
+            bubbles: [
+                { top: -0.27, left: -0.44, text: '👍', delay: 300, side: 'left' },
+                { top: -0.13, left: 0.13, text: 'No forms? Nice', delay: 400, side: 'right' },
+                { top: 0.0, left: -0.45, text: 'That was fast', delay: 500, side: 'left' },
+            ],
         },
     ];
+    // Animation values for slide transitions
+    const screenOpacity = useSharedValue(1);
+    const screenScale = useSharedValue(1);
 
     const onFinish = async () => {
         try {
+            // Exit animation for final slide
+            screenOpacity.value = withTiming(0, { duration: 300, easing: Easing.inOut(Easing.ease) });
+            screenScale.value = withTiming(0.96, { duration: 300, easing: Easing.inOut(Easing.ease) });
+
+            // Wait for animation to complete
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
             await appStorage.setSplashOnboarding(false);
             navigation.dispatch(StackActions.replace('Home'));
         } catch (error) {
@@ -60,16 +101,23 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
         }
     };
 
-    const onNext = () => {
+    const onNext = async () => {
         if (activeIndex === slides.length - 1) {
             onFinish();
         } else {
-            setActiveIndex(activeIndex + 1);
+            const next = activeIndex + 1;
+
+            setActiveIndex(next);
         }
     };
 
+    const screenStyle = useAnimatedStyle(() => ({
+        opacity: screenOpacity.value,
+        transform: [{ scale: screenScale.value }],
+    }));
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container]}>
             <BackgroundSvg
                 width="100%"
                 height="100%"
@@ -77,7 +125,7 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
                 style={StyleSheet.absoluteFill}
             />
 
-            <View style={[styles.pictureAndSlider, { height: pictureAndSliderHeight }]}>
+            <Animated.View style={[styles.pictureAndSlider, { height: pictureAndSliderHeight }, screenStyle]}>
                 <Swiper
                     loop={false}
                     index={activeIndex}
@@ -86,13 +134,27 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
                     dotStyle={styles.dot}
                     activeDotStyle={styles.activeDot}
                 >
-                    {slides.map((slide) => (
-                        <View style={styles.slide} key={slide.id}>
-                            <Image source={slide.image} style={styles.image} />
-                        </View>
-                    ))}
+                    {slides.map((slide) => {
+                        return (
+                            <View style={styles.slide} key={slide.id}>
+                                <Image source={slide.image} style={[styles.image]} />
+                                <View style={[styles.bubblesContainer]}>
+                                    {slide.bubbles.map((b, i) => {
+                                        const top = b.top * screenHeight;
+                                        const left = b.left * screenWidth;
+
+                                        return (
+                                            <View key={i} style={{ position: 'absolute', top, left }}>
+                                                <Bubble text={b.text} delay={b.delay} side={b.side} />
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            </View>
+                        );
+                    })}
                 </Swiper>
-            </View>
+            </Animated.View>
 
             <View style={[styles.textContainer, { height: textHeight }]}>
                 <ScrollView contentContainerStyle={styles.content}>
@@ -103,14 +165,14 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 
             <View style={[styles.buttonContainer, { height: buttonsHeight }]}>
                 {activeIndex < slides.length - 1 && (
-                    <TouchableOpacity onPress={onFinish}>
-                        <Text style={styles.skipButton}>Skip</Text>
-                    </TouchableOpacity>
-                )}
-                {activeIndex < slides.length - 1 && (
-                    <TouchableOpacity onPress={onNext} style={styles.nextButton}>
-                        <ArrowForwardIcon color={theme.colors.white} />
-                    </TouchableOpacity>
+                    <>
+                        <TouchableOpacity onPress={onFinish}>
+                            <Text style={styles.skipButton}>Skip</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={onNext} style={styles.nextButton}>
+                            <ArrowForwardIcon color={theme.colors.white} />
+                        </TouchableOpacity>
+                    </>
                 )}
                 {activeIndex === slides.length - 1 && (
                     <TouchableOpacity style={styles.getStartedBtn} onPress={onFinish}>
@@ -123,9 +185,7 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+    container: { flex: 1 },
     pictureAndSlider: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -170,7 +230,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-
     title: {
         fontSize: 26,
         fontWeight: 'bold',
@@ -214,7 +273,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
         borderWidth: 1,
-        borderColor: theme.colors.white,
+        borderColor: '#BA54D3',
+    },
+    bubblesContainer: {
+        position: 'absolute',
+        bottom: screenHeight * 0.2,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
     },
 });
 
