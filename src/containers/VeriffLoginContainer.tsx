@@ -10,7 +10,7 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
     const { ssoApp } = useVerificationStore();
 
     const onStartVerification = async () => {
-        navigation.navigate('VeriffLoading');
+        navigation.navigate('KycOnboarding');
     };
 
     return (

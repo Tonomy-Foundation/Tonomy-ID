@@ -13,15 +13,28 @@ import OnBoardingImage3 from '../assets/images/kyc-onboarding/3.png';
 import OnBoardingImage4 from '../assets/images/kyc-onboarding/4.png';
 import BackgroundSvg from '../assets/images/kyc-onboarding/bg.svg';
 import { Bubble } from '../components/Bubble';
+import { handleVeriffIfRequired } from '../utils/veriff';
+import { KYCPayload, KYCVC, SdkErrors, util, VeriffStatusEnum, VerificationTypeEnum } from '@tonomy/tonomy-id-sdk';
+import settings from '../settings';
+import useUserStore from '../store/userStore';
+import TSpinner from '../components/atoms/TSpinner';
 
 const { height: screenHeight } = Dimensions.get('window');
 const pictureAndSliderHeight = screenHeight * 0.59;
 const textHeight = screenHeight * 0.22;
 const buttonsHeight = screenHeight * 0.09;
 
+type VeriffPayload = {
+    appName: string;
+    proof?: string;
+};
+
 function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
     const errorStore = useErrorStore();
+    const { user } = useUserStore();
+
     const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
     const slides = [
         {
@@ -73,17 +86,67 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
     const screenOpacity = useSharedValue(1);
     const screenScale = useSharedValue(1);
 
-    const onFinish = async () => {
-        try {
-            // Exit animation for final slide
-            screenOpacity.value = withTiming(0, { duration: 300, easing: Easing.inOut(Easing.ease) });
-            screenScale.value = withTiming(0.96, { duration: 300, easing: Easing.inOut(Easing.ease) });
+    async function startVeriffFlow() {
+        const appName = settings.config.appName;
 
-            // Wait for animation to complete
-            await new Promise((resolve) => setTimeout(resolve, 300));
+        const issuer = await user.getIssuer();
+        const did = await user.getDid();
+
+        const proofVc = await util.VerifiableCredential.sign<VeriffPayload>(
+            did,
+            'VerifiableCredential',
+            { appName },
+            issuer
+        );
+
+        const jwt = proofVc.toString();
+        const verificationEventPromise: Promise<KYCPayload> = user.waitForNextVeriffVerification();
+
+        try {
+            const isVerified = await handleVeriffIfRequired(jwt, navigation);
+
+            setLoading(true);
+
+            // Verification was successful from user
+            if (isVerified) {
+                let verificationEvent: KYCPayload;
+
+                try {
+                    verificationEvent = await verificationEventPromise;
+
+                    navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
+                } catch (error) {
+                    if (error.code === SdkErrors.VerificationDataNotFound) {
+                        verificationEvent = (
+                            (await user.fetchVerificationData(
+                                VerificationTypeEnum.KYC,
+                                VeriffStatusEnum.APPROVED
+                            )) as KYCVC
+                        ).getPayload();
+                        navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
+                    } else {
+                        errorStore.setError({ error: error, expected: false });
+                    }
+                }
+            } else {
+                // show error message
+                errorStore.setError({
+                    error: new Error('Verification failed. Please try again later.'),
+                    expected: false,
+                });
+                navigation.navigate('VeriffLogin');
+            }
         } catch (error) {
+            console.error('Error during Veriff flow:', error);
             errorStore.setError({ error, expected: false });
+            navigation.navigate('VeriffLogin');
+        } finally {
+            setLoading(false);
         }
+    }
+
+    const onFinish = async () => {
+        startVeriffFlow();
     };
 
     const onNext = async () => {
@@ -102,73 +165,85 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
     }));
 
     return (
-        <View style={[styles.container]}>
-            <BackgroundSvg
-                width="100%"
-                height="100%"
-                preserveAspectRatio="xMidYMid slice"
-                style={StyleSheet.absoluteFill}
-            />
+        <>
+            {loading ? (
+                <View style={styles.inner}>
+                    <TSpinner size={80} />
+                    <Text style={styles.loadingtitle}>Verifying your identity</Text>
+                    <Text style={styles.subtitle}>This may take a few moments</Text>
+                </View>
+            ) : (
+                <View style={[styles.container]}>
+                    <BackgroundSvg
+                        width="100%"
+                        height="100%"
+                        preserveAspectRatio="xMidYMid slice"
+                        style={StyleSheet.absoluteFill}
+                    />
 
-            <Animated.View style={[styles.pictureAndSlider, { height: pictureAndSliderHeight }, screenStyle]}>
-                <Swiper
-                    loop={false}
-                    index={activeIndex}
-                    onIndexChanged={(index) => setActiveIndex(index)}
-                    showsPagination={true}
-                    dotStyle={styles.dot}
-                    activeDotStyle={styles.activeDot}
-                >
-                    {slides.map((slide) => {
-                        return (
-                            <View style={styles.slide} key={slide.id}>
-                                <Image source={slide.image} style={[styles.image]} />
-                                <View style={[styles.bubblesContainer]}>
-                                    {slide.bubbles.map((b, i) => {
-                                        const top = b.top * screenHeight;
-                                        const left = b.left * screenWidth;
+                    <Animated.View style={[styles.pictureAndSlider, { height: pictureAndSliderHeight }, screenStyle]}>
+                        <Swiper
+                            loop={false}
+                            index={activeIndex}
+                            onIndexChanged={(index) => setActiveIndex(index)}
+                            showsPagination={true}
+                            dotStyle={styles.dot}
+                            activeDotStyle={styles.activeDot}
+                        >
+                            {slides.map((slide) => {
+                                return (
+                                    <View style={styles.slide} key={slide.id}>
+                                        <Image source={slide.image} style={[styles.image]} />
+                                        <View style={[styles.bubblesContainer]}>
+                                            {slide.bubbles.map((b, i) => {
+                                                const top = b.top * screenHeight;
+                                                const left = b.left * screenWidth;
 
-                                        return (
-                                            <View key={i} style={{ position: 'absolute', top, left }}>
-                                                <Bubble text={b.text} delay={b.delay} side={b.side} />
-                                            </View>
-                                        );
-                                    })}
-                                </View>
-                            </View>
-                        );
-                    })}
-                </Swiper>
-            </Animated.View>
+                                                return (
+                                                    <View key={i} style={{ position: 'absolute', top, left }}>
+                                                        <Bubble text={b.text} delay={b.delay} side={b.side} />
+                                                    </View>
+                                                );
+                                            })}
+                                        </View>
+                                    </View>
+                                );
+                            })}
+                        </Swiper>
+                    </Animated.View>
 
-            <View style={[styles.textContainer, { height: textHeight }]}>
-                <ScrollView contentContainerStyle={styles.content}>
-                    <Text style={styles.title}>{slides[activeIndex].title}</Text>
-                    <Text style={styles.text}>{slides[activeIndex].text}</Text>
-                </ScrollView>
-            </View>
+                    <View style={[styles.textContainer, { height: textHeight }]}>
+                        <ScrollView contentContainerStyle={styles.content}>
+                            <Text style={styles.title}>{slides[activeIndex].title}</Text>
+                            <Text style={styles.text}>{slides[activeIndex].text}</Text>
+                        </ScrollView>
+                    </View>
 
-            <View style={[styles.buttonContainer, { height: buttonsHeight }]}>
-                {activeIndex < slides.length - 1 && (
-                    <>
-                        <TouchableOpacity onPress={onFinish}>
-                            <Text style={styles.skipButton}>Skip</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={onNext} style={styles.nextButton}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={{ color: theme.colors.white, marginRight: 5, fontSize: 16 }}>Next</Text>
-                                <ArrowForwardIcon color={theme.colors.white} />
-                            </View>
-                        </TouchableOpacity>
-                    </>
-                )}
-                {activeIndex === slides.length - 1 && (
-                    <TouchableOpacity style={styles.getStartedBtn} onPress={onFinish}>
-                        <Text style={{ color: theme.colors.white }}>Get Started!</Text>
-                    </TouchableOpacity>
-                )}
-            </View>
-        </View>
+                    <View style={[styles.buttonContainer, { height: buttonsHeight }]}>
+                        {activeIndex < slides.length - 1 && (
+                            <>
+                                <TouchableOpacity onPress={onFinish}>
+                                    <Text style={styles.skipButton}>Skip</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={onNext} style={styles.nextButton}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text style={{ color: theme.colors.white, marginRight: 5, fontSize: 16 }}>
+                                            Next
+                                        </Text>
+                                        <ArrowForwardIcon color={theme.colors.white} />
+                                    </View>
+                                </TouchableOpacity>
+                            </>
+                        )}
+                        {activeIndex === slides.length - 1 && (
+                            <TouchableOpacity style={styles.getStartedBtn} onPress={onFinish}>
+                                <Text style={{ color: theme.colors.white }}>Get Started!</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                </View>
+            )}
+        </>
     );
 }
 
@@ -269,6 +344,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
+    },
+    inner: {
+        alignItems: 'center',
+    },
+    loadingtitle: {
+        textAlign: 'center',
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginTop: -15,
+    },
+    subtitle: {
+        textAlign: 'center',
+        fontSize: 16,
+        marginTop: 8,
     },
 });
 

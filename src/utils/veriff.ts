@@ -2,7 +2,7 @@ import VeriffSdk from '@veriff/react-native-sdk';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import settings from '../settings';
-import { Props } from '../screens/VeriffLoadingScreen';
+import { Props } from '../screens/KycOnboardingScreen';
 
 const debug = Debug('tonomy-id:veriff');
 
