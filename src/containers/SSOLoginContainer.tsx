@@ -215,11 +215,20 @@ export default function SSOLoginContainer({
             body={
                 <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
                     {/* Progress bar */}
-                    <View style={styles.progressBarContainer}>
-                        <View style={styles.progressActive} />
-                        <View style={styles.progressInactive} />
-                        <View style={styles.progressInactive} />
-                    </View>
+                    {requestType === 'login' ? (
+                        <View style={styles.progressBarContainer}>
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressActive} />
+                        </View>
+                    ) : (
+                        <View style={styles.progressBarContainer}>
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressInactive} />
+                            <View style={styles.progressInactive} />
+                        </View>
+                    )}
+
                     {ssoApp && (
                         <View style={styles.loginCard}>
                             <Image source={{ uri: ssoApp.logoUrl }} style={styles.appIcon} />

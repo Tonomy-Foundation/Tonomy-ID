@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, View, Text, ScrollView } from 'react-native';
+import { Image, StyleSheet, View, Text, ScrollView, ImageBackground } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained } from '../components/atoms/TButton';
 import theme, { commonStyles } from '../utils/theme';
@@ -33,16 +33,25 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
                 </ScrollView>
             }
             footerHint={
-                <View style={styles.hintCard}>
-                    <View style={styles.bulletRow}>
-                        <Text style={styles.bullet}>{'\u2022'}</Text>
-                        <Text style={styles.bulletText}>Prepare a valid government-issued ID</Text>
+                <ImageBackground
+                    source={require('../assets/images/light-bulb.png')}
+                    imageStyle={{
+                        resizeMode: 'contain',
+                        position: 'absolute',
+                        right: '60%',
+                    }}
+                >
+                    <View style={styles.hintCard}>
+                        <View style={styles.bulletRow}>
+                            <Text style={styles.bullet}>{'\u2022'}</Text>
+                            <Text style={styles.bulletText}>Prepare a valid government-issued ID</Text>
+                        </View>
+                        <View style={styles.bulletRow}>
+                            <Text style={styles.bullet}>{'\u2022'}</Text>
+                            <Text style={styles.bulletText}>Be prepared to take a selfie and photos of your ID</Text>
+                        </View>
                     </View>
-                    <View style={styles.bulletRow}>
-                        <Text style={styles.bullet}>{'\u2022'}</Text>
-                        <Text style={styles.bulletText}>Be prepared to take a selfie and photos of your ID</Text>
-                    </View>
-                </View>
+                </ImageBackground>
             }
             footer={
                 <View style={{ marginTop: 30 }}>
