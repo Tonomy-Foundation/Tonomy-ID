@@ -3,18 +3,17 @@ import * as Linking from 'expo-linking';
 import { Image, StyleSheet, View } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import TInfoBox from '../components/TInfoBox';
 import useUserStore from '../store/userStore';
 import { rejectLoginRequest, App, SdkErrors, DualWalletRequests, CommunicationError } from '@tonomy/tonomy-id-sdk';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import { commonStyles } from '../utils/theme';
-import settings from '../settings';
 import useErrorStore from '../store/errorStore';
 import { Images } from '../assets';
 import Debug from 'debug';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -189,12 +188,10 @@ export default function SSOLoginContainer({
             }
             footerHint={
                 <View style={styles.infoBox}>
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="100% secure. Only your phone can authorize your app login."
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
+                    <TInfoModalBox
+                        description="Instant and secure access, made easy"
+                        modalTitle="Instant and secure access"
+                        modalDescription="Enjoy a faster and more secure login experience without going through unnecessary steps. With reusable identity, you stay in control of your data while accessing services seamlessly across platforms"
                     />
                 </View>
             }
