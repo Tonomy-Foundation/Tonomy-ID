@@ -33,25 +33,29 @@ export default function VeriffLoginContainer({ navigation }: { navigation: Props
                 </ScrollView>
             }
             footerHint={
-                <ImageBackground
-                    source={require('../assets/images/light-bulb.png')}
-                    imageStyle={{
-                        resizeMode: 'contain',
-                        position: 'absolute',
-                        right: '60%',
-                    }}
-                >
-                    <View style={styles.hintCard}>
-                        <View style={styles.bulletRow}>
-                            <Text style={styles.bullet}>{'\u2022'}</Text>
-                            <Text style={styles.bulletText}>Prepare a valid government-issued ID</Text>
+                <View style={{ backgroundColor: theme.colors.info, borderRadius: 12 }}>
+                    <ImageBackground
+                        source={require('../assets/images/light-bulb.png')}
+                        imageStyle={{
+                            resizeMode: 'contain',
+                            position: 'absolute',
+                            right: '60%',
+                        }}
+                    >
+                        <View style={styles.hintCard}>
+                            <View style={styles.bulletRow}>
+                                <Text style={styles.bullet}>{'\u2022'}</Text>
+                                <Text style={styles.bulletText}>Prepare a valid government-issued ID</Text>
+                            </View>
+                            <View style={styles.bulletRow}>
+                                <Text style={styles.bullet}>{'\u2022'}</Text>
+                                <Text style={styles.bulletText}>
+                                    Be prepared to take a selfie and photos of your ID
+                                </Text>
+                            </View>
                         </View>
-                        <View style={styles.bulletRow}>
-                            <Text style={styles.bullet}>{'\u2022'}</Text>
-                            <Text style={styles.bulletText}>Be prepared to take a selfie and photos of your ID</Text>
-                        </View>
-                    </View>
-                </ImageBackground>
+                    </ImageBackground>
+                </View>
             }
             footer={
                 <View style={{ marginTop: 30 }}>
@@ -171,11 +175,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     hintCard: {
-        backgroundColor: '#F8FAFC', // light background
-        borderRadius: 12,
-        padding: 16,
-        marginTop: 30,
+        display: 'flex',
+        flexDirection: 'column',
         width: '100%',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 27,
     },
 
     bulletRow: {
@@ -185,16 +190,16 @@ const styles = StyleSheet.create({
     },
 
     bullet: {
-        fontSize: 20,
+        fontSize: 21,
         lineHeight: 17,
         marginRight: 6,
-        color: 'black',
+        ...commonStyles.primaryFontFamily,
     },
 
     bulletText: {
         flex: 1,
         fontSize: 14,
         lineHeight: 16,
-        color: 'black',
+        ...commonStyles.primaryFontFamily,
     },
 });

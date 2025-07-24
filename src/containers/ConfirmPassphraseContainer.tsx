@@ -98,11 +98,9 @@ export default function ConfirmPassphraseWordContainer({
                 }
                 footer={
                     <View>
-                        <View style={commonStyles.marginBottom}>
-                            <TButtonContained size="large" onPress={onNext} disabled={!value || value === ''}>
-                                Next
-                            </TButtonContained>
-                        </View>
+                        <TButtonContained size="large" onPress={onNext} disabled={!value || value === ''}>
+                            Next
+                        </TButtonContained>
                     </View>
                 }
             ></LayoutComponent>

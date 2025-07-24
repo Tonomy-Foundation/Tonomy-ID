@@ -247,7 +247,7 @@ export default function SSOLoginContainer({
                 </ScrollView>
             }
             footerHint={
-                <View style={styles.infoBox}>
+                <View>
                     <TInfoModalBox
                         description="Instant and secure access, made easy"
                         modalTitle="Instant and secure access"
@@ -270,9 +270,6 @@ export default function SSOLoginContainer({
 }
 
 const styles = StyleSheet.create({
-    infoBox: {
-        marginBottom: 32,
-    },
     container: {
         flex: 1,
         alignItems: 'center',

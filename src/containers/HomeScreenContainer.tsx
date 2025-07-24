@@ -24,7 +24,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                 </View>
             }
             footerHint={
-                <View>
+                <View style={{ marginTop: 30 }}>
                     <TButtonContained
                         size="large"
                         onPress={() => navigation.navigate('CreateAccountUsername')}
@@ -42,7 +42,7 @@ export default function HomeScreenContainer({ navigation }: { navigation: Props[
                 </View>
             }
             footer={
-                <View>
+                <View style={{ marginTop: 30 }}>
                     <TInfoModalBox
                         description="Your personal data is stored ONLY on your phone. Not in databases, "
                         modalTitle="Your Data Stays Private and Secure"
