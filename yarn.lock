@@ -4937,9 +4937,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.32.0-development.2":
-  version: 0.32.0-development.2
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.32.0-development.2"
+"@tonomy/tonomy-id-sdk@npm:0.32.0-development.3":
+  version: 0.32.0-development.3
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.32.0-development.3"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -4966,7 +4966,7 @@ __metadata:
     typeorm: "npm:^0.3.20"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/99e99a2ca58db2b9b2795597ac854e18eb6d99211d29fb1b2d264bd751932b92681f6da0affd2b404b234db910162005bebc08e6c95d03d165761446f5f45319
+  checksum: 10c0/8c39f0cae85d8dcaac9664acb726d83ad059b0a5072c2a375ba2005b45131f38e062d51af2f70a4bbcf04bd4e639fed56a876bf2c532c29e152a343655a49228
   languageName: node
   linkType: hard
 
@@ -5833,6 +5833,16 @@ __metadata:
     multiformats: "npm:^13.0.0"
     uint8arrays: "npm:^4.0.6"
   checksum: 10c0/63adb82599fce2fc65cb93695352b4bcd932c3e1dcb23d67d374c41c24d0fdfd8c29e39cfbaeb8c95e04f5a041a1c8ab4458e0257f7a3ad718767b1f29a2f3e1
+  languageName: node
+  linkType: hard
+
+"@veriff/react-native-sdk@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@veriff/react-native-sdk@npm:8.1.0"
+  peerDependencies:
+    react: ^18.3.0
+    react-native: ^0.74.0
+  checksum: 10c0/6a5311dab86fe28a0807c642d0bdd092a874590b4b37a9a78f7c96e57465815d21256266a7118b34a5a5d81a3fef29a65892d09ad0b174ec2e2fa026fb9266f1
   languageName: node
   linkType: hard
 
@@ -19840,7 +19850,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~5.24.3"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.32.0-development.2"
+    "@tonomy/tonomy-id-sdk": "npm:0.32.0-development.3"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~18.2.79"
@@ -19849,6 +19859,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^5.40.0"
     "@typescript-eslint/parser": "npm:^5.40.0"
     "@veramo/core": "npm:^6.0.0"
+    "@veriff/react-native-sdk": "npm:^8.1.0"
     "@walletconnect/core": "npm:^2.17.2"
     "@walletconnect/react-native-compat": "npm:^2.17.2"
     "@walletconnect/utils": "npm:^2.17.2"
