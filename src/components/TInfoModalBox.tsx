@@ -29,7 +29,7 @@ export default function TInfoModalBox(props: TInfoModalBoxProps) {
             width: '100%',
             justifyContent: 'space-between',
             paddingHorizontal: 20,
-            paddingVertical: 30,
+            paddingVertical: 25,
         },
         infoBoxText: {
             fontSize: 16,
