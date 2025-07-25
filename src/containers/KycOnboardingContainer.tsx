@@ -105,6 +105,8 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
         try {
             const isVerified = await handleVeriffIfRequired(jwt, navigation);
 
+            setActiveIndex(0);
+
             setLoading(true);
 
             // Verification was successful from user
