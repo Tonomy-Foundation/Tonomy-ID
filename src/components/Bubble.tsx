@@ -38,10 +38,10 @@ export function Bubble({ text, delay, side = 'left', style }: BubbleProps) {
             delay,
             withRepeat(
                 withSequence(
-                    withTiming(6, { duration, easing: Easing.linear }), // move right
-                    withTiming(6, { duration, easing: Easing.linear }), // hold right
-                    withTiming(-6, { duration, easing: Easing.linear }), // move left
-                    withTiming(-6, { duration, easing: Easing.linear }) // hold left
+                    withTiming(4, { duration, easing: Easing.linear }), // move right
+                    withTiming(4, { duration, easing: Easing.linear }), // hold right
+                    withTiming(-4, { duration, easing: Easing.linear }), // move left
+                    withTiming(-4, { duration, easing: Easing.linear }) // hold left
                 ),
                 -1,
                 true
@@ -52,10 +52,10 @@ export function Bubble({ text, delay, side = 'left', style }: BubbleProps) {
             delay,
             withRepeat(
                 withSequence(
-                    withTiming(-6, { duration, easing: Easing.linear }), // move up
-                    withTiming(6, { duration, easing: Easing.linear }), // move down
-                    withTiming(6, { duration, easing: Easing.linear }), // hold down
-                    withTiming(-6, { duration, easing: Easing.linear }) // move back up
+                    withTiming(-4, { duration, easing: Easing.linear }), // move up
+                    withTiming(4, { duration, easing: Easing.linear }), // move down
+                    withTiming(4, { duration, easing: Easing.linear }), // hold down
+                    withTiming(-4, { duration, easing: Easing.linear }) // move back up
                 ),
                 -1,
                 true
