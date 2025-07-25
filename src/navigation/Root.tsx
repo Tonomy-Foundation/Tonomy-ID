@@ -50,9 +50,9 @@ import WithdrawVestedScreen from '../screens/WithdrawVestedScreen';
 import VestedSuccessScreen from '../screens/VestedSuccessScreen';
 import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
 import VeriffLoginScreen from '../screens/VeriffLoginScreen';
-import VeriffLoadingScreen from '../screens/VeriffLoadingScreen';
 import VeriffDataSharingScreen from '../screens/VeriffDataSharingScreen';
 import { KYCPayload } from '@tonomy/tonomy-id-sdk';
+import KycOnboardingScreen from '../screens/KycOnboardingScreen';
 
 const prefix = Linking.createURL('');
 
@@ -131,8 +131,8 @@ export type MainRouteStackParamList = {
     SuccessVested: AssetsParamsScreen;
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
     VeriffLogin: undefined;
-    VeriffLoading: undefined;
     VeriffDataSharing: { payload: KYCPayload };
+    KycOnboarding: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -363,18 +363,14 @@ export default function RootNavigation() {
                             component={VeriffLoginScreen}
                         />
                         <Stack.Screen
-                            name="VeriffLoading"
-                            options={{
-                                headerBackTitleVisible: false,
-                                headerBackVisible: false,
-                                headerShown: false,
-                            }}
-                            component={VeriffLoadingScreen}
-                        />
-                        <Stack.Screen
                             name="VeriffDataSharing"
                             options={{ headerBackTitleVisible: false, title: 'Data Sharing' }}
                             component={VeriffDataSharingScreen}
+                        />
+                        <Stack.Screen
+                            name="KycOnboarding"
+                            options={{ headerShown: false, headerBackTitleVisible: false, title: 'KYC Onboarding' }}
+                            component={KycOnboardingScreen}
                         />
                     </Stack.Navigator>
                 </>
