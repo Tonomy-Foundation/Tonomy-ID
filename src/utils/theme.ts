@@ -38,6 +38,7 @@ type ExtendedMD2Colors = MD2Colors & {
     blue1: string;
     blue2: string;
     warning: string;
+    purple: string;
 };
 
 type ExtendedMD2Theme = MD2Theme & {
@@ -90,6 +91,7 @@ const theme: ExtendedMD2Theme = {
         blue1: '#00AEED',
         blue2: '#007BB5',
         warning: '#FF96351A',
+        purple: '#5833BC',
     } as ExtendedMD2Colors,
 };
 

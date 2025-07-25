@@ -18,6 +18,7 @@ import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
+import TInfoModalBox from '../components/TInfoModalBox';
 import { ArrowUpRight } from 'iconoir-react-native';
 import SSOLoginBottomLayover from '../components/SSOLoginBottomLayover';
 import { useVerificationStore } from '../store/verificationStore';
@@ -214,11 +215,20 @@ export default function SSOLoginContainer({
             body={
                 <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
                     {/* Progress bar */}
-                    <View style={styles.progressBarContainer}>
-                        <View style={styles.progressActive} />
-                        <View style={styles.progressInactive} />
-                        <View style={styles.progressInactive} />
-                    </View>
+                    {requestType === 'login' ? (
+                        <View style={styles.progressBarContainer}>
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressActive} />
+                        </View>
+                    ) : (
+                        <View style={styles.progressBarContainer}>
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressInactive} />
+                            <View style={styles.progressInactive} />
+                        </View>
+                    )}
+
                     {ssoApp && (
                         <View style={styles.loginCard}>
                             <Image source={{ uri: ssoApp.logoUrl }} style={styles.appIcon} />
@@ -237,10 +247,13 @@ export default function SSOLoginContainer({
                 </ScrollView>
             }
             footerHint={
-                <TouchableOpacity style={styles.promptCard} onPress={() => refMessage?.current?.open()}>
-                    <Text style={styles.promptText}>Instant and secure access, made easy</Text>
-                    <ArrowUpRight width={20} height={20} color={'black'} />
-                </TouchableOpacity>
+                <View>
+                    <TInfoModalBox
+                        description="Instant and secure access, made easy"
+                        modalTitle="Instant and secure access"
+                        modalDescription="Enjoy a faster and more secure login experience without going through unnecessary steps. With reusable identity, you stay in control of your data while accessing services seamlessly across platforms"
+                    />
+                </View>
             }
             footer={
                 <View style={{ marginTop: 30 }}>

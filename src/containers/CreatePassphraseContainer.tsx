@@ -4,7 +4,6 @@ import { TButtonContained, TButtonOutlined, TButtonSecondaryContained } from '..
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
-import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
 import PassphraseBox from '../components/PassphraseBox';
@@ -15,6 +14,7 @@ import { ApplicationError, ApplicationErrors } from '../utils/errors';
 import { Checksum256, PrivateKey } from '@wharfkit/antelope';
 import useErrorStore from '../store/errorStore';
 import TSpinner from '../components/atoms/TSpinner';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 export interface ILoginOptions {
     keyFromPasswordFn: KeyFromPasswordFn;
@@ -108,12 +108,10 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                 }
                 footerHint={
                     <View>
-                        <TInfoBox
-                            align="left"
-                            icon="security"
-                            description="Your passphrase and private keys are self-sovereign meaning hackers have a very hard time! "
-                            linkUrl={settings.config.links.securityLearnMore}
-                            linkUrlText="Learn more"
+                        <TInfoModalBox
+                            description="Pick a fun 6-word passphrase to keep your keys safe! "
+                            modalTitle="Create Your 6-Word Passphrase"
+                            modalDescription=" Choose a fun and memorable 6-word passphrase — this will help protect your keys and recover your account if you ever lose access. It’s like a safety net only you control, so make it something unique and store it somewhere safe. No one else can recreate or retrieve it for you"
                         />
                     </View>
                 }
