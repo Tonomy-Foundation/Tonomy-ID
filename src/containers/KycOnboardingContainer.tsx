@@ -115,7 +115,6 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 
                 try {
                     verificationEvent = await verificationEventPromise;
-
                     navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
                 } catch (error) {
                     if (error.code === SdkErrors.VerificationDataNotFound) {
