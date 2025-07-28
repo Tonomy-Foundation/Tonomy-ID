@@ -111,16 +111,12 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 
             // Verification was successful from user
             if (isVerified) {
-                console.log('iffff');
                 let verificationEvent: KYCPayload;
 
                 try {
                     verificationEvent = await verificationEventPromise;
-                    console.log('verificationEvent', verificationEvent);
                     navigation.navigate('VeriffDataSharing', { payload: verificationEvent });
                 } catch (error) {
-                    console.log('verificationEvent error', error);
-
                     if (error.code === SdkErrors.VerificationDataNotFound) {
                         verificationEvent = (
                             (await user.fetchVerificationData(
