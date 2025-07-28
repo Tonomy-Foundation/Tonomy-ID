@@ -10,6 +10,7 @@ import { useVerificationStore } from '../store/verificationStore';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 const debug = Debug('tonomy-id:containers:VeriffDataSharingContainer');
 
@@ -276,6 +277,9 @@ export default function VeriffDataSharingContainer({
 }
 
 const styles = StyleSheet.create({
+    infoBox: {
+        marginBottom: 32,
+    },
     textContainer: {
         flex: 1, // Let it fill the space
         flexDirection: 'column',

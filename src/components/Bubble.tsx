@@ -5,9 +5,9 @@ import Animated, {
     useAnimatedStyle,
     withTiming,
     withDelay,
+    withSequence,
     withRepeat,
     Easing,
-    withSequence,
 } from 'react-native-reanimated';
 import theme from '../utils/theme';
 
@@ -20,16 +20,42 @@ interface BubbleProps {
 
 export function Bubble({ text, delay, side = 'left', style }: BubbleProps) {
     const opacity = useSharedValue(0);
+    const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
 
     useEffect(() => {
-        opacity.value = withDelay(delay, withTiming(1, { duration: 3000, easing: Easing.inOut(Easing.ease) }));
-        translateY.value = withDelay(
-            20,
+        opacity.value = withDelay(
+            delay,
+            withTiming(1, {
+                duration: 3000,
+                easing: Easing.inOut(Easing.ease),
+            })
+        );
+
+        const duration = 1000; // duration for each leg of the diamond
+
+        translateX.value = withDelay(
+            delay,
             withRepeat(
                 withSequence(
-                    withTiming(-6, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
-                    withTiming(6, { duration: 3000, easing: Easing.inOut(Easing.ease) })
+                    withTiming(4, { duration, easing: Easing.linear }), // move right
+                    withTiming(4, { duration, easing: Easing.linear }), // hold right
+                    withTiming(-4, { duration, easing: Easing.linear }), // move left
+                    withTiming(-4, { duration, easing: Easing.linear }) // hold left
+                ),
+                -1,
+                true
+            )
+        );
+
+        translateY.value = withDelay(
+            delay,
+            withRepeat(
+                withSequence(
+                    withTiming(-4, { duration, easing: Easing.linear }), // move up
+                    withTiming(4, { duration, easing: Easing.linear }), // move down
+                    withTiming(4, { duration, easing: Easing.linear }), // hold down
+                    withTiming(-4, { duration, easing: Easing.linear }) // move back up
                 ),
                 -1,
                 true
@@ -39,7 +65,7 @@ export function Bubble({ text, delay, side = 'left', style }: BubbleProps) {
 
     const aStyle = useAnimatedStyle(() => ({
         opacity: opacity.value,
-        transform: [{ translateY: translateY.value }],
+        transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
     }));
 
     const isLeft = side === 'left';

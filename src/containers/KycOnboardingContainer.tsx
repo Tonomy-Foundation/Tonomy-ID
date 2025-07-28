@@ -105,7 +105,6 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
         try {
             const isVerified = await handleVeriffIfRequired(jwt, navigation);
 
-            console.log('isVerified', isVerified);
             setActiveIndex(0);
 
             setLoading(true);
@@ -158,11 +157,10 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
     const onNext = async () => {
         if (activeIndex === slides.length - 1) {
             onFinish();
-        } else {
-            const next = activeIndex + 1;
-
-            setActiveIndex(next);
+            return;
         }
+
+        setActiveIndex((prev) => prev + 1);
     };
 
     const screenStyle = useAnimatedStyle(() => ({
@@ -173,10 +171,12 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
     return (
         <>
             {loading ? (
-                <View style={styles.inner}>
-                    <TSpinner size={80} />
-                    <Text style={styles.loadingtitle}>Verifying your identity</Text>
-                    <Text style={styles.subtitle}>This may take a few moments</Text>
+                <View style={styles.loadingContainer}>
+                    <View style={styles.inner}>
+                        <TSpinner size={80} />
+                        <Text style={styles.loadingtitle}>Verifying your identity</Text>
+                        <Text style={styles.subtitle}>This may take a few moments</Text>
+                    </View>
                 </View>
             ) : (
                 <View style={[styles.container]}>
@@ -220,8 +220,8 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 
                     <View style={[styles.textContainer, { height: textHeight }]}>
                         <ScrollView contentContainerStyle={styles.content}>
-                            <Text style={styles.title}>{slides[activeIndex].title}</Text>
-                            <Text style={styles.text}>{slides[activeIndex].text}</Text>
+                            <Text style={styles.title}>{slides[activeIndex]?.title}</Text>
+                            <Text style={styles.text}>{slides[activeIndex]?.text}</Text>
                         </ScrollView>
                     </View>
 
@@ -242,7 +242,7 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
                             </>
                         )}
                         {activeIndex === slides.length - 1 && (
-                            <TouchableOpacity style={styles.getStartedBtn} onPress={onFinish}>
+                            <TouchableOpacity style={styles.getStartedBtn} onPress={() => startVeriffFlow()}>
                                 <Text style={{ color: theme.colors.white }}>Get Started!</Text>
                             </TouchableOpacity>
                         )}
@@ -255,6 +255,12 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 110,
+    },
     pictureAndSlider: {
         justifyContent: 'center',
         alignItems: 'center',
