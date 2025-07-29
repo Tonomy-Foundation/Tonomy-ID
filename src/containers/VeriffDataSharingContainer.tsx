@@ -4,7 +4,13 @@ import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
 import theme, { commonStyles } from '../utils/theme';
 import { ArrowUpRight, NavArrowUp, NavArrowDown } from 'iconoir-react-native';
 import { Props } from '../screens/VeriffDataSharingScreen';
-import { CommunicationError, KYCPayload, rejectLoginRequest, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import {
+    CommunicationError,
+    KYCPayload,
+    rejectLoginRequest,
+    SdkErrors,
+    VerificationTypeEnum,
+} from '@tonomy/tonomy-id-sdk';
 import { Images } from '../assets';
 import { useVerificationStore } from '../store/verificationStore';
 import useUserStore from '../store/userStore';
@@ -24,11 +30,12 @@ export default function VeriffDataSharingContainer({
     const { ssoApp, dualRequests, receivedVia, clearAuth, isUsernameRequested } = useVerificationStore();
     const { user, logout } = useUserStore();
     const errorStore = useErrorStore();
-    const [identityCollapsed, setIdentityCollapsed] = useState(false);
+    const [identityCollapsed, setIdentityCollapsed] = useState(true);
     const [personalCollapsed, setPersonalCollapsed] = useState(true);
     const [nextLoading, setNextLoading] = useState<boolean>(false);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
     const [username, setUsername] = useState<string>();
+    const [reuseKycCount, setReuseKycCount] = useState<number>(0);
 
     const person = payload.data.verification.person;
     const document = payload.data.verification.document;
@@ -47,8 +54,20 @@ export default function VeriffDataSharingContainer({
         }
     }
 
+    async function getKycReuseableCount() {
+        try {
+            const count = await user.fetchReuseableKycCount(VerificationTypeEnum.KYC);
+
+            debug('getKycReuseableCount() count:', count);
+            setReuseKycCount(count);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
     useEffect(() => {
         setUserName();
+        getKycReuseableCount();
     }, []);
 
     const displayPersonData = (label: string, value: string) => {
@@ -71,6 +90,7 @@ export default function VeriffDataSharingContainer({
                 receivedVia === 'deepLink' ? 'redirect' : 'message'
             );
 
+            await user.updateReuseableKycCount(VerificationTypeEnum.KYC);
             debug('onLogin() callbackUrl:', callbackUrl);
 
             if (receivedVia === 'deepLink') {
@@ -153,80 +173,44 @@ export default function VeriffDataSharingContainer({
 
     return (
         <View style={{ flex: 1 }}>
-            <ScrollView style={styles.container}>
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}
+            >
                 {/* Progress bar */}
-                <View style={styles.progressBarContainer}>
-                    <View style={styles.progressActive} />
-                    <View style={styles.progressActive} />
-                    <View style={styles.progressActive} />
-                </View>
-
-                {/* Top Card */}
-                <View style={styles.card}>
-                    <View style={styles.iconRow}>
-                        <Image source={Images.GetImage('logo48')} style={styles.appIcon} />
-                        <Text style={styles.dots}>. . .</Text>
-                        <Image source={{ uri: ssoApp?.logoUrl }} style={styles.appIcon} />
+                <View>
+                    {reuseKycCount > 0 ? (
+                        <View style={styles.progressBarContainer}>
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressActive} />
+                        </View>
+                    ) : (
+                        <View style={styles.progressBarContainer}>
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressActive} />
+                            <View style={styles.progressActive} />
+                        </View>
+                    )}
+                    {/* Top Card */}
+                    <View style={styles.card}>
+                        <View style={styles.iconRow}>
+                            <Image source={Images.GetImage('logo48')} style={styles.appIcon} />
+                            <Text style={styles.dots}>. . .</Text>
+                            <Image source={{ uri: ssoApp?.logoUrl }} style={styles.appIcon} />
+                        </View>
+                        <Text style={styles.shareText}>
+                            Share data with <Text style={styles.discord}>{ssoApp?.appName}</Text>
+                        </Text>
+                        <View style={styles.usernameView}>
+                            <Text style={styles.username}>@{username}</Text>
+                        </View>
                     </View>
-                    <Text style={styles.shareText}>
-                        Share data with <Text style={styles.discord}>{ssoApp?.appName}</Text>
-                    </Text>
-                    <View style={styles.usernameView}>
-                        <Text style={styles.username}>@{username}</Text>
-                    </View>
-                </View>
-
-                {/* Reusable Identity Verification Section */}
-                <View style={styles.sectionHeader}>
-                    <View style={styles.textContainer}>
-                        <TouchableOpacity
-                            style={styles.sectionWrapper}
-                            onPress={() => setIdentityCollapsed(!identityCollapsed)}
-                        >
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <View style={{ flex: 1, marginRight: 20 }}>
-                                    <Text style={styles.sectionTitle}>Reusable Identity Verification</Text>
-                                    <Text style={styles.subTitle}>
-                                        Saved you time 5 times already – your KYC data was reused seamlessly
-                                    </Text>
-                                </View>
-
-                                {identityCollapsed ? (
-                                    <NavArrowDown width={16} height={16} color={theme.colors.primary} />
-                                ) : (
-                                    <NavArrowUp width={16} height={16} color={theme.colors.primary} />
-                                )}
-                            </View>
-                        </TouchableOpacity>
-
-                        {!identityCollapsed && (
-                            <View style={styles.sectionContent}>
-                                {person?.dateOfBirth?.value &&
-                                    displayPersonData('Date of birth', person.dateOfBirth.value)}
-                                {person?.firstName?.value && displayPersonData('First name', person.firstName.value)}
-                                {person?.lastName?.value && displayPersonData('Last name', person.lastName.value)}
-                                {person?.gender?.value && displayPersonData('Gender', person.gender.value)}
-                                {person?.nationality?.value &&
-                                    displayPersonData('Nationality', person.nationality.value)}
-                                {document?.type?.value && displayPersonData('Document type', document.type.value)}
-                                {document?.number?.value && displayPersonData('Document number', document.number.value)}
-                            </View>
-                        )}
-                    </View>
-                </View>
-
-                {/* Personal Data Section */}
-                {isUsernameRequested && (
+                    {/* Reusable Identity Verification Section */}
                     <View style={styles.sectionHeader}>
                         <View style={styles.textContainer}>
                             <TouchableOpacity
                                 style={styles.sectionWrapper}
-                                onPress={() => setPersonalCollapsed(!personalCollapsed)}
+                                onPress={() => setIdentityCollapsed(!identityCollapsed)}
                             >
                                 <View
                                     style={{
@@ -235,10 +219,14 @@ export default function VeriffDataSharingContainer({
                                     }}
                                 >
                                     <View style={{ flex: 1, marginRight: 20 }}>
-                                        <Text style={styles.sectionTitle}>Personal Data</Text>
+                                        <Text style={styles.sectionTitle}>Reusable Identity Verification</Text>
+                                        <Text style={styles.subTitle}>
+                                            Saved you time {reuseKycCount} times already – your KYC data was reused
+                                            seamlessly
+                                        </Text>
                                     </View>
 
-                                    {personalCollapsed ? (
+                                    {identityCollapsed ? (
                                         <NavArrowDown width={16} height={16} color={theme.colors.primary} />
                                     ) : (
                                         <NavArrowUp width={16} height={16} color={theme.colors.primary} />
@@ -246,23 +234,69 @@ export default function VeriffDataSharingContainer({
                                 </View>
                             </TouchableOpacity>
 
-                            {!personalCollapsed && (
+                            {!identityCollapsed && (
                                 <View style={styles.sectionContent}>
-                                    <View style={styles.row}>
-                                        <Text style={styles.rowLabel}>Username</Text>
-                                        <Text style={styles.rowValue}>{username}</Text>
-                                    </View>
+                                    {person?.dateOfBirth?.value &&
+                                        displayPersonData('Date of birth', person.dateOfBirth.value)}
+                                    {person?.firstName?.value &&
+                                        displayPersonData('First name', person.firstName.value)}
+                                    {person?.lastName?.value && displayPersonData('Last name', person.lastName.value)}
+                                    {person?.gender?.value && displayPersonData('Gender', person.gender.value)}
+                                    {person?.nationality?.value &&
+                                        displayPersonData('Nationality', person.nationality.value)}
+                                    {document?.type?.value && displayPersonData('Document type', document.type.value)}
+                                    {document?.number?.value &&
+                                        displayPersonData('Document number', document.number.value)}
                                 </View>
                             )}
                         </View>
                     </View>
-                )}
+                    {/* Personal Data Section */}
+                    {isUsernameRequested && (
+                        <View style={styles.sectionHeader}>
+                            <View style={styles.textContainer}>
+                                <TouchableOpacity
+                                    style={styles.sectionWrapper}
+                                    onPress={() => setPersonalCollapsed(!personalCollapsed)}
+                                >
+                                    <View
+                                        style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <View style={{ flex: 1, marginRight: 20 }}>
+                                            <Text style={styles.sectionTitle}>Personal Data</Text>
+                                        </View>
 
-                <TInfoModalBox
-                    description="Your personal info is self-sovereign meaning only you control who you share it with!"
-                    modalTitle="You control your info"
-                    modalDescription="With self-sovereign identity, your personal data lives with you — not on some company’s server. You decide when to share it, with whom, and for what purpose. No hidden tracking, no unexpected sharing. Just full control in your hands"
-                />
+                                        {personalCollapsed ? (
+                                            <NavArrowDown width={16} height={16} color={theme.colors.primary} />
+                                        ) : (
+                                            <NavArrowUp width={16} height={16} color={theme.colors.primary} />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+
+                                {!personalCollapsed && (
+                                    <View style={styles.sectionContent}>
+                                        <View style={styles.row}>
+                                            <Text style={styles.rowLabel}>Username</Text>
+                                            <Text style={styles.rowValue}>{username}</Text>
+                                        </View>
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+                    )}
+                </View>
+
+                <View>
+                    <TInfoModalBox
+                        description="Your personal info is self-sovereign meaning only you control who you share it with!"
+                        modalTitle="You control your info"
+                        modalDescription="With self-sovereign identity, your personal data lives with you — not on some company’s server. You decide when to share it, with whom, and for what purpose. No hidden tracking, no unexpected sharing. Just full control in your hands"
+                    />
+                </View>
             </ScrollView>
             <View style={styles.footerButtons}>
                 <TButtonContained style={commonStyles.marginBottom} disabled={nextLoading} onPress={onAcceptRequest}>
@@ -280,6 +314,13 @@ const styles = StyleSheet.create({
     infoBox: {
         marginBottom: 32,
     },
+    scrollContent: {
+        paddingHorizontal: 16,
+    },
+    modalBoxContainer: {
+        marginTop: 156,
+    },
+
     textContainer: {
         flex: 1, // Let it fill the space
         flexDirection: 'column',
@@ -348,5 +389,5 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     infoText: { flex: 1, fontSize: 16, marginRight: 8 },
-    footerButtons: { paddingHorizontal: 16, paddingBottom: 24 },
+    footerButtons: { paddingHorizontal: 16, paddingBottom: 35 },
 });

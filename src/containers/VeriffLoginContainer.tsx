@@ -200,6 +200,6 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 14,
         lineHeight: 16,
-        ...commonStyles.primaryFontFamily,
+        fontWeight: '400',
     },
 });
