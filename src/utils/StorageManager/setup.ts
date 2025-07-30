@@ -14,6 +14,7 @@ import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
 import { AssetNameMigration163837490194410 } from './migrations/assetNameMigration';
 import { IdentityVerificationStorage } from '@tonomy/tonomy-id-sdk';
+import { AddReuseCountColumn163837490194410 } from './migrations/addReuseCountMigration';
 
 const debug = Debug('tonomy-id:storageManager:setup');
 
@@ -22,6 +23,7 @@ export const kycDatasource = new DataSource({
     entities: [IdentityVerificationStorage],
     type: 'expo',
     driver: ExpoSQLite,
+    migrations: [AddReuseCountColumn163837490194410],
 });
 
 export const dataSource = new DataSource({

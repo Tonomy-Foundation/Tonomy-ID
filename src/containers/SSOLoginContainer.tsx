@@ -40,6 +40,7 @@ export default function SSOLoginContainer({
     const [username, setUsername] = useState<string>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const [reuseKycCount, setReuseKycCount] = useState<number>(0);
     const [requestType, setRequestType] = useState<'login' | 'kyc'>('login');
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
 
@@ -205,9 +206,21 @@ export default function SSOLoginContainer({
         }
     }
 
+    async function getKycReuseableCount() {
+        try {
+            const count = await user.fetchReuseableKycCount(VerificationTypeEnum.KYC);
+
+            debug('getKycReuseableCount() count:', count);
+            setReuseKycCount(count);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
+        }
+    }
+
     useEffect(() => {
         setUserName();
         getRequestsFromParams();
+        getKycReuseableCount();
     }, []);
 
     return (
@@ -218,15 +231,22 @@ export default function SSOLoginContainer({
                     {requestType === 'login' ? (
                         <View style={styles.progressBarContainer}>
                             <View style={styles.progressActive} />
-                            <View style={styles.progressActive} />
-                            <View style={styles.progressActive} />
                         </View>
                     ) : (
-                        <View style={styles.progressBarContainer}>
-                            <View style={styles.progressActive} />
-                            <View style={styles.progressInactive} />
-                            <View style={styles.progressInactive} />
-                        </View>
+                        <>
+                            {reuseKycCount > 0 ? (
+                                <View style={styles.progressBarContainer}>
+                                    <View style={styles.progressActive} />
+                                    <View style={styles.progressInactive} />
+                                </View>
+                            ) : (
+                                <View style={styles.progressBarContainer}>
+                                    <View style={styles.progressActive} />
+                                    <View style={styles.progressInactive} />
+                                    <View style={styles.progressInactive} />
+                                </View>
+                            )}
+                        </>
                     )}
 
                     {ssoApp && (
