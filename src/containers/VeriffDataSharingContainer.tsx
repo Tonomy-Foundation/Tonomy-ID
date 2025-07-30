@@ -179,7 +179,7 @@ export default function VeriffDataSharingContainer({
             >
                 {/* Progress bar */}
                 <View>
-                    {reuseKycCount > 0 ? (
+                    {reuseKycCount > 1 ? (
                         <View style={styles.progressBarContainer}>
                             <View style={styles.progressActive} />
                             <View style={styles.progressActive} />
@@ -221,8 +221,10 @@ export default function VeriffDataSharingContainer({
                                     <View style={{ flex: 1, marginRight: 20 }}>
                                         <Text style={styles.sectionTitle}>Reusable Identity Verification</Text>
                                         <Text style={styles.subTitle}>
-                                            Saved you time {reuseKycCount} times already – your KYC data was reused
-                                            seamlessly
+                                            {reuseKycCount > 1
+                                                ? ` Saved you time ${reuseKycCount} times already – your KYC data was reused
+                                            seamlessly`
+                                                : `Haven’t reused your KYC data yet — you’re all set for a faster login next time`}
                                         </Text>
                                     </View>
 
