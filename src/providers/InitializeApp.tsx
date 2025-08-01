@@ -18,6 +18,7 @@ const InitializeAppProvider: React.FC = () => {
         const initialize = async () => {
             try {
                 debug('App setup started');
+
                 await connect();
                 debug('Storage connected');
                 // need import dynamically, to ensure that it's sub-components do not call getSettings()

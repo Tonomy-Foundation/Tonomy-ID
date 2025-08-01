@@ -9,7 +9,7 @@ const availableAppsData = [
         image: require('../assets/tonomyProduction/favicon.png'),
         title: `${settings.config.ecosystemName} DAO on Hypha`,
         description: `Collaborate and make decisions within the ${settings.config.ecosystemName} ecosystem with others.`,
-        url: 'https://pangea.hypha.earth/pangea-dao/',
+        url: 'https://tonomy.hypha.earth/tonomy-dao/',
         isAvailable: true,
     },
     {
@@ -17,7 +17,7 @@ const availableAppsData = [
         title: 'Hypha DAO Platform',
         description:
             'Harnes the power of team-driven decisions. Create proposals, vote, and manage your DAO with ease.',
-        url: 'https://pangea.hypha.earth',
+        url: 'https://tonomy.hypha.earth',
         isAvailable: true,
     },
     {

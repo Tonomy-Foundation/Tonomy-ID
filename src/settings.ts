@@ -62,6 +62,7 @@ type ConfigType = {
     sentrySecretKey: string;
     sentryProjectId: string;
     currencySymbol: string;
+    veriffApiKey: string;
 };
 
 type SettingsType = {

@@ -42,5 +42,6 @@
     "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
     "etherscanApiKey": "8V6DEHQ64R18FFNX2B5S345IXXNZRJVVQX",
     "walletConnectProjectId": "650e5b61be5fadae5d817ff12daa1283",
-    "currencySymbol": "TONO"
+    "currencySymbol": "TONO",
+    "veriffApiKey": "461a1795-d8b4-4a1f-950a-8f523ff72d0c"
 }

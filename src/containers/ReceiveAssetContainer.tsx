@@ -11,6 +11,8 @@ import { AccountTokenDetails, getAssetDetails } from '../utils/tokenRegistry';
 import TSpinner from '../components/atoms/TSpinner';
 import { IChain } from '../utils/chain/types';
 import useErrorStore from '../store/errorStore';
+import LayoutComponent from '../components/layout';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 export type ReceiveAssetProps = {
     navigation: ReceiveAssetScreenNavigationProp['navigation'];
@@ -63,53 +65,72 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
     const logo = asset.token.icon;
 
     return (
-        <View style={styles.container}>
-            <View style={styles.content}>
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <Text style={styles.subHeading}>
-                        {asset.account && asset.account !== ''
-                            ? `Only send ${asset.chain.getName()} assets to this account. Please make sure you are using the ${asset.chain.getName()} network before sending assets to this account`
-                            : 'To complete the transaction, top up your account balance using this QR code'}
-                    </Text>
-                    <View style={styles.networkHeading}>
-                        <Image source={typeof logo === 'string' ? { uri: logo } : logo} style={styles.faviconIcon} />
-                        <Text style={styles.networkTitleName}>{asset.chain.getName()} Network</Text>
-                    </View>
-                    <View style={styles.flexCenter}>
-                        <View style={{ ...styles.qrView, flexDirection: 'column' }}>
-                            <QRCode value={asset.account} size={200} />
-                            <Text style={styles.accountName}>{asset.account}</Text>
-                        </View>
-                        <View style={styles.iconContainer}>
-                            <Popover
-                                isVisible={showPopover}
-                                popoverStyle={{ padding: 10 }}
-                                from={
-                                    <TouchableOpacity onPress={() => copyToClipboard()}>
-                                        <View style={styles.iconButton}>
-                                            <CopyIcon />
-                                        </View>
-                                        <Text style={styles.socialText}>Copy</Text>
-                                    </TouchableOpacity>
-                                }
-                            >
-                                <Text>Message Copied</Text>
-                            </Popover>
-                            <TouchableOpacity onPress={() => onShare()}>
-                                <View style={styles.iconButton}>
-                                    <ShareAndroidSolid height={24} width={24} color={theme.colors.black} />
+        <LayoutComponent
+            body={
+                <View style={styles.container}>
+                    <View style={styles.content}>
+                        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                            <Text style={styles.subHeading}>
+                                {asset.account && asset.account !== ''
+                                    ? `Only send ${asset.chain.getName()} assets to this account. Please make sure you are using the ${asset.chain.getName()} network before sending assets to this account`
+                                    : 'To complete the transaction, top up your account balance using this QR code'}
+                            </Text>
+                            <View style={styles.networkHeading}>
+                                <Image
+                                    source={typeof logo === 'string' ? { uri: logo } : logo}
+                                    style={styles.faviconIcon}
+                                />
+                                <Text style={styles.networkTitleName}>{asset.chain.getName()} Network</Text>
+                            </View>
+                            <View style={styles.flexCenter}>
+                                <View style={{ ...styles.qrView, flexDirection: 'column' }}>
+                                    <QRCode value={asset.account} size={200} />
+                                    <Text style={styles.accountName}>{asset.account}</Text>
                                 </View>
-                                <Text style={styles.socialText}>Share</Text>
-                            </TouchableOpacity>
-                        </View>
+                                <View style={styles.iconContainer}>
+                                    <Popover
+                                        isVisible={showPopover}
+                                        popoverStyle={{ padding: 10 }}
+                                        from={
+                                            <TouchableOpacity onPress={() => copyToClipboard()}>
+                                                <View style={styles.iconButton}>
+                                                    <CopyIcon />
+                                                </View>
+                                                <Text style={styles.socialText}>Copy</Text>
+                                            </TouchableOpacity>
+                                        }
+                                    >
+                                        <Text>Message Copied</Text>
+                                    </Popover>
+                                    <TouchableOpacity onPress={() => onShare()}>
+                                        <View style={styles.iconButton}>
+                                            <ShareAndroidSolid height={24} width={24} color={theme.colors.black} />
+                                        </View>
+                                        <Text style={styles.socialText}>Share</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </ScrollView>
                     </View>
-                </ScrollView>
-            </View>
-        </View>
+                </View>
+            }
+            footerHint={
+                <View style={styles.infoBox}>
+                    <TInfoModalBox
+                        description="Next-level peer-to-peer security —trust without intermediaries"
+                        modalTitle="True peer-to-peer trust"
+                        modalDescription="Tonomy gives you real security — with no middlemen, no hidden servers, and no third parties. Connect, share, and transact directly, backed by strong cryptography and full privacy. It’s digital trust, redesigned: simple, direct, and fully yours"
+                    />
+                </View>
+            }
+        ></LayoutComponent>
     );
 };
 
 const styles = StyleSheet.create({
+    infoBox: {
+        marginBottom: 32,
+    },
     container: {
         padding: 16,
         flex: 1,

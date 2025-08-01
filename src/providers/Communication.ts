@@ -5,10 +5,10 @@ import {
     CommunicationError,
     LinkAuthRequestMessage,
     LoginRequestsMessage,
-    objToBase64Url,
     parseDid,
     SdkError,
     SdkErrors,
+    isErrorCode,
 } from '@tonomy/tonomy-id-sdk';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useErrorStore from '../store/errorStore';
@@ -79,8 +79,8 @@ export default function CommunicationProvider() {
 
                             if (payload) {
                                 navigation.navigate('SSO', {
-                                    payload: payload,
-                                    platform: 'mobile',
+                                    payload,
+                                    receivedVia: 'deepLink',
                                 });
                             } else {
                                 throw new Error('Payload not found in deep link');
@@ -119,7 +119,7 @@ export default function CommunicationProvider() {
         return () => {
             if (listener) listener.remove();
         };
-    }, []);
+    }, [navigation, sessionRef, walletConnectSession, antelopeSession]);
 
     /**
      *  Login to communication microservice
@@ -127,26 +127,28 @@ export default function CommunicationProvider() {
      */
     async function loginToService() {
         try {
-            const issuer = await user.getIssuer();
-            const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
+            if (user) {
+                const issuer = await user.getIssuer();
+                const message = await AuthenticationMessage.signMessageWithoutRecipient({}, issuer);
 
-            debug('loginToService() login message', message);
+                debug('loginToService() login message', message);
 
-            const subscribers = listenToMessages();
+                const subscribers = listenToMessages();
 
-            debug('loginToService() subscribers', subscribers);
+                debug('loginToService() subscribers', subscribers);
 
-            setSubscribers(subscribers);
+                setSubscribers(subscribers);
 
-            try {
-                await user.loginCommunication(message);
-            } catch (e) {
-                if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
-                    await logout(
-                        e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
-                    );
-                } else {
-                    throw e;
+                try {
+                    await user.loginCommunication(message);
+                } catch (e) {
+                    if (e instanceof CommunicationError && (e.exception.status === 401 || e.exception.status === 404)) {
+                        await logout(
+                            e.exception.status === 401 ? 'Communication key rotation' : 'Communication key not found'
+                        );
+                    } else {
+                        throw e;
+                    }
                 }
             }
         } catch (e) {
@@ -154,7 +156,7 @@ export default function CommunicationProvider() {
 
             if (isNetworkError(e)) {
                 throw e;
-            } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+            } else if (isErrorCode(e, SdkErrors.CommunicationNotConnected)) {
                 throw new Error(NETWORK_ERROR_MESSAGE);
             } else {
                 errorStore.setError({ error: e, expected: false });
@@ -163,10 +165,17 @@ export default function CommunicationProvider() {
     }
 
     function listenToMessages(): number[] {
+        /**
+         * @description
+         * This callback is called when a message of type `LoginRequestsMessage` is received.
+         * It verifies the message and navigates to the SSO screen with the received message payload.
+         * If the message sender does not match the user's DID, it is dropped.
+         * @param {VerifiableCredentialWithType} message The received message
+         * @returns {Promise<void>}
+         */
         const loginRequestSubscriber = user.subscribeMessage(async (message) => {
             try {
                 const senderDid = message.getSender();
-
                 const { method, id } = parseDid(senderDid);
 
                 // did:key is used for the initial login request so is allowed
@@ -185,13 +194,12 @@ export default function CommunicationProvider() {
 
                 const loginRequestsMessage = new LoginRequestsMessage(message);
                 const payload = loginRequestsMessage.getPayload();
-                const base64UrlPayload = objToBase64Url(payload);
 
                 navigation.navigate('SSO', {
-                    payload: base64UrlPayload,
-                    platform: 'browser',
+                    payload: payload.toString(),
+                    receivedVia: 'message',
                 });
-                sendLoginNotificationOnBackground(payload.requests[0].getPayload().origin);
+                sendLoginNotificationOnBackground(payload.external.getOrigin());
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             }
@@ -216,7 +224,7 @@ export default function CommunicationProvider() {
             } catch (e) {
                 if (isNetworkError(e)) {
                     debug('linkAuthRequestSubscriber() Network error');
-                } else if (e instanceof SdkError && e.code === SdkErrors.CommunicationNotConnected) {
+                } else if (isErrorCode(e, SdkErrors.CommunicationNotConnected)) {
                     debug('linkAuthRequestSubscriber() Network error connecting to Communication service');
                 } else {
                     errorStore.setError({ error: e, expected: false });
@@ -241,7 +249,7 @@ export default function CommunicationProvider() {
 
     const unsubscribeAll = useCallback(() => {
         for (const s of subscribers) {
-            user.unsubscribeMessage(s);
+            user?.unsubscribeMessage(s);
         }
     }, [subscribers, user]);
 

@@ -6,7 +6,7 @@ import LayoutComponent from '../components/layout';
 import { sleep } from '../utils/time';
 import useErrorStore from '../store/errorStore';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { isErrorCode, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import { Props } from '../screens/MainSplashScreen';
 import { Images } from '../assets';
 import { appStorage } from '../utils/StorageManager/setup';
@@ -28,6 +28,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     useEffect(() => {
         async function main() {
             await sleep(800);
+            logout("Invalid data in user's storage");
 
             try {
                 if (!isAppInitialized) {
@@ -60,7 +61,7 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
                         try {
                             await user.getUsername();
                         } catch (e) {
-                            if (e instanceof SdkError && e.code === SdkErrors.InvalidData) {
+                            if (isErrorCode(e, SdkErrors.InvalidData)) {
                                 logout("Invalid data in user's storage");
                             } else {
                                 debug('loggedin error', e);
