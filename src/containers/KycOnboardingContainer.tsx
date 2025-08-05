@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
         color: theme.colors.white,
     },
     nextButton: {
-        width: 40,
+        width: 70,
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
