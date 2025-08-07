@@ -18,6 +18,7 @@ import { AntelopeTransactionRequest } from '../utils/session/antelope';
 import settings from '../settings';
 import LayoutComponent from '../components/layout';
 import TInfoModalBox from '../components/TInfoModalBox';
+import TInputTextBox from '../components/TInputTextBox';
 
 export type SendAssetProps = {
     navigation: SendAssetScreenNavigationProp['navigation'];
@@ -29,6 +30,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     const [depositAccount, setDepositAccount] = useState<string>();
     const [balance, setBalance] = useState<string>();
     const [availableBalance, setAvailableBalance] = useState<string>();
+    const [memo, setMemo] = useState<string>();
 
     const [usdAmount, setUsdAmount] = useState<string>();
     const [asset, setAsset] = useState<AccountTokenDetails | null>(null);
@@ -155,7 +157,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                         from: asset.account,
                         to: depositAccount.toLowerCase(),
                         quantity: Number(balance).toFixed(asset.token.precision) + ' ' + asset.token.symbol,
-                        memo: '',
+                        memo: memo || '',
                     },
                 };
 
@@ -197,6 +199,7 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
         setBalance(amount);
         debouncedSearch(amount);
     };
+
     const logo = asset.token.icon;
 
     return (
@@ -263,7 +266,24 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                                     <Text style={styles.inputHelp}>${Number(usdAmount) || '0.00'}</Text>
                                 </View>
                             </View>
+                            <Text style={styles.inputHelp}>${Number(usdAmount) || '0.00'}</Text>
                         </ScrollView>
+                        <View>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    defaultValue={memo}
+                                    style={styles.input}
+                                    placeholder="Memo"
+                                    placeholderTextColor={theme.colors.tabGray}
+                                    onChangeText={(v) => setMemo(v)}
+                                />
+                                <View style={{ flexDirection: 'row', gap: 8 }}>
+                                    <Text style={styles.inputButton}>
+                                        <Text style={styles.currencyButtonText}>Optional</Text>
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
                     </View>
                 </View>
             }
