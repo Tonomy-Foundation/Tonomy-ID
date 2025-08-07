@@ -242,7 +242,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SSO"
-                            options={{ headerBackTitleVisible: false, title: 'App login' }}
+                            options={{ ...noHeaderScreenOptions, title: 'App login' }}
                             component={SSOLoginScreen}
                         />
                         <Stack.Screen
@@ -364,7 +364,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="VeriffDataSharing"
-                            options={{ headerBackTitleVisible: false, title: 'Data Sharing' }}
+                            options={{ ...noHeaderScreenOptions, title: 'Data Sharing' }}
                             component={VeriffDataSharingScreen}
                         />
                         <Stack.Screen
