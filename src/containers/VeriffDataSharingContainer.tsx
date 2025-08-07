@@ -228,20 +228,6 @@ export default function VeriffDataSharingContainer({
                                                 ? `KYC data reused ${reuseKycCount} times – saving you ~25 minutes of your previous time`
                                                 : `Your KYC data is now ready for faster login next time`}
                                         </Text>
-
-                                        {/* Option 2: Split into two lines manually */}
-                                        {/* 
-                                        {reuseKycCount > 1 ? (
-                                            <>
-                                                <Text style={styles.subTitle}>KYC data reused {reuseKycCount} times</Text>
-                                                <Text style={styles.subTitle}>Saving you ~25 minutes of your previous time</Text>
-                                            </>
-                                        ) : (
-                                            <Text style={styles.subTitle}>
-                                                Your KYC data is now ready for faster login next time
-                                            </Text>
-                                        )} 
-                                        */}
                                     </View>
 
                                     {/* Arrow Icon */}
