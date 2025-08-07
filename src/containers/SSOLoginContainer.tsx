@@ -115,6 +115,8 @@ export default function SSOLoginContainer({
                 } else {
                     errorStore.setError({ error: e, expected: false });
                 }
+            } finally {
+                setNextLoading(false);
             }
         } else {
             try {

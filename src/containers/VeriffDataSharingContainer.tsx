@@ -216,23 +216,28 @@ export default function VeriffDataSharingContainer({
                                     style={{
                                         flexDirection: 'row',
                                         alignItems: 'center',
+                                        justifyContent: 'space-between', // Better alignment
                                     }}
                                 >
-                                    <View style={{ flex: 1, marginRight: 20 }}>
+                                    {/* Text Block */}
+                                    <View style={{ flex: 1, marginRight: 12 }}>
                                         <Text style={styles.sectionTitle}>Reusable Identity Verification</Text>
+
                                         <Text style={styles.subTitle}>
                                             {reuseKycCount > 1
-                                                ? ` Saved you time ${reuseKycCount} times already – your KYC data was reused
-                                            seamlessly`
-                                                : `Haven’t reused your KYC data yet — you’re all set for a faster login next time`}
+                                                ? `KYC data reused ${reuseKycCount} times – saving you ~25 minutes of your previous time`
+                                                : `Your KYC data is now ready for faster login next time`}
                                         </Text>
                                     </View>
 
-                                    {identityCollapsed ? (
-                                        <NavArrowDown width={16} height={16} color={theme.colors.primary} />
-                                    ) : (
-                                        <NavArrowUp width={16} height={16} color={theme.colors.primary} />
-                                    )}
+                                    {/* Arrow Icon */}
+                                    <View style={{ marginLeft: 8 }}>
+                                        {identityCollapsed ? (
+                                            <NavArrowDown width={16} height={16} color={theme.colors.primary} />
+                                        ) : (
+                                            <NavArrowUp width={16} height={16} color={theme.colors.primary} />
+                                        )}
+                                    </View>
                                 </View>
                             </TouchableOpacity>
 
@@ -283,7 +288,7 @@ export default function VeriffDataSharingContainer({
                                     <View style={styles.sectionContent}>
                                         <View style={styles.row}>
                                             <Text style={styles.rowLabel}>Username</Text>
-                                            <Text style={styles.rowValue}>{username}</Text>
+                                            <Text style={styles.rowValue}>@{username}</Text>
                                         </View>
                                     </View>
                                 )}
@@ -356,6 +361,8 @@ const styles = StyleSheet.create({
         color: theme.colors.grey9,
         fontSize: 12,
         marginTop: 2,
+        flexWrap: 'wrap',
+        flexShrink: 1,
     },
     sectionHeader: {
         flexDirection: 'row',
