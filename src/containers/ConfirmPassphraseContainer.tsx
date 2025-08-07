@@ -9,6 +9,7 @@ import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import usePassphraseStore from '../store/passphraseStore';
 import settings from '../settings';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 export default function ConfirmPassphraseWordContainer({
     route,
@@ -43,6 +44,27 @@ export default function ConfirmPassphraseWordContainer({
         setValue(text);
         setErrorMsg('');
     };
+    const infoMessages = [
+        {
+            description: 'More secure than passwords and private keys',
+            modalTitle: 'Stronger than passwords',
+            modalDescription:
+                'Your passphrase isn’t just a password — it’s your ultra-secure key to everything. Easier to remember than a (secure) password or a private key. It combines simple, human-friendly words with advanced cryptography to keep your identity safe without the complexity. No special characters. No reset links. Just pure, powerful protection — made for real life',
+        },
+        {
+            description: 'Your passphrase is the key to recovering your account securely — only you have access to it',
+            modalTitle: 'Only you hold the key',
+            modalDescription:
+                'Your passphrase is the only way to recover your account — and only you can access it. We don’t store it. We can’t reset it. And no one else can guess it. You’re fully in control of your identity, with zero dependencies. Lose it, and it’s gone. Keep it safe, and your account is yours — forever. No emails, no phone numbers, no recovery hacks. Just true, private security. As it should be',
+        },
+        {
+            description:
+                'Write your passphrase down and store it somewhere safe. Don’t share it — no one else can recover it for you',
+            modalTitle: 'Keep it safe and private',
+            modalDescription:
+                'Your passphrase is the only way to recover your keys if you lose access. Store it offline in a secure place, like a password manager or a locked drawer. Never share it — if someone gets it, they can access your account',
+        },
+    ];
 
     return (
         <>
@@ -65,13 +87,20 @@ export default function ConfirmPassphraseWordContainer({
                         </View>
                     </View>
                 }
+                footerHint={
+                    <View style={{ marginBottom: 16 }}>
+                        <TInfoModalBox
+                            description={infoMessages[index].description}
+                            modalTitle={infoMessages[index].modalTitle}
+                            modalDescription={infoMessages[index].modalDescription}
+                        />
+                    </View>
+                }
                 footer={
                     <View>
-                        <View style={commonStyles.marginBottom}>
-                            <TButtonContained size="large" onPress={onNext} disabled={!value || value === ''}>
-                                Next
-                            </TButtonContained>
-                        </View>
+                        <TButtonContained size="large" onPress={onNext} disabled={!value || value === ''}>
+                            Next
+                        </TButtonContained>
                     </View>
                 }
             ></LayoutComponent>

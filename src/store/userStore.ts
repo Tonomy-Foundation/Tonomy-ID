@@ -15,6 +15,7 @@ import * as SecureStore from 'expo-secure-store';
 import Debug from 'debug';
 import useWalletStore from './useWalletStore';
 import { setUser } from '../utils/sentry';
+import { kycDatasource } from '../utils/StorageManager/setup';
 
 const debug = Debug('tonomy-id:store:userStore');
 
@@ -35,9 +36,10 @@ export interface UserState {
 }
 
 const useUserStore = create<UserState>((set, get) => ({
-    user: createUserObject(new RNKeyManager(), storageFactory),
+    user: createUserObject(new RNKeyManager(), storageFactory, kycDatasource),
     status: UserStatus.NONE,
     isAppInitialized: false,
+
     getStatus: async () => {
         const storageStatus = await AsyncStorage.getItem(STORAGE_NAMESPACE + 'store.status');
 
@@ -61,7 +63,7 @@ const useUserStore = create<UserState>((set, get) => ({
         set({ status: newStatus });
     },
     logout: async (reason: string) => {
-        await get().user.logout();
+        await get().user?.logout();
         if (get().status === UserStatus.LOGGED_IN) get().setStatus(UserStatus.NOT_LOGGED_IN);
         useWalletStore.getState().clearState();
         setUser(null);
@@ -80,10 +82,17 @@ const useUserStore = create<UserState>((set, get) => ({
             const user = get().user;
 
             await user.initializeFromStorage();
-            setUser({
-                id: (await user.getAccountName()).toString(),
-                username: '@' + (await user.getUsername()).getBaseUsername(),
-            });
+
+            if (user) {
+                const accountName = await user.getAccountName();
+                const usernameObj = await user.getUsername();
+
+                setUser({
+                    id: accountName.toString(),
+                    username: '@' + usernameObj.getBaseUsername(),
+                });
+            }
+
             set({ isAppInitialized: true });
         } catch (e) {
             debug('initializeStatusFromStorage() catch', e, typeof e);

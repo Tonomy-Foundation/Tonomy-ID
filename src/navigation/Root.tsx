@@ -49,6 +49,10 @@ import SuccessUnstakeScreen from '../screens/SuccessUnstakeScreen';
 import WithdrawVestedScreen from '../screens/WithdrawVestedScreen';
 import VestedSuccessScreen from '../screens/VestedSuccessScreen';
 import ConfirmUnstakingScreen from '../screens/ConfirmUnstakingScreen';
+import VeriffLoginScreen from '../screens/VeriffLoginScreen';
+import VeriffDataSharingScreen from '../screens/VeriffDataSharingScreen';
+import { KYCPayload } from '@tonomy/tonomy-id-sdk';
+import KycOnboardingScreen from '../screens/KycOnboardingScreen';
 
 const prefix = Linking.createURL('');
 
@@ -70,7 +74,7 @@ export type MainRouteStackParamList = {
     SetPassword: undefined;
     Settings: undefined;
     Support: undefined;
-    SSO: { payload: string; platform?: 'mobile' | 'browser' };
+    SSO: { payload: string; receivedVia?: 'deepLink' | 'message' };
     ConfirmPassword: undefined;
     ConfirmPassphrase: { index: number };
     TermsAndCondition: undefined;
@@ -126,6 +130,9 @@ export type MainRouteStackParamList = {
     WithdrawVested: AssetsParamsScreen & { amount: number; total: number };
     SuccessVested: AssetsParamsScreen;
     ConfirmUnStaking: AssetsParamsScreen & { amount: number; allocationId: number };
+    VeriffLogin: undefined;
+    VeriffDataSharing: { payload: KYCPayload };
+    KycOnboarding: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -235,7 +242,7 @@ export default function RootNavigation() {
                         />
                         <Stack.Screen
                             name="SSO"
-                            options={{ ...noHeaderScreenOptions, title: settings.config.appName }}
+                            options={{ headerBackTitleVisible: false, headerBackVisible: false, title: 'App login' }}
                             component={SSOLoginScreen}
                         />
                         <Stack.Screen
@@ -349,6 +356,21 @@ export default function RootNavigation() {
                             name="ConfirmUnStaking"
                             options={{ headerBackTitleVisible: false, title: 'Confirm unstaking' }}
                             component={ConfirmUnstakingScreen}
+                        />
+                        <Stack.Screen
+                            name="VeriffLogin"
+                            options={{ headerBackTitleVisible: false, title: 'App Login' }}
+                            component={VeriffLoginScreen}
+                        />
+                        <Stack.Screen
+                            name="VeriffDataSharing"
+                            options={{ headerBackTitleVisible: false, headerBackVisible: false, title: 'Data Sharing' }}
+                            component={VeriffDataSharingScreen}
+                        />
+                        <Stack.Screen
+                            name="KycOnboarding"
+                            options={{ headerShown: false, headerBackTitleVisible: false, title: 'KYC Onboarding' }}
+                            component={KycOnboardingScreen}
                         />
                     </Stack.Navigator>
                 </>

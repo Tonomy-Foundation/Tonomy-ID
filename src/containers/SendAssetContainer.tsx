@@ -16,6 +16,8 @@ import { AntelopeAccount, AntelopeChain, AntelopePrivateKey, AntelopeTransaction
 import { WalletTransactionRequest } from '../utils/session/walletConnect';
 import { AntelopeTransactionRequest } from '../utils/session/antelope';
 import settings from '../settings';
+import LayoutComponent from '../components/layout';
+import TInfoModalBox from '../components/TInfoModalBox';
 import TInputTextBox from '../components/TInputTextBox';
 
 export type SendAssetProps = {
@@ -201,63 +203,71 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
     const logo = asset.token.icon;
 
     return (
-        <View style={styles.container}>
-            <ReceiverAccountScanner onScanQR={setDepositAccount} chain={chain} refMessage={refMessage} />
-            <View style={styles.content}>
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <View style={styles.flexCol}>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                value={depositAccount}
-                                style={styles.input}
-                                placeholder="Enter or scan the account"
-                                placeholderTextColor={theme.colors.tabGray}
-                                onChangeText={setDepositAccount}
-                                onEndEditing={(e) => {
-                                    const account = e.nativeEvent.text;
+        <LayoutComponent
+            body={
+                <View style={styles.container}>
+                    <ReceiverAccountScanner onScanQR={setDepositAccount} chain={chain} refMessage={refMessage} />
+                    <View style={styles.content}>
+                        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                            <View style={styles.flexCol}>
+                                <View style={styles.inputContainer}>
+                                    <TextInput
+                                        value={depositAccount}
+                                        style={styles.input}
+                                        placeholder="Enter or scan the account"
+                                        placeholderTextColor={theme.colors.tabGray}
+                                        onChangeText={setDepositAccount}
+                                        onEndEditing={(e) => {
+                                            const account = e.nativeEvent.text;
 
-                                    if (!chain.isValidAccountName(account.toLowerCase())) {
-                                        errorStore.setError({
-                                            error: new Error('The account you entered is invalid'),
-                                            title: 'Invalid account',
-                                            expected: true,
-                                        });
-                                    }
-                                }}
-                            />
-                            <View style={{ flexDirection: 'row', gap: 8 }}>
-                                <TouchableOpacity style={styles.inputButton} onPress={handlePaste}>
-                                    <Text style={styles.inputButtonText}>Paste</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.inputButton} onPress={handleOpenQRScan}>
-                                    <ScanIcon color={theme.colors.primary} width={18} height={18} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={styles.networkContainer}>
-                            <Image source={typeof logo === 'string' ? { uri: logo } : logo} style={styles.favicon} />
-                            <Text style={styles.networkName}>{asset.chain.getName()} network</Text>
-                        </View>
-                        <View>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    defaultValue={balance}
-                                    style={styles.input}
-                                    placeholder="Enter amount"
-                                    placeholderTextColor={theme.colors.tabGray}
-                                    onChangeText={onAmountChange}
-                                />
-                                <View style={{ flexDirection: 'row', gap: 8 }}>
-                                    <TouchableOpacity style={styles.inputButton}>
-                                        <Text style={styles.currencyButtonText}>{asset.token.symbol}</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
-                                        <Text style={styles.inputButtonText}>MAX</Text>
-                                    </TouchableOpacity>
+                                            if (!chain.isValidAccountName(account.toLowerCase())) {
+                                                errorStore.setError({
+                                                    error: new Error('The account you entered is invalid'),
+                                                    title: 'Invalid account',
+                                                    expected: true,
+                                                });
+                                            }
+                                        }}
+                                    />
+                                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                                        <TouchableOpacity style={styles.inputButton} onPress={handlePaste}>
+                                            <Text style={styles.inputButtonText}>Paste</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.inputButton} onPress={handleOpenQRScan}>
+                                            <ScanIcon color={theme.colors.primary} width={18} height={18} />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View style={styles.networkContainer}>
+                                    <Image
+                                        source={typeof logo === 'string' ? { uri: logo } : logo}
+                                        style={styles.favicon}
+                                    />
+                                    <Text style={styles.networkName}>{asset.chain.getName()} network</Text>
+                                </View>
+                                <View>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            defaultValue={balance}
+                                            style={styles.input}
+                                            placeholder="Enter amount"
+                                            placeholderTextColor={theme.colors.tabGray}
+                                            onChangeText={onAmountChange}
+                                        />
+                                        <View style={{ flexDirection: 'row', gap: 8 }}>
+                                            <TouchableOpacity style={styles.inputButton}>
+                                                <Text style={styles.currencyButtonText}>{asset.token.symbol}</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.inputButton} onPress={handleMaxAmount}>
+                                                <Text style={styles.inputButtonText}>MAX</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                    <Text style={styles.inputHelp}>${Number(usdAmount) || '0.00'}</Text>
                                 </View>
                             </View>
                             <Text style={styles.inputHelp}>${Number(usdAmount) || '0.00'}</Text>
-                        </View>
+                        </ScrollView>
                         <View>
                             <View style={styles.inputContainer}>
                                 <TextInput
@@ -275,7 +285,18 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                             </View>
                         </View>
                     </View>
-                </ScrollView>
+                </View>
+            }
+            footerHint={
+                <View style={styles.infoBox}>
+                    <TInfoModalBox
+                        description="Tonomy Network currently scales to over 15,000 transactions per second"
+                        modalTitle="Built to scale fast"
+                        modalDescription="Tonomy is built for performance — powering over 15,000 transactions per second and 500 millisecond latency. From verifying identity to signing requests, everything happens in real time. No lag, no slowdowns, no limits. Whether you're just starting out or scaling to millions, Tonomy keeps up — effortlessly"
+                    />
+                </View>
+            }
+            footer={
                 <View style={commonStyles.marginBottom}>
                     {submitting && (
                         <View style={[commonStyles.marginBottom, styles.proceedLoader]}>
@@ -291,14 +312,17 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                         Proceed
                     </TButtonContained>
                 </View>
-            </View>
-        </View>
+            }
+        ></LayoutComponent>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    infoBox: {
+        marginBottom: 32,
     },
     content: {
         flex: 1,

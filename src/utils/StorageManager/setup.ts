@@ -1,11 +1,11 @@
 import { DataSource } from 'typeorm';
 import { KeyStorage } from './entities/keyStorage';
-import { AppStorage } from './entities/appSettings';
+import { AppStorage } from './entities/appSettingsStorage';
 import * as ExpoSQLite from 'expo-sqlite/legacy';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
-import { AppStorageRepository } from './repositories/appStorageRepository';
-import { AppStorageManager } from './repositories/appStorageManager';
+import { AppStorageRepository } from './repositories/appSettingsStorageRepository';
+import { AppStorageManager } from './repositories/appSettingsStorageManager';
 import { AssetStorageRepository } from './repositories/assetStorageRepository';
 import { AssetStorageManager } from './repositories/assetStorageManager';
 import { AssetStorage } from './entities/assetStorage';
@@ -13,8 +13,18 @@ import Debug from '../debug';
 import { isNetworkError } from '../errors';
 import { captureError } from '../sentry';
 import { AssetNameMigration163837490194410 } from './migrations/assetNameMigration';
+import { IdentityVerificationStorage } from '@tonomy/tonomy-id-sdk';
+import { AddReuseCountColumn163837490194410 } from './migrations/addReuseCountMigration';
 
 const debug = Debug('tonomy-id:storageManager:setup');
+
+export const kycDatasource = new DataSource({
+    database: 'kycstorage',
+    entities: [IdentityVerificationStorage],
+    type: 'expo',
+    driver: ExpoSQLite,
+    migrations: [AddReuseCountColumn163837490194410],
+});
 
 export const dataSource = new DataSource({
     database: 'storage',
@@ -24,6 +34,7 @@ export const dataSource = new DataSource({
     migrations: [AssetNameMigration163837490194410],
 });
 
+// TODO: clean this
 // Create the key repository instances
 const keyStorageRepository = new KeyStorageRepository(dataSource);
 

@@ -2,14 +2,13 @@ import React from 'react';
 import { Image, StyleSheet, View, Text } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import TInfoBox from '../components/TInfoBox';
 import { TH1, TP } from '../components/atoms/THeadings';
 import TLink from '../components/atoms/TA';
 import theme, { commonStyles } from '../utils/theme';
-import settings from '../settings';
 import { Props } from '../screens/WalletConnectLoginScreen';
 import useErrorStore from '../store/errorStore';
 import { ILoginRequest } from '../utils/chain/types';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 export default function WalletConnectLoginContainer({
     navigation,
@@ -71,12 +70,10 @@ export default function WalletConnectLoginContainer({
             }
             footerHint={
                 <View style={styles.infoBox}>
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="100% secure. Only your phone can authorize your app login."
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
+                    <TInfoModalBox
+                        description="You’re in control — your data stays private unless you say otherwise"
+                        modalTitle="You're in Control"
+                        modalDescription="Your data stays private and secure on your device. It’s only shared with the services you choose — and only when you give permission. No one else can access it, not even us"
                     />
                 </View>
             }

@@ -6,13 +6,13 @@ import theme, { commonStyles } from '../utils/theme';
 import { Props } from '../screens/LoginUsernameScreen';
 import TInputTextBox from '../components/TInputTextBox';
 import settings from '../settings';
-import TInfoBox from '../components/TInfoBox';
 import { TButtonContained } from '../components/atoms/TButton';
 import useUserStore from '../store/userStore';
 import { TError } from '../components/TError';
 import useErrorStore from '../store/errorStore';
 import { formatUsername } from '../utils/username';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 export default function LoginUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     const [username, setUsername] = useState('');
@@ -62,12 +62,10 @@ export default function LoginUsernameContainer({ navigation }: { navigation: Pro
             }
             footerHint={
                 <View>
-                    <TInfoBox
-                        align="left"
-                        icon="privacy"
-                        description={`Your username is private and can only be seen by you and those you share it with, not even the ${settings.config.ecosystemName} can see it.`}
-                        linkUrl={settings.config.links.privacyLearnMore}
-                        linkUrlText="Learn more"
+                    <TInfoModalBox
+                        description="Your data stays with you — safely stored on your phone, not in the cloud"
+                        modalTitle="Your Data, Your Control"
+                        modalDescription="All your personal information is stored directly on your phone — not in external servers or cloud databases. This means your data never leaves your device unless you choose to share it. No third parties, not even we, can access it. It’s privacy and security by design"
                     />
                 </View>
             }

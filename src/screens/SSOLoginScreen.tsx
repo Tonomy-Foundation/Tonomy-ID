@@ -10,7 +10,7 @@ export default function SSOLoginScreen(props: SSOLoginScreenProps) {
         <SSOLoginContainer
             navigation={props.navigation}
             payload={props.route.params.payload}
-            platform={props.route.params.platform ?? 'mobile'}
+            receivedVia={props.route.params.receivedVia ?? 'deepLink'}
         />
     );
 }

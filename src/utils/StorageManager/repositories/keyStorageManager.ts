@@ -17,9 +17,9 @@ export abstract class KeyManager {
         if (existingKey) {
             existingKey.value = value;
             existingKey.updatedAt = new Date();
-            await this.repository.updateKey(existingKey);
+            await this.repository.update(existingKey);
         } else {
-            await this.repository.storeNewKey(name, value);
+            await this.repository.create(name, value);
         }
     }
 
