@@ -29,7 +29,7 @@ YARNLOCK_SHA256_OLD=$(sha256sum yarn.lock)
 
 # Update the SDK
 echo "Updating package @tonomy/tonomy-id-sdk@${VERSION}"
-yarn up "@tonomy/tonomy-id-sdk@${VERSION}"
+yarn up "@tonomy/tonomy-id-sdk@0.33.1"
 
 # Get the sha256sum of yarn.lock after updating the SDK
 YARNLOCK_SHA256_NEW=$(sha256sum yarn.lock)
