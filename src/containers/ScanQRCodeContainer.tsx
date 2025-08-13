@@ -1,5 +1,5 @@
 import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import { CommunicationError, IdentifyMessage, SdkError, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
+import { CommunicationError, IdentifyMessage, isErrorCode, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
 import Debug from 'debug';
@@ -115,6 +115,7 @@ export default function ScanQRCodeContainer({
             } else {
                 const did = validateQrCode(data);
 
+                debug('onScan() validated did:', did);
                 await connectToDid(did);
             }
         } catch (e) {
@@ -127,7 +128,7 @@ export default function ScanQRCodeContainer({
                     error: new Error(NETWORK_ERROR_RESPONSE),
                     expected: true,
                 });
-            } else if (e instanceof SdkError && e.code === SdkErrors.InvalidQrCode) {
+            } else if (isErrorCode(e, SdkErrors.InvalidQrCode)) {
                 debug('onScan() Invalid QR Code', JSON.stringify(e, null, 2));
 
                 if (e.message === 'QR schema does not match app') {

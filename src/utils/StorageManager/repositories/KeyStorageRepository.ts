@@ -8,12 +8,13 @@ export class KeyStorageRepository {
         this.ormRepository = dataSource.getRepository(KeyStorage);
     }
 
-    public async storeNewKey(name: string, value: string): Promise<KeyStorage> {
+    public async create(name: string, value: string): Promise<KeyStorage> {
+        const now = new Date();
         const keyStorageEntity = this.ormRepository.create({
             name,
             value,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: now,
+            updatedAt: now,
         });
 
         const storage = this.ormRepository.save(keyStorageEntity);
@@ -21,7 +22,7 @@ export class KeyStorageRepository {
         return storage;
     }
 
-    public async updateKey(key: KeyStorage): Promise<KeyStorage> {
+    public async update(key: KeyStorage): Promise<KeyStorage> {
         const findDoc = await this.ormRepository.findOne({ where: { name: key.name, id: key.id } });
 
         if (findDoc) return await this.ormRepository.save(key);

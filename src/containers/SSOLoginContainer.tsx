@@ -1,49 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Linking from 'expo-linking';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import LayoutComponent from '../components/layout';
 import { TButtonContained, TButtonOutlined } from '../components/atoms/TButton';
-import TInfoBox from '../components/TInfoBox';
 import useUserStore from '../store/userStore';
 import {
-    terminateLoginRequest,
-    App,
-    base64UrlToObj,
+    rejectLoginRequest,
     SdkErrors,
     CommunicationError,
-    ResponsesManager,
-    RequestsManager,
-    SdkError,
-    LoginRequest,
-    WalletRequestAndResponseObject,
+    DualWalletRequests,
+    WalletRequest,
+    DataSharingRequestPayload,
+    VerificationTypeEnum,
+    KYCVC,
 } from '@tonomy/tonomy-id-sdk';
-import { TH1, TP } from '../components/atoms/THeadings';
-import TLink from '../components/atoms/TA';
-import { commonStyles } from '../utils/theme';
-import settings from '../settings';
+import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
-import { Images } from '../assets';
 import Debug from 'debug';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
+import TInfoModalBox from '../components/TInfoModalBox';
+import { ArrowUpRight } from 'iconoir-react-native';
+import SSOLoginBottomLayover from '../components/SSOLoginBottomLayover';
+import { useVerificationStore } from '../store/verificationStore';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
 export default function SSOLoginContainer({
     payload,
-    platform,
+    receivedVia,
     navigation,
 }: {
     payload: string;
-    platform: 'mobile' | 'browser';
+    receivedVia: 'deepLink' | 'message';
     navigation: SSOLoginScreenProps['navigation'];
 }) {
     const { user, logout } = useUserStore();
-    const [responsesManager, setResponsesManager] = useState<ResponsesManager>();
+    const { ssoApp, dualRequests, setDualRequests, setSsoApp, setReceivedVia, clearAuth, setUsernameRequested } =
+        useVerificationStore();
     const [username, setUsername] = useState<string>();
-    const [ssoApp, setSsoApp] = useState<App>();
     const [nextLoading, setNextLoading] = useState<boolean>(true);
     const [cancelLoading, setCancelLoading] = useState<boolean>(false);
+    const [reuseKycCount, setReuseKycCount] = useState<number>(0);
+    const [requestType, setRequestType] = useState<'login' | 'kyc'>('login');
+    const refMessage = useRef<{ open: () => void; close: () => void }>(null);
 
     const errorStore = useErrorStore();
 
@@ -63,25 +62,32 @@ export default function SSOLoginContainer({
 
     async function getRequestsFromParams() {
         try {
-            debug('getRequestsFromParams(): start');
-            const parsedPayload = base64UrlToObj(payload);
+            setReceivedVia(receivedVia);
+            const requests = DualWalletRequests.fromString(payload);
+            // Check request types
+            const externalRequests = requests.external.getRequests();
+            const hasKycRequest = externalRequests
+                .filter(WalletRequest.isDataSharingRequest)
+                .some((req) => (req as DataSharingRequestPayload).data.kyc === true);
 
-            debug('getRequestsFromParams(): parsedPayload', parsedPayload?.requests?.length);
-            const managedRequests = new RequestsManager(parsedPayload?.requests);
+            if (hasKycRequest) {
+                setRequestType('kyc');
+            } else {
+                setRequestType('login');
+            }
 
-            debug('getRequestsFromParams(): managedRequests', managedRequests?.requests?.length);
+            const hasUsernameRequested = externalRequests
+                .filter(WalletRequest.isDataSharingRequest)
+                .some((req) => (req as DataSharingRequestPayload).data.username === true);
 
-            await managedRequests.verify();
-            // TODO: check if the internal login request comes from same DID as the sender of the message.
-
-            const managedResponses = new ResponsesManager(managedRequests);
-
-            debug('getRequestsFromParams(): managedResponses', managedResponses);
-
-            await managedResponses.fetchMeta({ accountName: await user.getAccountName() });
-
-            setSsoApp(managedResponses.getExternalLoginResponseOrThrow().getAppOrThrow());
-            setResponsesManager(managedResponses);
+            setUsernameRequested(hasUsernameRequested);
+            debug(
+                'getRequestsFromParams(): requests',
+                requests.external.getRequests().length,
+                requests.sso?.getRequests().length
+            );
+            setSsoApp(await requests.external.getApp());
+            setDualRequests(requests);
             debug('getRequestsFromParams(): end');
         } catch (e) {
             errorStore.setError({ error: e, expected: false });
@@ -91,102 +97,91 @@ export default function SSOLoginContainer({
     }
 
     async function onLogin() {
-        try {
-            setNextLoading(true);
-            debug('onLogin() logs start:');
+        setNextLoading(true);
+        debug('onLogin() logs start:', requestType);
 
-            if (!responsesManager) throw new Error('Responses manager is not set');
-
-            await responsesManager.createResponses(user);
-
-            let loginRequest: LoginRequest | WalletRequestAndResponseObject;
-
+        if (requestType === 'kyc') {
             try {
-                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
+                const vc = (await user?.fetchVerificationData(VerificationTypeEnum.KYC)) as KYCVC;
+
+                if (vc) {
+                    navigation.navigate('VeriffDataSharing', {
+                        payload: vc.getPayload(),
+                    });
+                }
             } catch (e) {
-                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
-                    debug('onLogin() getting loginRequest from external website');
-                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
-                } else throw e;
+                if (e.code === SdkErrors.VerificationDataNotFound) {
+                    navigation.navigate('VeriffLogin');
+                } else {
+                    errorStore.setError({ error: e, expected: false });
+                }
+            } finally {
+                setNextLoading(false);
             }
+        } else {
+            try {
+                if (!dualRequests) throw new Error('dualRequests manager is not set');
 
-            const payload = loginRequest.getPayload();
+                const callbackUrl = await user.acceptLoginRequest(
+                    dualRequests,
+                    receivedVia === 'deepLink' ? 'redirect' : 'message'
+                );
 
-            const callbackUrl = await user.acceptLoginRequest(responsesManager, platform, {
-                callbackPath: payload.callbackPath,
-                callbackOrigin: payload.origin,
-                messageRecipient: loginRequest.getIssuer(),
-            });
+                debug('onLogin() callbackUrl:', callbackUrl);
 
-            debug('onLogin() callbackUrl:', callbackUrl);
+                if (receivedVia === 'deepLink') {
+                    if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
+                    await Linking.openURL(callbackUrl);
+                    navigation.navigate('Assets');
+                } else {
+                    navigation.navigate('Assets');
+                }
+            } catch (e) {
+                if (
+                    e instanceof CommunicationError &&
+                    e.exception.status === 400 &&
+                    e.exception.message.startsWith('Recipient not connected')
+                ) {
+                    debug('onLogin() CommunicationError');
 
-            if (platform === 'mobile') {
-                if (typeof callbackUrl !== 'string') throw new Error('Callback url is not string');
-                await Linking.openURL(callbackUrl);
-                navigation.navigate('Assets');
-            } else {
-                navigation.navigate('Assets');
+                    // User cancelled in the browser, so can just navigate back to home
+                    navigation.navigate('Assets');
+                } else {
+                    errorStore.setError({
+                        error: e,
+                        expected: false,
+                        onClose: async () => navigation.navigate('Assets'),
+                    });
+                }
+            } finally {
+                setNextLoading(false);
+                clearAuth();
             }
-        } catch (e) {
-            if (
-                e instanceof CommunicationError &&
-                e.exception.status === 400 &&
-                e.exception.message.startsWith('Recipient not connected')
-            ) {
-                debug('onLogin() CommunicationError');
-
-                // User cancelled in the browser, so can just navigate back to home
-                navigation.navigate('Assets');
-            } else {
-                errorStore.setError({
-                    error: e,
-                    expected: false,
-                    onClose: async () => navigation.navigate('Assets'),
-                });
-            }
-        } finally {
-            setNextLoading(false);
         }
     }
 
     async function onCancel() {
         try {
             setCancelLoading(true);
-            if (!responsesManager) throw new Error('Responses manager is not set');
+            if (!dualRequests) throw new Error('dualRequests is not set');
 
-            let loginRequest: LoginRequest | WalletRequestAndResponseObject;
-
-            try {
-                loginRequest = responsesManager.getAccountsLoginRequestOrThrow();
-            } catch (e) {
-                if (e instanceof SdkError && e.code === SdkErrors.ResponsesNotFound) {
-                    debug('onLogin() getting loginRequest from external website');
-                    loginRequest = responsesManager.getExternalLoginResponseOrThrow().getRequest();
-                } else throw e;
-            }
-
-            const payload = loginRequest.getPayload();
-
-            const res = await terminateLoginRequest(
-                responsesManager,
-                platform,
+            const redirectUrl = await rejectLoginRequest(
+                dualRequests,
+                receivedVia === 'deepLink' ? 'redirect' : 'message',
                 {
                     code: SdkErrors.UserCancelled,
                     reason: 'User cancelled login request',
                 },
                 {
-                    callbackPath: payload.callbackPath,
-                    callbackOrigin: payload.origin,
-                    messageRecipient: loginRequest.getIssuer(),
                     user,
                 }
             );
 
             setNextLoading(false);
 
-            if (platform === 'mobile') {
-                if (typeof res !== 'string') throw new Error('Res is not string');
-                await Linking.openURL(res);
+            if (receivedVia === 'deepLink') {
+                if (typeof redirectUrl !== 'string') throw new Error('redirectUrl is not string');
+                await Linking.openURL(redirectUrl);
             }
 
             navigation.navigate('Assets');
@@ -208,51 +203,84 @@ export default function SSOLoginContainer({
                     onClose: async () => navigation.navigate('Assets'),
                 });
             }
+        } finally {
+            clearAuth();
+        }
+    }
+
+    async function getKycReuseableCount() {
+        try {
+            const count = await user.fetchReuseableKycCount(VerificationTypeEnum.KYC);
+
+            debug('getKycReuseableCount() count:', count);
+            setReuseKycCount(count);
+        } catch (e) {
+            errorStore.setError({ error: e, expected: false });
         }
     }
 
     useEffect(() => {
         setUserName();
         getRequestsFromParams();
+        getKycReuseableCount();
     }, []);
 
     return (
         <LayoutComponent
             body={
-                <View style={styles.container}>
-                    <SafeAreaView>
-                        <Image
-                            style={[styles.logo, commonStyles.marginBottom]}
-                            source={Images.GetImage('logo1024')}
-                        ></Image>
-                    </SafeAreaView>
-                    {username && <TH1 style={commonStyles.textAlignCenter}>{username}</TH1>}
+                <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+                    {/* Progress bar */}
+                    {requestType === 'login' ? (
+                        <View style={styles.progressBarContainer}>
+                            <View style={styles.progressActive} />
+                        </View>
+                    ) : (
+                        <>
+                            {reuseKycCount > 0 ? (
+                                <View style={styles.progressBarContainer}>
+                                    <View style={styles.progressActive} />
+                                    <View style={styles.progressInactive} />
+                                </View>
+                            ) : (
+                                <View style={styles.progressBarContainer}>
+                                    <View style={styles.progressActive} />
+                                    <View style={styles.progressInactive} />
+                                    <View style={styles.progressInactive} />
+                                </View>
+                            )}
+                        </>
+                    )}
 
                     {ssoApp && (
-                        <View style={[styles.appDialog, styles.marginTop]}>
-                            <Image style={styles.appDialogImage} source={{ uri: ssoApp.logoUrl }} />
-                            <TH1 style={commonStyles.textAlignCenter}>{ssoApp.appName}</TH1>
-                            <TP style={commonStyles.textAlignCenter}>Wants you to log in to their application here:</TP>
-                            <TLink to={ssoApp.origin}>{ssoApp.origin}</TLink>
+                        <View style={styles.loginCard}>
+                            <Image source={{ uri: ssoApp.logoUrl }} style={styles.appIcon} />
+                            <Text style={styles.loginTitle}>{ssoApp.appName}</Text>
+                            <Text style={styles.loginSubtitle}>wants you to log in to</Text>
+                            <TouchableOpacity onPress={() => Linking.openURL(ssoApp.origin)}>
+                                <Text style={styles.appLink}>{ssoApp.origin.replace(/^https?:\/\//, '')}</Text>
+                            </TouchableOpacity>
+                            <View style={styles.usernameContainer}>
+                                <Text style={styles.username}>@{username}</Text>
+                            </View>
                         </View>
                     )}
-                </View>
+
+                    <SSOLoginBottomLayover refMessage={refMessage} />
+                </ScrollView>
             }
             footerHint={
-                <View style={styles.infoBox}>
-                    <TInfoBox
-                        align="left"
-                        icon="security"
-                        description="100% secure. Only your phone can authorize your app login."
-                        linkUrl={settings.config.links.securityLearnMore}
-                        linkUrlText="Learn more"
+                <View>
+                    <TInfoModalBox
+                        description="Instant and secure access, made easy"
+                        modalTitle="Instant and secure access"
+                        modalDescription="Enjoy a faster and more secure login experience without going through unnecessary steps. With reusable identity, you stay in control of your data while accessing services seamlessly across platforms"
                     />
                 </View>
             }
             footer={
-                <View>
+                <View style={{ marginTop: 30 }}>
                     <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onLogin}>
-                        Login
+                        Proceed
                     </TButtonContained>
                     <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
                         Cancel
@@ -268,36 +296,82 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         textAlign: 'center',
+        paddingBottom: 50,
     },
-    logo: {
-        width: 80,
-        height: 80,
-    },
-    appDialog: {
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderStyle: 'solid',
-        borderRadius: 8,
-        padding: 16,
-        flex: 1,
-        alignItems: 'center',
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        minHeight: 200,
-    },
-    appDialogImage: {
-        aspectRatio: 1,
+    appIcon: {
+        width: 50,
         height: 50,
-        resizeMode: 'contain',
+        marginBottom: 12,
     },
-    marginTop: {
+    loginSubtitle: {
+        fontSize: 22,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 2,
+    },
+    loginCard: {
+        alignItems: 'center',
+        paddingHorizontal: 40,
+        paddingVertical: 28,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: theme.colors.grey8,
+        marginBottom: 30,
+        marginTop: 70,
+    },
+    promptText: {
+        flex: 1,
+        fontSize: 14,
+        color: 'black',
+    },
+    loginTitle: {
+        fontSize: 22,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 0,
+        paddingBottom: 0,
+    },
+    appLink: {
+        fontSize: 18,
+        color: theme.colors.primary,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    usernameContainer: {
+        backgroundColor: '#0000000D',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
         marginTop: 10,
     },
-    infoBox: {
-        marginBottom: 32,
+    username: {
+        fontSize: 14,
+        color: 'black',
     },
-    checkbox: {
+    promptCard: {
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: theme.colors.backgroundGray,
+        borderRadius: 12,
+        paddingHorizontal: 15,
+        marginTop: 30,
+        paddingVertical: 18,
+    },
+    progressBarContainer: {
+        flexDirection: 'row',
+        marginBottom: 30,
+    },
+    progressActive: {
+        flex: 1,
+        height: 4,
+        backgroundColor: theme.colors.primary,
+        borderRadius: 2,
+    },
+    progressInactive: {
+        flex: 1,
+        height: 4,
+        backgroundColor: '#ECF1F4',
+        marginLeft: 4,
+        borderRadius: 2,
     },
 });

@@ -1,25 +1,25 @@
 {
     "theme": {
-        "primaryColor": "#000000",
-        "disabled": "#939393",
+        "primaryColor": "#5833BC",
+        "disabled": "#C2B8E6",
         "secondaryColor": "#EDF2F9",
-        "secondaryColor2": "#6E84A3",
+        "secondaryColor2": "#1ACFD3",
         "tertiaryColor": "#7660E7",
         "tertiaryColor2": "#CFC8F7",
         "text": "#000000",
         "textGray": "#000000",
-        "linkColor": "#4CAF50",
+        "linkColor": "#5833BC",
         "infoBackground": "#F6F9FB",
         "lightBackground": "#F6F9FB"
     },
-    "appLogoUrl": "./src/assets/pangea/favicon.png",
+    "appLogoUrl": "./src/assets/tonomyProduction/favicon.png",
     "appName": "Tonomy ID Development",
     "ecosystemName": "Tonomy Development",
     "appSlogan": "Building Ecosystem Of Trust",
     "images": {
-        "splash": "./src/assets/pangea/pangea-splash.png",
-        "logo48": "./src/assets/pangea/favicon.png",
-        "logo1024": "./src/assets/pangea/pangea-large-logo.png"
+        "splash": "./src/assets/tonomyProduction/tonomy-splash.png",
+        "logo48": "./src/assets/tonomyProduction/favicon.png",
+        "logo1024": "./src/assets/tonomyProduction/logo1024x1024.png"
     },
     "links": {
         "privacyPolicyLearnMore": "#",
@@ -42,5 +42,6 @@
     "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
     "etherscanApiKey": "ESTDTCEUZWS9R56V3FYTXBNAFVQE3EZVIT",
     "walletConnectProjectId": "850cdd095217e599acfd5f9f01d7b1ba",
-    "currencySymbol": "TONO"
+    "currencySymbol": "TONO",
+    "veriffApiKey": "d58b414f-9c36-4538-85cd-5a0af6eb9c0e"
 }

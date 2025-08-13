@@ -5836,6 +5836,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@veriff/react-native-sdk@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@veriff/react-native-sdk@npm:8.1.0"
+  peerDependencies:
+    react: ^18.3.0
+    react-native: ^0.74.0
+  checksum: 10c0/6a5311dab86fe28a0807c642d0bdd092a874590b4b37a9a78f7c96e57465815d21256266a7118b34a5a5d81a3fef29a65892d09ad0b174ec2e2fa026fb9266f1
+  languageName: node
+  linkType: hard
+
 "@walletconnect/auth-client@npm:2.1.2":
   version: 2.1.2
   resolution: "@walletconnect/auth-client@npm:2.1.2"
@@ -6230,7 +6240,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wharfkit/antelope@npm:^1.0.0, @wharfkit/antelope@npm:^1.0.11, @wharfkit/antelope@npm:^1.0.2, @wharfkit/antelope@npm:^1.0.4, @wharfkit/antelope@npm:^1.0.7":
+"@wharfkit/antelope@npm:1.0.13":
   version: 1.0.13
   resolution: "@wharfkit/antelope@npm:1.0.13"
   dependencies:
@@ -19849,6 +19859,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^5.40.0"
     "@typescript-eslint/parser": "npm:^5.40.0"
     "@veramo/core": "npm:^6.0.0"
+    "@veriff/react-native-sdk": "npm:^8.1.0"
     "@walletconnect/core": "npm:^2.17.2"
     "@walletconnect/react-native-compat": "npm:^2.17.2"
     "@walletconnect/utils": "npm:^2.17.2"
