@@ -4,15 +4,15 @@ import { TButtonContained } from '../components/atoms/TButton';
 import { TCaption, TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
 import useUserStore from '../store/userStore';
-import { randomString, SdkError, SdkErrors } from '@tonomy/tonomy-id-sdk';
+import { randomString, isErrorCode, SdkErrors } from '@tonomy/tonomy-id-sdk';
 import TInputTextBox from '../components/TInputTextBox';
-import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import theme, { commonStyles } from '../utils/theme';
 import useErrorStore from '../store/errorStore';
 import { Props } from '../screens/CreateAccountUsernameScreen';
 import { formatUsername } from '../utils/username';
 import { isNetworkError, NETWORK_ERROR_RESPONSE } from '../utils/errors';
+import TInfoModalBox from '../components/TInfoModalBox';
 
 export default function CreateAccountUsernameContainer({ navigation }: { navigation: Props['navigation'] }) {
     let startUsername = '';
@@ -42,8 +42,8 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
         try {
             await user.saveUsername(formattedUsername);
             navigation.navigate('CreatePassphrase');
-        } catch (e: any) {
-            if (e instanceof SdkError && e.code === SdkErrors.UsernameTaken) {
+        } catch (e) {
+            if (isErrorCode(e, SdkErrors.UsernameTaken)) {
                 setErrorMessage('Username already exists');
             } else if (isNetworkError(e)) {
                 setErrorMessage(NETWORK_ERROR_RESPONSE);
@@ -77,12 +77,10 @@ export default function CreateAccountUsernameContainer({ navigation }: { navigat
                 </View>
             }
             footerHint={
-                <TInfoBox
-                    align="left"
-                    icon="security"
-                    description={`Your username is private and can only be seen by you and those you share it with, not even ${settings.config.ecosystemName} can see it.`}
-                    linkUrl={settings.config.links.securityLearnMore}
-                    linkUrlText="Learn more"
+                <TInfoModalBox
+                    description="Your username is your secure, private ID. Use it to connect and transact easily"
+                    modalTitle="Private. Shareable. You."
+                    modalDescription="Your username is more than just a name — it’s your private digital identity. You can use it to connect, receive payments, or share information without ever revealing your email, phone number, or any personal details. Only those that you share it with can see it, not even Tonomy. Built for privacy. Designed for trust. Made for the new internet"
                 />
             }
             footer={

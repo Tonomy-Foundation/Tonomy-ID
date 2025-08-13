@@ -1,6 +1,6 @@
 {
     "name": "tonomy-id",
-    "version": "0.176.2",
+    "version": "0.178.5",
     "type": "commonjs",
     "scripts": {
         "eas-build-pre-install": "corepack enable",
@@ -40,8 +40,9 @@
         "@react-navigation/native-stack": "^6.11.0",
         "@sentry/react-native": "~5.24.3",
         "@sinonjs/text-encoding": "^0.7.3",
-        "@tonomy/tonomy-id-sdk": "0.32.0",
+        "@tonomy/tonomy-id-sdk": "0.33.1",
         "@veramo/core": "^6.0.0",
+        "@veriff/react-native-sdk": "^8.1.0",
         "@walletconnect/core": "^2.17.2",
         "@walletconnect/react-native-compat": "^2.17.2",
         "@walletconnect/utils": "^2.17.2",
@@ -137,7 +138,8 @@
     },
     "resolutions": {
         "jsonld": "link:./node_modules/@digitalcredentials/jsonld",
-        "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto"
+        "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto",
+        "@wharfkit/antelope": "1.0.13"
     },
     "private": true,
     "packageManager": "yarn@4.3.1",
