@@ -139,7 +139,7 @@
     "resolutions": {
         "jsonld": "link:./node_modules/@digitalcredentials/jsonld",
         "isomorphic-webcrypto": "link:./node_modules/@sphereon/isomorphic-webcrypto",
-        "@wharfkit/antelope": "1.0.13"
+        "@wharfkit/antelope": "1.0.10"
     },
     "private": true,
     "packageManager": "yarn@4.3.1",
