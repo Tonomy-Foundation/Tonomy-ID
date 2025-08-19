@@ -7,7 +7,7 @@ import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/LoginPassphraseScreen';
 import useUserStore, { UserStatus } from '../store/userStore';
-import { AccountType, isErrorCode, SdkErrors, TonomyUsername, TonomyContract } from '@tonomy/tonomy-id-sdk';
+import { AccountType, isErrorCode, SdkErrors, TonomyUsername, getTonomyContract } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
@@ -15,8 +15,6 @@ import PassphraseInput from '../components/PassphraseInput';
 import { createNetworkErrorState, isNetworkError } from '../utils/errors';
 import { setUser } from '../utils/sentry';
 import TInfoModalBox from '../components/TInfoModalBox';
-
-const tonomyContract = TonomyContract.Instance;
 
 export default function LoginPassphraseContainer({
     navigation,
@@ -49,18 +47,17 @@ export default function LoginPassphraseContainer({
                 settings.config.accountSuffix
             );
 
-            const idData = await tonomyContract.getPerson(tonomyUsername);
-            const salt = idData.password_salt;
+            const idData = await getTonomyContract().getPerson(tonomyUsername);
 
-            await savePrivateKeyToStorage(passphrase.join(' '), salt.toString());
+            await savePrivateKeyToStorage(passphrase.join(' '), idData.passwordSalt.toString());
 
             const result = await user.login(tonomyUsername, passphrase.join(' '), {
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
-            if (result?.account_name !== undefined) {
+            if (result?.accountName !== undefined) {
                 setUser({
-                    id: result.account_name.toString(),
+                    id: result.accountName.toString(),
                     username: '@' + tonomyUsername.getBaseUsername(),
                 });
                 setPassphrase(['', '', '', '', '', '']);

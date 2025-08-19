@@ -8,7 +8,7 @@ import TInfoBox from '../components/TInfoBox';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreateEthereumKeyScreen';
 import useUserStore from '../store/userStore';
-import { AccountType, isErrorCode, SdkErrors, TonomyUsername, TonomyContract, util } from '@tonomy/tonomy-id-sdk';
+import { AccountType, isErrorCode, SdkErrors, TonomyUsername, getTonomyContract, util } from '@tonomy/tonomy-id-sdk';
 import { generatePrivateKeyFromPassword, savePrivateKeyToStorage } from '../utils/keys';
 import useErrorStore from '../store/errorStore';
 import { DEFAULT_DEV_PASSPHRASE_LIST } from '../store/passphraseStore';
@@ -21,8 +21,6 @@ import { useSessionStore } from '../store/sessionStore';
 import { ITransactionRequest } from '../utils/chain/types';
 
 const debug = Debug('tonomy-id:containers:CreateEthereunKey');
-
-const tonomyContract = TonomyContract.Instance;
 
 export default function CreateEthereumKeyContainer({
     requestType,
@@ -79,8 +77,8 @@ export default function CreateEthereumKeyContainer({
                 settings.config.accountSuffix
             );
 
-            const idData = await tonomyContract.getPerson(tonomyUsername);
-            const salt = idData.password_salt;
+            const idData = await getTonomyContract().getPerson(tonomyUsername);
+            const salt = idData.passwordSalt;
 
             await user.login(tonomyUsername, passphrase.join(' '), {
                 keyFromPasswordFn: generatePrivateKeyFromPassword,

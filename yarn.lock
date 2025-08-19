@@ -6240,9 +6240,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wharfkit/antelope@npm:1.0.13":
-  version: 1.0.13
-  resolution: "@wharfkit/antelope@npm:1.0.13"
+"@wharfkit/antelope@npm:1.0.10":
+  version: 1.0.10
+  resolution: "@wharfkit/antelope@npm:1.0.10"
   dependencies:
     bn.js: "npm:^4.11.9"
     brorand: "npm:^1.1.0"
@@ -6250,7 +6250,7 @@ __metadata:
     hash.js: "npm:^1.0.0"
     pako: "npm:^2.1.0"
     tslib: "npm:^2.0.3"
-  checksum: 10c0/6a9f6aad1ec261158e25261277c33262312588c5a6a2b96ca6111a51623ea1b8896d038e2ab72421c28610fc018039cf1b5713e9e8dfae7c4651dee44576ac3c
+  checksum: 10c0/af71ca1d519e6ba2f8fe840eeee76f654010c0b50aecb2ab81aa2c793cfa43d62b3cd7c3db29934e093e5de476b5592dbf0ea0bb3304e730815b31b16f4c3523
   languageName: node
   linkType: hard
 
