@@ -64,7 +64,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
 
             const accounts = await Promise.all(accountPromises);
 
-            debug(`initializeWalletAccount() accounts: ${accounts}`);
+            debug(
+                `initializeWalletAccount() accounts: ${accounts.map(
+                    (account) => `${account?.getChain().getName()}: ${account?.getName()}`
+                )}`
+            );
 
             set({
                 accounts,
@@ -101,7 +105,11 @@ const useWalletStore = create<WalletState>((set, get) => ({
     updateBalance: async () => {
         const { accounts, accountsInitialized } = get();
 
-        debug(`updateBalance() accountsInitialized: ${accountsInitialized}, ${accounts}`);
+        debug(
+            `updateBalance() accountsInitialized: ${accountsInitialized}, ${accounts.map(
+                (account) => `${account?.getChain().getName()}: ${account?.getName()}`
+            )}`
+        );
 
         if (accountsInitialized) {
             await Promise.all(
