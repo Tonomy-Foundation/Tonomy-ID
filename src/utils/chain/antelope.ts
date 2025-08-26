@@ -48,6 +48,7 @@ import {
     AntelopePushTransactionError,
     HttpError,
     isErrorCode,
+    getVestingContract,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';

@@ -23,6 +23,14 @@ if (typeof BigInt === 'undefined') {
     global.BigInt = BigInteger;
 }
 
+// required for @wharfkit/contract
+if (typeof Symbol === undefined) throw new Error('Symbol is undefined');
+
+if (typeof Symbol === 'function' && !Symbol.asyncIterator) {
+    // @ts-expect-error Symbol.asyncIterator global type mismatch
+    Symbol.asyncIterator = Symbol.for('Symbol.asyncIterator');
+}
+
 /**
  * Mocks no internet connection by overriding fetch and XMLHttpRequest.
  * Call this function to simulate a network failure.
