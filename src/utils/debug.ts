@@ -1,9 +1,6 @@
 import Debug from 'debug';
 import { serializeAny } from './strings';
 
-Debug.enable(process.env.DEBUG);
-console.log('DEBUG:', process.env.DEBUG);
-
 type LogEntry = {
     dateTime: Date;
     namespace: string;

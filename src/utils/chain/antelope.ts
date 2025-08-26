@@ -200,7 +200,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         const transaction = Transaction.from({
             ...header,
             expiration,
-            actions: actions,
+            actions,
         });
 
         // Create signature
