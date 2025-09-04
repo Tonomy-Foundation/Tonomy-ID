@@ -3,7 +3,15 @@ const path = require('path');
 module.exports = function (api) {
     api.cache(true);
     return {
-        presets: ['babel-preset-expo'],
+        presets: [
+            [
+                'babel-preset-expo',
+                {
+                    // eslint-disable-next-line camelcase
+                    unstable_transformImportMeta: true,
+                },
+            ],
+        ],
         plugins: [
             'react-native-paper/babel',
             'transform-inline-environment-variables',

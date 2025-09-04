@@ -1,12 +1,16 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "strict": true,
     "noImplicitAny": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "experimentalDecorators": true, // needed for @wharfkit/antelope
-    "useUnknownInCatchVariables": false, // needed for @wharfkit/antelope
+    "experimentalDecorators": true,
+    "useUnknownInCatchVariables": false,
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false
   },
@@ -17,6 +21,6 @@
     "types"
   ],
   "exclude": [
-    "node_modules",
+    "node_modules"
   ]
 }

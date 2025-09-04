@@ -121,8 +121,8 @@ const expo: ExpoConfig = {
             {
                 android: {
                     compileSdkVersion: 35,
-                    targetSdkVersion: 34,
-                    buildToolsVersion: '34.0.0',
+                    targetSdkVersion: 35,
+                    buildToolsVersion: '35.0.0',
                     minSdkVersion: 26,
                     extraMavenRepos: [
                         {
