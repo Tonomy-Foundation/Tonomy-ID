@@ -101,6 +101,7 @@
         "reflect-metadata": "^0.2.2",
         "stream-browserify": "^3.0.0",
         "typeorm": "^0.3.20",
+        "typeorm-expo": "^0.2.6",
         "zustand": "^5.0.1"
     },
     "devDependencies": {

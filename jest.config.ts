@@ -1,8 +1,7 @@
 import type { Config } from 'jest';
 
-// List of node_module packages that will be transformed by jest
+// List of node_module packages that Jest should transform
 const packagesRegexToTransform = [
-    // Existing packages migrated from package.json::jest.transformIgnorePatterns
     '@?(jest-)?react-native(-community)?',
     '@?expo(nent)?',
     '@expo-google-fonts',
@@ -11,13 +10,6 @@ const packagesRegexToTransform = [
     'native-base',
     'react-native-svg',
     'argon2',
-    /*
-        /home/dev/Documents/Git/Tonomy/Tonomy-ID/node_modules/multiformats/dist/src/basics.js:1
-    ({"Object.<anonymous>":function(module,exports,require,__dirname,__filename,jest){import * as base10 from './bases/base10.js';
-                                                                                      ^^^^^^
-
-    SyntaxError: Cannot use import statement outside a module
-    */
     '@veramo',
     '@ipld/dag-pb',
     'multiformats',
@@ -26,18 +18,11 @@ const packagesRegexToTransform = [
     'uint8-varint',
     'uint8arrays',
     'expo-modules-core',
-    /*
-    /home/dev/Documents/Git/Tonomy/Tonomy-ID/node_modules/expo-sqlite/build/index.js:1
-    ({"Object.<anonymous>":function(module,exports,require,__dirname,__filename,jest){export * from './SQLite';
-                                                                                      ^^^^^^
-
-    SyntaxError: Unexpected token 'export'
-    */
     'expo-sqlite',
+    'expo-asset', // ✅ added to fix import/export syntax errors
 ];
 
-// One big regex string to ignore several packages from not being transformed
-// Aka these ARE transformed (despite normally being ignored because they are in node_modules)
+// Build the transformIgnorePatterns regex
 const ignoreRegexString = 'node_modules/(?!(' + packagesRegexToTransform.join('|') + ')/.*)';
 
 console.info('jest.transformIgnorePatterns:', ignoreRegexString);
@@ -47,7 +32,6 @@ const config: Config = {
     transformIgnorePatterns: [ignoreRegexString],
     testEnvironment: 'node',
     moduleNameMapper: {
-        // Cannot find module ... from ...
         '^@ipld/dag-pb$': '<rootDir>/node_modules/@ipld/dag-pb/src/index.js',
         '^multiformats/(.*)$': '<rootDir>/node_modules/multiformats/esm/src/$1',
         '^ipfs-unixfs$': '<rootDir>/node_modules/ipfs-unixfs/dist/src/index.js',
