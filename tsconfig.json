@@ -9,8 +9,8 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "experimentalDecorators": true,
-    "useUnknownInCatchVariables": false,
+    "experimentalDecorators": true, // needed for @wharfkit/antelope
+    "useUnknownInCatchVariables": false, // needed for @wharfkit/antelope
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false
   },
