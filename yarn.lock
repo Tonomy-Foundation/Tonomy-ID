@@ -5334,7 +5334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.33.1":
+"@tonomy/tonomy-id-sdk@npm:^0.33.1":
   version: 0.33.1
   resolution: "@tonomy/tonomy-id-sdk@npm:0.33.1"
   dependencies:
@@ -7284,13 +7284,6 @@ __metadata:
   dependencies:
     possible-typed-array-names: "npm:^1.0.0"
   checksum: 10c0/d07226ef4f87daa01bd0fe80f8f310982e345f372926da2e5296aecc25c41cab440916bbaa4c5e1034b453af3392f67df5961124e4b586df1e99793a1374bdb2
-  languageName: node
-  linkType: hard
-
-"await-lock@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "await-lock@npm:2.2.2"
-  checksum: 10c0/bedf00dad44c6325a655bf3bd523ab9e1ce41023da6a8c379990c76ac1d942ac7e5301627ab84ba37917ab5247506ba429b7f6e4bf77074093f255571b9ad5ee
   languageName: node
   linkType: hard
 
@@ -10894,19 +10887,6 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/abd35fd0be993a5cf4fcd3010b3e3ab8dca35284c0d4a0a1184721b614673715c65a11d3104b779bb42633b66129c19bd049f5de387ba0c6bcf5efd14653af11
-  languageName: node
-  linkType: hard
-
-"expo-sqlite@npm:~15.2.14":
-  version: 15.2.14
-  resolution: "expo-sqlite@npm:15.2.14"
-  dependencies:
-    await-lock: "npm:^2.2.2"
-  peerDependencies:
-    expo: "*"
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/0748f48b3219d595474a8b345e5f4cad9089791ac26c3bf5d0a4778298843d6c839b817f0ac220914e4e24d949e0845506dcb7b84ee8fd9f6d42333979f23ffb
   languageName: node
   linkType: hard
 
@@ -19734,7 +19714,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~6.14.0"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.33.1"
+    "@tonomy/tonomy-id-sdk": "npm:^0.33.1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~19.0.10"
@@ -19783,7 +19763,6 @@ __metadata:
     expo-notifications: "npm:~0.31.4"
     expo-secure-store: "npm:~14.2.4"
     expo-sharing: "npm:~13.1.5"
-    expo-sqlite: "npm:~15.2.14"
     expo-status-bar: "npm:~2.2.3"
     expo-web-browser: "npm:~14.2.0"
     iconoir-react-native: "npm:^7.9.0"
