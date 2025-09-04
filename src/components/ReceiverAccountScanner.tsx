@@ -12,7 +12,7 @@ import useErrorStore from '../store/errorStore';
 const debug = Debug('tonomy-id:components:ReceiverAccountScanner');
 
 export type ReceiverAccountScannerProps = {
-    refMessage: React.RefObject<{ open: () => void; close: () => void }>;
+    refMessage: React.RefObject<{ open: () => void; close: () => void }| null>;
     onScanQR: (accountName: string) => void;
     chain: IChain;
 };

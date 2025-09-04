@@ -4,7 +4,7 @@
     "type": "commonjs",
     "scripts": {
         "eas-build-pre-install": "corepack enable",
-        "build:prepare": "ts-node prepare.app.config.ts",
+        "build:prepare": "ts-node -P config.script.json prepare.app.config.ts",
         "build:ios:create": "yarn run build:prepare && npx eas device:create",
         "build:ios": "yarn run build:prepare && npx eas build --clear-cache --profile development --platform ios --no-wait",
         "build:android": "yarn run build:prepare && npx eas build --clear-cache --profile development --platform android --no-wait",
@@ -38,9 +38,9 @@
         "@react-navigation/drawer": "^6.7.2",
         "@react-navigation/native": "^6.1.18",
         "@react-navigation/native-stack": "^6.11.0",
-        "@sentry/react-native": "~6.14.0",
+        "@sentry/react-native": "5.24.3",
         "@sinonjs/text-encoding": "^0.7.3",
-        "@tonomy/tonomy-id-sdk": "^0.33.1",
+        "@tonomy/tonomy-id-sdk": "0.33.0-development.3",
         "@veramo/core": "^6.0.0",
         "@veriff/react-native-sdk": "^8.1.0",
         "@walletconnect/core": "^2.17.2",
@@ -70,6 +70,7 @@
         "expo-notifications": "~0.31.4",
         "expo-secure-store": "~14.2.4",
         "expo-sharing": "~13.1.5",
+        "expo-sqlite": "~15.2.14",
         "expo-status-bar": "~2.2.3",
         "expo-web-browser": "~14.2.0",
         "iconoir-react-native": "^7.9.0",
@@ -100,7 +101,6 @@
         "reflect-metadata": "^0.2.2",
         "stream-browserify": "^3.0.0",
         "typeorm": "^0.3.20",
-        "typeorm-expo": "^0.2.6",
         "zustand": "^5.0.1"
     },
     "devDependencies": {
