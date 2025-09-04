@@ -1,8 +1,11 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
+const { getDefaultConfig } = require('@expo/metro-config');
 const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const path = require('path');
 
-const config = getSentryExpoConfig(__dirname);
+let config = getDefaultConfig(__dirname);
+
+config = getSentryExpoConfig(__dirname);
 
 // Needed to resolve pure ESM packages that are within Tonomy-ID-SDK
 config.resolver.unstable_enablePackageExports = true;
