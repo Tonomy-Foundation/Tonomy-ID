@@ -83,7 +83,11 @@ export function TButtonContained(props: ButtonProps) {
 
     return !props.loading ? (
         // eslint-disable-next-line react/prop-types
-        <TButton {...props} style={[props.style, style, !props.disabled ? shadowStyle : null]} color={color}>
+        <TButton
+            {...props}
+            style={[props.style, style, !props.disabled ? shadowStyle : null]}
+            color={color}
+        >
             {props.children}
         </TButton>
     ) : (

@@ -1,5 +1,5 @@
 // metro.config.js
-const { getDefaultConfig } = require('@expo/metro-config');
+const { getDefaultConfig } = require('expo/metro-config');
 const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const path = require('path');
 
@@ -12,11 +12,9 @@ config = {
 };
 
 // Needed to resolve pure ESM packages that are within Tonomy-ID-SDK
-// eslint-disable-next-line camelcase
 config.resolver.unstable_enablePackageExports = true;
 
 // Turn on symlinks for local development
-// eslint-disable-next-line camelcase
 config.resolver.unstable_enableSymlinks = true;
 
 if (process.env.EXPO_NODE_ENV === 'local') {

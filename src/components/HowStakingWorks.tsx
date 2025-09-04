@@ -7,7 +7,7 @@ import { StakingContract } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
 
 export type Props = {
-    refMessage: React.RefObject<{ open: () => void; close: () => void }>;
+    refMessage: React.RefObject<{ open: () => void; close: () => void } | null>;
 };
 
 const HowStakingWorks = (props: Props) => {
