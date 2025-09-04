@@ -20,6 +20,7 @@ const packagesRegexToTransform = [
     'expo-modules-core',
     'expo-sqlite',
     'expo-asset', // ✅ added to fix import/export syntax errors
+    'expo-constants',
 ];
 
 // Build the transformIgnorePatterns regex
