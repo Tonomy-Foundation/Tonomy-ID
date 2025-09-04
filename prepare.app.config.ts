@@ -129,9 +129,13 @@ const expo: ExpoConfig = {
                             url: 'https://cdn.veriff.me/android/',
                         },
                     ],
+                    enableFTS: false,
+                    useSQLCipher: false,
                 },
                 ios: {
                     deploymentTarget: '15.1',
+                    // You can also override the shared configurations for iOS
+                    customBuildFlags: ['-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1'],
                 },
             },
         ],

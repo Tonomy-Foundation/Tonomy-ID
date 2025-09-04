@@ -80,7 +80,7 @@ jobs:
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
-          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
+          npx eas build --clear-cache --profile "development-internal" --platform "android" --local
         env:
           SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
         
