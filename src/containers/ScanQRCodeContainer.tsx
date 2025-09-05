@@ -1,4 +1,4 @@
-import {  BarcodeScanningResult } from 'expo-camera';
+import { BarcodeScanningResult } from 'expo-camera';
 import { CommunicationError, IdentifyMessage, isErrorCode, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';

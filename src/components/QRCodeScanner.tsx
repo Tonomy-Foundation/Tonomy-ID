@@ -64,7 +64,7 @@ export const ScannerOverlay = ({ isFlashlightOn, onPress }: ScannerOverlayProps)
 
 export type Props = {
     onClose?: () => void;
-    onScan: (result: BarCodeScannerResult) => void;
+    onScan: (result: BarcodeScanningResult) => void;
 };
 
 export default function QRCodeScanner(props: Props) {

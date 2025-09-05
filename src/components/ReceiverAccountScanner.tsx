@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
-import {  BarcodeScanningResult } from 'expo-camera';
+import { BarcodeScanningResult } from 'expo-camera';
 import Debug from 'debug';
 import QRCodeScanner from './QRCodeScanner';
 import { ChainType, IChain } from '../utils/chain/types';
