@@ -1,4 +1,4 @@
-// metro.config.js
+// Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const path = require('path');
@@ -19,19 +19,23 @@ config.resolver.unstable_enableSymlinks = true;
 
 if (process.env.EXPO_NODE_ENV === 'local') {
     console.log('Setting up local development environment. Using local Tonomy-ID-SDK.');
+    // see https://medium.com/@alielmajdaoui/linking-local-packages-in-react-native-the-right-way-2ac6587dcfa2
     const sdkPath = path.resolve(__dirname, '../Tonomy-ID-SDK');
 
     config.resolver.nodeModulesPaths.push(sdkPath);
     config.watchFolders.push(sdkPath);
 
-    // Needed to resolve locally in SDK
+    // Need to resolve these babel-plugin-rewrite-require locally as Tonomy-ID-SDK tries to import them from it's directory
     config.resolver.extraNodeModules['crypto-browserify'] = path.resolve(__dirname);
     config.resolver.extraNodeModules['stream-browserify'] = path.resolve(__dirname);
 }
 
 const debugModulePath = path.resolve(__dirname, 'src/utils/debug.ts');
 
-// Override "debug" imports
+// For all app code, and imported libraries
+// if they import the "debug" package
+// this should be instead use the ./src/utils/debugAndLog.ts
+// so that we can send the logs to Sentry
 config.resolver.resolveRequest = (context, moduleName, platform) => {
     if (moduleName === 'debug') {
         console.log(`Resolving debug module from ${context.originModulePath}`);
@@ -45,6 +49,10 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 
     return context.resolveRequest(context, moduleName, platform);
 };
+
+// config.resolver.extraNodeModules.debug = path.resolve(__dirname, 'src/utils/debugAndLog.ts');
+
+console.log('Metro config resolver', config.resolver);
 
 // SVG transformer
 config.transformer.babelTransformerPath = require.resolve('react-native-svg-transformer');
