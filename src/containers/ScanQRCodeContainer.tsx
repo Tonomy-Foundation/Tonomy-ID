@@ -1,4 +1,4 @@
-import { BarCodeScannerResult } from 'expo-barcode-scanner';
+import {  BarcodeScanningResult } from 'expo-camera';
 import { CommunicationError, IdentifyMessage, isErrorCode, SdkErrors, validateQrCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
@@ -103,7 +103,7 @@ export default function ScanQRCodeContainer({
         }
     }, [setUserName, did, onUrlOpen]);
 
-    async function onScan({ data }: BarCodeScannerResult) {
+    async function onScan({ data }: BarcodeScanningResult) {
         debug('onScan() data:', data);
         setIsLoadingView(true);
 

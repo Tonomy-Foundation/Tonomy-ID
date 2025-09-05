@@ -110,6 +110,12 @@ const expo: ExpoConfig = {
     },
     plugins: [
         [
+            'expo-camera',
+            {
+                cameraPermission: 'Allow tonomy id to access your camera',
+            },
+        ],
+        [
             'expo-notifications',
             {
                 icon: settings.config.images.logo1024,

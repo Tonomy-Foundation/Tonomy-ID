@@ -10633,17 +10633,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-barcode-scanner@npm:^13.0.1":
-  version: 13.0.1
-  resolution: "expo-barcode-scanner@npm:13.0.1"
-  dependencies:
-    expo-image-loader: "npm:~4.7.0"
-  peerDependencies:
-    expo: "*"
-  checksum: 10c0/a3b55a9f725957f9fad3fdee7afd7053cbcb0c246fb9487b5f9412b23caeb39d18e82cee80d2f747f5f3d631d695d0f6828af7194be5cb00d80f0a3240a4f5cc
-  languageName: node
-  linkType: hard
-
 "expo-build-properties@npm:~0.14.8":
   version: 0.14.8
   resolution: "expo-build-properties@npm:0.14.8"
@@ -10754,15 +10743,6 @@ __metadata:
     expo: "*"
     react: "*"
   checksum: 10c0/00711fbdb380f076594b43caddf06ad6f70a5261caaccce564dabf01a02054f89987ac0367c96ad8cb38b4edbf904e99839ab2a446d7b57e7e84b29145da4ccd
-  languageName: node
-  linkType: hard
-
-"expo-image-loader@npm:~4.7.0":
-  version: 4.7.0
-  resolution: "expo-image-loader@npm:4.7.0"
-  peerDependencies:
-    expo: "*"
-  checksum: 10c0/7db9df154f1b44e9877361e0707715503eaaf2b18968b6aecb6b0205612cf40bfd99ab8c6e6d7de3a5abd35267e9636963d5050e082af063d8e527763d597eb1
   languageName: node
   linkType: hard
 
@@ -19473,7 +19453,6 @@ __metadata:
     eslint-plugin-react-native: "npm:^4.0.0"
     ethers: "npm:^6.13.4"
     expo: "npm:53.0.22"
-    expo-barcode-scanner: "npm:^13.0.1"
     expo-build-properties: "npm:~0.14.8"
     expo-camera: "npm:~16.1.11"
     expo-dev-client: "npm:~5.2.4"
