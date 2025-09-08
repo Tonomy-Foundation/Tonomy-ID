@@ -1,5 +1,7 @@
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import AppsScreen from '../screens/AppsScreen';
 import CitizenshipScreen from '../screens/CitizenshipScreen';
 import AssetListingScreen from '../screens/AssetListingScreen';
@@ -20,35 +22,36 @@ import AppInstructionProvider from '../providers/AppInstruction';
 
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
 
-type ScanTabBarButtonProps = BottomTabBarButtonProps;
+const isIpad = Platform.OS === 'ios' && Dimensions.get('window').width >= 768;
 
-const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }) => {
-    return (
-        <>
-            <TouchableOpacity style={{ top: -30, justifyContent: 'center', alignContent: 'center' }} onPress={onPress}>
-                <View
-                    style={{
-                        width: 70,
-                        height: 70,
-                        borderRadius: 35,
-                        backgroundColor: theme.colors.primary,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    {children}
-                </View>
-            </TouchableOpacity>
-        </>
-    );
-};
+const TAB_H = isIpad ? 30 : 55; // base height of bar
+const FAB_OFFSET = isIpad ? -10 : -20; // how high the center button floats  const insets = useSafeAreaInsets();
+
+type ScanTabBarButtonProps = BottomTabBarButtonProps & { fabOffset?: number };
+
+const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress, fabOffset = -28 }) => (
+    <TouchableOpacity style={{ top: fabOffset, alignSelf: 'center' }} onPress={onPress} activeOpacity={0.9}>
+        <View
+            style={{
+                width: 70,
+                height: 70,
+                borderRadius: 35,
+                backgroundColor: theme.colors.primary,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            {children}
+        </View>
+    </TouchableOpacity>
+);
 
 type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'Citizenship'>;
-const isIpad = Platform.OS === 'ios' && Dimensions.get('window').width >= 768;
 
 function BottomTabNavigator(props) {
     const theme = useAppTheme();
     const navigation = useNavigation<DrawerNavigation>();
+    const insets = useSafeAreaInsets();
 
     return (
         <>
@@ -79,10 +82,12 @@ function BottomTabNavigator(props) {
                     tabBarStyle: {
                         borderTopWidth: 1,
                         borderTopColor: theme.colors.border,
-                        paddingTop: isIpad ? 10 : 20,
+                        paddingTop: isIpad ? 8 : 10,
+                        paddingBottom: Math.max(insets.bottom, 10), // keep above the home bar
+                        height: TAB_H + Math.max(insets.bottom, 8),
+                        overflow: 'visible', // allow the FAB to stick out
                     },
                     tabBarItemStyle: {
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                     },
@@ -152,7 +157,7 @@ function BottomTabNavigator(props) {
                         ),
                         tabBarLabel: () => null,
                         tabBarIcon: () => <ScanIcon width={28} height={28} />,
-                        tabBarButton: (props) => <ScanTabBarButton {...props} />,
+                        tabBarButton: (props) => <ScanTabBarButton {...props} fabOffset={FAB_OFFSET} />,
                     }}
                 />
                 <Tab.Screen
@@ -216,7 +221,6 @@ const styles = StyleSheet.create({
     tabLabel: {
         fontSize: 10,
         fontWeight: '500',
-        marginTop: isIpad ? 0 : 13,
     },
 });
 

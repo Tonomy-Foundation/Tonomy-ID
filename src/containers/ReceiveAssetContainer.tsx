@@ -47,7 +47,6 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
 
     // Copy
     const copyToClipboard = () => {
-        console.log('Copying to clipboard:', asset.account);
         if (asset.account) Clipboard.setString(asset.account);
         setShowPopover(true);
         // close automatically; also provide onRequestClose below
