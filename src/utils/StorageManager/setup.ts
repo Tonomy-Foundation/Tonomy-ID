@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { KeyStorage } from './entities/keyStorage';
 import { AppStorage } from './entities/appSettingsStorage';
-import * as SQLite from 'expo-sqlite';
+import * as ExpoSQLite from 'expo-sqlite';
 import { KeyStorageRepository } from './repositories/KeyStorageRepository';
 import { KeyManager } from './repositories/keyStorageManager';
 import { AppStorageRepository } from './repositories/appSettingsStorageRepository';
@@ -22,13 +22,13 @@ export const kycDatasource = new DataSource({
     database: 'kycstorage',
     entities: [IdentityVerificationStorage],
     type: 'expo',
-    driver: SQLite,
+    driver: ExpoSQLite,
     migrations: [AddReuseCountColumn163837490194410],
 });
 
 export const dataSource = new DataSource({
     database: 'storage',
-    driver: SQLite,
+    driver: ExpoSQLite,
     entities: [KeyStorage, AppStorage, AssetStorage],
     type: 'expo',
     migrations: [AssetNameMigration163837490194410],

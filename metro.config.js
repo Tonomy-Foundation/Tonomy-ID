@@ -17,6 +17,18 @@ config.resolver.unstable_enablePackageExports = true;
 // Turn on symlinks for local development
 config.resolver.unstable_enableSymlinks = true;
 
+// Add wasm asset support
+config.resolver.assetExts.push('wasm');
+
+// Add COEP and COOP headers to support SharedArrayBuffer
+config.server.enhanceMiddleware = (middleware) => {
+    return (req, res, next) => {
+        res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+        middleware(req, res, next);
+    };
+};
+
 if (process.env.EXPO_NODE_ENV === 'local') {
     console.log('Setting up local development environment. Using local Tonomy-ID-SDK.');
     // see https://medium.com/@alielmajdaoui/linking-local-packages-in-react-native-the-right-way-2ac6587dcfa2

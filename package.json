@@ -85,7 +85,7 @@
     "react-native-get-random-values": "^1.11.0",
     "react-native-modal": "^13.0.1",
     "react-native-paper": "^5.12.5",
-    "react-native-popover-view": "^5.1.9",
+    "react-native-popover-view": "^6.0.4",
     "react-native-qrcode-svg": "^6.3.12",
     "react-native-raw-bottom-sheet": "^3.0.0",
     "react-native-reanimated": "~3.17.4",
@@ -99,7 +99,7 @@
     "react-native-webview": "13.13.5",
     "reflect-metadata": "^0.2.2",
     "stream-browserify": "^3.0.0",
-    "typeorm": "^0.3.20",
+    "typeorm": "0.3.22",
     "zustand": "^5.0.1"
   },
   "devDependencies": {

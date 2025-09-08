@@ -1,12 +1,12 @@
 import { DataSource } from 'typeorm';
 import { dbConnection, setupDatabase, veramo, veramo2, sha256 } from '@tonomy/tonomy-id-sdk';
 import { Entities, migrations } from '@veramo/data-store';
-import * as SQLite from 'expo-sqlite';
 import { Checksum256 } from '@wharfkit/antelope';
 import { EthereumPrivateKey, EthereumAccount, EthereumSepoliaChain } from './chain/etherum';
 import { ethers, TransactionRequest, Wallet } from 'ethers';
 import Debug from 'debug';
 import { generatePrivateKeyFromPassword } from './keys';
+import * as ExpoSQLite from 'expo-sqlite';
 
 const debug = Debug('tonomy-id:util:runtime-tests');
 
@@ -14,7 +14,7 @@ async function testVeramo() {
     debug('testVeramo() called');
     const dataSource = new DataSource({
         type: 'expo',
-        driver: SQLite,
+        driver: ExpoSQLite,
         database: 'veramo.sqlite',
         migrations: migrations,
         migrationsRun: true,

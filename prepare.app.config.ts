@@ -110,6 +110,22 @@ const expo: ExpoConfig = {
     },
     plugins: [
         [
+            'expo-sqlite',
+            {
+                enableFTS: true,
+                useSQLCipher: true,
+                android: {
+                    // Override the shared configuration for Android
+                    enableFTS: false,
+                    useSQLCipher: false,
+                },
+                ios: {
+                    // You can also override the shared configurations for iOS
+                    customBuildFlags: ['-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1'],
+                },
+            },
+        ],
+        [
             'expo-camera',
             {
                 cameraPermission: 'Allow tonomy id to access your camera',
@@ -135,13 +151,9 @@ const expo: ExpoConfig = {
                             url: 'https://cdn.veriff.me/android/',
                         },
                     ],
-                    enableFTS: false,
-                    useSQLCipher: false,
                 },
                 ios: {
                     deploymentTarget: '15.1',
-                    // You can also override the shared configurations for iOS
-                    customBuildFlags: ['-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1'],
                 },
             },
         ],
