@@ -23,8 +23,6 @@ import { isIpad } from '../utils/device';
 
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
 
-const isIpad = Platform.OS === 'ios' && Dimensions.get('window').width >= 768;
-
 const TAB_H = isIpad ? 30 : 55; // base height of bar
 const FAB_OFFSET = isIpad ? -10 : -20; // how high the center button floats  const insets = useSafeAreaInsets();
 
