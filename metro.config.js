@@ -17,7 +17,7 @@ config.resolver.unstable_enablePackageExports = true;
 // Turn on symlinks for local development
 config.resolver.unstable_enableSymlinks = true;
 
-// Add wasm asset support
+// Add wasm asset support https://docs.expo.dev/versions/latest/sdk/sqlite/
 config.resolver.assetExts.push('wasm');
 
 // Add COEP and COOP headers to support SharedArrayBuffer
@@ -49,6 +49,7 @@ const debugModulePath = path.resolve(__dirname, 'src/utils/debug.ts');
 // this should be instead use the ./src/utils/debugAndLog.ts
 // so that we can send the logs to Sentry
 config.resolver.resolveRequest = (context, moduleName, platform) => {
+    // if the module is debug and not importing from the src/utils/debug.ts file
     if (moduleName === 'debug') {
         console.log(`Resolving debug module from ${context.originModulePath}`);
 

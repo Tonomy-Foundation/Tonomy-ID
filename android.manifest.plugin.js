@@ -29,7 +29,8 @@ const updateAndroidManifest = function (config) {
             return perm;
         });
 
-        // ✅ Add or override the ML Kit dependency meta-data
+        //To resolve: [RUN_GRADLEW] > Manifest merger failed : Attribute meta-data#com.google.mlkit.vision.DEPENDENCIES@value value=(barcode_ui) from [host.exp.exponent:expo.modules.camera:16.1.11] AndroidManifest.xml:13:13-39
+        // Add the ML Kit dependency meta-data
         if (!manifest.application[0]['meta-data']) {
             manifest.application[0]['meta-data'] = [];
         }
@@ -43,7 +44,7 @@ const updateAndroidManifest = function (config) {
         manifest.application[0]['meta-data'].push({
             $: {
                 'android:name': 'com.google.mlkit.vision.DEPENDENCIES',
-                'android:value': 'barcode_ui,face', //TODO: update this
+                'android:value': 'barcode_ui', //TODO: update this
                 'tools:replace': 'android:value',
             },
         });

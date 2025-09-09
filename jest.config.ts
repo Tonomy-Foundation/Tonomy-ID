@@ -33,7 +33,6 @@ const packagesRegexToTransform = [
     SyntaxError: Unexpected token 'export'
     */
     'expo-sqlite',
-
     'expo-constants',
 ];
 

@@ -5,7 +5,7 @@ import CitizenshipScreen from '../screens/CitizenshipScreen';
 import AssetListingScreen from '../screens/AssetListingScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import theme, { useAppTheme } from '../utils/theme';
-import { Platform, StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ScanIcon from '../assets/icons/ScanIcon';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -17,6 +17,7 @@ import UserCircleSolid from '../assets/icons/UserCircleSolid';
 import CompassSolid from '../assets/icons/CompassSolid';
 import GridPlusSolid from '../assets/icons/GridPlusSolid';
 import AppInstructionProvider from '../providers/AppInstruction';
+import { isIpad } from '../utils/device';
 
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
 
@@ -44,7 +45,6 @@ const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress }
 };
 
 type DrawerNavigation = DrawerNavigationProp<RouteStackParamList, 'Citizenship'>;
-const isIpad = Platform.OS === 'ios' && Dimensions.get('window').width >= 768;
 
 function BottomTabNavigator(props) {
     const theme = useAppTheme();
