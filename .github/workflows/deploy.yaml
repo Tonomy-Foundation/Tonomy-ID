@@ -34,7 +34,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.3.0
-      - run: npm install -g eas-cli@12.6.2
+      - run: npm install -g eas-cli@16.3.3
       - run: node -v && npm -v && yarn -v && eas -v
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8

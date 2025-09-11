@@ -28,7 +28,6 @@ export default function MainSplashScreenContainer({ navigation }: { navigation: 
     useEffect(() => {
         async function main() {
             await sleep(800);
-            logout("Invalid data in user's storage");
 
             try {
                 if (!isAppInitialized) {

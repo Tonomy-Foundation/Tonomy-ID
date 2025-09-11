@@ -83,6 +83,7 @@ export function TButtonContained(props: ButtonProps) {
 
     return !props.loading ? (
         // eslint-disable-next-line react/prop-types
+        // @ts-ignore
         <TButton {...props} style={[props.style, style, !props.disabled ? shadowStyle : null]} color={color}>
             {props.children}
         </TButton>
@@ -102,6 +103,7 @@ export function TButtonSecondaryContained(props: ButtonProps) {
 
     return (
         // eslint-disable-next-line react/prop-types
+        // @ts-ignore
         <TButton {...props} style={[props.style, style]} color={color}>
             {props.children}
         </TButton>
@@ -116,6 +118,7 @@ export function TButtonOutlined(props: ButtonProps) {
 
     return (
         // eslint-disable-next-line react/prop-types
+        // @ts-ignore
         <TButton {...props} style={[props.style, style]}>
             {props.children}
         </TButton>

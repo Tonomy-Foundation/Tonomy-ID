@@ -193,10 +193,13 @@ const styles = StyleSheet.create({
         marginLeft: 2,
     },
     input: {
-        color: 'white',
-        zIndex: 0,
-        opacity: 0,
+        // keep the real input on top and focusable
+        ...StyleSheet.absoluteFillObject,
         width: '100%',
+        // nearly invisible but still measurable on Android
+        opacity: 0.01,
+        backgroundColor: 'transparent',
+        zIndex: 2,
     },
     innerContainer: {
         flexDirection: 'row',
@@ -209,7 +212,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.disabled,
         borderRadius: 8,
-        zIndex: -1,
+        zIndex: 1,
+        position: 'relative',
+        overflow: 'hidden',
     },
     horizontalLine: {
         borderBottomColor: theme.colors.grey5,
@@ -227,6 +232,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.error,
         borderRadius: 8,
-        zIndex: -1,
+        zIndex: 1,
+        position: 'relative',
+        overflow: 'hidden',
     },
 });

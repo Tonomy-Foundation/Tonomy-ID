@@ -32,7 +32,7 @@
     },
     "expoProjectId": "b227858a-74c6-4996-8645-33b7f28f8980",
     "accountSuffix": ".testnet.pangea",
-    "blockchainUrl": "https://blockchain-api-testnet.tonomy.io",
+    "blockchainUrl": "https://test.pangea.eosusa.io",
     "ssoWebsiteOrigin": "https://accounts.testnet.tonomy.io",
     "communicationUrl": "wss://communication.testnet.tonomy.io",
     "accountsServiceUrl": "https://communication.testnet.tonomy.io",
