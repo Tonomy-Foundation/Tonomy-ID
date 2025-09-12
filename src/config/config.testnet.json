@@ -36,6 +36,7 @@
     "ssoWebsiteOrigin": "https://accounts.testnet.tonomy.io",
     "communicationUrl": "wss://communication.testnet.tonomy.io",
     "accountsServiceUrl": "https://communication.testnet.tonomy.io",
+      "tonomyAppsOrigin": "https://apps.testnet.tonomy.io",
     "blockExplorerUrl": "https://explorer.testnet.tonomy.io",
     "captchaSiteKey": "bf994ca7-3b1f-43c4-b35f-0cf27b0da3c8",
     "tonomyIdSlug": "pangea-testnet://",

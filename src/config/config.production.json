@@ -36,6 +36,7 @@
     "ssoWebsiteOrigin": "https://accounts.tonomy.io",
     "communicationUrl": "wss://communication.tonomy.io",
     "accountsServiceUrl": "https://communication.tonomy.io",
+      "tonomyAppsOrigin": "https://apps.tonomy.io",
     "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb",
     "blockExplorerUrl": "https://explorer.tonomy.io",
     "tonomyIdSlug": "united-wallet://",
