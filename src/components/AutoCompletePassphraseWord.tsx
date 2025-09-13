@@ -40,6 +40,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
     const [valueLength, setValueLength] = useState<number>(0);
     const [isFocused, setIsFocused] = useState(false);
     const [cursorVisible] = useState(new Animated.Value(0));
+    const inputRef = useRef<any>(null);
 
     const handleFocus = () => {
         setIsFocused(true);
@@ -77,7 +78,7 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
         }
     }, [cursorVisible, isFocused]);
 
-    const onChangeText = (text) => {
+    const onChangeText = (text: string) => {
         const newText = text.toLowerCase().replace(/[^a-z]/g, '');
 
         setErrorMsg('');
@@ -103,9 +104,20 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
         setMenuVisible(true);
     };
 
+    const handleContainerPress = () => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    };
+
     return (
         <View style={containerStyle}>
-            <View style={errorMsg ? styles.errorInput : styles.inputContainer}>
+            <TouchableOpacity
+                activeOpacity={1}
+                style={errorMsg ? styles.errorInput : styles.inputContainer}
+                onPress={handleContainerPress}
+                disabled={disabled}
+            >
                 <View style={styles.innerContainer}>
                     <View style={styles.coloredTextContainer}>
                         {/* display the value text with red underling for invalid characters */}
@@ -125,17 +137,22 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                         {isFocused && <Animated.View style={[styles.cursor, { opacity: cursorVisible }]} />}
                     </View>
                     <TextInput
+                        ref={inputRef}
                         value={value}
                         underlineColor="transparent"
                         activeUnderlineColor="transparent"
                         style={{ ...styles.input, ...textInputStyle }}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
-                        onChangeText={(text) => onChangeText(text)}
+                        onChangeText={onChangeText}
                         disabled={disabled}
+                        // Make the input nearly invisible but still interactive
+                        caretHidden={true}
+                        contextMenuHidden={true}
+                        selectTextOnFocus={false}
                     />
                 </View>
-            </View>
+            </TouchableOpacity>
 
             {menuVisible && suggestedWords?.length > 0 && (
                 <View style={[styles.menuView, !menuStyle ? { bottom: 47 } : { ...menuStyle }]}>
@@ -147,6 +164,10 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                                 setMenuVisible(false);
                                 if (onChange) onChange(word);
                                 setErrorMsg('');
+
+                                if (inputRef.current) {
+                                    inputRef.current.blur();
+                                }
                             }}
                         >
                             <Menu.Item style={[{ width: '100%', zIndex: 1 }]} title={word} />
@@ -166,6 +187,7 @@ export default AutoCompletePassphraseWord;
 const styles = StyleSheet.create({
     coloredTextContainer: {
         flexDirection: 'row',
+        zIndex: 9,
     },
     menuContainer: {
         borderRadius: 8,
@@ -184,6 +206,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 0,
         backgroundColor: 'white',
+        zIndex: 10,
     },
 
     cursor: {
@@ -193,13 +216,12 @@ const styles = StyleSheet.create({
         marginLeft: 2,
     },
     input: {
-        // keep the real input on top and focusable
-        ...StyleSheet.absoluteFillObject,
+        // Keep the real input interactive but visually hidden
+        position: 'absolute',
         width: '100%',
-        // nearly invisible but still measurable on Android
-        opacity: 0.01,
+        height: '100%',
+        opacity: 0.01, // Minimal opacity to maintain interactivity
         backgroundColor: 'transparent',
-        zIndex: 2,
     },
     innerContainer: {
         flexDirection: 'row',
@@ -212,7 +234,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.disabled,
         borderRadius: 8,
-        zIndex: 1,
         position: 'relative',
         overflow: 'hidden',
     },
