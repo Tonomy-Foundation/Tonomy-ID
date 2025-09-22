@@ -1,8 +1,15 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
+const { getDefaultConfig } = require('expo/metro-config');
 const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const path = require('path');
 
-const config = getSentryExpoConfig(__dirname);
+/** @type {import('expo/metro-config').MetroConfig} */
+let config = getDefaultConfig(__dirname);
+
+config = {
+    ...config,
+    ...getSentryExpoConfig(__dirname, config),
+};
 
 // Needed to resolve pure ESM packages that are within Tonomy-ID-SDK
 config.resolver.unstable_enablePackageExports = true;
@@ -10,10 +17,21 @@ config.resolver.unstable_enablePackageExports = true;
 // Turn on symlinks for local development
 config.resolver.unstable_enableSymlinks = true;
 
+// Add wasm asset support https://docs.expo.dev/versions/latest/sdk/sqlite/
+config.resolver.assetExts.push('wasm');
+
+// Add COEP and COOP headers to support SharedArrayBuffer
+config.server.enhanceMiddleware = (middleware) => {
+    return (req, res, next) => {
+        res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+        middleware(req, res, next);
+    };
+};
+
 if (process.env.EXPO_NODE_ENV === 'local') {
     console.log('Setting up local development environment. Using local Tonomy-ID-SDK.');
     // see https://medium.com/@alielmajdaoui/linking-local-packages-in-react-native-the-right-way-2ac6587dcfa2
-
     const sdkPath = path.resolve(__dirname, '../Tonomy-ID-SDK');
 
     config.resolver.nodeModulesPaths.push(sdkPath);
@@ -44,11 +62,14 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 
     return context.resolveRequest(context, moduleName, platform);
 };
+
 // config.resolver.extraNodeModules.debug = path.resolve(__dirname, 'src/utils/debugAndLog.ts');
 
 console.log('Metro config resolver', config.resolver);
 
+// SVG transformer
 config.transformer.babelTransformerPath = require.resolve('react-native-svg-transformer');
 config.resolver.assetExts = config.resolver.assetExts.filter((ext) => ext !== 'svg');
 config.resolver.sourceExts.push('svg');
+
 module.exports = config;
