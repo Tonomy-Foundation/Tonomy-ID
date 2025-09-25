@@ -15,7 +15,6 @@ const packagesRegexToTransform = [
         /home/dev/Documents/Git/Tonomy/Tonomy-ID/node_modules/multiformats/dist/src/basics.js:1
     ({"Object.<anonymous>":function(module,exports,require,__dirname,__filename,jest){import * as base10 from './bases/base10.js';
                                                                                       ^^^^^^
-
     SyntaxError: Cannot use import statement outside a module
     */
     '@veramo',
@@ -26,14 +25,15 @@ const packagesRegexToTransform = [
     'uint8-varint',
     'uint8arrays',
     'expo-modules-core',
+    'expo-asset',
     /*
     /home/dev/Documents/Git/Tonomy/Tonomy-ID/node_modules/expo-sqlite/build/index.js:1
     ({"Object.<anonymous>":function(module,exports,require,__dirname,__filename,jest){export * from './SQLite';
                                                                                       ^^^^^^
-
     SyntaxError: Unexpected token 'export'
     */
     'expo-sqlite',
+    'expo-constants',
 ];
 
 // One big regex string to ignore several packages from not being transformed
@@ -46,8 +46,8 @@ const config: Config = {
     preset: 'jest-expo',
     transformIgnorePatterns: [ignoreRegexString],
     testEnvironment: 'node',
+    // Cannot find module ... from ...
     moduleNameMapper: {
-        // Cannot find module ... from ...
         '^@ipld/dag-pb$': '<rootDir>/node_modules/@ipld/dag-pb/src/index.js',
         '^multiformats/(.*)$': '<rootDir>/node_modules/multiformats/esm/src/$1',
         '^ipfs-unixfs$': '<rootDir>/node_modules/ipfs-unixfs/dist/src/index.js',

@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TIconButton from './TIconButton';
 import theme from '../utils/theme';
-import { BarCodeScannerResult } from 'expo-barcode-scanner';
+import { BarcodeScanningResult } from 'expo-camera';
 import Debug from 'debug';
 import QRCodeScanner from './QRCodeScanner';
 import { ChainType, IChain } from '../utils/chain/types';
@@ -12,7 +12,7 @@ import useErrorStore from '../store/errorStore';
 const debug = Debug('tonomy-id:components:ReceiverAccountScanner');
 
 export type ReceiverAccountScannerProps = {
-    refMessage: React.RefObject<{ open: () => void; close: () => void }>;
+    refMessage: React.RefObject<{ open: () => void; close: () => void } | null>;
     onScanQR: (accountName: string) => void;
     chain: IChain;
 };
@@ -20,7 +20,7 @@ export type ReceiverAccountScannerProps = {
 const ReceiverAccountScanner = (props: ReceiverAccountScannerProps) => {
     const errorStore = useErrorStore();
 
-    async function onScan({ data }: BarCodeScannerResult) {
+    async function onScan({ data }: BarcodeScanningResult) {
         debug('send scan data: ', data);
         const chainType = props.chain.getChainType();
         let account = data;

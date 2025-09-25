@@ -24,7 +24,6 @@ const InitializeAppProvider: React.FC = () => {
                 // need import dynamically, to ensure that it's sub-components do not call getSettings()
                 // from @tonomy/tonomy-id-sdk before setSettings() is called, or try connect to storage before
                 // it's connected
-                // @ts-expect-error dynamic imports only supported in ESM
                 const { default: Root } = await import('../navigation/Root');
 
                 debug('Root navigation loaded');

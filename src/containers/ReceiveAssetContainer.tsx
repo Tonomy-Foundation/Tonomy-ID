@@ -45,23 +45,29 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
         return <TSpinner />;
     }
 
+    // Copy
     const copyToClipboard = () => {
-        setShowPopover(true);
         if (asset.account) Clipboard.setString(asset.account);
-        setTimeout(() => setShowPopover(false), 400);
+        setShowPopover(true);
+        // close automatically; also provide onRequestClose below
+        setTimeout(() => setShowPopover(false), 600);
     };
 
+    // Share
     const onShare = async () => {
         try {
+            // ensure no modal/popover is visible
+            setShowPopover(false);
+
             if (asset.account) {
-                await Share.share({
-                    message: asset.account,
-                });
+                await Share.share({ message: asset.account }); // await to serialize
             }
-        } catch (error) {
-            alert(error.message);
+        } catch (e: any) {
+            // avoid alert() during modal transitions
+            errorStore.setError({ error: e, expected: false });
         }
     };
+
     const logo = asset.token.icon;
 
     return (
@@ -90,9 +96,11 @@ const ReceiveAssetContainer = (props: ReceiveAssetProps) => {
                                 <View style={styles.iconContainer}>
                                     <Popover
                                         isVisible={showPopover}
+                                        onRequestClose={() => setShowPopover(false)}
+                                        onCloseComplete={() => setShowPopover(false)}
                                         popoverStyle={{ padding: 10 }}
                                         from={
-                                            <TouchableOpacity onPress={() => copyToClipboard()}>
+                                            <TouchableOpacity onPress={copyToClipboard}>
                                                 <View style={styles.iconButton}>
                                                     <CopyIcon />
                                                 </View>

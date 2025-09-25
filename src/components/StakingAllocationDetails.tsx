@@ -156,10 +156,7 @@ const StakingAllocationDetails = (props: PropsStaking) => {
                 {isUnlocked && !allocation.unstakeRequested && (
                     <View style={styles.stakeMoreBtn}>
                         <TButton
-                            style={[
-                                styles.unstakeBtn,
-                                { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                            ]}
+                            style={styles.unstakeBtnCombined}
                             color={theme.colors.black}
                             onPress={() => requestUnstakeToken()}
                         >
@@ -273,6 +270,15 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.backgroundGray,
         width: '100%',
         paddingVertical: 14,
+    },
+    unstakeBtnCombined: {
+        borderRadius: 6,
+        backgroundColor: theme.colors.backgroundGray,
+        width: '100%',
+        paddingVertical: 14,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

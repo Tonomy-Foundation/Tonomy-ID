@@ -25,6 +25,7 @@ export default function LayoutComponent(props: layoutProps) {
             hideSubscription.remove();
         };
     }, []);
+
     return (
         <View style={layoutStyles.container}>
             {props.body && <View style={[layoutStyles.body, { flex: keyboardStatusShown ? 2 : 3 }]}>{props.body}</View>}
