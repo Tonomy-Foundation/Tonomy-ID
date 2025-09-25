@@ -5390,9 +5390,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.33.0-development.4":
-  version: 0.33.0-development.4
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.33.0-development.4"
+"@tonomy/tonomy-id-sdk@npm:0.35.0-development.1":
+  version: 0.35.0-development.1
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.35.0-development.1"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -5406,6 +5406,7 @@ __metadata:
     "@veramo/key-manager": "npm:^6.0.0"
     "@veramo/kms-local": "npm:^6.0.0"
     "@wharfkit/antelope": "npm:^1.0.7"
+    "@wharfkit/contract": "npm:^1.2.1"
     argon2: "npm:^0.41.1"
     cross-fetch: "npm:^4.0.0"
     csv-parse: "npm:^5.5.6"
@@ -5419,7 +5420,7 @@ __metadata:
     typeorm: "npm:0.3.22"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/4c28e68706616826ba6feb5347e734f638971891837bc57d105dec7c89b7283ec3c76361e1fe2f8c6de66c29af23f79cd93c6a891d10a4564beefbfa993cdfa4
+  checksum: 10c0/de598ff15ad39257ef4cb651f5ece2e1d3ed0f0b1386b94d01ed062639ce4948a8ec801d65290ce010e18b4180db38288c68c5f03fbcd9345974eb0d55dc4d38
   languageName: node
   linkType: hard
 
@@ -6634,9 +6635,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wharfkit/antelope@npm:1.0.10":
-  version: 1.0.10
-  resolution: "@wharfkit/antelope@npm:1.0.10"
+"@wharfkit/antelope@npm:1.0.13":
+  version: 1.0.13
+  resolution: "@wharfkit/antelope@npm:1.0.13"
   dependencies:
     bn.js: "npm:^4.11.9"
     brorand: "npm:^1.1.0"
@@ -6644,7 +6645,7 @@ __metadata:
     hash.js: "npm:^1.0.0"
     pako: "npm:^2.1.0"
     tslib: "npm:^2.0.3"
-  checksum: 10c0/af71ca1d519e6ba2f8fe840eeee76f654010c0b50aecb2ab81aa2c793cfa43d62b3cd7c3db29934e093e5de476b5592dbf0ea0bb3304e730815b31b16f4c3523
+  checksum: 10c0/6a9f6aad1ec261158e25261277c33262312588c5a6a2b96ca6111a51623ea1b8896d038e2ab72421c28610fc018039cf1b5713e9e8dfae7c4651dee44576ac3c
   languageName: node
   linkType: hard
 
@@ -6668,6 +6669,18 @@ __metadata:
     "@wharfkit/signing-request": "npm:^3.1.0"
     tslib: "npm:^2.1.0"
   checksum: 10c0/bdf2361ebc5f6bdf9909006d24be4d2981c0314dc1cd2a55e2fc8491be48bbce1a58a5afb145d6299afa88aee8c9dd9961028972fdae52a7000c7f4ef7f75e4c
+  languageName: node
+  linkType: hard
+
+"@wharfkit/contract@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@wharfkit/contract@npm:1.2.1"
+  dependencies:
+    "@wharfkit/abicache": "npm:^1.2.0"
+    "@wharfkit/antelope": "npm:^1.0.4"
+    "@wharfkit/signing-request": "npm:^3.1.0"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/9abf44e9521423e88b9822422d386f584536dddc9d7653027eedaff38003330ce8db1a4fb8f9d1aa1ba6b33c3ddd36de7f46e3d22c661bb9723eedb26fa8555a
   languageName: node
   linkType: hard
 
@@ -19426,7 +19439,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~6.14.0"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.33.0-development.4"
+    "@tonomy/tonomy-id-sdk": "npm:0.35.0-development.1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~19.0.10"
