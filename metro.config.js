@@ -14,9 +14,6 @@ config = {
 // Needed to resolve pure ESM packages that are within Tonomy-ID-SDK
 config.resolver.unstable_enablePackageExports = true;
 
-// Turn on symlinks for local development
-config.resolver.unstable_enableSymlinks = true;
-
 // Add wasm asset support https://docs.expo.dev/versions/latest/sdk/sqlite/
 config.resolver.assetExts.push('wasm');
 
