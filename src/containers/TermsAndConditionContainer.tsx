@@ -84,7 +84,7 @@ export default function TermsAndConditionContainer({ navigation }: { navigation:
                 {fullTermsShow && (
                     <View>
                         <TP style={styles.scrollView}>
-                            These Terms of Service ("Terms") outline the agreement between you and {settings.config.appName} regarding
+                            These Terms of Service (&quot;Terms&quot;) outline the agreement between you and {settings.config.appName} regarding
                             the use of our self-sovereign identity and non-custodial wallet services. Please read these Terms carefully
                             before using our platform.
                         </TP>
