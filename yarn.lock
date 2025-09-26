@@ -2542,9 +2542,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/cli@npm:0.24.21":
-  version: 0.24.21
-  resolution: "@expo/cli@npm:0.24.21"
+"@expo/cli@npm:0.24.22":
+  version: 0.24.22
+  resolution: "@expo/cli@npm:0.24.22"
   dependencies:
     "@0no-co/graphql.web": "npm:^1.0.8"
     "@babel/runtime": "npm:^7.20.0"
@@ -2559,7 +2559,7 @@ __metadata:
     "@expo/osascript": "npm:^2.2.5"
     "@expo/package-manager": "npm:^1.8.6"
     "@expo/plist": "npm:^0.3.5"
-    "@expo/prebuild-config": "npm:^9.0.11"
+    "@expo/prebuild-config": "npm:^9.0.12"
     "@expo/schema-utils": "npm:^0.1.0"
     "@expo/spawn-async": "npm:^1.7.2"
     "@expo/ws-tunnel": "npm:^1.0.1"
@@ -2610,7 +2610,7 @@ __metadata:
     ws: "npm:^8.12.1"
   bin:
     expo-internal: build/bin/cli
-  checksum: 10c0/6ae1b20b23045192a8a72194212f8eaeb7d239d6b4ae7d9875cf736c31bf96493ffa69e1273feb5ee0cd99b610909fb1f22f901908b5d4de9935f35583e6f8b5
+  checksum: 10c0/6096c311640499b5bdccee7919b3fefa6b6c376af1995a2c0d7af33c82b224f39cf8ea1c41f80d19ceae5691890e2c1fc9dd6f1e06406c616c17a0581f7788a0
   languageName: node
   linkType: hard
 
@@ -2819,7 +2819,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/prebuild-config@npm:^9.0.11":
+"@expo/prebuild-config@npm:^9.0.12":
   version: 9.0.12
   resolution: "@expo/prebuild-config@npm:9.0.12"
   dependencies:
@@ -10921,12 +10921,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:53.0.22":
-  version: 53.0.22
-  resolution: "expo@npm:53.0.22"
+"expo@npm:~53.0.23":
+  version: 53.0.23
+  resolution: "expo@npm:53.0.23"
   dependencies:
     "@babel/runtime": "npm:^7.20.0"
-    "@expo/cli": "npm:0.24.21"
+    "@expo/cli": "npm:0.24.22"
     "@expo/config": "npm:~11.0.13"
     "@expo/config-plugins": "npm:~10.1.2"
     "@expo/fingerprint": "npm:0.13.4"
@@ -10959,7 +10959,7 @@ __metadata:
     expo: bin/cli
     expo-modules-autolinking: bin/autolinking
     fingerprint: bin/fingerprint
-  checksum: 10c0/e476744d0df61a73d9805836073061146ca309956c78d11287441cecd1592f60776c767a7d4eca921d6ce9d7c702e7ddfc126ce7dcc31a61becf443212272ad8
+  checksum: 10c0/ec452c32c2e636b8b810ac7e04a818dfbb9ab692f3dd82bcb899de1a72a37cd147f29226aea0e0047e5b77960079bced26241021e85a37ae97968fa4544630d8
   languageName: node
   linkType: hard
 
@@ -19464,7 +19464,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-native: "npm:^4.0.0"
     ethers: "npm:^6.13.4"
-    expo: "npm:53.0.22"
+    expo: "npm:~53.0.23"
     expo-build-properties: "npm:~0.14.8"
     expo-camera: "npm:~16.1.11"
     expo-dev-client: "npm:~5.2.4"

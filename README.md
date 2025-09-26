@@ -27,7 +27,7 @@ This is to create an expo build so you can down an `.apk` or `.ipa` file from [h
 
 1. Create an expo account to build the app. [https://expo.dev/signup](https://expo.dev/signup)
 2. (for first time build only) `export EXPO_FIRST_TIME=true`
-3. (for every time after first time only) Change the value of `"projectId"` in `./src/config/config.json` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
+3. (for every time after first time only) Change the value of `"expoProjectId"` in `./src/config/config.json` to the vale of the `"Project ID"` in [https://expo.dev](https://expo.dev)
 4. (for IOS only) Run `yarn run build:ios:create` to create a device profile for your phone. Follow the steps below:
 
     If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
