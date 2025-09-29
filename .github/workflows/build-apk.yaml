@@ -43,16 +43,28 @@ jobs:
           sudo rm -rf /opt/ghc || true
           sudo rm -rf /usr/share/dotnet || true
           sudo rm -rf /usr/local/share/boost || true
-          sudo rm -rf /opt/hostedtoolcache || true
-         
-      
-      - name: Install nodejs
+          sudo rm -rf /opt/hostedtoolcache || true   
+
+      - name: Free additional disk space
         run: |
-          wget "nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
-          sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODE_VERSION}-linux-x64.tar.gz"
-          sudo corepack enable
-          node -v && npm -v && yarn -v
-          rm "node-v${NODE_VERSION}-linux-x64.tar.gz"
+          sudo rm -rf /usr/local/lib/android/sdk/system-images || true
+          sudo rm -rf /usr/local/lib/android/sdk/emulator || true
+          sudo rm -rf /usr/local/lib/android/sdk/.android || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          df -h
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.3.0
+          cache: 'yarn'
+
+      # - name: Install nodejs
+      #   run: |
+      #     wget "nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
+      #     sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODE_VERSION}-linux-x64.tar.gz"
+      #     sudo corepack enable
+      #     node -v && npm -v && yarn -v
+      #     rm "node-v${NODE_VERSION}-linux-x64.tar.gz"
 
       # Clears about 3.2Gb
       # Images:
@@ -89,7 +101,7 @@ jobs:
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
-          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
+          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local --non-interactive --skip-project-configuration
         env:
           SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
         
