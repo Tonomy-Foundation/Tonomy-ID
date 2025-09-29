@@ -36,23 +36,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      # Remove preinstalled tool caches you don't need for this build
-      - name: Free disk space on runner
-        run: |
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /usr/local/share/boost || true
-          sudo rm -rf /opt/hostedtoolcache || true   
-
-      - name: Free additional disk space
-        run: |
-          sudo rm -rf /usr/local/lib/android/sdk/system-images || true
-          sudo rm -rf /usr/local/lib/android/sdk/emulator || true
-          sudo rm -rf /usr/local/lib/android/sdk/.android || true
-          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
-          sudo rm -rf /usr/share/swift || true
-          df -h
       
       - name: Install nodejs
         run: |
@@ -99,6 +82,7 @@ jobs:
           rm -rf ~/.gradle/caches ~/.gradle/daemon ~/.gradle/native ~/.android/build-cache || true
           rm -rf ~/.npm/_cacache ~/.cache || true
           df -h
+          
       - name: Install Ninja build system
         run: |
           sudo apt-get update
