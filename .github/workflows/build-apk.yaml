@@ -99,6 +99,10 @@ jobs:
           rm -rf ~/.gradle/caches ~/.gradle/daemon ~/.gradle/native ~/.android/build-cache || true
           rm -rf ~/.npm/_cacache ~/.cache || true
           df -h
+      - name: Install Ninja build system
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
 
       - name: 🚀 Build Android .apk app
         run: |
