@@ -30,7 +30,7 @@ jobs:
       SENTRY_SECRET_KEY : ${{ secrets.SENTRY_SECRET_KEY }}
       # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
     container:
-      image: cimg/android:2024.01-ndk
+      image: cimg/android:2024.01
       # See https://circleci.com/developer/images/image/cimg/android#image-tags
 
     steps:
@@ -64,18 +64,35 @@ jobs:
           sudo docker images
           sudo docker system df
         
-      - name: Install dependancies
+      - name: Install dependencies
         run: yarn --immutable
 
       # Clears about 0.5Gb
       - name: Clear yarn cache
         run: |
-          sudo du -sh ~/.yarn
+          sudo du -sh ~/.yarn || true
           yarn cache clean
-          sudo du -sh ~/.yarn
+          sudo du -sh ~/.yarn || true
 
       - name: Install eas globally
         run: sudo npm install -g eas-cli@16.3.3
+
+      - name: Free space inside container
+        run: |
+          # Remove unused Android packages
+          yes | sdkmanager --uninstall "emulator" || true
+          yes | sdkmanager --uninstall "system-images;android-2*" "system-images;android-3*" || true
+          yes | sdkmanager --uninstall "platforms;android-2*" "platforms;android-3*" || true
+          yes | sdkmanager --uninstall "build-tools;2*" "build-tools;3*" || true
+          # Remove Gradle/Android/node caches
+          rm -rf ~/.gradle/caches ~/.gradle/daemon ~/.gradle/native ~/.android/build-cache || true
+          rm -rf ~/.npm/_cacache ~/.cache || true
+          df -h
+
+      - name: Install Ninja build system
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
 
       - name: 🚀 Build Android .apk app
         run: |

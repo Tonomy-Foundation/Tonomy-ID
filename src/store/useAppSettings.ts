@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { appStorage } from '../utils/StorageManager/setup';
 import { useFocusEffect } from '@react-navigation/native';
 import useErrorStore from './errorStore';
+import { toggleDebugLogs } from '../utils/debug';
 
 function useAppSettings() {
     const [developerMode, setDeveloperMode] = useState<boolean>(false);
@@ -26,6 +27,7 @@ function useAppSettings() {
     const setDeveloperModeSettings = async (mode: boolean) => {
         try {
             setDeveloperMode(mode);
+            toggleDebugLogs(mode);
             await appStorage.setDeveloperMode(mode);
         } catch (error) {
             errorStore.setError({ error, expected: false });
