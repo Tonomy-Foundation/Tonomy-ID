@@ -53,18 +53,14 @@ jobs:
           sudo rm -rf /opt/hostedtoolcache/CodeQL || true
           df -h
       
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.3.0
-          cache: 'yarn'
-
-      # - name: Install nodejs
-      #   run: |
-      #     wget "nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
-      #     sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODE_VERSION}-linux-x64.tar.gz"
-      #     sudo corepack enable
-      #     node -v && npm -v && yarn -v
-      #     rm "node-v${NODE_VERSION}-linux-x64.tar.gz"
+      
+      - name: Install nodejs
+        run: |
+          wget "nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
+          sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODE_VERSION}-linux-x64.tar.gz"
+          sudo corepack enable
+          node -v && npm -v && yarn -v
+          rm "node-v${NODE_VERSION}-linux-x64.tar.gz"
 
       # Clears about 3.2Gb
       # Images:
