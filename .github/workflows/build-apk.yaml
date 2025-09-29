@@ -31,7 +31,7 @@ jobs:
       # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
     container:
       image: cimg/android:2024.01
-      # ⚡ No NDK version → lighter image (~5–7 GB smaller)
+      # See https://circleci.com/developer/images/image/cimg/android#image-tags
 
     steps:
       - name: Checkout code
@@ -46,6 +46,12 @@ jobs:
           rm "node-v${NODE_VERSION}-linux-x64.tar.gz"
 
       # Clears about 3.2Gb
+      # Images:
+      # - node:16/18/20(-alpine)
+      # - moby/buildkit:latest
+      # - alpine:3.16/3.17/3.18/3.19
+      # - debian:10/11
+      # - ubuntu:24.04
       - name: Clean up Docker images
         run: |
           echo "Docker before cleanup:"
@@ -82,7 +88,7 @@ jobs:
           rm -rf ~/.gradle/caches ~/.gradle/daemon ~/.gradle/native ~/.android/build-cache || true
           rm -rf ~/.npm/_cacache ~/.cache || true
           df -h
-          
+
       - name: Install Ninja build system
         run: |
           sudo apt-get update
@@ -91,7 +97,7 @@ jobs:
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
-          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local --non-interactive --skip-project-configuration
+          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
         env:
           SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
         
