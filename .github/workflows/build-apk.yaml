@@ -96,8 +96,6 @@ jobs:
 
       - name: Free space inside container
         run: |
-          set -euxo pipefail
-          df -h
           # Remove emulator and system images if present
           yes | sdkmanager --uninstall "emulator" || true
           yes | sdkmanager --uninstall "system-images;android-21;*" "system-images;android-22;*" "system-images;android-23;*" \
