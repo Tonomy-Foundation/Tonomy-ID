@@ -36,6 +36,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+        # Remove preinstalled tool caches you don't need for this build
+      - name: Free disk space on runner
+        run: |
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /opt/hostedtoolcache || true
+         
       
       - name: Install nodejs
         run: |
