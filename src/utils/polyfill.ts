@@ -77,7 +77,8 @@ function mockNoInternet() {
  * This polyfill restores the legacy `removeEventListener` API and ensures compatibility with libraries expecting it.
  */
 (() => {
-    const subs = new Map<Function, { remove: () => void }>();
+    type BackPressHandler = () => boolean;
+    const subs = new Map<BackPressHandler, { remove: () => void }>();
     const add = BackHandler.addEventListener.bind(BackHandler);
 
     BackHandler.addEventListener = (eventName: any, handler: any) => {
@@ -92,9 +93,9 @@ function mockNoInternet() {
         } as any;
     };
 
-    // @ts-ignore legacy removal polyfill
+    // @ts-ignore legacy removeEventListener polyfill
     if (!BackHandler.removeEventListener) {
-        // @ts-ignore
+        // @ts-ignore legacy removeEventListener polyfill
         BackHandler.removeEventListener = (_evt: any, handler: any) => {
             const sub = subs.get(handler);
 
