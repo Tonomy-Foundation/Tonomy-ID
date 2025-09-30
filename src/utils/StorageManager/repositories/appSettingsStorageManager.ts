@@ -1,3 +1,4 @@
+import settings from '../../../settings';
 import { AppStorageRepository } from './appSettingsStorageRepository';
 
 export abstract class AppStorageManager {
@@ -44,7 +45,8 @@ export abstract class AppStorageManager {
     public async getDeveloperMode(): Promise<boolean> {
         const mode = await this.repository.findByName('developerMode');
 
-        return mode?.value === 'true' ? true : false;
+        if (!mode) return settings.env !== 'production';
+        return mode.value === 'true';
     }
 
     //-- Splace Screen >> Onboarding

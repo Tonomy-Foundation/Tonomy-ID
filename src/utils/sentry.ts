@@ -20,11 +20,31 @@ if (settings.isProduction()) {
 export function captureError(message: string, error: any, level: SeverityLevel = 'error'): string {
     const errorObject = error instanceof Error ? error : new Error(serializeAny(error));
 
+    console[levelToLoggerLevel(level)](
+        `captureError(): ${message}`,
+        errorObject,
+        errorObject.stack,
+        error instanceof Error
+    );
+
     if (settings.isProduction()) {
         return sendToSentry(message, errorObject, level);
     } else {
-        console[level](`captureError(): ${message}`, errorObject.stack || errorObject);
         return 'sentry-not-active';
+    }
+}
+
+function levelToLoggerLevel(level: SeverityLevel): 'error' | 'log' | 'warn' | 'debug' | 'info' {
+    switch (level) {
+        case 'error':
+        case 'log':
+        case 'debug':
+        case 'info':
+            return level;
+        case 'warning':
+            return 'warn';
+        case 'fatal':
+            return 'error';
     }
 }
 
