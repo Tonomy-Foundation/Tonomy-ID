@@ -47,5 +47,5 @@
     "veriffApiKey": "d58b414f-9c36-4538-85cd-5a0af6eb9c0e",
     "baseNetwork": "localhost",
     "baseTokenAddress": "0xb09da8a5B236fE0295A345035287e80bb0008290",
-    "baseRpcUrl": "https://base-sepolia.infura.io/v3/"
+    "baseRpcUrl": "http://localhost:8545"
 }
