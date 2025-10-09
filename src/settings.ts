@@ -52,6 +52,7 @@ type ConfigType = {
     ssoWebsiteOrigin: string;
     communicationUrl: string;
     accountsServiceUrl: string;
+    tonomyAppsOrigin: string;
     tonomyIdSlug: string;
     captchaSiteKey: string;
     blockExplorerUrl: string;

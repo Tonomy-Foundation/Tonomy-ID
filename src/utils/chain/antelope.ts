@@ -349,9 +349,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         coinmarketCapId: string,
         transferable = true,
         vestable = false,
-        stakeable = false
+        stakeable = false,
+        swapable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable, swapable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -527,7 +528,18 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, TokenLogo, 'tono', false, true, true);
+export const TONOToken = new TonomyToken(
+    TonomyMainnetChain,
+    'TONO',
+    'TONO',
+    6,
+    TokenLogo,
+    'tono',
+    false,
+    true,
+    true,
+    true
+);
 
 export const TONOTestnetToken = new TonomyToken(
     TonomyTestnetChain,
@@ -537,6 +549,7 @@ export const TONOTestnetToken = new TonomyToken(
     TokenLogo,
     'tono-testnet',
     false,
+    true,
     true,
     true
 );
@@ -550,6 +563,7 @@ export const TONOStagingToken = new TonomyToken(
     'tono-staging',
     false,
     true,
+    true,
     true
 );
 
@@ -561,6 +575,7 @@ export const TONOLocalToken = new TonomyToken(
     TokenLogo,
     'tono-local',
     false,
+    true,
     true,
     true
 );

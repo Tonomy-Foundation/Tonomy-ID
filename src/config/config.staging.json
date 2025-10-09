@@ -36,6 +36,7 @@
     "ssoWebsiteOrigin": "https://accounts.staging.tonomy.foundation",
     "communicationUrl": "wss://communication.staging.tonomy.foundation",
     "accountsServiceUrl": "https://communication.staging.tonomy.foundation",
+    "tonomyAppsOrigin": "https://apps.staging.tonomy.foundation",
     "captchaSiteKey": "95008dde-06bd-4713-bb8d-4b1e578dad6a",
     "blockExplorerUrl": "https://local.bloks.io",
     "tonomyIdSlug": "tonomy-id-staging://",
@@ -43,5 +44,8 @@
     "etherscanApiKey": "8V6DEHQ64R18FFNX2B5S345IXXNZRJVVQX",
     "walletConnectProjectId": "650e5b61be5fadae5d817ff12daa1283",
     "currencySymbol": "TONO",
-    "veriffApiKey": "46d9cff1-7c16-4bd6-9a58-db8e35858fe7"
+    "veriffApiKey": "46d9cff1-7c16-4bd6-9a58-db8e35858fe7",
+    "baseNetwork": "base-sepolia",
+    "baseTokenAddress": "0xC71Ae7EBa91037Ff145671D0d25Ba415BB69450c",
+    "baseRpcUrl": "https://base-sepolia.infura.io/v3/"
 }
