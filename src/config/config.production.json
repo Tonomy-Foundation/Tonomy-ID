@@ -44,5 +44,8 @@
     "etherscanApiKey": "ID6DBNPAV79QFD8M784Y7SH58HNDDP25PZ",
     "walletConnectProjectId": "850cdd095217e599acfd5f9f01d7b1ba",
     "currencySymbol": "TONO",
-    "veriffApiKey": "7200d9b7-bf87-43bd-a425-e3d1c57d708c"
+    "veriffApiKey": "7200d9b7-bf87-43bd-a425-e3d1c57d708c",
+    "baseNetwork": "base",
+    "baseTokenAddress": "TODO",
+    "baseRpcUrl": "https://base.infura.io/v3/"
 }
