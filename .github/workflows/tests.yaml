@@ -5,7 +5,9 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-24.04
-
+    env:
+      INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+      
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4

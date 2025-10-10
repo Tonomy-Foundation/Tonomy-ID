@@ -158,7 +158,6 @@ if (process.env.SENTRY_PROJECT_ID) {
 }
 
 config.environment = env;
-
 settings.config = config;
 
 export default settings;
