@@ -127,6 +127,22 @@ if (process.env.SENTRY_SECRET_KEY) {
     config.sentrySecretKey = process.env.SENTRY_SECRET_KEY;
 }
 
+if (process.env.INFURA_KEY) {
+    config.infuraKey = process.env.INFURA_KEY;
+}
+
+if (process.env.ETHERSCAN_API_KEY) {
+    config.etherscanApiKey = process.env.ETHERSCAN_API_KEY;
+}
+
+if (process.env.WALLETCONNECT_PROJECT_ID) {
+    config.walletConnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
+}
+
+if (process.env.VERIFF_API_KEY) {
+    config.veriffApiKey = process.env.VERIFF_API_KEY;
+}
+
 config.sentryPublicKey = '49c8103bafbb9ebd792b3e3db9f91e76';
 config.sentryProjectId = '4508392816705616';
 config.environment = env;

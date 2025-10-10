@@ -19,7 +19,7 @@ jobs:
       # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
       GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
       # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
-
+      INFURA_KEY: ${{ secrets.INFURA_KEY }}
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
@@ -43,16 +43,28 @@ jobs:
       - run: |
           if [[ ${GITHUB_REF#refs/*/} == "master" ]]; then
             echo "Branch is 'master'"
+            echo "MAINNET_ETHERSCAN_API_KEY=${{ secrets.MAINNET_ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
+            echo "MAINNET_HCAPTCHA_SITE_KEY=${{ secrets.MAINNET_HCAPTCHA_SITE_KEY }}" >> $GITHUB_ENV
+            echo "MAINNET_VERIFF_API_KEY=${{ secrets.MAINNET_VERIFF_API_KEY }}" >> $GITHUB_ENV
+            echo "MAINNET_WALLETCONNECT_PROJECT_ID=${{ secrets.MAINNET_WALLETCONNECT_PROJECT_ID }}" >> $GITHUB_ENV
             yarn run deploy:production
           fi
 
           if [[ ${GITHUB_REF#refs/*/} == "testnet" ]]; then
             echo "Branch is 'testnet'"
+            echo "TESTNET_ETHERSCAN_API_KEY=${{ secrets.TESTNET_ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
+            echo "TESTNET_HCAPTCHA_SITE_KEY=${{ secrets.TESTNET_HCAPTCHA_SITE_KEY }}" >> $GITHUB_ENV
+            echo "TESTNET_VERIFF_API_KEY=${{ secrets.TESTNET_VERIFF_API_KEY }}" >> $GITHUB_ENV
+            echo "WALLETCONNECT_PROJECT_ID=${{ secrets.WALLETCONNECT_PROJECT_ID }}" >> $GITHUB_ENV
             yarn run deploy:testnet
           fi
 
           if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             echo "Branch is 'development'"
+            echo "STAGING_ETHERSCAN_API_KEY=${{ secrets.STAGING_ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
+            echo "STAGING_HCAPTCHA_SITE_KEY=${{ secrets.STAGING_HCAPTCHA_SITE_KEY }}" >> $GITHUB_ENV
+            echo "STAGING_VERIFF_API_KEY=${{ secrets.STAGING_VERIFF_API_KEY }}" >> $GITHUB_ENV
+            echo "WALLETCONNECT_PROJECT_ID=${{ secrets.WALLETCONNECT_PROJECT_ID }}" >> $GITHUB_ENV
             yarn run deploy:staging
           fi
         env:
