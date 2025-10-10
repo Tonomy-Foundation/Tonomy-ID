@@ -39,3 +39,23 @@ DebugAndLog.storage = Debug.storage;
 DebugAndLog.destroy = Debug.destroy;
 
 export default DebugAndLog;
+
+export function toggleDebugLogs(tonomyNamespaceEnable: boolean): void {
+    const namespaces = Debug.disable();
+    let newNamespaces = namespaces;
+
+    if (tonomyNamespaceEnable) {
+        if (!namespaces.includes('tonomy*')) {
+            newNamespaces = namespaces + ',tonomy*';
+        }
+
+        if (process.env.DEBUG && !namespaces.includes(process.env.DEBUG)) {
+            newNamespaces = namespaces + ',' + process.env.DEBUG;
+        }
+    } else {
+        newNamespaces = namespaces.replace('tonomy*', '');
+        newNamespaces = namespaces.replace(process.env.DEBUG, '');
+    }
+
+    Debug.enable(newNamespaces);
+}

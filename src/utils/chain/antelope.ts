@@ -43,26 +43,22 @@ import { IdentityV3, ResolvedSigningRequest } from '@wharfkit/signing-request';
 import Debug from '../debug';
 import { createUrl, getQueryParam, KeyValue, serializeAny } from '../strings';
 import {
-    VestingContract,
-    StakingContract,
     StakingAccountState,
     SdkErrors,
     AntelopePushTransactionError,
     HttpError,
     isErrorCode,
+    getVestingContract,
 } from '@tonomy/tonomy-id-sdk';
 import { hexToBytes, bytesToHex } from 'did-jwt';
 import { ApplicationErrors, throwError } from '../errors';
 import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
-import { Signer } from '@tonomy/tonomy-id-sdk';
+import { Signer, getStakingContract } from '@tonomy/tonomy-id-sdk';
 import settings from '../../settings';
 import TokenLogo from '../../assets/tonomyProduction/favicon.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
 import { formatAssetToNumber } from '../numbers';
-
-const vestingContract = VestingContract.Instance;
-const stakingContract = StakingContract.Instance;
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -163,29 +159,29 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
     }
 
     async signTransaction(data: ActionData[] | AntelopeTransaction): Promise<SignedTransaction> {
-        const actions: ActionData[] = data instanceof AntelopeTransaction ? await data.getData() : data;
+        const actionData: ActionData[] = data instanceof AntelopeTransaction ? await data.getData() : data;
 
         // Get the ABI(s) of all contracts
 
         // Create the action data
-        const actionData: Action[] = [];
+        const actions: Action[] = [];
 
-        for (const action of actions) {
+        for (const action of actionData) {
             if (action.name.toString() === 'identity') {
                 const abi: ABI = Serializer.synthesize(IdentityV3 as ABISerializableConstructor);
 
                 // eslint-disable-next-line camelcase
                 abi.actions = [{ name: 'identity', type: 'identity', ricardian_contract: '' }];
-                actionData.push(Action.from(action, abi));
+                actions.push(Action.from(action, abi));
             } else {
                 const api = await this.chain.getApiClient();
-                const uniqueContracts = [...new Set(actions.map((data) => data.account))];
+                const uniqueContracts = [...new Set(actionData.map((data) => data.account))];
                 const abiPromises = uniqueContracts.map((contract) => api.v1.chain.get_abi(contract));
                 const abiArray = await Promise.all(abiPromises);
                 const abiMap = new Map(abiArray.map((abi) => [abi.account_name, abi.abi]));
                 const abi = abiMap.get(action.account.toString());
 
-                actionData.push(Action.from(action, abi));
+                actions.push(Action.from(action, abi));
             }
         }
 
@@ -204,7 +200,7 @@ export class AntelopePrivateKey extends AbstractPrivateKey implements IPrivateKe
         const transaction = Transaction.from({
             ...header,
             expiration,
-            actions: actionData,
+            actions,
         });
 
         // Create signature
@@ -353,9 +349,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         coinmarketCapId: string,
         transferable = true,
         vestable = false,
-        stakeable = false
+        stakeable = false,
+        swapable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable, swapable);
         this.coinmarketCapId = coinmarketCapId;
     }
 
@@ -459,28 +456,26 @@ export class TonomyToken extends AntelopeToken {
                 throw new Error('Account not found');
             })();
 
-        const vestedBalance = await vestingContract.getBalance(lookupAccount.getName());
+        const vestedBalance = await getVestingContract().getBalance(lookupAccount.getName());
 
         debug('getVestedTotalBalance() vestedBalance', vestedBalance);
         return new Asset(this, new Decimal(vestedBalance));
     }
 
     async getVestedTokens(account: IAccount): Promise<VestedTokens> {
-        return await vestingContract.getVestingAllocations(account.getName());
+        return await getVestingContract().getVestingAllocations(account.getName());
     }
 
     async withdrawVestedTokens(account: IAccount, accountSigner: Signer): Promise<PushTransactionResponse> {
-        return await vestingContract.withdraw(account.getName(), accountSigner);
+        return await getVestingContract().withdraw(account.getName(), accountSigner);
     }
 
     async getAccountStateData(account: IAccount): Promise<StakingAccountState> {
-        const accountData = await stakingContract.getAccountState(account.getName());
-
-        return accountData;
+        return await getStakingContract().getAccountState(account.getName());
     }
 
     async stakeTokens(account: IAccount, amount: string, accountSigner: Signer): Promise<PushTransactionResponse> {
-        return await stakingContract.stakeTokens(account.getName(), amount, accountSigner);
+        return await getStakingContract().stakeTokens(account.getName(), amount, accountSigner);
     }
 
     async unStakeTokens(
@@ -488,13 +483,13 @@ export class TonomyToken extends AntelopeToken {
         allocationId: number,
         accountSigner: Signer
     ): Promise<PushTransactionResponse> {
-        return await stakingContract.requestUnstake(account.getName(), allocationId, accountSigner);
+        return await getStakingContract().requestUnstake(account.getName(), allocationId, accountSigner);
     }
 
     async getCalculatedYield(amount: number): Promise<number> {
-        const settings = await stakingContract.getSettings();
+        const settings = await getStakingContract().getSettings();
 
-        return stakingContract.calculateMonthlyYield(amount, settings);
+        return getStakingContract().calculateMonthlyYield(amount, settings);
     }
 }
 
@@ -533,7 +528,18 @@ export const TonomyLocalChain = new AntelopeChain(
     true
 );
 
-export const TONOToken = new TonomyToken(TonomyMainnetChain, 'TONO', 'TONO', 6, TokenLogo, 'tono', false, true, true);
+export const TONOToken = new TonomyToken(
+    TonomyMainnetChain,
+    'TONO',
+    'TONO',
+    6,
+    TokenLogo,
+    'tono',
+    false,
+    true,
+    true,
+    true
+);
 
 export const TONOTestnetToken = new TonomyToken(
     TonomyTestnetChain,
@@ -543,6 +549,7 @@ export const TONOTestnetToken = new TonomyToken(
     TokenLogo,
     'tono-testnet',
     false,
+    true,
     true,
     true
 );
@@ -556,6 +563,7 @@ export const TONOStagingToken = new TonomyToken(
     'tono-staging',
     false,
     true,
+    true,
     true
 );
 
@@ -567,6 +575,7 @@ export const TONOLocalToken = new TonomyToken(
     TokenLogo,
     'tono-local',
     false,
+    true,
     true,
     true
 );

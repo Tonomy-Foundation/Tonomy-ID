@@ -36,12 +36,11 @@
     "ssoWebsiteOrigin": "https://accounts.tonomy.io",
     "communicationUrl": "wss://communication.tonomy.io",
     "accountsServiceUrl": "https://communication.tonomy.io",
-    "captchaSiteKey": "0caf1023-edb9-466c-b848-6f2e0fe975eb",
+    "tonomyAppsOrigin": "https://apps.tonomy.io",
     "blockExplorerUrl": "https://explorer.tonomy.io",
     "tonomyIdSlug": "united-wallet://",
-    "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
-    "etherscanApiKey": "ID6DBNPAV79QFD8M784Y7SH58HNDDP25PZ",
-    "walletConnectProjectId": "850cdd095217e599acfd5f9f01d7b1ba",
     "currencySymbol": "TONO",
-    "veriffApiKey": "7200d9b7-bf87-43bd-a425-e3d1c57d708c"
+    "baseNetwork": "base",
+    "baseTokenAddress": "TODO",
+    "baseRpcUrl": "https://base.infura.io/v3/"
 }

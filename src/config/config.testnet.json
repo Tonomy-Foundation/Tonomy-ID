@@ -36,12 +36,11 @@
     "ssoWebsiteOrigin": "https://accounts.testnet.tonomy.io",
     "communicationUrl": "wss://communication.testnet.tonomy.io",
     "accountsServiceUrl": "https://communication.testnet.tonomy.io",
+    "tonomyAppsOrigin": "https://apps.testnet.tonomy.io",
     "blockExplorerUrl": "https://explorer.testnet.tonomy.io",
-    "captchaSiteKey": "bf994ca7-3b1f-43c4-b35f-0cf27b0da3c8",
     "tonomyIdSlug": "pangea-testnet://",
-    "infuraKey": "77422fa49acc4b4eb189abd416350cd8",
-    "etherscanApiKey": "8V6DEHQ64R18FFNX2B5S345IXXNZRJVVQX",
-    "walletConnectProjectId": "650e5b61be5fadae5d817ff12daa1283",
     "currencySymbol": "TONO",
-    "veriffApiKey": "461a1795-d8b4-4a1f-950a-8f523ff72d0c"
+    "baseNetwork": "base-sepolia",
+    "baseTokenAddress": "0x56aD9925f417358640746266eF44a701622c54Ba",
+    "baseRpcUrl": "https://base-sepolia.infura.io/v3/"
 }

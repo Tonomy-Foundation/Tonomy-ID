@@ -2542,9 +2542,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/cli@npm:0.24.21":
-  version: 0.24.21
-  resolution: "@expo/cli@npm:0.24.21"
+"@expo/cli@npm:0.24.22":
+  version: 0.24.22
+  resolution: "@expo/cli@npm:0.24.22"
   dependencies:
     "@0no-co/graphql.web": "npm:^1.0.8"
     "@babel/runtime": "npm:^7.20.0"
@@ -2559,7 +2559,7 @@ __metadata:
     "@expo/osascript": "npm:^2.2.5"
     "@expo/package-manager": "npm:^1.8.6"
     "@expo/plist": "npm:^0.3.5"
-    "@expo/prebuild-config": "npm:^9.0.11"
+    "@expo/prebuild-config": "npm:^9.0.12"
     "@expo/schema-utils": "npm:^0.1.0"
     "@expo/spawn-async": "npm:^1.7.2"
     "@expo/ws-tunnel": "npm:^1.0.1"
@@ -2610,7 +2610,7 @@ __metadata:
     ws: "npm:^8.12.1"
   bin:
     expo-internal: build/bin/cli
-  checksum: 10c0/6ae1b20b23045192a8a72194212f8eaeb7d239d6b4ae7d9875cf736c31bf96493ffa69e1273feb5ee0cd99b610909fb1f22f901908b5d4de9935f35583e6f8b5
+  checksum: 10c0/6096c311640499b5bdccee7919b3fefa6b6c376af1995a2c0d7af33c82b224f39cf8ea1c41f80d19ceae5691890e2c1fc9dd6f1e06406c616c17a0581f7788a0
   languageName: node
   linkType: hard
 
@@ -2819,7 +2819,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/prebuild-config@npm:^9.0.11":
+"@expo/prebuild-config@npm:^9.0.12":
   version: 9.0.12
   resolution: "@expo/prebuild-config@npm:9.0.12"
   dependencies:
@@ -5390,9 +5390,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tonomy/tonomy-id-sdk@npm:0.33.0-development.4":
-  version: 0.33.0-development.4
-  resolution: "@tonomy/tonomy-id-sdk@npm:0.33.0-development.4"
+"@tonomy/tonomy-id-sdk@npm:0.35.0-rc.1":
+  version: 0.35.0-rc.1
+  resolution: "@tonomy/tonomy-id-sdk@npm:0.35.0-rc.1"
   dependencies:
     "@consento/sync-randombytes": "npm:^1.0.5"
     "@tonomy/antelope-did-resolver": "npm:^0.10.0"
@@ -5406,6 +5406,7 @@ __metadata:
     "@veramo/key-manager": "npm:^6.0.0"
     "@veramo/kms-local": "npm:^6.0.0"
     "@wharfkit/antelope": "npm:^1.0.7"
+    "@wharfkit/contract": "npm:^1.2.1"
     argon2: "npm:^0.41.1"
     cross-fetch: "npm:^4.0.0"
     csv-parse: "npm:^5.5.6"
@@ -5419,7 +5420,7 @@ __metadata:
     typeorm: "npm:0.3.22"
     universal-base64url: "npm:^1.1.0"
     web-did-resolver: "npm:^2.0.27"
-  checksum: 10c0/4c28e68706616826ba6feb5347e734f638971891837bc57d105dec7c89b7283ec3c76361e1fe2f8c6de66c29af23f79cd93c6a891d10a4564beefbfa993cdfa4
+  checksum: 10c0/f467a46a90ca39778c5bccc68de0473bb8092c9e490bbf2eecd651e5ac74e7852ce42e15ac92250d24ac639ce3da9fc7ea2288611b068c4a418370c847a91f69
   languageName: node
   linkType: hard
 
@@ -6668,6 +6669,18 @@ __metadata:
     "@wharfkit/signing-request": "npm:^3.1.0"
     tslib: "npm:^2.1.0"
   checksum: 10c0/bdf2361ebc5f6bdf9909006d24be4d2981c0314dc1cd2a55e2fc8491be48bbce1a58a5afb145d6299afa88aee8c9dd9961028972fdae52a7000c7f4ef7f75e4c
+  languageName: node
+  linkType: hard
+
+"@wharfkit/contract@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@wharfkit/contract@npm:1.2.1"
+  dependencies:
+    "@wharfkit/abicache": "npm:^1.2.0"
+    "@wharfkit/antelope": "npm:^1.0.4"
+    "@wharfkit/signing-request": "npm:^3.1.0"
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/9abf44e9521423e88b9822422d386f584536dddc9d7653027eedaff38003330ce8db1a4fb8f9d1aa1ba6b33c3ddd36de7f46e3d22c661bb9723eedb26fa8555a
   languageName: node
   linkType: hard
 
@@ -10921,12 +10934,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:53.0.22":
-  version: 53.0.22
-  resolution: "expo@npm:53.0.22"
+"expo@npm:~53.0.23":
+  version: 53.0.23
+  resolution: "expo@npm:53.0.23"
   dependencies:
     "@babel/runtime": "npm:^7.20.0"
-    "@expo/cli": "npm:0.24.21"
+    "@expo/cli": "npm:0.24.22"
     "@expo/config": "npm:~11.0.13"
     "@expo/config-plugins": "npm:~10.1.2"
     "@expo/fingerprint": "npm:0.13.4"
@@ -10959,7 +10972,7 @@ __metadata:
     expo: bin/cli
     expo-modules-autolinking: bin/autolinking
     fingerprint: bin/fingerprint
-  checksum: 10c0/e476744d0df61a73d9805836073061146ca309956c78d11287441cecd1592f60776c767a7d4eca921d6ce9d7c702e7ddfc126ce7dcc31a61becf443212272ad8
+  checksum: 10c0/ec452c32c2e636b8b810ac7e04a818dfbb9ab692f3dd82bcb899de1a72a37cd147f29226aea0e0047e5b77960079bced26241021e85a37ae97968fa4544630d8
   languageName: node
   linkType: hard
 
@@ -19426,7 +19439,7 @@ __metadata:
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/react-native": "npm:~6.14.0"
     "@sinonjs/text-encoding": "npm:^0.7.3"
-    "@tonomy/tonomy-id-sdk": "npm:0.33.0-development.4"
+    "@tonomy/tonomy-id-sdk": "npm:0.35.0-rc.1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~19.0.10"
@@ -19464,7 +19477,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-native: "npm:^4.0.0"
     ethers: "npm:^6.13.4"
-    expo: "npm:53.0.22"
+    expo: "npm:~53.0.23"
     expo-build-properties: "npm:~0.14.8"
     expo-camera: "npm:~16.1.11"
     expo-dev-client: "npm:~5.2.4"

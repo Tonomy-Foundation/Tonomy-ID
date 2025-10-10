@@ -29,13 +29,26 @@ jobs:
       # https://sentry.io/orgredirect/organizations/:orgslug/settings/auth-tokens/
       SENTRY_SECRET_KEY : ${{ secrets.SENTRY_SECRET_KEY }}
       # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
+      SENTRY_PROJECT_ID : ${{ secrets.SENTRY_PROJECT_ID }}
+      SENTRY_PUBLIC_KEY : ${{ secrets.SENTRY_PUBLIC_KEY }}
     container:
-      image: cimg/android:2024.01-ndk
+      image: cimg/android:2024.01
       # See https://circleci.com/developer/images/image/cimg/android#image-tags
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Clean up disk space
+        run: |
+          echo "Before cleanup:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /home/runner/.cache
+          echo "After cleanup:"
+          df -h
       
       - name: Install nodejs
         run: |
@@ -64,18 +77,35 @@ jobs:
           sudo docker images
           sudo docker system df
         
-      - name: Install dependancies
+      - name: Install dependencies
         run: yarn --immutable
 
       # Clears about 0.5Gb
       - name: Clear yarn cache
         run: |
-          sudo du -sh ~/.yarn
+          sudo du -sh ~/.yarn || true
           yarn cache clean
-          sudo du -sh ~/.yarn
+          sudo du -sh ~/.yarn || true
 
       - name: Install eas globally
         run: sudo npm install -g eas-cli@16.3.3
+
+      - name: Free space inside container
+        run: |
+          # Remove unused Android packages
+          yes | sdkmanager --uninstall "emulator" || true
+          yes | sdkmanager --uninstall "system-images;android-2*" "system-images;android-3*" || true
+          yes | sdkmanager --uninstall "platforms;android-2*" "platforms;android-3*" || true
+          yes | sdkmanager --uninstall "build-tools;2*" "build-tools;3*" || true
+          # Remove Gradle/Android/node caches
+          rm -rf ~/.gradle/caches ~/.gradle/daemon ~/.gradle/native ~/.android/build-cache || true
+          rm -rf ~/.npm/_cacache ~/.cache || true
+          df -h
+
+      - name: Install Ninja build system
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
 
       - name: 🚀 Build Android .apk app
         run: |
