@@ -128,23 +128,35 @@ if (process.env.SENTRY_SECRET_KEY) {
 }
 
 if (process.env.INFURA_KEY) {
+    debug(`Using Infura key from env: ************`);
     config.infuraKey = process.env.INFURA_KEY;
 }
 
 if (process.env.ETHERSCAN_API_KEY) {
+    debug(`Using Etherscan API key from env: ************`);
     config.etherscanApiKey = process.env.ETHERSCAN_API_KEY;
 }
 
 if (process.env.WALLETCONNECT_PROJECT_ID) {
+    debug(`Using WalletConnect Project ID from env: ************`);
     config.walletConnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
 }
 
 if (process.env.VERIFF_API_KEY) {
+    debug(`Using Veriff API key from env: ************`);
     config.veriffApiKey = process.env.VERIFF_API_KEY;
 }
 
-config.sentryPublicKey = '49c8103bafbb9ebd792b3e3db9f91e76';
-config.sentryProjectId = '4508392816705616';
+if (process.env.SENTRY_PUBLIC_KEY) {
+    debug(`Using Sentry public key from env: ************`);
+    config.sentryPublicKey = process.env.SENTRY_PUBLIC_KEY;
+}
+
+if (process.env.SENTRY_PROJECT_ID) {
+    debug(`Using Sentry project ID from env: ************`);
+    config.sentryProjectId = process.env.SENTRY_PROJECT_ID;
+}
+
 config.environment = env;
 
 settings.config = config;

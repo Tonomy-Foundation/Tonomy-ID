@@ -20,6 +20,8 @@ jobs:
       GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
       # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
       INFURA_KEY: ${{ secrets.INFURA_KEY }}
+      SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
+      SENTRY_PROJECT_ID: ${{ secrets.SENTRY_PROJECT_ID }}
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
