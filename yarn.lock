@@ -19480,6 +19480,7 @@ __metadata:
     expo: "npm:~53.0.23"
     expo-build-properties: "npm:~0.14.8"
     expo-camera: "npm:~16.1.11"
+    expo-constants: "npm:~17.1.7"
     expo-dev-client: "npm:~5.2.4"
     expo-font: "npm:~13.3.2"
     expo-linking: "npm:~7.1.7"

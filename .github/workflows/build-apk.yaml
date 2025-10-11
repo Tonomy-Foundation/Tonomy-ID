@@ -32,24 +32,13 @@ jobs:
       SENTRY_PROJECT_ID : ${{ secrets.SENTRY_PROJECT_ID }}
       SENTRY_PUBLIC_KEY : ${{ secrets.SENTRY_PUBLIC_KEY }}
     container:
-      image: cimg/android:2024.01
+      image: cimg/android:2025.10
       # See https://circleci.com/developer/images/image/cimg/android#image-tags
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Clean up disk space
-        run: |
-          echo "Before cleanup:"
-          df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /home/runner/.cache
-          echo "After cleanup:"
-          df -h
-      
       - name: Install nodejs
         run: |
           wget "nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
@@ -90,17 +79,31 @@ jobs:
       - name: Install eas globally
         run: sudo npm install -g eas-cli@16.3.3
 
-      - name: Free space inside container
+      - name: Clean Android SDK (keep only necessary components)
         run: |
-          # Remove unused Android packages
-          yes | sdkmanager --uninstall "emulator" || true
-          yes | sdkmanager --uninstall "system-images;android-2*" "system-images;android-3*" || true
-          yes | sdkmanager --uninstall "platforms;android-2*" "platforms;android-3*" || true
-          yes | sdkmanager --uninstall "build-tools;2*" "build-tools;3*" || true
-          # Remove Gradle/Android/node caches
-          rm -rf ~/.gradle/caches ~/.gradle/daemon ~/.gradle/native ~/.android/build-cache || true
-          rm -rf ~/.npm/_cacache ~/.cache || true
-          df -h
+          # Remove unnecessary Android SDK components
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "emulator" || true
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "system-images;android-30;google_apis;x86_64" || true
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "system-images;android-29;google_apis;x86_64" || true
+          # Keep only the necessary build tools and platforms
+          echo "Current Android packages:"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
+
+      - name: Clear caches before build
+        run: |
+          # Clear various caches
+          yarn cache clean
+          npm cache clean --force
+          rm -rf ~/.cache
+          rm -rf ~/.npm
+          # Clear Android/Gradle caches but keep SDK
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.android/build-cache
+          # Clear temporary files
+          sudo rm -rf /tmp/*
+
+      - name: Check disk space before build
+        run: df -h
 
       - name: Install Ninja build system
         run: |
