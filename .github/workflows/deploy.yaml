@@ -54,12 +54,6 @@ jobs:
           echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
           echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
 
-      - name: Install dependencies
-        run: yarn --immutable || yarn install
-
-      - name: Release build
-        run: yarn release
-
       - name: 🔐 Sync EAS Secrets with GitHub Secrets
         run: |
           # Determine EAS environment based on branch
@@ -79,14 +73,14 @@ jobs:
       - name: 🔐 Sync EAS Secrets
         run: |
           # Use eas secret:create instead of eas env:create
-          eas env:create development --name INFURA_KEY --value $INFURA_KEY --visibility secret --non-interactive || true
-          eas env:create development --name ETHERSCAN_API_KEY --value $ETHERSCAN_API_KEY --visibility secret --non-interactive || true
-          eas env:create development --name SENTRY_PUBLIC_KEY --value $SENTRY_PUBLIC_KEY --visibility secret --non-interactive || true
-          eas env:create development --name SENTRY_SECRET_KEY --value $SENTRY_SECRET_KEY --visibility secret --non-interactive || true
-          eas env:create development --name SENTRY_PROJECT_ID --value $SENTRY_PROJECT_ID --visibility secret --non-interactive || true
-          eas env:create development --name WALLETCONNECT_PROJECT_ID --value $WALLETCONNECT_PROJECT_ID --visibility secret --non-interactive || true
-          eas env:create development --name HCAPTCHA_SITE_KEY --value $HCAPTCHA_SITE_KEY --visibility secret --non-interactive || true
-          eas env:create development --name VERIFF_API_KEY --value $VERIFF_API_KEY --visibility secret --non-interactive || true
+          eas env:create development --name INFURA_KEY --value $INFURA_KEY --non-interactive || true
+          eas env:create development --name ETHERSCAN_API_KEY --value $ETHERSCAN_API_KEY --non-interactive || true
+          eas env:create development --name SENTRY_PUBLIC_KEY --value $SENTRY_PUBLIC_KEY --non-interactive || true
+          eas env:create development --name SENTRY_SECRET_KEY --value $SENTRY_SECRET_KEY --non-interactive || true
+          eas env:create development --name SENTRY_PROJECT_ID --value $SENTRY_PROJECT_ID --non-interactive || true
+          eas env:create development --name WALLETCONNECT_PROJECT_ID --value $WALLETCONNECT_PROJECT_ID --non-interactive || true
+          eas env:create development --name HCAPTCHA_SITE_KEY --value $HCAPTCHA_SITE_KEY --non-interactive || true
+          eas env:create development --name VERIFF_API_KEY --value $VERIFF_API_KEY --non-interactive || true
 
           # eas secret:create --name INFURA_KEY --value "$INFURA_KEY" --scope project --non-interactive || true
           # eas secret:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --scope project --non-interactive || true
@@ -112,10 +106,16 @@ jobs:
           echo "📋 Listing all EAS environment variables:"
           eas env:list --scope project --non-interactive          
           echo "🔍 Checking specific variables:"
-          eas env:view INFURA_KEY --scope project --non-interactive || echo "INFURA_KEY not found"
-          eas env:view WALLETCONNECT_PROJECT_ID --scope project --non-interactive || echo "WALLETCONNECT_PROJECT_ID not found"
-          
+          eas env:view development INFURA_KEY --scope project --non-interactive || echo "INFURA_KEY not found"
+          eas env:view development WALLETCONNECT_PROJECT_ID --scope project --non-interactive || echo "WALLETCONNECT_PROJECT_ID not found"
+
           echo "✅ Verification complete"
+
+      - name: Install dependencies
+        run: yarn --immutable || yarn install
+
+      - name: Release build
+        run: yarn release
 
       - name: Deploy based on branch
         run: |
