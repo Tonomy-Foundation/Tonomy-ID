@@ -6,7 +6,6 @@ on:
       - master
       - testnet
       - development
-      - feature/1556-update-asset
 
 jobs:
   deploy:
@@ -64,10 +63,6 @@ jobs:
           if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             echo "Branch is 'development'"
             yarn run deploy:staging
-          fi
-          if [[ ${GITHUB_REF#refs/*/} == "feature/1556-update-asset" ]]; then
-            echo "Branch is 'feature/1556-update-asset'"
-            yarn run deploy:staging:ios
           fi
         env:
           GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
