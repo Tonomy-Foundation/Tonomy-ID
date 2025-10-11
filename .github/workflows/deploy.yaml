@@ -60,9 +60,6 @@ jobs:
       - name: Release build
         run: yarn release
 
-      - name: 🔑 Authenticate with Expo
-        run: npx eas login --token ${{ secrets.EXPO_TOKEN }}
-
       # 🟩 Add this here: BEFORE the "Deploy based on branch" step
       - name: 🔐 Sync EAS Secrets with GitHub Secrets
         run: |
