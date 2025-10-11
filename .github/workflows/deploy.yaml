@@ -10,6 +10,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       # https://expo.dev/accounts/[account]/settings/access-tokens
@@ -17,7 +18,7 @@ jobs:
       # https://github.com/expo/fyi/blob/main/creating-google-service-account.md
       APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
       # https://github.com/expo/fyi/blob/main/creating-asc-api-key.md
-      GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+      GITHUB_TOKEN: ${{ secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN }}
       # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
       INFURA_KEY: ${{ secrets.INFURA_KEY }}
       SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
@@ -28,39 +29,48 @@ jobs:
       HCAPTCHA_SITE_KEY: ${{ secrets.HCAPTCHA_SITE_KEY }}
 
     steps:
-      - name: 🏗 Setup repo
+      - name: 🏗 Checkout repo
         uses: actions/checkout@v4
         with:
-          token: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+          token: ${{ secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN }}
           # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
-      
+
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
-      - name: 🚀 Build and publish staging app
+      - name: 🚀 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.3.0
-      - run: npm install -g eas-cli@16.3.3
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli@16.3.3
+
       - run: node -v && npm -v && yarn -v && eas -v
-      - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
-      - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
-      - run: yarn --immutable
-      - run: yarn release
-      - run: |
+
+      - name: Create service account files
+        run: |
+          echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
+          echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+
+      - name: Install dependencies
+        run: yarn --immutable || yarn install
+
+      - name: Release build
+        run: yarn release
+
+      - name: Deploy based on branch
+        run: |
+          echo "Current branch: ${{ github.ref_name }}"
+
           if [[ ${GITHUB_REF#refs/*/} == "master" ]]; then
             echo "Branch is 'master'"
             yarn run deploy:production
-          fi
-
-          if [[ ${GITHUB_REF#refs/*/} == "testnet" ]]; then
+          elif [[ ${GITHUB_REF#refs/*/} == "testnet" ]]; then
             echo "Branch is 'testnet'"
             yarn run deploy:testnet
-          fi
-
-          if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
+          elif [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             echo "Branch is 'development'"
             yarn run deploy:staging
           fi
-        env:
-          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
+
