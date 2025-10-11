@@ -24,35 +24,60 @@ jobs:
       EXPO_PLATFORM: android
       NODE_VERSION: 22.3.0
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
-      SENTRY_PROJECT_ID: ${{ secrets.SENTRY_PROJECT_ID }}
-      SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
+      # https://expo.dev/accounts/[account]/settings/access-tokens
+      SENTRY_AUTH_TOKEN : ${{ secrets.SENTRY_AUTH_TOKEN }}
+      # https://sentry.io/orgredirect/organizations/:orgslug/settings/auth-tokens/
+      SENTRY_SECRET_KEY : ${{ secrets.SENTRY_SECRET_KEY }}
+      # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
+      SENTRY_PROJECT_ID : ${{ secrets.SENTRY_PROJECT_ID }}
+      SENTRY_PUBLIC_KEY : ${{ secrets.SENTRY_PUBLIC_KEY }}
+    container:
+      image: cimg/android:2025.10
+      # See https://circleci.com/developer/images/image/cimg/android#image-tags
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup disk space
+      - name: Install nodejs
         run: |
-          echo "Initial disk space:"
-          df -h
-          # Clean system caches
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/*
-          
-      - name: Install Node.js with corepack
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
+          wget "nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
+          sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODE_VERSION}-linux-x64.tar.gz"
+          sudo corepack enable
+          node -v && npm -v && yarn -v
+          rm "node-v${NODE_VERSION}-linux-x64.tar.gz"
 
+      # Clears about 3.2Gb
+      # Images:
+      # - node:16/18/20(-alpine)
+      # - moby/buildkit:latest
+      # - alpine:3.16/3.17/3.18/3.19
+      # - debian:10/11
+      # - ubuntu:24.04
+      - name: Clean up Docker images
+        run: |
+          echo "Docker before cleanup:"
+          sudo docker ps
+          sudo docker images
+          sudo docker system df
+          sudo docker system prune -af
+          echo "Docker after cleanup:"
+          sudo docker ps
+          sudo docker images
+          sudo docker system df
+        
       - name: Install dependencies
-        run: |
-          yarn --immutable --prefer-offline
+        run: yarn --immutable
 
-      - name: Install EAS CLI
-        run: npm install -g eas-cli@16.3.3
+      # Clears about 0.5Gb
+      - name: Clear yarn cache
+        run: |
+          sudo du -sh ~/.yarn || true
+          yarn cache clean
+          sudo du -sh ~/.yarn || true
+
+      - name: Install eas globally
+        run: sudo npm install -g eas-cli@16.3.3
 
       - name: Clean Android SDK (keep only necessary components)
         run: |
@@ -80,17 +105,23 @@ jobs:
       - name: Check disk space before build
         run: df -h
 
+      - name: Install Ninja build system
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
           npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
         env:
           SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
-
-      - name: Find and rename APK file
+        
+      - name: Find APK file and rename it so it can be added as an artifact
         run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk" \;
 
       - name: Archive Android APK as artifact
+        # Do not run this step if the action is being run locally (using nektos/act)
         if: ${{ github.actor != 'nektos/act' }}
         uses: actions/upload-artifact@v4
         with:
