@@ -5,9 +5,7 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-24.04
-    env:
-      INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
-      
+    
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
@@ -21,5 +19,7 @@ jobs:
           node-version: 22.3.0
       - run: yarn --immutable
       - run: yarn run test
+        env:
+          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
       - run: yarn run lint
       - run: yarn run typeCheck
