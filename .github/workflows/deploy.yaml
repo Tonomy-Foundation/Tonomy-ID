@@ -78,14 +78,14 @@ jobs:
       # 🟩 Add this here: BEFORE the "Deploy based on branch" step
       - name: 🔐 Sync EAS Secrets with GitHub Secrets
         run: |
-          eas env:create --name INFURA_KEY --value "$INFURA_KEY" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
-          eas env:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
-          eas env:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
-          eas env:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
-          eas env:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
-          eas env:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
-          eas env:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
-          eas env:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --environment $EAS_ENVIRONMENT --scope project --visibility secret --non-interactive
+          eas env:create --name INFURA_KEY --value "$INFURA_KEY" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
+          eas env:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
+          eas env:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
+          eas env:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
+          eas env:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
+          eas env:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
+          eas env:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
+          eas env:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --environment $EAS_ENVIRONMENT --visibility secret --non-interactive
 
       - name: ✅ Verify EAS Environment Variables
         run: |
