@@ -70,7 +70,7 @@ jobs:
           elif [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             EAS_ENVIRONMENT="development"
           else
-            EAS_ENVIRONMENT="preview"
+            EAS_ENVIRONMENT="staging"
           fi
           
           echo "Using EAS environment: $EAS_ENVIRONMENT"
