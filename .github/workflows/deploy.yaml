@@ -63,5 +63,3 @@ jobs:
             echo "Branch is 'development'"
             yarn run deploy:staging
           fi
-        env:
-          GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
