@@ -79,14 +79,23 @@ jobs:
       - name: 🔐 Sync EAS Secrets
         run: |
           # Use eas secret:create instead of eas env:create
-          eas secret:create --name INFURA_KEY --value "$INFURA_KEY" --scope project --non-interactive || true
-          eas secret:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --scope project --non-interactive || true
-          eas secret:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --scope project --non-interactive || true
-          eas secret:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --scope project --non-interactive || true
-          eas secret:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --scope project --non-interactive || true
-          eas secret:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --scope project --non-interactive || true
-          eas secret:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --scope project --non-interactive || true
-          eas secret:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --scope project --non-interactive || true
+          eas env:create development --name INFURA_KEY --value $INFURA_KEY --visibility secret --non-interactive || true
+          eas env:create development --name ETHERSCAN_API_KEY --value $ETHERSCAN_API_KEY --visibility secret --non-interactive || true
+          eas env:create development --name SENTRY_PUBLIC_KEY --value $SENTRY_PUBLIC_KEY --visibility secret --non-interactive || true
+          eas env:create development --name SENTRY_SECRET_KEY --value $SENTRY_SECRET_KEY --visibility secret --non-interactive || true
+          eas env:create development --name SENTRY_PROJECT_ID --value $SENTRY_PROJECT_ID --visibility secret --non-interactive || true
+          eas env:create development --name WALLETCONNECT_PROJECT_ID --value $WALLETCONNECT_PROJECT_ID --visibility secret --non-interactive || true
+          eas env:create development --name HCAPTCHA_SITE_KEY --value $HCAPTCHA_SITE_KEY --visibility secret --non-interactive || true
+          eas env:create development --name VERIFF_API_KEY --value $VERIFF_API_KEY --visibility secret --non-interactive || true
+
+          # eas secret:create --name INFURA_KEY --value "$INFURA_KEY" --scope project --non-interactive || true
+          # eas secret:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --scope project --non-interactive || true
+          # eas secret:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --scope project --non-interactive || true
+          # eas secret:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --scope project --non-interactive || true
+          # eas secret:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --scope project --non-interactive || true
+          # eas secret:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --scope project --non-interactive || true
+          # eas secret:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --scope project --non-interactive || true
+          # eas secret:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --scope project --non-interactive || true
         env:
           INFURA_KEY: ${{ secrets.INFURA_KEY }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
