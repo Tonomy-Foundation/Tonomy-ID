@@ -63,14 +63,24 @@ jobs:
       # 🟩 Add this here: BEFORE the "Deploy based on branch" step
       - name: 🔐 Sync EAS Secrets with GitHub Secrets
         run: |
-          eas env:create --name INFURA_KEY --value "$INFURA_KEY" --scope project --visibility secret
-          eas env:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --scope project --visibility secret
-          eas env:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --scope project --visibility secret
-          eas env:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --scope project --visibility secret
-          eas env:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --scope project --visibility secret
-          eas env:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --scope project --visibility secret
-          eas env:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --scope project --visibility secret
-          eas env:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --scope project --visibility secret
+          eas env:create --name INFURA_KEY --value "$INFURA_KEY" --scope project --visibility secret --non-interactive
+          eas env:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --scope project --visibility secret --non-interactive
+          eas env:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --scope project --visibility secret --non-interactive
+          eas env:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --scope project --visibility secret --non-interactive
+          eas env:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --scope project --visibility secret --non-interactive
+          eas env:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --scope project --visibility secret --non-interactive
+          eas env:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --scope project --visibility secret --non-interactive
+          eas env:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --scope project --visibility secret --non-interactive
+
+      - name: ✅ Verify EAS Environment Variables
+        run: |
+          echo "📋 Listing all EAS environment variables:"
+          eas env:list --scope project --non-interactive          
+          echo "🔍 Checking specific variables:"
+          eas env:view INFURA_KEY --scope project --non-interactive || echo "INFURA_KEY not found"
+          eas env:view WALLETCONNECT_PROJECT_ID --scope project --non-interactive || echo "WALLETCONNECT_PROJECT_ID not found"
+          
+          echo "✅ Verification complete"
 
       - name: Deploy based on branch
         run: |
