@@ -46,6 +46,8 @@ jobs:
       - run: node -v && npm -v && yarn -v && eas -v
       - run: echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
       - run: echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+      - name: 🔍 View Environment Secrets for Current Branch
+        run: eas secret:list --env all
       - run: yarn --immutable
       - run: yarn release
       - run: |
