@@ -1,6 +1,9 @@
 import Debug from 'debug';
+import Constants from 'expo-constants';
 
 const debug = Debug('tonomy-id:settings');
+const expoConfig = Constants.expoConfig?.extra || process.env;
+
 const env = process.env.EXPO_NODE_ENV ?? 'development';
 
 const settingsInputs = {
@@ -117,44 +120,44 @@ if (process.env.ACCOUNTS_SERVICE_URL) {
     config.accountsServiceUrl = process.env.ACCOUNTS_SERVICE_URL;
 }
 
-if (process.env.HCAPTCHA_SITE_KEY) {
-    debug(`Using hCaptcha site key from env: ${process.env.HCAPTCHA_SITE_KEY}`);
-    config.captchaSiteKey = process.env.HCAPTCHA_SITE_KEY;
+if (expoConfig.HCAPTCHA_SITE_KEY) {
+    debug(`Using hCaptcha site key from env: ${expoConfig.HCAPTCHA_SITE_KEY}`);
+    config.captchaSiteKey = expoConfig.HCAPTCHA_SITE_KEY;
 }
 
-if (process.env.SENTRY_SECRET_KEY) {
+if (expoConfig.SENTRY_SECRET_KEY) {
     debug(`Using Sentry secret key from env: ************`);
-    config.sentrySecretKey = process.env.SENTRY_SECRET_KEY;
+    config.sentrySecretKey = expoConfig.SENTRY_SECRET_KEY;
 }
 
-if (process.env.INFURA_KEY) {
+if (expoConfig.INFURA_KEY) {
     debug(`Using Infura key from env: ************`);
-    config.infuraKey = process.env.INFURA_KEY;
+    config.infuraKey = expoConfig.INFURA_KEY;
 }
 
-if (process.env.ETHERSCAN_API_KEY) {
+if (expoConfig.ETHERSCAN_API_KEY) {
     debug(`Using Etherscan API key from env: ************`);
-    config.etherscanApiKey = process.env.ETHERSCAN_API_KEY;
+    config.etherscanApiKey = expoConfig.ETHERSCAN_API_KEY;
 }
 
-if (process.env.WALLETCONNECT_PROJECT_ID) {
+if (expoConfig.WALLETCONNECT_PROJECT_ID) {
     debug(`Using WalletConnect Project ID from env: ************`);
-    config.walletConnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
+    config.walletConnectProjectId = expoConfig.WALLETCONNECT_PROJECT_ID;
 }
 
-if (process.env.VERIFF_API_KEY) {
+if (expoConfig.VERIFF_API_KEY) {
     debug(`Using Veriff API key from env: ************`);
-    config.veriffApiKey = process.env.VERIFF_API_KEY;
+    config.veriffApiKey = expoConfig.VERIFF_API_KEY;
 }
 
-if (process.env.SENTRY_PUBLIC_KEY) {
+if (expoConfig.SENTRY_PUBLIC_KEY) {
     debug(`Using Sentry public key from env: ************`);
-    config.sentryPublicKey = process.env.SENTRY_PUBLIC_KEY;
+    config.sentryPublicKey = expoConfig.SENTRY_PUBLIC_KEY;
 }
 
-if (process.env.SENTRY_PROJECT_ID) {
+if (expoConfig.SENTRY_PROJECT_ID) {
     debug(`Using Sentry project ID from env: ************`);
-    config.sentryProjectId = process.env.SENTRY_PROJECT_ID;
+    config.sentryProjectId = expoConfig.SENTRY_PROJECT_ID;
 }
 
 config.environment = env;

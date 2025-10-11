@@ -58,7 +58,7 @@ jobs:
 
       - name: Release build
         run: yarn release
-
+    
       - name: Deploy based on branch
         run: |
           echo "Current branch: ${{ github.ref_name }}"

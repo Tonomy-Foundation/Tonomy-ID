@@ -25,12 +25,6 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Debug environment
-        run: |
-          echo "Branch: ${{ github.ref_name }}"
-          echo "INFURA_KEY set? $( [ -n \"$INFURA_KEY\" ] && echo yes || echo no )"
-          echo "ETHERSCAN_API_KEY: $ETHERSCAN_API_KEY"
-        
       - name: 🧪 Run tests
         run: yarn run test
 
