@@ -10,42 +10,57 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-24.04
-    
+
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN }}
+      INFURA_KEY: ${{ secrets.INFURA_KEY }}
+      SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
+      SENTRY_PROJECT_ID: ${{ secrets.SENTRY_PROJECT_ID }}
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+      WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
+      VERIFF_API_KEY: ${{ secrets.VERIFF_API_KEY }}
+      HCAPTCHA_SITE_KEY: ${{ secrets.HCAPTCHA_SITE_KEY }}
+
     steps:
-      - name: 🏗 Setup repo
+      - name: 🏗 Checkout repo
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN }}
-          # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
 
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
-      - name: 🚀 Build and publish staging app
+      - name: 🚀 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.3.0
-      
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          expo-token: ${{ secrets.EXPO_TOKEN }}
-          eas-version: latest
-      
-      - run: npm install -g eas-cli@16.3.3
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli@16.3.3
+
       - run: node -v && npm -v && yarn -v && eas -v
-      
+
       - name: Create service account files
         run: |
-          echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}' > ./google-service-key.json
-          echo '${{ secrets.APPLE_STORE_CONNECT_API_KEY }}' > ./apple-asc-api-key.p8
-      
-      - run: yarn --immutable
-      - run: yarn release
-      
+          echo "${GOOGLE_SERVICE_ACCOUNT_KEY}" > ./google-service-key.json
+          echo "${APPLE_STORE_CONNECT_API_KEY}" > ./apple-asc-api-key.p8
+
+      - name: Install dependencies
+        run: yarn --immutable || yarn install
+
+      - name: Authenticate with Expo
+        run: expo whoami || expo login --token $EXPO_TOKEN
+
+      - name: Release build
+        run: yarn release
+
       - name: Deploy based on branch
         run: |
+          echo "Current branch: ${{ github.ref_name }}"
+
           if [[ ${GITHUB_REF#refs/*/} == "master" ]]; then
             echo "Branch is 'master'"
             yarn run deploy:production
@@ -56,13 +71,3 @@ jobs:
             echo "Branch is 'development'"
             yarn run deploy:staging
           fi
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          INFURA_KEY: ${{ secrets.INFURA_KEY }}
-          SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
-          SENTRY_PROJECT_ID: ${{ secrets.SENTRY_PROJECT_ID }}
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-          WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
-          VERIFF_API_KEY: ${{ secrets.VERIFF_API_KEY }}
-          HCAPTCHA_SITE_KEY: ${{ secrets.HCAPTCHA_SITE_KEY }}
-          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN }}
