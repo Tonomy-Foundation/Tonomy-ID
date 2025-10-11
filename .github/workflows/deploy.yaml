@@ -63,14 +63,15 @@ jobs:
       # 🟩 Add this here: BEFORE the "Deploy based on branch" step
       - name: 🔐 Sync EAS Secrets with GitHub Secrets
         run: |
-          eas env:create --name INFURA_KEY --value "$INFURA_KEY" --scope project --non-interactive || true
-          eas env:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --scope project --non-interactive || true
-          eas env:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --scope project --non-interactive || true
-          eas env:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --scope project --non-interactive || true
-          eas env:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --scope project --non-interactive || true
-          eas env:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --scope project --non-interactive || true
-          eas env:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --scope project --non-interactive || true
-          eas env:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --scope project --non-interactive || true
+          eas env:create --name INFURA_KEY --value "$INFURA_KEY" --scope project --visibility secret --non-interactive || true
+          eas env:create --name ETHERSCAN_API_KEY --value "$ETHERSCAN_API_KEY" --scope project --visibility secret --non-interactive || true
+          eas env:create --name SENTRY_PUBLIC_KEY --value "$SENTRY_PUBLIC_KEY" --scope project --visibility secret --non-interactive || true
+          eas env:create --name SENTRY_SECRET_KEY --value "$SENTRY_SECRET_KEY" --scope project --visibility secret --non-interactive || true
+          eas env:create --name SENTRY_PROJECT_ID --value "$SENTRY_PROJECT_ID" --scope project --visibility secret --non-interactive || true
+          eas env:create --name WALLETCONNECT_PROJECT_ID --value "$WALLETCONNECT_PROJECT_ID" --scope project --visibility secret --non-interactive || true
+          eas env:create --name HCAPTCHA_SITE_KEY --value "$HCAPTCHA_SITE_KEY" --scope project --visibility secret --non-interactive || true
+          eas env:create --name VERIFF_API_KEY --value "$VERIFF_API_KEY" --scope project --visibility secret --non-interactive || true
+
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -86,5 +87,5 @@ jobs:
             yarn run deploy:testnet
           elif [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             echo "Branch is 'development'"
-            yarn run deploy:staging
+            yarn run deploy:staging:ios
           fi
