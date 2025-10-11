@@ -179,6 +179,14 @@ const expo: ExpoConfig = {
         },
         EXPO_NODE_ENV: process.env.EXPO_NODE_ENV,
         DEBUG: process.env.DEBUG,
+        INFURA_KEY: process.env.INFURA_KEY,
+        ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
+        SENTRY_PUBLIC_KEY: process.env.SENTRY_PUBLIC_KEY,
+        SENTRY_SECRET_KEY: process.env.SENTRY_SECRET_KEY,
+        SENTRY_PROJECT_ID: process.env.SENTRY_PROJECT_ID,
+        HCAPTCHA_SITE_KEY: process.env.HCAPTCHA_SITE_KEY,
+        WALLETCONNECT_PROJECT_ID: process.env.WALLETCONNECT_PROJECT_ID,
+        VERIFF_API_KEY: process.env.VERIFF_API_KEY,
     },
 };
 
