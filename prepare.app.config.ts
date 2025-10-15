@@ -145,6 +145,7 @@ const expo: ExpoConfig = {
                     compileSdkVersion: 35,
                     targetSdkVersion: 35,
                     buildToolsVersion: '35.0.0',
+                    minSdkVersion: 26,
                     extraMavenRepos: [
                         {
                             url: 'https://cdn.veriff.me/android/',
