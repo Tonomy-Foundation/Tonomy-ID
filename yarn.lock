@@ -2535,13 +2535,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo-google-fonts/roboto@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@expo-google-fonts/roboto@npm:0.2.3"
-  checksum: 10c0/f2557d888f881003240b74fb015840f4c68ceef610d57f6c492b86fc8b5056d453a9bd824d95bdd258cae61d39d633ff027a182d52c7fd2850379afdee14117b
-  languageName: node
-  linkType: hard
-
 "@expo/cli@npm:0.24.22":
   version: 0.24.22
   resolution: "@expo/cli@npm:0.24.22"
@@ -3386,25 +3379,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@json-rpc-tools/types@npm:^1.7.6":
-  version: 1.7.6
-  resolution: "@json-rpc-tools/types@npm:1.7.6"
-  dependencies:
-    keyvaluestorage-interface: "npm:^1.0.0"
-  checksum: 10c0/5d373132b64613aa73adf5be3c41af1fb74e1add8bbfb45aae6c0ad4173c31ce97fcfd3c9dfd713b0148b19759d46116a401d2dfc47882d7a1264a7ac144b61f
-  languageName: node
-  linkType: hard
-
-"@json-rpc-tools/utils@npm:^1.7.6":
-  version: 1.7.6
-  resolution: "@json-rpc-tools/utils@npm:1.7.6"
-  dependencies:
-    "@json-rpc-tools/types": "npm:^1.7.6"
-    "@pedrouid/environment": "npm:^1.0.1"
-  checksum: 10c0/ba64fc5f709061b86afc91cf4b59a5108596b15b2a0820e1bec2df915488b9e29451205c93cd02c84f0e42b272dd069948d4c9d30345258cc3d5131563cc2cd3
-  languageName: node
-  linkType: hard
-
 "@multiformats/base-x@npm:^4.0.1":
   version: 4.0.1
   resolution: "@multiformats/base-x@npm:4.0.1"
@@ -4033,13 +4007,6 @@ __metadata:
     tslib: "npm:^2.6.2"
     webcrypto-core: "npm:^1.8.0"
   checksum: 10c0/4f6f24b2c52c2155b9c569b6eb1d57954cb5f7bd2764a50cdaed7aea17a6dcf304b75b87b57ba318756ffec8179a07d9a76534aaf77855912b838543e5ff8983
-  languageName: node
-  linkType: hard
-
-"@pedrouid/environment@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@pedrouid/environment@npm:1.0.1"
-  checksum: 10c0/4f6cd64962738e7dabc9bed9eaa7bdad41c9e33f2faee954b7888d23e7556671a7d034adb99b93620c39649a633062e96d3ecc94a71a78717636260cf707eef8
   languageName: node
   linkType: hard
 
@@ -19426,9 +19393,7 @@ __metadata:
     "@babel/plugin-transform-private-methods": "npm:^7.25.9"
     "@babel/plugin-transform-react-jsx-source": "npm:^7.25.9"
     "@ethersproject/shims": "npm:^5.7.0"
-    "@expo-google-fonts/roboto": "npm:^0.2.3"
     "@hcaptcha/react-native-hcaptcha": "npm:^1.7.2"
-    "@json-rpc-tools/utils": "npm:^1.7.6"
     "@react-native-async-storage/async-storage": "npm:2.1.2"
     "@react-native-clipboard/clipboard": "npm:^1.14.3"
     "@react-native-community/netinfo": "npm:11.4.1"

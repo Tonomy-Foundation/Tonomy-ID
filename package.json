@@ -28,9 +28,7 @@
   },
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
-    "@expo-google-fonts/roboto": "^0.2.3",
     "@hcaptcha/react-native-hcaptcha": "^1.7.2",
-    "@json-rpc-tools/utils": "^1.7.6",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-clipboard/clipboard": "^1.14.3",
     "@react-native-community/netinfo": "11.4.1",
