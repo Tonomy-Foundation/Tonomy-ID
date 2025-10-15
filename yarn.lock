@@ -2535,6 +2535,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo-google-fonts/roboto@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@expo-google-fonts/roboto@npm:0.2.3"
+  checksum: 10c0/f2557d888f881003240b74fb015840f4c68ceef610d57f6c492b86fc8b5056d453a9bd824d95bdd258cae61d39d633ff027a182d52c7fd2850379afdee14117b
+  languageName: node
+  linkType: hard
+
 "@expo/cli@npm:0.24.22":
   version: 0.24.22
   resolution: "@expo/cli@npm:0.24.22"
@@ -3379,6 +3386,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@json-rpc-tools/types@npm:^1.7.6":
+  version: 1.7.6
+  resolution: "@json-rpc-tools/types@npm:1.7.6"
+  dependencies:
+    keyvaluestorage-interface: "npm:^1.0.0"
+  checksum: 10c0/5d373132b64613aa73adf5be3c41af1fb74e1add8bbfb45aae6c0ad4173c31ce97fcfd3c9dfd713b0148b19759d46116a401d2dfc47882d7a1264a7ac144b61f
+  languageName: node
+  linkType: hard
+
+"@json-rpc-tools/utils@npm:^1.7.6":
+  version: 1.7.6
+  resolution: "@json-rpc-tools/utils@npm:1.7.6"
+  dependencies:
+    "@json-rpc-tools/types": "npm:^1.7.6"
+    "@pedrouid/environment": "npm:^1.0.1"
+  checksum: 10c0/ba64fc5f709061b86afc91cf4b59a5108596b15b2a0820e1bec2df915488b9e29451205c93cd02c84f0e42b272dd069948d4c9d30345258cc3d5131563cc2cd3
+  languageName: node
+  linkType: hard
+
 "@multiformats/base-x@npm:^4.0.1":
   version: 4.0.1
   resolution: "@multiformats/base-x@npm:4.0.1"
@@ -4007,6 +4033,13 @@ __metadata:
     tslib: "npm:^2.6.2"
     webcrypto-core: "npm:^1.8.0"
   checksum: 10c0/4f6f24b2c52c2155b9c569b6eb1d57954cb5f7bd2764a50cdaed7aea17a6dcf304b75b87b57ba318756ffec8179a07d9a76534aaf77855912b838543e5ff8983
+  languageName: node
+  linkType: hard
+
+"@pedrouid/environment@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@pedrouid/environment@npm:1.0.1"
+  checksum: 10c0/4f6cd64962738e7dabc9bed9eaa7bdad41c9e33f2faee954b7888d23e7556671a7d034adb99b93620c39649a633062e96d3ecc94a71a78717636260cf707eef8
   languageName: node
   linkType: hard
 
@@ -5594,13 +5627,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/argon2-browser@npm:^1":
-  version: 1.18.4
-  resolution: "@types/argon2-browser@npm:1.18.4"
-  checksum: 10c0/c82d6cf18042594eda4f563f9998195eaba461210f43133c5df02bc9a15bf28b2b5421e404a6627c4cd8aa89af721496b82fbbbe562ace532e44a4cbf766b2c4
-  languageName: node
-  linkType: hard
-
 "@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.14":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
@@ -7089,13 +7115,6 @@ __metadata:
   version: 5.0.2
   resolution: "arg@npm:5.0.2"
   checksum: 10c0/ccaf86f4e05d342af6666c569f844bec426595c567d32a8289715087825c2ca7edd8a3d204e4d2fb2aa4602e09a57d0c13ea8c9eea75aac3dbb4af5514e6800e
-  languageName: node
-  linkType: hard
-
-"argon2-browser@npm:^1.18.0":
-  version: 1.18.0
-  resolution: "argon2-browser@npm:1.18.0"
-  checksum: 10c0/da58d39e6fd2be58cf0f7ee3fe6e3d88bfdf4c923f00ae0cce9d9431ea8661b8bc1c62326e7cf6b33872e2f3e8d1bb0816842f8e05d97141b859351fd5a80ca4
   languageName: node
   linkType: hard
 
@@ -17097,6 +17116,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-argon2@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "react-native-argon2@npm:3.0.0"
+  checksum: 10c0/1bc6f721393d8dc8e25f3317952090c5243823acf6996448e958c6ed8e76a316f1135fe68025f9d8235845cd43509390fd721448c54d88865d9913445926d0ca
+  languageName: node
+  linkType: hard
+
 "react-native-autocomplete-input@npm:^5.4.0":
   version: 5.5.2
   resolution: "react-native-autocomplete-input@npm:5.5.2"
@@ -19400,7 +19426,9 @@ __metadata:
     "@babel/plugin-transform-private-methods": "npm:^7.25.9"
     "@babel/plugin-transform-react-jsx-source": "npm:^7.25.9"
     "@ethersproject/shims": "npm:^5.7.0"
+    "@expo-google-fonts/roboto": "npm:^0.2.3"
     "@hcaptcha/react-native-hcaptcha": "npm:^1.7.2"
+    "@json-rpc-tools/utils": "npm:^1.7.6"
     "@react-native-async-storage/async-storage": "npm:2.1.2"
     "@react-native-clipboard/clipboard": "npm:^1.14.3"
     "@react-native-community/netinfo": "npm:11.4.1"
@@ -19412,7 +19440,6 @@ __metadata:
     "@sentry/react-native": "npm:~6.14.0"
     "@sinonjs/text-encoding": "npm:^0.7.3"
     "@tonomy/tonomy-id-sdk": "npm:0.35.0-rc.1"
-    "@types/argon2-browser": "npm:^1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~19.0.10"
@@ -19432,7 +19459,6 @@ __metadata:
     "@wharfkit/signing-request": "npm:^3.2.0"
     "@wharfkit/wallet-plugin-privatekey": "npm:^1.1.0"
     argon2: "npm:^0.41.1"
-    argon2-browser: "npm:^1.18.0"
     babel-plugin-module-resolver: "npm:^5.0.2"
     babel-plugin-rewrite-require: "npm:^1.14.5"
     babel-plugin-transform-builtin-extend: "npm:^1.1.2"
@@ -19475,6 +19501,7 @@ __metadata:
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     react-native: "npm:0.79.5"
+    react-native-argon2: "npm:^3.0.0"
     react-native-autocomplete-input: "npm:^5.4.0"
     react-native-exception-handler: "npm:^2.10.10"
     react-native-gesture-handler: "npm:~2.24.0"

@@ -1,5 +1,5 @@
 import { Bytes, Checksum256, KeyType, PrivateKey } from '@wharfkit/antelope';
-import { hash, ArgonType } from 'argon2-browser';
+import argon2 from 'react-native-argon2';
 import { randomBytes } from '@tonomy/tonomy-id-sdk';
 import { appStorage, keyStorage } from './StorageManager/setup';
 import { getKeyOrNullFromChain, tokenRegistry } from './tokenRegistry';
@@ -24,24 +24,15 @@ export async function generateSeedFromPassword(
     salt?: string
 ): Promise<{ seed: string; salt: string }> {
     if (!salt) salt = Checksum256.from(randomBytes(32)).hexString;
-    // const result = await argon2(password, salt, {
-    //     mode: 'argon2id',
-    //     iterations: 40,
-    //     memory: 64 * 1024,
-    //     parallelism: 1,
-    //     hashLength: 32,
-    // });
-    const result = await hash({
-        pass: password,
-        salt,
-        type: ArgonType.Argon2id,
-        time: 40,
-        mem: 64 * 1024,
+    const result = await argon2(password, salt, {
+        mode: 'argon2id',
+        iterations: 40,
+        memory: 64 * 1024,
         parallelism: 1,
-        hashLen: 32,
+        hashLength: 32,
     });
 
-    return { seed: result.hashHex as string, salt };
+    return { seed: result.rawHash as string, salt };
 }
 
 export async function savePrivateKeyToStorage(passphrase: string, salt?: string): Promise<void> {
