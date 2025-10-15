@@ -5594,6 +5594,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/argon2-browser@npm:^1":
+  version: 1.18.4
+  resolution: "@types/argon2-browser@npm:1.18.4"
+  checksum: 10c0/c82d6cf18042594eda4f563f9998195eaba461210f43133c5df02bc9a15bf28b2b5421e404a6627c4cd8aa89af721496b82fbbbe562ace532e44a4cbf766b2c4
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.14":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
@@ -7082,6 +7089,13 @@ __metadata:
   version: 5.0.2
   resolution: "arg@npm:5.0.2"
   checksum: 10c0/ccaf86f4e05d342af6666c569f844bec426595c567d32a8289715087825c2ca7edd8a3d204e4d2fb2aa4602e09a57d0c13ea8c9eea75aac3dbb4af5514e6800e
+  languageName: node
+  linkType: hard
+
+"argon2-browser@npm:^1.18.0":
+  version: 1.18.0
+  resolution: "argon2-browser@npm:1.18.0"
+  checksum: 10c0/da58d39e6fd2be58cf0f7ee3fe6e3d88bfdf4c923f00ae0cce9d9431ea8661b8bc1c62326e7cf6b33872e2f3e8d1bb0816842f8e05d97141b859351fd5a80ca4
   languageName: node
   linkType: hard
 
@@ -17083,13 +17097,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-argon2@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "react-native-argon2@npm:2.0.1"
-  checksum: 10c0/5a052dffd18cfebeca12c83a8f1ecf84737f238a4dce9d4035753355411fdf0a12ed7002b5d531a965a0964360e272fe38d0832058c376c2f8bb2abe33c04ad3
-  languageName: node
-  linkType: hard
-
 "react-native-autocomplete-input@npm:^5.4.0":
   version: 5.5.2
   resolution: "react-native-autocomplete-input@npm:5.5.2"
@@ -19405,6 +19412,7 @@ __metadata:
     "@sentry/react-native": "npm:~6.14.0"
     "@sinonjs/text-encoding": "npm:^0.7.3"
     "@tonomy/tonomy-id-sdk": "npm:0.35.0-rc.1"
+    "@types/argon2-browser": "npm:^1"
     "@types/bluebird": "npm:^3"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~19.0.10"
@@ -19424,6 +19432,7 @@ __metadata:
     "@wharfkit/signing-request": "npm:^3.2.0"
     "@wharfkit/wallet-plugin-privatekey": "npm:^1.1.0"
     argon2: "npm:^0.41.1"
+    argon2-browser: "npm:^1.18.0"
     babel-plugin-module-resolver: "npm:^5.0.2"
     babel-plugin-rewrite-require: "npm:^1.14.5"
     babel-plugin-transform-builtin-extend: "npm:^1.1.2"
@@ -19466,7 +19475,6 @@ __metadata:
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     react-native: "npm:0.79.5"
-    react-native-argon2: "npm:^2.0.1"
     react-native-autocomplete-input: "npm:^5.4.0"
     react-native-exception-handler: "npm:^2.10.10"
     react-native-gesture-handler: "npm:~2.24.0"

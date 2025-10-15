@@ -1,22 +1,22 @@
-import mockArg from 'argon2';
+import * as mockArg from 'argon2-browser';
 
-jest.mock('react-native-argon2', () => {
+jest.mock('argon2-browser', () => {
     return {
         __esModule: true,
-        default: jest.fn(async (passowrd: string, salt: string, options?) => {
+        default: jest.fn(async (password: string, salt: string, options?) => {
             return mockArg
-                .hash(passowrd, {
-                    raw: true,
-                    salt: Buffer.from(salt),
-                    type: mockArg.argon2id,
-                    hashLength: 32,
-                    memoryCost: 64 * 1024,
+                .hash({
+                    pass: password,
+                    salt,
+                    type: mockArg.ArgonType.Argon2id,
+                    time: 40,
+                    mem: 64 * 1024,
                     parallelism: 1,
-                    timeCost: 40,
+                    hashLen: 32,
                 })
                 .then((hash) => {
                     return {
-                        rawHash: hash.toString('hex'),
+                        rawHash: hash.hashHex as string,
                         encoded: 'test value',
                     };
                 });
