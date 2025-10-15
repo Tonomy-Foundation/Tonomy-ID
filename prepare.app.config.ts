@@ -151,6 +151,8 @@ const expo: ExpoConfig = {
                             url: 'https://cdn.veriff.me/android/',
                         },
                     ],
+                    ndkVersion: '27.0.12077973',
+                    extraLdflags: ['-Wl,-z,max-page-size=16384'],
                 },
                 ios: {
                     deploymentTarget: '15.1',
