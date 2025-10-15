@@ -65,6 +65,35 @@ jobs:
           sudo docker ps
           sudo docker images
           sudo docker system df
+
+      - name: Deep clean Gradle and Android caches
+        run: |
+          rm -rf $HOME/.gradle/caches/
+          rm -rf $HOME/.gradle/daemon/
+          rm -rf $HOME/.gradle/native/
+          rm -rf $HOME/.gradle/wrapper/
+          rm -rf $HOME/.android/build-cache/
+          rm -rf $HOME/.android/cache/
+          rm -rf $HOME/.android/avd/
+
+
+      - name: Aggressive cleanup before build
+        run: |
+          echo "Cleaning up system files to free disk space..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/share/chruby
+          sudo rm -rf /usr/local/share/ri
+          sudo rm -rf /usr/local/share/rvm
+          sudo rm -rf /usr/local/share/pyenv
+          sudo rm -rf /home/runner/.cache
+          sudo rm -rf /home/runner/.npm
+          sudo rm -rf /home/runner/.yarn
+          sudo rm -rf /home/runner/.gradle
+          sudo rm -rf /tmp/*
+          df -h
         
       - name: Install dependencies
         run: yarn --immutable
