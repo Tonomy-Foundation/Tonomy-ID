@@ -31,7 +31,10 @@ jobs:
       # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
       SENTRY_PROJECT_ID : ${{ secrets.SENTRY_PROJECT_ID }}
       SENTRY_PUBLIC_KEY : ${{ secrets.SENTRY_PUBLIC_KEY }}
-
+      INFURA_KEY: ${{ secrets.INFURA_KEY }}
+      WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
+      VERIFF_API_KEY: ${{ secrets.VERIFF_API_KEY }}
+      HCAPTCHA_SITE_KEY: ${{ secrets.HCAPTCHA_SITE_KEY }}
 
     steps:
       - name: Checkout code
