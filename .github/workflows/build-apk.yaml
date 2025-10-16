@@ -31,92 +31,43 @@ jobs:
       # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
       SENTRY_PROJECT_ID : ${{ secrets.SENTRY_PROJECT_ID }}
       SENTRY_PUBLIC_KEY : ${{ secrets.SENTRY_PUBLIC_KEY }}
-    container:
-      image: cimg/android:2025.10
-      # See https://circleci.com/developer/images/image/cimg/android#image-tags
+
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ⚡ Free up disk space early
+      - name: Free up disk space
+        run: |
+          echo "Before cleanup:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo docker system prune -af || true
+          echo "After cleanup:"
+          df -h
+
       - name: Install nodejs
         run: |
-          wget "nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
+          wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz"
           sudo tar -C /usr/local --strip-components 1 -xzf "node-v${NODE_VERSION}-linux-x64.tar.gz"
           sudo corepack enable
           node -v && npm -v && yarn -v
           rm "node-v${NODE_VERSION}-linux-x64.tar.gz"
 
-      # Clears about 3.2Gb
-      # Images:
-      # - node:16/18/20(-alpine)
-      # - moby/buildkit:latest
-      # - alpine:3.16/3.17/3.18/3.19
-      # - debian:10/11
-      # - ubuntu:24.04
-      - name: Clean up Docker images
-        run: |
-          echo "Docker before cleanup:"
-          sudo docker ps
-          sudo docker images
-          sudo docker system df
-          sudo docker system prune -af
-          echo "Docker after cleanup:"
-          sudo docker ps
-          sudo docker images
-          sudo docker system df
-
       - name: Install dependencies
         run: yarn --immutable
 
-      # Clears about 0.5Gb
-      - name: Clear yarn cache
-        run: |
-          sudo du -sh ~/.yarn || true
-          yarn cache clean
-          sudo du -sh ~/.yarn || true
-
-      - name: Install eas globally
+      - name: Install EAS
         run: sudo npm install -g eas-cli@16.3.3
-
-      - name: Clean Android SDK (keep only necessary components)
-        run: |
-          # Remove unnecessary Android SDK components
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "emulator" || true
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "system-images;android-30;google_apis;x86_64" || true
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --uninstall "system-images;android-29;google_apis;x86_64" || true
-          # Keep only the necessary build tools and platforms
-          echo "Current Android packages:"
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
-
-      - name: Clear caches before build
-        run: |
-          # Clear various caches
-          yarn cache clean
-          npm cache clean --force
-          rm -rf ~/.cache
-          rm -rf ~/.npm
-          # Clear Android/Gradle caches but keep SDK
-          rm -rf ~/.gradle/caches
-          rm -rf ~/.android/build-cache
-          # Clear temporary files
-          sudo rm -rf /tmp/*
-
-      - name: Check disk space before build
-        run: df -h
-
-      - name: Install Ninja build system
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build
 
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
-          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
-        env:
-          SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
-        
+          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}"
+                    
       - name: Find APK file and rename it so it can be added as an artifact
         run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk" \;
 
@@ -127,3 +78,4 @@ jobs:
         with:
           name: "TonomyID-Android-${{env.EXPO_NODE_ENV}}"
           path: "./Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk"
+
