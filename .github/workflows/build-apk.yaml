@@ -66,8 +66,8 @@ jobs:
       - name: 🚀 Build Android .apk app
         run: |
           yarn run build:prepare
-          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}"
-                    
+          npx eas build --clear-cache --profile "${{env.EXPO_NODE_ENV}}-internal" --platform "${EXPO_PLATFORM}" --local
+
       - name: Find APK file and rename it so it can be added as an artifact
         run: find . -name "*.apk" -exec mv {} "Tonomy-ID-${{env.EXPO_NODE_ENV}}.apk" \;
 
