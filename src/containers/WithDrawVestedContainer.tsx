@@ -97,7 +97,7 @@ const WithDrawVestedContainer = ({ navigation, chain, amount, total }: VestedAss
                                 {monthlyEarnings} {symbol}
                             </Text>
                             <Text style={styles.annualSubText}>
-                                ${formatCurrencyValue(assetToAmount(monthlyEarnings) * usdPrice)}
+                                ${formatCurrencyValue(assetToAmount(monthlyEarnings + " " + symbol) * usdPrice)}
                             </Text>
                         </View>
                     </View>
