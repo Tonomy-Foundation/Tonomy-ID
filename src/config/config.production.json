@@ -41,6 +41,6 @@
     "tonomyIdSlug": "united-wallet://",
     "currencySymbol": "TONO",
     "baseNetwork": "base",
-    "baseTokenAddress": "TODO",
+    "baseTokenAddress": "0x36a0E9d5bb7322b26185D76Fb3fce46a40007e90",
     "baseRpcUrl": "https://base.infura.io/v3/"
 }
