@@ -327,12 +327,13 @@ export class AntelopeChain extends AbstractChain {
     }
 }
 
+const privateRoundPrice = (0.0001 * 2.0) / 3.0;
 const tonoSalesPrices = {
-    seed: 0.0001,
-    preSale: 0.0002,
-    private: 0.0004,
-    kol: 0.0006,
-    publicSale: 0.0006,
+    seed: privateRoundPrice,
+    preSale: privateRoundPrice,
+    private: privateRoundPrice,
+    kol: privateRoundPrice,
+    publicSale: 0.0001,
 };
 
 export const TONO_CURRENT_PRICE = tonoSalesPrices.publicSale;
