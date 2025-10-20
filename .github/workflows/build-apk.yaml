@@ -11,7 +11,7 @@ name: Build Android APK
 #   echo "Get an access token from https://expo.dev/accounts/[account]/settings/access-tokens"
 #   export EXPO_TOKEN=rtsB...
 # RUN:
-#   act -j build-android -s EXPO_TOKEN="${EXPO_TOKEN}"
+#   act -j build-android -s EXPO_TOKEN="${EXPO_TOKEN}" SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" SENTRY_SECRET_KEY="${SENTRY_SECRET_KEY}" SENTRY_PROJECT_ID="${SENTRY_PROJECT_ID}" SENTRY_PUBLIC_KEY="${SENTRY_PUBLIC_KEY}" INFURA_KEY="${INFURA_KEY}" WALLETCONNECT_PROJECT_ID="${WALLETCONNECT_PROJECT_ID}" VERIFF_API_KEY="${VERIFF_API_KEY}" HCAPTCHA_SITE_KEY="${HCAPTCHA_SITE_KEY}""
 
 on:
   push
@@ -31,9 +31,13 @@ jobs:
       # https://sentry.io/orgredirect/organizations/:orgslug/projects/:projectslug/settings/keys/
       SENTRY_PROJECT_ID : ${{ secrets.SENTRY_PROJECT_ID }}
       SENTRY_PUBLIC_KEY : ${{ secrets.SENTRY_PUBLIC_KEY }}
+      # https://docs.sentry.io/api/projects/create-a-new-client-key/
       INFURA_KEY: ${{ secrets.INFURA_KEY }}
+      # https://medium.com/jelly-market/how-to-get-infura-api-key-e7d552dd396f
       WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
+      # https://docs.blockscout.com/setup/configuration-options/walletconnect-project-id-for-contract-read-write
       VERIFF_API_KEY: ${{ secrets.VERIFF_API_KEY }}
+      # https://devdocs.veriff.com/apidocs/veriff-public-api-guides
       HCAPTCHA_SITE_KEY: ${{ secrets.HCAPTCHA_SITE_KEY }}
 
     steps:
