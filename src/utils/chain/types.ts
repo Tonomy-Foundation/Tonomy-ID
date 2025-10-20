@@ -266,6 +266,7 @@ export interface IToken {
     isTransferable(): boolean;
     isVestable(): boolean;
     isStakeable(): boolean;
+    isSwapable(): boolean;
     eq(other: IToken): boolean;
     getVestedTokens(account: IAccount): Promise<VestedTokens>;
     getAvailableBalance(account?: IAccount): Promise<IAsset>;
@@ -287,6 +288,7 @@ export abstract class AbstractToken implements IToken {
     protected transferable = true;
     protected vestable = false;
     protected stakeable = false;
+    protected swapable = false;
 
     constructor(
         name: string,
@@ -296,7 +298,8 @@ export abstract class AbstractToken implements IToken {
         logoUrl: string,
         transferable = true,
         vestable = false,
-        stakeable = false
+        stakeable = false,
+        swapable = false
     ) {
         this.name = name;
         this.symbol = symbol;
@@ -306,6 +309,7 @@ export abstract class AbstractToken implements IToken {
         this.transferable = transferable;
         this.vestable = vestable;
         this.stakeable = stakeable;
+        this.swapable = swapable;
     }
 
     setAccount(account: IAccount): IToken {
@@ -340,6 +344,10 @@ export abstract class AbstractToken implements IToken {
     }
     isStakeable(): boolean {
         return this.stakeable;
+    }
+
+    isSwapable(): boolean {
+        return this.swapable;
     }
 
     eq(other: IToken): boolean {

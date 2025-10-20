@@ -6,6 +6,10 @@ jobs:
   build:
     runs-on: ubuntu-24.04
 
+    env:
+      INFURA_KEY: ${{ secrets.INFURA_KEY }}
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
@@ -13,11 +17,19 @@ jobs:
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
-      - name: 📦 Build, test and lint
+      - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.3.0
-      - run: yarn --immutable
-      - run: yarn run test
-      - run: yarn run lint
-      - run: yarn run typeCheck
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: 🧪 Run tests
+        run: yarn run test
+
+      - name: 🧹 Lint code
+        run: yarn run lint
+
+      - name: 🔍 Type check
+        run: yarn run typeCheck

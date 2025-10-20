@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { BarCodeScannerResult } from 'expo-barcode-scanner';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { ActivityIndicator, IconButton } from 'react-native-paper';
 import { TP } from './atoms/THeadings';
 import theme, { commonStyles } from '../utils/theme';
@@ -10,7 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import useErrorStore from '../store/errorStore';
 
 type CameraProps = {
-    onBarCodeScanned: (result: BarCodeScannerResult) => void;
+    onBarCodeScanned: (result: BarcodeScanningResult) => void;
     enableTorch: boolean;
 };
 
@@ -65,7 +64,7 @@ export const ScannerOverlay = ({ isFlashlightOn, onPress }: ScannerOverlayProps)
 
 export type Props = {
     onClose?: () => void;
-    onScan: (result: BarCodeScannerResult) => void;
+    onScan: (result: BarcodeScanningResult) => void;
 };
 
 export default function QRCodeScanner(props: Props) {

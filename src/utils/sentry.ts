@@ -1,7 +1,7 @@
-import { init, captureException, wrap as sentryWrap, setUser as sentrySetUser, User, Hub } from '@sentry/react-native';
+import { init, captureException, wrap as sentryWrap, setUser as sentrySetUser } from '@sentry/react-native';
+import type { User, SeverityLevel } from '@sentry/types';
+import type { Hub } from '@sentry/core';
 import settings from '../settings';
-import { ExclusiveEventHintOrCaptureContext } from '@sentry/core/types/utils/prepareEvent';
-import { SeverityLevel } from '@sentry/types/types/severity';
 import { debugLog } from './debug';
 import { serializeAny } from './strings';
 
@@ -20,28 +20,40 @@ if (settings.isProduction()) {
 export function captureError(message: string, error: any, level: SeverityLevel = 'error'): string {
     const errorObject = error instanceof Error ? error : new Error(serializeAny(error));
 
+    console[levelToLoggerLevel(level)](
+        `captureError(): ${message}`,
+        errorObject,
+        errorObject.stack,
+        error instanceof Error
+    );
+
     if (settings.isProduction()) {
         return sendToSentry(message, errorObject, level);
     } else {
-        console[level](`captureError(): ${message}`, errorObject.stack || errorObject);
         return 'sentry-not-active';
     }
 }
 
-export function wrap(component: React.ComponentType): React.ComponentType {
-    if (settings.isProduction()) {
-        return sentryWrap(component);
-    } else {
-        return component;
+function levelToLoggerLevel(level: SeverityLevel): 'error' | 'log' | 'warn' | 'debug' | 'info' {
+    switch (level) {
+        case 'error':
+        case 'log':
+        case 'debug':
+        case 'info':
+            return level;
+        case 'warning':
+            return 'warn';
+        case 'fatal':
+            return 'error';
     }
 }
 
+export function wrap(component: React.ComponentType): React.ComponentType {
+    return settings.isProduction() ? sentryWrap(component) : component;
+}
+
 export function setUser(user: User | null): ReturnType<Hub['setUser']> | null {
-    if (settings.isProduction()) {
-        return sentrySetUser(user);
-    } else {
-        return null;
-    }
+    return settings.isProduction() ? sentrySetUser(user) : null;
 }
 
 /**
@@ -60,7 +72,7 @@ export function createBlobFromDebugLogs(): string {
         blobs.push(blobString);
     });
 
-    // Truncate to 16kB (16267 characters) as per size limit in sentry
+    // Truncate to 16kB (16267 characters) as per size limit in Sentry
     while (blobs.join('').length > 16267) {
         blobs.shift();
     }
@@ -69,7 +81,7 @@ export function createBlobFromDebugLogs(): string {
 }
 
 function sendToSentry(message: string, error: Error, level: SeverityLevel): string {
-    const hint: ExclusiveEventHintOrCaptureContext = {
+    const context = {
         extra: {
             // NOTE: For the following line to work, in the Sentry project settings,
             // under "Data Scrubbing", we need to add the following (multiple lines) as Safe Fields:
@@ -86,5 +98,5 @@ function sendToSentry(message: string, error: Error, level: SeverityLevel): stri
         level,
     };
 
-    return captureException(error, hint);
+    return captureException(error, context);
 }

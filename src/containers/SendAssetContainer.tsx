@@ -265,25 +265,24 @@ const SendAssetContainer = ({ chain, privateKey, navigation }: SendAssetProps) =
                                     </View>
                                     <Text style={styles.inputHelp}>${Number(usdAmount) || '0.00'}</Text>
                                 </View>
-                            </View>
-                            <Text style={styles.inputHelp}>${Number(usdAmount) || '0.00'}</Text>
-                        </ScrollView>
-                        <View>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    defaultValue={memo}
-                                    style={styles.input}
-                                    placeholder="Memo"
-                                    placeholderTextColor={theme.colors.tabGray}
-                                    onChangeText={(v) => setMemo(v)}
-                                />
-                                <View style={{ flexDirection: 'row', gap: 8 }}>
-                                    <Text style={styles.inputButton}>
-                                        <Text style={styles.currencyButtonText}>Optional</Text>
-                                    </Text>
+                                <View>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            defaultValue={memo}
+                                            style={styles.input}
+                                            placeholder="Memo"
+                                            placeholderTextColor={theme.colors.tabGray}
+                                            onChangeText={(v) => setMemo(v)}
+                                        />
+                                        <View style={{ flexDirection: 'row', gap: 8 }}>
+                                            <Text style={styles.inputButton}>
+                                                <Text style={styles.currencyButtonText}>Optional</Text>
+                                            </Text>
+                                        </View>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
+                        </ScrollView>
                     </View>
                 </View>
             }

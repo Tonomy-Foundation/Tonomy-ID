@@ -110,6 +110,28 @@ const expo: ExpoConfig = {
     },
     plugins: [
         [
+            'expo-sqlite',
+            {
+                enableFTS: true,
+                useSQLCipher: true,
+                android: {
+                    // Override the shared configuration for Android
+                    enableFTS: false,
+                    useSQLCipher: false,
+                },
+                ios: {
+                    // You can also override the shared configurations for iOS
+                    customBuildFlags: ['-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1'],
+                },
+            },
+        ],
+        [
+            'expo-camera',
+            {
+                cameraPermission: 'Allow tonomy id to access your camera',
+            },
+        ],
+        [
             'expo-notifications',
             {
                 icon: settings.config.images.logo1024,
@@ -120,9 +142,9 @@ const expo: ExpoConfig = {
             'expo-build-properties',
             {
                 android: {
-                    compileSdkVersion: 34,
-                    targetSdkVersion: 34,
-                    buildToolsVersion: '34.0.0',
+                    compileSdkVersion: 35,
+                    targetSdkVersion: 35,
+                    buildToolsVersion: '35.0.0',
                     minSdkVersion: 26,
                     extraMavenRepos: [
                         {
@@ -131,7 +153,7 @@ const expo: ExpoConfig = {
                     ],
                 },
                 ios: {
-                    deploymentTarget: '13.4',
+                    deploymentTarget: '15.1',
                 },
             },
         ],
@@ -157,6 +179,14 @@ const expo: ExpoConfig = {
         },
         EXPO_NODE_ENV: process.env.EXPO_NODE_ENV,
         DEBUG: process.env.DEBUG,
+        INFURA_KEY: process.env.INFURA_KEY,
+        ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
+        SENTRY_PUBLIC_KEY: process.env.SENTRY_PUBLIC_KEY,
+        SENTRY_SECRET_KEY: process.env.SENTRY_SECRET_KEY,
+        SENTRY_PROJECT_ID: process.env.SENTRY_PROJECT_ID,
+        HCAPTCHA_SITE_KEY: process.env.HCAPTCHA_SITE_KEY,
+        WALLETCONNECT_PROJECT_ID: process.env.WALLETCONNECT_PROJECT_ID,
+        VERIFF_API_KEY: process.env.VERIFF_API_KEY,
     },
 };
 
