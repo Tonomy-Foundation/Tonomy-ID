@@ -168,7 +168,7 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
     const handleSwapPress = async () => {
         try {
             // Replace with your actual swap website URL
-            await WebBrowser.openBrowserAsync(settings.config.tonomyAppsOrigin);
+            await Linking.openURL(settings.config.tonomyAppsOrigin);
         } catch (error) {
             console.error('Error opening web browser:', error);
         }
