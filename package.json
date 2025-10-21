@@ -40,7 +40,7 @@
     "@react-navigation/native-stack": "^6.11.0",
     "@sentry/react-native": "~6.14.0",
     "@sinonjs/text-encoding": "^0.7.3",
-    "@tonomy/tonomy-id-sdk": "0.35.0-rc.2",
+    "@tonomy/tonomy-id-sdk": "0.35.0",
     "@veramo/core": "^6.0.0",
     "@veriff/react-native-sdk": "^8.1.0",
     "@walletconnect/core": "^2.17.2",

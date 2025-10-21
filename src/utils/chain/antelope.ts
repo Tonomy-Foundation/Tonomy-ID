@@ -332,7 +332,7 @@ const tonoSalesPrices = {
     seed: privateRoundPrice,
     preSale: privateRoundPrice,
     private: privateRoundPrice,
-    kol: privateRoundPrice,
+    kol: 0.0001,
     publicSale: 0.0001,
 };
 
@@ -536,7 +536,7 @@ export const TONOToken = new TonomyToken(
     6,
     TokenLogo,
     'tono',
-    false,
+    true,
     true,
     true,
     true
