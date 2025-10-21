@@ -549,7 +549,7 @@ export const TONOTestnetToken = new TonomyToken(
     6,
     TokenLogo,
     'tono-testnet',
-    false,
+    true,
     true,
     true,
     true
