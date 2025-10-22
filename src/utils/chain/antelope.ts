@@ -56,7 +56,7 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer, getStakingContract } from '@tonomy/tonomy-id-sdk';
 import settings from '../../settings';
-import TokenLogo from '../../assets/tonomyProduction/favicon.png';
+import TokenLogo from '../../assets/tonomy/tono-logo.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
 import { formatAssetToNumber } from '../numbers';
 
