@@ -7,6 +7,7 @@ import { VestedAllocation } from '../utils/chain/types';
 import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import settings from '../settings';
+import { formatDate } from '../utils/time';
 
 export type Props = {
     refMessage: React.RefObject<any>;
@@ -62,8 +63,7 @@ const AllocationDetails = (props: Props) => {
                     <Text style={styles.allocTitle}>Vesting start</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>
-                            To Be Finalized
-                            {/* {allocationData?.vestingStart && formatDate(allocationData?.vestingStart)} */}
+                            {allocationData?.vestingStart && formatDate(allocationData?.vestingStart)}
                         </Text>
                     </View>
                 </View>

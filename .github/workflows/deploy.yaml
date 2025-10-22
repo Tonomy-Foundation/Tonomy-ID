@@ -6,7 +6,6 @@ on:
       - master
       - testnet
       - development
-      - feature/testnet-release
 
 jobs:
   deploy:
@@ -63,8 +62,4 @@ jobs:
           if [[ ${GITHUB_REF#refs/*/} == "development" ]]; then
             echo "Branch is 'development'"
             yarn run deploy:staging
-          fi
-          if [[ ${GITHUB_REF#refs/*/} == "feature/testnet-release" ]]; then
-            echo "Branch is 'feature/testnet-release'"
-            yarn run deploy:production:ios
           fi
