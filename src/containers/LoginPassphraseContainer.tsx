@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, ScrollView } from 'react-native';
 import { TButtonContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
 import settings from '../settings';
@@ -100,15 +100,17 @@ export default function LoginPassphraseContainer({
                 body={
                     <View>
                         <TH1 style={[styles.headline, commonStyles.textAlignCenter]}>Passphrase</TH1>
-                        <View style={styles.innerContainer}>
-                            <PassphraseInput
-                                value={passphrase}
-                                onChange={setPassphrase}
-                                setNextDisabled={setNextDisabled}
-                                disabled={loading}
-                            />
-                        </View>
-                        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+                        <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+                            <View style={styles.innerContainer}>
+                                <PassphraseInput
+                                    value={passphrase}
+                                    onChange={setPassphrase}
+                                    setNextDisabled={setNextDisabled}
+                                    disabled={loading}
+                                />
+                            </View>
+                            {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+                        </ScrollView>
                     </View>
                 }
                 footerHint={
