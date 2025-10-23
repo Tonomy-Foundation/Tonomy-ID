@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TButtonContained, TButtonOutlined, TButtonSecondaryContained } from '../components/atoms/TButton';
+import { StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
+import { TButtonContained, TButtonSecondaryContained } from '../components/atoms/TButton';
 import { TH1, TP } from '../components/atoms/THeadings';
-import settings from '../settings';
 import theme, { commonStyles } from '../utils/theme';
 import LayoutComponent from '../components/layout';
 import { Props } from '../screens/CreatePassphraseScreen';
@@ -13,7 +12,6 @@ import useUserStore from '../store/userStore';
 import { ApplicationError, ApplicationErrors } from '../utils/errors';
 import { Checksum256, PrivateKey } from '@wharfkit/antelope';
 import useErrorStore from '../store/errorStore';
-import TSpinner from '../components/atoms/TSpinner';
 import TInfoModalBox from '../components/TInfoModalBox';
 
 export interface ILoginOptions {
@@ -83,39 +81,36 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                     <View>
                         <TH1 style={commonStyles.textAlignCenter}>Create passphrase</TH1>
                         <TP style={styles.paragraph}>
-                            Passphrase is like a password but more secure and easier to remember.{' '}
-                            {/* TODO: uncomment link */}
-                            {/* <TP style={styles.link}>Learn more.</TP> */}
+                            Passphrase is like a password but more secure and easier to remember.
                         </TP>
-                        <View style={styles.innerContainer}>
-                            <View style={styles.columnContainer}>
-                                {passphraseList.map((text, index) => (
-                                    <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
-                                ))}
-                                {passphraseList.map((text, index) => (
-                                    <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
-                                ))}
-                                {passphraseList.map((text, index) => (
-                                    <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
-                                ))}
+                        <ScrollView
+                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+                            showsVerticalScrollIndicator={false}
+                        >
+                            <View style={styles.innerContainer}>
+                                <View style={styles.columnContainer}>
+                                    {passphraseList.map((text, index) => (
+                                        <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
+                                    ))}
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.btnView}>
-                            <TButtonSecondaryContained
-                                style={styles.regenerateBtn}
-                                onPress={regenerate}
-                                icon={require('../assets/images/refresh-ccw.png')}
-                                disabled={loading}
-                            >
-                                Regenerate
-                            </TButtonSecondaryContained>
-                        </View>
+                            <View style={styles.btnView}>
+                                <TButtonSecondaryContained
+                                    style={styles.regenerateBtn}
+                                    onPress={regenerate}
+                                    icon={require('../assets/images/refresh-ccw.png')}
+                                    disabled={loading}
+                                >
+                                    Regenerate
+                                </TButtonSecondaryContained>
+                            </View>
+                        </ScrollView>
                     </View>
                 }
                 footerHint={
                     <View>
                         <TInfoModalBox
-                            description="Pick a fun 6-word passphrase to keep your keys safe! "
+                            description="Pick a fun 6-word passphrase to keep your keys safe!"
                             modalTitle="Create Your 6-Word Passphrase"
                             modalDescription=" Choose a fun and memorable 6-word passphrase — this will help protect your keys and recover your account if you ever lose access. It’s like a safety net only you control, so make it something unique and store it somewhere safe. No one else can recreate or retrieve it for you"
                         />

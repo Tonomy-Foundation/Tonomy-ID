@@ -53,8 +53,8 @@ const layoutStyles = StyleSheet.create({
         padding: 16,
         backgroundColor: '#FDFEFF',
     },
-    body: { flex: 3 },
-    footerHint: { flex: 1, justifyContent: 'flex-end' },
+    body: { flex: 2.8 },
+    footerHint: { flex: 1.2, justifyContent: 'flex-end' },
     nofooterHint: { flex: 1.3, justifyContent: 'flex-end' },
     footer: {
         flex: 1.2,
