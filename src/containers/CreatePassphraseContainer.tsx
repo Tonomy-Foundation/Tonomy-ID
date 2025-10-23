@@ -92,6 +92,12 @@ export default function CreatePassphraseContainer({ navigation }: { navigation: 
                                 {passphraseList.map((text, index) => (
                                     <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
                                 ))}
+                                {passphraseList.map((text, index) => (
+                                    <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
+                                ))}
+                                {passphraseList.map((text, index) => (
+                                    <PassphraseBox number={`${index + 1}.`} text={text} key={index} />
+                                ))}
                             </View>
                         </View>
                         <View style={styles.btnView}>
