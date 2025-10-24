@@ -33,8 +33,10 @@ export default function LoginPassphraseContainer({
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const lowercasePassphrase = passphrase.map((word) => word.toLowerCase());
+
     async function updateKeys() {
-        await user.updateKeys(passphrase.join(' '));
+        await user.updateKeys(lowercasePassphrase.join(' '));
     }
 
     async function onNext() {
@@ -49,9 +51,9 @@ export default function LoginPassphraseContainer({
 
             const idData = await getTonomyContract().getPerson(tonomyUsername);
 
-            await savePrivateKeyToStorage(passphrase.join(' '), idData.passwordSalt.toString());
+            await savePrivateKeyToStorage(lowercasePassphrase.join(' '), idData.passwordSalt.toString());
 
-            const result = await user.login(tonomyUsername, passphrase.join(' '), {
+            const result = await user.login(tonomyUsername, lowercasePassphrase.join(' '), {
                 keyFromPasswordFn: generatePrivateKeyFromPassword,
             });
 
@@ -126,8 +128,8 @@ export default function LoginPassphraseContainer({
                     <View style={styles.createAccountMargin}>
                         <View style={commonStyles.marginBottom}>
                             <TButtonContained
-                                loading={loading || nextDisabled}
-                                disabled={loading}
+                                loading={loading}
+                                disabled={nextDisabled}
                                 style={{ width: '100%' }}
                                 size="large"
                                 onPress={onNext}
