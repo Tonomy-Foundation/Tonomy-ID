@@ -129,7 +129,8 @@ const expo: ExpoConfig = {
         [
             'expo-camera',
             {
-                cameraPermission: 'Allow tonomy id to access your camera',
+                cameraPermission:
+                    'Tonomy ID uses your camera to scan QR codes for secure login and identity verification within the app.',
             },
         ],
         [
