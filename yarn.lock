@@ -5422,6 +5422,11 @@ __metadata:
     web-did-resolver: "npm:^2.0.27"
   checksum: 10c0/9cd1abd88396fa2bd7ee058cebff155cf3afc00862d5ea509a1bc7bcd3221f971f28de0a553ffb3c3b88ddb588f19f3e543ef693e538d0be5f1c8c7248757dc9
   languageName: node
+  linkType: hard
+
+"@tootallnate/once@npm:1":
+  version: 1.1.2
+  resolution: "@tootallnate/once@npm:1.1.2"
   checksum: 10c0/8fe4d006e90422883a4fa9339dd05a83ff626806262e1710cee5758d493e8cbddf2db81c0e4690636dc840b02c9fda62877866ea774ebd07c1777ed5fafbdec6
   languageName: node
   linkType: hard
