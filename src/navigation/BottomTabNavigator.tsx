@@ -24,7 +24,7 @@ import { isIpad } from '../utils/device';
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
 
 const TAB_H = isIpad ? 30 : 55; // base height of bar
-const FAB_OFFSET = isIpad ? -10 : Platform.OS === 'android' ? 0 : -28; // how high the center button floats  const insets = useSafeAreaInsets();
+const FAB_OFFSET = isIpad ? -10 : Platform.OS === 'android' ? 0 : -20; // how high the center button floats  const insets = useSafeAreaInsets();
 
 type ScanTabBarButtonProps = BottomTabBarButtonProps & { fabOffset?: number };
 
