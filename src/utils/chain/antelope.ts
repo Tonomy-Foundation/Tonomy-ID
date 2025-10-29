@@ -350,9 +350,10 @@ export class AntelopeToken extends AbstractToken implements IToken {
         coinmarketCapId: string,
         transferable = true,
         vestable = false,
-        stakeable = false
+        stakeable = false,
+        swapable = false
     ) {
-        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable);
+        super(name, symbol, precision, chain, logoUrl, transferable, vestable, stakeable, swapable);
         this.coinmarketCapId = coinmarketCapId;
     }
 

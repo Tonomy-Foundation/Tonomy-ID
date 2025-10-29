@@ -11,6 +11,7 @@ const availableAppsData = [
         description: `Collaborate and make decisions within the ${settings.config.ecosystemName} ecosystem with others.`,
         url: 'https://tonomy.hypha.earth/tonomy-dao/',
         isAvailable: true,
+        plaform: 'both',
     },
     {
         image: require('../assets/images/apps/hypha-logo.jpeg'),
@@ -19,6 +20,15 @@ const availableAppsData = [
             'Harnes the power of team-driven decisions. Create proposals, vote, and manage your DAO with ease.',
         url: 'https://tonomy.hypha.earth',
         isAvailable: true,
+        plaform: 'both',
+    },
+    {
+        image: require('../assets/images/apps/bankless-icon.png'),
+        title: 'Tonomy Bankless',
+        description: `Swap your Tonomy coins quickly and securely — no banks, no middlemen, no hassle`,
+        url: settings.config.tonomyAppsOrigin + '/bankless',
+        isAvailable: true,
+        platform: 'android',
     },
     {
         image: require('../assets/tonomyProduction/favicon.png'),
@@ -26,6 +36,7 @@ const availableAppsData = [
         description: `Invest in ${settings.config.ecosystemName}, purchase ${settings.config.currencySymbol} tokens easily. ${settings.config.currencySymbol} customers are protected under Europe’s MICA regulation.`,
         url: 'https://launchpad.tonomy.io',
         isAvailable: true,
+        plaform: 'both',
     },
     {
         image: require('../assets/tonomyProduction/favicon.png'),
@@ -33,6 +44,7 @@ const availableAppsData = [
         title: `${settings.config.ecosystemName} Block Explorer`,
         url: 'https://explorer.tonomy.io',
         isAvailable: true,
+        plaform: 'both',
     },
     {
         image: require('../assets/tonomyProduction/favicon.png'),
@@ -40,6 +52,7 @@ const availableAppsData = [
         description: `A website to demonstrate the flows and features available to developers in ${settings.config.ecosystemName}. See the  0.5s block time, easy data signing flows and simplified non-custodial crypto management.`,
         url: 'https://demo.tonomy.io',
         isAvailable: true,
+        plaform: 'both',
     },
     // {
     //     image: require('../assets/images/apps/pangean-bankless.png'),
@@ -85,7 +98,7 @@ export default function AppsContainer() {
                 <View style={styles.flexColumn}>
                     <Text style={styles.headingText}>Available now</Text>
                     {availableAppsData
-                        .filter((app) => app.isAvailable)
+                        .filter((app) => app.isAvailable && (app.platform === 'android' || app.platform === 'both'))
                         .map((app, index) => (
                             <View key={index} style={styles.app}>
                                 <View style={styles.flexRow}>

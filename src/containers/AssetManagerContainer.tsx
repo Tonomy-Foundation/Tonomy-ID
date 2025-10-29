@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image, ScrollView } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    ImageBackground,
+    Linking,
+    Image,
+    ScrollView,
+    Platform,
+} from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins, DataTransferBoth } from 'iconoir-react-native';
 import { Asset, IChain } from '../utils/chain/types';
@@ -163,7 +173,16 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
 
     const isVestable = chain.getNativeToken().isVestable();
     const isStakeable = chain.getNativeToken().isStakeable();
+    const isSwapable = chain.getNativeToken().isSwapable();
 
+    const handleSwapPress = async () => {
+        try {
+            // Replace with your actual swap website URL
+            await Linking.openURL(settings.config.tonomyAppsOrigin);
+        } catch (error) {
+            console.error('Error opening web browser:', error);
+        }
+    };
     const { user } = useUserStore();
 
     useEffect(() => {
@@ -307,6 +326,20 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
                                 </View>
                                 <Text style={styles.textSize}>Receive</Text>
                             </TouchableOpacity>
+                            {isSwapable && Platform.OS === 'android' && (
+                                <TouchableOpacity onPress={handleSwapPress} style={styles.flexCenter}>
+                                    <View style={styles.headerButton}>
+                                        <DataTransferBoth
+                                            height={24}
+                                            width={24}
+                                            color={theme.colors.black}
+                                            strokeWidth={2}
+                                        />
+                                    </View>
+                                    <Text style={styles.textSize}>Swap</Text>
+                                </TouchableOpacity>
+                            )}
+
                             <TouchableOpacity style={styles.flexCenter} onPress={redirectToCheckExplorer}>
                                 <View style={styles.headerButton}>
                                     <Clock height={24} width={24} color={theme.colors.black} strokeWidth={2} />
