@@ -306,7 +306,7 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
                                     <ArrowDown height={24} width={24} color={theme.colors.black} strokeWidth={2} />
                                 </View>
                                 <Text style={styles.textSize}>Receive</Text>
-                            </TouchableOpacity>                      
+                            </TouchableOpacity>
                             <TouchableOpacity style={styles.flexCenter} onPress={redirectToCheckExplorer}>
                                 <View style={styles.headerButton}>
                                     <Clock height={24} width={24} color={theme.colors.black} strokeWidth={2} />
