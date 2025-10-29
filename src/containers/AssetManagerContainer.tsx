@@ -29,6 +29,7 @@ import { SdkErrors, isErrorCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
 import { formatAssetToNumber } from '../utils/numbers';
+import { isPlatformAndroid } from '../utils/device';
 
 export type AssetsProps = {
     navigation: Props['navigation'];
@@ -326,7 +327,7 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
                                 </View>
                                 <Text style={styles.textSize}>Receive</Text>
                             </TouchableOpacity>
-                            {isSwapable && Platform.OS === 'android' && (
+                            {isSwapable && isPlatformAndroid && (
                                 <TouchableOpacity onPress={handleSwapPress} style={styles.flexCenter}>
                                     <View style={styles.headerButton}>
                                         <DataTransferBoth
