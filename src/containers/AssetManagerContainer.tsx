@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Linking, Image, ScrollView } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    ImageBackground,
+    Linking,
+    Image,
+    ScrollView,
+    Platform,
+} from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { ArrowDown, ArrowUp, Clock, ArrowRight, NavArrowRight, Coins, DataTransferBoth } from 'iconoir-react-native';
 import { Asset, IChain } from '../utils/chain/types';
@@ -19,6 +29,7 @@ import { SdkErrors, isErrorCode } from '@tonomy/tonomy-id-sdk';
 import useUserStore from '../store/userStore';
 import settings from '../settings';
 import { formatAssetToNumber } from '../utils/numbers';
+import { isPlatformAndroid } from '../utils/device';
 
 export type AssetsProps = {
     navigation: Props['navigation'];
@@ -316,7 +327,7 @@ const AssetManagerContainer = ({ navigation, chain }: AssetsProps) => {
                                 </View>
                                 <Text style={styles.textSize}>Receive</Text>
                             </TouchableOpacity>
-                            {isSwapable && (
+                            {isSwapable && isPlatformAndroid && (
                                 <TouchableOpacity onPress={handleSwapPress} style={styles.flexCenter}>
                                     <View style={styles.headerButton}>
                                         <DataTransferBoth
