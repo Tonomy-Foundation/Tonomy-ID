@@ -21,13 +21,6 @@ const availableAppsData = [
         isAvailable: true,
     },
     {
-        image: require('../assets/images/apps/bankless-icon.png'),
-        title: 'Tonomy Bankless',
-        description: `Swap your Tonomy coins quickly and securely — no banks, no middlemen, no hassle`,
-        url: settings.config.tonomyAppsOrigin + '/bankless',
-        isAvailable: true,
-    },
-    {
         image: require('../assets/tonomyProduction/favicon.png'),
         title: 'Tonomy Launchpad',
         description: `Invest in ${settings.config.ecosystemName}, purchase ${settings.config.currencySymbol} tokens easily. ${settings.config.currencySymbol} customers are protected under Europe’s MICA regulation.`,
