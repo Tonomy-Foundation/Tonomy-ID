@@ -59,6 +59,7 @@ import settings from '../../settings';
 import TokenLogo from '../../assets/tonomy/tono-logo.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
 import { formatAssetToNumber } from '../numbers';
+import { isPlatformAndroid } from '../device';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -539,7 +540,7 @@ export const TONOToken = new TonomyToken(
     true,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false //IOS rejected Performance: App Completeness
 );
 
 export const TONOTestnetToken = new TonomyToken(
@@ -552,7 +553,7 @@ export const TONOTestnetToken = new TonomyToken(
     true,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false
 );
 
 export const TONOStagingToken = new TonomyToken(
@@ -565,7 +566,7 @@ export const TONOStagingToken = new TonomyToken(
     false,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false
 );
 
 export const TONOLocalToken = new TonomyToken(
@@ -578,7 +579,7 @@ export const TONOLocalToken = new TonomyToken(
     false,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false
 );
 
 export const EOSJungleChain = new AntelopeChain(
