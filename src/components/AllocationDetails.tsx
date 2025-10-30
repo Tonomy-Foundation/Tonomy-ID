@@ -26,7 +26,7 @@ const AllocationDetails = (props: Props) => {
             ref={props.refMessage}
             openDuration={150}
             closeDuration={100}
-            height={470}
+            height={525}
             customStyles={{ container: { paddingHorizontal: 10 } }}
         >
             <View style={styles.vestHead}>
