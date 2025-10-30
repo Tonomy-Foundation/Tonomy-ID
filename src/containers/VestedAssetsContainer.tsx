@@ -103,7 +103,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         });
     };
 
-    const vestingAllocationsView = async () => {
+    const vestingAllocationsView = () => {
         return (
             <ScrollView style={styles.scrollView}>
                 <View style={{ marginVertical: 16 }}>
