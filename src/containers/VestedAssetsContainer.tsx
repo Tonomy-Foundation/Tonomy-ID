@@ -13,6 +13,7 @@ import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
 import settings from '../settings';
+import { getVestingContract } from '@tonomy/tonomy-id-sdk';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -98,7 +99,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         });
     };
 
-    const vestingAllocationsView = () => {
+    const vestingAllocationsView = async () => {
         return (
             <ScrollView style={styles.scrollView}>
                 <View style={{ marginVertical: 16 }}>
@@ -137,6 +138,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                             refMessage={refMessage}
                             allocationData={selectedAllocation}
                             usdPriceValue={usdPrice}
+                            initialUnlockDate={(await getVestingContract().getSettings()).launchDate}
                         />
                     )}
                 </View>

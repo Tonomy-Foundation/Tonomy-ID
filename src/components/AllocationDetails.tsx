@@ -8,66 +8,18 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import settings from '../settings';
 import { formatDate } from '../utils/time';
-import { getVestingContract } from '@tonomy/tonomy-id-sdk';
+import { calculateMonthlyUnlock } from '../utils/vesting';
 
 export type Props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
     allocationData: VestedAllocation;
     usdPriceValue: number;
+    initialUnlockDate: Date;
 };
 
-const AllocationDetails = async (props: Props) => {
+const AllocationDetails = (props: Props) => {
     const allocationData = props.allocationData;
-    const initialUnlockDate = await getVestingContract().getSettings();
-
-    const parseVestingPeriodToMonths = (periodString: string): number => {
-        if (!periodString) return 0;
-
-        const lower = periodString.toLowerCase().trim();
-
-        const value = parseFloat(lower);
-
-        if (isNaN(value)) return 0;
-
-        if (lower.includes('second')) {
-            return value / (30 * 24 * 60 * 60); // seconds → months
-        } else if (lower.includes('hour')) {
-            return value / (24 * 30); // hours → months
-        } else if (lower.includes('day')) {
-            return value / 30; // days → months
-        } else if (lower.includes('month')) {
-            return value; // already in months
-        } else if (lower.includes('year')) {
-            return value * 12; // years → months
-        }
-
-        return 0;
-    };
-
-    const calculateMonthlyUnlock = () => {
-        const initialPercent = allocationData.unlockAtVestingStart * 100;
-        const remainingPercent = 100 - initialPercent;
-
-        // Parse string like "6 months", "1 year", "45 days" → number of months
-        const vestingMonths = parseVestingPeriodToMonths(allocationData.vestingPeriod);
-
-        // Avoid invalid or zero durations
-        if (vestingMonths <= 0) return 0;
-
-        // Calculate monthly unlock percent
-        let monthlyUnlockPercent = remainingPercent / vestingMonths;
-
-        // 🔒 Safety check: ensure total unlock <= 100%
-        if (initialPercent + monthlyUnlockPercent * vestingMonths > 100) {
-            monthlyUnlockPercent = remainingPercent / vestingMonths; // recalc to exact 100 total
-        }
-
-        // 🔒 Clamp just in case of rounding errors
-        monthlyUnlockPercent = Math.min(monthlyUnlockPercent, remainingPercent);
-
-        return parseFloat(monthlyUnlockPercent.toFixed(2)); // round for display
-    };
 
     return (
         <RBSheet
@@ -119,7 +71,7 @@ const AllocationDetails = async (props: Props) => {
                     <Text style={styles.allocTitle}>Initial unlock date</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>
-                            {initialUnlockDate.launchDate && formatDate(initialUnlockDate.launchDate)}
+                            {props.initialUnlockDate && formatDate(props.initialUnlockDate)}
                         </Text>
                     </View>
                 </View>
@@ -140,11 +92,11 @@ const AllocationDetails = async (props: Props) => {
                         <Text style={styles.allocMulti}>{allocationData.vestingPeriod}</Text>
                     </View>
                 </View>
-                {calculateMonthlyUnlock() > 0 && (
+                {calculateMonthlyUnlock(allocationData) > 0 && (
                     <View style={styles.allocationView}>
                         <Text style={styles.allocTitle}>Vesting unlock per month</Text>
                         <View style={styles.flexColEnd}>
-                            <Text style={styles.allocMulti}>{calculateMonthlyUnlock()}%</Text>
+                            <Text style={styles.allocMulti}>{calculateMonthlyUnlock(allocationData)}%</Text>
                         </View>
                     </View>
                 )}
