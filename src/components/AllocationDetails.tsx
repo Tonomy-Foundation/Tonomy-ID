@@ -15,7 +15,7 @@ export type Props = {
     onClose: () => void;
     allocationData: VestedAllocation;
     usdPriceValue: number;
-    initialUnlockDate: Date;
+    initialUnlockDate: Date | null;
 };
 
 const AllocationDetails = (props: Props) => {

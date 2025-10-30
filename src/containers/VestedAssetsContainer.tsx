@@ -25,6 +25,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
     const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
+    const [launchDate, setLaunchDate] = useState<Date | null>(null);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const token = chain.getNativeToken();
     const { user } = useUserStore();
@@ -46,6 +47,9 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
                 setUsdPrice(usdPriceValue);
                 setVestedAllocation(allocations);
+                const launchDate = (await getVestingContract().getSettings()).launchDate;
+
+                setLaunchDate(launchDate);
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             } finally {
@@ -138,7 +142,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                             refMessage={refMessage}
                             allocationData={selectedAllocation}
                             usdPriceValue={usdPrice}
-                            initialUnlockDate={(await getVestingContract().getSettings()).launchDate}
+                            initialUnlockDate={launchDate}
                         />
                     )}
                 </View>

@@ -41,6 +41,5 @@ export const calculateMonthlyUnlock = (allocationData) => {
 
     // 🔒 Clamp just in case of rounding errors
     monthlyUnlockPercent = Math.min(monthlyUnlockPercent, remainingPercent);
-
     return parseFloat(monthlyUnlockPercent.toFixed(2)); // round for display
 };
