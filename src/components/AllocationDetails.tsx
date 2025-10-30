@@ -8,6 +8,7 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import settings from '../settings';
 import { formatDate } from '../utils/time';
+import { getVestingContract } from '@tonomy/tonomy-id-sdk';
 
 export type Props = {
     refMessage: React.RefObject<any>;
@@ -16,9 +17,57 @@ export type Props = {
     usdPriceValue: number;
 };
 
-const AllocationDetails = (props: Props) => {
+const AllocationDetails = async (props: Props) => {
     const allocationData = props.allocationData;
-    const lockedPercentage = (allocationData.locked / allocationData.totalAllocation) * 100;
+    const initialUnlockDate = await getVestingContract().getSettings();
+
+    const parseVestingPeriodToMonths = (periodString: string): number => {
+        if (!periodString) return 0;
+
+        const lower = periodString.toLowerCase().trim();
+
+        const value = parseFloat(lower);
+
+        if (isNaN(value)) return 0;
+
+        if (lower.includes('second')) {
+            return value / (30 * 24 * 60 * 60); // seconds → months
+        } else if (lower.includes('hour')) {
+            return value / (24 * 30); // hours → months
+        } else if (lower.includes('day')) {
+            return value / 30; // days → months
+        } else if (lower.includes('month')) {
+            return value; // already in months
+        } else if (lower.includes('year')) {
+            return value * 12; // years → months
+        }
+
+        return 0;
+    };
+
+    const calculateMonthlyUnlock = () => {
+        const initialPercent = allocationData.unlockAtVestingStart * 100;
+        const remainingPercent = 100 - initialPercent;
+
+        // Parse string like "6 months", "1 year", "45 days" → number of months
+        const vestingMonths = parseVestingPeriodToMonths(allocationData.vestingPeriod);
+
+        // Avoid invalid or zero durations
+        if (vestingMonths <= 0) return 0;
+
+        // Calculate monthly unlock percent
+        let monthlyUnlockPercent = remainingPercent / vestingMonths;
+
+        // 🔒 Safety check: ensure total unlock <= 100%
+        if (initialPercent + monthlyUnlockPercent * vestingMonths > 100) {
+            monthlyUnlockPercent = remainingPercent / vestingMonths; // recalc to exact 100 total
+        }
+
+        // 🔒 Clamp just in case of rounding errors
+        monthlyUnlockPercent = Math.min(monthlyUnlockPercent, remainingPercent);
+
+        return parseFloat(monthlyUnlockPercent.toFixed(2)); // round for display
+    };
 
     return (
         <RBSheet
@@ -36,7 +85,7 @@ const AllocationDetails = (props: Props) => {
             </View>
             <View style={styles.vestingDetailView}>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Vested asset</Text>
+                    <Text style={styles.allocTitle}>Vested assets</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
                             {formatTokenValue(new Decimal(allocationData.locked ?? 0))} {settings.config.currencySymbol}
@@ -46,6 +95,8 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
+                <View style={styles.divider} />
+
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Initial allocation</Text>
                     <View style={styles.flexColCenter}>
@@ -58,6 +109,21 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Initial unlock</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Initial unlock date</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>
+                            {initialUnlockDate.launchDate && formatDate(initialUnlockDate.launchDate)}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.divider} />
 
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
@@ -67,18 +133,21 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
+
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting period</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>{allocationData.vestingPeriod}</Text>
                     </View>
                 </View>
-                <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Unlock at vesting start</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
+                {calculateMonthlyUnlock() > 0 && (
+                    <View style={styles.allocationView}>
+                        <Text style={styles.allocTitle}>Vesting unlock per month</Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>{calculateMonthlyUnlock()}%</Text>
+                        </View>
                     </View>
-                </View>
+                )}
             </View>
             <View style={styles.howView}>
                 <Text style={styles.howHead}>How vesting works</Text>
@@ -151,6 +220,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 7,
         alignItems: 'flex-end',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: theme.colors.grey8,
+        marginVertical: 8,
+        alignSelf: 'stretch',
+        opacity: 0.6,
     },
 });
 
