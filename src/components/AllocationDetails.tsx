@@ -8,24 +8,25 @@ import { formatCurrencyValue, formatTokenValue } from '../utils/numbers';
 import Decimal from 'decimal.js';
 import settings from '../settings';
 import { formatDate } from '../utils/time';
+import { calculateMonthlyUnlock } from '../utils/vesting';
 
 export type Props = {
     refMessage: React.RefObject<any>;
     onClose: () => void;
     allocationData: VestedAllocation;
     usdPriceValue: number;
+    initialUnlockDate: Date | null;
 };
 
 const AllocationDetails = (props: Props) => {
     const allocationData = props.allocationData;
-    const lockedPercentage = (allocationData.locked / allocationData.totalAllocation) * 100;
 
     return (
         <RBSheet
             ref={props.refMessage}
             openDuration={150}
             closeDuration={100}
-            height={470}
+            height={525}
             customStyles={{ container: { paddingHorizontal: 10 } }}
         >
             <View style={styles.vestHead}>
@@ -36,7 +37,7 @@ const AllocationDetails = (props: Props) => {
             </View>
             <View style={styles.vestingDetailView}>
                 <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Vested asset</Text>
+                    <Text style={styles.allocTitle}>Vested assets</Text>
                     <View style={styles.flexColCenter}>
                         <Text style={styles.allocMulti}>
                             {formatTokenValue(new Decimal(allocationData.locked ?? 0))} {settings.config.currencySymbol}
@@ -46,6 +47,8 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
+                <View style={styles.divider} />
+
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Initial allocation</Text>
                     <View style={styles.flexColCenter}>
@@ -58,6 +61,21 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Initial unlock</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
+                    </View>
+                </View>
+                <View style={styles.allocationView}>
+                    <Text style={styles.allocTitle}>Initial unlock date</Text>
+                    <View style={styles.flexColEnd}>
+                        <Text style={styles.allocMulti}>
+                            {props.initialUnlockDate && formatDate(props.initialUnlockDate)}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.divider} />
 
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting start</Text>
@@ -67,18 +85,21 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
+
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Vesting period</Text>
                     <View style={styles.flexColEnd}>
                         <Text style={styles.allocMulti}>{allocationData.vestingPeriod}</Text>
                     </View>
                 </View>
-                <View style={styles.allocationView}>
-                    <Text style={styles.allocTitle}>Unlock at vesting start</Text>
-                    <View style={styles.flexColEnd}>
-                        <Text style={styles.allocMulti}>{allocationData.unlockAtVestingStart * 100}%</Text>
+                {calculateMonthlyUnlock(allocationData) > 0 && (
+                    <View style={styles.allocationView}>
+                        <Text style={styles.allocTitle}>Vesting unlock per month</Text>
+                        <View style={styles.flexColEnd}>
+                            <Text style={styles.allocMulti}>{calculateMonthlyUnlock(allocationData)}%</Text>
+                        </View>
                     </View>
-                </View>
+                )}
             </View>
             <View style={styles.howView}>
                 <Text style={styles.howHead}>How vesting works</Text>
@@ -151,6 +172,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 7,
         alignItems: 'flex-end',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: theme.colors.grey8,
+        marginVertical: 8,
+        alignSelf: 'stretch',
+        opacity: 0.6,
     },
 });
 
