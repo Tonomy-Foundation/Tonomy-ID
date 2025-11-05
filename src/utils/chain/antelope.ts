@@ -60,6 +60,7 @@ import TokenLogo from '../../assets/tonomy/tono-logo.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
 import { formatAssetToNumber } from '../numbers';
 import { isPlatformAndroid } from '../device';
+import { getPriceCoinGecko } from './common';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -367,7 +368,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
 
         switch (this.getChain().getName()) {
             case 'Tonomy':
-                return TONO_CURRENT_PRICE;
+                return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
             default:
                 throw new Error('Unsupported Antelope chain');
         }
@@ -536,7 +537,7 @@ export const TONOToken = new TonomyToken(
     'TONO',
     6,
     TokenLogo,
-    'tono',
+    'tonomy',
     true,
     true,
     true,

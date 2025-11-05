@@ -19,7 +19,7 @@ export async function getPriceCoinGecko(token: string, currency: string): Promis
         throw new Error('Failed to fetch price from CoinGecko');
     }
 
-    const price = res.ethereum?.usd;
+    const price = res[token]?.[currency];
 
     if (typeof price === 'number') {
         cachedPrice = price;
