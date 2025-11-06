@@ -7,7 +7,7 @@ export async function getPriceCoinGecko(token: string, currency: string): Promis
     const now = Date.now();
 
     // Return cached value if within 30 seconds
-    if (priceCache[cacheKey] !== null && now - priceCache[cacheKey].timestamp < CACHE_DURATION) {
+    if (priceCache[cacheKey] !== null && now - priceCache[cacheKey]?.timestamp < CACHE_DURATION) {
         return priceCache[cacheKey].price;
     }
 
