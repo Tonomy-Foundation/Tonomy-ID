@@ -169,13 +169,13 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                     </View>
                 )}
                 <View style={styles.unlockAssetView}>
-                <Text style={styles.unlockhead}>When can I unlock coins?</Text>
+                    <Text style={styles.unlockhead}>When can I unlock coins?</Text>
 
-                <Text style={styles.lockedParagraph}>
-                    Coins are gradually unlockable after the public sale based on the vesting schedule for your
-                    allocation(s).
-                </Text>
-            </View>
+                    <Text style={styles.lockedParagraph}>
+                        Coins are gradually unlockable after the public sale based on the vesting schedule for your
+                        allocation(s).
+                    </Text>
+                </View>
             </ScrollView>
         );
     };
@@ -183,7 +183,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     return (
         <View style={styles.container}>
             {totalVestedView()}
-            {vestingAllocationsView()}            
+            {vestingAllocationsView()}
         </View>
     );
 };
