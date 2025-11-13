@@ -1,6 +1,6 @@
 {
   "name": "tonomy-id",
-  "version": "0.186.8",
+  "version": "0.186.9",
   "type": "commonjs",
   "scripts": {
     "eas-build-pre-install": "corepack enable",
