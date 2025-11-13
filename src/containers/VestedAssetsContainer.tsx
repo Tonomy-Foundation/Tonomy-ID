@@ -105,7 +105,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
     const vestingAllocationsView = () => {
         return (
-            <ScrollView style={styles.scrollView}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
                 <View style={{ marginVertical: 16 }}>
                     {vestedAllocations?.allocationsDetails?.length > 0 &&
                         vestedAllocations.allocationsDetails.map((allocation, index) => (
@@ -168,6 +168,14 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         </View>
                     </View>
                 )}
+                <View style={styles.unlockAssetView}>
+                    <Text style={styles.unlockhead}>When can I unlock coins?</Text>
+
+                    <Text style={styles.lockedParagraph}>
+                        Coins are gradually unlockable after the public sale based on the vesting schedule for your
+                        allocation(s).
+                    </Text>
+                </View>
             </ScrollView>
         );
     };
@@ -176,15 +184,6 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         <View style={styles.container}>
             {totalVestedView()}
             {vestingAllocationsView()}
-
-            <View style={styles.unlockAssetView}>
-                <Text style={styles.unlockhead}>When can I unlock coins?</Text>
-
-                <Text style={styles.lockedParagraph}>
-                    Coins are gradually unlockable after the public sale based on the vesting schedule for your
-                    allocation(s).
-                </Text>
-            </View>
         </View>
     );
 };
