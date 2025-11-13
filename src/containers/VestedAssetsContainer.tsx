@@ -105,7 +105,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
     const vestingAllocationsView = () => {
         return (
-            <ScrollView style={styles.scrollView}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
                 <View style={{ marginVertical: 16 }}>
                     {vestedAllocations?.allocationsDetails?.length > 0 &&
                         vestedAllocations.allocationsDetails.map((allocation, index) => (
