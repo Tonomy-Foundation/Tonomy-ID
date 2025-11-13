@@ -168,16 +168,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         </View>
                     </View>
                 )}
-            </ScrollView>
-        );
-    };
-
-    return (
-        <View style={styles.container}>
-            {totalVestedView()}
-            {vestingAllocationsView()}
-
-            <View style={styles.unlockAssetView}>
+                <View style={styles.unlockAssetView}>
                 <Text style={styles.unlockhead}>When can I unlock coins?</Text>
 
                 <Text style={styles.lockedParagraph}>
@@ -185,6 +176,14 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                     allocation(s).
                 </Text>
             </View>
+            </ScrollView>
+        );
+    };
+
+    return (
+        <View style={styles.container}>
+            {totalVestedView()}
+            {vestingAllocationsView()}            
         </View>
     );
 };
