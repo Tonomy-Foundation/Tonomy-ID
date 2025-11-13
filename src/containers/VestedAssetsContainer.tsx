@@ -105,11 +105,17 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
     const vestingAllocationsView = () => {
         return (
-            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}>
                 <View style={{ marginVertical: 16 }}>
                     {vestedAllocations?.allocationsDetails?.length > 0 &&
                         vestedAllocations.allocationsDetails.map((allocation, index) => (
-                            <View key={index}>
+                            <View
+                                key={index}
+                                style={[
+                                    index === vestedAllocations.allocationsDetails.length - 1 &&
+                                        vestedAllocations.allocationsDetails.length > 5 && { marginBottom: 50 },
+                                ]}
+                            >
                                 {allocation.totalAllocation !== allocation.unlocked && (
                                     <TouchableOpacity
                                         key={index}
@@ -147,7 +153,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                     )}
                 </View>
                 {vestedAllocations.unlockable > 0 && (
-                    <View>
+                    <View style={{ marginBottom: 60 }}>
                         <Text style={styles.subTitle}>Unlockable coins</Text>
 
                         <View style={styles.availableAssetView}>
@@ -168,7 +174,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         </View>
                     </View>
                 )}
-                <View style={styles.unlockAssetView}>
+                <View style={vestedAllocations.unlockable > 0 ? styles.unlockAssetView : styles.unlockableView}>
                     <Text style={styles.unlockhead}>When can I unlock coins?</Text>
 
                     <Text style={styles.lockedParagraph}>
@@ -245,6 +251,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
     },
     unlockAssetView: {
+        alignItems: 'flex-start',
+        backgroundColor: theme.colors.grey7,
+        borderRadius: 8,
+        marginTop: 30,
+        padding: 16,
+    },
+    unlockableView: {
         alignItems: 'flex-start',
         backgroundColor: theme.colors.grey7,
         borderRadius: 8,
