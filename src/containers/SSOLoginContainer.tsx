@@ -243,10 +243,10 @@ export default function SSOLoginContainer({
                             </View>
                         </View>
                     )}
-                    
+
                     <Image source={require('../assets/images/kyc-onboarding/verifiedRequest.png')} />
                     <SSOLoginBottomLayover refMessage={refMessage} />
-                     <RBSheet
+                    <RBSheet
                         ref={refMessage}
                         openDuration={150}
                         closeDuration={100}
@@ -265,16 +265,10 @@ export default function SSOLoginContainer({
                             </TouchableOpacity>
                         </View>
                         <View>
-                            <Text style={styles.lockedParagraph}>
-                                Here’s how identity verification works:
-                            </Text>
-                            <Text style={styles.lockedParagraph}>
-                                ⛶ We’ll check if you’re already verified  
-                            </Text>
-                            <Text style={styles.lockedParagraph}>
-                                🪪 If needed, scan your ID once
-                            </Text>
-                            <TButtonContained style={{marginTop: 30}} onPress={onLogin}>
+                            <Text style={styles.lockedParagraph}>Here’s how identity verification works:</Text>
+                            <Text style={styles.lockedParagraph}>⛶ We’ll check if you’re already verified</Text>
+                            <Text style={styles.lockedParagraph}>🪪 If needed, scan your ID once</Text>
+                            <TButtonContained style={{ marginTop: 30 }} onPress={onLogin}>
                                 Got It
                             </TButtonContained>
                         </View>
@@ -292,7 +286,11 @@ export default function SSOLoginContainer({
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={requestType === 'kyc' ? () => refMessage.current?.open() : onLogin}>
+                    <TButtonContained
+                        disabled={nextLoading}
+                        style={commonStyles.marginBottom}
+                        onPress={requestType === 'kyc' ? () => refMessage.current?.open() : onLogin}
+                    >
                         Proceed
                     </TButtonContained>
                     <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
@@ -300,11 +298,7 @@ export default function SSOLoginContainer({
                     </TButtonOutlined>
                 </View>
             }
-        >
-
-
-
-        </LayoutComponent>
+        ></LayoutComponent>
     );
 }
 
@@ -391,7 +385,7 @@ const styles = StyleSheet.create({
         marginLeft: 4,
         borderRadius: 2,
     },
-     vestHead: {
+    vestHead: {
         paddingHorizontal: 5,
         paddingVertical: 13,
         flexDirection: 'row',

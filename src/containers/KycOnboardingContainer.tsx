@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Swiper from 'react-native-swiper';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import theme, { commonStyles } from '../utils/theme';
 import ArrowForwardIcon from '../assets/icons/ArrowForwardIcon';
 import { Props } from '../screens/KycOnboardingScreen';
@@ -10,19 +10,11 @@ import useErrorStore from '../store/errorStore';
 import OnBoardingImage1 from '../assets/images/kyc-onboarding/1.png';
 import OnBoardingImage2 from '../assets/images/kyc-onboarding/2.png';
 import OnBoardingImage3 from '../assets/images/kyc-onboarding/3.png';
-import OnBoardingImage4 from '../assets/images/kyc-onboarding/4.png';
-import BackgroundSvg from '../assets/images/kyc-onboarding/bg.svg';
-import { Bubble } from '../components/Bubble';
 import { handleVeriffIfRequired } from '../utils/veriff';
 import { KYCPayload, KYCVC, SdkErrors, util, VeriffStatusEnum, VerificationTypeEnum } from '@tonomy/tonomy-id-sdk';
 import settings from '../settings';
 import useUserStore from '../store/userStore';
 import TSpinner from '../components/atoms/TSpinner';
-
-const { height: screenHeight } = Dimensions.get('window');
-const pictureAndSliderHeight = screenHeight * 0.59;
-const textHeight = screenHeight * 0.22;
-const buttonsHeight = screenHeight * 0.09;
 
 type VeriffPayload = {
     appName: string;
@@ -35,51 +27,24 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
     const errorStore = useErrorStore();
     const { user } = useUserStore();
 
-    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
     const slides = [
         {
             id: 1,
             title: `Tired of verifying your identity again and again?`,
-            text: '',
+            text: 'Skip the forms and endless uploads — verify once, use everywhere',
             image: OnBoardingImage1,
-            bubbles: [
-                { top: -0.27, left: 0.23, text: 'Frustration', delay: 300, side: 'right' },
-                { top: -0.22, left: -0.43, text: '💢', delay: 400, side: 'left' },
-                { top: -0.004, left: 0.35, text: '😤', delay: 500, side: 'right' },
-            ],
         },
         {
             id: 2,
-            title: `Meet reusable KYC`,
-            text: `Verify once. Log in anywhere securely — without repeating the process`,
+            title: `Skip new verifications – meet reusable KYC`,
+            text: `Verify once. Log in anywhere securely – without repeating the process`,
             image: OnBoardingImage2,
-            bubbles: [
-                { top: -0.29, left: 0.11, text: 'Already verified?', delay: 300, side: 'right' },
-                { top: -0.22, left: -0.44, text: '😍', delay: 400, side: 'left' },
-                { top: -0.02, left: -0.44, text: 'Felt kind of magic', delay: 500, side: 'left' },
-            ],
         },
         {
             id: 3,
-            title: 'Faster access. Full control',
-            text: `Your data stays private and secure — even we can't see it`,
-            image: OnBoardingImage3,
-            bubbles: [
-                { top: -0.29, left: -0.44, text: 'Privacy', delay: 300, side: 'left' },
-                { top: -0.2, left: 0.34, text: '😎', delay: 400, side: 'right' },
-                { top: 0.0, left: 0.19, text: 'Confidence', delay: 500, side: 'right' },
-            ],
-        },
-        {
-            id: 4,
             title: 'One ID. All your apps',
-            text: 'This is just the beginning',
-            image: OnBoardingImage4,
-            bubbles: [
-                { top: -0.27, left: -0.44, text: '👍', delay: 300, side: 'left' },
-                { top: -0.13, left: 0.13, text: 'No forms? Nice', delay: 400, side: 'right' },
-                { top: 0.0, left: -0.45, text: 'That was fast', delay: 500, side: 'left' },
-            ],
+            text: `Keep your data private and use it anywhere you log in`,
+            image: OnBoardingImage3,
         },
     ];
     // Animation values for slide transitions
@@ -176,52 +141,32 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
                 </View>
             ) : (
                 <View style={[styles.container]}>
-                    <BackgroundSvg
-                        width="100%"
-                        height="100%"
-                        preserveAspectRatio="xMidYMid slice"
-                        style={StyleSheet.absoluteFill}
-                    />
+                    <Swiper
+                        loop={false}
+                        index={activeIndex}
+                        onIndexChanged={(index) => setActiveIndex(index)}
+                        showsPagination={true}
+                        dotStyle={styles.dot}
+                        activeDotStyle={styles.activeDot}
+                        paginationStyle={{ bottom: 230 }}
+                    >
+                        {slides.map((slide) => {
+                            return (
+                                <View style={styles.slide} key={slide.id}>
+                                    <Image source={slide.image} style={[styles.image]} />
+                                </View>
+                            );
+                        })}
+                    </Swiper>
 
-                    <Animated.View style={[styles.pictureAndSlider, { height: pictureAndSliderHeight }, screenStyle]}>
-                        <Swiper
-                            loop={false}
-                            index={activeIndex}
-                            onIndexChanged={(index) => setActiveIndex(index)}
-                            showsPagination={true}
-                            dotStyle={styles.dot}
-                            activeDotStyle={styles.activeDot}
-                        >
-                            {slides.map((slide) => {
-                                return (
-                                    <View style={styles.slide} key={slide.id}>
-                                        <Image source={slide.image} style={[styles.image]} />
-                                        <View style={[styles.bubblesContainer]}>
-                                            {slide.bubbles.map((b, i) => {
-                                                const top = b.top * screenHeight;
-                                                const left = b.left * screenWidth;
-
-                                                return (
-                                                    <View key={i} style={{ position: 'absolute', top, left }}>
-                                                        <Bubble text={b.text} delay={b.delay} side={b.side} />
-                                                    </View>
-                                                );
-                                            })}
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                        </Swiper>
-                    </Animated.View>
-
-                    <View style={[styles.textContainer, { height: textHeight }]}>
+                    <View style={[styles.textContainer]}>
                         <ScrollView contentContainerStyle={styles.content}>
                             <Text style={styles.title}>{slides[activeIndex]?.title}</Text>
                             <Text style={styles.text}>{slides[activeIndex]?.text}</Text>
                         </ScrollView>
                     </View>
 
-                    <View style={[styles.buttonContainer, { height: buttonsHeight }]}>
+                    <View style={[styles.buttonContainer]}>
                         {activeIndex < slides.length - 1 && (
                             <>
                                 <TouchableOpacity onPress={onFinish}>
@@ -229,10 +174,10 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={onNext} style={styles.nextButton}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Text style={{ color: theme.colors.white, marginRight: 5, fontSize: 16 }}>
+                                        <Text style={{ color: theme.colors.black, marginRight: 5, fontSize: 16 }}>
                                             Next
                                         </Text>
-                                        <ArrowForwardIcon color={theme.colors.white} />
+                                        <ArrowForwardIcon color={theme.colors.black} />
                                     </View>
                                 </TouchableOpacity>
                             </>
@@ -250,7 +195,7 @@ function KycOnboardingContainer({ navigation }: { navigation: Props['navigation'
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, display: 'flex' },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -260,27 +205,30 @@ const styles = StyleSheet.create({
     pictureAndSlider: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 20,
     },
     slide: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
+        paddingTop: 80,
     },
+
     image: {
-        width: '80%',
-        height: '75%',
+        width: '90%',
+        height: '85%', // slightly taller image to fill space
         resizeMode: 'contain',
+        marginBottom: 5, // smaller bottom space
+        bottom: 70,
     },
+
     dot: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.primary,
         width: 6,
         height: 5,
         borderRadius: 10,
         marginHorizontal: 5,
     },
     activeDot: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.primary,
         width: 18,
         height: 5,
         borderRadius: 10,
@@ -289,8 +237,8 @@ const styles = StyleSheet.create({
     textContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingBottom: 10,
         paddingHorizontal: 6,
+        bottom: 190,
     },
     content: {
         gap: 9,
@@ -302,16 +250,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 26,
+        fontSize: 29,
         fontWeight: 'bold',
         lineHeight: 32,
-        color: theme.colors.white,
+        color: theme.colors.black,
+        textAlign: 'center',
         ...commonStyles.primaryFontFamily,
     },
     text: {
-        fontSize: 16,
+        fontSize: 18,
         lineHeight: 21,
-        color: theme.colors.white,
+        color: theme.colors.black,
         textAlign: 'center',
         ...commonStyles.secondaryFontFamily,
     },
@@ -322,10 +271,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         width: '100%',
         minHeight: 55,
+        bottom: 60,
     },
     skipButton: {
         fontSize: 16,
-        color: theme.colors.white,
+        color: theme.colors.black,
     },
     nextButton: {
         width: 70,
@@ -336,7 +286,7 @@ const styles = StyleSheet.create({
     },
     getStartedBtn: {
         width: '100%',
-        backgroundColor: theme.colors.black,
+        backgroundColor: theme.colors.primary,
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 8,
@@ -346,13 +296,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#BA54D3',
     },
-    bubblesContainer: {
-        position: 'absolute',
-        bottom: screenHeight * 0.2,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-    },
+
     inner: {
         alignItems: 'center',
     },
