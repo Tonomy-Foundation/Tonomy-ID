@@ -19,9 +19,10 @@ import useErrorStore from '../store/errorStore';
 import Debug from 'debug';
 import { SSOLoginScreenProps } from '../screens/SSOLoginScreen';
 import TInfoModalBox from '../components/TInfoModalBox';
-import { ArrowUpRight } from 'iconoir-react-native';
 import SSOLoginBottomLayover from '../components/SSOLoginBottomLayover';
 import { useVerificationStore } from '../store/verificationStore';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import TIconButton from '../components/TIconButton';
 
 const debug = Debug('tonomy-id:containers:SSOLoginContainer');
 
@@ -229,28 +230,6 @@ export default function SSOLoginContainer({
         <LayoutComponent
             body={
                 <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-                    {/* Progress bar */}
-                    {requestType === 'login' ? (
-                        <View style={styles.progressBarContainer}>
-                            <View style={styles.progressActive} />
-                        </View>
-                    ) : (
-                        <>
-                            {reuseKycCount > 0 ? (
-                                <View style={styles.progressBarContainer}>
-                                    <View style={styles.progressActive} />
-                                    <View style={styles.progressInactive} />
-                                </View>
-                            ) : (
-                                <View style={styles.progressBarContainer}>
-                                    <View style={styles.progressActive} />
-                                    <View style={styles.progressInactive} />
-                                    <View style={styles.progressInactive} />
-                                </View>
-                            )}
-                        </>
-                    )}
-
                     {ssoApp && (
                         <View style={styles.loginCard}>
                             <Image source={{ uri: ssoApp.logoUrl }} style={styles.appIcon} />
@@ -264,8 +243,42 @@ export default function SSOLoginContainer({
                             </View>
                         </View>
                     )}
-
+                    
+                    <Image source={require('../assets/images/kyc-onboarding/verifiedRequest.png')} />
                     <SSOLoginBottomLayover refMessage={refMessage} />
+                     <RBSheet
+                        ref={refMessage}
+                        openDuration={150}
+                        closeDuration={100}
+                        height={280}
+                        customStyles={{ container: { paddingHorizontal: 10 } }}
+                    >
+                        <View style={styles.vestHead}>
+                            <Text style={styles.drawerHead}>Before we continue</Text>
+                            <TouchableOpacity onPress={() => refMessage?.current?.close()}>
+                                <TIconButton
+                                    icon={'close'}
+                                    color={theme.colors.lightBg}
+                                    iconColor={theme.colors.grey1}
+                                    size={17}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View>
+                            <Text style={styles.lockedParagraph}>
+                                Here’s how identity verification works:
+                            </Text>
+                            <Text style={styles.lockedParagraph}>
+                                ⛶ We’ll check if you’re already verified  
+                            </Text>
+                            <Text style={styles.lockedParagraph}>
+                                🪪 If needed, scan your ID once
+                            </Text>
+                            <TButtonContained style={{marginTop: 30}} onPress={onLogin}>
+                                Got It
+                            </TButtonContained>
+                        </View>
+                    </RBSheet>
                 </ScrollView>
             }
             footerHint={
@@ -279,7 +292,7 @@ export default function SSOLoginContainer({
             }
             footer={
                 <View style={{ marginTop: 30 }}>
-                    <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={onLogin}>
+                    <TButtonContained disabled={nextLoading} style={commonStyles.marginBottom} onPress={requestType === 'kyc' ? () => refMessage.current?.open() : onLogin}>
                         Proceed
                     </TButtonContained>
                     <TButtonOutlined disabled={cancelLoading} onPress={onCancel}>
@@ -287,7 +300,11 @@ export default function SSOLoginContainer({
                     </TButtonOutlined>
                 </View>
             }
-        ></LayoutComponent>
+        >
+
+
+
+        </LayoutComponent>
     );
 }
 
@@ -316,7 +333,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderWidth: 1,
         borderColor: theme.colors.grey8,
-        marginBottom: 30,
+        marginBottom: 20,
         marginTop: 70,
     },
     promptText: {
@@ -373,5 +390,24 @@ const styles = StyleSheet.create({
         backgroundColor: '#ECF1F4',
         marginLeft: 4,
         borderRadius: 2,
+    },
+     vestHead: {
+        paddingHorizontal: 5,
+        paddingVertical: 13,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    drawerHead: {
+        fontSize: 22,
+        fontWeight: '700',
+        marginTop: 8,
+    },
+    lockedParagraph: {
+        fontSize: 18,
+        fontWeight: '400',
+        color: theme.colors.black,
+        marginTop: 6,
+        paddingHorizontal: 10,
     },
 });
