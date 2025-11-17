@@ -27,7 +27,7 @@ const PassphraseInput: React.FC<PassphraseInputProps> = ({ value, onChange, setN
             setNextDisabled(false);
 
             for (let i = 0; i < newPassphrase.length; i++) {
-                if (!util.isKeyword(newPassphrase[i])) {
+                if (!util.isKeyword(newPassphrase[i].toLowerCase())) {
                     setNextDisabled(true);
                 }
             }
