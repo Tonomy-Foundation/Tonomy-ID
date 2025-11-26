@@ -427,7 +427,8 @@ export class AntelopeToken extends AbstractToken implements IToken {
 export class TonomyToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
-        const vestedBalance = await this.getVestedTotalBalance(account);
+        const allocations = await this.getVestedTokens(account as IAccount);
+        const lockedVestedAsset = new Asset(this, new Decimal(allocations.locked));
 
         // Ensure we retrieve staking state correctly
         let stakedBalance = new Asset(this, new Decimal(0));
@@ -444,7 +445,7 @@ export class TonomyToken extends AntelopeToken {
             }
         }
 
-        return availableBalance.add(vestedBalance).add(stakedBalance);
+        return availableBalance.add(lockedVestedAsset).add(stakedBalance);
     }
 
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
