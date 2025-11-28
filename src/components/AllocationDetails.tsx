@@ -47,7 +47,6 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
-                <View style={styles.divider} />
 
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Initial allocation</Text>
@@ -61,6 +60,8 @@ const AllocationDetails = (props: Props) => {
                         </Text>
                     </View>
                 </View>
+                <View style={styles.divider} />
+
                 <View style={styles.allocationView}>
                     <Text style={styles.allocTitle}>Initial unlock</Text>
                     <View style={styles.flexColEnd}>
