@@ -79,18 +79,16 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
     }, [cursorVisible, isFocused]);
 
     const onChangeText = (text: string) => {
-        const newText = text.toLowerCase().replace(/[^a-z]/g, '');
-
         setErrorMsg('');
 
-        if (onChange) onChange(newText);
+        if (onChange) onChange(text);
 
-        if (newText.length > 0) {
-            const suggestWords = util.generateAutoSuggestions(newText);
+        if (text.length > 0) {
+            const suggestWords = util.generateAutoSuggestions(text.toLowerCase());
 
             if (suggestWords.length === 0) {
                 if (valueLength === 0) {
-                    setValueLength(newText.length);
+                    setValueLength(text.length);
                 }
 
                 setErrorMsg('Not in the world list.');
@@ -161,13 +159,14 @@ const AutoCompletePassphraseWord: React.FC<AutocompleteProps> = ({
                             key={i}
                             style={{ marginTop: -6 }}
                             onPress={() => {
-                                setMenuVisible(false);
                                 if (onChange) onChange(word);
                                 setErrorMsg('');
 
                                 if (inputRef.current) {
                                     inputRef.current.blur();
                                 }
+
+                                setMenuVisible(false);
                             }}
                         >
                             <Menu.Item style={[{ width: '100%', zIndex: 1 }]} title={word} />

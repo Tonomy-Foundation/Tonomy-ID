@@ -56,9 +56,11 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer, getStakingContract } from '@tonomy/tonomy-id-sdk';
 import settings from '../../settings';
-import TokenLogo from '../../assets/tonomyProduction/favicon.png';
+import TokenLogo from '../../assets/tonomy/tono-logo.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
 import { formatAssetToNumber } from '../numbers';
+import { isPlatformAndroid } from '../device';
+import { getPriceCoinGecko } from './common';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -327,12 +329,13 @@ export class AntelopeChain extends AbstractChain {
     }
 }
 
+const privateRoundPrice = (0.0001 * 2.0) / 3.0;
 const tonoSalesPrices = {
-    seed: 0.0001,
-    preSale: 0.0002,
-    private: 0.0004,
-    kol: 0.0006,
-    publicSale: 0.0006,
+    seed: privateRoundPrice,
+    preSale: privateRoundPrice,
+    private: privateRoundPrice,
+    kol: 0.0001,
+    publicSale: 0.0001,
 };
 
 export const TONO_CURRENT_PRICE = tonoSalesPrices.publicSale;
@@ -365,7 +368,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
 
         switch (this.getChain().getName()) {
             case 'Tonomy':
-                return TONO_CURRENT_PRICE;
+                return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
             default:
                 throw new Error('Unsupported Antelope chain');
         }
@@ -534,11 +537,11 @@ export const TONOToken = new TonomyToken(
     'TONO',
     6,
     TokenLogo,
-    'tono',
-    false,
+    'tonomy',
     true,
     true,
-    true
+    true,
+    isPlatformAndroid ? true : false //IOS rejected Performance: App Completeness
 );
 
 export const TONOTestnetToken = new TonomyToken(
@@ -548,10 +551,10 @@ export const TONOTestnetToken = new TonomyToken(
     6,
     TokenLogo,
     'tono-testnet',
-    false,
     true,
     true,
-    true
+    true,
+    isPlatformAndroid ? true : false
 );
 
 export const TONOStagingToken = new TonomyToken(
@@ -564,7 +567,7 @@ export const TONOStagingToken = new TonomyToken(
     false,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false
 );
 
 export const TONOLocalToken = new TonomyToken(
@@ -577,7 +580,7 @@ export const TONOLocalToken = new TonomyToken(
     false,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false
 );
 
 export const EOSJungleChain = new AntelopeChain(
