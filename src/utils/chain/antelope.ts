@@ -56,9 +56,11 @@ import { captureError } from '../sentry';
 import Decimal from 'decimal.js';
 import { Signer, getStakingContract } from '@tonomy/tonomy-id-sdk';
 import settings from '../../settings';
-import TokenLogo from '../../assets/tonomyProduction/favicon.png';
+import TokenLogo from '../../assets/tonomy/tono-logo.png';
 import TonomyLogo from '../../assets/tonomyProduction/logo48x48.png';
 import { formatAssetToNumber } from '../numbers';
+import { isPlatformAndroid } from '../device';
+import { getPriceCoinGecko } from './common';
 
 const debug = Debug('tonomy-id:utils:chain:antelope');
 
@@ -366,7 +368,7 @@ export class AntelopeToken extends AbstractToken implements IToken {
 
         switch (this.getChain().getName()) {
             case 'Tonomy':
-                return TONO_CURRENT_PRICE;
+                return await getPriceCoinGecko(this.coinmarketCapId, 'usd');
             default:
                 throw new Error('Unsupported Antelope chain');
         }
@@ -425,7 +427,8 @@ export class AntelopeToken extends AbstractToken implements IToken {
 export class TonomyToken extends AntelopeToken {
     async getBalance(account?: AntelopeAccount): Promise<IAsset> {
         const availableBalance = await this.getAvailableBalance(account);
-        const vestedBalance = await this.getVestedTotalBalance(account);
+        const allocations = await this.getVestedTokens(account as IAccount);
+        const lockedVestedAsset = new Asset(this, new Decimal(allocations.locked));
 
         // Ensure we retrieve staking state correctly
         let stakedBalance = new Asset(this, new Decimal(0));
@@ -442,7 +445,7 @@ export class TonomyToken extends AntelopeToken {
             }
         }
 
-        return availableBalance.add(vestedBalance).add(stakedBalance);
+        return availableBalance.add(lockedVestedAsset).add(stakedBalance);
     }
 
     async getAvailableBalance(account?: AntelopeAccount): Promise<IAsset> {
@@ -535,11 +538,11 @@ export const TONOToken = new TonomyToken(
     'TONO',
     6,
     TokenLogo,
-    'tono',
+    'tonomy',
     true,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false //IOS rejected Performance: App Completeness
 );
 
 export const TONOTestnetToken = new TonomyToken(
@@ -549,10 +552,10 @@ export const TONOTestnetToken = new TonomyToken(
     6,
     TokenLogo,
     'tono-testnet',
-    false,
     true,
     true,
-    true
+    true,
+    isPlatformAndroid ? true : false
 );
 
 export const TONOStagingToken = new TonomyToken(
@@ -565,7 +568,7 @@ export const TONOStagingToken = new TonomyToken(
     false,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false
 );
 
 export const TONOLocalToken = new TonomyToken(
@@ -578,7 +581,7 @@ export const TONOLocalToken = new TonomyToken(
     false,
     true,
     true,
-    true
+    isPlatformAndroid ? true : false
 );
 
 export const EOSJungleChain = new AntelopeChain(

@@ -3,6 +3,7 @@ import theme from '../utils/theme';
 import { openURL } from 'expo-linking';
 import { OpenNewWindow } from 'iconoir-react-native';
 import settings from '../settings';
+import { isPlatformAndroid } from '../utils/device';
 
 const availableAppsData = [
     {
@@ -25,7 +26,7 @@ const availableAppsData = [
         title: 'Tonomy Bankless',
         description: `Swap your Tonomy coins quickly and securely — no banks, no middlemen, no hassle`,
         url: settings.config.tonomyAppsOrigin + '/bankless',
-        isAvailable: true,
+        isAvailable: isPlatformAndroid ? true : false,
     },
     {
         image: require('../assets/tonomyProduction/favicon.png'),

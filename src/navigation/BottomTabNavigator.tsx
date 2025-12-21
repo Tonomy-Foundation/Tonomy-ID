@@ -7,7 +7,7 @@ import CitizenshipScreen from '../screens/CitizenshipScreen';
 import AssetListingScreen from '../screens/AssetListingScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import theme, { useAppTheme } from '../utils/theme';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ScanIcon from '../assets/icons/ScanIcon';
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -24,7 +24,7 @@ import { isIpad } from '../utils/device';
 const Tab = createBottomTabNavigator<BottonNavigatorRouteStackParamList>();
 
 const TAB_H = isIpad ? 30 : 55; // base height of bar
-const FAB_OFFSET = isIpad ? -10 : -20; // how high the center button floats  const insets = useSafeAreaInsets();
+const FAB_OFFSET = isIpad ? -10 : Platform.OS === 'android' ? 0 : -20; // how high the center button floats  const insets = useSafeAreaInsets();
 
 type ScanTabBarButtonProps = BottomTabBarButtonProps & { fabOffset?: number };
 
@@ -32,8 +32,8 @@ const ScanTabBarButton: React.FC<ScanTabBarButtonProps> = ({ children, onPress, 
     <TouchableOpacity style={{ top: fabOffset, alignSelf: 'center' }} onPress={onPress} activeOpacity={0.9}>
         <View
             style={{
-                width: 70,
-                height: 70,
+                width: Platform.OS === 'android' ? 60 : 70,
+                height: Platform.OS === 'android' ? 60 : 70,
                 borderRadius: 35,
                 backgroundColor: theme.colors.primary,
                 justifyContent: 'center',
@@ -148,10 +148,17 @@ function BottomTabNavigator(props) {
                         headerTitle: 'Scan QR',
                         headerLeft: () => (
                             <TouchableOpacity
-                                style={{ paddingHorizontal: 5, paddingVertical: 10 }}
+                                style={{
+                                    paddingHorizontal: Platform.OS === 'android' ? 4 : 5,
+                                    paddingVertical: Platform.OS === 'android' ? 8 : 10,
+                                }}
                                 onPress={() => navigation.navigate('Assets')}
                             >
-                                <ArrowLeft height={24} width={24} color={theme.colors.primary} />
+                                <ArrowLeft
+                                    height={Platform.OS === 'android' ? 24 : 28}
+                                    width={Platform.OS === 'android' ? 24 : 28}
+                                    color={theme.colors.primary}
+                                />
                             </TouchableOpacity>
                         ),
                         tabBarLabel: () => null,
