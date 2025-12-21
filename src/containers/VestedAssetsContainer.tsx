@@ -13,6 +13,7 @@ import Decimal from 'decimal.js';
 import useUserStore from '../store/userStore';
 import useErrorStore from '../store/errorStore';
 import settings from '../settings';
+import { getVestingContract } from '@tonomy/tonomy-id-sdk';
 
 export type VestedAssetProps = {
     navigation: VestedAssetscreenNavigationProp['navigation'];
@@ -24,6 +25,7 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
     const [usdPrice, setUsdPrice] = useState(0);
     const [vestedAllocations, setVestedAllocation] = useState<VestedTokens>({} as VestedTokens);
     const [selectedAllocation, setSelectedAllocation] = useState<VestedAllocation>({} as VestedAllocation);
+    const [launchDate, setLaunchDate] = useState<Date | null>(null);
     const refMessage = useRef<{ open: () => void; close: () => void }>(null);
     const token = chain.getNativeToken();
     const { user } = useUserStore();
@@ -45,6 +47,9 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
                 setUsdPrice(usdPriceValue);
                 setVestedAllocation(allocations);
+                const launchDate = (await getVestingContract().getSettings()).launchDate;
+
+                setLaunchDate(launchDate);
             } catch (e) {
                 errorStore.setError({ error: e, expected: false });
             } finally {
@@ -100,11 +105,17 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
 
     const vestingAllocationsView = () => {
         return (
-            <ScrollView style={styles.scrollView}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}>
                 <View style={{ marginVertical: 16 }}>
                     {vestedAllocations?.allocationsDetails?.length > 0 &&
                         vestedAllocations.allocationsDetails.map((allocation, index) => (
-                            <View key={index}>
+                            <View
+                                key={index}
+                                style={[
+                                    index === vestedAllocations.allocationsDetails.length - 1 &&
+                                        vestedAllocations.allocationsDetails.length > 5 && { marginBottom: 50 },
+                                ]}
+                            >
                                 {allocation.totalAllocation !== allocation.unlocked && (
                                     <TouchableOpacity
                                         key={index}
@@ -137,11 +148,12 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                             refMessage={refMessage}
                             allocationData={selectedAllocation}
                             usdPriceValue={usdPrice}
+                            initialUnlockDate={launchDate}
                         />
                     )}
                 </View>
                 {vestedAllocations.unlockable > 0 && (
-                    <View>
+                    <View style={{ marginBottom: 60 }}>
                         <Text style={styles.subTitle}>Unlockable coins</Text>
 
                         <View style={styles.availableAssetView}>
@@ -162,6 +174,14 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
                         </View>
                     </View>
                 )}
+                <View style={vestedAllocations.unlockable > 0 ? styles.unlockAssetView : styles.unlockableView}>
+                    <Text style={styles.unlockhead}>When can I unlock coins?</Text>
+
+                    <Text style={styles.lockedParagraph}>
+                        Coins are gradually unlockable after the public sale based on the vesting schedule for your
+                        allocation(s).
+                    </Text>
+                </View>
             </ScrollView>
         );
     };
@@ -170,15 +190,6 @@ const VestedAssetsContainer = ({ navigation, chain }: VestedAssetProps) => {
         <View style={styles.container}>
             {totalVestedView()}
             {vestingAllocationsView()}
-
-            <View style={styles.unlockAssetView}>
-                <Text style={styles.unlockhead}>When can I unlock coins?</Text>
-
-                <Text style={styles.lockedParagraph}>
-                    Coins are gradually unlockable after the public sale based on the vesting schedule for your
-                    allocation(s).
-                </Text>
-            </View>
         </View>
     );
 };
@@ -240,6 +251,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
     },
     unlockAssetView: {
+        alignItems: 'flex-start',
+        backgroundColor: theme.colors.grey7,
+        borderRadius: 8,
+        marginTop: 30,
+        padding: 16,
+    },
+    unlockableView: {
         alignItems: 'flex-start',
         backgroundColor: theme.colors.grey7,
         borderRadius: 8,

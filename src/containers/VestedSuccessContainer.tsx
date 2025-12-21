@@ -48,13 +48,15 @@ const VestedSuccessContainer = ({ navigation, chain }: SuccessVestedProps) => {
     const redirectBack = () => {
         setLoading(true);
 
-        if (totalLocked > 0) {
-            navigation.navigate('VestedAssets', { chain });
-        } else {
-            navigation.navigate('AssetManager', { chain });
-        }
+        setTimeout(() => {
+            if (totalLocked > 0) {
+                navigation.navigate('VestedAssets', { chain });
+            } else {
+                navigation.navigate('AssetManager', { chain });
+            }
 
-        setLoading(false);
+            setLoading(false);
+        }, 8000);
     };
 
     return (
