@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: 🧪 Run tests
-        run: yarn run test
+      - name: 🔍 Type check
+        run: yarn run typeCheck
 
       - name: 🧹 Lint code
         run: yarn run lint
 
-      - name: 🔍 Type check
-        run: yarn run typeCheck
+      - name: 🧪 Run tests
+        run: yarn run test
