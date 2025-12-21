@@ -6,7 +6,6 @@ on:
       - master
       - testnet
       - development
-      - hotfix/master-conflicts
 
 jobs:
   deploy:
@@ -55,9 +54,9 @@ jobs:
       - run: yarn --immutable
       - run: yarn release
       - run: |
-          if [[ ${GITHUB_REF#refs/*/} == "hotfix/master-conflicts" ]]; then
+          if [[ ${GITHUB_REF#refs/*/} == "master" ]]; then
             echo "Branch is 'master'"
-            eas submit --platform ios
+            yarn run deploy:production
           fi
 
           if [[ ${GITHUB_REF#refs/*/} == "testnet" ]]; then
