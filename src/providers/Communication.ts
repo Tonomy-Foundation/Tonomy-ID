@@ -6,7 +6,6 @@ import {
     LinkAuthRequestMessage,
     LoginRequestsMessage,
     parseDid,
-    SdkError,
     SdkErrors,
     isErrorCode,
 } from '@tonomy/tonomy-id-sdk';
@@ -27,7 +26,7 @@ import settings from '../settings';
 const debug = Debug('tonomy-id:services:CommunicationModule');
 
 export default function CommunicationProvider() {
-    const { user, logout } = useUserStore();
+    const { user, logout, isAppInitialized, initializeStatusFromStorage } = useUserStore();
     const navigation = useNavigation<NavigationProp<RouteStackParamList>>();
     const errorStore = useErrorStore();
     const [subscribers, setSubscribers] = useState<number[]>([]);
@@ -78,6 +77,10 @@ export default function CommunicationProvider() {
                             const payload = params.get('payload');
 
                             if (payload) {
+                                if (!isAppInitialized) {
+                                    await user.initializeFromStorage();
+                                }
+
                                 navigation.navigate('SSO', {
                                     payload,
                                     receivedVia: 'deepLink',

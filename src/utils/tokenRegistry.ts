@@ -202,7 +202,7 @@ export const getAssetDetails = async (chain: IChain): Promise<AccountTokenDetail
             balance: asset.balance,
             usdBalance: asset.usdBalance,
             icon: tokenRegistry.token.getLogoUrl(),
-            symbol: 'test', //tokenRegistry.token.getSymbol(),
+            symbol: tokenRegistry.token.getSymbol(),
             name: tokenRegistry.token.getName(),
             isTransferable: tokenRegistry.token.isTransferable(),
             precision: tokenRegistry.token.getPrecision(),

@@ -64,7 +64,7 @@ const expo: ExpoConfig = {
         supportsTablet: true,
         bundleIdentifier: identifier,
         infoPlist: {
-            NSCameraUsageDescription: 'We need access to your camera to scan the QR code.',
+            NSCameraUsageDescription: 'Tonomy ID uses your camera to scan QR codes for secure login within the app.',
             LSApplicationQueriesSchemes: ['esr', 'wc', 'did'],
             CFBundleURLTypes: [
                 {
@@ -128,7 +128,7 @@ const expo: ExpoConfig = {
         [
             'expo-camera',
             {
-                cameraPermission: 'Allow tonomy id to access your camera',
+                cameraPermission: 'Tonomy ID uses your camera to scan QR codes for secure login within the app.',
             },
         ],
         [

@@ -20,12 +20,17 @@ jobs:
       GITHUB_TOKEN: ${{secrets.MY_GITHUB_PERSONAL_ACCESS_TOKEN}}
       # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
       INFURA_KEY: ${{ secrets.INFURA_KEY }}
+      # https://medium.com/jelly-market/how-to-get-infura-api-key-e7d552dd396f
       SENTRY_PUBLIC_KEY: ${{ secrets.SENTRY_PUBLIC_KEY }}
       SENTRY_PROJECT_ID: ${{ secrets.SENTRY_PROJECT_ID }}
       SENTRY_SECRET_KEY: ${{ secrets.SENTRY_SECRET_KEY }}
+      # https://docs.sentry.io/api/projects/create-a-new-client-key/
       ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+      # https://docs.etherscan.io/getting-an-api-key
       WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
+      # https://docs.blockscout.com/setup/configuration-options/walletconnect-project-id-for-contract-read-write
       VERIFF_API_KEY: ${{ secrets.VERIFF_API_KEY }}
+      # https://devdocs.veriff.com/apidocs/veriff-public-api-guides
       HCAPTCHA_SITE_KEY: ${{ secrets.HCAPTCHA_SITE_KEY }}
 
     steps:
