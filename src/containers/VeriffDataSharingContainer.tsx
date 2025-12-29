@@ -188,9 +188,7 @@ export default function VeriffDataSharingContainer({
                         <Text style={styles.shareText}>
                             Finish login with <Text style={styles.discord}>{ssoApp?.appName}</Text>
                         </Text>
-                        <Text style={styles.shareSubText}>
-                            Here's what data {ssoApp?.appName} will receive
-                        </Text>
+                        <Text style={styles.shareSubText}>{"Here's what data {ssoApp?.appName} will receive"}</Text>
                         <View style={styles.usernameView}>
                             <Text style={styles.username}>@{username}</Text>
                         </View>
@@ -216,7 +214,7 @@ export default function VeriffDataSharingContainer({
                                         <Text style={styles.subTitle}>
                                             {reuseKycCount > 1
                                                 ? `KYC data reused ${reuseKycCount} times - saving you ~25 minutes of your previous time`
-                                                : `Haven't reused your KYC data yet — you're all set for a faster login next time`}
+                                                : "Haven't reused your KYC data yet - you're all set for a faster login next time"}
                                         </Text>
                                     </View>
 
@@ -333,7 +331,7 @@ const styles = StyleSheet.create({
     appIcon: { width: 40, height: 40, resizeMode: 'contain' },
     dots: { marginHorizontal: 15, marginBottom: 20, fontSize: 35, color: theme.colors.grey9 },
     shareText: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
-    shareSubText: {fontSize: 16, textAlign: 'center', marginTop:6},
+    shareSubText: { fontSize: 16, textAlign: 'center', marginTop: 6 },
     discord: { color: theme.colors.primary },
     sectionWrapper: { paddingVertical: 9, paddingLeft: 9 },
     usernameView: {
