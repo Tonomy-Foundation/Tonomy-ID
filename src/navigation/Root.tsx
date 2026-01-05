@@ -53,6 +53,7 @@ import VeriffLoginScreen from '../screens/VeriffLoginScreen';
 import VeriffDataSharingScreen from '../screens/VeriffDataSharingScreen';
 import { KYCPayload } from '@tonomy/tonomy-id-sdk';
 import KycOnboardingScreen from '../screens/KycOnboardingScreen';
+import ExistingTrinsicIdScreen from '../screens/ExistingTrinsicIdScreen';
 
 const prefix = Linking.createURL('');
 
@@ -133,6 +134,7 @@ export type MainRouteStackParamList = {
     VeriffLogin: undefined;
     VeriffDataSharing: { payload: KYCPayload };
     KycOnboarding: undefined;
+    ExistingTrinsicId: undefined;
 };
 
 export type BottonNavigatorRouteStackParamList = {
@@ -371,6 +373,11 @@ export default function RootNavigation() {
                             name="KycOnboarding"
                             options={{ headerShown: false, headerBackTitleVisible: false, title: 'KYC Onboarding' }}
                             component={KycOnboardingScreen}
+                        />
+                        <Stack.Screen
+                            name="ExistingTrinsicId"
+                            options={{ ...noHeaderScreenOptions, title: 'ExistingTrinsicId' }}
+                            component={ExistingTrinsicIdScreen}
                         />
                     </Stack.Navigator>
                 </>
